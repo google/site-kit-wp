@@ -24,12 +24,12 @@ import { useLifecycles, useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 
@@ -54,19 +54,21 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			// Use apiFetch directly, instead of our wrapper API, to have
-			// control over the error handling/catching, as status is switched to offline
-			// if request fails to reach the server.
-			const onlineResponse = await apiFetch( {
-				method: 'GET',
-				path: '/google-site-kit/v1/core/site/data/health-checks',
-			} );
+			const connectionCheckResponse = await API.get(
+				'core',
+				'site',
+				'connection-check',
+				undefined,
+				{
+					useCache: false,
+				}
+			);
 
 			// We are only interested if the request was successful, to
 			// confirm online status.
-			const canReachInternetURL = !! onlineResponse.checks;
+			const canReachConnectionCheck = !! connectionCheckResponse;
 
-			setIsOnline( canReachInternetURL );
+			setIsOnline( canReachConnectionCheck );
 		} catch ( err ) {
 			setIsOnline( false );
 		}
