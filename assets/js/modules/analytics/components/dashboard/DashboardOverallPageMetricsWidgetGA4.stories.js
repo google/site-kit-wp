@@ -22,6 +22,7 @@
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -408,11 +409,18 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
+						slug: 'analytics',
 						active: true,
 						connected: true,
-						slug: 'analytics',
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
 					},
 				] );
+
+				provideModuleRegistrations( registry );
 
 				provideUserAuthentication( registry );
 
