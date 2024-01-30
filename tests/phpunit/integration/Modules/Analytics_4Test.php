@@ -3095,7 +3095,7 @@ class Analytics_4Test extends TestCase {
 		// Should return WP error when `propertyID` is not supplied.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $result );
 
-		// Request with `propertyID` parameter
+		// Request with `propertyID` parameter.
 		$result = $this->analytics->get_data( 'adsense-links', array( 'propertyID' => '12345' ) );
 
 		// Should return array with `GoogleAnalyticsAdminV1alphaAdSenseLink` as defined in the mock response.
