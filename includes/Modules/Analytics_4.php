@@ -323,6 +323,20 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Checks whether the AdSense module is connected.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function is_adsense_connected() {
+		$adsense_settings = ( new AdSense_Settings( $this->options ) )->get();
+
+		if ( empty( $adsense_settings['accountSetupComplete'] ) || empty( $adsense_settings['siteSetupComplete'] ) ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.30.0
@@ -331,13 +345,6 @@ final class Analytics_4 extends Module
 	 */
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
-
-		$adsense_connected = true;
-		$adsense_settings  = ( new AdSense_Settings( $this->options ) )->get();
-
-		if ( empty( $adsense_settings['accountSetupComplete'] ) || empty( $adsense_settings['siteSetupComplete'] ) ) {
-			$adsense_connected = false;
-		}
 
 		$debug_fields = array(
 			// phpcs:disable
@@ -388,17 +395,21 @@ final class Analytics_4 extends Module
 					? 'none'
 					: join( ', ', $settings['availableCustomDimensions'] ),
 			),
-			'adsense_linked'                          => array(
-				'label' => __( 'AdSense Linked', 'google-site-kit' ),
-				'value' => $adsense_connected && $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
-				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
-			),
-			'adsense_linked_last_synced_at'           => array(
-				'label' => __( 'AdSense Linked Last Synced At', 'google-site-kit' ),
-				'value' => $adsense_connected && $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
-				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
-			),
 		);
+
+		if ( $this->is_adsense_connected() ) {
+			$debug_fields['adsense_linked'] = array(
+				'label' => __( 'AdSense Linked', 'google-site-kit' ),
+				'value' => $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
+				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
+			);
+
+			$debug_fields['adsense_linked_last_synced_at'] = array(
+				'label' => __( 'AdSense Linked Last Synced At', 'google-site-kit' ),
+				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
+				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
+			);
+		}
 
 		return $debug_fields;
 	}
