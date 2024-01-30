@@ -266,6 +266,9 @@ class Reset {
 			wp_die( esc_html__( 'You don’t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+		// Call hooks on plugin reset. This is used to reset the ad blocking recovery notification.
+		do_action( 'googlesitekit_reset' );
+
 		$this->all();
 		$this->maybe_hard_reset();
 
