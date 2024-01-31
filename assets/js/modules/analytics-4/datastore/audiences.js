@@ -17,10 +17,37 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+
+const audienceFields = [
+	'name',
+	'displayName',
+	'description',
+	'membershipDurationDays',
+	'adsPersonalizationEnabled',
+	'eventTrigger',
+	'exclusionDurationMode',
+	'filterClauses',
+];
+
+function validateAudience( audience ) {
+	invariant( isPlainObject( audience ), 'Audience must be an object.' );
+	Object.keys( audience ).forEach( ( key ) => {
+		invariant(
+			audienceFields.includes( key ),
+			`Audience must contain only valid keys. Invalid key: "${ key }"`
+		);
+	} );
+}
 
 const fetchGetAudiencesStore = createFetchStore( {
 	baseName: 'getAudiences',
@@ -39,4 +66,23 @@ const fetchGetAudiencesStore = createFetchStore( {
 		return { ...state, audiences };
 	},
 } );
+
+const fetchCreateAudienceStore = createFetchStore( {
+	baseName: 'createAudience',
+	controlCallback: ( { audience } ) =>
+		API.set( 'modules', 'analytics-4', 'create-audience', {
+			audience,
+		} ),
+	reducerCallback( state, audiences ) {
+		return { ...state, audiences };
+	},
+	argsToParams: ( audience ) => ( {
+		audience,
+	} ),
+	validateParams: ( { audience } ) => {
+		validateAudience( audience );
+	},
+} );
+
+fetchCreateAudienceStore();
 fetchGetAudiencesStore();
