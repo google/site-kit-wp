@@ -48,6 +48,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -60,6 +61,7 @@ use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAudiencesService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
@@ -71,6 +73,7 @@ use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
@@ -462,6 +465,17 @@ final class Analytics_4 extends Module
 				'service' => '',
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+			$datapoints[] = array(
+				'GET:audiences'        => array( 'service' => 'analyticsaudiences' ),
+				'POST:create-audience' => array(
+					'service'                => 'analyticsaudiences',
+					'scopes'                 => array( Analytics::EDIT_SCOPE ),
+					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
+				),
+			);
+		}
 
 		return $datapoints;
 	}
@@ -906,6 +920,82 @@ final class Analytics_4 extends Module
 							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
 						)
 					);
+			case 'GET:audiences':
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				$analyticsadmin = $this->get_analyticsaudiences_service();
+				$parent         = 'properties/' . self::normalize_property_id( $settings['propertyID'] );
+
+				return $analyticsadmin
+					->properties_audiences // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesAudiences( $parent );
+			case 'POST:create-audience':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['audience'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'audience' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$audience = $data['audience'];
+
+				$fields = array(
+					'name',
+					'displayName',
+					'description',
+					'membershipDurationDays',
+					'adsPersonalizationEnabled',
+					'eventTrigger',
+					'exclusionDurationMode',
+					'filterClauses',
+				);
+
+				$invalid_keys = array_diff( array_keys( $enhanced_measurement_settings ), $fields );
+
+				if ( ! empty( $invalid_keys ) ) {
+					return new WP_Error(
+						'invalid_property_name',
+						/* translators: %s: Invalid property names */
+						sprintf( __( 'Invalid properties in enhancedMeasurementSettings: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$name = self::normalize_property_id(
+					$data['propertyID']
+				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
+
+				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $data['enhancedMeasurementSettings'] );
+
+				$analyticsadmin = $this->get_analyticsaudiences_service();
+
+				return $analyticsadmin
+					->properties_audiences // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->updateEnhancedMeasurementSettings(
+						$name,
+						$post_body,
+						array(
+							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
+						)
+					);
 			case 'POST:create-custom-dimension':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1315,6 +1405,17 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets the configured Analytics Data service object instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return PropertiesAudiencesService The Analytics Admin API service.
+	 */
+	protected function get_analyticsaudiences_service() {
+		return $this->get_service( 'analyticsaudiences' );
+	}
+
+	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
@@ -1334,6 +1435,7 @@ final class Analytics_4 extends Module
 			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
 			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
 			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
+			'analyticsaudiences'           => new PropertiesAudiencesService( $client ),
 			'analyticsadsenselinks'        => new PropertiesAdSenseLinksService( $client ),
 			'tagmanager'                   => new Google_Service_TagManager( $client ),
 		);
