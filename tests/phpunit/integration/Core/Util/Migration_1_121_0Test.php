@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_1_121_0;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 class Migration_1_121_0Test extends TestCase {
@@ -124,7 +123,7 @@ class Migration_1_121_0Test extends TestCase {
 			array(
 				'ownerID'               => get_current_user_id(),
 				'accountID'             => '12345678',
-				'adSenseLinked'         => true,
+				'adsenseLinked'         => true,
 				'adsConversionID'       => '111111',
 				'anonymizeIP'           => true,
 				'internalWebPropertyID' => '',
