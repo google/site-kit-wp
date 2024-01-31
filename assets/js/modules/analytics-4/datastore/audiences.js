@@ -15,3 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Internal dependencies
+ */
+import API from 'googlesitekit-api';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+
+const fetchGetAudiencesStore = createFetchStore( {
+	baseName: 'getAudiences',
+	controlCallback() {
+		return API.get(
+			'modules',
+			'analytics-4',
+			'audiences',
+			{},
+			{
+				useCache: false,
+			}
+		);
+	},
+	reducerCallback( state, audiences ) {
+		return { ...state, audiences };
+	},
+} );
+fetchGetAudiencesStore();
