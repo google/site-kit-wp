@@ -33,6 +33,7 @@ import report from './report';
 import service from './service';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
+import tagmanager from './tagmanager';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 
 const store = Data.combineStores(
@@ -48,7 +49,8 @@ const store = Data.combineStores(
 	report,
 	service,
 	tags,
-	webdatastreams
+	webdatastreams,
+	tagmanager
 );
 
 export const initialState = store.initialState;
