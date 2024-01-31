@@ -720,12 +720,12 @@ final class Analytics_4 extends Module
 					->properties_audiences
 					->listPropertiesAudiences( $parent );
 			case 'POST:create-audience':
-				if ( ! isset( $data['propertyID'] ) ) {
+				$settings = $this->get_settings()->get();
+				if ( ! isset( $settings['propertyID'] ) ) {
 					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
 					);
 				}
 
@@ -738,7 +738,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$property_id = $data['propertyID'];
+				$property_id = $settings['propertyID'];
 				$audience    = $data['audience'];
 
 				$fields = array(
