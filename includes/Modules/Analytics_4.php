@@ -326,6 +326,8 @@ final class Analytics_4 extends Module
 	 * Checks whether the AdSense module is connected.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return bool True if AdSense is connected, false otherwise.
 	 */
 	private function is_adsense_connected() {
 		$adsense_settings = ( new AdSense_Settings( $this->options ) )->get();
@@ -333,6 +335,7 @@ final class Analytics_4 extends Module
 		if ( empty( $adsense_settings['accountSetupComplete'] ) || empty( $adsense_settings['siteSetupComplete'] ) ) {
 			return false;
 		}
+
 		return true;
 	}
 
