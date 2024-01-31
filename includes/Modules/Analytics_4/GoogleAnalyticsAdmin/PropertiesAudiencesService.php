@@ -28,7 +28,7 @@ class PropertiesAudiencesService extends GoogleAnalyticsAdmin {
 	 *
 	 * @var PropertiesAudiences
 	 */
-	public $properties_audiences; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+	public $properties_audiences;
 
 	/**
 	 * Constructor.
@@ -42,7 +42,6 @@ class PropertiesAudiencesService extends GoogleAnalyticsAdmin {
 		parent::__construct( $client, $rootUrl ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		$this->version = 'v1alpha';
 
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		$this->properties_audiences = new PropertiesAudiences(
 			$this,
 			$this->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
