@@ -703,6 +703,78 @@ final class Analytics_4 extends Module
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
 				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
+			case 'GET:audiences':
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				$analyticsadmin = $this->get_analyticsaudiences_service();
+				$parent         = 'properties/' . self::normalize_property_id( $settings['propertyID'] );
+
+				return $analyticsadmin
+					->properties_audiences
+					->listPropertiesAudiences( $parent );
+			case 'POST:create-audience':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['audience'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'audience' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$property_id = $data['propertyID'];
+				$audience    = $data['audience'];
+
+				$fields = array(
+					'name',
+					'displayName',
+					'description',
+					'membershipDurationDays',
+					'adsPersonalizationEnabled',
+					'eventTrigger',
+					'exclusionDurationMode',
+					'filterClauses',
+				);
+
+				$invalid_keys = array_diff( array_keys( $audience ), $fields );
+
+				if ( ! empty( $invalid_keys ) ) {
+					return new WP_Error(
+						'invalid_property_name',
+						/* translators: %s: Invalid property names */
+						sprintf( __( 'Invalid properties in audience: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$parent = 'properties/' . self::normalize_property_id( $property_id );
+
+				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
+
+				$analyticsadmin = $this->get_analyticsaudiences_service();
+
+				return $analyticsadmin
+					->properties_audiences
+					->create(
+						$parent,
+						$post_body
+					);
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -919,78 +991,6 @@ final class Analytics_4 extends Module
 						array(
 							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
 						)
-					);
-			case 'GET:audiences':
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$parent         = 'properties/' . self::normalize_property_id( $settings['propertyID'] );
-
-				return $analyticsadmin
-					->properties_audiences
-					->listPropertiesAudiences( $parent );
-			case 'POST:create-audience':
-				if ( ! isset( $data['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				if ( ! isset( $data['audience'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'audience' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$property_id = $data['propertyID'];
-				$audience    = $data['audience'];
-
-				$fields = array(
-					'name',
-					'displayName',
-					'description',
-					'membershipDurationDays',
-					'adsPersonalizationEnabled',
-					'eventTrigger',
-					'exclusionDurationMode',
-					'filterClauses',
-				);
-
-				$invalid_keys = array_diff( array_keys( $audience ), $fields );
-
-				if ( ! empty( $invalid_keys ) ) {
-					return new WP_Error(
-						'invalid_property_name',
-						/* translators: %s: Invalid property names */
-						sprintf( __( 'Invalid properties in audience: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$parent = 'properties/' . self::normalize_property_id( $property_id );
-
-				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
-
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-
-				return $analyticsadmin
-					->properties_audiences
-					->create(
-						$parent,
-						$post_body
 					);
 			case 'POST:create-custom-dimension':
 				if ( ! isset( $data['propertyID'] ) ) {
