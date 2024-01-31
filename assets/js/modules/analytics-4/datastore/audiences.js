@@ -29,13 +29,12 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const audienceFields = [
-	'name',
 	'displayName',
 	'description',
 	'membershipDurationDays',
-	'adsPersonalizationEnabled',
 	'eventTrigger',
 	'exclusionDurationMode',
 	'filterClauses',
@@ -64,8 +63,8 @@ const fetchGetAudiencesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, audiences ) {
-		return { ...state, audiences };
+	reducerCallback( state, audiencesResponse ) {
+		return { ...state, audiences: audiencesResponse.audiences };
 	},
 } );
 
@@ -87,7 +86,8 @@ const fetchCreateAudienceStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	audiences: [],
+	audiences: undefined,
+	nextPageToken: undefined,
 };
 
 const baseActions = {
@@ -121,9 +121,31 @@ const baseReducer = ( state, { type } ) => {
 	}
 };
 
-const baseResolvers = {};
+const baseResolvers = {
+	*getAudiences() {
+		const registry = yield Data.commonActions.getRegistry();
 
-const baseSelectors = {};
+		const audiences = registry.select( MODULES_ANALYTICS_4 ).getAudiences();
+
+		if ( audiences === undefined ) {
+			yield fetchGetAudiencesStore.actions.fetchGetAudiences();
+		}
+	},
+};
+
+const baseSelectors = {
+	/**
+	 * Gets the property audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} An object with enhanced measurement settings; `undefined` if not loaded.
+	 */
+	getAudiences( state ) {
+		return state.audiences;
+	},
+};
 
 const store = Data.combineStores(
 	fetchGetAudiencesStore,
