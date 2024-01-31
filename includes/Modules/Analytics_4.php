@@ -467,13 +467,11 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints[] = array(
-				'GET:audiences'        => array( 'service' => 'analyticsaudiences' ),
-				'POST:create-audience' => array(
-					'service'                => 'analyticsaudiences',
-					'scopes'                 => array( Analytics::EDIT_SCOPE ),
-					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
-				),
+			$datapoints['GET:audiences']        = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:create-audience'] = array(
+				'service'                => 'analyticsaudiences',
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
 			);
 		}
 
@@ -714,11 +712,11 @@ final class Analytics_4 extends Module
 				}
 
 				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$parent         = 'properties/' . self::normalize_property_id( $settings['propertyID'] );
+				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
 					->properties_audiences
-					->listPropertiesAudiences( $parent );
+					->listPropertiesAudiences( $property_id );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -761,7 +759,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$parent = 'properties/' . self::normalize_property_id( $property_id );
+				$property_id = self::normalize_property_id( $property_id );
 
 				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
 
@@ -770,7 +768,7 @@ final class Analytics_4 extends Module
 				return $analyticsadmin
 					->properties_audiences
 					->create(
-						$parent,
+						$property_id,
 						$post_body
 					);
 			case 'POST:create-account-ticket':
