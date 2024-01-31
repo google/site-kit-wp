@@ -153,3 +153,16 @@ export function isValidGoogleTagAccountID( googleTagAccountID ) {
 export function isValidGoogleTagContainerID( googleTagContainerID ) {
 	return isValidNumericID( googleTagContainerID );
 }
+
+/**
+ * Checks if the given ads conversion ID is valid.
+ *
+ * @since 1.32.0
+ * @since n.e.x.t Migrated from analytics to analytics-4.
+ *
+ * @param {*} value Conversion ID to test.
+ * @return {boolean} Whether or not the given ID is valid.
+ */
+export function isValidAdsConversionID( value ) {
+	return typeof value === 'string' && /^AW-[0-9]+$/.test( value );
+}
