@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -35,15 +36,18 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -55,6 +59,7 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
@@ -86,13 +91,14 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
+	use Module_With_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -171,15 +177,25 @@ final class Analytics_4 extends Module
 			2
 		);
 		// Analytics 4 tag placement logic.
-		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 
-		// Ensure that the data available state is reset when the measurement ID changes.
 		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
+				// Ensure that the data available state is reset when the measurement ID changes.
 				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
+				}
+
+				// Reset AdSense link settings when propertyID changes.
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+					$this->get_settings()->merge(
+						array(
+							'adSenseLinked'             => false,
+							'adSenseLinkedLastSyncedAt' => 0,
+						)
+					);
 				}
 			}
 		);
@@ -382,6 +398,7 @@ final class Analytics_4 extends Module
 		$datapoints = array(
 			'GET:account-summaries'                => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                         => array( 'service' => 'analyticsadmin' ),
+			'GET:adsense-links'                    => array( 'service' => 'analyticsadsenselinks' ),
 			'GET:container-lookup'                 => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
@@ -664,6 +681,14 @@ final class Analytics_4 extends Module
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
+			case 'GET:adsense-links':
+				if ( empty( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				$parent = self::normalize_property_id( $data['propertyID'] );
+
+				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -1138,6 +1163,8 @@ final class Analytics_4 extends Module
 					$account_summaries,
 					'displayName'
 				);
+			case 'GET:adsense-links':
+				return (array) $response->getAdsenseLinks();
 			case 'POST:create-account-ticket':
 				$account_ticket = new Account_Ticket();
 				$account_ticket->set_id( $response->getAccountTicketId() );
@@ -1277,6 +1304,17 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets the configured Analytics Admin service object instance that includes `adSenseLinks` related methods.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return PropertiesAdSenseLinksService The Analytics Admin API service.
+	 */
+	protected function get_analyticsadsenselinks_service() {
+		return $this->get_service( 'analyticsadsenselinks' );
+	}
+
+	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
@@ -1296,6 +1334,7 @@ final class Analytics_4 extends Module
 			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
 			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
 			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
+			'analyticsadsenselinks'        => new PropertiesAdSenseLinksService( $client ),
 			'tagmanager'                   => new Google_Service_TagManager( $client ),
 		);
 	}
@@ -1359,8 +1398,9 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.31.0
 	 * @since 1.104.0 Added support for AMP tag.
+	 * @since 1.119.0 Made method public.
 	 */
-	private function register_tag() {
+	public function register_tag() {
 		$tag = $this->context->is_amp()
 			? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG ) // AMP currently only works with the measurement ID.
 			: new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
@@ -1391,6 +1431,17 @@ final class Analytics_4 extends Module
 		);
 
 		$tag->register();
+	}
+
+	/**
+	 * Returns the Module_Tag_Matchers instance.
+	 *
+	 * @since 1.119.0
+	 *
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
+	 */
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
 	}
 
 	/**

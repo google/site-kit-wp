@@ -61,7 +61,13 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
 
-	const { setAccountID } = useDispatch( MODULES_ANALYTICS );
+	const { setAccountID } = useDispatch( MODULES_ANALYTICS_4 );
+
+	// TODO: Remove this when the legacy 'analytics' module is removed (see #7932).
+	// Temporarily added so that the module setup and settings work in the meantime.
+	const { setAccountID: setLegacyAnalyticsAccountID } =
+		useDispatch( MODULES_ANALYTICS );
+
 	const { findMatchedAccount, matchAndSelectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
 	const [ isMatchedAccount, setIsMatchedAccount ] = useState( false );
@@ -76,6 +82,7 @@ export default function SetupMain( { finishSetup } ) {
 			setIsMatchedAccount( false );
 			if ( matchedAccount ) {
 				setAccountID( matchedAccount._id );
+				setLegacyAnalyticsAccountID( matchedAccount._id );
 				matchAndSelectProperty( matchedAccount._id );
 			}
 		};
@@ -87,6 +94,7 @@ export default function SetupMain( { finishSetup } ) {
 		findMatchedAccount,
 		accounts,
 		setAccountID,
+		setLegacyAnalyticsAccountID,
 		accountID,
 		matchAndSelectProperty,
 	] );

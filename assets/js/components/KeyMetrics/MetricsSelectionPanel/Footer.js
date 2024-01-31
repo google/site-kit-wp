@@ -189,7 +189,7 @@ export default function Footer( {
 					setPermissionScopeError( {
 						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 						message: __(
-							'Additional permissions are required to create new Analytics custom dimensions.',
+							'Additional permissions are required to create new Analytics custom dimensions',
 							'google-site-kit'
 						),
 						data: {

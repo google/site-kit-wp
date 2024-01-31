@@ -133,7 +133,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					content={ __(
-						'The Key Metrics section will be added back to your dashboard once you set your goals in Settings.',
+						'The Key Metrics section will be added back to your dashboard once you set your goals in Settings',
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }

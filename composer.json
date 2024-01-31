@@ -22,6 +22,7 @@
     "ext-openssl": "*",
     "google/apiclient": "^2.12.2",
     "google/apiclient-services": "0.277.*",
+    "google/apiclient-services-adsenselinks": "^0.1.0",
     "guzzlehttp/guzzle": "^6.5.8",
     "true/punycode": "^2.0 <2.1.1"
   },
@@ -52,7 +53,15 @@
   "extra": {
     "wordpress-install-dir": "vendor/roots/wordpress"
   },
-  "repositories": [],
+  "repositories": [
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-adsenselinks",
+      "options": {
+        "symlink": false
+      }
+    }
+  ],
   "scripts": {
     "post-install-cmd": [
       "@prefix-dependencies"

@@ -36,8 +36,8 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Date;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Sort;
@@ -135,18 +135,6 @@ final class Analytics extends Module
 				}
 			}
 		);
-
-		add_filter(
-			'googlesitekit_dashboard_sharing_data',
-			function ( $data ) {
-				if ( ! $this->authentication->is_authenticated() ) {
-					$settings = $this->get_settings()->get();
-				}
-
-				return $data;
-			}
-		);
-
 	}
 
 	/**

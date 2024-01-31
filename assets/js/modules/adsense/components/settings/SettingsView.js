@@ -199,58 +199,68 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ loading && <ProgressBar small height={ 130 } /> }
-			{ ! loading && adBlockingRecoverySetupStatus?.length > 0 && (
+			{ adBlockingRecoverySetupStatus?.length > 0 && (
 				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Ad blocking recovery', 'google-site-kit' ) }
-						</h5>
-						{ ! useAdBlockingRecoverySnippet && (
-							<p className="googlesitekit-settings-module__meta-item-data">
+					{ loading && <ProgressBar small height={ 90 } /> }
+					{ ! loading && (
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ __(
-									'Ad blocking recovery message is not placed',
+									'Ad blocking recovery',
 									'google-site-kit'
 								) }
-							</p>
-						) }
-						{ useAdBlockingRecoverySnippet && (
-							<Fragment>
+							</h5>
+							{ ! useAdBlockingRecoverySnippet && (
 								<p className="googlesitekit-settings-module__meta-item-data">
-									{ useAdBlockingRecoveryErrorSnippet
-										? __(
-												'Ad blocking recovery message enabled with error protection code',
-												'google-site-kit'
-										  )
-										: __(
-												'Ad blocking recovery message enabled without error protection code',
-												'google-site-kit'
-										  ) }
-								</p>
-								<p className="googlesitekit-settings-module__meta-item-data">
-									{ createInterpolateElement(
-										__(
-											'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													href={ privacyMessagingURL }
-													external
-												/>
-											),
-										}
+									{ __(
+										'Ad blocking recovery message is not placed',
+										'google-site-kit'
 									) }
 								</p>
-							</Fragment>
-						) }
-					</div>
+							) }
+							{ useAdBlockingRecoverySnippet && (
+								<Fragment>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ useAdBlockingRecoveryErrorSnippet
+											? __(
+													'Ad blocking recovery message enabled with error protection code',
+													'google-site-kit'
+											  )
+											: __(
+													'Ad blocking recovery message enabled without error protection code',
+													'google-site-kit'
+											  ) }
+									</p>
+									<p className="googlesitekit-settings-module__meta-item-data">
+										{ createInterpolateElement(
+											__(
+												'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<Link
+														href={
+															privacyMessagingURL
+														}
+														external
+													/>
+												),
+											}
+										) }
+									</p>
+								</Fragment>
+							) }
+						</div>
+					) }
 				</div>
 			) }
 
-			{ ! loading && ! adBlockingRecoverySetupStatus?.length && (
-				<AdBlockingRecoverySetupCTANotice />
+			{ ! adBlockingRecoverySetupStatus?.length && (
+				<Fragment>
+					{ loading && <ProgressBar small height={ 135 } /> }
+					{ ! loading && <AdBlockingRecoverySetupCTANotice /> }
+				</Fragment>
 			) }
 		</div>
 	);

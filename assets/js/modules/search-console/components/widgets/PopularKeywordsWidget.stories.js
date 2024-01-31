@@ -118,11 +118,6 @@ Error.args = {
 				status: 400,
 				reason: 'badRequest',
 			},
-			selectorData: {
-				storeName: 'modules/search-console',
-				name: 'getReport',
-				args: [ reportOptions ],
-			},
 		};
 
 		dispatch( MODULES_SEARCH_CONSOLE ).receiveError(
@@ -151,11 +146,6 @@ InsufficientPermissions.args = {
 			data: {
 				status: 403,
 				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-			},
-			selectorData: {
-				storeName: 'modules/search-console',
-				name: 'getReport',
-				args: [ reportOptions ],
 			},
 		};
 

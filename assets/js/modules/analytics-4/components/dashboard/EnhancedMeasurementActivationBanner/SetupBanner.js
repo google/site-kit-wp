@@ -116,7 +116,7 @@ export default function SetupBanner( props ) {
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
-					'Additional permissions are required to enable enhanced measurement for the selected web data stream.',
+					'Additional permissions are required to enable enhanced measurement for the selected web data stream',
 					'google-site-kit'
 				),
 				data: {

@@ -151,11 +151,11 @@ export default function Ready( { site, finishSetup } ) {
 
 		uiProps.description = existingTag
 			? __(
-					'Connect your AdSense account to see stats on your overall earnings, page CTR, and top earning pages.',
+					'Connect your AdSense account to see stats on your overall earnings, page CTR, and top earning pages',
 					'google-site-kit'
 			  )
 			: __(
-					'Site Kit has placed AdSense code on your site to connect your site to AdSense and help you get the most out of ads.',
+					'Site Kit has placed AdSense code on your site to connect your site to AdSense and help you get the most out of ads',
 					'google-site-kit'
 			  );
 

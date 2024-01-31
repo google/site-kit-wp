@@ -274,6 +274,34 @@ describe( 'modules/analytics-4 report', () => {
 				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 
+			it( 'should return TRUE if propertyCreateTime is 0', async () => {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					authenticated: true,
+				} );
+
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: zeroDataReport,
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyCreateTime: 0,
+				} );
+
+				muteFetch( dataAvailableRegexp );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( true );
+			} );
+
 			describe.each( [
 				[ 'undefined', undefined ],
 				[ 'null', null ],
@@ -362,7 +390,7 @@ describe( 'modules/analytics-4 report', () => {
 					expect( isGatheringData() ).toBe( true );
 				} );
 
-				it( 'should return FALSE if the connnected GA4 property is older than three days', async () => {
+				it( 'should return FALSE if the connected GA4 property is older than three days', async () => {
 					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 						authenticated: true,
 					} );

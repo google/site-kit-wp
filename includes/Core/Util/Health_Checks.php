@@ -72,7 +72,7 @@ class Health_Checks {
 	 *
 	 * @since 1.14.0
 	 *
-	 * @return REST_Route[]
+	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
 		return array(
@@ -88,6 +88,20 @@ class Health_Checks {
 							);
 
 							return compact( 'checks' );
+						},
+						'permission_callback' => function () {
+							return current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) || current_user_can( Permissions::SETUP );
+						},
+					),
+				)
+			),
+			new REST_Route(
+				'core/site/data/connection-check',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function() {
+							return 'true';
 						},
 						'permission_callback' => function () {
 							return current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) || current_user_can( Permissions::SETUP );
