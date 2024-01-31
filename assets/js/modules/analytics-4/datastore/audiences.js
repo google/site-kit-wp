@@ -26,7 +26,9 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 
 const audienceFields = [
 	'name',
@@ -84,5 +86,63 @@ const fetchCreateAudienceStore = createFetchStore( {
 	},
 } );
 
-fetchCreateAudienceStore();
-fetchGetAudiencesStore();
+const baseInitialState = {
+	audiences: [],
+};
+
+const baseActions = {
+	/**
+	 * Creates new property audience.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} audience The property audience parameters.
+	 * @return {Object} Redux-style action.
+	 */
+	createAudience: createValidatedAction(
+		( audience ) => {
+			validateAudience( audience );
+		},
+		function* ( audience ) {
+			return yield fetchCreateAudienceStore.actions.fetchCreateAudience(
+				audience
+			);
+		}
+	),
+};
+
+const baseControls = {};
+
+const baseReducer = ( state, { type } ) => {
+	switch ( type ) {
+		default: {
+			return state;
+		}
+	}
+};
+
+const baseResolvers = {};
+
+const baseSelectors = {};
+
+const store = Data.combineStores(
+	fetchGetAudiencesStore,
+	fetchCreateAudienceStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
