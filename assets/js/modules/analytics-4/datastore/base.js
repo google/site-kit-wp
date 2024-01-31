@@ -42,7 +42,8 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	settingSlugs: [
 		'accountID',
 		'adsConversionID',
-		'adsenseLinked',
+		'adSenseLinked',
+		'adSenseLinkedLastSyncedAt',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
