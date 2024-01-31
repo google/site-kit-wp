@@ -2,22 +2,69 @@
 .googlesitekit-plugin .mdc-dialog {
 	z-index: 10000;
 
+	%label-small {
+		font-size: $fs-body-sm;
+		letter-spacing: 0.2px;
+		line-height: $lh-label-sm;
+	}
+
 	.mdc-dialog__surface {
-		padding: $grid-gap-desktop $grid-gap-desktop * 2;
+		border-radius: 8px;
+		box-shadow: 0 10px 40px 0 rgba(#000, 0.35);
+		padding: $grid-gap-desktop + 12px $grid-gap-desktop * 2 - 10; // 36px 38px.
+
+		@media (min-width: $bp-tablet) {
+			max-width: 478px;
+		}
+
+		@media (max-width: $bp-mobileOnly) {
+			max-width: 76vw;
+			padding: $grid-gap-desktop;
+		}
 	}
 
 	.mdc-dialog__lead,
 	.mdc-dialog__title {
 		color: $c-surfaces-on-surface;
-		text-align: center;
+	}
+
+	.mdc-dialog__title {
+		align-items: center;
+		column-gap: 9px;
+		display: flex;
+		font-size: $fs-headline-sm;
+		letter-spacing: 0;
+		padding: 0 0 $grid-gap-desktop - 10px; // 14px.
+
+		@media (max-width: $bp-mobileOnly) {
+			align-items: flex-start;
+			flex-direction: column;
+			padding: 0 0 4px;
+		}
+
+		&::before {
+			display: none;
+		}
+
+		svg {
+			color: $c-red-r-500;
+
+			@media (max-width: $bp-mobileOnly) {
+				margin-bottom: 4px;
+			}
+		}
 	}
 
 	.mdc-dialog__lead {
-		font-size: $fs-body-lg;
-		font-weight: $fw-light;
-		letter-spacing: $ls-m;
+		font-size: $fs-title-sm;
+		font-weight: $fw-medium;
+		line-height: $lh-label-md;
 		margin: 0;
 		max-width: 430px;
+
+		@media (max-width: $bp-mobileOnly) {
+			font-weight: $fw-normal;
+		}
 	}
 
 	.mdc-dialog__content {
@@ -27,17 +74,74 @@
 		padding: 0;
 	}
 
-	.mdc-dialog__provides {
-		overflow: initial;
-		padding: 20px 16px;
-	}
-
 	.mdc-dialog__dependencies {
 		margin: 1em 0;
+		@extend %label-small;
+
+		strong {
+			font-weight: $fw-medium;
+		}
+	}
+
+	.mdc-dialog__provides {
+		overflow: initial;
+		padding: 10px 0;
+
+		& + .mdc-dialog__dependencies {
+			margin: 0.5em 0 0;
+		}
+	}
+
+	.mdc-list {
+
+		&:first-child:last-child {
+			padding: 0;
+		}
+
+		&.mdc-list--underlined {
+
+			.mdc-list-item {
+				@extend %label-small;
+				height: unset;
+				min-height: 32px;
+				padding-left: 10px;
+
+				&::before {
+					background-color: $c-neutral-n-900;
+					border-radius: 50%;
+					content: " ";
+					height: 4px;
+					left: 0;
+					position: absolute;
+					top: 50%;
+					transform: translateY(-50%);
+					width: 4px;
+				}
+			}
+		}
 	}
 
 	.mdc-dialog__actions {
-		justify-content: space-between;
-		margin: 1em 0;
+		column-gap: 10px;
+		margin: 2em 0 0;
+		min-height: 40px;
+		padding: 0;
+	}
+
+	/** Different Size Custom Style **/
+	&.googlesitekit-dialog-md {
+		.mdc-dialog__surface {
+			@media (min-width: $bp-tablet) {
+				max-width: 441px;
+			}
+		}
+	}
+
+	&.googlesitekit-dialog-sm {
+		.mdc-dialog__surface {
+			@media (min-width: $bp-tablet) {
+				max-width: 402px;
+			}
+		}
 	}
 }
