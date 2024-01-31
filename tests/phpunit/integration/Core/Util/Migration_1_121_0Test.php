@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_1_119_0Test
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_121_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2024 Google LLC
@@ -19,13 +19,6 @@ use Google\Site_Kit\Tests\TestCase;
 
 class Migration_1_121_0Test extends TestCase {
 
-	use Fake_Site_Connection_Trait;
-
-	/**
-	 * @var integer
-	 */
-	protected $user_id;
-
 	/**
 	 * @var Context
 	 */
@@ -37,7 +30,7 @@ class Migration_1_121_0Test extends TestCase {
 	protected $options;
 
 	/**
-	 * @var Analytics_4
+	 * @var Analytics_Settings
 	 */
 	protected $analytics_settings;
 
@@ -110,14 +103,6 @@ class Migration_1_121_0Test extends TestCase {
 	}
 
 	protected function reset_analytics_4_options() {
-		$analytics_settings = $this->analytics_settings;
-		$reflection         = new \ReflectionClass( get_class( $analytics_settings ) );
-
-		$get_default = $reflection->getMethod( 'get_default' );
-		$get_default->setAccessible( true );
-
-		$default_options = $get_default->invokeArgs( $analytics_settings, array() );
-
 		// Set initial Analytics 4 module settings.
 		$this->analytics_settings->merge(
 			array(
