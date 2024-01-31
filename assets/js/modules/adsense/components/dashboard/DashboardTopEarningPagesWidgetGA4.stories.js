@@ -47,7 +47,7 @@ AdSenseNotLinked.args = {
 AdSenseNotLinked.storyName = 'AdSense Not Linked';
 
 export const AdBlockerActive = Template.bind( {} );
-Default.args = {
+AdBlockerActive.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
 	},
