@@ -79,8 +79,9 @@
 
 .googlesitekit-pagespeed-report-metric__hint-text {
 	color: $c-neutral-n-500;
-	letter-spacing: 0.25px;
-	margin-top: 7px;
+	letter-spacing: $ls-s;
+	line-height: $lh-body-lg;
+	margin-top: 0.5em;
 }
 
 .googlesitekit-pagespeed-report__row--unavailable {
