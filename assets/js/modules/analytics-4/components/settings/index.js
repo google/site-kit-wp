@@ -17,6 +17,7 @@
  */
 
 export { default as OptionalSettingsView } from './OptionalSettingsView';
+export { default as SettingsEdit } from './SettingsEdit';
 export { default as SettingsEnhancedMeasurementSwitch } from './SettingsEnhancedMeasurementSwitch';
 export { default as SettingsEnhancedMeasurementView } from './SettingsEnhancedMeasurementView';
 export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
