@@ -41,7 +41,7 @@ describe( 'useMonitorInternetConnection', () => {
 	};
 
 	const healthCheckEndpoint = new RegExp(
-		'google-site-kit/v1/core/site/data/health-checks'
+		'google-site-kit/v1/core/site/data/connection-check'
 	);
 
 	const healthCheckResponse = {
