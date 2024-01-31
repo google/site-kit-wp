@@ -934,7 +934,7 @@ final class Analytics_4 extends Module
 				$parent         = 'properties/' . self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-					->properties_audiences // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->properties_audiences
 					->listPropertiesAudiences( $parent );
 			case 'POST:create-audience':
 				if ( ! isset( $data['propertyID'] ) ) {
@@ -955,7 +955,8 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$audience = $data['audience'];
+				$property_id = $data['propertyID'];
+				$audience    = $data['audience'];
 
 				$fields = array(
 					'name',
@@ -968,33 +969,28 @@ final class Analytics_4 extends Module
 					'filterClauses',
 				);
 
-				$invalid_keys = array_diff( array_keys( $enhanced_measurement_settings ), $fields );
+				$invalid_keys = array_diff( array_keys( $audience ), $fields );
 
 				if ( ! empty( $invalid_keys ) ) {
 					return new WP_Error(
 						'invalid_property_name',
 						/* translators: %s: Invalid property names */
-						sprintf( __( 'Invalid properties in enhancedMeasurementSettings: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
+						sprintf( __( 'Invalid properties in audience: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
 						array( 'status' => 400 )
 					);
 				}
 
-				$name = self::normalize_property_id(
-					$data['propertyID']
-				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
+				$parent = 'properties/' . self::normalize_property_id( $property_id );
 
-				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $data['enhancedMeasurementSettings'] );
+				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
 
 				$analyticsadmin = $this->get_analyticsaudiences_service();
 
 				return $analyticsadmin
-					->properties_audiences // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					->updateEnhancedMeasurementSettings(
-						$name,
-						$post_body,
-						array(
-							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
-						)
+					->properties_audiences
+					->create(
+						$parent,
+						$post_body
 					);
 			case 'POST:create-custom-dimension':
 				if ( ! isset( $data['propertyID'] ) ) {
