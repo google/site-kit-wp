@@ -194,7 +194,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						isUnavailable={ ! interactionToNextPaint }
 						hintText={ createInterpolateElement(
 							__(
-								'INP will replace FID in March 2024 <LearnMoreLink />',
+								'INP will replace FID in March 2024. <LearnMoreLink />',
 								'google-site-kit'
 							),
 							{
