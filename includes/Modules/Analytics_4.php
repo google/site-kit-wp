@@ -742,11 +742,9 @@ final class Analytics_4 extends Module
 				$audience    = $data['audience'];
 
 				$fields = array(
-					'name',
 					'displayName',
 					'description',
 					'membershipDurationDays',
-					'adsPersonalizationEnabled',
 					'eventTrigger',
 					'exclusionDurationMode',
 					'filterClauses',
