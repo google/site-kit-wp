@@ -23,6 +23,5 @@ export const ERROR_FETCH_FAIL = 'check_fetch_failed';
 export const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
 export const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 export const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
-export const ERROR_WP_PRE_V5 = 'wp_pre_v5';
 export const ERROR_SK_SERVICE_CONNECTION_FAIL =
 	'google_sk_service_connection_fail';

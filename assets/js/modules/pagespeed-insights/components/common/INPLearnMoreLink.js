@@ -1,7 +1,7 @@
 /**
- * GA4 setup components.
+ * INP Learn More Link component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,27 @@
  * limitations under the License.
  */
 
-export { default as SetupEnhancedMeasurementSwitch } from './SetupEnhancedMeasurementSwitch';
-export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
-export { default as SetupFormFields } from './SetupFormFields';
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../../../../components/Link';
+
+export default function INPLearnMoreLink() {
+	return (
+		<Link
+			href="https://web.dev/inp-cwv/"
+			external
+			aria-label={ __(
+				'Learn more about INP replacing FID.',
+				'google-site-kit'
+			) }
+		>
+			{ __( 'Learn more', 'google-site-kit' ) }
+		</Link>
+	);
+}
