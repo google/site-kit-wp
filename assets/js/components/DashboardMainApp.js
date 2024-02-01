@@ -72,6 +72,7 @@ import {
 } from '../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
 import OfflineNotification from './notifications/OfflineNotification';
+import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
@@ -98,8 +99,7 @@ export default function DashboardMainApp() {
 		)
 	);
 
-	const { createCustomDimensions, syncGoogleTagSettings } =
-		useDispatch( MODULES_ANALYTICS_4 );
+	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const grantedScopes = useSelect( ( select ) =>
@@ -121,10 +121,6 @@ export default function DashboardMainApp() {
 		if ( ! viewOnlyDashboard ) {
 			// Render the current survey portal in 5 seconds after the initial rendering.
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
-		}
-
-		if ( isGA4Connected ) {
-			syncGoogleTagSettings();
 		}
 	} );
 
@@ -223,6 +219,8 @@ export default function DashboardMainApp() {
 	const isKeyMetricsWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
+
+	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
 

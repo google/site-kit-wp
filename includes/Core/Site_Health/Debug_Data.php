@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Site_Health\General_Data
+ * Class Google\Site_Kit\Core\Site_Health\Debug_Data
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2021 Google LLC
@@ -29,7 +29,7 @@ use Google\Site_Kit\Core\Util\Scopes;
  * @access private
  * @ignore
  */
-class General_Data {
+class Debug_Data {
 
 	/**
 	 * Context instance.

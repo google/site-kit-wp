@@ -464,14 +464,7 @@ describe( 'modules/tagmanager containers', () => {
 				const error = registry
 					.select( MODULES_TAGMANAGER )
 					.getErrorForSelector( 'getContainers', [ accountID ] );
-				expect( error ).toEqual( {
-					...errorResponse,
-					selectorData: {
-						args: [ accountID ],
-						name: 'getContainers',
-						storeName: MODULES_TAGMANAGER,
-					},
-				} );
+				expect( error ).toEqual( errorResponse );
 				expect( console ).toHaveErrored();
 			} );
 		} );

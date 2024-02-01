@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -142,6 +143,40 @@ class AdSenseTest extends TestCase {
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_head' ) );
+	}
+
+	public function test_register__reset_analytics_adsense_link_settings() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$adsense   = new AdSense( $context );
+		$analytics = new Analytics_4( $context );
+
+		$analytics->register();
+
+		$analytics->get_settings()->merge(
+			array(
+				'adSenseLinked'             => true,
+				'adSenseLinkedLastSyncedAt' => 1705938374500,
+			)
+		);
+
+		$adsense->get_settings()->merge(
+			array(
+				'accountID' => 'pub-1234567890',
+			)
+		);
+
+		$adsense->register();
+
+		$adsense->get_settings()->merge(
+			array(
+				'accountID' => 'pub-0987654321',
+			)
+		);
+
+		$analytics_settings = $analytics->get_settings()->get();
+
+		$this->assertFalse( $analytics_settings['adSenseLinked'] );
+		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0 );
 	}
 
 	/**
@@ -486,8 +521,9 @@ class AdSenseTest extends TestCase {
 	}
 
 	public function test_on_deactivation() {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$adsense = new AdSense( $context );
+		$options = new Options( $context );
 
 		$options->set( Settings::OPTION, 'test-value-settings' );
 		$options->set( Ad_Blocking_Recovery_Tag::OPTION, 'test-value-ad-blocking-recovery-tag' );
@@ -498,6 +534,22 @@ class AdSenseTest extends TestCase {
 
 		$this->assertOptionNotExists( Settings::OPTION );
 		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION );
+
+		$analytics = new Analytics_4( $context );
+		$analytics->register();
+		$analytics->get_settings()->merge(
+			array(
+				'adSenseLinked'             => true,
+				'adSenseLinkedLastSyncedAt' => 1705938374500,
+			)
+		);
+
+		$adsense->on_deactivation();
+
+		$analytics_settings = $analytics->get_settings()->get();
+
+		$this->assertFalse( $analytics_settings['adSenseLinked'] );
+		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0 );
 	}
 
 	public function test_get_datapoints() {

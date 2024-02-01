@@ -19,13 +19,14 @@
 /**
  * External dependencies
  */
-import { set, cloneDeep, merge, findLast } from 'lodash';
+import { cloneDeep, findLast, merge, set } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { stringToDate } from '../../util/date-range/string-to-date';
+import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
 import { getLocale } from '../../util';
+import { stringToDate } from '../../util/date-range/string-to-date';
 
 /**
  * Returns the Google chart data, filtered by selected stats if present.
@@ -129,12 +130,14 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
  * Returns a chart configuration object.
  *
  * @since 1.93.0
+ * @since 1.119.0 Added `breakpoint` parameter.
  *
  * @param {Object}  options       Configuration data.
  * @param {boolean} gatheringData If chart is in gathering info state.
  * @param {string}  chartType     Chart types: PieChart, LineChart.
  * @param {string}  startDate     Start date for a user data range.
  * @param {string}  endDate       End date for a user data range.
+ * @param {string}  breakpoint    Current breakpoint.
  * @return {Object} Chart options configuration.
  */
 export const getChartOptions = (
@@ -142,7 +145,8 @@ export const getChartOptions = (
 	gatheringData,
 	chartType,
 	startDate,
-	endDate
+	endDate,
+	breakpoint
 ) => {
 	const chartOptions = cloneDeep( options );
 	if ( gatheringData && chartType === 'LineChart' ) {
@@ -178,7 +182,8 @@ export const getChartOptions = (
 			set( chartOptions, 'hAxis.maxTextLines', 1 );
 		}
 		if ( ! options?.hAxis?.minTextSpacing ) {
-			set( chartOptions, 'hAxis.minTextSpacing', 100 );
+			const minTextSpacing = breakpoint === BREAKPOINT_SMALL ? 50 : 100;
+			set( chartOptions, 'hAxis.minTextSpacing', minTextSpacing );
 		}
 		// eslint-disable-next-line sitekit/acronym-case
 		if ( options?.tooltip?.isHtml === undefined ) {

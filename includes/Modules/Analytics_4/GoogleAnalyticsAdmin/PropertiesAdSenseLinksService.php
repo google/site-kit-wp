@@ -17,7 +17,7 @@ use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_PropertiesA
 /**
  * Class for managing GA4 AdSense Links.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class PropertiesAdSenseLinksService extends GoogleAnalyticsAdmin {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param Google_Client $client The client used to deliver requests.
 	 * @param string        $rootUrl The root URL used for requests to the service.
