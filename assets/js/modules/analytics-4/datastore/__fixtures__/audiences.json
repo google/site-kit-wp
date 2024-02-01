@@ -28,18 +28,29 @@
 				"simpleFilter": {
 					"scope": "AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS",
 					"filterExpression": {
-						"andGroup": {
-							"filterExpressions": {
-								"dimensionOrMetricFilter": {
-									"fieldName": "newVsReturning",
-									"stringFilter": {
-										"matchType": "EXACT",
-										"Value": "new"
-									}
-								}
-							}
-						}
-					}
+                        "andGroup": {
+                            "filterExpressions": [
+                                {
+                                    "orGroup": {
+                                        "filterExpressions": [
+                                            {
+                                                "dimensionOrMetricFilter": {
+                                                    "atAnyPointInTime": null,
+                                                    "fieldName": "newVsReturning",
+                                                    "inAnyNDayPeriod": null,
+                                                    "stringFilter": {
+                                                        "caseSensitive": null,
+                                                        "matchType": "EXACT",
+                                                        "value": "new"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
 				}
 			}
         ]
