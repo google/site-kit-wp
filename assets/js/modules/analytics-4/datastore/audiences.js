@@ -30,6 +30,8 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+const { receiveError, clearError } = errorStoreActions;
 
 const audienceFields = [
 	'displayName',
@@ -139,10 +141,16 @@ const baseActions = {
 			validateAudience( audience );
 		},
 		function* ( audience ) {
+			yield clearError( 'createAudience', [] );
+
 			const { response, error } =
 				yield fetchCreateAudienceStore.actions.fetchCreateAudience(
 					audience
 				);
+
+			if ( error ) {
+				yield receiveError( error, 'createAudience', [] );
+			}
 
 			return { response, error };
 		}
