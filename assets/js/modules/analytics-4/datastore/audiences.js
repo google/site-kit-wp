@@ -117,8 +117,22 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} audience The property audience parameters.
-	 * @return {Object} Redux-style action.
+	 * @param {Object} audience                             The property audience parameters.
+	 * @param {string} [audience.displayName]               Required. The display name of the Audience.
+	 * @param {string} [audience.description]               Required. The description of the Audience.
+	 * @param {number} [audience.membershipDurationDays]    Required. The duration a user should stay in an Audience. Cannot be more than 540 days.
+	 * @param {Array}  [audience.filterClauses]             Required. Filter clauses array of <AudienceFilterClause> objects that define the Audience.
+	 * @param {Object} [audience.eventTrigger]              Optional. Specifies an event to log when a user joins the Audience.
+	 * @param {string} [audience.eventTrigger.eventName]    Required if `eventTrigger` is provided. The event name that will be logged.
+	 * @param {string} [audience.eventTrigger.logCondition] Required if `eventTrigger` is provided. When to log the event. Acceptable values:
+	 *                                                      - 'LOG_CONDITION_UNSPECIFIED': Log condition is not specified.
+	 *                                                      - 'AUDIENCE_JOINED': The event should be logged only when a user is joined.
+	 *                                                      - 'AUDIENCE_MEMBERSHIP_RENEWED': The event should be logged whenever the Audience condition is met, even if the user is already a member of the Audience.
+	 * @param {string} [audience.exclusionDurationMode]     Optional. Specifies how long an exclusion lasts for users that meet the exclusion filter. Acceptable values:
+	 *                                                      - 'AUDIENCE_EXCLUSION_DURATION_MODE_UNSPECIFIED': Not specified.
+	 *                                                      - 'EXCLUDE_TEMPORARILY': Exclude users from the Audience during periods when they meet the filter clause.
+	 *                                                      - 'EXCLUDE_PERMANENTLY': Exclude users from the Audience if they've ever met the filter clause.
+	 * @return {Object} Object with `response` and `error`.
 	 */
 	createAudience: createValidatedAction(
 		( audience ) => {
