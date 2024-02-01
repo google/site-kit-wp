@@ -511,6 +511,21 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'hasAccessToShareableModule', () => {
+			it( 'should return undefined if modules are not loaded', async () => {
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.hasAccessToShareableModule( 'analytics-4' );
+
+				expect( canViewSharedModule ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+
 			it( 'should return FALSE if the module is not available', () => {
 				registry
 					.dispatch( CORE_MODULES )
