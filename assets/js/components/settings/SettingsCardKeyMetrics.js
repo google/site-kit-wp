@@ -38,12 +38,14 @@ import { Grid, Cell, Row } from '../../material-components';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
+import PreviewBlock from '../PreviewBlock';
 
 const { useSelect } = Data;
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();
 	const inView = useInView();
+
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
@@ -58,6 +60,15 @@ export default function SettingsCardKeyMetrics() {
 
 		return select( CORE_USER ).isResolving( 'getUserInputSettings', [] );
 	} );
+	const hasUserPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+	const isUserInputCompletedLoading = useSelect(
+		( select ) =>
+			! select( CORE_USER ).hasFinishedResolution(
+				'isUserInputCompleted'
+			)
+	);
 
 	const gaEventCategory = `${ viewContext }_kmw`;
 
@@ -67,10 +78,6 @@ export default function SettingsCardKeyMetrics() {
 		}
 	}, [ isUserInputCompleted, gaEventCategory ] );
 
-	const hasUserPickedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
-	);
-
 	const ctaLabel = !! hasUserPickedMetrics?.length
 		? __( 'Set your site goals', 'google-site-kit' )
 		: __( 'Personalize your metrics', 'google-site-kit' );
@@ -78,6 +85,14 @@ export default function SettingsCardKeyMetrics() {
 	return (
 		<Layout title={ __( 'Key Metrics', 'google-site-kit' ) } header rounded>
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
+				{ isUserInputCompletedLoading && (
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="117px"
+					/>
+				) }
 				{ isUserInputCompleted && (
 					<Fragment>
 						<SettingsKeyMetrics loading={ loading } />

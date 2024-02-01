@@ -35,6 +35,7 @@ import ResetButton from '../ResetButton';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
+import PreviewBlock from '../PreviewBlock';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
@@ -44,6 +45,59 @@ export default function SettingsAdmin() {
 			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData() === false
 	);
+	const showKeyMetricsSettingsLoading = useSelect(
+		( select ) =>
+			! select( CORE_MODULES ).hasFinishedResolution(
+				'isModuleConnected',
+				[ 'analytics-4' ]
+			) ||
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'isGatheringData'
+			) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'isGatheringData'
+			)
+	);
+
+	// Show a loading skeleton to prevent a layout shift.
+	if ( showKeyMetricsSettingsLoading ) {
+		return (
+			<Row>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+			</Row>
+		);
+	}
 
 	return (
 		<Row>
