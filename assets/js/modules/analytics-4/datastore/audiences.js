@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isPlainObject, isArray } from 'lodash';
 
 /**
  * Internal dependencies
@@ -40,14 +40,36 @@ const audienceFields = [
 	'filterClauses',
 ];
 
+const audienceRequiredFields = [
+	'displayName',
+	'description',
+	'membershipDurationDays',
+	'filterClauses',
+];
+
 function validateAudience( audience ) {
+	invariant( audience, 'audience is required.' );
+
 	invariant( isPlainObject( audience ), 'Audience must be an object.' );
+
 	Object.keys( audience ).forEach( ( key ) => {
 		invariant(
 			audienceFields.includes( key ),
-			`Audience must contain only valid keys. Invalid key: "${ key }"`
+			`Audience object must contain only valid keys. Invalid key: "${ key }"`
 		);
 	} );
+
+	audienceRequiredFields.forEach( ( key ) => {
+		invariant(
+			audience[ key ],
+			`Audience object must contain required keys. Missing key: "${ key }"`
+		);
+	} );
+
+	invariant(
+		isArray( audience.filterClauses ),
+		'filterClauses must be an array with AudienceFilterClause objects.'
+	);
 }
 
 const fetchGetAudiencesStore = createFetchStore( {
@@ -87,7 +109,6 @@ const fetchCreateAudienceStore = createFetchStore( {
 
 const baseInitialState = {
 	audiences: undefined,
-	nextPageToken: undefined,
 };
 
 const baseActions = {
