@@ -109,6 +109,9 @@ const fetchCreateAudienceStore = createFetchStore( {
 	},
 } );
 
+// Actions.
+const ADD_AUDIENCE = 'ADD_AUDIENCE';
+
 const baseInitialState = {
 	audiences: undefined,
 };
@@ -150,6 +153,11 @@ const baseActions = {
 
 			if ( error ) {
 				yield receiveError( error, 'createAudience', [] );
+			} else {
+				yield {
+					type: ADD_AUDIENCE,
+					payload: response,
+				};
 			}
 
 			return { response, error };
@@ -159,8 +167,19 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
+		case ADD_AUDIENCE: {
+			const audiences = state.audiences?.length
+				? [ ...state.audiences, payload ]
+				: [ payload ];
+
+			return {
+				...state,
+				audiences,
+			};
+		}
+
 		default: {
 			return state;
 		}
