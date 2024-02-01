@@ -323,11 +323,18 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug to check.
-	 * @return {boolean} `true` if the user is authenticated or if the module is shareable and viewable by the current user. `false` if the module does not exist, is not shareable or not viewable by the current user.
+	 * @return {(boolean|undefined)} `true` if the user is authenticated or if the module is shareable and viewable by the current user. `false` if the module is not shareable or not viewable by the current user. `undefined` if the modules are not loaded yet.
 	 */
 	hasAccessToShareableModule: createRegistrySelector(
 		( select ) => ( state, moduleSlug ) => {
-			if ( ! select( CORE_MODULES ).isModuleAvailable( moduleSlug ) ) {
+			const isModuleAvailable =
+				select( CORE_MODULES ).isModuleAvailable( moduleSlug );
+
+			if ( isModuleAvailable === undefined ) {
+				return undefined;
+			}
+
+			if ( isModuleAvailable === false ) {
 				return false;
 			}
 
