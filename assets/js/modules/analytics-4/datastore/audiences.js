@@ -125,9 +125,12 @@ const baseActions = {
 			validateAudience( audience );
 		},
 		function* ( audience ) {
-			return yield fetchCreateAudienceStore.actions.fetchCreateAudience(
-				audience
-			);
+			const { response, error } =
+				yield fetchCreateAudienceStore.actions.fetchCreateAudience(
+					audience
+				);
+
+			return { response, error };
 		}
 	),
 };
