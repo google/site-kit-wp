@@ -99,8 +99,11 @@ const fetchCreateAudienceStore = createFetchStore( {
 		API.set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
-	reducerCallback( state, audiences ) {
-		return { ...state, audiences };
+	reducerCallback( state, audience ) {
+		return {
+			...state,
+			audiences: [ ...( state.audiences || [] ), audience ],
+		};
 	},
 	argsToParams: ( audience ) => ( {
 		audience,
@@ -109,9 +112,6 @@ const fetchCreateAudienceStore = createFetchStore( {
 		validateAudience( audience );
 	},
 } );
-
-// Actions.
-const ADD_AUDIENCE = 'ADD_AUDIENCE';
 
 const baseInitialState = {
 	audiences: undefined,
@@ -154,11 +154,6 @@ const baseActions = {
 
 			if ( error ) {
 				yield receiveError( error, 'createAudience', [] );
-			} else {
-				yield {
-					type: ADD_AUDIENCE,
-					payload: response,
-				};
 			}
 
 			return { response, error };
@@ -168,19 +163,8 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		case ADD_AUDIENCE: {
-			const audiences = state.audiences?.length
-				? [ ...state.audiences, payload ]
-				: [ payload ];
-
-			return {
-				...state,
-				audiences,
-			};
-		}
-
 		default: {
 			return state;
 		}
