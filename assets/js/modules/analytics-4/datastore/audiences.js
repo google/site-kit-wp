@@ -27,9 +27,10 @@ import { isPlainObject, isArray } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4 } from './constants';
+
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
 
@@ -205,7 +206,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} An object with enhanced measurement settings; `undefined` if not loaded.
+	 * @return {(Array|undefined)} An array with audiences objects; `undefined` if not loaded.
 	 */
 	getAudiences( state ) {
 		return state.audiences;
