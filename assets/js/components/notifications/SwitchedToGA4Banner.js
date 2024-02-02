@@ -106,11 +106,11 @@ export default function SwitchedToGA4Banner() {
 	const description =
 		stringToDate( referenceDate ) >= stringToDate( UA_CUTOFF_DATE )
 			? __(
-					'Universal Analytics, the old version of Google Analytics, stopped collecting data on July 1, 2023.',
+					'Universal Analytics, the old version of Google Analytics, stopped collecting data on July 1, 2023',
 					'google-site-kit'
 			  )
 			: __(
-					'Universal Analytics, the old version of Google Analytics, will stop collecting data on July 1, 2023.',
+					'Universal Analytics, the old version of Google Analytics, will stop collecting data on July 1, 2023',
 					'google-site-kit'
 			  );
 

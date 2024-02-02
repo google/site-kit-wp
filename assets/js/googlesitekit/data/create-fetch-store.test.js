@@ -197,7 +197,6 @@ describe( 'createFetchStore store', () => {
 				expect( action.throw( error ).value.type ).toEqual(
 					'RECEIVE_ERROR'
 				);
-				expect( action.next().value.type ).toEqual( 'RECEIVE_ERROR' );
 				expect( action.next().value.type ).toEqual(
 					'CATCH_FETCH_SAVE_SOME_DATA'
 				);
@@ -270,8 +269,6 @@ describe( 'createFetchStore store', () => {
 					expect(
 						select.getError( STORE_PARAMS.baseName, errorArgs )
 					).toEqual( errorResponse );
-					// @TODO: remove assertion once all instances of the legacy usage have been removed.
-					expect( select.getError() ).toEqual( errorResponse );
 				} );
 
 				it( 'clears previously set errors when re-fetching', async () => {
@@ -297,8 +294,6 @@ describe( 'createFetchStore store', () => {
 					expect(
 						select.getError( STORE_PARAMS.baseName, errorArgs )
 					).toEqual( errorResponse );
-					// @TODO: remove assertion once all instances of the legacy usage have been removed.
-					expect( select.getError() ).toEqual( errorResponse );
 
 					fetchMock.getOnce(
 						new RegExp(
@@ -316,8 +311,6 @@ describe( 'createFetchStore store', () => {
 					expect(
 						select.getError( STORE_PARAMS.baseName, errorArgs )
 					).toBeUndefined();
-					// @TODO: remove assertion once all instances of the legacy usage have been removed.
-					expect( select.getError() ).toBeUndefined();
 				} );
 			} );
 

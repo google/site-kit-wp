@@ -20,32 +20,40 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Class for integrating information with Site Health.
  *
- * @since n.e.x.t
+ * @since 1.119.0
  * @access private
  * @ignore
  */
 class Site_Health {
 
 	/**
-	 * General_Data instance.
+	 * Debug_Data instance.
 	 *
-	 * @since n.e.x.t
-	 * @var General_data
+	 * @since 1.119.0
+	 * @var Debug_Data
 	 */
-	private $general_data;
+	private $debug_data;
 
 	/**
-	 * Tags_Placement instance.
+	 * Tag_Placement instance.
 	 *
-	 * @since n.e.x.t
-	 * @var Tags_Placement
+	 * @since 1.119.0
+	 * @var Tag_Placement
 	 */
-	private $tags_placement;
+	private $tag_placement;
+
+	/**
+	 * REST_Site_Health_Controller instance.
+	 *
+	 * @since 1.119.0
+	 * @var REST_Site_Health_Controller
+	 */
+	protected $rest_controller;
 
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
 	 * @param Context        $context        Context instance.
 	 * @param Options        $options        Options instance.
@@ -62,18 +70,20 @@ class Site_Health {
 		Modules $modules,
 		Permissions $permissions
 	) {
-		$this->general_data   = new General_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
-		$this->tags_placement = new Tags_Placement( $modules );
+		$this->debug_data      = new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
+		$this->tag_placement   = new Tag_Placement( $modules );
+		$this->rest_controller = new REST_Site_Health_Controller( $this->tag_placement );
 	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 */
 	public function register() {
-		$this->general_data->register();
-		$this->tags_placement->register();
+		$this->debug_data->register();
+		$this->tag_placement->register();
+		$this->rest_controller->register();
 	}
 
 }

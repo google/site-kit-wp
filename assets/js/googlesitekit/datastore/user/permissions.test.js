@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -506,6 +507,94 @@ describe( 'core/user authentication', () => {
 					.canViewSharedModule( 'analytics' );
 
 				expect( canViewSharedAnalytics ).toBe( true );
+			} );
+		} );
+
+		describe( 'hasAccessToShareableModule', () => {
+			it( 'should return undefined if modules are not loaded', async () => {
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.hasAccessToShareableModule( 'analytics-4' );
+
+				expect( canViewSharedModule ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+
+			it( 'should return FALSE if the module is not available', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [
+						{ slug: 'search-console', name: 'Search Console' },
+					] );
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.hasAccessToShareableModule( 'analytics-4' );
+
+				expect( canViewSharedModule ).toBe( false );
+			} );
+
+			it( 'should return TRUE if the user is authenticated', () => {
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [
+						{ slug: 'search-console', name: 'Search Console' },
+					] );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasAccessToShareableModule( 'search-console' )
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasAccessToShareableModule( 'search-console' )
+				).toBe( false );
+			} );
+
+			it( 'should return TRUE if the module is shared and the user has the view permission', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasAccessToShareableModule( 'search-console' )
+				).toBe( true );
 			} );
 		} );
 	} );

@@ -30,6 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { REPORT_ARGS_NAV_KEY } from '../constants';
@@ -42,6 +43,42 @@ import {
 const { createRegistrySelector } = Data;
 
 export const selectors = {
+	/**
+	 * Gets a URL to the service.
+	 *
+	 * @since 1.119.0
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Object containing optional path and query args.
+	 * @param {string} [args.path]  A path to append to the base url.
+	 * @param {Object} [args.query] Object of query params to be added to the URL.
+	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
+	 */
+	getServiceURL: createRegistrySelector(
+		( select ) =>
+			( state, { path, query } = {} ) => {
+				let serviceURL = 'https://analytics.google.com/analytics/web/';
+
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
+				}
+
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+				}
+
+				const accountChooserBaseURI =
+					select( CORE_USER ).getAccountChooserURL( serviceURL );
+
+				if ( accountChooserBaseURI === undefined ) {
+					return undefined;
+				}
+
+				return accountChooserBaseURI;
+			}
+	),
+
 	/**
 	 * Gets a URL for a specific Analytics 4 reporting view on the service.
 	 *

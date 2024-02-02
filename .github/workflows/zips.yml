@@ -132,6 +132,7 @@ jobs:
   upload-to-cloud-storage:
     name: Upload to GCS
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch'
     needs: build-zips
     steps:
       - uses: actions/download-artifact@v3
@@ -147,6 +148,7 @@ jobs:
           path: ${{ github.ref }}
           destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
           parent: false
+          process_gcloudignore: false
 
   add-comment-to-pr:
     name: Add comment to PR
@@ -231,17 +233,16 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: zip-files
-          path: ${{ github.ref }}
+          path: /tmp
       - name: Extract
         run: |
-          unzip google-site-kit.zip
-          mv google-site-kit/* .
-          rm -rf google-site-kit ./*.zip
+          unzip /tmp/google-site-kit.zip
           echo .distignore > .distignore
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
         with:
           dry-run: ${{ inputs.dry_run }}
         env:
+          SLUG: google-site-kit
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           VERSION: ${{ inputs.release_version }}

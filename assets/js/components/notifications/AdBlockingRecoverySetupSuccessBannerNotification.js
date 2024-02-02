@@ -104,21 +104,25 @@ export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 				'You successfully enabled the ad blocking recovery message',
 				'google-site-kit'
 			) }
-			description={ createInterpolateElement(
-				__(
-					'Make sure to also create the message in <a>AdSense</a>, otherwise this feature won’t work.',
-					'google-site-kit'
-				),
-				{
-					a: (
-						<Link
-							href={ privacyMessagingURL }
-							external
-							hideExternalIndicator
-						/>
-					),
-				}
-			) }
+			description={
+				<p>
+					{ createInterpolateElement(
+						__(
+							'Make sure to also create the message in <a>AdSense</a>, otherwise this feature won’t work',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ privacyMessagingURL }
+									external
+									hideExternalIndicator
+								/>
+							),
+						}
+					) }
+				</p>
+			}
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			onDismiss={ handleDismiss }
 			isDismissible

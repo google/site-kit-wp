@@ -21,6 +21,7 @@
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
@@ -265,11 +266,13 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
+						slug: 'analytics-4',
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
 					},
 				] );
+
+				provideModuleRegistrations( registry );
 
 				provideUserAuthentication( registry );
 

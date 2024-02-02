@@ -212,7 +212,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
-					'Additional permissions are required to create a new GA4 property.',
+					'Additional permissions are required to create a new GA4 property',
 					'google-site-kit'
 				),
 				data: {
@@ -303,7 +303,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 						'google-site-kit'
 					) }
 					content={ __(
-						'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+						'You can configure the Google Analytics 4 property inside the Site Kit Settings later',
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }

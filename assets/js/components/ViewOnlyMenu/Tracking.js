@@ -36,7 +36,7 @@ export default function Tracking() {
 			<p>
 				{ createInterpolateElement(
 					__(
-						'Thanks for using Site Kit!<br />Help us make it even better.',
+						'Thanks for using Site Kit!<br />Help us make it even better',
 						'google-site-kit'
 					),
 					{

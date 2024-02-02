@@ -134,7 +134,7 @@ export default function FormInstructions( { isSetup } ) {
 						'google-site-kit'
 				  )
 				: __(
-						'Please select your Tag Manager account and container below.',
+						'Please select your Tag Manager account and container below',
 						'google-site-kit'
 				  ) }
 		</p>

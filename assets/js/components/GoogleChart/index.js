@@ -60,6 +60,7 @@ import {
 } from './utils';
 import { stringToDate, getDateString } from '../../util/date-range';
 import { getLocale } from '../../util';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
 const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -92,6 +93,8 @@ export default function GoogleChart( props ) {
 	const iconSize = 18;
 
 	const instanceID = useInstanceID( GoogleChart );
+
+	const breakpoint = useBreakpoint();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
@@ -375,7 +378,8 @@ export default function GoogleChart( props ) {
 		gatheringData,
 		chartType,
 		startDate,
-		endDate
+		endDate,
+		breakpoint
 	);
 
 	return (
