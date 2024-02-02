@@ -444,7 +444,8 @@ const baseSelectors = {
 				? measurements
 				: [ measurements ];
 
-			let summaries = select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+			const summaries =
+				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 			if ( ! Array.isArray( summaries ) ) {
 				return undefined;
 			}
@@ -454,22 +455,25 @@ const baseSelectors = {
 			// account will contain a measurement ID that we are looking for.
 			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
 			// Clone summaries to avoid mutating the original array.
-			summaries = [ ...summaries ].sort( ( { _id: accountID } ) =>
-				accountID === currentAccountID ? -1 : 0
+			const sortedSummaries = summaries.toSorted(
+				( { _id: accountID } ) =>
+					accountID === currentAccountID ? -1 : 0
 			);
 
 			const info = {};
 			const propertyIDs = [];
 
-			summaries.forEach( ( { _id: accountID, propertySummaries } ) => {
-				propertySummaries.forEach( ( { _id: propertyID } ) => {
-					propertyIDs.push( propertyID );
-					info[ propertyID ] = {
-						accountID,
-						propertyID,
-					};
-				} );
-			} );
+			sortedSummaries.forEach(
+				( { _id: accountID, propertySummaries } ) => {
+					propertySummaries.forEach( ( { _id: propertyID } ) => {
+						propertyIDs.push( propertyID );
+						info[ propertyID ] = {
+							accountID,
+							propertyID,
+						};
+					} );
+				}
+			);
 
 			if ( propertyIDs.length === 0 ) {
 				return null;
