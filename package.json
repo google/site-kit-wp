@@ -233,7 +233,7 @@
 		"postcss": "^8.4.33",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^4.0.0",
-		"postcss-preset-env": "^6.7.2",
+		"postcss-preset-env": "^8.5.1",
 		"prettier": "npm:wp-prettier@2.6.2",
 		"puppeteer": "^10.4.0",
 		"puppeteer-core": "^3.3.0",
