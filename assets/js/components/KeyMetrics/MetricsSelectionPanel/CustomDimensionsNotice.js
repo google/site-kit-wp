@@ -82,7 +82,8 @@ function CustomDimensionsNotice() {
 			hasMissingCustomDimensions &&
 			previousHasMissingCustomDimensions === false
 		) {
-			const currentFocusedElement = document.activeElement;
+			const currentFocusedElement =
+				noticeRef.current?.ownerDocument.activeElement;
 
 			if (
 				currentFocusedElement &&

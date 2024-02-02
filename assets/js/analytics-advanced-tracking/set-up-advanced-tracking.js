@@ -48,6 +48,7 @@ export default function setUpAdvancedTracking(
 			}
 		};
 
+		// eslint-disable-next-line @wordpress/no-global-event-listener
 		document.addEventListener( eventConfig.on, handleDOMEvent, true );
 		toRemove.push( [ eventConfig.on, handleDOMEvent, true ] );
 	} );
