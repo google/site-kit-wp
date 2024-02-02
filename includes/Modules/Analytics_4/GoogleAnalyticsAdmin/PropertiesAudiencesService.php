@@ -15,7 +15,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\Resource\Pr
 use Google\Site_Kit_Dependencies\Google_Client;
 
 /**
- * Class for managing GA4 audiences settings.
+ * Class for managing GA4 audiences.
  *
  * @since n.e.x.t
  * @access private
