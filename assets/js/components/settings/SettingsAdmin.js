@@ -39,25 +39,43 @@ import PreviewBlock from '../PreviewBlock';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
 	const showKeyMetricsSettings = useSelect(
 		( select ) =>
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
+			isAnalyticsConnected &&
 			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData() === false
 	);
-	const showKeyMetricsSettingsLoading = useSelect(
-		( select ) =>
+	const showKeyMetricsSettingsLoading = useSelect( ( select ) => {
+		if (
 			! select( CORE_MODULES ).hasFinishedResolution(
 				'isModuleConnected',
 				[ 'analytics-4' ]
-			) ||
+			)
+		) {
+			return true;
+		}
+
+		// Following resolvers are not resolved if Analytics is disconnected.
+		if ( isAnalyticsConnected === false ) {
+			return false;
+		}
+
+		if (
 			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 				'isGatheringData'
 			) ||
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'isGatheringData'
 			)
-	);
+		) {
+			return true;
+		}
+
+		return false;
+	} );
 
 	// Show a loading skeleton to prevent a layout shift.
 	if ( showKeyMetricsSettingsLoading ) {
