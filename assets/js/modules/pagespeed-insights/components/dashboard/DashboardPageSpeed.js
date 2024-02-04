@@ -229,28 +229,30 @@ export default function DashboardPageSpeed() {
 			const allAudits = select(
 				MODULES_PAGESPEED_INSIGHTS
 			).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
+
 			if ( ! allAudits || ! Object.keys( allAudits ).length ) {
 				return [];
 			}
 
-			const audits = [];
-			Object.keys( allAudits ).forEach( ( auditSlug ) => {
-				const audit = allAudits[ auditSlug ];
-				if (
-					( audit.scoreDisplayMode !== 'numeric' &&
-						audit.scoreDisplayMode !== 'binary' ) ||
-					audit.score >= 0.9
-				) {
-					return;
-				}
+			return Object.keys( allAudits )
+				.filter(
+					( auditSlug ) =>
+						allAudits[ auditSlug ].scoreDisplayMode ===
+							'metricSavings' && allAudits[ auditSlug ].score < 1
+				)
+				.sort( ( a, b ) => {
+					// If the scores are the same, sort alphabetically by
+					// audit slug. This is how the API returns audits.
+					if ( allAudits[ a ].score === allAudits[ b ].score ) {
+						return a.localeCompare( b );
+					}
 
-				audits.push( {
-					id: audit.id,
-					title: audit.title,
-				} );
-			} );
-
-			return audits;
+					return allAudits[ a ].score - allAudits[ b ].score;
+				} )
+				.map( ( auditSlug ) => ( {
+					id: allAudits[ auditSlug ].id,
+					title: allAudits[ auditSlug ].title,
+				} ) );
 		},
 		[ referenceURL, strategy, finishedResolution ]
 	);
