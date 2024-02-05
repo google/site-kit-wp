@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-import { isPlainObject, isArray } from 'lodash';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -30,48 +24,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-const { receiveError, clearError } = errorStoreActions;
-
-const audienceFields = [
-	'displayName',
-	'description',
-	'membershipDurationDays',
-	'eventTrigger',
-	'exclusionDurationMode',
-	'filterClauses',
-];
-
-const audienceRequiredFields = [
-	'displayName',
-	'description',
-	'membershipDurationDays',
-	'filterClauses',
-];
-
-function validateAudience( audience ) {
-	invariant( isPlainObject( audience ), 'Audience must be an object.' );
-
-	Object.keys( audience ).forEach( ( key ) => {
-		invariant(
-			audienceFields.includes( key ),
-			`Audience object must contain only valid keys. Invalid key: "${ key }"`
-		);
-	} );
-
-	audienceRequiredFields.forEach( ( key ) => {
-		invariant(
-			audience[ key ],
-			`Audience object must contain required keys. Missing key: "${ key }"`
-		);
-	} );
-
-	invariant(
-		isArray( audience.filterClauses ),
-		'filterClauses must be an array with AudienceFilterClause objects.'
-	);
-}
+import { validateAudience } from '../utils/validation';
 
 const fetchGetAudiencesStore = createFetchStore( {
 	baseName: 'getAudiences',
@@ -139,20 +92,12 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	createAudience: createValidatedAction(
-		( audience ) => {
-			validateAudience( audience );
-		},
+		validateAudience,
 		function* ( audience ) {
-			yield clearError( 'createAudience', [] );
-
 			const { response, error } =
 				yield fetchCreateAudienceStore.actions.fetchCreateAudience(
 					audience
 				);
-
-			if ( error ) {
-				yield receiveError( error, 'createAudience', [] );
-			}
 
 			return { response, error };
 		}

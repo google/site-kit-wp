@@ -162,32 +162,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					audiencesFixture[ 2 ]
 				);
 			} );
-
-			it( 'dispatches an error if the request fails', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-				fetchMock.postOnce( createAudienceEndpoint, {
-					status: 500,
-					body: response,
-				} );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.createAudience( audience );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getErrorForAction( 'createAudience' )
-				).toMatchObject( response );
-				expect( console ).toHaveErrored();
-
-				// State should remain unchanged.
-				expect( store.getState().audiences ).toBeUndefined();
-			} );
 		} );
 	} );
 
