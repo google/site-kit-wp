@@ -144,7 +144,6 @@ ModalDialog.propTypes = {
 	handleDialog: PropTypes.func,
 	handleConfirm: PropTypes.func.isRequired,
 	title: PropTypes.string,
-	description: PropTypes.string,
 	confirmButton: PropTypes.string,
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
