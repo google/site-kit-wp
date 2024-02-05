@@ -2,24 +2,15 @@
 .googlesitekit-plugin .mdc-dialog {
 	z-index: 10000;
 
-	%label-small {
-		font-size: $fs-body-sm;
-		letter-spacing: 0.2px;
-		line-height: $lh-label-sm;
-	}
-
 	.mdc-dialog__surface {
-		border-radius: 8px;
-		box-shadow: 0 10px 40px 0 rgba(#000, 0.35);
-		padding: $grid-gap-desktop + 12px $grid-gap-desktop * 2 - 10; // 36px 38px.
+		border-radius: $br-xs;
+		box-shadow: 0 10px 40px 0 rgba($c-black, 0.35);
+		max-width: 76vw;
+		padding: $grid-gap-desktop;
 
 		@media (min-width: $bp-tablet) {
 			max-width: 478px;
-		}
-
-		@media (max-width: $bp-mobileOnly) {
-			max-width: 76vw;
-			padding: $grid-gap-desktop;
+			padding: 36px;
 		}
 	}
 
@@ -29,17 +20,18 @@
 	}
 
 	.mdc-dialog__title {
-		align-items: center;
+		align-items: flex-start;
 		column-gap: 9px;
 		display: flex;
+		flex-direction: column;
 		font-size: $fs-headline-sm;
 		letter-spacing: 0;
-		padding: 0 0 $grid-gap-desktop - 10px; // 14px.
+		padding: 0 0 4px;
 
-		@media (max-width: $bp-mobileOnly) {
-			align-items: flex-start;
-			flex-direction: column;
-			padding: 0 0 4px;
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			flex-direction: row;
+			padding: 0 0 $grid-gap-desktop - 10px; // 14px.
 		}
 
 		&::before {
@@ -48,23 +40,20 @@
 
 		svg {
 			color: $c-red-r-500;
+			margin-bottom: 4px;
 
-			@media (max-width: $bp-mobileOnly) {
-				margin-bottom: 4px;
+			@media (min-width: $bp-tablet) {
+				margin-bottom: 0;
 			}
 		}
 	}
 
 	.mdc-dialog__lead {
-		font-size: $fs-title-sm;
-		font-weight: $fw-medium;
+		font-size: $fs-label-md;
+		font-weight: $fw-normal;
 		line-height: $lh-label-md;
 		margin: 0;
 		max-width: 430px;
-
-		@media (max-width: $bp-mobileOnly) {
-			font-weight: $fw-normal;
-		}
 	}
 
 	.mdc-dialog__content {
@@ -75,8 +64,10 @@
 	}
 
 	.mdc-dialog__dependencies {
+		font-size: $fs-label-sm;
+		letter-spacing: $ls-xs;
+		line-height: $lh-label-sm;
 		margin: 1em 0;
-		@extend %label-small;
 
 		strong {
 			font-weight: $fw-medium;
@@ -85,11 +76,7 @@
 
 	.mdc-dialog__provides {
 		overflow: initial;
-		padding: 10px 0;
-
-		& + .mdc-dialog__dependencies {
-			margin: 0.5em 0 0;
-		}
+		padding: 8px 0;
 	}
 
 	.mdc-list {
@@ -101,13 +88,15 @@
 		&.mdc-list--underlined {
 
 			.mdc-list-item {
-				@extend %label-small;
+				font-size: $fs-body-sm;
 				height: unset;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
 				min-height: 32px;
 				padding-left: 10px;
 
 				&::before {
-					background-color: $c-neutral-n-900;
+					background-color: $c-surfaces-on-surface;
 					border-radius: 50%;
 					content: " ";
 					height: 4px;
@@ -128,7 +117,7 @@
 		padding: 0;
 	}
 
-	/** Different Size Custom Style **/
+	// Size variants
 	&.googlesitekit-dialog-md {
 		.mdc-dialog__surface {
 			@media (min-width: $bp-tablet) {
