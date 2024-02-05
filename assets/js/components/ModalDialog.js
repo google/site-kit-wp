@@ -43,19 +43,19 @@ import {
 import ExclamationIcon from '../../svg/icons/warning.svg';
 
 function ModalDialog( {
-	className,
-	dialogActive,
-	handleDialog,
-	title,
+	className = '',
+	dialogActive = false,
+	handleDialog = null,
+	title = null,
 	provides,
 	handleConfirm,
 	subtitle,
-	confirmButton,
+	confirmButton = null,
 	dependentModules,
-	danger,
+	danger = false,
 	inProgress = false,
-	small,
-	medium,
+	small = false,
+	medium = false,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
@@ -149,18 +149,6 @@ ModalDialog.propTypes = {
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
-};
-
-ModalDialog.defaultProps = {
-	className: null,
-	dialogActive: false,
-	handleDialog: null,
-	title: null,
-	description: null,
-	confirmButton: null,
-	danger: false,
-	small: false,
-	medium: false,
 };
 
 export default ModalDialog;
