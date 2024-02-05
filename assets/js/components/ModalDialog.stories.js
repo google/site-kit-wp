@@ -21,30 +21,74 @@
  */
 import ModalDialog from './ModalDialog';
 
-function Template() {
-	return (
-		<ModalDialog
-			dialogActive
-			title="Modal Dialog Title"
-			subtitle="Modal Dialog Subtitle"
-			provides={ [
-				'Audience overview',
-				'Top pages',
-				'Top acquisition channels',
-			] }
-			handleConfirm={ global.console.log.bind(
-				null,
-				'Dialog::handleConfirm'
-			) }
-			danger
-		/>
-	);
+const defaultArgs = {
+	dialogActive: true,
+	title: 'Modal Dialog Title',
+	subtitle:
+		'Modal Dialog Subtitle. It will adjust the width based on default value.',
+	handleConfirm: () =>
+		global.console.log.bind( null, 'Dialog::handleConfirm' ),
+};
+
+function Template( args ) {
+	return <ModalDialog { ...args } />;
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = defaultArgs;
 Default.scenario = {
 	label: 'Global/ModalDialog',
+};
+
+export const Danger = Template.bind( {} );
+Danger.storyName = 'Danger';
+Danger.args = {
+	...defaultArgs,
+	title: 'Danger/Error Modal Dialog Title',
+	provides: [ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
+	danger: true,
+};
+Danger.scenario = {
+	label: 'Global/ModalDialog/Danger',
+};
+
+export const DependentModules = Template.bind( {} );
+DependentModules.storyName = 'Danger With DependentModules Text';
+DependentModules.args = {
+	...defaultArgs,
+	subtitle:
+		'Longer subtitle text for modal dialog. It will adjust to the size prop.',
+	dependentModules: 'Depend modules text',
+	provides: [ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
+	danger: true,
+};
+DependentModules.scenario = {
+	label: 'Global/ModalDialog/DangerWithDependentModules',
+};
+
+export const SmallModal = Template.bind( {} );
+SmallModal.storyName = 'Small Width Modal';
+SmallModal.args = {
+	...defaultArgs,
+	subtitle:
+		'Longer subtitle text for modal dialog. It will adjust to the size prop.',
+	small: true,
+};
+SmallModal.scenario = {
+	label: 'Global/ModalDialog/Small',
+};
+
+export const MediumModal = Template.bind( {} );
+MediumModal.storyName = 'Medium Width Modal';
+MediumModal.args = {
+	...defaultArgs,
+	subtitle:
+		'Longer subtitle text for modal dialog. It will adjust to the size prop.',
+	medium: true,
+};
+MediumModal.scenario = {
+	label: 'Global/ModalDialog/Medium',
 };
 
 export default {
