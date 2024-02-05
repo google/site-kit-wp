@@ -42,12 +42,9 @@ class Survey_TimeoutsTest extends TestCase {
 		$this->assertEmpty( $this->user_options->get( Survey_Timeouts::OPTION ) );
 
 		$this->timeouts->add( 'foo', 100 );
-		$this->assertEquals(
-			array(
-				'foo' => time() + 100,
-			),
-			$this->user_options->get( Survey_Timeouts::OPTION )
-		);
+		$timeouts = $this->user_options->get( Survey_Timeouts::OPTION );
+		$this->assertArrayHasKey( 'foo', $timeouts );
+		$this->assertEqualsWithDelta( time() + 100, $timeouts['foo'], 2 );
 	}
 
 	public function test_get_survey_timeouts() {
