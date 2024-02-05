@@ -9,7 +9,9 @@
 		padding: $grid-gap-desktop;
 
 		@media (min-width: $bp-tablet) {
-			max-width: 478px;
+			/* Differs from what is seen in figma design - 478px,
+			after disscusion with Sigal https://10up.slack.com/archives/C01CA828ZPZ/p1707129589297719 */
+			max-width: 590px;
 			padding: 36px;
 		}
 	}
