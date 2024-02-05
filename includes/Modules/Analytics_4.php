@@ -728,12 +728,7 @@ final class Analytics_4 extends Module
 				}
 
 				if ( ! isset( $data['audience'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'audience' ),
-						array( 'status' => 400 )
-					);
+					throw new Missing_Required_Param_Exception( 'audience' );
 				}
 
 				$property_id = $settings['propertyID'];

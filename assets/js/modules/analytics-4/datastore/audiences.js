@@ -51,8 +51,6 @@ const audienceRequiredFields = [
 ];
 
 function validateAudience( audience ) {
-	invariant( audience, 'audience is required.' );
-
 	invariant( isPlainObject( audience ), 'Audience must be an object.' );
 
 	Object.keys( audience ).forEach( ( key ) => {
