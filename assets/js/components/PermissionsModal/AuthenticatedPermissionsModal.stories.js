@@ -29,7 +29,7 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'AuthenticatedPermissionsModal dialog';
+Default.storyName = 'AuthenticatedPermissionsModal';
 Default.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
