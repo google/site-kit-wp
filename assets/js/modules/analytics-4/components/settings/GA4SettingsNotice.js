@@ -1,5 +1,5 @@
 /**
- * Analytics-4 Settings Notice component.
+ * Analytics 4 Settings Notice component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -44,7 +44,7 @@ function getFormattedOwnerName( module ) {
 }
 
 export default function GA4SettingsNotice( {
-	isGA4Connected,
+	isModuleConnected,
 	hasAnalytics4Access,
 } ) {
 	const analytics4Module = useSelect( ( select ) =>
@@ -53,7 +53,7 @@ export default function GA4SettingsNotice( {
 
 	const formattedOwnerName = getFormattedOwnerName( analytics4Module );
 
-	if ( isGA4Connected && ! hasAnalytics4Access ) {
+	if ( isModuleConnected && ! hasAnalytics4Access ) {
 		return (
 			<SettingsNotice
 				type={ TYPE_INFO }
@@ -80,6 +80,6 @@ export default function GA4SettingsNotice( {
 
 // eslint-disable-next-line sitekit/acronym-case
 GA4SettingsNotice.propTypes = {
-	isGA4Connected: PropTypes.bool,
+	isModuleConnected: PropTypes.bool,
 	hasAnalytics4Access: PropTypes.bool,
 };

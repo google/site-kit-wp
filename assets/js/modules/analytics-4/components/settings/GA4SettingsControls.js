@@ -1,5 +1,5 @@
 /**
- * Analytics-4 Settings controls.
+ * Analytics 4 Settings controls.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -80,7 +80,7 @@ export default function GA4SettingsControls( props ) {
 			</div>
 
 			<GA4SettingsNotice
-				isGA4Connected={ isModuleConnected }
+				isModuleConnected={ isModuleConnected }
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
 
