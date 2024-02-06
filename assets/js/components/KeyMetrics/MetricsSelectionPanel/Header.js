@@ -33,9 +33,12 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import Link from '../../Link';
 import CloseIcon from '../../../../svg/icons/close.svg';
+import useViewOnly from '../../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
 export default function Header() {
+	const isViewOnly = useViewOnly();
+
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -67,24 +70,26 @@ export default function Header() {
 					<CloseIcon width="15" height="15" />
 				</Link>
 			</div>
-			<p>
-				{ createInterpolateElement(
-					__(
-						'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
-						'google-site-kit'
-					),
-					{
-						link: (
-							<Link
-								secondary
-								onClick={ onSettingsClick }
-								disabled={ isSavingSettings }
-							/>
+			{ ! isViewOnly && (
+				<p>
+					{ createInterpolateElement(
+						__(
+							'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
+							'google-site-kit'
 						),
-						strong: <strong />,
-					}
-				) }
-			</p>
+						{
+							link: (
+								<Link
+									secondary
+									onClick={ onSettingsClick }
+									disabled={ isSavingSettings }
+								/>
+							),
+							strong: <strong />,
+						}
+					) }
+				</p>
+			) }
 		</header>
 	);
 }
