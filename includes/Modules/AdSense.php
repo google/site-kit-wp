@@ -61,6 +61,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\WP_Query_404_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 use WP_Error;
 use WP_REST_Response;
 
@@ -147,6 +148,15 @@ final class AdSense extends Module
 
 		// AdSense tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+
+		// Reset AdSense link settings in Analytics when accountID changes.
+		$this->get_settings()->on_change(
+			function( $old_value, $new_value ) {
+				if ( $old_value['accountID'] !== $new_value['accountID'] ) {
+					$this->reset_analytics_adsense_linked_settings();
+				}
+			}
+		);
 	}
 
 	/**
@@ -192,6 +202,9 @@ final class AdSense extends Module
 		$this->get_settings()->delete();
 
 		$this->ad_blocking_recovery_tag->delete();
+
+		// Reset AdSense link settings in Analytics.
+		$this->reset_analytics_adsense_linked_settings();
 	}
 
 	/**
@@ -1090,5 +1103,25 @@ final class AdSense extends Module
 			default:
 				return __( 'Not set up', 'google-site-kit' );
 		}
+	}
+
+	/**
+	 * Resets the AdSense linked settings in the Analytics module.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function reset_analytics_adsense_linked_settings() {
+		$analytics_settings = new Analytics_Settings( $this->options );
+
+		if ( ! $analytics_settings->has() ) {
+			return;
+		}
+
+		$analytics_settings->merge(
+			array(
+				'adSenseLinked'             => false,
+				'adSenseLinkedLastSyncedAt' => 0,
+			)
+		);
 	}
 }

@@ -28,13 +28,21 @@ import {
 	setupSearchConsoleZeroData,
 	setupAnalytics4ZeroData,
 } from './common-GA4.stories';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
+import {
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '../../../../tests/js/utils';
+import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants';
 
-function Template( { setupRegistry = () => {}, ...args } ) {
+function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<AdminBarApp { ...args } />
+			<ViewContextProvider value={ viewContext }>
+				<AdminBarApp { ...args } />
+			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
 }
@@ -51,6 +59,50 @@ Ready.scenario = {
 	label: 'Global/Admin Bar',
 	readySelector: '.googlesitekit-data-block',
 	delay: 250,
+};
+
+export const ViewOnlyAnalyticsAndSearchConsole = Template.bind( {} );
+ViewOnlyAnalyticsAndSearchConsole.storyName =
+	'View Only Analytics And Search Console';
+ViewOnlyAnalyticsAndSearchConsole.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
+};
+
+export const ViewOnlyAnalytics = Template.bind( {} );
+ViewOnlyAnalytics.storyName = 'View Only Analytics';
+ViewOnlyAnalytics.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
+};
+
+export const ViewOnlySearchConsole = Template.bind( {} );
+ViewOnlySearchConsole.storyName = 'View Only Search Console';
+ViewOnlySearchConsole.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 };
 
 export const GatheringData = Template.bind( {} );

@@ -27,7 +27,6 @@ import {
 	ERROR_GOOGLE_API_CONNECTION_FAIL,
 	ERROR_INVALID_HOSTNAME,
 	ERROR_TOKEN_MISMATCH,
-	ERROR_WP_PRE_V5,
 	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 
@@ -101,14 +100,5 @@ export const checkAMPConnectivity = async () => {
 
 	if ( ! response.ok ) {
 		throw ERROR_AMP_CDN_RESTRICTED;
-	}
-};
-// Check that the current version of WordPress is 5.0+.
-// eslint-disable-next-line require-await
-export const checkWPVersion = async () => {
-	const { wpVersion } = global._googlesitekitBaseData || {};
-	// Throw only if we can get the current version, otherwise ignore it.
-	if ( wpVersion && wpVersion.major < 5 ) {
-		throw ERROR_WP_PRE_V5;
 	}
 };

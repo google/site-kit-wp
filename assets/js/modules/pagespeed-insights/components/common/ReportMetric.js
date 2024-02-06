@@ -47,6 +47,7 @@ export default function ReportMetric( {
 	isLast,
 	isHidden,
 	isUnavailable,
+	hintText,
 } ) {
 	// Normalize the category case.
 	category = category?.toLowerCase();
@@ -85,6 +86,11 @@ export default function ReportMetric( {
 				<div className="googlesitekit-pagespeed-report-metric__description">
 					{ description }
 				</div>
+				{ hintText && (
+					<div className="googlesitekit-pagespeed-report-metric__hint-text">
+						{ hintText }
+					</div>
+				) }
 			</td>
 
 			<td
@@ -148,4 +154,5 @@ ReportMetric.propTypes = {
 	experimental: PropTypes.bool,
 	isLast: PropTypes.bool,
 	isHidden: PropTypes.bool,
+	hintText: PropTypes.node,
 };

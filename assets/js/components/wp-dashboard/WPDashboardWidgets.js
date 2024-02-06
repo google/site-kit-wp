@@ -31,6 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
@@ -76,6 +77,13 @@ export default function WPDashboardWidgets() {
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
 
+	const canViewSharedAnalytics = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
+	);
+	const canViewSharedSearchConsole = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule( 'search-console' )
+	);
+
 	if ( analyticsModule === undefined ) {
 		return null;
 	}
@@ -98,15 +106,19 @@ export default function WPDashboardWidgets() {
 				}
 			) }
 		>
-			{ analyticsModuleActiveAndConnected && (
+			{ analyticsModuleActiveAndConnected && canViewSharedAnalytics && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsGA4Widget />
 					<WPDashboardSessionDurationGA4Widget />
 				</Fragment>
 			) }
 
-			<WPDashboardImpressionsWidget />
-			<WPDashboardClicksWidget />
+			{ canViewSharedSearchConsole && (
+				<Fragment>
+					<WPDashboardImpressionsWidget />
+					<WPDashboardClicksWidget />
+				</Fragment>
+			) }
 
 			{ ! analyticsModuleActiveAndConnected && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
@@ -114,7 +126,7 @@ export default function WPDashboardWidgets() {
 				</div>
 			) }
 
-			{ analyticsModuleActiveAndConnected && (
+			{ analyticsModuleActiveAndConnected && canViewSharedAnalytics && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsChartGA4Widget />
 					<WPDashboardPopularPagesGA4Widget />

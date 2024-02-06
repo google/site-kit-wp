@@ -844,14 +844,7 @@ describe( 'modules/tagmanager versions', () => {
 							accountID,
 							internalContainerID,
 						] )
-				).toEqual( {
-					...errorResponse,
-					selectorData: {
-						args: [ accountID, internalContainerID ],
-						name: 'getLiveContainerVersion',
-						storeName: MODULES_TAGMANAGER,
-					},
-				} );
+				).toEqual( errorResponse );
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )
@@ -893,9 +886,16 @@ describe( 'modules/tagmanager versions', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( console ).toHaveErrored();
+
 				expect(
-					registry.select( MODULES_TAGMANAGER ).getError()
-				).toBeFalsy();
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getError( 'getLiveContainerVersion', [
+							accountID,
+							internalContainerID,
+						] )
+				).toBeUndefined();
+
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )

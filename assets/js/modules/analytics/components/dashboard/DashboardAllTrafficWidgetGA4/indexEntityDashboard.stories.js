@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -330,7 +331,14 @@ export default {
 					active: true,
 					connected: true,
 				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
 			] );
+
+			provideModuleRegistrations( registry );
 
 			// Set some site information.
 			provideSiteInfo( registry );

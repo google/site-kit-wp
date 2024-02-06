@@ -72,6 +72,7 @@ import {
 } from '../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
 import OfflineNotification from './notifications/OfflineNotification';
+import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
@@ -218,6 +219,8 @@ export default function DashboardMainApp() {
 	const isKeyMetricsWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
+
+	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
 

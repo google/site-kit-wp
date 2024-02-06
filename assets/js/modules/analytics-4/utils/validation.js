@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject, isArray } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import {
@@ -152,4 +158,50 @@ export function isValidGoogleTagAccountID( googleTagAccountID ) {
  */
 export function isValidGoogleTagContainerID( googleTagContainerID ) {
 	return isValidNumericID( googleTagContainerID );
+}
+
+/**
+ * Checks whether the passed audience object is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} audience Audience object to check.
+ */
+export function validateAudience( audience ) {
+	const audienceFields = [
+		'displayName',
+		'description',
+		'membershipDurationDays',
+		'eventTrigger',
+		'exclusionDurationMode',
+		'filterClauses',
+	];
+
+	const audienceRequiredFields = [
+		'displayName',
+		'description',
+		'membershipDurationDays',
+		'filterClauses',
+	];
+
+	invariant( isPlainObject( audience ), 'Audience must be an object.' );
+
+	Object.keys( audience ).forEach( ( key ) => {
+		invariant(
+			audienceFields.includes( key ),
+			`Audience object must contain only valid keys. Invalid key: "${ key }"`
+		);
+	} );
+
+	audienceRequiredFields.forEach( ( key ) => {
+		invariant(
+			audience[ key ],
+			`Audience object must contain required keys. Missing key: "${ key }"`
+		);
+	} );
+
+	invariant(
+		isArray( audience.filterClauses ),
+		'filterClauses must be an array with AudienceFilterClause objects.'
+	);
 }

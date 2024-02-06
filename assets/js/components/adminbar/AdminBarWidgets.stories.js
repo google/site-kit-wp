@@ -23,9 +23,9 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
 import {
-	setupSearchConsoleAnalyticsMockReports,
 	setupSearchConsoleMockReports,
 	setupSearchConsoleAnalyticsGatheringData,
 	setupSearchConsoleAnalyticsZeroData,
@@ -35,14 +35,18 @@ import {
 	setupAnalytics4Loading,
 	setupAnalytics4MockReports,
 } from './common-GA4.stories';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
 
-function Template( { setupRegistry = () => {}, ...args } ) {
+function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<AdminBarWidgets { ...args } />
+			<ViewContextProvider value={ viewContext }>
+				<AdminBarWidgets { ...args } />
+			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
 }
@@ -50,7 +54,11 @@ function Template( { setupRegistry = () => {}, ...args } ) {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupSearchConsoleAnalyticsMockReports,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
 };
 
 export const AnalyticsInactive = Template.bind( {} );
@@ -138,6 +146,89 @@ Analytics4WidgetsLoading.args = {
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4Loading( registry );
 	},
+};
+
+export const ViewOnlyAnalyticsAndSearchConsole = Template.bind( {} );
+ViewOnlyAnalyticsAndSearchConsole.storyName =
+	'View Only Analytics And Search Console';
+ViewOnlyAnalyticsAndSearchConsole.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
+};
+
+export const ViewOnlyAnalytics = Template.bind( {} );
+ViewOnlyAnalytics.storyName = 'View Only Analytics';
+ViewOnlyAnalytics.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
+};
+
+export const ViewOnlySearchConsole = Template.bind( {} );
+ViewOnlySearchConsole.storyName = 'View Only Search Console';
+ViewOnlySearchConsole.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 };
 
 export const GatheringData = Template.bind( {} );
