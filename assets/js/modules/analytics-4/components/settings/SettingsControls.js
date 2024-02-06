@@ -40,7 +40,7 @@ import GA4SettingsNotice from './GA4SettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 const { useSelect } = Data;
 
-export default function GA4SettingsControls( props ) {
+export default function SettingsControls( props ) {
 	const { hasModuleAccess } = props;
 
 	const propertyID = useSelect( ( select ) =>
@@ -98,6 +98,6 @@ export default function GA4SettingsControls( props ) {
 }
 
 // eslint-disable-next-line sitekit/acronym-case
-GA4SettingsControls.propTypes = {
+SettingsControls.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 };

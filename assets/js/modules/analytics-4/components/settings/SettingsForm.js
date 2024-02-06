@@ -33,7 +33,7 @@ import Data from 'googlesitekit-data';
 import { AdsConversionIDTextField, TrackingExclusionSwitches } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import GA4SettingsControls from './GA4SettingsControls';
+import SettingsControls from './SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
 const { useSelect } = Data;
@@ -49,7 +49,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 	return (
 		<Fragment>
-			<GA4SettingsControls hasModuleAccess={ hasModuleAccess } />
+			<SettingsControls hasModuleAccess={ hasModuleAccess } />
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
