@@ -45,7 +45,7 @@ function getFormattedOwnerName( module ) {
 
 export default function GA4SettingsNotice( {
 	isModuleConnected,
-	hasAnalytics4Access,
+	hasModuleAccess,
 } ) {
 	const analytics4Module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics-4' )
@@ -53,7 +53,7 @@ export default function GA4SettingsNotice( {
 
 	const formattedOwnerName = getFormattedOwnerName( analytics4Module );
 
-	if ( isModuleConnected && ! hasAnalytics4Access ) {
+	if ( isModuleConnected && ! hasModuleAccess ) {
 		return (
 			<SettingsNotice
 				type={ TYPE_INFO }
@@ -81,5 +81,5 @@ export default function GA4SettingsNotice( {
 // eslint-disable-next-line sitekit/acronym-case
 GA4SettingsNotice.propTypes = {
 	isModuleConnected: PropTypes.bool,
-	hasAnalytics4Access: PropTypes.bool,
+	hasModuleAccess: PropTypes.bool,
 };

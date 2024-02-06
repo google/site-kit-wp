@@ -38,7 +38,7 @@ import EntityOwnershipChangeNotice from '../../../../components/settings/EntityO
 import { isValidAccountID } from '../../utils/validation';
 const { useSelect } = Data;
 
-export default function SettingsForm( { hasAnalytics4Access } ) {
+export default function SettingsForm( { hasModuleAccess } ) {
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -49,7 +49,7 @@ export default function SettingsForm( { hasAnalytics4Access } ) {
 
 	return (
 		<Fragment>
-			<GA4SettingsControls hasAnalytics4Access={ hasAnalytics4Access } />
+			<GA4SettingsControls hasModuleAccess={ hasModuleAccess } />
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
@@ -58,7 +58,7 @@ export default function SettingsForm( { hasAnalytics4Access } ) {
 				</Fragment>
 			) }
 
-			{ hasAnalytics4Access && (
+			{ hasModuleAccess && (
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
 			) }
 		</Fragment>
@@ -66,5 +66,5 @@ export default function SettingsForm( { hasAnalytics4Access } ) {
 }
 
 SettingsForm.propTypes = {
-	hasAnalytics4Access: PropTypes.bool,
+	hasModuleAccess: PropTypes.bool,
 };

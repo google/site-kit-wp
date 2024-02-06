@@ -41,7 +41,7 @@ import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamN
 const { useSelect } = Data;
 
 export default function GA4SettingsControls( props ) {
-	const { hasAnalytics4Access } = props;
+	const { hasModuleAccess } = props;
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
@@ -63,25 +63,25 @@ export default function GA4SettingsControls( props ) {
 			/>
 
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess={ hasAnalytics4Access }
+				hasModuleAccess={ hasModuleAccess }
 				isDisabled={ ! propertyID }
 			/>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect hasModuleAccess={ hasAnalytics4Access } />
+				<AccountSelect hasModuleAccess={ hasModuleAccess } />
 				<PropertySelect
-					hasModuleAccess={ hasAnalytics4Access }
+					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ ! propertyID }
 				/>
 				<WebDataStreamSelect
-					hasModuleAccess={ hasAnalytics4Access }
+					hasModuleAccess={ hasModuleAccess }
 					isDisabled={ ! propertyID }
 				/>
 			</div>
 
 			<GA4SettingsNotice
 				isModuleConnected={ isModuleConnected }
-				hasAnalytics4Access={ hasAnalytics4Access }
+				hasModuleAccess={ hasModuleAccess }
 			/>
 
 			{ propertyID && (
@@ -91,7 +91,7 @@ export default function GA4SettingsControls( props ) {
 			) }
 
 			<SettingsEnhancedMeasurementSwitch
-				hasAnalytics4Access={ hasAnalytics4Access }
+				hasModuleAccess={ hasModuleAccess }
 			/>
 		</div>
 	);
@@ -99,5 +99,5 @@ export default function GA4SettingsControls( props ) {
 
 // eslint-disable-next-line sitekit/acronym-case
 GA4SettingsControls.propTypes = {
-	hasAnalytics4Access: PropTypes.bool,
+	hasModuleAccess: PropTypes.bool,
 };

@@ -36,7 +36,7 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
 </div>
 `;
 
-exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch disabled when hasAnalytics4Access is false 1`] = `
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch disabled when hasModuleAccess is false 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"

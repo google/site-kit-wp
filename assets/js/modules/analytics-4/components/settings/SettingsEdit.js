@@ -49,7 +49,7 @@ export default function SettingsEdit() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const hasAnalytics4Access = useSelect( ( select ) => {
+	const hasModuleAccess = useSelect( ( select ) => {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
 
@@ -91,7 +91,7 @@ export default function SettingsEdit() {
 	if (
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
-		hasAnalytics4Access === undefined
+		hasModuleAccess === undefined
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( ! accounts.length || isCreateAccount ) {
@@ -101,9 +101,7 @@ export default function SettingsEdit() {
 			<AccountCreateLegacy />
 		);
 	} else {
-		viewComponent = (
-			<SettingsForm hasAnalytics4Access={ hasAnalytics4Access } />
-		);
+		viewComponent = <SettingsForm hasModuleAccess={ hasModuleAccess } />;
 	}
 
 	return (
