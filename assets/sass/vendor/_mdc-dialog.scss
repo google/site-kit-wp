@@ -9,10 +9,12 @@
 		padding: $grid-gap-desktop;
 
 		@media (min-width: $bp-tablet) {
-			/* Differs from what is seen in figma design - 478px,
-			after disscusion with Sigal https://10up.slack.com/archives/C01CA828ZPZ/p1707129589297719 */
-			max-width: 590px;
+			max-width: 478px;
 			padding: 36px;
+		}
+
+		@media (min-width: $bp-desktop) {
+			max-width: 590px;
 		}
 	}
 
@@ -52,7 +54,7 @@
 
 	.mdc-dialog__lead {
 		font-size: $fs-label-md;
-		font-weight: $fw-normal;
+		font-weight: $fw-medium;
 		line-height: $lh-label-md;
 		margin: 0;
 		max-width: 430px;
@@ -66,9 +68,9 @@
 	}
 
 	.mdc-dialog__dependencies {
-		font-size: $fs-label-sm;
+		font-size: $fs-body-sm;
 		letter-spacing: $ls-xs;
-		line-height: $lh-label-sm;
+		line-height: $lh-body-sm;
 		margin: 1em 0;
 
 		strong {
