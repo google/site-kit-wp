@@ -21,6 +21,7 @@
  */
 import { WEBDATASTREAM_CREATE } from '../datastore/constants';
 import {
+	isValidAdsConversionID,
 	isValidGoogleTagAccountID,
 	isValidGoogleTagContainerID,
 	isValidGoogleTagID,
@@ -83,7 +84,7 @@ describe( 'modules/analytics-4 validations', () => {
 			expect( isValidGoogleTagID( 'AW-WD40' ) ).toBe( true );
 		} );
 
-		it( 'should return FALSE when a invalid googleTagId is passed', () => {
+		it( 'should return FALSE when an invalid googleTagId is passed', () => {
 			expect( isValidGoogleTagID( 'ABC12' ) ).toBe( false );
 			expect( isValidGoogleTagID( 'AB-C12' ) ).toBe( false );
 			expect( isValidGoogleTagID( 'GT-_35' ) ).toBe( false );
@@ -97,7 +98,7 @@ describe( 'modules/analytics-4 validations', () => {
 			expect( isValidGoogleTagAccountID( '1' ) ).toBe( true );
 		} );
 
-		it( 'should return FALSE when a invalid googleTagId is passed', () => {
+		it( 'should return FALSE when an invalid googleTagId is passed', () => {
 			expect( isValidGoogleTagAccountID( 1.1 ) ).toBe( false );
 			expect( isValidGoogleTagAccountID( '' ) ).toBe( false );
 			expect( isValidGoogleTagAccountID( 'X' ) ).toBe( false );
@@ -110,9 +111,33 @@ describe( 'modules/analytics-4 validations', () => {
 			expect( isValidGoogleTagContainerID( '1' ) ).toBe( true );
 		} );
 
-		it( 'should return FALSE when a invalid googleTagId is passed', () => {
+		it( 'should return FALSE when an invalid googleTagId is passed', () => {
 			expect( isValidGoogleTagContainerID( '' ) ).toBe( false );
 			expect( isValidGoogleTagContainerID( 'X' ) ).toBe( false );
 		} );
+	} );
+
+	describe( 'isValidAdsConversionID', () => {
+		it( 'should return TRUE when a valid AdsConversionID is passed', () => {
+			expect( isValidAdsConversionID( 'AW-123456789' ) ).toBe( true );
+		} );
+
+		it.each( [
+			[ 'false', false ],
+			[ 'an integer', 12345 ],
+			[ 'an empty string', '' ],
+			[ 'a string not starting with AW', 'AB-123456789' ],
+			[
+				'a string starts with AW but ends without numbers',
+				'AW-ABCDEFGHI',
+			],
+		] )(
+			'should return FALSE when %s is passed',
+			( _, adsConversionID ) => {
+				expect( isValidAdsConversionID( adsConversionID ) ).toBe(
+					false
+				);
+			}
+		);
 	} );
 } );
