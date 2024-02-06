@@ -234,24 +234,23 @@ export default function DashboardPageSpeed() {
 				return [];
 			}
 
-			return Object.keys( allAudits )
+			return Object.values( allAudits )
 				.filter(
-					( auditSlug ) =>
-						allAudits[ auditSlug ].scoreDisplayMode ===
-							'metricSavings' && allAudits[ auditSlug ].score < 1
+					( { scoreDisplayMode, score } ) =>
+						scoreDisplayMode === 'metricSavings' && score < 1
 				)
 				.sort( ( a, b ) => {
 					// If the scores are the same, sort alphabetically by
 					// audit slug. This is how the API returns audits.
-					if ( allAudits[ a ].score === allAudits[ b ].score ) {
-						return a.localeCompare( b );
+					if ( a.score === b.score ) {
+						return a.id < b.id ? -1 : 1;
 					}
 
-					return allAudits[ a ].score - allAudits[ b ].score;
+					return a.score - b.score;
 				} )
-				.map( ( auditSlug ) => ( {
-					id: allAudits[ auditSlug ].id,
-					title: allAudits[ auditSlug ].title,
+				.map( ( { id, title } ) => ( {
+					id,
+					title,
 				} ) );
 		},
 		[ referenceURL, strategy, finishedResolution ]
