@@ -22,11 +22,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -48,10 +43,6 @@ export default function SettingsControls( props ) {
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
-			<h4 className="googlesitekit-settings-module__fields-group-title">
-				{ __( 'Google Analytics 4', 'google-site-kit' ) }
-			</h4>
-
 			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
