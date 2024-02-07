@@ -166,7 +166,7 @@ export default function WebDataStreamSelect( props ) {
 									/* translators: 1: Data stream name. 2: Measurement ID. */
 									_x(
 										'%1$s (%2$s)',
-										'Analytics 4 data stream name and measurement ID',
+										'Analytics data stream name and measurement ID',
 										'google-site-kit'
 									),
 									displayName,
