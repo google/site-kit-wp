@@ -35,7 +35,6 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -885,7 +884,8 @@ const baseSelectors = {
 				'getAccountSummaries'
 			) ||
 			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+			select( MODULES_ANALYTICS_4 ).hasFinishedSelectingAccount() ===
+				false
 		);
 	} ),
 };

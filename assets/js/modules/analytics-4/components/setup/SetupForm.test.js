@@ -34,7 +34,6 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
@@ -113,7 +112,7 @@ describe( 'SetupForm', () => {
 		// @TODO: This is temporarily needed here as the AccountSelect component
 		// still relies on the `analytics` datastore. This should be removed
 		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const { container, getByText, waitForRegistry } = render(
 			<SetupForm />,
@@ -163,7 +162,7 @@ describe( 'SetupForm', () => {
 		// @TODO: This is temporarily needed here as the AccountSelect component
 		// still relies on the `analytics` datastore. This should be removed
 		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -262,7 +261,7 @@ describe( 'SetupForm', () => {
 		// @TODO: This is temporarily needed here as the AccountSelect component
 		// still relies on the `analytics` datastore. This should be removed
 		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
@@ -371,7 +370,7 @@ describe( 'SetupForm', () => {
 		// @TODO: This is temporarily needed here as the AccountSelect component
 		// still relies on the `analytics` datastore. This should be removed
 		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.

@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -41,10 +40,8 @@ const { useSelect, useDispatch } = Data;
 export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
-	const accountID = useSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getAccountID() ||
-			select( MODULES_ANALYTICS ).getAccountID()
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
@@ -60,7 +57,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	// TODO: Remove this when the legacy 'analytics' module is removed (see #7932).
 	// Temporarily added so that the module setup and settings work in the meantime.
 	const { selectAccount: selectLegacyAnalyticsAccount } =
-		useDispatch( MODULES_ANALYTICS );
+		useDispatch( MODULES_ANALYTICS_4 );
 
 	const onChange = useCallback(
 		( index, item ) => {

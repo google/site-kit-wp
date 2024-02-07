@@ -30,11 +30,10 @@ import {
 	createWaitForRegistry,
 } from '../../../../../../../tests/js/utils';
 import {
-	MODULES_ANALYTICS,
+	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 	FORM_SETUP,
-} from '../../../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+} from '../../../datastore/constants';
 import * as fixtures from '../../../../analytics/datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import {
@@ -101,12 +100,11 @@ describe( 'SetupBanner', () => {
 
 	it( 'should render a create property CTA when no existing properties are available', async () => {
 		const { dispatch } = registry;
-		dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
-		dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( accounts );
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
 			accountID,
 		} );
-		dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 
 		const { getByText, waitForRegistry } = render( <SetupBanner />, {
@@ -147,12 +145,11 @@ describe( 'SetupBanner', () => {
 		const onSubmitSuccess = jest.fn();
 
 		const { dispatch } = registry;
-		dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
-		dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( accounts );
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
 			accountID,
 		} );
-		dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
@@ -217,12 +214,11 @@ describe( 'SetupBanner', () => {
 		const onSubmitSuccess = jest.fn();
 
 		const { dispatch } = registry;
-		dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
-		dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( accounts );
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
 			accountID,
 		} );
-		dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		// Simulate an auto-submit scenario after scope is granted.
 		provideUserAuthentication( registry, {

@@ -26,7 +26,6 @@ import { useEffect, useRef } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -46,7 +45,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupEnhancedMeasurementSwitch() {
 	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 
 	const propertyID = useSelect( ( select ) =>

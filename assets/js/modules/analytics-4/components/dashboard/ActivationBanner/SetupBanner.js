@@ -36,15 +36,12 @@ import {
 } from '../../../../analytics-4/components/common';
 import ErrorNotice from '../../../../../components/ErrorNotice';
 import {
+	EDIT_SCOPE,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../../datastore/constants';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
-import {
-	EDIT_SCOPE,
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY,
@@ -76,16 +73,16 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
 
-	// Call getAccounts to ensure it can be resolved before rendering the PropertySelect
+	// Call getAccountSummaries to ensure it can be resolved before rendering the PropertySelect
 	// component, to avoid showing a ProgressBar in the PropertySelect.
 	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccounts()
+		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 	);
 
 	const getPropertyID = useSelect(

@@ -27,7 +27,7 @@ import fetchMock from 'fetch-mock';
 import ReminderBanner from './ReminderBanner';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -117,7 +117,7 @@ export default {
 				provideModules( registry );
 				provideModuleRegistrations( registry );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( { ownerID: 1 } );
 			};
 

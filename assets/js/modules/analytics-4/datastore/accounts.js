@@ -35,7 +35,6 @@ import {
 	FORM_ACCOUNT_CREATE,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -320,12 +319,12 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			const termsOfServiceURL = select( MODULES_ANALYTICS ).getServiceURL(
-				{
-					path: `/termsofservice/${ accountTicketID }`,
-					query: { provisioningSignup: 'false' },
-				}
-			);
+			const termsOfServiceURL = select(
+				MODULES_ANALYTICS_4
+			).getServiceURL( {
+				path: `/termsofservice/${ accountTicketID }`,
+				query: { provisioningSignup: 'false' },
+			} );
 
 			if ( ! termsOfServiceURL ) {
 				return undefined;

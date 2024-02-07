@@ -29,7 +29,6 @@ import {
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -89,7 +88,7 @@ describe( 'modules/analytics-4 settings', () => {
 			beforeEach( () => {
 				provideUserAuthentication( registry );
 
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					accountID: fixtures.createProperty._accountID,
 				} );
 			} );

@@ -30,7 +30,6 @@ import {
 	provideModules,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../../../analytics/datastore/__fixtures__';
@@ -287,28 +286,27 @@ export default {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					referenceSiteURL: 'http://example.com',
 				} );
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetAccounts( accounts );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accounts );
 				registry
-					.dispatch( MODULES_ANALYTICS )
-					.finishResolution( 'getAccounts', [] );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getAccountSummaries', [] );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties( uaProps, {
 						accountID,
 					} );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getProperties', [ accountID ] );
 
 				registry
@@ -316,7 +314,7 @@ export default {
 					.receiveGetExistingTag( null );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.selectAccount( accountID );
 			};
 

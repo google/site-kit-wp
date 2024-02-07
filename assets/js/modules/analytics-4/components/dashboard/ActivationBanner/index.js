@@ -42,11 +42,7 @@ import {
 } from '../../../constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	EDIT_SCOPE,
-	MODULES_ANALYTICS,
-} from '../../../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4, EDIT_SCOPE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { getItem } from '../../../../../googlesitekit/api/cache';
 import whenActive from '../../../../../util/when-active';
@@ -74,7 +70,7 @@ function ActivationBanner() {
 	);
 
 	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 
 	// These are the selectors the Setup Banner uses; if any of them have encountered
@@ -86,7 +82,9 @@ function ActivationBanner() {
 				'getProperties',
 				[ accountID ]
 			),
-			select( MODULES_ANALYTICS ).getErrorForSelector( 'getAccounts' ),
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getAccountSummaries'
+			),
 			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getSettings' ),
 		].filter( ( error ) => error !== undefined );
 	} );
@@ -130,12 +128,12 @@ function ActivationBanner() {
 						[ accountID ]
 					),
 
-					dispatch( MODULES_ANALYTICS ).clearError(
-						'getAccounts',
+					dispatch( MODULES_ANALYTICS_4 ).clearError(
+						'getAccountSummaries',
 						[]
 					),
-					dispatch( MODULES_ANALYTICS ).invalidateResolution(
-						'getAccounts',
+					dispatch( MODULES_ANALYTICS_4 ).invalidateResolution(
+						'getAccountSummaries',
 						[]
 					),
 

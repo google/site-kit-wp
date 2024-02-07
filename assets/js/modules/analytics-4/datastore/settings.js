@@ -38,15 +38,12 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import {
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../analytics/datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -62,7 +59,7 @@ export const INVARIANT_INVALID_WEBDATASTREAM_ID =
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const accountID = select( MODULES_ANALYTICS_4 ).getAccountID();
 		const { response: property, error } = await dispatch(
 			MODULES_ANALYTICS_4
 		).createProperty( accountID );
@@ -195,7 +192,7 @@ export function validateCanSubmitChanges( select ) {
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
 	const { haveSettingsChanged: haveUASettingsChanged } =
-		createStrictSelect( select )( MODULES_ANALYTICS );
+		createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
 	// Check if GA4 / enhanced measurement settings are changed only if we are sure that there are no UA changes.
 	if ( ! haveUASettingsChanged() ) {

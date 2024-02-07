@@ -35,7 +35,6 @@ import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
 import {
 	isValidPropertyID,
@@ -48,11 +47,8 @@ const { useSelect, useDispatch } = Data;
 
 export default function WebDataStreamSelect( props ) {
 	const { hasModuleAccess, isDisabled, className } = props;
-
-	// TODO: Update this select hook to pull accountID from the modules/analytics-4
-	// datastore when GA4 module becomes separated from the Analytics one.
 	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 
 	const { propertyID, webDataStreamID, measurementID } = useSelect(
