@@ -93,6 +93,12 @@ EnhancedMeasurementSwitch.decorators = [
 	},
 ];
 
+export const WithoutModuleAccess = Template.bind( null );
+WithoutModuleAccess.storyName = 'Without Module Access';
+WithoutModuleAccess.args = {
+	hasModuleAccess: false,
+};
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [
