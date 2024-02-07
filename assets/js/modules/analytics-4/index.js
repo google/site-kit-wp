@@ -41,7 +41,13 @@ import {
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+} from '../../googlesitekit/widgets/default-areas';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -65,6 +71,11 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { SettingsView } from './components/settings';
 import { SetupMain } from './components/setup';
+import {
+	DashboardAllTrafficWidgetGA4,
+	DashboardOverallPageMetricsWidgetGA4,
+} from './components/dashboard';
+import { ModulePopularPagesWidgetGA4 } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -78,6 +89,46 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
+	// Register Analytics 4 Widgets.
+	widgets.registerWidget(
+		'analyticsAllTrafficGA4',
+		{
+			Component: DashboardAllTrafficWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		]
+	);
+
+	widgets.registerWidget(
+		'analyticsOverallPageMetricsGA4',
+		{
+			Component: DashboardOverallPageMetricsWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 3,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		'analyticsModulePopularPagesGA4',
+		{
+			Component: ModulePopularPagesWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 4,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
+	);
+
 	/*
 	 * Key metrics widgets.
 	 */
