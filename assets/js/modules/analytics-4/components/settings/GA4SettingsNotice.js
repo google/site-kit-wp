@@ -37,21 +37,17 @@ import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-function getFormattedOwnerName( module ) {
-	return module?.owner?.login
-		? `<strong>${ module.owner.login }</strong>`
-		: __( 'Another admin', 'google-site-kit' );
-}
-
 export default function GA4SettingsNotice( {
 	isModuleConnected,
 	hasModuleAccess,
 } ) {
-	const analytics4Module = useSelect( ( select ) =>
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics-4' )
 	);
 
-	const formattedOwnerName = getFormattedOwnerName( analytics4Module );
+	const formattedOwnerName = module?.owner?.login
+		? `<strong>${ module.owner.login }</strong>`
+		: __( 'Another admin', 'google-site-kit' );
 
 	if ( isModuleConnected && ! hasModuleAccess ) {
 		return (
