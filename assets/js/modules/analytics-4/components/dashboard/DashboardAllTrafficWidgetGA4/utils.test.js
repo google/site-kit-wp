@@ -1,7 +1,7 @@
 /**
- * GA4 Dashboard components.
+ * DashboardAllTrafficWidgetGA4 utility function tests.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,27 @@
  * limitations under the License.
  */
 
-export { default as ActivationBanner } from './ActivationBanner';
-export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';
-export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
+/**
+ * Internal dependencies
+ */
+import { createZeroDataRow } from './utils';
+
+describe( 'createZeroDataRow', () => {
+	it( 'should return a row with the given date and a zero for the metric value', () => {
+		const date = '2021-01-01';
+		const row = createZeroDataRow( date );
+
+		expect( row ).toEqual( {
+			dimensionValues: [
+				{
+					value: '20210101',
+				},
+			],
+			metricValues: [
+				{
+					value: 0,
+				},
+			],
+		} );
+	} );
+} );
