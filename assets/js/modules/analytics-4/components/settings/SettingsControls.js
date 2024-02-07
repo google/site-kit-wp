@@ -89,7 +89,6 @@ export default function SettingsControls( props ) {
 	);
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 SettingsControls.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 };
