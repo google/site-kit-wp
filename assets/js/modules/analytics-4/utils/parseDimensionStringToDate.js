@@ -20,6 +20,7 @@
  * Converts a dimnension string date into a Date object accounting for differences in timezones.
  *
  * @since 1.10.0
+ * @since n.e.x.t Migrated from analytics to analytics-4.
  * @private
  *
  * @param {string} dateString String representing the date in the format of `YYYYMMDD`.
