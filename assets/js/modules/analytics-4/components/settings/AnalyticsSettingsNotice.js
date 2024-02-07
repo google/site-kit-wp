@@ -37,10 +37,7 @@ import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-export default function AnalyticsSettingsNotice( {
-	isModuleConnected,
-	hasModuleAccess,
-} ) {
+export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics-4' )
 	);
@@ -49,7 +46,7 @@ export default function AnalyticsSettingsNotice( {
 		? `<strong>${ module.owner.login }</strong>`
 		: __( 'Another admin', 'google-site-kit' );
 
-	if ( isModuleConnected && ! hasModuleAccess ) {
+	if ( ! hasModuleAccess ) {
 		return (
 			<SettingsNotice
 				type={ TYPE_INFO }
@@ -75,6 +72,5 @@ export default function AnalyticsSettingsNotice( {
 }
 
 AnalyticsSettingsNotice.propTypes = {
-	isModuleConnected: PropTypes.bool,
 	hasModuleAccess: PropTypes.bool,
 };

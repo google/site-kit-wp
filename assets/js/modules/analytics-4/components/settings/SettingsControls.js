@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { AccountSelect, PropertySelect, WebDataStreamSelect } from '../common';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
@@ -45,10 +44,6 @@ export default function SettingsControls( props ) {
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-
-	const isModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
 	return (
@@ -79,10 +74,7 @@ export default function SettingsControls( props ) {
 				/>
 			</div>
 
-			<AnalyticsSettingsNotice
-				isModuleConnected={ isModuleConnected }
-				hasModuleAccess={ hasModuleAccess }
-			/>
+			<AnalyticsSettingsNotice hasModuleAccess={ hasModuleAccess } />
 
 			{ propertyID && (
 				<div className="googlesitekit-settings-module__meta-item">
