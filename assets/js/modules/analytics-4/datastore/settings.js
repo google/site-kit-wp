@@ -48,7 +48,6 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -157,14 +156,6 @@ export async function submitChanges( { select, dispatch } ) {
 		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 		if ( error ) {
 			return { error };
-		}
-
-		if (
-			select( CORE_MODULES ).isModuleConnected( 'analytics' ) &&
-			! select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-		) {
-			// Refresh modules from server if GA4 was connected after initial setup.
-			await dispatch( CORE_MODULES ).fetchGetModules();
 		}
 	}
 
