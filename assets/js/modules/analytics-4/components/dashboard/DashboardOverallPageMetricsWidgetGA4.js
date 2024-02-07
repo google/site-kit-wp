@@ -272,6 +272,6 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics' } )(
+export default whenActive( { moduleName: 'analytics-4' } )(
 	DashboardOverallPageMetricsWidgetGA4
 );

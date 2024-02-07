@@ -395,6 +395,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics' } )(
+export default whenActive( { moduleName: 'analytics-4' } )(
 	DashboardAllTrafficWidgetGA4
 );

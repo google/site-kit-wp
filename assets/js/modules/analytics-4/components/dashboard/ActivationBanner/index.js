@@ -223,4 +223,4 @@ function ActivationBanner() {
 	}
 }
 
-export default whenActive( { moduleName: 'analytics' } )( ActivationBanner );
+export default whenActive( { moduleName: 'analytics-4' } )( ActivationBanner );
