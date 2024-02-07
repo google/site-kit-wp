@@ -58,7 +58,7 @@ export default function GA4SettingsNotice( {
 					sprintf(
 						/* translators: %s: module owner's name */
 						__(
-							'%s configured Analytics 4 and you don’t have access to its configured property. Contact them to share access or change the configured property.',
+							'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or change the configured property.',
 							'google-site-kit'
 						),
 						formattedOwnerName
