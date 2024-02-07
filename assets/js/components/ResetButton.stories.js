@@ -1,7 +1,7 @@
 /**
  * Reset Button stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,36 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import ResetButton from '../assets/js/components/ResetButton';
-import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import ResetButton from './ResetButton';
+import {
+	WithTestRegistry,
+	createTestRegistry,
+	provideSiteInfo,
+} from '../../../tests/js/utils';
 
-storiesOf( 'Global', module ).add( 'Reset Button', () => {
-	const setupRegistry = ( registry ) => {
+function Template() {
+	return <ResetButton>Reset Site Kit Button</ResetButton>;
+}
+
+export const Default = Template.bind( {} );
+Default.storyName = 'ResetButton';
+
+Default.decorators = [
+	( Story ) => {
+		const registry = createTestRegistry();
 		provideSiteInfo( registry );
-	};
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<ResetButton>Reset Site Kit Button</ResetButton>
-		</WithTestRegistry>
-	);
-} );
+
+		return (
+			<WithTestRegistry registry={ registry }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export default {
+	title: 'Components/ResetButton',
+	component: ResetButton,
+};
