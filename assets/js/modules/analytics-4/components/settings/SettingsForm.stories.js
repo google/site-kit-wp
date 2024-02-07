@@ -69,6 +69,30 @@ Default.scenario = {
 	delay: 250,
 };
 
+export const EnhancedMeasurementSwitch = Template.bind( null );
+EnhancedMeasurementSwitch.storyName = 'With Enhanced Measurement Switch';
+EnhancedMeasurementSwitch.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{},
+					{
+						propertyID,
+						webDataStreamID,
+					}
+				);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [
