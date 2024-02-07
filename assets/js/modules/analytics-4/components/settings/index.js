@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export { default as GA4SettingsNotice } from './GA4SettingsNotice';
+export { default as AnalyticsSettingsNotice } from './AnalyticsSettingsNotice';
 export { default as OptionalSettingsView } from './OptionalSettingsView';
 export { default as PropertyOrWebDataStreamNotAvailableError } from './PropertyOrWebDataStreamNotAvailableError';
 export { default as SettingsControls } from './SettingsControls';

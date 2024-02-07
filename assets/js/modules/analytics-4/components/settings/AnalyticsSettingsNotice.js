@@ -37,7 +37,7 @@ import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-export default function GA4SettingsNotice( {
+export default function AnalyticsSettingsNotice( {
 	isModuleConnected,
 	hasModuleAccess,
 } ) {
@@ -74,8 +74,7 @@ export default function GA4SettingsNotice( {
 	return null;
 }
 
-// eslint-disable-next-line sitekit/acronym-case
-GA4SettingsNotice.propTypes = {
+AnalyticsSettingsNotice.propTypes = {
 	isModuleConnected: PropTypes.bool,
 	hasModuleAccess: PropTypes.bool,
 };

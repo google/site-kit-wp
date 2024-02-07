@@ -36,7 +36,7 @@ import { AccountSelect, PropertySelect, WebDataStreamSelect } from '../common';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import GA4SettingsNotice from './GA4SettingsNotice';
+import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 const { useSelect } = Data;
 
@@ -79,7 +79,7 @@ export default function SettingsControls( props ) {
 				/>
 			</div>
 
-			<GA4SettingsNotice
+			<AnalyticsSettingsNotice
 				isModuleConnected={ isModuleConnected }
 				hasModuleAccess={ hasModuleAccess }
 			/>
