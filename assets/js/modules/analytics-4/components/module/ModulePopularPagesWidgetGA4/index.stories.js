@@ -130,7 +130,7 @@ Loaded.args = {
 	},
 };
 Loaded.scenario = {
-	label: 'Modules/Analytics/Widgets/ModulePopularPagesWidgetGA4/Loaded',
+	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loaded',
 	delay: 250,
 };
 
@@ -154,7 +154,7 @@ Loading.decorators = [
 	},
 ];
 Loading.scenario = {
-	label: 'Modules/Analytics/Widgets/ModulePopularPagesWidgetGA4/Loading',
+	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loading',
 };
 
 export const DataUnavailable = Template.bind( {} );
@@ -200,7 +200,7 @@ DataUnavailable.args = {
 	},
 };
 DataUnavailable.scenario = {
-	label: 'Modules/Analytics/Widgets/ModulePopularPagesWidgetGA4/DataUnavailable',
+	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/DataUnavailable',
 };
 
 export const ZeroData = Template.bind( {} );
@@ -227,7 +227,7 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'Modules/Analytics/Widgets/ModulePopularPagesWidgetGA4/ZeroData',
+	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/ZeroData',
 	delay: 250,
 };
 
@@ -256,11 +256,11 @@ Error.args = {
 	},
 };
 Error.scenario = {
-	label: 'Modules/Analytics/Widgets/ModulePopularPagesWidgetGA4/Error',
+	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Error',
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/ModulePopularPagesWidgetGA4',
+	title: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

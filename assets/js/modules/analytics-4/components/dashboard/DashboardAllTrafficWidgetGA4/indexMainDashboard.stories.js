@@ -171,7 +171,7 @@ MainDashboardLoaded.args = {
 	},
 };
 MainDashboardLoaded.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loaded',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loaded',
 };
 
 export const MainDashboardLoading = Template.bind( {} );
@@ -197,7 +197,7 @@ MainDashboardLoading.decorators = [
 	},
 ];
 MainDashboardLoading.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loading',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loading',
 };
 
 export const MainDashboardDataUnavailable = Template.bind( {} );
@@ -232,7 +232,7 @@ MainDashboardDataUnavailable.args = {
 	},
 };
 MainDashboardDataUnavailable.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/DataUnavailable',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/DataUnavailable',
 };
 
 export const MainDashboardZeroData = Template.bind( {} );
@@ -272,7 +272,7 @@ MainDashboardZeroData.args = {
 	},
 };
 MainDashboardZeroData.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/ZeroData',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/ZeroData',
 };
 
 export const MainDashboardError = Template.bind( {} );
@@ -296,7 +296,7 @@ MainDashboardError.args = {
 	},
 };
 MainDashboardError.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Error',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Error',
 };
 
 export const MainDashboardOneRowOfData = Template.bind( {} );
@@ -320,11 +320,11 @@ MainDashboardOneRowOfData.args = {
 	},
 };
 MainDashboardOneRowOfData.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/OneRowOfData',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/OneRowOfData',
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/All Traffic Widget GA4/Main Dashboard',
+	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Main Dashboard',
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {

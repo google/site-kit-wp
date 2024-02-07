@@ -168,7 +168,7 @@ EntityDashboardLoaded.args = {
 	},
 };
 EntityDashboardLoaded.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loaded',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loaded',
 };
 
 export const EntityDashboardLoading = Template.bind( {} );
@@ -194,7 +194,7 @@ EntityDashboardLoading.decorators = [
 	},
 ];
 EntityDashboardLoading.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loading',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loading',
 };
 
 export const EntityDashboardDataUnavailable = Template.bind( {} );
@@ -227,7 +227,7 @@ EntityDashboardDataUnavailable.args = {
 	},
 };
 EntityDashboardDataUnavailable.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/DataUnavailable',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/DataUnavailable',
 };
 
 export const EntityDashboardZeroData = Template.bind( {} );
@@ -267,7 +267,7 @@ EntityDashboardZeroData.args = {
 	},
 };
 EntityDashboardZeroData.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/ZeroData',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/ZeroData',
 };
 
 export const EntityDashboardError = Template.bind( {} );
@@ -291,7 +291,7 @@ EntityDashboardError.args = {
 	},
 };
 EntityDashboardError.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Error',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Error',
 };
 
 export const EntityDashboardOneRowOfData = Template.bind( {} );
@@ -315,22 +315,17 @@ EntityDashboardOneRowOfData.args = {
 	},
 };
 EntityDashboardOneRowOfData.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/OneRowOfData',
+	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/OneRowOfData',
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/All Traffic Widget GA4/Entity Dashboard',
+	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Entity Dashboard',
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
 			const registry = createTestRegistry();
 			// Activate the module.
 			provideModules( registry, [
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
 				{
 					slug: 'analytics-4',
 					active: true,
