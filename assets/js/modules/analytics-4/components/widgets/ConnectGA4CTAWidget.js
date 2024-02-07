@@ -59,7 +59,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		);
 	} );
 	const isAnalyticsActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
 		const adminReauthURL =
@@ -73,7 +73,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	} );
 	const isActivatingAnalytics = useSelect( ( select ) =>
 		select( CORE_MODULES ).isFetchingSetModuleActivation(
-			'analytics',
+			'analytics-4',
 			true
 		)
 	);
@@ -90,9 +90,9 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const activateAnalytics = useActivateModuleCallback( 'analytics' );
+	const activateAnalytics = useActivateModuleCallback( 'analytics-4' );
 	const completeAnalyticsActivation =
-		useCompleteModuleActivationCallback( 'analytics' );
+		useCompleteModuleActivationCallback( 'analytics-4' );
 
 	const handleCTAClick = useCallback( () => {
 		if ( isAnalyticsActive ) {

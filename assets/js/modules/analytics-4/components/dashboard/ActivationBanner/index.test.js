@@ -55,7 +55,7 @@ describe( 'ActivationBanner', () => {
 	it( 'does not render when UA is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: false,
 			},
@@ -70,11 +70,6 @@ describe( 'ActivationBanner', () => {
 
 	it( 'does not render when UA and GA4 are both connected', async () => {
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'analytics-4',
 				active: true,
@@ -91,11 +86,6 @@ describe( 'ActivationBanner', () => {
 
 	it( 'does render when UA is connected but GA4 is not connected', async () => {
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'analytics-4',
 				active: true,

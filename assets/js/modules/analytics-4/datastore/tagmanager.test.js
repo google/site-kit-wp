@@ -50,7 +50,7 @@ describe( 'modules/analytics-4 tagmanager', () => {
 				// Set the Tag Manager module to not be connected.
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'analytics',
+						slug: 'analytics-4',
 						name: 'Analytics',
 						active: true,
 					},
@@ -130,7 +130,7 @@ describe( 'modules/analytics-4 tagmanager', () => {
 			it( 'should return TRUE when the Google Tag Manager module is available and the AMP containers are loaded', async () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'analytics',
+						slug: 'analytics-4',
 						name: 'Analytics',
 						active: true,
 					},
@@ -193,7 +193,7 @@ describe( 'modules/analytics-4 tagmanager', () => {
 			it( 'should return FALSE when the selector is not resolved yet', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'analytics',
+						slug: 'analytics-4',
 						name: 'Analytics',
 						active: true,
 					},
