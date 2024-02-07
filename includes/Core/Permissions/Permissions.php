@@ -459,7 +459,7 @@ final class Permissions {
 	 * either the authenticated or shared dashboard and if the user has a shared role for either the Analytics
 	 * or Search Console module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.

@@ -163,7 +163,7 @@ export function isValidGoogleTagContainerID( googleTagContainerID ) {
 /**
  * Checks whether the passed audience object is valid.
  *
- * @since n.e.x.t
+ * @since 1.120.0
  *
  * @param {Object} audience Audience object to check.
  */

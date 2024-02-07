@@ -1383,7 +1383,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the configured Analytics Admin service object instance that includes `adSenseLinks` related methods.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 *
 	 * @return PropertiesAdSenseLinksService The Analytics Admin API service.
 	 */
@@ -1394,7 +1394,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 *
 	 * @return PropertiesAudiencesService The Analytics Admin API service.
 	 */

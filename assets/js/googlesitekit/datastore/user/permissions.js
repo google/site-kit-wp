@@ -319,7 +319,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the current user has access to the specified shareable module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug to check.
