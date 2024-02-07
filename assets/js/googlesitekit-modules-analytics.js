@@ -21,13 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import {
-	registerStore,
-	registerModule,
-	registerWidgets,
-} from './modules/analytics';
+import { registerStore, registerModule } from './modules/analytics';
 
 registerStore( Data );
 registerModule( Modules );
-registerWidgets( Widgets );

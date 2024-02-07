@@ -24,19 +24,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-} from '../../googlesitekit/widgets/default-areas';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import DashboardAllTrafficWidgetGA4 from './components/dashboard/DashboardAllTrafficWidgetGA4';
-import DashboardOverallPageMetricsWidgetGA4 from './components/dashboard/DashboardOverallPageMetricsWidgetGA4';
-import { ModulePopularPagesWidgetGA4 } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -53,46 +44,4 @@ export const registerModule = ( modules ) => {
 			__( 'Top acquisition channels', 'google-site-kit' ),
 		],
 	} );
-};
-
-export const registerWidgets = ( widgets ) => {
-	// Register Analytics 4 (GA4) Widgets.
-	widgets.registerWidget(
-		'analyticsAllTrafficGA4',
-		{
-			Component: DashboardAllTrafficWidgetGA4,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'analytics-4' ],
-		},
-		[
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-		]
-	);
-
-	widgets.registerWidget(
-		'analyticsOverallPageMetricsGA4',
-		{
-			Component: DashboardOverallPageMetricsWidgetGA4,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 3,
-			wrapWidget: false,
-			modules: [ 'analytics-4' ],
-		},
-		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
-	);
-
-	widgets.registerWidget(
-		'analyticsModulePopularPagesGA4',
-		{
-			Component: ModulePopularPagesWidgetGA4,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 4,
-			wrapWidget: false,
-			modules: [ 'analytics-4' ],
-		},
-		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
-	);
 };
