@@ -34,9 +34,9 @@ import Data from 'googlesitekit-data';
 import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
-	MODULES_ANALYTICS,
+	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
-} from '../../../analytics/datastore/constants';
+} from '../../../analytics-4/datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import whenActive from '../../../../util/when-active';
 import SourceLink from '../../../../components/SourceLink';
@@ -65,7 +65,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		if ( viewOnlyDashboard ) {
 			return null;
 		}
-		return select( MODULES_ANALYTICS ).getServiceReportURL(
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 			'content-publisher-overview',
 			generateDateRangeArgs( { startDate, endDate } )
 		);
