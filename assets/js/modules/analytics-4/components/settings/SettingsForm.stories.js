@@ -141,6 +141,44 @@ WebDataStreamNotAvailable.decorators = [
 	},
 ];
 
+export const WithExistingTagMatch = Template.bind( null );
+WithExistingTagMatch.storyName =
+	'With existing tag matching the measurement ID';
+WithExistingTagMatch.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetExistingTag( measurementID );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithExistingTagNoMatch = Template.bind( null );
+WithExistingTagNoMatch.storyName =
+	'With existing tag not matching the measurement ID';
+WithExistingTagNoMatch.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetExistingTag( 'G-123456789' );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [
