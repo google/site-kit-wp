@@ -43,10 +43,7 @@ export default function AdsConversionIDTextField() {
 		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
 	const snippetEnabled = useSelect( ( select ) => {
-		return (
-			select( MODULES_ANALYTICS_4 ).getCanUseSnippet() &&
-			select( MODULES_ANALYTICS_4 ).getUseSnippet()
-		);
+		return select( MODULES_ANALYTICS_4 ).getUseSnippet();
 	} );
 
 	const { setAdsConversionID } = useDispatch( MODULES_ANALYTICS_4 );
