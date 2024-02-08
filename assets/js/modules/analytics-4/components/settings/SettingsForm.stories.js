@@ -212,6 +212,10 @@ export default {
 					anonymizeIP: true,
 					trackingDisabled: [ 'loggedinUsers' ],
 				} );
+
+				// @TODO: This is temporarily needed here as the certain components
+				// still rely on the `analytics` datastore. This should be removed
+				// once the two Analytics modules are entirely decoupled.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					accountID,
 				} );
