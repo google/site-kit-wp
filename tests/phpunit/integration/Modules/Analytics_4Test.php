@@ -1108,6 +1108,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_measurement_id',
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
+				'analytics_4_ads_conversion_id',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
