@@ -136,11 +136,6 @@ Error.args = {
 				status: 400,
 				reason: 'badRequest',
 			},
-			selectorData: {
-				storeName: 'modules/analytics-4',
-				name: 'getReport',
-				args: [ reportOptions[ 1 ] ],
-			},
 		};
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveError(
@@ -169,11 +164,6 @@ InsufficientPermissions.args = {
 			data: {
 				status: 403,
 				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-			},
-			selectorData: {
-				storeName: 'modules/analytics-4',
-				name: 'getReport',
-				args: [ reportOptions[ 1 ] ],
 			},
 		};
 

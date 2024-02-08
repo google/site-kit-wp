@@ -138,6 +138,7 @@ function ResetButton( { children } ) {
 					) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					danger
+					small
 					inProgress={ inProgress }
 				/>
 			</Portal>

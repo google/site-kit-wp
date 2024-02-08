@@ -89,8 +89,76 @@ describe( 'MetricsSelectionPanel', () => {
 		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
+	describe( 'Header', () => {
+		beforeEach( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+					modules: [ 'analytics-4' ],
+				},
+			} );
+
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_RETURNING_VISITORS,
+				],
+			} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				availableCustomDimensions: [],
+			} );
+		} );
+
+		it( 'should display a settings link to edit personalized goals', async () => {
+			const { getByText, waitForRegistry } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					/Edit your personalized goals or deactivate this widget in/i
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not display a settings link to edit personalized goals for a view-only user', async () => {
+			const { container, waitForRegistry } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).not.toHaveTextContent(
+				'Edit your personalized goals or deactivate this widget in'
+			);
+		} );
+	} );
+
 	describe( 'Metrics', () => {
-		it( 'should list metrics regardless of modules being connected or not', () => {
+		it( 'should list metrics regardless of modules being connected or not', async () => {
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
@@ -110,7 +178,11 @@ describe( 'MetricsSelectionPanel', () => {
 				},
 			} );
 
-			render( <MetricsSelectionPanel />, { registry } );
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
 
 			expect(
 				document.querySelector(

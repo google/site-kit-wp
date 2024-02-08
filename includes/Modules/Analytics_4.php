@@ -38,16 +38,18 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\Site_Health\General_Data;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -59,6 +61,8 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAudiencesService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
@@ -70,6 +74,7 @@ use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
@@ -98,6 +103,7 @@ final class Analytics_4 extends Module
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
+	use Module_With_Tag_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -182,14 +188,25 @@ final class Analytics_4 extends Module
 		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 
 		// Analytics 4 tag placement logic.
-		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 
-		// Ensure that the data available state is reset when the measurement ID changes.
 		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
+				// Ensure that the data available state is reset when the property ID or measurement ID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
+				}
+
+				// Reset AdSense link settings when propertyID changes.
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+					$this->get_settings()->merge(
+						array(
+							'adSenseLinked'             => false,
+							'adSenseLinkedLastSyncedAt' => 0,
+						)
+					);
 				}
 			}
 		);
@@ -253,17 +270,6 @@ final class Analytics_4 extends Module
 		);
 
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
-	}
-
-	/**
-	 * Gets Module public name.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Formatted module name.
-	 */
-	public function get_public_name() {
-		return 'Analytics';
 	}
 
 	/**
@@ -338,40 +344,35 @@ final class Analytics_4 extends Module
 		$settings = $this->get_settings()->get();
 
 		$debug_fields = array(
-			// phpcs:disable
-			/*
-			TODO: This can be uncommented when we support Ads Integration for Analytics 4.
-			'analytics_4_ads_conversion_id'         => array(
-				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
-				'debug' => General_Data::redact_debug_value( $settings['adsConversionID'] ),
-			),
-			*/
-			// phpcs:enable
 			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => General_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_property_id'        => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
-				'debug' => General_Data::redact_debug_value( $settings['propertyID'], 7 ),
+				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id' => array(
 				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
-				'debug' => General_Data::redact_debug_value( $settings['webDataStreamID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
 			'analytics_4_measurement_id'     => array(
 				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
-				'debug' => General_Data::redact_debug_value( $settings['measurementID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
 			),
 			'analytics_4_use_snippet'        => array(
 				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+			'analytics_4_ads_conversion_id'  => array(
+				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
+				'value' => $settings['adsConversionID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 		);
 
@@ -403,6 +404,7 @@ final class Analytics_4 extends Module
 		$datapoints = array(
 			'GET:account-summaries'                => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                         => array( 'service' => 'analyticsadmin' ),
+			'GET:adsense-links'                    => array( 'service' => 'analyticsadsenselinks' ),
 			'GET:container-lookup'                 => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
@@ -466,6 +468,15 @@ final class Analytics_4 extends Module
 				'service' => '',
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+			$datapoints['GET:audiences']        = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:create-audience'] = array(
+				'service'                => 'analyticsaudiences',
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
+			);
+		}
 
 		return $datapoints;
 	}
@@ -826,6 +837,79 @@ final class Analytics_4 extends Module
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
+			case 'GET:adsense-links':
+				if ( empty( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				$parent = self::normalize_property_id( $data['propertyID'] );
+
+				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
+			case 'GET:audiences':
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				$analyticsadmin = $this->get_analyticsaudiences_service();
+				$property_id    = self::normalize_property_id( $settings['propertyID'] );
+
+				return $analyticsadmin
+					->properties_audiences
+					->listPropertiesAudiences( $property_id );
+			case 'POST:create-audience':
+				$settings = $this->get_settings()->get();
+				if ( ! isset( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				if ( ! isset( $data['audience'] ) ) {
+					throw new Missing_Required_Param_Exception( 'audience' );
+				}
+
+				$property_id = $settings['propertyID'];
+				$audience    = $data['audience'];
+
+				$fields = array(
+					'displayName',
+					'description',
+					'membershipDurationDays',
+					'eventTrigger',
+					'exclusionDurationMode',
+					'filterClauses',
+				);
+
+				$invalid_keys = array_diff( array_keys( $audience ), $fields );
+
+				if ( ! empty( $invalid_keys ) ) {
+					return new WP_Error(
+						'invalid_property_name',
+						/* translators: %s: Invalid property names */
+						sprintf( __( 'Invalid properties in audience: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$property_id = self::normalize_property_id( $property_id );
+
+				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
+
+				$analyticsadmin = $this->get_analyticsaudiences_service();
+
+				return $analyticsadmin
+					->properties_audiences
+					->create(
+						$property_id,
+						$post_body
+					);
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -1300,6 +1384,8 @@ final class Analytics_4 extends Module
 					$account_summaries,
 					'displayName'
 				);
+			case 'GET:adsense-links':
+				return (array) $response->getAdsenseLinks();
 			case 'POST:create-account-ticket':
 				$account_ticket = new Account_Ticket();
 				$account_ticket->set_id( $response->getAccountTicketId() );
@@ -1439,6 +1525,28 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets the configured Analytics Admin service object instance that includes `adSenseLinks` related methods.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return PropertiesAdSenseLinksService The Analytics Admin API service.
+	 */
+	protected function get_analyticsadsenselinks_service() {
+		return $this->get_service( 'analyticsadsenselinks' );
+	}
+
+	/**
+	 * Gets the configured Analytics Data service object instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return PropertiesAudiencesService The Analytics Admin API service.
+	 */
+	protected function get_analyticsaudiences_service() {
+		return $this->get_service( 'analyticsaudiences' );
+	}
+
+	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
@@ -1458,6 +1566,8 @@ final class Analytics_4 extends Module
 			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
 			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
 			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
+			'analyticsaudiences'           => new PropertiesAudiencesService( $client ),
+			'analyticsadsenselinks'        => new PropertiesAdSenseLinksService( $client ),
 			'tagmanager'                   => new Google_Service_TagManager( $client ),
 		);
 	}
@@ -1521,7 +1631,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.31.0
 	 * @since 1.104.0 Added support for AMP tag.
-	 * @since n.e.x.t Made method public.
+	 * @since 1.119.0 Made method public.
 	 */
 	public function register_tag() {
 		$tag = $this->context->is_amp()
@@ -1557,29 +1667,14 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Checks if the module tag is found in the provided content.
+	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.119.0
 	 *
-	 * @param string $content Content to search for the tags.
-	 * @return bool TRUE if tag is found, FALSE if not.
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
-	public function has_placed_tag_in_content( $content ) {
-		$tag_matchers = ( new Tag_Matchers() )->regex_matchers();
-
-		$search_string = 'Google Analytics snippet added by Site Kit';
-
-		if ( strpos( $content, $search_string ) !== false ) {
-			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
-		} else {
-			foreach ( $tag_matchers as $pattern ) {
-				if ( preg_match( $pattern, $content ) ) {
-					return Module_Tag_Matchers::TAG_EXISTS;
-				}
-			}
-		}
-
-		return Module_Tag_Matchers::NO_TAG_FOUND;
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
 	}
 
 	/**
