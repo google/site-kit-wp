@@ -147,7 +147,7 @@ final class Modules {
 	private $core_modules = array(
 		Site_Verification::MODULE_SLUG  => Site_Verification::class,
 		Search_Console::MODULE_SLUG     => Search_Console::class,
-		Analytics::MODULE_SLUG          => Analytics::class,
+		Analytics_4::MODULE_SLUG          => Analytics_4::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
 		AdSense::MODULE_SLUG            => AdSense::class,
 		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
@@ -177,8 +177,6 @@ final class Modules {
 		$this->user_options     = $user_options ?: new User_Options( $this->context );
 		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets           = $assets ?: new Assets( $this->context );
-
-		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
@@ -253,21 +251,21 @@ final class Modules {
 				}
 
 				// Do nothing if the Analytics module is already activated.
-				if ( $this->is_module_active( Analytics::MODULE_SLUG ) ) {
+				if ( $this->is_module_active( Analytics_4::MODULE_SLUG ) ) {
 					return;
 				}
 
-				$this->activate_module( Analytics::MODULE_SLUG );
+				$this->activate_module( Analytics_4::MODULE_SLUG );
 
 				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
 				if ( is_array( $extra_scopes ) ) {
-					$readonly_scope_index = array_search( Analytics::READONLY_SCOPE, $extra_scopes, true );
+					$readonly_scope_index = array_search( Analytics_4::READONLY_SCOPE, $extra_scopes, true );
 					if ( $readonly_scope_index >= 0 ) {
 						unset( $extra_scopes[ $readonly_scope_index ] );
 
 						$auth_scopes = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
 						if ( is_array( $auth_scopes ) ) {
-							$auth_scopes[] = Analytics::READONLY_SCOPE;
+							$auth_scopes[] = Analytics_4::READONLY_SCOPE;
 							$auth_scopes   = array_unique( $auth_scopes );
 
 							$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
@@ -277,7 +275,7 @@ final class Modules {
 				}
 
 				try {
-					$analytics = $this->get_module( Analytics::MODULE_SLUG );
+					$analytics = $this->get_module( Analytics_4::MODULE_SLUG );
 					$analytics->handle_token_response_data( $token_response );
 				} catch ( Exception $e ) {
 					return;
@@ -650,16 +648,6 @@ final class Modules {
 
 		$module = $this->get_module( $slug );
 
-		// TODO: Remove this when UA is sunset.
-		// Consider UA to be connected if GA4 is connected.
-		if (
-			Analytics::MODULE_SLUG === $slug &&
-			! $module->is_connected() &&
-			$this->is_module_connected( Analytics_4::MODULE_SLUG )
-		) {
-			return true;
-		}
-
 		return (bool) $module->is_connected();
 	}
 
@@ -690,13 +678,6 @@ final class Modules {
 			$module = $this->get_module( $slug );
 		} catch ( Exception $e ) {
 			return false;
-		}
-
-		// TODO: Remove this hack.
-		if ( Analytics::MODULE_SLUG === $slug ) {
-			// GA4 needs to be handled first to pass conditions below
-			// due to special handling in active modules option.
-			$this->activate_module( Analytics_4::MODULE_SLUG );
 		}
 
 		$option = $this->get_active_modules_option();
@@ -742,13 +723,6 @@ final class Modules {
 			$module = $this->get_module( $slug );
 		} catch ( Exception $e ) {
 			return false;
-		}
-
-		// TODO: Remove this hack.
-		if ( Analytics::MODULE_SLUG === $slug ) {
-			// GA4 needs to be handled first to pass conditions below
-			// due to special handling in active modules option.
-			$this->deactivate_module( Analytics_4::MODULE_SLUG );
 		}
 
 		$option = $this->get_active_modules_option();
@@ -858,11 +832,11 @@ final class Modules {
 			$option = array( PageSpeed_Insights::MODULE_SLUG );
 		}
 
-		$includes_analytics   = in_array( Analytics::MODULE_SLUG, $option, true );
-		$includes_analytics_4 = in_array( Analytics_4::MODULE_SLUG, $option, true );
-		if ( $includes_analytics && ! $includes_analytics_4 ) {
-			$option[] = Analytics_4::MODULE_SLUG;
-		}
+		// $includes_analytics   = in_array( Analytics::MODULE_SLUG, $option, true );
+		// $includes_analytics_4 = in_array( Analytics_4::MODULE_SLUG, $option, true );
+		// if ( $includes_analytics && ! $includes_analytics_4 ) {
+		// 	$option[] = Analytics_4::MODULE_SLUG;
+		// }
 
 		return $option;
 	}
@@ -875,10 +849,6 @@ final class Modules {
 	 * @param array $option List of active module slugs.
 	 */
 	private function set_active_modules_option( array $option ) {
-		if ( in_array( Analytics_4::MODULE_SLUG, $option, true ) ) {
-			unset( $option[ array_search( Analytics_4::MODULE_SLUG, $option, true ) ] );
-		}
-
 		$this->options->set( self::OPTION_ACTIVE_MODULES, $option );
 	}
 
