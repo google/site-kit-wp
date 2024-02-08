@@ -285,7 +285,6 @@ final class Analytics_4 extends Module
 	public function is_connected() {
 		$required_keys = array(
 			'accountID',
-			'adsConversionID',
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
