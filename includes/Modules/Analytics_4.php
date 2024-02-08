@@ -103,6 +103,10 @@ final class Analytics_4 extends Module
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
 
+	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+
 	/**
 	 * Module slug name.
 	 */
@@ -219,12 +223,6 @@ final class Analytics_4 extends Module
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 
-		// Replicate Analytics settings for Analytics-4 if not set.
-		add_filter(
-			'option_' . Module_Sharing_Settings::OPTION,
-			$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
-		);
-
 		add_filter(
 			'googlesitekit_auth_scopes',
 			function( array $scopes ) {
@@ -286,9 +284,8 @@ final class Analytics_4 extends Module
 	 */
 	public function is_connected() {
 		$required_keys = array(
-			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-			/* 'accountID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			/* 'adsConversionID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			'accountID',
+			'adsConversionID',
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -1349,12 +1346,10 @@ final class Analytics_4 extends Module
 	protected function setup_info() {
 		return array(
 			'slug'        => self::MODULE_SLUG,
-			'name'        => _x( 'Analytics 4', 'Service name', 'google-site-kit' ),
+			'name'        => _x( 'Analytics', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
-			'internal'    => true,
-			'depends_on'  => array( 'analytics' ),
 		);
 	}
 
@@ -1860,27 +1855,6 @@ final class Analytics_4 extends Module
 		}
 
 		return $modules_data;
-	}
-
-	/**
-	 * Returns sharing settings with settings for Analytics-4 replicated from Analytics.
-	 *
-	 * Module sharing settings for Analytics and Analytics-4 are always kept "in-sync" when
-	 * setting these settings in the datastore. However, this function ensures backwards
-	 * compatibility before this replication was introduced, i.e. when sharing settings were
-	 * saved for Analytics but not copied to Analytics-4.
-	 *
-	 * @since 1.98.0
-	 *
-	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
-	 * @return array Dashboard sharing settings option with Analytics-4 settings.
-	 */
-	protected function replicate_analytics_sharing_settings( $sharing_settings ) {
-		if ( ! isset( $sharing_settings[ self::MODULE_SLUG ] ) && isset( $sharing_settings[ Analytics::MODULE_SLUG ] ) ) {
-			$sharing_settings[ self::MODULE_SLUG ] = $sharing_settings[ Analytics::MODULE_SLUG ];
-		}
-
-		return $sharing_settings;
 	}
 
 	/**
