@@ -25,6 +25,7 @@ import {
 	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../../../tests/js/test-utils';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import ActivationBanner from './index';
 
 describe( 'ActivationBanner', () => {
@@ -46,6 +47,7 @@ describe( 'ActivationBanner', () => {
 			),
 			{ body: {}, status: 200 }
 		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
 	afterEach( () => {
@@ -55,7 +57,7 @@ describe( 'ActivationBanner', () => {
 	it( 'does not render when UA is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: 'analytics',
 				active: true,
 				connected: false,
 			},
@@ -71,6 +73,11 @@ describe( 'ActivationBanner', () => {
 	it( 'does not render when UA and GA4 are both connected', async () => {
 		provideModules( registry, [
 			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
@@ -82,21 +89,5 @@ describe( 'ActivationBanner', () => {
 		} );
 		await waitForRegistry();
 		expect( container.childElementCount ).toBe( 0 );
-	} );
-
-	it( 'does render when UA is connected but GA4 is not connected', async () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: false,
-			},
-		] );
-
-		const { container, waitForRegistry } = render( <ActivationBanner />, {
-			registry,
-		} );
-		await waitForRegistry();
-		expect( container.childElementCount ).toBe( 1 );
 	} );
 } );
