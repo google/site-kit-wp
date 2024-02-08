@@ -241,6 +241,9 @@ class Reset {
 							$this->all();
 							$this->maybe_hard_reset();
 
+							// Call hooks on plugin reset. This is used to reset the ad blocking recovery notification.
+							do_action( 'googlesitekit_reset' );
+
 							return new WP_REST_Response( true );
 						},
 						'permission_callback' => $can_setup,
