@@ -30,7 +30,7 @@ import Data from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	UI_DIMENSION_COLOR,
+	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
 	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
@@ -78,7 +78,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 	const dimensionName = useSelect(
 		( select ) =>
-			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) ||
+			select( CORE_UI ).getValue( UI_DIMENSION_NAME ) ||
 			'sessionDefaultChannelGrouping'
 	);
 	const dimensionValue = useSelect( ( select ) =>
