@@ -189,7 +189,6 @@ final class Analytics_4 extends Module
 
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
-		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 
 		$this->get_settings()->on_change(
 			function( $old_value, $new_value ) {
