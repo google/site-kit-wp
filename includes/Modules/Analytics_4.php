@@ -241,7 +241,7 @@ final class Analytics_4 extends Module
 
 				if ( $oauth_client->has_sufficient_scopes(
 					array(
-						Analytics_4::READONLY_SCOPE,
+						self::READONLY_SCOPE,
 						'https://www.googleapis.com/auth/tagmanager.readonly',
 					)
 				) ) {
@@ -253,7 +253,7 @@ final class Analytics_4 extends Module
 					// modal also appearing.
 					if ( ! $oauth_client->has_sufficient_scopes(
 						array(
-							Analytics_4::READONLY_SCOPE,
+							self::READONLY_SCOPE,
 						)
 					) ) {
 						$needs_tagmanager_scope = true;
