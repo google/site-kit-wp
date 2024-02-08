@@ -1,0 +1,58 @@
+[
+    {
+        "adsPersonalizationEnabled": true,
+        "description": "All users",
+        "displayName": "All Users",
+        "exclusionDurationMode": null,
+        "membershipDurationDays": 540,
+        "name": "properties/12345/audiences/1"
+    },
+    {
+        "adsPersonalizationEnabled": true,
+        "description": "Users who have made a purchase",
+        "displayName": "Purchasers",
+        "exclusionDurationMode": null,
+        "membershipDurationDays": 540,
+        "name": "properties/12345/audiences/2"
+    },
+    {
+        "adsPersonalizationEnabled": true,
+        "description": "Description",
+        "displayName": "Test Audience",
+        "exclusionDurationMode": null,
+        "membershipDurationDays": 30,
+        "name": "properties/12345/audiences/3",
+        "filterClauses": [
+            {
+				"clauseType": "INCLUDE",
+				"simpleFilter": {
+					"scope": "AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS",
+					"filterExpression": {
+                        "andGroup": {
+                            "filterExpressions": [
+                                {
+                                    "orGroup": {
+                                        "filterExpressions": [
+                                            {
+                                                "dimensionOrMetricFilter": {
+                                                    "atAnyPointInTime": null,
+                                                    "fieldName": "newVsReturning",
+                                                    "inAnyNDayPeriod": null,
+                                                    "stringFilter": {
+                                                        "caseSensitive": null,
+                                                        "matchType": "EXACT",
+                                                        "value": "new"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+				}
+			}
+        ]
+    }
+]
