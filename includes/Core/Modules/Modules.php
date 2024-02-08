@@ -147,7 +147,7 @@ final class Modules {
 	private $core_modules = array(
 		Site_Verification::MODULE_SLUG  => Site_Verification::class,
 		Search_Console::MODULE_SLUG     => Search_Console::class,
-		Analytics_4::MODULE_SLUG          => Analytics_4::class,
+		Analytics_4::MODULE_SLUG        => Analytics_4::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
 		AdSense::MODULE_SLUG            => AdSense::class,
 		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
@@ -831,12 +831,6 @@ final class Modules {
 		if ( ! is_array( $option ) ) {
 			$option = array( PageSpeed_Insights::MODULE_SLUG );
 		}
-
-		// $includes_analytics   = in_array( Analytics::MODULE_SLUG, $option, true );
-		// $includes_analytics_4 = in_array( Analytics_4::MODULE_SLUG, $option, true );
-		// if ( $includes_analytics && ! $includes_analytics_4 ) {
-		// 	$option[] = Analytics_4::MODULE_SLUG;
-		// }
 
 		return $option;
 	}

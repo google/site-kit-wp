@@ -1339,7 +1339,7 @@ final class Analytics_4 extends Module
 	 * Sets up information about the module.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Migrated from analytics to analytics-4.
+	 * @since n.e.x.t Updated to include in the module setup.
 	 *
 	 * @return array Associative array of module info.
 	 */
