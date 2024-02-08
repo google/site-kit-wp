@@ -70,7 +70,7 @@ Default.scenario = {
 };
 
 export const EnhancedMeasurementSwitch = Template.bind( null );
-EnhancedMeasurementSwitch.storyName = 'With Enhanced Measurement Switch';
+EnhancedMeasurementSwitch.storyName = 'With enhanced measurement switch';
 EnhancedMeasurementSwitch.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -94,10 +94,52 @@ EnhancedMeasurementSwitch.decorators = [
 ];
 
 export const WithoutModuleAccess = Template.bind( null );
-WithoutModuleAccess.storyName = 'Without Module Access';
+WithoutModuleAccess.storyName = 'Without module access';
 WithoutModuleAccess.args = {
 	hasModuleAccess: false,
 };
+
+export const PropertyNotAvailable = Template.bind( null );
+PropertyNotAvailable.storyName = 'Property not available';
+PropertyNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
+				accountSummaries.map( ( acct ) => ( {
+					...acct,
+					propertySummaries: [],
+				} ) )
+			);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WebDataStreamNotAvailable = Template.bind( null );
+WebDataStreamNotAvailable.storyName = 'Web data stream not available';
+WebDataStreamNotAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
+				{},
+				{
+					propertyID,
+				}
+			);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
