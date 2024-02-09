@@ -273,7 +273,7 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel-metrics'
 				)
 			).toHaveTextContent(
-				'Analytics 4 and Search Console are disconnected, no data to show'
+				'Analytics and Search Console are disconnected, no data to show'
 			);
 		} );
 

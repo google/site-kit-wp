@@ -52,7 +52,7 @@ exports[`WPDashboardReportError should only render one error per module when the
       <h3
         class="googlesitekit-cta__title"
       >
-        Data error in Analytics 4
+        Data error in Analytics
       </h3>
       <div
         class="googlesitekit-cta__description"
