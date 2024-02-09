@@ -32,10 +32,6 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
-	const canUseSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getCanUseSnippet()
-	);
-
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
@@ -47,8 +43,6 @@ export default function OptionalSettingsView() {
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
-
-	const showAdsConversionIDSettings = canUseSnippet && useSnippet;
 
 	return (
 		<Fragment>
@@ -80,7 +74,7 @@ export default function OptionalSettingsView() {
 				</div>
 			</div>
 
-			{ showAdsConversionIDSettings && (
+			{ useSnippet && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">

@@ -86,7 +86,7 @@ function EnhancedMeasurementActivationBanner() {
 		)
 	);
 
-	const hasAnalytics4Access = useSelect( ( select ) =>
+	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics-4' )
 	);
 
@@ -94,7 +94,7 @@ function EnhancedMeasurementActivationBanner() {
 		if (
 			! isValidPropertyID( propertyID ) ||
 			! isValidWebDataStreamID( webDataStreamID ) ||
-			! hasAnalytics4Access ||
+			! hasModuleAccess ||
 			isBannerDismissed
 		) {
 			return undefined;

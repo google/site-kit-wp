@@ -74,7 +74,7 @@ import {
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../googlesitekit/datastore/user/constants';
-import { SettingsView } from './components/settings';
+import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain } from './components/setup';
 import {
 	DashboardAllTrafficWidgetGA4,
@@ -87,6 +87,7 @@ export { registerStore } from './datastore';
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'analytics-4', {
 		storeName: MODULES_ANALYTICS_4,
+		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
 		Icon: AnalyticsIcon,

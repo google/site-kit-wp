@@ -117,7 +117,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, getByLabelText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -140,7 +140,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, getByLabelText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -165,7 +165,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, queryByLabelText, getByText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -196,7 +196,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should render correctly, with the switch defaulting to the on position', () => {
 			const { container, getByLabelText } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -219,7 +219,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				} );
 
 			const { getByLabelText } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -269,7 +269,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			setLoadingState();
 
 			const { container, getByRole, waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -283,7 +283,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		}
 	);
 
-	it( 'should render correctly, with the switch disabled when hasAnalytics4Access is false', async () => {
+	it( 'should render correctly, with the switch disabled when hasModuleAccess is false', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setEnhancedMeasurementStreamEnabled(
@@ -293,7 +293,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, getByLabelText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access={ false } />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess={ false } />,
 			{ registry }
 		);
 
@@ -306,7 +306,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 	it( 'should toggle the switch on click', async () => {
 		const { getByLabelText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -325,7 +325,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 	it( 'should toggle the streamEnabled setting on click', async () => {
 		const { getByLabelText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -372,7 +372,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should revert the switch from off to on', async () => {
 			const { getByLabelText, waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -399,7 +399,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should not toggle the switch from on to off', () => {
 			const { getByLabelText } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -436,7 +436,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { getByLabelText, getByText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -482,7 +482,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { getByLabelText, getByText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -533,7 +533,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				.invalidateResolution( 'getAccountSummaries', [] );
 
 			const { waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -550,7 +550,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				.invalidateResolution( 'getWebDataStreams', [ propertyID ] );
 
 			const { waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -563,7 +563,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should retrieve enhanced measurement settings when neither properties or web data streams are loading', async () => {
 			const { waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
