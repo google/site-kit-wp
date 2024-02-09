@@ -698,6 +698,8 @@ final class Analytics_4 extends Module
 		$new_settings['accountID'] = $account_id;
 
 		$this->get_settings()->merge( $new_settings );
+		// TODO: Remove this when the original Analytics (UA) accountID is not referred to anymore.
+		( new Analytics_Settings( $this->options ) )->merge( $new_settings );
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
