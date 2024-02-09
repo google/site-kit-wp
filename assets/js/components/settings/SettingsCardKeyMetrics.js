@@ -52,7 +52,7 @@ export default function SettingsCardKeyMetrics() {
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const loading = useSelect( ( select ) => {
+	const isGetUserInputSettingsLoading = useSelect( ( select ) => {
 		// Ensure that `getUserInputSettings()` is called here in order to trigger its resolver, which we
 		// want to track for the loading state. Invoking the selector here rather than relying on one of
 		// the child components to call it avoids a brief flicker of the loaded state.
@@ -95,14 +95,18 @@ export default function SettingsCardKeyMetrics() {
 				) }
 				{ isUserInputCompleted && (
 					<Fragment>
-						<SettingsKeyMetrics loading={ loading } />
+						<SettingsKeyMetrics
+							loading={ isGetUserInputSettingsLoading }
+						/>
 
 						<Grid>
 							<Row>
 								<Cell size={ 12 }>
 									<UserInputPreview
 										settingsView
-										loading={ loading }
+										loading={
+											isGetUserInputSettingsLoading
+										}
 									/>
 								</Cell>
 							</Row>
@@ -121,7 +125,9 @@ export default function SettingsCardKeyMetrics() {
 									size={ 12 }
 								>
 									<LoadingWrapper
-										loading={ loading }
+										loading={
+											isGetUserInputSettingsLoading
+										}
 										className="googlesitekit-user-input__notification-text-loading"
 										width="500px"
 										height="20.5px"
@@ -139,7 +145,9 @@ export default function SettingsCardKeyMetrics() {
 									</LoadingWrapper>
 
 									<LoadingWrapper
-										loading={ loading }
+										loading={
+											isGetUserInputSettingsLoading
+										}
 										width="200px"
 										height="20.5px"
 									>
