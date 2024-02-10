@@ -2,95 +2,41 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
-class Gtag_JS {
-	const HANDLE = 'google_gtagjs';
-	protected $measurement_id;
+use WP_Error;
 
-	public function __construct( $measurement_id ) {
-		$this->measurement_id = (string) $measurement_id;
-	}
+class Gtag {
+	protected $calls = [];
+	/**
+	 * @var array
+	 */
+	private $allowed_commands;
 
-	function register() {
-		wp_register_script(
-			self::HANDLE,
-			'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->measurement_id ),
-			array(), // Deps
-			null // Version: omit ?ver=
-			// Core async strategy puts the script in the footer, and removes async when setting inline scripts
-		);
-		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
-
-		add_action(
-			'wp_print_scripts',
-			function () {
-//				ray( wp_scripts()->queue );
-
-				if ( ! in_array( self::HANDLE, wp_scripts()->queue ) ) {
-					return;
-				}
-
-				$this->before_print();
-				$this->add_after_print();
-			}
-		);
-	}
-
-	public static function enqueue() {
-		wp_enqueue_script( self::HANDLE );
-	}
-
-	private function before_print() {
-		$commands = new Gtag_JS_Commands();
-
-		do_action( 'googlesitekit_gtagjs_commands_before', $commands );
-
-		if ( count( $commands ) ) {
-			$this->print_commands( $commands );
-		}
-	}
-
-	private function add_after_print() {
-		$commands = new Gtag_JS_Commands();
-
-		do_action( 'googlesitekit_gtagjs_commands', $commands );
-
-		$this->add_inline_after( $commands );
-	}
-
-	private function add_inline_after( Gtag_JS_Commands $commands ) {
-		$javascript = $this->commands_to_js( $commands );
-		$data       = join( "\n", $javascript );
-
-		wp_add_inline_script( self::HANDLE, $data );
-	}
-
-	private function print_commands( Gtag_JS_Commands $commands ) {
-		$javascript = $this->commands_to_js( $commands );
-
-		wp_print_inline_script_tag(
-			join( "\n", $javascript ),
-			[
-				'data-googlesitekit' => true,
-			]
-		);
-	}
-
-	private function commands_to_js( Gtag_JS_Commands $commands ) {
-		$javascript = [];
-		// Initialize with common JS.
-		$javascript[] = 'window.dataLayer = window.dataLayer || [];';
-		$javascript[] = 'function gtag(){dataLayer.push(arguments);}';
-
-		foreach ( $commands as $command ) {
-			$command_js = array_map(
-				function ( $cmd ) {
-					return wp_json_encode( $cmd );
-				},
-				$command
+	public function __invoke( ...$args ) {
+		if (
+			$this->allowed_commands
+			&& ! in_array( $args[0], $this->allowed_commands, true )
+		) {
+			return new WP_Error(
+				'disallowed_gtag_command',
+				sprintf(
+					__( 'The %s gtag command is not allowed on this instance.', 'google-site-kit' ),
+					$args[0]
+				)
 			);
-			$javascript[] = sprintf( 'gtag(%s);', join( ', ', $command_js ) );
 		}
+		$this->calls[] = $args;
+		return true;
+	}
 
-		return $javascript;
+	public function only_commands( array $allowed_commands ) {
+		$this->allowed_commands = $allowed_commands;
+	}
+
+	public function has_calls() {
+		return isset( $this->calls[0] );
+	}
+
+	public function get_calls() {
+		return $this->calls;
 	}
 }
