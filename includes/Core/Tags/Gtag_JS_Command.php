@@ -3,12 +3,11 @@
 namespace Google\Site_Kit\Core\Tags;
 
 class Gtag_JS_Command {
-
-
 	/**
 	 * @var string
 	 */
 	private $command;
+
 	/**
 	 * @var string
 	 */

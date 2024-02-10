@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
+use Google\Site_Kit\Core\Tags\Gtag_JS_Command;
+use Google\Site_Kit\Core\Tags\Gtag_JS_Commands;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -88,14 +90,57 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.31.0
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ), 20 );
+//		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ), 20 );
 		add_filter(
 			'wp_resource_hints',
 			$this->get_dns_prefetch_hints_callback( '//www.googletagmanager.com' ),
 			10,
 			2
 		);
+		add_action(
+			'googlesitekit_gtagjs_commands',
+			[ $this, 'gtag_commands' ]
+		);
 		$this->do_init_tag_action();
+	}
+
+	public function gtag_commands( Gtag_JS_Commands $commands ) {
+		$legacy = $this->get_tag_config();
+
+		/**
+		 * Filters the gtag configuration options for the Analytics snippet.
+		 *
+		 * You can use the {@see 'googlesitekit_amp_gtag_opt'} filter to do the same for gtag in AMP.
+		 *
+		 * @since 1.24.0
+		 *
+		 * @see https://developers.google.com/gtagjs/devguide/configure
+		 *
+		 * @param array $gtag_opt gtag config options.
+		 */
+		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $legacy );
+
+		if ( ! empty( $gtag_opt['linker'] ) ) {
+			$linker = new Gtag_JS_Command( 'set', 'linker' );
+			$linker->set( 'domains', $gtag_opt['linker']['domains'] );
+			$commands->add_command( $linker );
+		}
+
+		unset( $gtag_opt['linker'] );
+
+		$config = new Gtag_JS_Command( 'config', $this->tag_id );
+		$commands->add_command( $config );
+		ray( $gtag_opt );
+
+		foreach ( $gtag_opt as $key => $value ) {
+			$config->set( $key, $value );
+		}
+
+		if ( $this->ads_conversion_id ) {
+			$commands->add_command(
+				new Gtag_JS_Command( 'config', $this->ads_conversion_id )
+			);
+		}
 	}
 
 	/**
@@ -113,13 +158,14 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	protected function enqueue_gtag_script() {
-		$gtag_opt = $this->get_tag_config();
-		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tag_id );
+//		$gtag_opt = $this->get_tag_config();
+//		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tag_id );
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_enqueue_script( 'google_gtagjs', $gtag_src, false, null, false );
-		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
-		wp_add_inline_script( 'google_gtagjs', 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
+//		wp_enqueue_script( 'google_gtagjs', $gtag_src, false, null, false );
+
+//		wp_add_inline_script( 'google_gtagjs', 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
+
 
 		/**
 		 * Filters the gtag configuration options for the Analytics snippet.
@@ -142,11 +188,11 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 		unset( $gtag_opt['linker'] );
 
-		wp_add_inline_script( 'google_gtagjs', 'gtag("js", new Date());' );
-		wp_add_inline_script( 'google_gtagjs', 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
+//		wp_add_inline_script( 'google_gtagjs', 'gtag("js", new Date());' );
+//		wp_add_inline_script( 'google_gtagjs', 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
 
-		$this->add_inline_config( $this->tag_id, $gtag_opt );
-		$this->add_inline_ads_conversion_id_config();
+//		$this->add_inline_config( $this->tag_id, $gtag_opt );
+//		$this->add_inline_ads_conversion_id_config();
 
 		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
@@ -180,7 +226,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			return $snippet_comment_begin . $tag . $snippet_comment_end;
 		};
 
-		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
+//		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
 	}
 
 	/**

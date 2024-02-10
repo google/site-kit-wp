@@ -6,6 +6,15 @@ class Gtag_JS_Commands implements \IteratorAggregate {
 
 	protected $commands = [];
 
+	/**
+	 * @var mixed|null
+	 */
+	private $allowed_commands;
+
+	public function __construct( $allowed_commands = null ) {
+		$this->allowed_commands = $allowed_commands;
+	}
+
 	public function add_command( Gtag_JS_Command $command ) {
 		$this->commands[] = $command;
 	}

@@ -15,11 +15,10 @@ class Gtag_JS {
 			self::HANDLE,
 			'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->measurement_id ),
 			array(), // Deps
-			null, // Version: omit ?ver=
-			array(
-				'strategy' => 'async',
-			)
+			null // Version: omit ?ver=
+			// Core async strategy puts the script in the footer, and removes async when setting inline scripts
 		);
+		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
 
 		add_action(
 			'wp_print_scripts',
@@ -31,17 +30,13 @@ class Gtag_JS {
 				}
 
 				$this->before_print();
+				$this->add_after_print();
 			}
 		);
-//		wp_add_inline_script(
-//			self::HANDLE,
-
-//		);
 	}
 
 	public static function enqueue() {
 		wp_enqueue_script( self::HANDLE );
-//		do_action( 'googlesitekit_gtagjs_enqueued' );
 	}
 
 	private function before_print() {
@@ -49,6 +44,38 @@ class Gtag_JS {
 
 		do_action( 'googlesitekit_gtagjs_commands_before', $commands );
 
+		if ( count( $commands ) ) {
+			$this->print_commands( $commands );
+		}
+	}
+
+	private function add_after_print() {
+		$commands = new Gtag_JS_Commands();
+
+		do_action( 'googlesitekit_gtagjs_commands', $commands );
+
+		$this->add_inline_after( $commands );
+	}
+
+	private function add_inline_after( Gtag_JS_Commands $commands ) {
+		$javascript = $this->commands_to_js( $commands );
+		$data       = join( "\n", $javascript );
+
+		wp_add_inline_script( self::HANDLE, $data );
+	}
+
+	private function print_commands( Gtag_JS_Commands $commands ) {
+		$javascript = $this->commands_to_js( $commands );
+
+		wp_print_inline_script_tag(
+			join( "\n", $javascript ),
+			[
+				'data-googlesitekit' => true,
+			]
+		);
+	}
+
+	private function commands_to_js( Gtag_JS_Commands $commands ) {
 		$javascript = [];
 		// Initialize with common JS.
 		$javascript[] = 'window.dataLayer = window.dataLayer || [];';
@@ -64,12 +91,6 @@ class Gtag_JS {
 			$javascript[] = sprintf( 'gtag(%s);', join( ', ', $command_js ) );
 		}
 
-		wp_print_inline_script_tag(
-			join( "\n", $javascript ),
-			[
-				'data-googlesitekit' => true,
-				'data-attribution' => 'Site Kit by Google',
-			]
-		);
+		return $javascript;
 	}
 }
