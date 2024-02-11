@@ -230,6 +230,39 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets the first Google Tag object within the current live container for the given account and internal container ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state               Data store's state.
+	 * @param {string} accountID           Account ID the container belongs to.
+	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
+	 * @return {(Object|null|undefined)} Live container Google tag object, `null` if none exists, or `undefined` if not loaded yet.
+	 */
+	getLiveContainerGoogleTag: createRegistrySelector(
+		( select ) =>
+			function ( state, accountID, internalContainerID ) {
+				const liveContainerVersion = select(
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( accountID, internalContainerID );
+
+				if ( liveContainerVersion === undefined ) {
+					return undefined;
+				}
+
+				if ( liveContainerVersion?.tag ) {
+					return (
+						liveContainerVersion.tag.find(
+							( { type } ) => type === 'googtag'
+						) || null
+					);
+				}
+
+				return null;
+			}
+	),
+
+	/**
 	 * Gets the live container Universal Analytics tag object for the given account and container ID.
 	 *
 	 * @since 1.18.0
