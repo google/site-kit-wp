@@ -1108,7 +1108,7 @@ final class AdSense extends Module
 	/**
 	 * Resets the AdSense linked settings in the Analytics module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 */
 	protected function reset_analytics_adsense_linked_settings() {
 		$analytics_settings = new Analytics_Settings( $this->options );

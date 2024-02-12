@@ -54,7 +54,7 @@ final class Dashboard {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -124,7 +124,7 @@ final class Dashboard {
 	 * Render the Site Kit WordPress Dashboard widget.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added the `data-view-only` attribute.
+	 * @since 1.120.0 Added the `data-view-only` attribute.
 	 */
 	private function render_googlesitekit_wp_dashboard() {
 

@@ -69,7 +69,7 @@ final class Admin_Bar {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -269,7 +269,7 @@ final class Admin_Bar {
 	 * This is only relevant if the current context is AMP.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Added the `data-view-only` attribute.
+	 * @since 1.120.0 Added the `data-view-only` attribute.
 	 *
 	 * @return bool True if AMP dev mode is enabled, false otherwise.
 	 */
