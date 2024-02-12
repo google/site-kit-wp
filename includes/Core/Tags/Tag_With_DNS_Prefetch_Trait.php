@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
+use Closure;
+
 /**
  * Trait for adding the dns-prefetch directive to a url.
  *
@@ -25,7 +27,7 @@ trait Tag_With_DNS_Prefetch_Trait {
 	 * @since 1.35.0
 	 *
 	 * @param string $url URL to which the dns-prefetch directive should be added.
-	 * @return array List of urls.
+	 * @return Closure Function for callback.
 	 */
 	protected function get_dns_prefetch_hints_callback( $url ) {
 		return function( $urls, $relation_type ) use ( $url ) {

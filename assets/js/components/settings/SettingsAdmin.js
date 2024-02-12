@@ -35,6 +35,7 @@ import ResetButton from '../ResetButton';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
+import SettingsCardConsentMode from './SettingsCardConsentMode';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
@@ -52,6 +53,10 @@ export default function SettingsAdmin() {
 					<SettingsCardKeyMetrics />
 				</Cell>
 			) }
+
+			<Cell size={ 12 }>
+				<SettingsCardConsentMode />
+			</Cell>
 
 			<Cell size={ 12 }>
 				<Layout

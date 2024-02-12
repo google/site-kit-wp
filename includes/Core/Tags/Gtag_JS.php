@@ -12,7 +12,7 @@ class Gtag_JS {
 		$this->measurement_id = (string) $measurement_id;
 	}
 
-	function register() {
+	public function register() {
 		wp_register_script(
 			self::HANDLE,
 			'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->measurement_id ),
@@ -54,22 +54,30 @@ class Gtag_JS {
 	}
 
 	private function print_tag_before() {
-		$gtag = new Gtag();
-		$gtag->only_commands( [ 'consent' ] );
+		// Limit the earliest commands to configuring consent only.
+		$gtag = new Gtag( [ 'consent' ] );
+		$func = $this->gtag_func( $gtag );
 
-		do_action( 'googlesitekit_gtag_before', $gtag );
+		do_action( 'googlesitekit_gtag_before', $func );
 
 		if ( $gtag->has_calls() ) {
 			$this->print_commands( $gtag );
 		}
 	}
 
+	private function gtag_func( Gtag $gtag ) {
+		return static function ( ...$args ) use ( $gtag ) {
+			return $gtag( ...$args );
+		};
+	}
+
 	private function print_tag_after() {
 		$gtag = new Gtag();
 		$gtag( 'js', '{newDate}' );
 		$gtag( 'set', 'developer_id.dZTNiMT', true );
+		$func = $this->gtag_func( $gtag );
 
-		do_action( 'googlesitekit_gtag', $gtag );
+		do_action( 'googlesitekit_gtag', $func );
 
 		$this->print_commands( $gtag );
 	}

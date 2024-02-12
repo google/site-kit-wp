@@ -11,9 +11,6 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
-use Google\Site_Kit\Core\Tags\Gtag;
-use Google\Site_Kit\Core\Tags\Gtag_JS_Command;
-use Google\Site_Kit\Core\Tags\Gtag_JS_Commands;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -98,7 +95,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		$this->do_init_tag_action();
 	}
 
-	public function gtag_commands( Gtag $gtag ) {
+	public function gtag_commands( $gtag ) {
 		$legacy = $this->get_tag_config();
 
 		/**
