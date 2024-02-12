@@ -34,6 +34,7 @@ import {
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../../analytics/util';
+import { isValidGoogleTagID } from '../../analytics-4/utils/validation';
 const { createRegistrySelector } = Data;
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {
@@ -256,6 +257,58 @@ const baseSelectors = {
 							( { type } ) => type === 'googtag'
 						) || null
 					);
+				}
+
+				return null;
+			}
+	),
+
+	/**
+	 * Gets the fist Google Tag ID within the live container for the given account and container ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state               Data store's state.
+	 * @param {string} accountID           Account ID the container belongs to.
+	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
+	 * @return {(string|null|undefined)} Google Tag ID if present and valid, `null` if none exists or not valid, or `undefined` if not loaded yet.
+	 */
+	getLiveContainerGoogleTagID: createRegistrySelector(
+		( select ) =>
+			function ( state, accountID, internalContainerID ) {
+				const googleTag = select(
+					MODULES_TAGMANAGER
+				).getLiveContainerGoogleTag( accountID, internalContainerID );
+
+				if ( googleTag === undefined ) {
+					return undefined;
+				}
+
+				if ( googleTag?.parameter ) {
+					// Check if the tag ID is provided directly on the tag first.
+					let tagID = googleTag.parameter.find(
+						( { key } ) => key === 'tagId'
+					)?.value;
+
+					// If the tag ID is a variable, parse out the name and look up its value.
+					if ( tagID?.startsWith( '{{' ) ) {
+						tagID = tagID.replace( /(\{\{|\}\})/g, '' );
+						const constantVariable = select(
+							MODULES_TAGMANAGER
+						).getLiveContainerVariable(
+							accountID,
+							internalContainerID,
+							tagID
+						);
+						tagID = constantVariable?.parameter.find(
+							( { key } ) => key === 'value'
+						)?.value;
+					}
+
+					// Finally, check that whatever was found is a valid Google Tag ID.
+					if ( isValidGoogleTagID( tagID ) ) {
+						return tagID;
+					}
 				}
 
 				return null;
