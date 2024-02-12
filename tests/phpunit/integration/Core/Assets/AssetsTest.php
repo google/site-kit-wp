@@ -227,80 +227,53 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( '2020-01-01', $data['referenceDate'] );
 	}
 
-	public function test_base_data__product_base_paths__no_permalink_structure() {
-		$this->enable_feature( 'keyMetrics' );
+	public function test_base_data__product_post_type__no_products() {
 		$data = $this->get_inline_base_data();
-		$this->assertTrue( empty( $data['productBasePaths'] ) );
+		$this->assertTrue( empty( $data['productPostType'] ) );
 	}
 
-	public function test_base_data__product_base_paths__empty() {
-		$this->enable_feature( 'keyMetrics' );
-		$this->set_permalink_structure( '/%postname%/' );
-
-		$data = $this->get_inline_base_data();
-		$this->assertTrue( empty( $data['productBasePaths'] ) );
-	}
-
-	public function test_base_data__product_base_paths__hidden_post_type() {
-		$this->enable_feature( 'keyMetrics' );
+	public function test_base_data__product_post_type__hidden_post_type() {
 		$this->set_permalink_structure( '/%postname%/' );
 
 		register_post_type( 'product', array( 'public' => false ) );
 		$data = $this->get_inline_base_data();
 
-		$this->assertTrue( empty( $data['productBasePaths'] ) );
+		$this->assertTrue( empty( $data['productPostType'] ) );
 	}
 
-	/**
-	 * @dataProvider data_product_base_paths
-	 */
-	public function test_base_data__product_base_paths( $args, $expected ) {
-		$this->enable_feature( 'keyMetrics' );
-		$this->set_permalink_structure( '/%postname%/' );
-		register_post_type( 'product', $args['post_type_args'] );
+	public function test_base_data__product_post_type__filter_change_product_post() {
+		register_post_type( 'digital_product', array( 'public' => true ) );
 
-		if ( ! empty( $args['product_permastruct'] ) ) {
-			add_permastruct( 'product', $args['product_permastruct'] );
-		}
+		add_filter(
+			'googlesitekit_product_post_type',
+			function() {
+				return 'digital_product';
+			}
+		);
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( $expected, $data['productBasePaths'] );
+		$this->assertEquals( 'digital_product', $data['productPostType'] );
 	}
 
-	public function data_product_base_paths() {
-		return array(
-			'public post type'           => array(
-				array(
-					'post_type_args' =>
-						array(
-							'public'  => true,
-							'rewrite' => true,
-						),
-				),
-				array( '^/product/' ),
-			),
-			'custom rewrite rule'        => array(
-				array(
-					'post_type_args' => array(
-						'public'  => true,
-						'rewrite' => array( 'slug' => 'fancy-products' ),
-					),
-				),
-				array( '^/fancy-products/' ),
-			),
-			'custom product permastruct' => array(
-				array(
-					'post_type_args'      =>
-						array(
-							'public'  => true,
-							'rewrite' => true,
-						),
-					'product_permastruct' => '/product/%year%/%monthnum%/%category%/',
-				),
-				array( '^/product/([0-9]{4})/([0-9]{1,2})/%category%/' ),
-			),
+	public function test_base_data__product_post_type__invalid_post_type() {
+		add_filter(
+			'googlesitekit_product_post_type',
+			function() {
+				return 'invalid_post_type';
+			}
 		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( empty( $data['productPostType'] ) );
 	}
 
+	public function test_base_data__product_post_type() {
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'product', $data['productPostType'] );
+	}
 }

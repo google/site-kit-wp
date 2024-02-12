@@ -31,7 +31,9 @@ import {
 } from '../../../tests/js/utils';
 import NewBadge from './NewBadge';
 
-const Template = ( args ) => <ReportTable { ...args } />;
+function Template( args ) {
+	return <ReportTable { ...args } />;
+}
 
 export const ReportTableBasic = Template.bind( {} );
 ReportTableBasic.storyName = 'Basic';
@@ -47,13 +49,15 @@ ReportTableBasic.decorators = [
 				title: 'Name',
 				description: 'Module name',
 				primary: true,
-				Component: ( { row } ) => (
-					<Link
-						href={ row.homepage }
-						children={ row.name }
-						external
-					/>
-				),
+				Component( { row } ) {
+					return (
+						<Link
+							href={ row.homepage }
+							children={ row.name }
+							external
+						/>
+					);
+				},
 			},
 			{
 				title: 'Description',
@@ -62,7 +66,9 @@ ReportTableBasic.decorators = [
 			},
 			{
 				title: 'Icon',
-				Component: ( { row } ) => row.Icon && <row.Icon width={ 33 } />,
+				Component( { row } ) {
+					return row.Icon && <row.Icon width={ 33 } />;
+				},
 			},
 		];
 

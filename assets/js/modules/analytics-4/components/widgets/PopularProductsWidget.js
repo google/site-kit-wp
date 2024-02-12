@@ -62,8 +62,8 @@ function PopularProductsWidget( props ) {
 
 	const viewOnlyDashboard = useViewOnly();
 
-	const productBasePaths = useSelect( ( select ) =>
-		select( CORE_SITE ).getProductBasePaths()
+	const productPostType = useSelect( ( select ) =>
+		select( CORE_SITE ).getProductPostType()
 	);
 
 	const dates = useSelect( ( select ) =>
@@ -95,10 +95,10 @@ function PopularProductsWidget( props ) {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		dimensionFilters: {
-			pagePath: {
+			'customEvent:googlesitekit_post_type': {
 				filterType: 'stringFilter',
-				matchType: 'PARTIAL_REGEXP',
-				value: productBasePaths,
+				matchType: 'EXACT',
+				value: productPostType,
 			},
 		},
 		metrics: [ { name: 'screenPageViews' } ],
@@ -115,9 +115,7 @@ function PopularProductsWidget( props ) {
 		select( CORE_USER ).isKeyMetricActive( KM_ANALYTICS_POPULAR_PRODUCTS )
 	);
 
-	const siteHasProductBasePaths = productBasePaths?.length > 0;
-
-	const showWidget = isPopularProductsWidgetActive || siteHasProductBasePaths;
+	const showWidget = isPopularProductsWidgetActive || productPostType;
 
 	const report = useInViewSelect( ( select ) =>
 		showWidget
@@ -154,7 +152,7 @@ function PopularProductsWidget( props ) {
 	const columns = [
 		{
 			field: 'dimensionValues.0.value',
-			Component: ( { fieldValue } ) => {
+			Component( { fieldValue } ) {
 				const url = fieldValue;
 				const title = titles[ url ];
 				// Utilizing `useSelect` inside the component rather than
@@ -194,9 +192,9 @@ function PopularProductsWidget( props ) {
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<strong>{ numFmt( fieldValue ) }</strong>
-			),
+			Component( { fieldValue } ) {
+				return <strong>{ numFmt( fieldValue ) }</strong>;
+			},
 		},
 	];
 
@@ -219,7 +217,7 @@ function PopularProductsWidget( props ) {
 		'google-site-kit'
 	);
 
-	if ( ! siteHasProductBasePaths && isPopularProductsWidgetActive ) {
+	if ( ! productPostType && isPopularProductsWidgetActive ) {
 		zeroStateMessage = __(
 			'No product posts currently detected on your site. This metric applies only to sites with product posts.',
 			'google-site-kit'

@@ -22,7 +22,9 @@
 import GoogleChart from './';
 import { WithTestRegistry } from '../../../../tests/js/utils';
 
-const Template = ( args ) => <GoogleChart { ...args } />;
+function Template( args ) {
+	return <GoogleChart { ...args } />;
+}
 
 export const LineChartGatheringData = Template.bind( {} );
 LineChartGatheringData.storyName = 'Line Chart - Gathering Data';
@@ -60,7 +62,7 @@ LineChartGatheringData.args = {
 			},
 		},
 		hAxis: {
-			format: 'M/d/yy',
+			format: 'MMM d',
 			gridlines: {
 				color: '#fff',
 			},

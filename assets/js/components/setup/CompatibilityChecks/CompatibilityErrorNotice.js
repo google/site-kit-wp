@@ -37,7 +37,6 @@ import {
 	ERROR_GOOGLE_API_CONNECTION_FAIL,
 	ERROR_INVALID_HOSTNAME,
 	ERROR_TOKEN_MISMATCH,
-	ERROR_WP_PRE_V5,
 	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 import GetHelpLink from './GetHelpLink';
@@ -94,6 +93,11 @@ export default function CompatibilityErrorNotice( { error } ) {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'staging' );
 	} );
+	const googleAPIConnectionFailHelpURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+			code: ERROR_GOOGLE_API_CONNECTION_FAIL,
+		} )
+	);
 
 	switch ( error ) {
 		case ERROR_API_UNAVAILABLE:
@@ -116,9 +120,21 @@ export default function CompatibilityErrorNotice( { error } ) {
 				<p>
 					{ ! installed && (
 						<span>
-							{ __(
-								'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.',
-								'google-site-kit'
+							{ createInterpolateElement(
+								__(
+									'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console. <GetHelpLink />',
+									'google-site-kit'
+								),
+								{
+									GetHelpLink: (
+										<Link
+											{ ...helperCTA(
+												developerPlugin,
+												documentationURL
+											) }
+										/>
+									),
+								}
 							) }
 						</span>
 					) }
@@ -166,17 +182,16 @@ export default function CompatibilityErrorNotice( { error } ) {
 							'google-site-kit'
 						) }
 						<br/>
-						${
-							sprintf(
-								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
-								__(
-									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
-									'google-site-kit'
-								), // eslint-disable-line indent
-								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-								`<br/>${ error }` // eslint-disable-line indent
-							) /* eslint-disable-line indent */
-						}
+						${ sprintf(
+							/* translators: 1: Help URL, 2: Support Forum URL, 3: Error message */
+							__(
+								'<a href="%1$s">Click here</a> for more information, or to get more help, ask a question on our <a href="%2$s">support forum</a> and include the text of the original error message: %3$s',
+								'google-site-kit'
+							),
+							googleAPIConnectionFailHelpURL,
+							'https://wordpress.org/support/plugin/google-site-kit/',
+							`<br/>${ error }`
+						) }
 						`,
 						{
 							ALLOWED_TAGS: [ 'a', 'br' ],
@@ -196,15 +211,6 @@ export default function CompatibilityErrorNotice( { error } ) {
 						{
 							GetHelpLink: <GetHelpLink errorCode={ error } />,
 						}
-					) }
-				</p>
-			);
-		case ERROR_WP_PRE_V5:
-			return (
-				<p>
-					{ __(
-						'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).',
-						'google-site-kit'
 					) }
 				</p>
 			);

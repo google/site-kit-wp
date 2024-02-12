@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -32,26 +33,30 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	SpinnerButton,
+	Button,
 	Dialog,
-	DialogTitle,
 	DialogContent,
 	DialogFooter,
+	DialogTitle,
+	SpinnerButton,
 } from 'googlesitekit-components';
-import Link from './Link';
+import ExclamationIcon from '../../svg/icons/warning.svg';
 
-const ModalDialog = ( {
-	dialogActive,
-	handleDialog,
-	title,
+function ModalDialog( {
+	className = '',
+	dialogActive = false,
+	handleDialog = null,
+	title = null,
 	provides,
 	handleConfirm,
 	subtitle,
-	confirmButton,
+	confirmButton = null,
 	dependentModules,
-	danger,
+	danger = false,
 	inProgress = false,
-} ) => {
+	small = false,
+	medium = false,
+} ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
@@ -61,8 +66,15 @@ const ModalDialog = ( {
 			open={ dialogActive }
 			aria-describedby={ hasProvides ? describedByID : undefined }
 			tabIndex="-1"
+			className={ classnames( className, {
+				'googlesitekit-dialog-sm': small,
+				'googlesitekit-dialog-md': medium,
+			} ) }
 		>
-			<DialogTitle>{ title }</DialogTitle>
+			<DialogTitle>
+				{ danger && <ExclamationIcon width={ 28 } height={ 28 } /> }
+				{ title }
+			</DialogTitle>
 			{
 				// Ensure we don't render anything at all if subtitle is falsy, as Dialog expects all its children to be elements and a falsy value will result in an error.
 				subtitle ? <p className="mdc-dialog__lead">{ subtitle }</p> : []
@@ -103,6 +115,14 @@ const ModalDialog = ( {
 				) }
 			</DialogContent>
 			<DialogFooter>
+				<Button
+					className="mdc-dialog__cancel-button"
+					tertiary
+					onClick={ handleDialog }
+					disabled={ inProgress }
+				>
+					{ __( 'Cancel', 'google-site-kit' ) }
+				</Button>
 				<SpinnerButton
 					onClick={ handleConfirm }
 					danger={ danger }
@@ -111,37 +131,23 @@ const ModalDialog = ( {
 				>
 					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
 				</SpinnerButton>
-				<Link
-					className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
-					onClick={ handleDialog }
-					disabled={ inProgress }
-				>
-					{ __( 'Cancel', 'google-site-kit' ) }
-				</Link>
 			</DialogFooter>
 		</Dialog>
 	);
-};
+}
 
 ModalDialog.displayName = 'Dialog';
 
 ModalDialog.propTypes = {
+	className: PropTypes.string,
 	dialogActive: PropTypes.bool,
 	handleDialog: PropTypes.func,
 	handleConfirm: PropTypes.func.isRequired,
 	title: PropTypes.string,
-	description: PropTypes.string,
 	confirmButton: PropTypes.string,
 	danger: PropTypes.bool,
-};
-
-ModalDialog.defaultProps = {
-	dialogActive: false,
-	handleDialog: null,
-	title: null,
-	description: null,
-	confirmButton: null,
-	danger: false,
+	small: PropTypes.bool,
+	medium: PropTypes.bool,
 };
 
 export default ModalDialog;

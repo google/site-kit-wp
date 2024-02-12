@@ -44,7 +44,11 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Learn more
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Learn more
+                </span>
                 <span
                   class="googlesitekit-icon-wrapper"
                   style="margin-left: 5px;"
@@ -68,9 +72,14 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
               </span>
             </button>
             <button
-              class="googlesitekit-cta-link"
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
             >
-              Maybe later
+              <span
+                class="mdc-button__label"
+              >
+                Maybe later
+              </span>
             </button>
           </div>
           <div
@@ -133,7 +142,11 @@ exports[`SetupBanner should render correctly when the user does not have the edi
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Learn more
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Learn more
+                </span>
                 <span
                   class="googlesitekit-icon-wrapper"
                   style="margin-left: 5px;"
@@ -157,9 +170,14 @@ exports[`SetupBanner should render correctly when the user does not have the edi
               </span>
             </button>
             <button
-              class="googlesitekit-cta-link"
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
             >
-              Maybe later
+              <span
+                class="mdc-button__label"
+              >
+                Maybe later
+              </span>
             </button>
           </div>
           <div

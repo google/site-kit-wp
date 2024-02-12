@@ -35,10 +35,17 @@ import {
 	waitForDefaultTimeouts,
 	provideUserInfo,
 	provideModuleRegistrations,
+	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 describe( 'SettingsEdit', () => {
+	const { accountSummaries, webDataStreamsBatch } = ga4Fixtures;
+	const accounts = accountSummaries;
+	const properties = accounts[ 1 ].propertySummaries;
+	const accountID = accounts[ 1 ]._id;
+	const propertyID = properties[ 0 ]._id;
+
 	let registry;
 
 	beforeEach( () => {
@@ -50,6 +57,7 @@ describe( 'SettingsEdit', () => {
 
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
@@ -83,25 +91,26 @@ describe( 'SettingsEdit', () => {
 			status: 200,
 		} );
 
-		const { accounts, properties, profiles } =
-			fixtures.accountsPropertiesProfiles;
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( accountSummaries );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccounts', [] );
 
-		const existingTag = {
-			/* eslint-disable sitekit/acronym-case */
-			accountID: profiles[ 0 ].accountId,
-			propertyID: profiles[ 0 ].webPropertyId,
-			/* eslint-enable */
-		};
-
-		const { accountID, propertyID } = existingTag;
-
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties( properties, { accountID } );
+			.receiveGetProperties( [], { accountID } );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProfiles( profiles, { accountID, propertyID } );
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( properties[ 0 ], {
+				propertyID,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
 
 		const { container, waitForRegistry } = render( <SettingsEdit />, {
 			registry,
@@ -130,27 +139,12 @@ describe( 'SettingsEdit', () => {
 	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
 		provideModuleRegistrations( registry );
 		fetchMock.get( new RegExp( 'tagmanager/data/settings' ), { body: {} } );
-		fetchMock.getOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/properties'
-			),
-			{ body: [] }
-		);
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 			),
 			{
-				body: ga4Fixtures.accountSummaries,
-				status: 200,
-			}
-		);
-		fetchMock.get(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
-			),
-			{
-				body: ga4Fixtures.webDataStreamsBatch,
+				body: [],
 				status: 200,
 			}
 		);
@@ -160,8 +154,7 @@ describe( 'SettingsEdit', () => {
 			status: 200,
 		} );
 
-		const { accounts, properties, profiles } =
-			fixtures.accountsPropertiesProfiles;
+		const { profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID: profiles[ 0 ].accountId,
@@ -169,20 +162,11 @@ describe( 'SettingsEdit', () => {
 			/* eslint-enable */
 		};
 
-		const { accountID, propertyID } = existingTag;
-
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProperties( properties, { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetProfiles( profiles, { accountID, propertyID } );
 
 		registry
 			.dispatch( MODULES_ANALYTICS )

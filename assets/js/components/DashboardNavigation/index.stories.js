@@ -25,21 +25,49 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '../../googlesitekit/widgets/default-contexts';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import {
+	freezeFetch,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 import { setupDefaultChips } from './test-utils';
+import {
+	CORE_USER,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '../../googlesitekit/datastore/user/constants';
 
-const Template = ( { setupRegistry, viewContext, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ viewContext }>
-			<DashboardNavigation { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, viewContext, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider value={ viewContext }>
+				<DashboardNavigation { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
 
 export const DefaultDashboardNavigation = Template.bind( {} );
 DefaultDashboardNavigation.storyName = 'Default State';
 DefaultDashboardNavigation.args = {
 	setupRegistry: ( registry ) => {
 		setupDefaultChips( registry );
+		provideUserAuthentication( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {
+				values: [ 'publish_blog' ],
+				scope: 'site',
+			},
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_CATEGORIES,
+			],
+			isWidgetHidden: false,
+		} );
+
 		// Monetization
 		registry
 			.dispatch( CORE_WIDGETS )
@@ -57,7 +85,9 @@ DefaultDashboardNavigation.args = {
 		registry
 			.dispatch( CORE_WIDGETS )
 			.registerWidget( 'MonetizationWidget', {
-				Component: () => <div>Monetization Widget</div>,
+				Component() {
+					return <div>Monetization Widget</div>;
+				},
 			} );
 		registry
 			.dispatch( CORE_WIDGETS )
@@ -71,8 +101,34 @@ MonetizationHiddenDashboardNavigation.storyName = 'Monetization Hidden State';
 MonetizationHiddenDashboardNavigation.args = {
 	setupRegistry: ( registry ) => {
 		setupDefaultChips( registry );
+		provideUserAuthentication( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {
+				values: [ 'publish_blog' ],
+				scope: 'site',
+			},
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_CATEGORIES,
+			],
+			isWidgetHidden: false,
+		} );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+};
+
+export const LoadingDashboardNavigation = Template.bind( {} );
+LoadingDashboardNavigation.storyName = 'Loading State';
+LoadingDashboardNavigation.args = {
+	setupRegistry: () => {
+		freezeFetch(
+			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
+		);
+	},
 };
 
 export default {

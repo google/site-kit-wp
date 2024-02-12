@@ -77,6 +77,11 @@
 
 		.mdc-button:not(:disabled) {
 			color: $c-surfaces-on-surface-variant;
+
+			&:hover {
+				color: $c-neutral-n-900;
+				text-decoration: none;
+			}
 		}
 
 		.mdc-button__label {
@@ -120,7 +125,6 @@
 		}
 
 		a {
-			display: inline-block;
 			margin: 4px; // Allow outline on focus to be visible.
 			max-width: 100%;
 			text-decoration: underline;

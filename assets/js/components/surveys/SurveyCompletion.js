@@ -27,28 +27,34 @@ import PropTypes from 'prop-types';
 import { Button } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
 
-const SurveyCompletion = ( {
+function SurveyCompletion( {
 	title,
 	children,
 	ctaText,
 	ctaURL,
 	ctaOnClick,
 	dismissSurvey,
-} ) => (
-	<div className="googlesitekit-survey__completion">
-		<SurveyHeader title={ title } dismissSurvey={ dismissSurvey } />
+} ) {
+	return (
+		<div className="googlesitekit-survey__completion">
+			<SurveyHeader title={ title } dismissSurvey={ dismissSurvey } />
 
-		<div className="googlesitekit-survey__body">{ children }</div>
+			<div className="googlesitekit-survey__body">{ children }</div>
 
-		{ ctaURL && ctaText && (
-			<div className="googlesitekit-survey__footer">
-				<Button href={ ctaURL } onClick={ ctaOnClick } target="_blank">
-					{ ctaText }
-				</Button>
-			</div>
-		) }
-	</div>
-);
+			{ ctaURL && ctaText && (
+				<div className="googlesitekit-survey__footer">
+					<Button
+						href={ ctaURL }
+						onClick={ ctaOnClick }
+						target="_blank"
+					>
+						{ ctaText }
+					</Button>
+				</div>
+			) }
+		</div>
+	);
+}
 
 SurveyCompletion.propTypes = {
 	title: PropTypes.string.isRequired,

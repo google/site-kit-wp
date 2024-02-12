@@ -161,9 +161,10 @@ final class Plugin {
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
 				$authentication->register();
 
-				if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-					$user_input->register();
-				}
+				$remote_features = new Core\Util\Remote_Features( $options, $authentication );
+				$remote_features->register();
+
+				$user_input->register();
 
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
@@ -188,7 +189,7 @@ final class Plugin {
 				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options, $survey_queue );
 				$user_surveys->register();
 
-				( new Core\Authentication\Setup( $this->context, $user_options, $authentication ) )->register();
+				( new Core\Authentication\Setup( $this->context, $user_options, $authentication, $remote_features ) )->register();
 
 				( new Core\Util\Reset( $this->context ) )->register();
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
@@ -202,7 +203,7 @@ final class Plugin {
 				( new Core\Admin\Pointers() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
-				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules, $permissions ) )->register();
+				( new Core\Site_Health\Site_Health( $this->context, $options, $user_options, $authentication, $modules, $permissions ) )->register();
 				( new Core\Util\Health_Checks( $authentication ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
@@ -210,10 +211,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
-
-				if ( Feature_Flags::enabled( 'keyMetrics' ) ) {
-					( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
-				}
+				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

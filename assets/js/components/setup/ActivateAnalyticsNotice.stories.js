@@ -21,7 +21,9 @@
  */
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 
-const Template = ( args ) => <ActivateAnalyticsNotice { ...args } />;
+function Template( args ) {
+	return <ActivateAnalyticsNotice { ...args } />;
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';

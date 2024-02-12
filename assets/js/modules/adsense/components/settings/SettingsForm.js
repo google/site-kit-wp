@@ -79,7 +79,7 @@ export default function SettingsForm() {
 	if ( existingTag && existingTag === clientID ) {
 		// Existing tag with permission.
 		checkedMessage = __(
-			'You’ve already got an AdSense code on your site for this account, we recommend you use Site Kit to place code to get the most out of AdSense.',
+			'You’ve already got an AdSense code on your site for this account, we recommend you use Site Kit to place code to get the most out of AdSense',
 			'google-site-kit'
 		);
 		uncheckedMessage = checkedMessage;
@@ -94,13 +94,13 @@ export default function SettingsForm() {
 			parseAccountID( existingTag )
 		);
 		uncheckedMessage = __(
-			'Please note that AdSense will not show ads on your website unless you’ve already placed the code.',
+			'Please note that AdSense will not show ads on your website unless you’ve already placed the code',
 			'google-site-kit'
 		);
 	} else {
 		// No existing tag.
 		uncheckedMessage = __(
-			'Please note that AdSense will not show ads on your website unless you’ve already placed the code.',
+			'Please note that AdSense will not show ads on your website unless you’ve already placed the code',
 			'google-site-kit'
 		);
 	}

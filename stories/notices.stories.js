@@ -35,7 +35,7 @@ import Link from '../assets/js/components/Link';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-const LearnMore = () => {
+function LearnMore() {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
@@ -45,7 +45,7 @@ const LearnMore = () => {
 			Learn more
 		</Link>
 	);
-};
+}
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (

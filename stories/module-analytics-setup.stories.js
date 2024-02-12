@@ -50,7 +50,7 @@ function Setup() {
 	return <ModuleSetup moduleSlug="analytics" />;
 }
 
-const WithRegistry = ( Story ) => {
+function WithRegistry( Story ) {
 	const registry = useRegistry();
 	provideModules( registry, [
 		{
@@ -62,7 +62,7 @@ const WithRegistry = ( Story ) => {
 	provideModuleRegistrations( registry );
 
 	return <Story registry={ registry } />;
-};
+}
 
 storiesOf( 'Analytics Module/Setup', module )
 	.add(
@@ -74,6 +74,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( null );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( [] );
 
 			return <Setup />;
 		},
@@ -93,6 +96,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProperties( properties, {
@@ -129,6 +135,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProperties( properties, {
@@ -183,6 +192,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
 			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
+			registry
 				.dispatch( MODULES_ANALYTICS )
 				// eslint-disable-next-line sitekit/acronym-case
 				.receiveGetProperties( properties, { accountID: accountId } );
@@ -230,7 +242,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( { ...fixtures.defaultSettings } );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( null );
@@ -423,14 +437,14 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Nothing selected',
 		( args, { registry } ) => {
-			const { accounts, properties, profiles } =
+			const { properties, profiles } =
 				fixtures.accountsPropertiesProfiles;
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProperties( properties, {

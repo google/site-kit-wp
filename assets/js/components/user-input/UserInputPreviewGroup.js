@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -193,10 +193,12 @@ export default function UserInputPreviewGroup( {
 							( !! currentlyEditingSlug && ! isEditing )
 						}
 						linkButton
+						trailingIcon={
+							<ChevronDownIcon width={ 20 } height={ 20 } />
+						}
 					>
-						{ __( 'Edit', 'google-site-kit' ) }
-
-						<ChevronDownIcon width={ 20 } height={ 20 } />
+						{ isEditing && __( 'Close', 'google-site-kit' ) }
+						{ ! isEditing && __( 'Edit', 'google-site-kit' ) }
 					</Link>
 				</LoadingWrapper>
 			</div>
@@ -250,27 +252,28 @@ export default function UserInputPreviewGroup( {
 
 							<div className="googlesitekit-user-input__preview-actions">
 								<SpinnerButton
-									disabled={
-										! hasSettingChanged || answerHasError
-									}
+									disabled={ answerHasError }
 									onClick={
 										hasSettingChanged
 											? submitChanges
-											: undefined
+											: toggleEditMode
 									}
 									isSaving={ isScreenLoading }
 								>
-									{ __(
-										'Confirm Changes',
-										'google-site-kit'
-									) }
+									{ hasSettingChanged || isSavingSettings
+										? __(
+												'Apply changes',
+												'google-site-kit'
+										  )
+										: __( 'Save', 'google-site-kit' ) }
 								</SpinnerButton>
-								<Link
+								<Button
+									tertiary
 									disabled={ isScreenLoading }
 									onClick={ handleOnCancelClick }
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }
-								</Link>
+								</Button>
 							</div>
 						</Fragment>
 					) }

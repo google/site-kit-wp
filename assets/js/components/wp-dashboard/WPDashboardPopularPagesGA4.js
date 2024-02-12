@@ -125,7 +125,7 @@ export default function WPDashboardPopularPagesGA4( {
 			title: __( 'Title', 'google-site-kit' ),
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
-			Component: ( { row } ) => {
+			Component( { row } ) {
 				const [ { value: title }, { value: url } ] =
 					row.dimensionValues;
 
@@ -136,9 +136,11 @@ export default function WPDashboardPopularPagesGA4( {
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-			),
+			Component( { fieldValue } ) {
+				return (
+					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				);
+			},
 		},
 	];
 

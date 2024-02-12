@@ -69,11 +69,13 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_CATEGORIES
 )( TopCategoriesWidget );
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -172,11 +174,6 @@ Error.args = {
 				status: 400,
 				reason: 'test-error-reason',
 			},
-			selectorData: {
-				storeName: 'modules/analytics-4',
-				name: 'getReport',
-				args: [ reportOptions ],
-			},
 		};
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveError(
@@ -213,11 +210,6 @@ InsufficientPermissions.args = {
 			data: {
 				status: 403,
 				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-			},
-			selectorData: {
-				storeName: 'modules/analytics-4',
-				name: 'getReport',
-				args: [ reportOptions ],
 			},
 		};
 
@@ -256,9 +248,7 @@ ErrorMissingCustomDimensions.args = {
 		} );
 	},
 };
-ErrorMissingCustomDimensions.parameters = {
-	features: [ 'keyMetrics' ],
-};
+
 ErrorMissingCustomDimensions.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorMissingCustomDimensions',
 	delay: 250,
@@ -293,9 +283,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 		} );
 	},
 };
-ErrorCustomDimensionsInsufficientPermissions.parameters = {
-	features: [ 'keyMetrics' ],
-};
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsInsufficientPermissions',
 	delay: 250,
@@ -329,9 +316,6 @@ ErrorCustomDimensionsGeneric.args = {
 			error,
 		} );
 	},
-};
-ErrorCustomDimensionsGeneric.parameters = {
-	features: [ 'keyMetrics' ],
 };
 ErrorCustomDimensionsGeneric.scenario = {
 	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsGeneric',

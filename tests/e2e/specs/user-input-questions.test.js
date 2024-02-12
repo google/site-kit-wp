@@ -30,7 +30,6 @@ import {
 	resetSiteKit,
 	setupSiteKit,
 	useRequestInterception,
-	enableFeature,
 	pageWait,
 	step,
 	setSearchConsoleProperty,
@@ -182,7 +181,6 @@ describe( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
-		await enableFeature( 'keyMetrics' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
 			'e2e-tests-oauth-callback-plugin'

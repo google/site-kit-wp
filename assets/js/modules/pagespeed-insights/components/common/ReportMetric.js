@@ -47,6 +47,7 @@ export default function ReportMetric( {
 	isLast,
 	isHidden,
 	isUnavailable,
+	hintText,
 } ) {
 	// Normalize the category case.
 	category = category?.toLowerCase();
@@ -76,7 +77,7 @@ export default function ReportMetric( {
 					{ isUnavailable && (
 						<InfoTooltip
 							title={ __(
-								'Field data is still being gathered for this metric and will become available once your site gets sufficient traffic.',
+								'Field data is still being gathered for this metric and will become available once your site gets sufficient traffic',
 								'google-site-kit'
 							) }
 						/>
@@ -85,6 +86,11 @@ export default function ReportMetric( {
 				<div className="googlesitekit-pagespeed-report-metric__description">
 					{ description }
 				</div>
+				{ hintText && (
+					<div className="googlesitekit-pagespeed-report-metric__hint-text">
+						{ hintText }
+					</div>
+				) }
 			</td>
 
 			<td
@@ -148,4 +154,5 @@ ReportMetric.propTypes = {
 	experimental: PropTypes.bool,
 	isLast: PropTypes.bool,
 	isHidden: PropTypes.bool,
+	hintText: PropTypes.node,
 };

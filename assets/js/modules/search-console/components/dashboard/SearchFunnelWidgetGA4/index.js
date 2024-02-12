@@ -57,7 +57,7 @@ import useViewOnly from '../../../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 const { useSelect, useInViewSelect } = Data;
 
-const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
+function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const breakpoint = useBreakpoint();
@@ -297,12 +297,14 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const WidgetFooter = () => (
-		<Footer
-			metrics={ SearchFunnelWidgetGA4.metrics }
-			selectedStats={ selectedStats }
-		/>
-	);
+	function WidgetFooter() {
+		return (
+			<Footer
+				metrics={ SearchFunnelWidgetGA4.metrics }
+				selectedStats={ selectedStats }
+			/>
+		);
+	}
 
 	if ( searchConsoleError ) {
 		return (
@@ -422,7 +424,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 				) }
 		</Widget>
 	);
-};
+}
 
 SearchFunnelWidgetGA4.metrics = [
 	{

@@ -28,16 +28,21 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { ENHANCED_MEASUREMENT_ENABLED, MODULES_ANALYTICS_4 } from './constants';
 import {
-	MODULES_ANALYTICS,
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+	ENHANCED_MEASUREMENT_ENABLED,
 	FORM_ACCOUNT_CREATE,
-} from '../../analytics/datastore/constants';
+	MODULES_ANALYTICS_4,
+} from './constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { isValidAccountSelection } from '../utils/validation';
 
 const { createRegistrySelector } = Data;
-const { receiveError, clearError } = errorStoreActions;
+const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
@@ -82,12 +87,38 @@ const fetchCreateAccountStore = createFetchStore( {
 	},
 } );
 
+// Actions.
+const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
+const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
+const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
+
 const baseInitialState = {
 	accountSummaries: undefined,
 	accountTicketID: undefined,
+	finishedSelectingAccount: undefined,
 };
 
 const baseActions = {
+	/**
+	 * Resets the account summaries.
+	 *
+	 * @since 1.118.0
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetAccountSummaries() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_ACCOUNT_SUMMARIES,
+		};
+
+		return dispatch(
+			MODULES_ANALYTICS_4
+		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
+	},
+
 	/**
 	 * Creates a new Analytics (GA4) account.
 	 *
@@ -121,12 +152,111 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Sets the given account in the store.
+	 *
+	 * @since 1.119.0
+	 *
+	 * @param {string} accountID Analytics account ID.
+	 * @return {Object} A generator function.
+	 */
+	selectAccount: createValidatedAction(
+		( accountID ) => {
+			invariant(
+				isValidAccountSelection( accountID ),
+				'A valid accountID is required to select.'
+			);
+		},
+		function* ( accountID ) {
+			const registry = yield Data.commonActions.getRegistry();
+			const finishSelectingAccountAction = {
+				type: FINISH_SELECTING_ACCOUNT,
+				payload: {},
+			};
+
+			yield {
+				type: START_SELECTING_ACCOUNT,
+				payload: {},
+			};
+
+			yield clearErrors();
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID,
+			} );
+
+			if ( ACCOUNT_CREATE === accountID ) {
+				yield finishSelectingAccountAction;
+				return;
+			}
+
+			yield Data.commonActions.await(
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.matchAndSelectProperty( accountID, PROPERTY_CREATE )
+			);
+
+			yield finishSelectingAccountAction;
+		}
+	),
+
+	/**
+	 * Finds a matching account summary.
+	 *
+	 * @since 1.118.0
+	 *
+	 * @return {Object|null} Matching account summary on success, otherwise NULL.
+	 */
+	*findMatchedAccount() {
+		const registry = yield Data.commonActions.getRegistry();
+		const matchedProperty = yield Data.commonActions.await(
+			registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
+		);
+
+		if ( ! matchedProperty ) {
+			return null;
+		}
+
+		const accountSummaries = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAccountSummaries();
+
+		const matchedAccount = accountSummaries.find( ( account ) =>
+			account.propertySummaries.some(
+				( { _id } ) => _id === matchedProperty._id
+			)
+		);
+
+		return matchedAccount || null;
+	},
 };
 
 const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case START_SELECTING_ACCOUNT: {
+			return {
+				...state,
+				finishedSelectingAccount: false,
+			};
+		}
+
+		case FINISH_SELECTING_ACCOUNT: {
+			return {
+				...state,
+				finishedSelectingAccount: true,
+			};
+		}
+
+		case RESET_ACCOUNT_SUMMARIES: {
+			return {
+				...state,
+				accountSummaries: undefined,
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -238,6 +368,18 @@ const baseSelectors = {
 
 		return true;
 	} ),
+
+	/**
+	 * Determines whether the account selection process has finished or not.
+	 *
+	 * @since 1.119.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} Initially undefined, TRUE if the account selection process has finished, otherwise FALSE.
+	 */
+	hasFinishedSelectingAccount( state ) {
+		return state.finishedSelectingAccount;
+	},
 };
 
 const store = Data.combineStores(

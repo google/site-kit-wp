@@ -32,7 +32,6 @@ import {
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
-import { isFeatureEnabled } from '../../features';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -81,24 +80,22 @@ export const registerWidgets = ( widgets ) => {
 		]
 	);
 
-	if ( isFeatureEnabled( 'keyMetrics' ) ) {
-		/*
-		 * Key metrics widgets.
-		 */
-		widgets.registerWidget(
-			KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-			{
-				Component: PopularKeywordsWidget,
-				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 2,
-				wrapWidget: false,
-				modules: [ 'search-console' ],
-				isActive: ( select ) =>
-					select( CORE_USER ).isKeyMetricActive(
-						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
-					),
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-	}
+	/*
+	 * Key metrics widgets.
+	 */
+	widgets.registerWidget(
+		KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+		{
+			Component: PopularKeywordsWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 };

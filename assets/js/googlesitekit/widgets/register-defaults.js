@@ -35,7 +35,6 @@ import {
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import { CORE_SITE } from '../datastore/site/constants';
-import { isFeatureEnabled } from '../../features';
 import {
 	KeyMetricsSetupCTAWidget,
 	ChangeMetricsLink,
@@ -256,110 +255,99 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
 	);
 
-	if ( isFeatureEnabled( 'keyMetrics' ) ) {
-		widgetsAPI.registerWidget(
-			'keyMetricsSetupCTA',
-			{
-				Component: KeyMetricsSetupCTAWidget,
-				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-				priority: 1,
-				wrapWidget: false,
-				modules: [ 'search-console' ],
-				isActive: ( select ) =>
-					select( CORE_USER ).isAuthenticated() &&
-					select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
+	widgetsAPI.registerWidget(
+		'keyMetricsSetupCTA',
+		{
+			Component: KeyMetricsSetupCTAWidget,
+			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isAuthenticated() &&
+				select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	/**
+	 * This widget is only shown if the GA4 module is not connected,
+	 * AND if the user has four KMW tiles dependent on GA4.
+	 * If the user has selected less than four KMW tiles dependent on GA4,
+	 * we show the `ConnectGA4CTATileWidget` instead.
+	 */
+	widgetsAPI.registerWidget(
+		'keyMetricsConnectGA4All',
+		{
+			Component: ConnectGA4CTAWidget,
+			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
+				const isGA4Connected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+				if ( isGA4Connected || ! Array.isArray( keyMetrics ) ) {
+					return false;
+				}
+				const kmAnalyticsWidgetCount = keyMetrics.filter(
+					( keyMetric ) => keyMetricsGA4Widgets.includes( keyMetric )
+				).length;
+
+				return kmAnalyticsWidgetCount > 3;
 			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 
-		/**
-		 * This widget is only shown if the GA4 module is not connected,
-		 * AND if the user has four KMW tiles dependent on GA4.
-		 * If the user has selected less than four KMW tiles dependent on GA4,
-		 * we show the `ConnectGA4CTATileWidget` instead.
-		 */
-		widgetsAPI.registerWidget(
-			'keyMetricsConnectGA4All',
-			{
-				Component: ConnectGA4CTAWidget,
-				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-				priority: 1,
-				wrapWidget: false,
-				modules: [ 'search-console' ],
-				isActive: ( select ) => {
-					const keyMetrics = select( CORE_USER ).getKeyMetrics();
-					const isGA4Connected =
-						select( CORE_MODULES ).isModuleConnected(
-							'analytics-4'
-						);
+	/**
+	 * Since we allow selecting at least two and at most four key
+	 * metrics, we're adding two instances of the same AddMetricCTATile
+	 * widget. Using the isActive property, we'll show one
+	 * AddMetricCTATile widget if the user has selected three
+	 * key metrics, or both if they have selected two key metrics.
+	 */
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricFirst',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if ( isGA4Connected || ! Array.isArray( keyMetrics ) ) {
-						return false;
-					}
-					const kmAnalyticsWidgetCount = keyMetrics.filter(
-						( keyMetric ) =>
-							keyMetricsGA4Widgets.includes( keyMetric )
-					).length;
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 2 ) {
+					return false;
+				}
 
-					return kmAnalyticsWidgetCount > 3;
-				},
+				return keyMetrics.length < 4;
 			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 
-		/**
-		 * Since we allow selecting at least two and at most four key
-		 * metrics, we're adding two instances of the same AddMetricCTATile
-		 * widget. Using the isActive property, we'll show one
-		 * AddMetricCTATile widget if the user has selected three
-		 * key metrics, or both if they have selected two key metrics.
-		 */
-		widgetsAPI.registerWidget(
-			'keyMetricsAddMetricFirst',
-			{
-				Component: AddMetricCTATile,
-				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
-				wrapWidget: false,
-				modules: [ 'search-console' ],
-				isActive: ( select ) => {
-					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricSecond',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if (
-						! Array.isArray( keyMetrics ) ||
-						keyMetrics.length < 2
-					) {
-						return false;
-					}
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 2 ) {
+					return false;
+				}
 
-					return keyMetrics.length < 4;
-				},
+				return keyMetrics.length < 3;
 			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-
-		widgetsAPI.registerWidget(
-			'keyMetricsAddMetricSecond',
-			{
-				Component: AddMetricCTATile,
-				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
-				wrapWidget: false,
-				modules: [ 'search-console' ],
-				isActive: ( select ) => {
-					const keyMetrics = select( CORE_USER ).getKeyMetrics();
-
-					if (
-						! Array.isArray( keyMetrics ) ||
-						keyMetrics.length < 2
-					) {
-						return false;
-					}
-
-					return keyMetrics.length < 3;
-				},
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-	}
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 }

@@ -19,7 +19,9 @@
  */
 import CircularProgress from './CircularProgress';
 
-const Template = ( args ) => <CircularProgress { ...args } />;
+function Template( args ) {
+	return <CircularProgress { ...args } />;
+}
 
 export const ColorPrimary = Template.bind( {} );
 ColorPrimary.storyName = 'Color - Primary';
@@ -48,33 +50,35 @@ SizeSmall.args = {
 	size: 14,
 };
 
-export const VRTStory = () => (
-	<div>
-		<h3>Colors</h3>
-		<div style={ { marginBottom: '50px' } }>
-			<h5>Primary Color</h5>
-			<CircularProgress color="primary" />
-		</div>
-		<div style={ { marginBottom: '50px' } }>
-			<h5>Secondary Color</h5>
-			<CircularProgress color="secondary" />
-		</div>
-
-		<h3>Sizes</h3>
-		<div style={ { marginBottom: '50px' } }>
-			<h5>Big (40px)</h5>
-			<CircularProgress size={ 40 } />
-		</div>
-		<div style={ { marginBottom: '50px' } }>
-			<h5>Medium (24px)</h5>
-			<CircularProgress size={ 24 } />
-		</div>
+export function VRTStory() {
+	return (
 		<div>
-			<h5>Small (14px)</h5>
-			<CircularProgress size={ 14 } />
+			<h3>Colors</h3>
+			<div style={ { marginBottom: '50px' } }>
+				<h5>Primary Color</h5>
+				<CircularProgress color="primary" />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<h5>Secondary Color</h5>
+				<CircularProgress color="secondary" />
+			</div>
+
+			<h3>Sizes</h3>
+			<div style={ { marginBottom: '50px' } }>
+				<h5>Big (40px)</h5>
+				<CircularProgress size={ 40 } />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<h5>Medium (24px)</h5>
+				<CircularProgress size={ 24 } />
+			</div>
+			<div>
+				<h5>Small (14px)</h5>
+				<CircularProgress size={ 14 } />
+			</div>
 		</div>
-	</div>
-);
+	);
+}
 
 VRTStory.scenario = {
 	label: 'Global/CircularProgress',

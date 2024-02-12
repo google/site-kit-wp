@@ -555,24 +555,16 @@ const baseSelectors = {
 	isLoadingWebDataStreams: createRegistrySelector(
 		( select ) =>
 			( state, { hasModuleAccess } ) => {
-				const accountID = select( MODULES_ANALYTICS ).getAccountID();
+				if (
+					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getAccountSummaries'
+					)
+				) {
+					return true;
+				}
 
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-				const loadedAccounts =
-					select( MODULES_ANALYTICS ).hasFinishedResolution(
-						'getAccounts'
-					);
-
-				const loadedProperties =
-					hasModuleAccess !== false
-						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-								'getProperties',
-								[ accountID ]
-						  )
-						: true;
-
 				const loadedWebDataStreams =
 					isValidPropertyID( propertyID ) && hasModuleAccess !== false
 						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -581,20 +573,27 @@ const baseSelectors = {
 						  )
 						: true;
 
-				const finishedSelectingAccount =
+				if ( ! loadedWebDataStreams ) {
+					return true;
+				}
+
+				if (
 					select(
 						MODULES_ANALYTICS
-					).hasFinishedSelectingAccount() !== false;
+					).hasFinishedSelectingAccount() === false
+				) {
+					return true;
+				}
 
-				const isMatchingAccountProperty =
-					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty();
+				if (
+					select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty()
+				) {
+					return true;
+				}
 
-				return (
-					isMatchingAccountProperty ||
-					! loadedAccounts ||
-					! loadedProperties ||
-					! loadedWebDataStreams ||
-					! finishedSelectingAccount
+				return select( MODULES_ANALYTICS_4 ).isResolving(
+					'getProperty',
+					[ propertyID ]
 				);
 			}
 	),

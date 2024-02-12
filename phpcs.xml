@@ -89,6 +89,7 @@
 	<!-- Third-party and generated code -->
 	<exclude-pattern>dist/*</exclude-pattern>
 	<exclude-pattern>node_modules/*</exclude-pattern>
+	<exclude-pattern>packages/apiclient-services-adsenselinks/*</exclude-pattern>
 	<exclude-pattern>third-party/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 

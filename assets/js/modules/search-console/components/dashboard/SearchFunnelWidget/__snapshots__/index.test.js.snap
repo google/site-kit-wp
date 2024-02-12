@@ -164,7 +164,11 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
           rel="noopener noreferrer"
           target="_blank"
         >
-          Search Console
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
           <span
             class="googlesitekit-icon-wrapper"
             style="margin-left: 5px;"
@@ -392,7 +396,7 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
                 <p
                   class="googlesitekit-analytics-cta--description"
                 >
-                  See how many people visit your site from Search and track how you’re achieving your goals.
+                  See how many people visit your site from Search and track how you’re achieving your goals
                 </p>
                 <button
                   class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
@@ -424,7 +428,11 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
           rel="noopener noreferrer"
           target="_blank"
         >
-          Search Console
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
           <span
             class="googlesitekit-icon-wrapper"
             style="margin-left: 5px;"

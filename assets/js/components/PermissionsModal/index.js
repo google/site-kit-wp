@@ -24,7 +24,7 @@ import AuthenticatedPermissionsModal from './AuthenticatedPermissionsModal';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
-const PermissionsModal = () => {
+function PermissionsModal() {
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -34,6 +34,6 @@ const PermissionsModal = () => {
 	}
 
 	return null;
-};
+}
 
 export default PermissionsModal;

@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -57,9 +58,9 @@ const widgetComponentProps = getWidgetComponentProps(
 	'analyticsAllTraffic-widget'
 );
 
-const Template = () => (
-	<DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />
-);
+function Template() {
+	return <DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />;
+}
 
 const baseAllTrafficOptions = {
 	startDate: '2020-12-09',
@@ -330,7 +331,14 @@ export default {
 					active: true,
 					connected: true,
 				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
 			] );
+
+			provideModuleRegistrations( registry );
 
 			// Set some site information.
 			provideSiteInfo( registry );

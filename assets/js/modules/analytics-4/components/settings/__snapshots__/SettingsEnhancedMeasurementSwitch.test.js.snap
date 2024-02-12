@@ -19,7 +19,11 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -32,7 +36,7 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
 </div>
 `;
 
-exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch disabled when hasAnalytics4Access is false 1`] = `
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch disabled when hasModuleAccess is false 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
@@ -80,7 +84,11 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -132,7 +140,11 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -145,7 +157,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
 </div>
 `;
 
-exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when properties are loading 1`] = `
+exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the switch in the loading state when property summaries are loading 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"
@@ -184,7 +196,11 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -236,7 +252,11 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -296,7 +316,11 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -356,7 +380,11 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -416,7 +444,11 @@ exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create sh
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"
@@ -476,7 +508,11 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
         rel="noopener noreferrer"
         target="_blank"
       >
-        Learn more
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
         <span
           class="googlesitekit-icon-wrapper"
           style="margin-left: 5px;"

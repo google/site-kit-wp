@@ -32,18 +32,14 @@ import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
-import { useFeature } from '../../hooks/useFeature';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
-	const keyMetricsEnabled = useFeature( 'keyMetrics' );
-
 	const showKeyMetricsSettings = useSelect(
 		( select ) =>
-			keyMetricsEnabled &&
 			select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
 			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData() === false

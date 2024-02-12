@@ -95,7 +95,7 @@ export default function ProfileNameTextField() {
 				helperText={
 					existingProfile &&
 					__(
-						'A view with this name already exists.',
+						'A view with this name already exists',
 						'google-site-kit'
 					)
 				}
@@ -114,7 +114,7 @@ export default function ProfileNameTextField() {
 
 			<p>
 				{ __(
-					'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics.',
+					'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics',
 					'google-site-kit'
 				) }
 			</p>

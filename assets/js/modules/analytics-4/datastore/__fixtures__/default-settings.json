@@ -7,5 +7,7 @@
   "googleTagID": "",
   "googleTagAccountID": "",
   "googleTagContainerID": "",
-  "propertyCreateTime": 0
+  "propertyCreateTime": 0,
+  "adSenseLinked": false,
+  "adSenseLinkedLastSyncedAt": 0
 }
