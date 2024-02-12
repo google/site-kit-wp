@@ -10,6 +10,10 @@
 
 namespace Google\Site_Kit\Core\Admin;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Storage\Transients;
+
 /**
  * Class representing a WordPress admin column.
  *
@@ -27,7 +31,86 @@ class Admin_Columns {
 	 */
 	protected $args = array();
 
-	// @TODO add construct that will accept $allowed_post_types
+
+	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
+	 * Module instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Module
+	 */
+	protected $module;
+
+	/**
+	 * Transients instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Transients
+	 */
+	protected $transients;
+
+	/**
+	 * Columns_Data instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Columns_Data
+	 */
+	protected $columns_data;
+
+	/**
+	 * Allowed post types array.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $allowed_post_types;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context    $context    Plugin context.
+	 * @param Module     $module     Module instance.
+	 * @param Transients $transients Optional. Transient API instance. Default is a new instance.
+	 * @param array      $allowed_post_types Optional. Post types slugs array on which custom columns should be shown.
+	 */
+	public function __construct(
+		Context $context,
+		Module $module,
+		Transients $transients = null,
+		$allowed_post_types = array( 'post', 'page' )
+	) {
+		$this->context    = $context;
+		$this->module     = $module;
+		$this->transients = $transients ?: new Transients( $this->context );
+
+		/**
+		 * Allowed post types for which to show column data.
+		 *
+		 * Filters the array of allowed post types on which column data will be included.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $allowed_post_types Array of allowed post types.
+		 */
+		$this->allowed_post_types = apply_filters( "googlesitekit_{$module->slug}_column_data_allowed_post_types", $allowed_post_types );
+
+		$this->columns_data = new Columns_Data(
+			$this->context,
+			$this->module,
+			$this,
+			$this->transients
+		);
+	}
+
 
 	/**
 	 * Registers the admin column.
@@ -55,12 +138,20 @@ class Admin_Columns {
 	public function register() {
 		array_walk(
 			$this->args,
-			function( $column_data ) {
+			function( $args ) {
 				foreach ( $this->allowed_post_types as $key => $post_type ) {
-					( new Admin_Column( $column_data ) )->register();
+					$admin_column = new Admin_Column(
+						$post_type,
+						array_keys( $args )[0],
+						$args,
+						$this->columns_data
+					);
+					$admin_column->register();
 				}
 			}
 		);
+
+		$this->columns_data->register();
 	}
 
 	/**
@@ -70,5 +161,14 @@ class Admin_Columns {
 	 */
 	public function get_columns_definition() {
 		return $this->args;
+	}
+
+	/**
+	 * Gets the allowed post types array.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function get_allowed_post_types() {
+		return $this->allowed_post_types;
 	}
 }

@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules;
 
 use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Admin\Admin_Columns;
+use Google\Site_Kit\Core\Admin\Columns_Data;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
@@ -148,6 +150,14 @@ final class Analytics_4 extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		$admin_columns = new Admin_Columns( $this->context, $this, $this->transients, array( 'post' ) );
+		$admin_columns->add(
+			'views',
+			__( 'Views', 'google-site-kit' ),
+			'screenPageViews'
+		);
+		$admin_columns->register();
 
 		$synchronize_property = new Synchronize_Property(
 			$this,

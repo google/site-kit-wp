@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Storage\Transients;
 use WP_Query;
 
-
 /**
  * Class to handle addint admin columns data.
  *
@@ -71,30 +70,23 @@ class Columns_Data {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context    $context      Plugin context.
-	 * @param Module     $module       Module instance.
-	 * @param Transients $transients   Optional. Transient API instance. Default is a new instance.
+	 * @param Context       $context    Plugin context.
+	 * @param Module        $module     Module instance.
+	 * @param Admin_Columns $columns    Admin_Columns instance.
+	 * @param Transients    $transients Optional. Transient API instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Module $module,
+		Admin_Columns $columns,
 		Transients $transients = null
 	) {
 		$this->context    = $context;
 		$this->module     = $module;
 		$this->transients = $transients ?: new Transients( $this->context );
-		$this->columns    = new Admin_Columns();
+		$this->columns    = $columns;
 
-		/**
-		 * Allowed post types for which to show column data.
-		 *
-		 * Filters the array of allowed post types on which column data will be included.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param array $allowed_post_types Array of allowed post types.
-		 */
-		$this->allowed_post_types = apply_filters( "googlesitekit_{$this->module->slug}_column_data_allowed_post_types", array( 'post', 'page' ) );
+		$this->allowed_post_types = $columns->get_allowed_post_types();
 	}
 
 	/**
@@ -106,15 +98,6 @@ class Columns_Data {
 		if ( ! $this->module->is_connected() || ! is_admin() ) {
 			return;
 		}
-
-		// @TODO extract this to a wrapper method add(..)
-		$this->columns->add(
-			'views',
-			esc_html__( 'Views', 'google-site-kit' ),
-			'pageScreenViews',
-			array( 'post', 'page' )
-		);
-		$this->columns->register();
 
 		add_action(
 			'pre_get_posts',
@@ -131,7 +114,7 @@ class Columns_Data {
 					$this->allowed_post_types
 				);
 
-				// Check if this post type is allowed.
+				// Check if this post type is not allowed to return early.
 				if ( $screen && ! in_array( $screen->id, $allowed_edit_screens, true ) ) {
 					return;
 				}
@@ -144,6 +127,20 @@ class Columns_Data {
 				);
 			}
 		);
+	}
+
+	/**
+	 * Makes a report request if transient is not present, or mismatches current
+	 * posts in admin posts list page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Query $query WP_Query instance.
+	 */
+	public function request_columns_data( $query ) {
+		// @TODO adapt `maybe_request_columns_data` method to work with client side.
+		// It will accept post_type, post ids array and column_key then rparse that into the data array
+		// and return back to the cient to then append the data in the span[data-id] elements.
 	}
 
 	/**
@@ -177,9 +174,9 @@ class Columns_Data {
 
 		$transient_key    = $this->get_transient_key( $current_post_type );
 		$stored_data      = $this->transients->get( $transient_key );
-		$make_new_request = empty( $existing_data ) ? true : false;
+		$make_new_request = empty( $stored_data ) ? true : false;
 
-		// If current posts in the admin posts view have changed from the the ones
+		// If current posts in the admin posts view have changed from the ones
 		// previously stored requesting new data is needed.
 		if ( ! empty( $stored_data ) && array_diff( array_keys( $current_posts_data ), array_keys( $stored_data ) ) ) {
 			$make_new_request = true;
@@ -189,7 +186,7 @@ class Columns_Data {
 			$paths = wp_list_pluck( $current_posts_data, 'path' );
 			$data  = $this->get_report_data( $paths, $columns_definition['metrics'] );
 
-			$this->process_report_data( $data, $columns_definition['columns'] );
+			$this->process_report_data( $data, $current_posts_data, $transient_key );
 		}
 	}
 
@@ -220,12 +217,12 @@ class Columns_Data {
 					'name' => 'pagePath',
 				),
 			),
-			'startDate'        => gmdate( 'Y-m-d' ),
-			'endDate'          => gmdate( 'Y-m-d', strtotime( '-28 days' ) ),
+			'startDate'        => gmdate( 'Y-m-d', strtotime( '-28 days' ) ),
+			'endDate'          => gmdate( 'Y-m-d' ),
 			'dimensionFilters' => array(
 				'pagePath' => array(
 					'filterType' => 'inListFilter',
-					'value'      => $paths,
+					'value'      => array_values( $paths ),
 				),
 			),
 			'limit'            => '20', // @TODO pull this dynamically from user option
@@ -239,15 +236,29 @@ class Columns_Data {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param mixed $data    Data if response is successful, or WP_Error if it failed.
-	 * @param array $columns The columns that are included in the post's data.
+	 * @param mixed $data               Data if response is successful, or WP_Error if it failed.
+	 * @param array $current_posts_data Inital posts data for the currently visible posts.
+	 * @param array $transient_key      Transient key.
 	 */
-	protected function process_report_data( $data, $columns ) {
+	protected function process_report_data( $data, $current_posts_data, $transient_key ) {
 		if ( is_wp_error( $data ) || ! is_wp_error( $data ) && empty( $data->rowCount ) ) { // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			return;
 		}
 
-		$data->totals;
+		foreach ( $data->rows as $row ) {
+			$path  = $row->dimensionValues[0]['value'];
+			$value = $row->metricValues[0]['value'];
+
+			foreach ( $current_posts_data as $post_id => $post_data ) {
+				if ( $path === $post_data['path'] ) {
+					$current_posts_data[ $post_id ]['views'] = $value;
+					break; // Stop the loop once we've found and updated the match.
+				}
+			}
+		}
+
+		// Data is updated once in 24h in analytics, so we can cache results for that value.
+		$this->transients->set( $transient_key, $current_posts_data, 24 * HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -283,6 +294,26 @@ class Columns_Data {
 	}
 
 	/**
+	 * Gets the stored report data from transient.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Transient key.
+	 */
+	public function get_data() {
+		global $typenow;
+
+		$transient_key = $this->get_transient_key( $typenow );
+		$stored_data   = $this->transients->get( $transient_key );
+
+		if ( empty( $stored_data ) ) {
+			return null;
+		}
+
+		return $stored_data;
+	}
+
+	/**
 	 * Get the transient key.
 	 *
 	 * @since n.e.x.t
@@ -291,6 +322,8 @@ class Columns_Data {
 	 * @return string Transient key.
 	 */
 	protected function get_transient_key( $post_type ) {
+		// It does not include column key, as it is grouped under post type, with
+		// keys in the data array representing the column value.
 		return "googlesitekit_{$this->module->slug}_{$post_type}_columns_data";
 	}
 
