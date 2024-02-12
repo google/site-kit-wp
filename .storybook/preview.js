@@ -111,6 +111,8 @@ export const decorators = [
 export const parameters = {
 	layout: 'fullscreen',
 	async puppeteerTest( page ) {
+		await page.waitForTimeout( 50 );
+
 		expect(
 			await page.$eval( 'body', ( el ) =>
 				el.classList.contains( 'sb-show-errordisplay' )

@@ -1,7 +1,7 @@
 /**
- * Reset Button stories.
+ * INP Learn More Link component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,26 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import { storiesOf } from '@storybook/react';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import ResetButton from '../assets/js/components/ResetButton';
-import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import Link from '../../../../components/Link';
 
-storiesOf( 'Global', module ).add( 'Reset Button', () => {
-	const setupRegistry = ( registry ) => {
-		provideSiteInfo( registry );
-	};
+export default function INPLearnMoreLink() {
 	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<ResetButton>Reset Site Kit Button</ResetButton>
-		</WithTestRegistry>
+		<Link
+			href="https://web.dev/inp-cwv/"
+			external
+			aria-label={ __(
+				'Learn more about INP replacing FID.',
+				'google-site-kit'
+			) }
+		>
+			{ __( 'Learn more', 'google-site-kit' ) }
+		</Link>
 	);
-} );
+}

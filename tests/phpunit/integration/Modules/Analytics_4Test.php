@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
-use Cassandra\Type\Custom;
 use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -38,11 +37,15 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaListAudiencesResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
@@ -136,6 +139,8 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'web_stories_story_head' );
 
 		$this->analytics->register();
 
@@ -147,6 +152,10 @@ class Analytics_4Test extends TestCase {
 			),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
+
+		// Test actions for tracking opt-out are added.
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'web_stories_story_head' ) );
 	}
 
 	/**
@@ -241,6 +250,97 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$analytics = new Analytics_4( $context );
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
+		add_filter(
+			'map_meta_cap',
+			function( $caps, $cap ) {
+				if ( Permissions::MANAGE_OPTIONS === $cap ) {
+					return array( 'manage_options' );
+				}
+				return $caps;
+			},
+			99,
+			2
+		);
+
+		$dashboard_url               = $context->admin_url();
+		$account_ticked_id_transient = Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
+
+		$_GET['gatoscallback']   = '1';
+		$_GET['accountTicketId'] = '123456';
+
+		$class  = new \ReflectionClass( Analytics_4::class );
+		$method = $class->getMethod( 'handle_provisioning_callback' );
+		$method->setAccessible( true );
+
+		// Results in an error for a mismatch (or no account ticket ID stored from before at all).
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
+				$redirect->get_location()
+			);
+		}
+
+		// Results in an error when there is an error parameter.
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['error'] = 'user_cancel';
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "user_cancel" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'error_code', 'user_cancel', $dashboard_url ),
+				$redirect->get_location()
+			);
+			// Ensure transient was deleted by the method despite error.
+			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
+		}
+		unset( $_GET['error'] );
+
+		// Intercept Google API requests to avoid failures.
+		FakeHttp::fake_google_http_handler(
+			$analytics->get_client()
+		);
+
+		// Results in an dashboard redirect on success, with new data being stored.
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId'] = '12345678';
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'page'         => 'googlesitekit-dashboard',
+						'notification' => 'authentication_success',
+						'slug'         => 'analytics',
+					),
+					admin_url( 'admin.php' )
+				),
+				$redirect->get_location()
+			);
+
+			// Ensure transient was deleted by the method.
+			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
+			// Ensure settings were set correctly.
+			$settings = $analytics->get_settings()->get();
+
+			$this->assertEquals( $_GET['accountId'], $settings['accountID'] );
+			$this->assertEquals( $admin_id, $settings['ownerID'] );
+		}
+	}
+
+	public function test_provision_property_webdatastream() {
 		$account_id              = '12345678';
 		$property_id             = '1001';
 		$webdatastream_id        = '2001';
@@ -312,8 +412,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
-
 		$this->analytics->register();
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
@@ -342,7 +440,9 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
+		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
+		$method->setAccessible( true );
+		$method->invoke( $this->analytics, $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -368,7 +468,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback__with_failing_container_lookup() {
+	public function test_provision_property_webdatastream__with_failing_container_lookup() {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -457,8 +557,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
-
 		$this->analytics->register();
 		// Here we're providing all the required scopes which is necessary to make sure
 		// the Google API request is made now, for the purpose of testing an error.
@@ -489,7 +587,9 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
+		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
+		$method->setAccessible( true );
+		$method->invoke( $this->analytics, $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertArrayIntersection(
 			array(
@@ -502,7 +602,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback__with_enhancedMeasurement_streamEnabled() {
+	public function test_provision_property_webdatastream__with_enhancedMeasurement_streamEnabled() {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
@@ -577,13 +677,11 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
-
 		$this->analytics->register();
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
 				$this->authentication->get_oauth_client()->get_required_scopes(),
-				array( Analytics::EDIT_SCOPE )
+				array( Analytics_4::EDIT_SCOPE )
 			)
 		);
 
@@ -612,7 +710,10 @@ class Analytics_4Test extends TestCase {
 
 		$account_ticket = new Analytics\Account_Ticket();
 		$account_ticket->set_enhanced_measurement_stream_enabled( true );
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, $account_ticket );
+
+		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
+		$method->setAccessible( true );
+		$method->invoke( $this->analytics, $account_id, $account_ticket );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -687,12 +788,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 		// Grant required scopes.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
 		$data = array(
 			'displayName'    => 'test account name',
@@ -710,7 +806,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
 		$this->assertEquals( "Request parameter is empty: $required_param.", $response->get_error_message() );
 		// Ensure transient is not set in the event of a failure.
-		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
+		$this->assertFalse( get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
 		// Ensure remote request was not made.
 		$this->assertNull( $provision_account_ticket_request );
 	}
@@ -762,12 +858,7 @@ class Analytics_4Test extends TestCase {
 		// Assert that the Analytics edit scope is required.
 		$this->assertWPError( $response );
 		$this->assertEquals( 'missing_required_scopes', $response->get_error_code() );
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
 
@@ -782,7 +873,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri() );
 
 		// Assert transient is set with params.
-		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
 		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'] );
 		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
 		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
@@ -818,26 +909,26 @@ class Analytics_4Test extends TestCase {
 		return array(
 			'with analytics and tag manager scopes granted' => array(
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
 			'with analytics scope granted' => array(
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 				),
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 				),
 			),
 			'with no scopes granted'       => array(
 				array(),
 				array(
-					Analytics::READONLY_SCOPE,
+					Analytics_4::READONLY_SCOPE,
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
@@ -861,6 +952,23 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$this->assertTrue( $analytics->is_connected() );
+	}
+
+	public function test_data_available_reset_on_property_change() {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '987654321',
+			)
+		);
+		$this->analytics->set_data_available();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '887654321',
+			)
+		);
+
+		$this->assertFalse( $this->analytics->is_data_available() );
 	}
 
 	public function test_data_available_reset_on_measurement_id_change() {
@@ -988,6 +1096,21 @@ class Analytics_4Test extends TestCase {
 				'custom-dimension-data-available',
 			),
 			$this->analytics->get_datapoints()
+		);
+	}
+
+	public function test_get_debug_fields() {
+		$this->assertEqualSets(
+			array(
+				'analytics_4_account_id',
+				'analytics_4_property_id',
+				'analytics_4_web_data_stream_id',
+				'analytics_4_measurement_id',
+				'analytics_4_use_snippet',
+				'analytics_4_available_custom_dimensions',
+				'analytics_4_ads_conversion_id',
+			),
+			array_keys( $this->analytics->get_debug_fields() )
 		);
 	}
 
@@ -1395,11 +1518,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		$this->analytics->get_data(
 			'report',
@@ -1448,11 +1567,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		$this->analytics->get_data(
 			'report',
@@ -1500,11 +1615,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		$this->analytics->get_data(
 			'report',
@@ -1553,11 +1664,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		$this->analytics->get_data(
 			'report',
@@ -1606,11 +1713,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		$this->analytics->get_data(
 			'report',
@@ -1703,11 +1806,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		// Test the invalid character cases.
 		// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
@@ -1774,11 +1873,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		// Test the invalid character cases.
 		// Please note this is not a comprehensive list of invalid characters, as that would be a very long list. This is just a representative sample.
@@ -1948,11 +2043,7 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		// Fetch conversion events.
 		$data = $this->analytics->get_data(
@@ -1978,12 +2069,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_get_enhanced_measurement_settings__required_params() {
 		// Grant READONLY_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::READONLY_SCOPE );
 
 		$data = $this->analytics->get_data(
 			'enhanced-measurement-settings',
@@ -2020,12 +2106,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Grant READONLY_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::READONLY_SCOPE );
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
@@ -2112,12 +2193,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Grant EDIT_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
 		// Call set_data with no parameters.
 		$data = $this->analytics->set_data(
@@ -2184,13 +2260,7 @@ class Analytics_4Test extends TestCase {
 			$this->create_enhanced_measurement_fake_http_handler( $property_id, $web_data_stream_id )
 		);
 		$this->analytics->register();
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
 		$response = $this->analytics->set_data(
 			'enhanced-measurement-settings',
@@ -2241,11 +2311,7 @@ class Analytics_4Test extends TestCase {
 	public function test_create_custom_dimension__required_params() {
 		$property_id = '123456789';
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		// Call set_data without EDIT_SCOPE.
 		$data = $this->analytics->set_data(
@@ -2276,12 +2342,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Grant EDIT_SCOPE so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
 		// Call set_data with no parameters.
 		$data = $this->analytics->set_data(
@@ -2347,18 +2408,9 @@ class Analytics_4Test extends TestCase {
 	public function test_create_custom_dimension() {
 		$property_id = '123456789';
 
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-		$this->analytics->register();
+		$this->fake_handler_and_invoke_register_method( $property_id );
 
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::EDIT_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
 		$custom_dimension = array(
 			'description'                => 'Test Custom Dimension Description',
@@ -2415,13 +2467,7 @@ class Analytics_4Test extends TestCase {
 			$this->create_sync_custom_dimensions_fake_http_handler( $property_id )
 		);
 		$this->analytics->register();
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$this->authentication->get_oauth_client()->get_required_scopes(),
-				(array) Analytics::READONLY_SCOPE
-			)
-		);
+		$this->grant_scope( Analytics_4::READONLY_SCOPE );
 
 		$response = $this->analytics->set_data(
 			'sync-custom-dimensions',
@@ -2558,6 +2604,21 @@ class Analytics_4Test extends TestCase {
 						200,
 						array(),
 						json_encode( $custom_dimension )
+					);
+
+				case "/v1alpha/properties/$property_id/audiences":
+					$audience = new GoogleAnalyticsAdminV1alphaAudience();
+					$audience->setName( "properties/$property_id/audiences/1" );
+					$audience->setDisplayName( 'Test' );
+					$audience->setDescription( 'Description' );
+
+					$audiences = new GoogleAnalyticsAdminV1alphaListAudiencesResponse();
+					$audiences->setAudiences( array( $audience ) );
+
+					return new Response(
+						200,
+						array(),
+						json_encode( $audiences )
 					);
 
 				default:
@@ -2763,32 +2824,158 @@ class Analytics_4Test extends TestCase {
 		$this->set_user_access_token( $user_id, $access_token );
 	}
 
-	public function test_tracking_opt_out_snippet() {
-		$this->analytics->register();
+	/**
+	 * @dataProvider tracking_disabled_provider
+	 *
+	 * @param array $settings
+	 * @param bool $logged_in
+	 * @param \Closure $assert_opt_out_presence
+	 * @param bool $is_content_creator
+	 */
+	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+		wp_styles(); // Prevent potential ->queue of non-object error.
 
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet is not output when both measurement ID and google tag ID are empty.
-		$this->assertEmpty( $snippet_html );
+		// Remove irrelevant script from throwing errors in CI from readfile().
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 
-		$settings = array(
-			'measurementID' => 'G-12345678',
+		// Set the current user (can be 0 for no user)
+		$role = $is_content_creator ? 'administrator' : 'subscriber';
+		$user = $logged_in ?
+			$this->factory()->user->create( array( 'role' => $role ) )
+			: 0;
+		wp_set_current_user( $user );
+
+		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->get_settings()->set( $settings );
+
+		remove_all_actions( 'template_redirect' );
+		$analytics->register();
+		do_action( 'template_redirect' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+		// Confidence check.
+		$this->assertNotEmpty( $head_html );
+
+		// Whether or not tracking is disabled should not affect the output of the GA4 snippet.
+		if ( $settings['measurementID'] && $settings['googleTagID'] && $settings['useSnippet'] ) {
+			$this->assertStringContainsString( "id={$settings['googleTagID']}", $head_html );
+		} elseif ( $settings['measurementID'] && ! $settings['googleTagID'] && $settings['useSnippet'] ) {
+			$this->assertStringContainsString( "id={$settings['measurementID']}", $head_html );
+		} else {
+			$this->assertStringNotContainsString( "id={$settings['googleTagID']}", $head_html );
+		}
+
+		if ( ! $settings['measurementID'] ) {
+			$this->assertStringNotContainsString( 'ga-disable', $head_html );
+		}
+
+		if ( $is_tracking_active ) {
+			// When tracking is active, the opt out snippet should not be present.
+			$this->assertStringNotContainsString( 'ga-disable', $head_html );
+
+			// When tracking is active, the `googlesitekit_analytics_tracking_opt_out` action should not be called.
+			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+		} else {
+			if ( empty( $settings['measurementID'] ) ) {
+				// When measurementID is not set, the opt out snippet should not be present.
+				$this->assertStringNotContainsString( 'ga-disable', $head_html );
+			} else {
+				// When tracking is disabled and measurementID is set, the opt out snippet should be present.
+				// Ensure the opt-out snippet contains the configured measurement ID (not GT tag) when it is set.
+				$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $head_html );
+			}
+
+			// When tracking is disabled, the `googlesitekit_analytics_tracking_opt_out` action should be called.
+			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+		}
+	}
+
+	public function tracking_disabled_provider() {
+		$base_settings = array(
+			'accountID'        => '12345678',
+			'propertyID'       => '987654321',
+			'webDataStreamID'  => '1234567890',
+			'measurementID'    => 'G-12345678',
+			'googleTagID'      => 'GT-12345678',
+			'useSnippet'       => true,
+			'trackingDisabled' => array( 'loggedinUsers' ),
 		);
-		$this->analytics->get_settings()->merge( $settings );
 
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet contains the configured measurement ID when it is set and the google tag ID is empty.
-		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
-
-		$settings = array(
-			'measurementID' => 'G-12345678',
-			'googleTagID'   => 'GT-12345678',
+		return array(
+			// Tracking should be active by default for non-logged-in users.
+			array(
+				$base_settings,
+				false,
+				true,
+			),
+			// Tracking is not active for non-logged-in users if snippet is disabled,
+			// but opt-out is not added because tracking is not disabled.
+			array(
+				array_merge( $base_settings, array( 'useSnippet' => false ) ),
+				false,
+				true,
+			),
+			// Tracking is not active for logged-in users by default (opt-out expected).
+			array(
+				$base_settings,
+				true,
+				false,
+			),
+			// Tracking is active for logged-in users if enabled via settings.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
+				true,
+				true,
+			),
+			// Tracking is not active for content creators if disabled via settings.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'contentCreators' ) ) ),
+				true,
+				false,
+				true,
+			),
+			// Tracking is still active for guests if disabled for logged in users.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				false,
+				true,
+			),
+			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting)
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				true,
+				false,
+				true,
+			),
+			// Analytics is enabled and tracking is disabled for logged-in users but property is not configured
+			array(
+				array_merge(
+					$base_settings,
+					array(
+						'trackingDisabled' => array( 'loggedinUsers' ),
+						'measurementID'    => '',
+					)
+				),
+				true,
+				false,
+				true,
+			),
+			// Analytics is enabled but not configured.
+			array(
+				array_merge( $base_settings, array( 'measurementID' => '' ) ),
+				false,
+				true,
+			),
+			// Ensure the opt-out snippet contains the configured measurement ID when it is set and the google tag ID is empty.
+			array(
+				array_merge( $base_settings, array( 'googleTagID' => '' ) ),
+				false,
+				true,
+			),
 		);
-
-		$this->analytics->get_settings()->merge( $settings );
-
-		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
-		// Ensure the snippet contains the configured measurement ID (not GT tag) when it is set.
-		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
 	}
 
 	public function test_register_allow_tracking_disabled() {
@@ -3134,6 +3321,166 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'ca-pub-12345', $adsense_link->getAdClientCode() );
 	}
 
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_audiences( $access_token ) {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		// Fetch conversion events.
+		$data = $this->analytics->get_data(
+			'audiences'
+		);
+
+		$this->assertNotWPError( $data );
+
+		// Verify the audiences are returned by checking an audience name.
+		$this->assertEquals( "properties/$property_id/audiences/1", $data[0]['name'] );
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+		$this->assertEquals( "/v1alpha/properties/$property_id/audiences", $request_url['path'] );
+	}
+
+	public function test_create_audience__required_scope() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$property_id = '123456789';
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		// Call set_data without EDIT_SCOPE.
+		$data = $this->analytics->set_data(
+			'create-audience',
+			array( 'audience' => $this->get_audience() )
+		);
+
+		// Verify that the EDIT_SCOPE is required.
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', $data );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
+		$this->assertEquals(
+			array(
+				'scopes' => array(
+					'https://www.googleapis.com/auth/analytics.edit',
+				),
+				'status' => 403,
+			),
+			$data->get_error_data( 'missing_required_scopes' )
+		);
+	}
+
+	public function test_create_audience__required_params() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$property_id = '123456789';
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		// Grant EDIT_SCOPE so request doesn't fail.
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		// Call set_data with no parameters.
+		$data = $this->analytics->set_data(
+			'create-audience',
+			array()
+		);
+
+		// Verify that the audience object is required.
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: audience.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+	}
+
+	public function test_create_audience__valid_audience_keys() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$property_id = '123456789';
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		// Grant EDIT_SCOPE so request doesn't fail.
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$audience                             = array( 'audience' => $this->get_audience() );
+		$audience['audience']['invalidField'] = 'invalidValue';
+
+		// Call set_data with invalid audience field.
+		$data = $this->analytics->set_data(
+			'create-audience',
+			$audience
+		);
+
+		// Verify that the keys are valid for the audience object.
+		$this->assertWPErrorWithMessage( 'Invalid properties in audience: invalidField.', $data );
+		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
+	}
+
+	public function get_audience() {
+		return array(
+			'displayName'            => 'Recently active users',
+			'description'            => 'Users that have been active in a recent period',
+			'membershipDurationDays' => 30,
+			'filterClauses'          => array(
+				array(
+					'clauseType'   => 'INCLUDE',
+					'simpleFilter' => array(
+						'scope'            => 'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
+						'filterExpression' => array(
+							'andGroup' => array(
+								'filterExpressions' => array(
+									array(
+										'orGroup' => array(
+											'filterExpressions' => array(
+												array(
+													'dimensionOrMetricFilter' => array(
+														'atAnyPointInTime' => null,
+														'fieldName' => 'newVsReturning',
+														'inAnyNDayPeriod' => null,
+														'stringFilter' => array(
+															'caseSensitive' => null,
+															'matchType' => 'EXACT',
+															'value' => 'new',
+														),
+													),
+												),
+											),
+										),
+									),
+								),
+							),
+						),
+					),
+				),
+			),
+		);
+	}
+
 	public function test_register_template_redirect_amp() {
 		$context   = $this->get_amp_primary_context();
 		$analytics = new Analytics_4( $context );
@@ -3320,6 +3667,23 @@ class Analytics_4Test extends TestCase {
 			'enabled'            => array(
 				true,
 			),
+		);
+	}
+
+	public function fake_handler_and_invoke_register_method( $property_id ) {
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+		$this->analytics->register();
+	}
+
+	public function grant_scope( $scope ) {
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) $scope
+			)
 		);
 	}
 
