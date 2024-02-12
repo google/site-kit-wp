@@ -34,7 +34,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function FormInstructions( { isSetup } ) {
@@ -43,9 +42,6 @@ export default function FormInstructions( { isSetup } ) {
 	);
 	const singleAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-	const hasMultipleAnalyticsPropertyIDs = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasMultipleAnalyticsPropertyIDs()
 	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
@@ -60,16 +56,6 @@ export default function FormInstructions( { isSetup } ) {
 
 		return select( MODULES_ANALYTICS ).getPropertyID();
 	} );
-
-	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
-	if ( hasMultipleAnalyticsPropertyIDs ) {
-		const message = __(
-			'Looks like you’re already using Google Analytics within your Google Tag Manager configurations. However, the configured Analytics tags reference different property IDs, or the setup process was not fully completed. You need to configure the same Analytics property in both containers.',
-			'google-site-kit'
-		);
-
-		return <ErrorText message={ message } />;
-	}
 
 	// If the Analytics property ID in the container(s) matches
 	// the property ID configured for the Analytics module,

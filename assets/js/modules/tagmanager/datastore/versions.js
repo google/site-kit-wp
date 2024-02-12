@@ -481,28 +481,6 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Checks if there are multiple unique Analytics property IDs for all effective containers based on current selections.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @return {(boolean|undefined)} `true` if multiple unique Analytics property IDs are found in selected GTM containers
-	 *                               `false` if no Analytics property IDs are found, or the same property ID is found in both (if secondary AMP)
-	 *                               `undefined` if live container data is not loaded yet for selected containers.
-	 */
-	hasMultipleAnalyticsPropertyIDs: createRegistrySelector(
-		( select ) => () => {
-			const propertyIDs =
-				select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
-
-			if ( propertyIDs === undefined ) {
-				return undefined;
-			}
-
-			return propertyIDs.length > 1;
-		}
-	),
-
-	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
 	 *
 	 * @since 1.11.0

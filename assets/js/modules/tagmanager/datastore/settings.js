@@ -64,8 +64,6 @@ export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID =
 	'a valid internalContainerID is required to submit changes';
 export const INVARIANT_INVALID_CONTAINER_NAME =
 	'a valid container name is required to submit changes';
-export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS =
-	'containers with Analytics tags must reference a single property ID to submit changes';
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
 
@@ -158,7 +156,6 @@ export function validateCanSubmitChanges( select ) {
 		getInternalAMPContainerID,
 		getSingleAnalyticsPropertyID,
 		hasAnyAnalyticsPropertyID,
-		hasMultipleAnalyticsPropertyIDs,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
 	} = strictSelect( MODULES_TAGMANAGER );
@@ -243,11 +240,6 @@ export function validateCanSubmitChanges( select ) {
 			);
 		}
 	}
-
-	invariant(
-		! hasMultipleAnalyticsPropertyIDs(),
-		INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS
-	);
 
 	if (
 		isModuleActive( 'analytics' ) &&
