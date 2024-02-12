@@ -316,6 +316,38 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets a Google Tag ID, if any, for the currently selected GTM account and container.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|null|undefined)} Google Tag ID string, or `null` if none, or `undefined` if not fully loaded.
+	 */
+	getCurrentGTMGoogleTagID: createRegistrySelector(
+		( select ) =>
+			function () {
+				const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+
+				if ( ! isValidAccountID( accountID ) ) {
+					return null;
+				}
+
+				const internalContainerID =
+					select( MODULES_TAGMANAGER ).getInternalContainerID();
+
+				if ( isValidInternalContainerID( internalContainerID ) ) {
+					return select(
+						MODULES_TAGMANAGER
+					).getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+				}
+
+				return null;
+			}
+	),
+
+	/**
 	 * Gets the live container Universal Analytics tag object for the given account and container ID.
 	 *
 	 * @since 1.18.0
