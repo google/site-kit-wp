@@ -117,7 +117,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Enhanced**
 
-* Update the Key Metrics selection panel not to display the link to Settings in the view-only mode. See [#8202](https://github.com/google/site-kit-wp/issues/8202).
+* Update the Key Metrics selection panel to omit the link to settings in view-only mode. See [#8202](https://github.com/google/site-kit-wp/issues/8202).
 * Add infrastructure to read and create audiences. See [#8108](https://github.com/google/site-kit-wp/issues/8108).
 * Improve compatibility checks code, including removing legacy notices for WordPress 4.x users. See [#8101](https://github.com/google/site-kit-wp/issues/8101).
 * Show a notification when the user goes offline. See [#8081](https://github.com/google/site-kit-wp/issues/8081).
@@ -125,7 +125,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Create REST endpoint to fetch Analytics AdSense links. See [#8046](https://github.com/google/site-kit-wp/issues/8046).
 * Create module setup component for Analytics 4. See [#7929](https://github.com/google/site-kit-wp/issues/7929).
 * Add a note to the Interaction to Next Paint (INP) metric in the PageSpeed Insights widget. See [#7685](https://github.com/google/site-kit-wp/issues/7685).
-* Create a shared version of the Admin Bar and certain dashboard widgets for users of Dashboard Sharing. See [#7344](https://github.com/google/site-kit-wp/issues/7344).
+* Make the Admin Bar and Site Kit Summary dashboard widget available to view-only dashboard users. See [#7344](https://github.com/google/site-kit-wp/issues/7344).
 * Remove legacy error handling code from plugin. See [#5858](https://github.com/google/site-kit-wp/issues/5858).
 
 **Fixed**
