@@ -34,7 +34,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -47,15 +47,12 @@ import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/Con
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { AdSenseLinkCTA } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { getCurrencyFormat } from '../../util/currency';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 const { useSelect, useInViewSelect } = Data;
 
 function TopEarningContentWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
-	console.log(
-		'🚀 ~ TopEarningContentWidget ~ viewOnlyDashboard: TODO: test in view only mode.',
-		viewOnlyDashboard
-	);
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -66,7 +63,7 @@ function TopEarningContentWidget( { Widget } ) {
 	const reportOptions = {
 		...dates,
 		dimensions: [ 'pagePath' ],
-		metrics: [ 'totalAdRevenue' ],
+		metrics: [ { name: 'totalAdRevenue' } ],
 		orderby: [
 			{
 				metric: { metricName: 'totalAdRevenue' },
@@ -77,36 +74,38 @@ function TopEarningContentWidget( { Widget } ) {
 	};
 
 	const report = useInViewSelect( ( select ) => {
-		return select( MODULES_ADSENSE ).getReport( reportOptions );
+		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			reportOptions,
 		] )
 	);
 
 	const titles = useInViewSelect( ( select ) =>
 		! error
-			? select( MODULES_ADSENSE ).getPageTitles( report, reportOptions )
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
 			: undefined
 	);
 
 	const loading = useSelect(
 		( select ) =>
-			! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [
-				reportOptions,
-			] ) || titles === undefined
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			) || titles === undefined
 	);
 
 	const isAdSenseLinked = useSelect( ( select ) => {
 		if ( viewOnlyDashboard && loading ) {
 			return undefined;
 		}
-		return select( MODULES_ANALYTICS_4 ).getAdsenseLinked();
+		return select( MODULES_ANALYTICS ).getAdsenseLinked();
 	} );
-
-	const currencyFormat = getCurrencyFormat( report );
 
 	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
@@ -115,6 +114,8 @@ function TopEarningContentWidget( { Widget } ) {
 			</Widget>
 		);
 	}
+
+	const currency = report?.metadata?.currencyCode;
 
 	const { rows = [] } = report || {};
 
@@ -131,7 +132,7 @@ function TopEarningContentWidget( { Widget } ) {
 				// Note: This pattern is replicated in a few other spots within our codebase.
 				const serviceURL = useSelect( ( select ) => {
 					return ! viewOnlyDashboard
-						? select( MODULES_ADSENSE ).getServiceReportURL(
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 								'all-pages-and-screens',
 								{
 									filters: {
@@ -163,7 +164,12 @@ function TopEarningContentWidget( { Widget } ) {
 			field: 'metricValues.0.value',
 			Component( { fieldValue } ) {
 				return (
-					<strong>{ numFmt( fieldValue, currencyFormat ) }</strong>
+					<strong>
+						{ numFmt( fieldValue, {
+							style: 'currency',
+							currency,
+						} ) }
+					</strong>
 				);
 			},
 		},
@@ -178,7 +184,7 @@ function TopEarningContentWidget( { Widget } ) {
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
-			moduleSlug="adsense"
+			moduleSlug="analytics-4"
 		/>
 	);
 }
@@ -191,9 +197,9 @@ export default compose(
 	whenActive( {
 		moduleName: 'analytics-4',
 		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
+	whenActive( {
+		moduleName: 'adsense',
+		FallbackComponent: ConnectAdSenseCTATileWidget,
 	} )
-	// whenActive( {
-	// 	moduleName: 'adsense',
-	// 	FallbackComponent: ConnectAdSenseCTATileWidget,
-	// } )
 )( TopEarningContentWidget );

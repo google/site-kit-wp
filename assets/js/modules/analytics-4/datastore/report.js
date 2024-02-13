@@ -320,15 +320,20 @@ const baseSelectors = {
 					return urlTitleMap;
 				}
 
+				// Get the metric name for the report that requires page titles.
+				const metricName = report.metricHeaders[ 0 ].name;
+
 				const options = {
 					startDate,
 					endDate,
 					dimensions: [ 'pagePath', 'pageTitle' ],
 					dimensionFilters: { pagePath: pagePaths.sort() },
-					metrics: [ { name: 'screenPageViews' } ],
+					metrics: [ { name: metricName } ],
 					orderby: [
 						{
-							metric: { metricName: 'screenPageViews' },
+							metric: {
+								metricName,
+							},
 							desc: true,
 						},
 					],
