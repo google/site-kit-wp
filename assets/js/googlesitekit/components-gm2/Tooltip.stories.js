@@ -22,7 +22,9 @@
 import Button from './Button';
 import Tooltip from './Tooltip';
 
-const Template = ( args ) => <Tooltip { ...args } />;
+function Template( args ) {
+	return <Tooltip { ...args } />;
+}
 
 export const DefaultTooltip = Template.bind( {} );
 DefaultTooltip.storyName = 'Default Tooltip';

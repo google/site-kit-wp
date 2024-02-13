@@ -60,8 +60,12 @@ describe( 'AdSenseConnectCTA', () => {
 				}
 			);
 
-			const Widget = ( { children } ) => <div>{ children }</div>;
-			const WidgetNull = () => <div>NULL</div>;
+			function Widget( { children } ) {
+				return <div>{ children }</div>;
+			}
+			function WidgetNull() {
+				return <div>NULL</div>;
+			}
 
 			container = render(
 				<div>
@@ -76,12 +80,14 @@ describe( 'AdSenseConnectCTA', () => {
 					/>
 				</div>,
 				{ registry }
-			).container;
+			);
+
+			const { getByRole } = container;
 
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
-					container.querySelector( 'button.googlesitekit-cta-link' )
+					getByRole( 'button', { name: /maybe later/i } )
 				);
 			} );
 		} );

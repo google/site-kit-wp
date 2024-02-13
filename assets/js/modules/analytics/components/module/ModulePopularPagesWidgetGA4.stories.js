@@ -21,6 +21,7 @@
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
@@ -95,11 +96,13 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
 	ModulePopularPagesWidgetGA4
 );
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Loaded = Template.bind( {} );
 Loaded.storyName = 'Loaded';
@@ -263,11 +266,13 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
+						slug: 'analytics-4',
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
 					},
 				] );
+
+				provideModuleRegistrations( registry );
 
 				provideUserAuthentication( registry );
 

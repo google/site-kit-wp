@@ -104,15 +104,15 @@ function PopularAuthorsWidget( props ) {
 	const columns = [
 		{
 			field: 'dimensionValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<MetricTileTablePlainText content={ fieldValue } />
-			),
+			Component( { fieldValue } ) {
+				return <MetricTileTablePlainText content={ fieldValue } />;
+			},
 		},
 		{
 			field: 'metricValues.0.value',
-			Component: ( { fieldValue } ) => (
-				<strong>{ numFmt( fieldValue ) }</strong>
-			),
+			Component( { fieldValue } ) {
+				return <strong>{ numFmt( fieldValue ) }</strong>;
+			},
 		},
 	];
 

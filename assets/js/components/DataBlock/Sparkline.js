@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { cloneElement } from '@wordpress/element';
 
-const Sparkline = ( { sparkline, invertChangeColor } ) => {
+function Sparkline( { sparkline, invertChangeColor } ) {
 	// The `sparkline` prop is passed as a component, but if `invertChangeColor`
 	// is set, we should pass that to `<Sparkline>`. In that case, we clone
 	// the element and add the prop.
@@ -42,7 +42,7 @@ const Sparkline = ( { sparkline, invertChangeColor } ) => {
 			{ sparklineComponent }
 		</div>
 	);
-};
+}
 
 Sparkline.propTypes = {
 	sparkline: PropTypes.element,

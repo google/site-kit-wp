@@ -26,20 +26,20 @@ class Advanced_TrackingTest extends TestCase {
 	public function test_register() {
 		$advanced_tracking = new Advanced_Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		remove_all_actions( 'googlesitekit_analytics_init_tag' );
-		remove_all_actions( 'googlesitekit_analytics_init_tag_amp' );
+		remove_all_actions( 'googlesitekit_analytics-4_init_tag' );
+		remove_all_actions( 'googlesitekit_analytics-4_init_tag_amp' );
 
 		$advanced_tracking->register();
 
-		$this->assertTrue( has_action( 'googlesitekit_analytics_init_tag' ) );
-		$this->assertTrue( has_action( 'googlesitekit_analytics_init_tag_amp' ) );
+		$this->assertTrue( has_action( 'googlesitekit_analytics-4_init_tag' ) );
+		$this->assertTrue( has_action( 'googlesitekit_analytics-4_init_tag_amp' ) );
 
 		remove_all_actions( 'wp_footer' );
-		do_action( 'googlesitekit_analytics_init_tag', 'UA-12345678-1' );
+		do_action( 'googlesitekit_analytics-4_init_tag', 'G-1A2BCD345E' );
 		$this->assertTrue( has_action( 'wp_footer' ) );
 
 		remove_all_filters( 'googlesitekit_amp_gtag_opt' );
-		do_action( 'googlesitekit_analytics_init_tag_amp', 'UA-12345678-1' );
+		do_action( 'googlesitekit_analytics-4_init_tag_amp', 'G-1A2BCD345E' );
 		$this->assertTrue( has_filter( 'googlesitekit_amp_gtag_opt' ) );
 	}
 
@@ -52,7 +52,7 @@ class Advanced_TrackingTest extends TestCase {
 		$this->add_action_register_event_list( $event_list );
 
 		// Triggers Advanced_Tracking::register_event_lists() call.
-		do_action( 'googlesitekit_analytics_init_tag', 'UA-12345678-1' );
+		do_action( 'googlesitekit_analytics-4_init_tag', 'G-1A2BCD345E' );
 
 		$this->assertCount( 2, $event_list->get_events() ); // The class adds 2 events during registration.
 	}
@@ -75,7 +75,7 @@ class Advanced_TrackingTest extends TestCase {
 		remove_all_actions( 'the_post' );
 
 		// Triggers Advanced_Tracking::register_event_lists() call.
-		do_action( 'googlesitekit_analytics_init_tag', 'UA-12345678-1' );
+		do_action( 'googlesitekit_analytics-4_init_tag', 'G-1A2BCD345E' );
 
 		// Reset original query after change above and check whether the 'the_post' hook from
 		// Dynamic_Blog_Post_Link_Event_List was added.
@@ -94,7 +94,7 @@ class Advanced_TrackingTest extends TestCase {
 		}
 
 		// Triggers Advanced_Tracking::register_event_lists() call.
-		do_action( 'googlesitekit_analytics_init_tag_amp', 'UA-12345678-1' );
+		do_action( 'googlesitekit_analytics-4_init_tag_amp', 'G-1A2BCD345E' );
 
 		// Triggers Advanced_Tracking::compile_events() call.
 		apply_filters( 'googlesitekit_amp_gtag_opt', array() );

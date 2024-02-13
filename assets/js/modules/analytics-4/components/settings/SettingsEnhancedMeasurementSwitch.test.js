@@ -24,8 +24,7 @@ import {
 	createTestRegistry,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import * as fixtures from '../../../analytics/datastore/__fixtures__';
-import * as ga4Fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '../../datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
@@ -38,9 +37,10 @@ import {
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 describe( 'SettingsEnhancedMeasurementSwitch', () => {
-	const { accounts } = fixtures.accountsPropertiesProfiles;
-	const { properties, webDataStreams } = ga4Fixtures;
-	const accountID = accounts[ 0 ].id;
+	const { webDataStreams, accountSummaries } = fixtures;
+	const accounts = accountSummaries;
+	const properties = accounts[ 1 ].propertySummaries;
+	const accountID = accounts[ 1 ]._id;
 	const propertyID = properties[ 0 ]._id;
 	const webDataStreamID = webDataStreams[ 0 ]._id;
 
@@ -72,18 +72,12 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			webDataStreamID,
 		} );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.finishResolution( 'getAccounts', [] );
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( properties, { accountID } );
+			.receiveGetAccountSummaries( accounts );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getProperties', [ accountID ] );
-
+			.finishResolution( 'getAccountSummaries', [] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetWebDataStreams( webDataStreams, {
@@ -127,7 +121,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, getByLabelText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -150,7 +144,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, getByLabelText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -175,7 +169,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, queryByLabelText, getByText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -206,7 +200,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should render correctly, with the switch defaulting to the on position', () => {
 			const { container, getByLabelText } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -229,7 +223,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				} );
 
 			const { getByLabelText } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -256,11 +250,11 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			},
 		],
 		[
-			'properties are loading',
+			'property summaries are loading',
 			() => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.invalidateResolution( 'getProperties', [ accountID ] );
+					.invalidateResolution( 'getAccountSummaries', [] );
 			},
 		],
 		[
@@ -279,7 +273,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			setLoadingState();
 
 			const { container, getByRole, waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -293,7 +287,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		}
 	);
 
-	it( 'should render correctly, with the switch disabled when hasAnalytics4Access is false', async () => {
+	it( 'should render correctly, with the switch disabled when hasModuleAccess is false', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setEnhancedMeasurementStreamEnabled(
@@ -303,7 +297,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { container, getByLabelText } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access={ false } />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess={ false } />,
 			{ registry }
 		);
 
@@ -316,7 +310,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 	it( 'should toggle the switch on click', async () => {
 		const { getByLabelText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -335,7 +329,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 	it( 'should toggle the streamEnabled setting on click', async () => {
 		const { getByLabelText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -382,7 +376,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should revert the switch from off to on', async () => {
 			const { getByLabelText, waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -409,7 +403,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should not toggle the switch from on to off', () => {
 			const { getByLabelText } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -446,7 +440,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { getByLabelText, getByText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -492,7 +486,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			);
 
 		const { getByLabelText, getByText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 			{
 				registry,
 			}
@@ -537,13 +531,13 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			} );
 		} );
 
-		it( 'should not attempt to retrieve enhanced measurement settings when properties are loading', async () => {
+		it( 'should not attempt to retrieve enhanced measurement settings when property summaries are loading', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.invalidateResolution( 'getProperties', [ accountID ] );
+				.invalidateResolution( 'getAccountSummaries', [] );
 
 			const { waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -560,7 +554,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				.invalidateResolution( 'getWebDataStreams', [ propertyID ] );
 
 			const { waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}
@@ -573,7 +567,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		it( 'should retrieve enhanced measurement settings when neither properties or web data streams are loading', async () => {
 			const { waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasAnalytics4Access />,
+				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
 				{
 					registry,
 				}

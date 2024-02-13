@@ -289,6 +289,7 @@ export default function UserMenu() {
 					) }
 					confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
 					danger
+					small
 				/>
 			</Portal>
 		</Fragment>

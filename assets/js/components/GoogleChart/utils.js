@@ -19,11 +19,13 @@
 /**
  * External dependencies
  */
-import { set, cloneDeep, merge } from 'lodash';
+import { cloneDeep, findLast, merge, set } from 'lodash';
 
 /**
  * Internal dependencies
  */
+import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
+import { getLocale } from '../../util';
 import { stringToDate } from '../../util/date-range/string-to-date';
 
 /**
@@ -128,12 +130,14 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
  * Returns a chart configuration object.
  *
  * @since 1.93.0
+ * @since 1.119.0 Added `breakpoint` parameter.
  *
  * @param {Object}  options       Configuration data.
  * @param {boolean} gatheringData If chart is in gathering info state.
  * @param {string}  chartType     Chart types: PieChart, LineChart.
  * @param {string}  startDate     Start date for a user data range.
  * @param {string}  endDate       End date for a user data range.
+ * @param {string}  breakpoint    Current breakpoint.
  * @return {Object} Chart options configuration.
  */
 export const getChartOptions = (
@@ -141,7 +145,8 @@ export const getChartOptions = (
 	gatheringData,
 	chartType,
 	startDate,
-	endDate
+	endDate,
+	breakpoint
 ) => {
 	const chartOptions = cloneDeep( options );
 	if ( gatheringData && chartType === 'LineChart' ) {
@@ -173,6 +178,13 @@ export const getChartOptions = (
 	}
 
 	if ( chartType === 'LineChart' ) {
+		if ( ! options?.hAxis?.maxTextLines ) {
+			set( chartOptions, 'hAxis.maxTextLines', 1 );
+		}
+		if ( ! options?.hAxis?.minTextSpacing ) {
+			const minTextSpacing = breakpoint === BREAKPOINT_SMALL ? 50 : 100;
+			set( chartOptions, 'hAxis.minTextSpacing', minTextSpacing );
+		}
 		// eslint-disable-next-line sitekit/acronym-case
 		if ( options?.tooltip?.isHtml === undefined ) {
 			set( chartOptions, 'tooltip.isHtml', true );
@@ -202,4 +214,57 @@ export const getChartOptions = (
 	} );
 
 	return chartOptions;
+};
+
+/**
+ * Returns the Google Charts currency pattern for a given currency code and locale.
+ *
+ * @since 1.118.0
+ *
+ * @param {string} currencyCode ISO 4217 currency code.
+ * @param {string} locale       Locale to use for formatting.
+ * @return {string} The currency pattern.
+ */
+export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
+	const formatter = Intl.NumberFormat( locale, {
+		style: 'currency',
+		currency: currencyCode,
+	} );
+
+	const parts = formatter.formatToParts( 1000000 );
+
+	return parts.reduce( ( pattern, part ) => {
+		const { value } = part;
+
+		switch ( part.type ) {
+			case 'group':
+				// The group and decimal separators will be replaced with the
+				// locale-specific versions by the chart.
+				// See: https://groups.google.com/g/google-visualization-api/c/hBF9daxe8qY/m/_aPk3EfQLgAJ
+				return pattern + ',';
+			case 'decimal':
+				return pattern + '.';
+			case 'currency':
+				return pattern + value;
+			case 'literal':
+				const sanitizedValue = /^\s*$/.test( value ) ? value : '';
+				return pattern + sanitizedValue;
+			case 'integer':
+				const integerPattern = value.replace( /\d/g, '#' );
+				const isLastIntegerGroup =
+					findLast( parts, ( { type } ) => 'integer' === type ) ===
+					part;
+
+				return (
+					pattern +
+					( isLastIntegerGroup
+						? integerPattern.replace( /#$/, '0' )
+						: integerPattern )
+				);
+			case 'fraction':
+				return pattern + value.replace( /\d/g, '0' );
+			default:
+				return pattern;
+		}
+	}, '' );
 };

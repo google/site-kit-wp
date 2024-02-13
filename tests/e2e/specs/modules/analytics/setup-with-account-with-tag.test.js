@@ -25,7 +25,7 @@ async function proceedToSetUpAnalytics() {
 		} ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
 		page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics/data/accounts-properties-profiles' )
+			res.url().match( 'analytics-4/data/account-summaries' )
 		),
 	] );
 }
@@ -120,6 +120,13 @@ describe( 'setting up the Analytics module with an existing account and existing
 					status: 200,
 				} );
 			} else if (
+				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
+			) {
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
+			} else if (
 				request
 					.url()
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
@@ -175,7 +182,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-setup-module--analytics p',
 			{
 				text: new RegExp(
-					`A tag ${ existingTag.propertyID } for the selected property already exists on the site.`,
+					`A tag ${ existingTag.propertyID } for the selected property already exists on the site`,
 					'i'
 				),
 			}
@@ -183,11 +190,11 @@ describe( 'setting up the Analytics module with an existing account and existing
 
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
-			{ text: /test account a/i }
+			{ text: /example com/i }
 		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
-			{ text: /test ga4 property/i }
+			{ text: /example property/i }
 		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',

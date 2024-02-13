@@ -25,7 +25,11 @@ exports[`ConnectGA4CTATileWidget should render the Connect GA4 CTA tile 1`] = `
             <button
               class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
             >
-              Connect Analytics
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Connect Analytics
+              </span>
             </button>
           </div>
         </div>

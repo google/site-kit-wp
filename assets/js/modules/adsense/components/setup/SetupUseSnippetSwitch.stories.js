@@ -37,11 +37,13 @@ const validSettings = {
 	siteStatus: SITE_STATUS_ADDED,
 };
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<SetupUseSnippetSwitch />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<SetupUseSnippetSwitch />
+		</WithRegistrySetup>
+	);
+}
 
 export const SameExistingTagAndClientID = Template.bind( {} );
 SameExistingTagAndClientID.storyName = 'Same ExistingTag and ClientID';
@@ -83,7 +85,7 @@ NoExistingTags.args = {
 };
 
 export default {
-	title: 'Modules/AdSense/Components/Setup/V2/SetupUseSnippetSwitch',
+	title: 'Modules/AdSense/Components/Setup/SetupUseSnippetSwitch',
 	component: SetupUseSnippetSwitch,
 	decorators: [
 		( Story ) => {

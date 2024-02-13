@@ -48,28 +48,20 @@ function PreviewBlock( {
 } ) {
 	const breakpoint = useBreakpoint();
 
-	let blockWidth = width;
-	let blockHeight = height;
-
-	if ( BREAKPOINT_SMALL === breakpoint && smallWidth && smallHeight ) {
-		blockWidth = smallWidth;
-		blockHeight = smallHeight;
-	}
-
-	if ( BREAKPOINT_TABLET === breakpoint && tabletWidth && tabletHeight ) {
-		blockWidth = tabletWidth;
-		blockHeight = tabletHeight;
-	}
-
-	if (
-		( BREAKPOINT_XLARGE === breakpoint ||
-			BREAKPOINT_DESKTOP === breakpoint ) &&
-		desktopWidth &&
-		desktopHeight
-	) {
-		blockWidth = desktopWidth;
-		blockHeight = desktopHeight;
-	}
+	const blockDimensions = {
+		width: {
+			[ BREAKPOINT_SMALL ]: smallWidth,
+			[ BREAKPOINT_TABLET ]: tabletWidth,
+			[ BREAKPOINT_DESKTOP ]: desktopWidth,
+			[ BREAKPOINT_XLARGE ]: desktopWidth,
+		},
+		height: {
+			[ BREAKPOINT_SMALL ]: smallHeight,
+			[ BREAKPOINT_TABLET ]: tabletHeight,
+			[ BREAKPOINT_DESKTOP ]: desktopHeight,
+			[ BREAKPOINT_XLARGE ]: desktopWidth,
+		},
+	};
 
 	return (
 		<div
@@ -77,8 +69,8 @@ function PreviewBlock( {
 				'googlesitekit-preview-block--padding': padding,
 			} ) }
 			style={ {
-				width: blockWidth,
-				height: blockHeight,
+				width: blockDimensions.width[ breakpoint ] || width,
+				height: blockDimensions.height[ breakpoint ] || height,
 			} }
 		>
 			<div

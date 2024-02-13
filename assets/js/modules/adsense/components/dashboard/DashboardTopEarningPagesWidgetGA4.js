@@ -75,14 +75,16 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		return <WidgetNull />;
 	}
 
-	const Footer = () => (
-		<SourceLink
-			className="googlesitekit-data-block__source"
-			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			href={ analyticsMainURL }
-			external
-		/>
-	);
+	function Footer() {
+		return (
+			<SourceLink
+				className="googlesitekit-data-block__source"
+				name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				href={ analyticsMainURL }
+				external
+			/>
+		);
+	}
 
 	const tableColumns = [
 		{
@@ -108,7 +110,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 					className="googlesitekit-margin-top-0 googlesitekit-margin-bottom-0 googlesitekit-settings-notice-adsense-top-earning-pages-widget"
 				>
 					{ __(
-						'Site Kit will notify you as soon as you can connect AdSense and Analytics again.',
+						'Site Kit will notify you as soon as you can connect AdSense and Analytics again',
 						'google-site-kit'
 					) }
 				</SettingsNotice>

@@ -22,14 +22,14 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const Widget = ( {
+function Widget( {
 	children,
 	className,
 	widgetSlug,
 	noPadding,
 	Header,
 	Footer,
-} ) => {
+} ) {
 	return (
 		<div
 			className={ classnames(
@@ -53,7 +53,7 @@ const Widget = ( {
 			) }
 		</div>
 	);
-};
+}
 
 Widget.defaultProps = {
 	children: undefined,

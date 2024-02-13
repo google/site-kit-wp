@@ -22,17 +22,21 @@
 import ErrorComponent from '../../../../tests/js/ThrowErrorComponent';
 import MediaErrorHandler from './';
 
-const Template = ( args ) => (
-	<MediaErrorHandler { ...args }>
-		<ErrorComponent throwErrorOnMount />
-	</MediaErrorHandler>
-);
+function Template( args ) {
+	return (
+		<MediaErrorHandler { ...args }>
+			<ErrorComponent throwErrorOnMount />
+		</MediaErrorHandler>
+	);
+}
 
-const NoErrorsTemplate = () => (
-	<MediaErrorHandler>
-		<div>There are no errors here.</div>
-	</MediaErrorHandler>
-);
+function NoErrorsTemplate() {
+	return (
+		<MediaErrorHandler>
+			<div>There are no errors here.</div>
+		</MediaErrorHandler>
+	);
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

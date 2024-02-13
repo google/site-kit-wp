@@ -35,7 +35,9 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 
-const Template = () => <SetupUsingProxyWithSignIn />;
+function Template() {
+	return <SetupUsingProxyWithSignIn />;
+}
 
 export const Start = Template.bind( {} );
 Start.storyName = 'Start';
@@ -64,9 +66,6 @@ StartUserInput.args = {
 		] );
 	},
 };
-StartUserInput.parameters = {
-	features: [ 'keyMetrics' ],
-};
 
 export const StartUserInputError = Template.bind( {} );
 StartUserInputError.storyName = 'Start – with error [User Input]';
@@ -84,9 +83,6 @@ StartUserInputError.args = {
 			},
 		] );
 	},
-};
-StartUserInputError.parameters = {
-	features: [ 'keyMetrics' ],
 };
 
 export const DisconnectedURLMismatch = Template.bind( {} );
@@ -117,9 +113,6 @@ DisconnectedURLMismatchUserInput.args = {
 			},
 		] );
 	},
-};
-DisconnectedURLMismatchUserInput.parameters = {
-	features: [ 'keyMetrics' ],
 };
 
 export const AnalyticsActive = Template.bind( {} );

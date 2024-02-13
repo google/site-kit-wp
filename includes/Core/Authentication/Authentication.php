@@ -24,7 +24,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\User_Input\User_Input;
 use Google\Site_Kit\Plugin;
-use WP_Error;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -280,12 +279,6 @@ final class Authentication {
 		add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'authentication_admin_notices' ) );
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
-		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
-
-		add_action( 'googlesitekit_cron_update_remote_features', $this->get_method_proxy( 'cron_update_remote_features' ) );
-		if ( ! wp_next_scheduled( 'googlesitekit_cron_update_remote_features' ) && ! wp_installing() ) {
-			wp_schedule_event( time(), 'twicedaily', 'googlesitekit_cron_update_remote_features' );
-		}
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
@@ -743,7 +736,7 @@ final class Authentication {
 		// Handles Direct OAuth client request.
 		if ( $this->context->input()->filter( INPUT_GET, 'oauth2callback' ) ) {
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
+				wp_die( esc_html__( 'You don’t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 			}
 
 			$this->get_oauth_client()->authorize_user();
@@ -763,7 +756,7 @@ final class Authentication {
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-			wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
+			wp_die( esc_html__( 'You don’t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 		}
 
 		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
@@ -792,7 +785,7 @@ final class Authentication {
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-			wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
+			wp_die( esc_html__( 'You don’t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 		}
 
 		$this->disconnect();
@@ -1378,70 +1371,6 @@ final class Authentication {
 	 */
 	public function get_proxy_support_link_url() {
 		return $this->google_proxy->url( Google_Proxy::SUPPORT_LINK_URI );
-	}
-
-	/**
-	 * Filters feature flags using features received from the proxy server.
-	 *
-	 * @since 1.27.0
-	 *
-	 * @param boolean $feature_enabled Original value of the feature.
-	 * @param string  $feature_name    Feature name.
-	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
-	 */
-	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
-		$remote_features_option = 'googlesitekitpersistent_remote_features';
-		$features               = $this->options->get( $remote_features_option );
-
-		if ( false === $features ) {
-			// Don't attempt to fetch features if the site is not connected yet.
-			if ( ! $this->credentials->has() ) {
-				return $feature_enabled;
-			}
-
-			$features = $this->fetch_remote_features();
-		}
-
-		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
-			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
-		}
-
-		return $feature_enabled;
-	}
-
-	/**
-	 * Fetches remotely-controlled features from the Google Proxy server and
-	 * saves them in a persistent option.
-	 *
-	 * If the fetch errors or fails, the persistent option is not updated.
-	 *
-	 * @since 1.71.0
-	 *
-	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
-	 */
-	private function fetch_remote_features() {
-		$remote_features_option = 'googlesitekitpersistent_remote_features';
-		$features               = $this->google_proxy->get_features( $this->credentials );
-		if ( ! is_wp_error( $features ) && is_array( $features ) ) {
-			$this->options->set( $remote_features_option, $features );
-		}
-
-		return $features;
-	}
-
-	/**
-	 * Action that is run by a cron twice daily to fetch and cache remotely-enabled features
-	 * from the Google Proxy server, if Site Kit has been setup.
-	 *
-	 * @since 1.71.0
-	 *
-	 * @return void
-	 */
-	private function cron_update_remote_features() {
-		if ( ! $this->credentials->has() ) {
-			return;
-		}
-		$this->fetch_remote_features();
 	}
 
 	/**

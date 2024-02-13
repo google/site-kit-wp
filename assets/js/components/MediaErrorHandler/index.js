@@ -61,7 +61,7 @@ class MediaErrorHandler extends Component {
 }
 
 MediaErrorHandler.defaultProps = {
-	errorMessage: __( 'Failed to load media.', 'google-site-kit' ),
+	errorMessage: __( 'Failed to load media', 'google-site-kit' ),
 };
 
 MediaErrorHandler.propTypes = {

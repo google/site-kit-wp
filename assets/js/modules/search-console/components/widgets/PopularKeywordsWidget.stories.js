@@ -46,15 +46,17 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
 	PopularKeywordsWidget
 );
 
-const Template = ( { setupRegistry, viewContext, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider
-			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-		>
-			<WidgetWithComponentProps { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, viewContext, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider
+				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+			>
+				<WidgetWithComponentProps { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -116,11 +118,6 @@ Error.args = {
 				status: 400,
 				reason: 'badRequest',
 			},
-			selectorData: {
-				storeName: 'modules/search-console',
-				name: 'getReport',
-				args: [ reportOptions ],
-			},
 		};
 
 		dispatch( MODULES_SEARCH_CONSOLE ).receiveError(
@@ -149,11 +146,6 @@ InsufficientPermissions.args = {
 			data: {
 				status: 403,
 				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-			},
-			selectorData: {
-				storeName: 'modules/search-console',
-				name: 'getReport',
-				args: [ reportOptions ],
 			},
 		};
 

@@ -56,7 +56,7 @@ export default function SettingsInactiveModules() {
 					'google-site-kit'
 				) }
 				description={ __(
-					'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.',
+					'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future',
 					'google-site-kit'
 				) }
 				format="small"

@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
@@ -26,7 +25,6 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Core\Util\URL;
 use Exception;
 
 /**
@@ -261,13 +259,13 @@ final class Modules {
 
 				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
 				if ( is_array( $extra_scopes ) ) {
-					$readonly_scope_index = array_search( Analytics::READONLY_SCOPE, $extra_scopes, true );
+					$readonly_scope_index = array_search( Analytics_4::READONLY_SCOPE, $extra_scopes, true );
 					if ( $readonly_scope_index >= 0 ) {
 						unset( $extra_scopes[ $readonly_scope_index ] );
 
 						$auth_scopes = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
 						if ( is_array( $auth_scopes ) ) {
-							$auth_scopes[] = Analytics::READONLY_SCOPE;
+							$auth_scopes[] = Analytics_4::READONLY_SCOPE;
 							$auth_scopes   = array_unique( $auth_scopes );
 
 							$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
@@ -322,36 +320,7 @@ final class Modules {
 		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
 		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 
-		add_action(
-			'add_option_' . Module_Sharing_Settings::OPTION,
-			function( $option, $values ) {
-				array_walk(
-					$values,
-					function( $value, $module_slug ) {
-						if ( ! $this->module_exists( $module_slug ) ) {
-							return;
-						}
-
-						$module = $this->get_module( $module_slug );
-
-						if ( ! $module instanceof Module_With_Service_Entity ) {
-
-							$module->get_settings()->merge(
-								array(
-									'ownerID' => get_current_user_id(),
-								)
-							);
-
-						};
-					}
-				);
-			},
-			10,
-			2
-		);
-
-		add_action(
-			'update_option_' . Module_Sharing_Settings::OPTION,
+		$this->sharing_settings->on_change(
 			function( $old_values, $values ) {
 				if ( is_array( $values ) && is_array( $old_values ) ) {
 					array_walk(
@@ -364,6 +333,17 @@ final class Modules {
 							$module = $this->get_module( $module_slug );
 
 							if ( ! $module instanceof Module_With_Service_Entity ) {
+								// If the option was just added, set the ownerID directly and bail.
+								if ( empty( $old_values ) ) {
+									$module->get_settings()->merge(
+										array(
+											'ownerID' => get_current_user_id(),
+										)
+									);
+
+									return;
+								}
+
 								$changed_settings = false;
 
 								if ( is_array( $value ) ) {
@@ -404,9 +384,7 @@ final class Modules {
 						}
 					);
 				}
-			},
-			10,
-			2
+			}
 		);
 	}
 

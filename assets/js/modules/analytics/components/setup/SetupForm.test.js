@@ -35,13 +35,22 @@ import {
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_GA4,
 } from '../../datastore/constants';
-import * as fixtures from '../../datastore/__fixtures__';
-import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import * as fixtures from '../../../analytics-4/datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../analytics-4/constants';
 
-const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+const {
+	accountSummaries,
+	defaultEnhancedMeasurementSettings,
+	webDataStreamsBatch,
+	webDataStreams,
+} = fixtures;
+const accounts = accountSummaries;
+const properties = accounts[ 1 ].propertySummaries;
+const accountID = accounts[ 1 ]._id;
+const propertyID = properties[ 0 ]._id;
+const webDataStreamID = webDataStreamsBatch[ propertyID ][ 0 ]._id;
 
 describe( 'SetupForm', () => {
 	let registry;
@@ -74,14 +83,34 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( accountSummaries );
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( [], { accountID } );
+			.receiveGetProperty( properties[ 0 ], {
+				propertyID,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				{
+					...defaultEnhancedMeasurementSettings,
+					streamEnabled: false,
+				},
+				{
+					propertyID,
+					webDataStreamID,
+				}
+			);
+
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Verify that the setup flow mode is GA4.
@@ -109,33 +138,28 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( accountSummaries );
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( analytics4Fixtures.properties, {
-				accountID,
+			.receiveGetProperty( properties[ 0 ], {
+				propertyID,
 			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreamsBatch(
-				analytics4Fixtures.webDataStreamsBatch,
-				{
-					propertyIDs: Object.keys(
-						analytics4Fixtures.webDataStreamsBatch
-					),
-				}
-			);
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetEnhancedMeasurementSettings(
-				analytics4Fixtures.defaultEnhancedMeasurementSettings,
+				defaultEnhancedMeasurementSettings,
 				{
-					propertyID: analytics4Fixtures.properties[ 0 ]._id,
-					webDataStreamID: '2000',
+					propertyID,
+					webDataStreamID,
 				}
 			);
 
@@ -155,7 +179,7 @@ describe( 'SetupForm', () => {
 			// Therefore, we simulate the click on the dropdown menu item directly, despite it being hidden.
 			fireEvent.click(
 				getByRole( 'menuitem', {
-					name: /Test GA4 Property/i,
+					name: /Example Property/i,
 					hidden: true,
 				} )
 			);
@@ -222,40 +246,32 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
+			accountSummaries.map( ( account ) => ( {
+				...account,
+				propertySummaries: [],
+			} ) )
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( analytics4Fixtures.accountSummaries );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( [], { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperty( analytics4Fixtures.properties[ 0 ], {
-				propertyID: analytics4Fixtures.properties[ 0 ]._id,
+			.receiveGetProperty( properties[ 0 ], {
+				propertyID,
 			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreamsBatch(
-				analytics4Fixtures.webDataStreamsBatch,
-				{
-					propertyIDs: Object.keys(
-						analytics4Fixtures.webDataStreamsBatch
-					),
-				}
-			);
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetEnhancedMeasurementSettings(
-				analytics4Fixtures.defaultEnhancedMeasurementSettings,
+				defaultEnhancedMeasurementSettings,
 				{
-					propertyID: analytics4Fixtures.properties[ 0 ]._id,
-					webDataStreamID: '2000',
+					propertyID,
+					webDataStreamID,
 				}
 			);
 
@@ -295,12 +311,12 @@ describe( 'SetupForm', () => {
 
 		fetchMock.post( createPropertyRegexp, {
 			status: 200,
-			body: analytics4Fixtures.properties[ 0 ],
+			body: properties[ 0 ],
 		} );
 
 		fetchMock.post( createWebDataStreamRegexp, {
 			status: 200,
-			body: analytics4Fixtures.webDataStreams[ 0 ],
+			body: webDataStreams[ 2 ],
 		} );
 
 		fetchMock.post( updateAnalyticsSettingsRegexp, {
@@ -312,6 +328,17 @@ describe( 'SetupForm', () => {
 			status: 200,
 			body: {},
 		} );
+
+		// We have to mock the account-summaries endpoint because the createProperty action calls it.
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+			),
+			{
+				body: [],
+				status: 200,
+			}
+		);
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -353,28 +380,20 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS )
-			.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-		registry
-			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProperties( [], { accountID } );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
+			accountSummaries.map( ( account ) => ( {
+				...account,
+				propertySummaries: [],
+			} ) )
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( analytics4Fixtures.accountSummaries );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperties( [], { accountID } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetWebDataStreamsBatch(
-				analytics4Fixtures.webDataStreamsBatch,
-				{
-					propertyIDs: Object.keys(
-						analytics4Fixtures.webDataStreamsBatch
-					),
-				}
-			);
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
 		await registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page

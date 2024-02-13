@@ -59,7 +59,7 @@ import {
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
+function SearchFunnelWidget( { Widget, WidgetReportError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const breakpoint = useBreakpoint();
@@ -276,12 +276,14 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const WidgetFooter = () => (
-		<Footer
-			metrics={ SearchFunnelWidget.metrics }
-			selectedStats={ selectedStats }
-		/>
-	);
+	function WidgetFooter() {
+		return (
+			<Footer
+				metrics={ SearchFunnelWidget.metrics }
+				selectedStats={ selectedStats }
+			/>
+		);
+	}
 
 	if ( searchConsoleError ) {
 		return (
@@ -401,7 +403,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 				) }
 		</Widget>
 	);
-};
+}
 
 SearchFunnelWidget.metrics = [
 	{

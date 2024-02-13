@@ -33,16 +33,15 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectAdSenseCTATile'
 )( ConnectGA4CTATileWidget );
 
-const Template = () => <WidgetWithComponentProps />;
+function Template() {
+	return <WidgetWithComponentProps />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectGA4CTATileWidget';
 Default.scenario = {
 	label: 'KeyMetrics/ConnectGA4CTATileWidget',
 	delay: 250,
-};
-Default.parameters = {
-	features: [ 'keyMetrics' ],
 };
 
 export default {

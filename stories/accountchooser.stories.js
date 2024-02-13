@@ -30,7 +30,7 @@ import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideUserInfo } from '../tests/js/utils';
 const { useSelect, useRegistry } = Data;
 
-export const AccountChooser = () => {
+export function AccountChooser() {
 	const [ destURL, setDestURL ] = useState(
 		'https://accounts.google.com/ManageAccount'
 	);
@@ -71,7 +71,7 @@ export const AccountChooser = () => {
 			</Button>
 		</div>
 	);
-};
+}
 
 export default {
 	title: 'AccountChooser',

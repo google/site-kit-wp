@@ -48,7 +48,7 @@ import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-const Header = ( { children, subHeader, showNavigation } ) => {
+function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
 
@@ -120,7 +120,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			<EntityHeader />
 		</Fragment>
 	);
-};
+}
 
 Header.displayName = 'Header';
 

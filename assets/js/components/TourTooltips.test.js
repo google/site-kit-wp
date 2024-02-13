@@ -58,14 +58,16 @@ const MOCK_STEPS = [
 ];
 const TEST_VIEW_CONTEXT = 'testViewContext';
 
-const MockUIWrapper = ( { children } ) => (
-	<ViewContextProvider value={ TEST_VIEW_CONTEXT }>
-		<div className="step-1" />
-		<div className="step-2" />
-		<div className="step-3" />
-		{ children }
-	</ViewContextProvider>
-);
+function MockUIWrapper( { children } ) {
+	return (
+		<ViewContextProvider value={ TEST_VIEW_CONTEXT }>
+			<div className="step-1" />
+			<div className="step-2" />
+			<div className="step-3" />
+			{ children }
+		</ViewContextProvider>
+	);
+}
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

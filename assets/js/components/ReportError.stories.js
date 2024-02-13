@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ReportError from './ReportError';
 import {
 	createTestRegistry,
@@ -35,33 +36,66 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
-const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider
-			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-		>
-			<ReportError moduleSlug="test-module" { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+const { useSelect } = Data;
+
+function ReportErrorWrapper( { ...args } ) {
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrors()
+	);
+
+	return <ReportError error={ error } { ...args } />;
+}
+
+function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
+	const setupRegistryCallback = async ( registry ) => {
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		await registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		await setupRegistry( registry );
+	};
+	return (
+		<WithRegistrySetup func={ setupRegistryCallback }>
+			<ViewContextProvider
+				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+			>
+				<ReportErrorWrapper moduleSlug="analytics" { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
+
+function PlainTemplate( { ...args } ) {
+	return <ReportError { ...args } />;
+}
 
 export const DefaultReportError = Template.bind( {} );
 DefaultReportError.storyName = 'Default ReportError';
 DefaultReportError.args = {
-	error: {
-		code: 'test-error-code',
-		message: 'Test error message',
-		data: {},
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {},
+			},
+			'getAccountID'
+		);
 	},
 };
 
 export const ReportErrorWithHTMLTags = Template.bind( {} );
 ReportErrorWithHTMLTags.storyName = 'ReportError with HTML tags';
 ReportErrorWithHTMLTags.args = {
-	error: {
-		code: 'test-error-code',
-		message: '<h1>Test error message with <strong>HTML</strong> tags</h1>',
-		data: {},
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message:
+					'<h1>Test error message with <strong>HTML</strong> tags</h1>',
+				data: {},
+			},
+			'getAccountID'
+		);
 	},
 };
 
@@ -69,12 +103,17 @@ export const ReportErrorWithInsufficientPermissions = Template.bind( {} );
 ReportErrorWithInsufficientPermissions.storyName =
 	'ReportError with insufficient permissions';
 ReportErrorWithInsufficientPermissions.args = {
-	error: {
-		code: 'test-error-code',
-		message: 'Test error message',
-		data: {
-			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-		},
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+				},
+			},
+			'getAccountID'
+		);
 	},
 };
 
@@ -83,15 +122,8 @@ export const ReportErrorWithInsufficientPermissionsWithRequestAccess =
 ReportErrorWithInsufficientPermissionsWithRequestAccess.storyName =
 	'ReportError with insufficient permissions with request access';
 ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
-	error: {
-		code: 'test-error-code',
-		message: 'Test error message',
-		data: {
-			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-		},
-	},
 	moduleSlug: 'analytics',
-	setupRegistry: ( registry ) => {
+	setupRegistry: async ( registry ) => {
 		provideModules( registry, [
 			{
 				active: true,
@@ -99,7 +131,6 @@ ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
 				slug: 'analytics',
 			},
 		] );
-		provideModuleRegistrations( registry );
 
 		const [ accountID, internalWebPropertyID, profileID ] = [
 			'12345',
@@ -107,11 +138,21 @@ ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
 			'56789',
 		];
 
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-		registry
+		await registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		await registry
 			.dispatch( MODULES_ANALYTICS )
 			.setInternalWebPropertyID( internalWebPropertyID );
-		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+		await registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+				},
+			},
+			'getAccountID'
+		);
 	},
 };
 
@@ -120,12 +161,17 @@ export const ReportErrorWithInsufficientPermissionsForViewOnlyUser =
 ReportErrorWithInsufficientPermissionsForViewOnlyUser.storyName =
 	'ReportError with insufficient permissions for view-only user';
 ReportErrorWithInsufficientPermissionsForViewOnlyUser.args = {
-	error: {
-		code: 'test-error-code',
-		message: 'Test error message',
-		data: {
-			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-		},
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+				},
+			},
+			'getAccountID'
+		);
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
@@ -133,24 +179,25 @@ ReportErrorWithInsufficientPermissionsForViewOnlyUser.args = {
 export const ReportErrorWithRetryButton = Template.bind( {} );
 ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
 ReportErrorWithRetryButton.args = {
-	error: {
-		code: 'test-error-code',
-		message: 'Test error message',
-		data: {
-			reason: 'Data Error',
-		},
-		selectorData: {
-			args: [
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: 'Data Error',
+				},
+			},
+			'getReport',
+			[
 				{
 					dimensions: [ 'ga:date' ],
 					metrics: [ { expression: 'ga:users' } ],
 					startDate: '2020-08-11',
 					endDate: '2020-09-07',
 				},
-			],
-			name: 'getReport',
-			storeName: MODULES_ANALYTICS,
-		},
+			]
+		);
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
@@ -159,65 +206,62 @@ export const MultipleReportErrorsWithRetryButton = Template.bind( {} );
 MultipleReportErrorsWithRetryButton.storyName =
 	'Multiple Report Errors with Retry Button';
 MultipleReportErrorsWithRetryButton.args = {
-	error: [
-		{
-			code: 'test-error-code',
-			message: 'Test error message one',
-			data: {
-				reason: 'Data Error',
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message one',
+				data: {
+					reason: 'Data Error',
+				},
 			},
-			selectorData: {
-				args: [
-					{
-						dimensions: [ 'ga:date' ],
-						metrics: [ { expression: 'ga:users' } ],
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-					},
-				],
-				name: 'getReport',
-				storeName: MODULES_ANALYTICS,
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message two',
+				data: {
+					reason: 'Data Error',
+				},
 			},
-		},
-		{
-			code: 'test-error-code',
-			message: 'Test error message two',
-			data: {
-				reason: 'Data Error',
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message three',
+				data: {
+					reason: 'Data Error',
+				},
 			},
-			selectorData: {
-				args: [
-					{
-						dimensions: [ 'ga:date' ],
-						metrics: [ { expression: 'ga:users' } ],
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-					},
-				],
-				name: 'getReport',
-				storeName: MODULES_ANALYTICS,
-			},
-		},
-		{
-			code: 'test-error-code',
-			message: 'Test error message three',
-			data: {
-				reason: 'Data Error',
-			},
-			selectorData: {
-				args: [
-					{
-						dimensions: [ 'ga:date' ],
-						metrics: [ { expression: 'ga:users' } ],
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-					},
-				],
-				name: 'getReport',
-				storeName: MODULES_ANALYTICS,
-			},
-		},
-	],
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+	},
 };
 
 export const MultipleUniqueReportErrorsWithRetryButtonWith = Template.bind(
@@ -226,51 +270,48 @@ export const MultipleUniqueReportErrorsWithRetryButtonWith = Template.bind(
 MultipleUniqueReportErrorsWithRetryButtonWith.storyName =
 	'Multiple Unique Report Errors with Retry Button';
 MultipleUniqueReportErrorsWithRetryButtonWith.args = {
-	error: [
-		{
-			code: 'test-error-code',
-			message: 'Test error message',
-			data: {
-				reason: 'Data Error',
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: 'Data Error',
+				},
 			},
-			selectorData: {
-				args: [
-					{
-						dimensions: [ 'ga:date' ],
-						metrics: [ { expression: 'ga:users' } ],
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-					},
-				],
-				name: 'getReport',
-				storeName: MODULES_ANALYTICS,
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: 'Data Error',
+				},
 			},
-		},
-		{
-			code: 'test-error-code',
-			message: 'Test error message',
-			data: {
-				reason: 'Data Error',
-			},
-			selectorData: {
-				args: [
-					{
-						dimensions: [ 'ga:date' ],
-						metrics: [ { expression: 'ga:users' } ],
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-					},
-				],
-				name: 'getReport',
-				storeName: MODULES_ANALYTICS,
-			},
-		},
-	],
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+	},
 };
 
-export const ReportErrorWithCustomInternalServerErrorMessage = Template.bind(
-	{}
-);
+export const ReportErrorWithCustomInternalServerErrorMessage =
+	PlainTemplate.bind( {} );
 ReportErrorWithCustomInternalServerErrorMessage.storyName =
 	'ReportError with custom Internal Server Error message';
 ReportErrorWithCustomInternalServerErrorMessage.args = {
@@ -280,7 +321,7 @@ ReportErrorWithCustomInternalServerErrorMessage.args = {
 	},
 };
 
-export const ReportErrorWithCustomInvalidJSONMessage = Template.bind( {} );
+export const ReportErrorWithCustomInvalidJSONMessage = PlainTemplate.bind( {} );
 ReportErrorWithCustomInvalidJSONMessage.storyName =
 	'ReportError with custom Invalid JSON message';
 ReportErrorWithCustomInvalidJSONMessage.args = {

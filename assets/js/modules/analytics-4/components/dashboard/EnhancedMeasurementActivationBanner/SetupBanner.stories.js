@@ -24,7 +24,9 @@ import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
 import SetupBanner from './SetupBanner';
 
-const Template = ( args ) => <SetupBanner { ...args } />;
+function Template( args ) {
+	return <SetupBanner { ...args } />;
+}
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';

@@ -38,7 +38,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -59,7 +59,6 @@ import {
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
-import Link from '../../Link';
 import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
 import useViewContext from '../../../hooks/useViewContext';
@@ -190,7 +189,7 @@ export default function Footer( {
 					setPermissionScopeError( {
 						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 						message: __(
-							'Additional permissions are required to create new Analytics custom dimensions.',
+							'Additional permissions are required to create new Analytics custom dimensions',
 							'google-site-kit'
 						),
 						data: {
@@ -312,12 +311,13 @@ export default function Footer( {
 					</p>
 				) }
 				<div className="googlesitekit-km-selection-panel-footer__actions">
-					<Link
+					<Button
+						tertiary
 						onClick={ onCancelClick }
 						disabled={ isSavingSettings || isNavigatingToOAuthURL }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
-					</Link>
+					</Button>
 					<SpinnerButton
 						onClick={ onSaveClick }
 						isSaving={ isSavingSettings || isNavigatingToOAuthURL }

@@ -61,7 +61,7 @@ export default function ContainerNameTextField( { label, name } ) {
 	const helperText =
 		containerName && ! isUniqueName
 			? __(
-					'A container with this name already exists.',
+					'A container with this name already exists',
 					'google-site-kit'
 			  )
 			: false;

@@ -44,7 +44,7 @@ import useDashboardType, {
 import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-const EntityHeader = () => {
+function EntityHeader() {
 	const viewContext = useViewContext();
 	const dashboardType = useDashboardType();
 	const currentEntityTitle = useSelect( ( select ) =>
@@ -119,6 +119,7 @@ const EntityHeader = () => {
 					aria-label={ __( 'Back to dashboard', 'google-site-kit' ) }
 					onClick={ onClick }
 					text
+					tertiary
 				>
 					{ __( 'Back to dashboard', 'google-site-kit' ) }
 				</Button>
@@ -140,6 +141,6 @@ const EntityHeader = () => {
 			</div>
 		</div>
 	);
-};
+}
 
 export default EntityHeader;

@@ -20,11 +20,11 @@
 
 	.googlesitekit-km-widget-tile {
 		display: flex;
+		flex-direction: column;
 		justify-content: space-between;
-		padding: $grid-gap-phone;
+		padding: 12px $grid-gap-phone;
 
 		@media (min-width: $bp-nonMobile) {
-			flex-direction: column;
 			min-height: 150px;
 			padding: 18px 24px;
 		}
@@ -37,6 +37,7 @@
 
 		.googlesitekit-km-widget-tile__title {
 			color: $c-neutral-n-500;
+			flex: 1;
 			font-family: $f-primary;
 			font-size: $fs-label-sm;
 			font-weight: $fw-normal;
@@ -46,12 +47,26 @@
 		}
 
 		.googlesitekit-km-widget-tile__body {
+			display: flex;
 			flex-basis: 50%;
 			flex-grow: 1;
+
+			@media (min-width: $bp-nonMobile) {
+				flex-direction: column;
+			}
+		}
+
+		.googlesitekit-km-widget-tile__metric-container {
+			flex-basis: 100%;
 		}
 
 		.googlesitekit-km-widget-tile__metric-change-container {
+			align-self: flex-end;
 			display: flex;
+
+			@media (min-width: $bp-nonMobile) {
+				align-self: auto;
+			}
 		}
 	}
 
@@ -61,7 +76,8 @@
 			font-family: $f-secondary;
 			font-size: $fs-headline-lg;
 			line-height: $lh-headline-lg;
-			margin-top: -8px;
+			margin-top: 4px;
+
 			@media (min-width: $bp-nonMobile) {
 				margin: 0;
 			}
@@ -87,8 +103,8 @@
 		.googlesitekit-km-widget-tile__metric {
 			font-size: $fs-title-lg;
 			font-weight: 500;
+			margin-top: 4px;
 
-			margin-top: -8px;
 			@media (min-width: $bp-nonMobile) {
 				margin: 5px 0 0;
 			}
@@ -110,7 +126,6 @@
 	}
 
 	.googlesitekit-km-widget-tile--table {
-		flex-direction: column;
 
 		.googlesitekit-km-widget-tile__table {
 			display: flex;
@@ -142,6 +157,10 @@
 			strong {
 				font-weight: $fw-medium;
 			}
+
+			.googlesitekit-cta-link {
+				display: inline;
+			}
 		}
 
 		.googlesitekit-km-widget-tile__table-plain-text {
@@ -153,21 +172,19 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-	}
 
-	.googlesitekit-km-widget-tile--numeric,
-	.googlesitekit-km-widget-tile--text {
-		.googlesitekit-km-widget-tile__title-container {
-			flex-direction: column;
-
-			@media (min-width: $bp-nonMobile) {
-				flex-direction: row;
-			}
+		.googlesitekit-table__body-zero-data {
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
 		}
 	}
 
-	.googlesitekit-km-widget-tile__loading .googlesitekit-km-widget-tile__loading-body {
-		margin-top: 10px;
+	.googlesitekit-km-widget-tile__loading {
+		width: 100%;
+
+		.googlesitekit-km-widget-tile__loading-body {
+			margin-top: 10px;
+		}
 	}
 
 	// Styles for KMW tile error state.

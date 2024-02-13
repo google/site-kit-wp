@@ -22,6 +22,7 @@
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -93,11 +94,13 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
 	DashboardOverallPageMetricsWidgetGA4
 );
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -406,11 +409,18 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
+						slug: 'analytics',
 						active: true,
 						connected: true,
-						slug: 'analytics',
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
 					},
 				] );
+
+				provideModuleRegistrations( registry );
 
 				provideUserAuthentication( registry );
 

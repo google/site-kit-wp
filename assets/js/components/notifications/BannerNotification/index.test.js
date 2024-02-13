@@ -25,9 +25,26 @@ import { getByText } from '@testing-library/dom';
  * Internal dependencies
  */
 import BannerNotification from './index';
-import { render } from '../../../../../tests/js/test-utils';
+import {
+	render,
+	fireEvent,
+	act,
+	waitFor,
+} from '../../../../../tests/js/test-utils';
+
+// Mock `@wordpress/url` to return `true` for `isURL` when `#` is passed as a URL.
+jest.mock( '@wordpress/url', () => ( {
+	...jest.requireActual( '@wordpress/url' ),
+	isURL: jest.fn().mockImplementation( ( url ) => url === '#' ),
+} ) );
+// Mock `invariant` to prevent it from throwing errors when `#` is passed as a URL.
+jest.mock( 'invariant', () => jest.fn() );
 
 describe( 'BannerNotification', () => {
+	afterAll( () => {
+		jest.restoreAllMocks();
+	} );
+
 	it( 'should wrap the description in a paragraph when the description is not a React element', () => {
 		const { container } = render(
 			<BannerNotification
@@ -72,5 +89,40 @@ describe( 'BannerNotification', () => {
 		).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should dismiss the notification when clicking on a CTA link and isDismissible is true', async () => {
+		const { container, getByRole } = render(
+			<div className="googlesitekit-dashboard">
+				<h2>Site Kit Dashboard</h2>
+				<BannerNotification
+					id="fake"
+					title="Hey there!"
+					description="This is a test notification"
+					ctaLink="#"
+					ctaLabel="Click me"
+					isDismissible
+				/>
+			</div>
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-publisher-win' )
+		).toBeInTheDocument();
+
+		act( () => {
+			fireEvent.click( getByRole( 'button', { name: /click me/i } ) );
+		} );
+
+		await waitFor( () => {
+			// Verify dashboard is still in the DOM
+			expect(
+				container.querySelector( '.googlesitekit-dashboard' )
+			).toBeInTheDocument();
+			// Verify notification is no longer in the DOM
+			expect(
+				container.querySelector( '.googlesitekit-publisher-win' )
+			).not.toBeInTheDocument();
+		} );
 	} );
 } );

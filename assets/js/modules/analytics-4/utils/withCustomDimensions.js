@@ -68,7 +68,7 @@ export default function withCustomDimensions( options = {} ) {
 	} = options;
 
 	return ( WrappedComponent ) => {
-		const WithCustomDimensionsComponent = ( props ) => {
+		function WithCustomDimensionsComponent( props ) {
 			const isViewOnly = useViewOnly();
 
 			const { Widget, widgetSlug } = props;
@@ -288,7 +288,7 @@ export default function withCustomDimensions( options = {} ) {
 					setPermissionScopeError( {
 						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 						message: __(
-							'Additional permissions are required to create new Analytics custom dimensions.',
+							'Additional permissions are required to create new Analytics custom dimensions',
 							'google-site-kit'
 						),
 						data: {
@@ -414,7 +414,7 @@ export default function withCustomDimensions( options = {} ) {
 			}
 
 			return <WrappedComponent { ...props } />;
-		};
+		}
 
 		WithCustomDimensionsComponent.displayName = 'WithCustomDimensions';
 

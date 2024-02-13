@@ -1,23 +1,23 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Util\Debug_DataTest
+ * Class Google\Site_Kit\Tests\Core\Site_Health\Debug_DataTest
  *
- * @package   Google\Site_Kit\Tests\Core\Util
+ * @package   Google\Site_Kit\Tests\Core\Site_Health
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Util;
+namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Tests\Core\Modules\FakeModule;
 use Google\Site_Kit\Tests\TestCase;
 

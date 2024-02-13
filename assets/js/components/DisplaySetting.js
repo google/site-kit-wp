@@ -18,9 +18,9 @@
 
 import PropTypes from 'prop-types';
 
-const DisplaySetting = ( { value } ) => {
+function DisplaySetting( { value } ) {
 	return value || '\u00A0';
-};
+}
 
 DisplaySetting.propTypes = {
 	value: PropTypes.oneOfType( [

@@ -46,7 +46,7 @@ export default function Notice() {
 				canSubmitSharingChanges &&
 				createInterpolateElement(
 					__(
-						'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit Dashboard data from the chosen Google service.',
+						'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit Dashboard data from the chosen Google service',
 						'google-site-kit'
 					),
 					{
@@ -59,7 +59,7 @@ export default function Notice() {
 				haveSharingSettingsChangedRoles &&
 				createInterpolateElement(
 					__(
-						'By clicking <strong>Apply</strong>, you’re granting the selected roles view-only access to data from the Google services you’ve connected via your account.',
+						'By clicking <strong>Apply</strong>, you’re granting the selected roles view-only access to data from the Google services you’ve connected via your account',
 						'google-site-kit'
 					),
 					{

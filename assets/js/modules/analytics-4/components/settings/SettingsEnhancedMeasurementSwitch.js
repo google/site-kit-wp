@@ -48,7 +48,7 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsEnhancedMeasurementSwitch( {
-	hasAnalytics4Access,
+	hasModuleAccess,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -65,20 +65,18 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
-	const isLoadingProperties = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).isLoadingProperties( {
-			hasModuleAccess: hasAnalytics4Access,
-		} );
+	const isLoadingPropertySummaries = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries();
 	} );
 
 	const isLoadingWebDataStreams = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
-			hasModuleAccess: hasAnalytics4Access,
+			hasModuleAccess,
 		} );
 	} );
 
 	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if ( isLoadingProperties || isLoadingWebDataStreams ) {
+		if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
 			return undefined;
 		}
 
@@ -97,7 +95,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
 		if (
-			isLoadingProperties ||
+			isLoadingPropertySummaries ||
 			isLoadingWebDataStreams ||
 			isEnhancedMeasurementStreamEnabled === undefined
 		) {
@@ -123,7 +121,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		if (
 			! isValidPropertySelection( propertyID ) ||
 			! isValidWebDataStreamSelection( webDataStreamID ) ||
-			isLoadingProperties ||
+			isLoadingPropertySummaries ||
 			isLoadingWebDataStreams
 		) {
 			return true;
@@ -201,7 +199,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	return (
 		<EnhancedMeasurementSwitch
-			disabled={ ! hasAnalytics4Access }
+			disabled={ ! hasModuleAccess }
 			loading={ isLoading }
 			isEnhancedMeasurementAlreadyEnabled={
 				isEnhancedMeasurementAlreadyEnabled
@@ -227,5 +225,5 @@ export default function SettingsEnhancedMeasurementSwitch( {
 }
 
 SettingsEnhancedMeasurementSwitch.propTypes = {
-	hasAnalytics4Access: PropTypes.bool,
+	hasModuleAccess: PropTypes.bool,
 };

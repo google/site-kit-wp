@@ -37,6 +37,7 @@ import Data from 'googlesitekit-data';
 import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
@@ -175,7 +176,7 @@ export default function Footer( props ) {
 	// premature interactions by the user.
 	const isLoading = useSelect( ( select ) => {
 		const resolutionMapping = {
-			analytics: 'getAccounts',
+			analytics: 'getAccountSummaries',
 			tagmanager: 'getAccounts',
 			'search-console': 'getMatchedProperties',
 		};
@@ -185,7 +186,13 @@ export default function Footer( props ) {
 			return false;
 		}
 
-		return ! select( module.storeName ).hasFinishedResolution(
+		// Since the GA4 accounts are loaded from `account-summaries` of the `analytics-4` store
+		// for the `getAccountSummaries` selector, we need to use the `analytics-4` store name
+		// instead of the module store name.
+		const storeName =
+			slug === 'analytics' ? MODULES_ANALYTICS_4 : module.storeName;
+
+		return ! select( storeName ).hasFinishedResolution(
 			resolutionSelector
 		);
 	} );
@@ -225,12 +232,13 @@ export default function Footer( props ) {
 				) }
 
 				{ hasSettings && (
-					<Link
+					<Button
+						tertiary
 						className="googlesitekit-settings-module__footer-cancel"
 						onClick={ handleClose }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
-					</Link>
+					</Button>
 				) }
 			</Fragment>
 		);
@@ -245,13 +253,15 @@ export default function Footer( props ) {
 					__( 'Edit %s settings', 'google-site-kit' ),
 					name
 				) }
+				trailingIcon={
+					<PencilIcon
+						className="googlesitekit-settings-module__edit-button-icon"
+						width={ 10 }
+						height={ 10 }
+					/>
+				}
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
-				<PencilIcon
-					className="googlesitekit-settings-module__edit-button-icon"
-					width="10"
-					height="10"
-				/>
 			</Link>
 		);
 	}
@@ -262,17 +272,19 @@ export default function Footer( props ) {
 				className="googlesitekit-settings-module__remove-button"
 				onClick={ handleDialog }
 				danger
+				trailingIcon={
+					<TrashIcon
+						className="googlesitekit-settings-module__remove-button-icon"
+						width={ 13 }
+						height={ 13 }
+					/>
+				}
 			>
 				{ sprintf(
 					/* translators: %s: module name */
 					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
 					name
 				) }
-				<TrashIcon
-					className="googlesitekit-settings-module__remove-button-icon"
-					width="13"
-					height="13"
-				/>
 			</Link>
 		);
 	} else if ( ! isEditing && moduleHomepage ) {

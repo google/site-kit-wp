@@ -73,15 +73,17 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
 	LeastEngagingPagesWidget
 );
 
-const Template = ( { setupRegistry, viewContext, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider
-			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-		>
-			<WidgetWithComponentProps { ...args } />
-		</ViewContextProvider>
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry, viewContext, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider
+				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+			>
+				<WidgetWithComponentProps { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
+}
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -295,11 +297,6 @@ Error.args = {
 				status: 400,
 				reason: 'badRequest',
 			},
-			selectorData: {
-				storeName: 'modules/analytics-4',
-				name: 'getReport',
-				args: [ pageViewsReportOptions ],
-			},
 		};
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveError(
@@ -328,11 +325,6 @@ InsufficientPermissions.args = {
 			data: {
 				status: 403,
 				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-			},
-			selectorData: {
-				storeName: 'modules/analytics-4',
-				name: 'getReport',
-				args: [ pageViewsReportOptions ],
 			},
 		};
 

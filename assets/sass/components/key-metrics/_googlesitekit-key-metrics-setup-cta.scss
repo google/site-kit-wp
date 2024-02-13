@@ -112,13 +112,14 @@
 			a,
 			button {
 				margin-top: 10px;
+				place-content: center;
 				text-align: center;
 				width: 100%;
 			}
 
 			@media (min-width: $bp-nonMobile) {
 				display: flex;
-				gap: 20px;
+				gap: 4px;
 				margin-left: 5px;
 				place-content: start;
 

@@ -64,6 +64,8 @@ const Link = forwardRef( ( props, ref ) => {
 		standalone = false,
 		linkButton = false,
 		to,
+		leadingIcon,
+		trailingIcon,
 		...otherProps
 	} = props;
 
@@ -151,6 +153,27 @@ const Link = forwardRef( ( props, ref ) => {
 	const LinkComponent = getLinkComponent();
 	const ariaLabel = getAriaLabel();
 
+	// Set the prefix/suffix icons, based on the type of link this is and
+	// the props supplied.
+	let leadingIconToUse = leadingIcon;
+	let trailingIconToUse = trailingIcon;
+
+	if ( back ) {
+		leadingIconToUse = <BackIcon width={ 14 } height={ 14 } />;
+	}
+
+	if ( external && ! hideExternalIndicator ) {
+		trailingIconToUse = <ExternalIcon width={ 14 } height={ 14 } />;
+	}
+
+	if ( arrow && ! inverse ) {
+		trailingIconToUse = <ArrowIcon width={ 14 } height={ 14 } />;
+	}
+
+	if ( arrow && inverse ) {
+		trailingIconToUse = <ArrowInverseIcon width={ 14 } height={ 14 } />;
+	}
+
 	return (
 		<LinkComponent
 			aria-label={ ariaLabel }
@@ -177,23 +200,17 @@ const Link = forwardRef( ( props, ref ) => {
 			to={ to }
 			{ ...otherProps }
 		>
-			{ back && (
+			{ !! leadingIconToUse && (
 				<IconWrapper marginRight={ 5 }>
-					<BackIcon width={ 14 } height={ 14 } />
+					{ leadingIconToUse }
 				</IconWrapper>
 			) }
-			{ children }
-			{ external && ! hideExternalIndicator && (
+			<span className="googlesitekit-cta-link__contents">
+				{ children }
+			</span>
+			{ !! trailingIconToUse && (
 				<IconWrapper marginLeft={ 5 }>
-					<ExternalIcon width={ 14 } height={ 14 } />
-				</IconWrapper>
-			) }
-			{ arrow && (
-				<IconWrapper marginLeft={ 5 }>
-					{ ! inverse && <ArrowIcon width={ 14 } height={ 14 } /> }
-					{ inverse && (
-						<ArrowInverseIcon width={ 14 } height={ 14 } />
-					) }
+					{ trailingIconToUse }
 				</IconWrapper>
 			) }
 		</LinkComponent>
@@ -212,11 +229,13 @@ Link.propTypes = {
 	hideExternalIndicator: PropTypes.bool,
 	href: PropTypes.string,
 	inverse: PropTypes.bool,
+	leadingIcon: PropTypes.node,
+	linkButton: PropTypes.bool,
 	onClick: PropTypes.func,
 	small: PropTypes.bool,
 	standalone: PropTypes.bool,
-	linkButton: PropTypes.bool,
 	to: PropTypes.string,
+	trailingIcon: PropTypes.node,
 };
 
 export default Link;

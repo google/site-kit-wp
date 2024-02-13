@@ -1,7 +1,7 @@
 /**
- * Reset Button stories.
+ * EnhancedMeasurementActivationBanner > InProgressBanner Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,20 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import ResetButton from '../assets/js/components/ResetButton';
-import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import InProgressBanner from './InProgressBanner';
 
-storiesOf( 'Global', module ).add( 'Reset Button', () => {
-	const setupRegistry = ( registry ) => {
-		provideSiteInfo( registry );
-	};
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<ResetButton>Reset Site Kit Button</ResetButton>
-		</WithTestRegistry>
-	);
-} );
+function Template( args ) {
+	return <InProgressBanner { ...args } />;
+}
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/InProgressBanner/Default',
+};
+
+export default {
+	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/InProgressBanner',
+};

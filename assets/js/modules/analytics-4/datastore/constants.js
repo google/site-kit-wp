@@ -18,8 +18,15 @@
 
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
+// A special Account ID value used for the "Set up a new account" option.
+export const ACCOUNT_CREATE = 'account_create';
+
+// A special Property ID value used for the "Set up a new property" option.
 export const PROPERTY_CREATE = 'property_create';
+
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
+
+export const FORM_SETUP = 'analyticsSetup';
 
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
@@ -33,7 +40,15 @@ export const ENHANCED_MEASUREMENT_ENABLED = 'enhanced-measurement-enabled';
 export const ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER =
 	'enhanced-measurement-should-dismiss-activation-banner';
 
-export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analytics4CustomDimensionsCreate';
+// Form ID for the account creation form.
+export const FORM_ACCOUNT_CREATE = 'analyticsAccountCreate';
+
+export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analyticsCustomDimensionsCreate';
+
+// OAuth scope required for provisioning a Google Analytics account.
+export const PROVISIONING_SCOPE =
+	'https://www.googleapis.com/auth/analytics.provision';
+export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 
 // Note: names and descriptions are not translated as these are not surfaced in Site Kit
 // and are also subject to hard limits on the length which would be unpredictable if translated.
@@ -64,4 +79,21 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 		description: 'Created by Site Kit: Content type of a post',
 		scope: 'EVENT',
 	},
+};
+
+// Audience enums.
+export const AUDIENCE_FILTER_CLAUSE_TYPE_ENUM = {
+	AUDIENCE_CLAUSE_TYPE_UNSPECIFIED: 'AUDIENCE_CLAUSE_TYPE_UNSPECIFIED',
+	INCLUDE: 'INCLUDE',
+	EXCLUDE: 'EXCLUDE',
+};
+
+export const AUDIENCE_FILTER_SCOPE_ENUM = {
+	AUDIENCE_FILTER_SCOPE_UNSPECIFIED: 'AUDIENCE_FILTER_SCOPE_UNSPECIFIED',
+	AUDIENCE_FILTER_SCOPE_WITHIN_SAME_EVENT:
+		'AUDIENCE_FILTER_SCOPE_WITHIN_SAME_EVENT',
+	AUDIENCE_FILTER_SCOPE_WITHIN_SAME_SESSION:
+		'AUDIENCE_FILTER_SCOPE_WITHIN_SAME_SESSION',
+	AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS:
+		'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
 };

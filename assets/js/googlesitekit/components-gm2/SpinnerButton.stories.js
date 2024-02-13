@@ -19,7 +19,9 @@
  */
 import SpinnerButton from './SpinnerButton';
 
-const Template = ( args ) => <SpinnerButton { ...args } />;
+function Template( args ) {
+	return <SpinnerButton { ...args } />;
+}
 
 export const DefaultButton = Template.bind( {} );
 DefaultButton.storyName = 'Default Button';

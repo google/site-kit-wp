@@ -25,6 +25,7 @@ import { storiesOf, Story } from '@storybook/react';
  * Internal dependencies
  */
 import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../assets/js/googlesitekit/constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,
@@ -32,6 +33,7 @@ import {
 	provideSiteInfo,
 } from '../../tests/js/utils';
 import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/util';
+import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 
 /**
  * Generates stories for a report based widget using provided data.
@@ -71,45 +73,49 @@ export function generateReportBasedWidgetStories( args ) {
 		setup = () => {},
 		zeroing,
 		padding,
+		viewContext,
 	} = args;
 
 	const stories = storiesOf( group, module );
 
-	const withRegistry = ( variantName ) => ( StoryComponent ) => {
-		const registry = createTestRegistry();
-		// Activate the module.
-		provideModules(
-			registry,
-			moduleSlugs.map( ( module ) => {
-				return {
-					slug: module,
-					active: true,
-					connected: true,
-				};
-			} )
-		);
+	const withRegistry = ( variantName ) =>
+		function ( StoryComponent ) {
+			const registry = createTestRegistry();
+			// Activate the module.
+			provideModules(
+				registry,
+				moduleSlugs.map( ( module ) => {
+					return {
+						slug: module,
+						active: true,
+						connected: true,
+					};
+				} )
+			);
 
-		let currentEntityURL = null;
-		if ( Array.isArray( options ) && options[ 0 ].url ) {
-			currentEntityURL = options[ 0 ].url;
-		} else if ( options.url ) {
-			currentEntityURL = options.url;
-		}
+			let currentEntityURL = null;
+			if ( Array.isArray( options ) && options[ 0 ].url ) {
+				currentEntityURL = options[ 0 ].url;
+			} else if ( options.url ) {
+				currentEntityURL = options.url;
+			}
 
-		// Set some site information.
-		provideSiteInfo( registry, {
-			currentEntityURL,
-		} );
+			// Set some site information.
+			provideSiteInfo( registry, {
+				currentEntityURL,
+			} );
 
-		if ( referenceDate ) {
-			registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
-		}
+			if ( referenceDate ) {
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( referenceDate );
+			}
 
-		// Call the optional setup function.
-		setup( registry, variantName );
+			// Call the optional setup function.
+			setup( registry, variantName );
 
-		return <StoryComponent registry={ registry } />;
-	};
+			return <StoryComponent registry={ registry } />;
+		};
 
 	if ( Array.isArray( options ) ) {
 		// 	If options is an array, so must data.
@@ -382,7 +388,11 @@ export function generateReportBasedWidgetStories( args ) {
 					callback={ variants[ variant ].callback }
 					features={ variants[ variant ].features || [] }
 				>
-					{ widgetElement }
+					<ViewContextProvider
+						value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+					>
+						{ widgetElement }
+					</ViewContextProvider>
 				</WithTestRegistry>
 			),
 			{

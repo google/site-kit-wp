@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import accounts from './accounts';
+import audiences from './audiences';
 import baseModuleStore from './base';
 import containers from './containers';
 import conversionEvents from './conversion-events';
@@ -33,10 +34,12 @@ import report from './report';
 import service from './service';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
+import tagmanager from './tagmanager';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 
 const store = Data.combineStores(
 	accounts,
+	audiences,
 	baseModuleStore,
 	containers,
 	conversionEvents,
@@ -48,7 +51,8 @@ const store = Data.combineStores(
 	report,
 	service,
 	tags,
-	webdatastreams
+	webdatastreams,
+	tagmanager
 );
 
 export const initialState = store.initialState;

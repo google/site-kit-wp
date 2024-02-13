@@ -48,14 +48,10 @@ export function generateErrorKey( baseName, args ) {
 }
 
 export const actions = {
-	receiveError( error, baseName, args ) {
+	receiveError( error, baseName, args = [] ) {
 		invariant( error, 'error is required.' );
-		if ( baseName ) {
-			invariant(
-				args && Array.isArray( args ),
-				'args is required (and must be an array) when baseName is specified.'
-			);
-		}
+		invariant( baseName, 'baseName is required.' );
+		invariant( args && Array.isArray( args ), 'args must be an array.' );
 
 		return {
 			type: RECEIVE_ERROR,
@@ -67,21 +63,16 @@ export const actions = {
 		};
 	},
 
-	// @TODO: remove clearMatchingLegacyError option once all instances of the legacy behavior have been removed.
-	clearError( baseName, args, { clearMatchingLegacyError = false } = {} ) {
-		if ( baseName ) {
-			invariant(
-				args && Array.isArray( args ),
-				'args is required (and must be an array) when baseName is specified.'
-			);
-		}
+	clearError( baseName, args = [] ) {
+		invariant( baseName, 'baseName is required.' );
+
+		invariant( args && Array.isArray( args ), 'args must be an array.' );
 
 		return {
 			type: CLEAR_ERROR,
 			payload: {
 				baseName,
 				args,
-				clearMatchingLegacyError,
 			},
 		};
 	},
@@ -101,7 +92,6 @@ export function createErrorStore( storeName ) {
 	const initialState = {
 		errors: {},
 		errorArgs: {},
-		error: undefined,
 	};
 
 	function reducer( state, { type, payload } ) {
@@ -109,47 +99,29 @@ export function createErrorStore( storeName ) {
 			case RECEIVE_ERROR: {
 				const { baseName, args, error } = payload;
 
-				if ( baseName ) {
-					const key = generateErrorKey( baseName, args );
-					return {
-						...state,
-						errors: {
-							...( state.errors || {} ),
-							[ key ]: error,
-						},
-						errorArgs: {
-							...( state.errorArgs || {} ),
-							[ key ]: args,
-						},
-					};
-				}
-
-				// @TODO: remove once all instances of the legacy behavior have been removed.
-				return { ...state, error };
+				const key = generateErrorKey( baseName, args );
+				return {
+					...state,
+					errors: {
+						...( state.errors || {} ),
+						[ key ]: error,
+					},
+					errorArgs: {
+						...( state.errorArgs || {} ),
+						[ key ]: args,
+					},
+				};
 			}
 
 			case CLEAR_ERROR: {
 				const { baseName, args } = payload;
 				const newState = { ...state };
-				if ( baseName ) {
-					const key = generateErrorKey( baseName, args );
-					newState.errors = { ...( state.errors || {} ) };
-					newState.errorArgs = { ...( state.errorArgs || {} ) };
+				const key = generateErrorKey( baseName, args );
+				newState.errors = { ...( state.errors || {} ) };
+				newState.errorArgs = { ...( state.errorArgs || {} ) };
 
-					// @TODO: remove this block once all instances of the legacy behavior have been removed.
-					if (
-						payload.clearMatchingLegacyError &&
-						newState.error === newState.errors[ key ]
-					) {
-						delete newState.error;
-					}
-
-					delete newState.errors[ key ];
-					delete newState.errorArgs[ key ];
-				} else {
-					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					newState.error = undefined;
-				}
+				delete newState.errors[ key ];
+				delete newState.errorArgs[ key ];
 
 				return newState;
 			}
@@ -172,8 +144,6 @@ export function createErrorStore( storeName ) {
 				} else {
 					newState.errors = {};
 					newState.errorArgs = {};
-					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					newState.error = undefined;
 				}
 				return newState;
 			}
@@ -211,20 +181,7 @@ export function createErrorStore( storeName ) {
 		 */
 		getErrorForSelector( state, selectorName, args = [] ) {
 			invariant( selectorName, 'selectorName is required.' );
-
-			const error = selectors.getError( state, selectorName, args );
-			if ( ! error ) {
-				return undefined;
-			}
-
-			return {
-				...error,
-				selectorData: {
-					storeName,
-					name: selectorName,
-					args,
-				},
-			};
+			return selectors.getError( state, selectorName, args );
 		},
 
 		/**
@@ -270,12 +227,7 @@ export function createErrorStore( storeName ) {
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getError( state, baseName, args ) {
-			const { error, errors } = state;
-
-			// @TODO: remove it once all instances of the legacy usage have been removed. Also make baseName required then.
-			if ( ! baseName && ! args ) {
-				return error;
-			}
+			const { errors } = state;
 
 			invariant( baseName, 'baseName is required.' );
 
@@ -292,11 +244,6 @@ export function createErrorStore( storeName ) {
 		 */
 		getErrors( state ) {
 			const errorsSet = new Set( Object.values( state.errors ) );
-
-			// @TODO: remove it once all instances of the legacy usage have been removed.
-			if ( undefined !== state.error ) {
-				errorsSet.add( state.error );
-			}
 
 			return Array.from( errorsSet );
 		},
@@ -355,26 +302,27 @@ export function createErrorStore( storeName ) {
 		 * @return {Object|null} Selector data for the given error object, or null if no selector data is available.
 		 */
 		getSelectorDataForError: createRegistrySelector(
-			( select ) => ( state, error ) => {
-				const metaData =
-					select( storeName ).getMetaDataForError( error );
+			( select ) =>
+				function ( state, error ) {
+					const metaData =
+						select( storeName ).getMetaDataForError( error );
 
-				if ( metaData ) {
-					const { baseName: name, args } = metaData;
+					if ( metaData ) {
+						const { baseName: name, args } = metaData;
 
-					const isSelector = !! select( storeName )[ name ];
+						const isSelector = !! select( storeName )[ name ];
 
-					if ( isSelector ) {
-						return {
-							storeName,
-							name,
-							args,
-						};
+						if ( isSelector ) {
+							return {
+								storeName,
+								name,
+								args,
+							};
+						}
 					}
-				}
 
-				return null;
-			}
+					return null;
+				}
 		),
 
 		/**

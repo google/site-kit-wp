@@ -33,10 +33,12 @@ import DashboardMainApp from './DashboardMainApp';
 const { useDispatch } = Data;
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	const { syncGoogleTagSettings } = useDispatch( MODULES_ANALYTICS_4 );
+	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
 
 	useMount( () => {
-		syncGoogleTagSettings();
+		// TODO: Refactor this to be in a module-specific location
+		// where such conditional logic isn't needed.
+		ga4Actions?.syncGoogleTagSettings();
 	} );
 
 	if ( !! setupModuleSlug ) {

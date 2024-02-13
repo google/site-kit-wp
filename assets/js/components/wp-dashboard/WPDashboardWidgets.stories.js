@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import WPDashboardWidgets from './WPDashboardWidgets';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -38,19 +39,23 @@ import {
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
 } from './common-GA4.stories';
+import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 
-const Template = ( { setupRegistry } ) => {
+function Template( { setupRegistry, viewContext } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<WPDashboardWidgets />
+			<ViewContextProvider value={ viewContext }>
+				<WPDashboardWidgets />
+			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
-};
+}
 
 export const ReadyGA4 = Template.bind( {} );
 ReadyGA4.storyName = 'Ready';
 ReadyGA4.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
 		provideAnalytics4ReportTitles( registry );
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
@@ -123,6 +128,89 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
 	},
+};
+
+export const ViewOnlyAnalyticsAndSearchConsole = Template.bind( {} );
+ViewOnlyAnalyticsAndSearchConsole.storyName =
+	'View Only Analytics And Search Console';
+ViewOnlyAnalyticsAndSearchConsole.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
+};
+
+export const ViewOnlyAnalytics = Template.bind( {} );
+ViewOnlyAnalytics.storyName = 'View Only Analytics';
+ViewOnlyAnalytics.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
+};
+
+export const ViewOnlySearchConsole = Template.bind( {} );
+ViewOnlySearchConsole.storyName = 'View Only Search Console';
+ViewOnlySearchConsole.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
+		} );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+	viewContext: VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
 };
 
 export const GatheringDataGA4 = Template.bind( {} );

@@ -22,7 +22,9 @@
 import Button from './Button';
 import HelpIcon from '../../../svg/icons/help.svg';
 
-const Template = ( args ) => <Button { ...args } />;
+function Template( args ) {
+	return <Button { ...args } />;
+}
 
 export const DefaultButton = Template.bind( {} );
 DefaultButton.storyName = 'Default Button';
@@ -59,6 +61,13 @@ DisabledButton.args = {
 	disabled: true,
 };
 
+export const TertiaryButton = Template.bind( {} );
+TertiaryButton.storyName = 'Tertiary Button';
+TertiaryButton.args = {
+	children: 'Tertiary Button',
+	tertiary: true,
+};
+
 export const IconButton = Template.bind( {} );
 IconButton.storyName = 'Icon Button with Tooltip';
 IconButton.args = {
@@ -67,25 +76,30 @@ IconButton.args = {
 	className: 'googlesitekit-button--icon',
 };
 
-export const VRTStory = () => (
-	<div>
-		<p>
-			<DefaultButton { ...DefaultButton.args } />
-		</p>
-		<p>
-			<LinkButton { ...LinkButton.args } />
-		</p>
-		<p>
-			<DangerButton { ...DangerButton.args } />
-		</p>
-		<p>
-			<DisabledButton { ...DisabledButton.args } />
-		</p>
-		<p>
-			<IconButton { ...IconButton.args } />
-		</p>
-	</div>
-);
+export function VRTStory() {
+	return (
+		<div>
+			<p>
+				<DefaultButton { ...DefaultButton.args } />
+			</p>
+			<p>
+				<LinkButton { ...LinkButton.args } />
+			</p>
+			<p>
+				<DangerButton { ...DangerButton.args } />
+			</p>
+			<p>
+				<DisabledButton { ...DisabledButton.args } />
+			</p>
+			<p>
+				<TertiaryButton { ...TertiaryButton.args } />
+			</p>
+			<p>
+				<IconButton { ...IconButton.args } />
+			</p>
+		</div>
+	);
+}
 VRTStory.scenario = {
 	label: 'Global/Buttons',
 	hoverSelector: '.googlesitekit-button--icon',
