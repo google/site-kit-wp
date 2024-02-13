@@ -150,14 +150,16 @@ class URL {
 			if ( $is_ascii ) {
 				// If the hostname is in punycode encoding, add the decoded version to the list of hosts.
 				if ( 0 === strpos( $hostname, self::PUNYCODE_PREFIX ) || false !== strpos( $hostname, '.' . self::PUNYCODE_PREFIX ) ) {
-					// Ignoring phpcs here, and not passing the variant so that the correct default can be selected by PHP based on the version. INTL_IDNA_VARIANT_UTS46 for php>=7.4, INTL_IDNA_VARIANT_2003 for php<7.4.
+					// Ignoring phpcs here, and not passing the variant so that the correct default can be selected by PHP based on the
+					// version. INTL_IDNA_VARIANT_UTS46 for PHP>=7.4, INTL_IDNA_VARIANT_2003 for PHP<7.4.
 					// phpcs:ignore PHPCompatibility.ParameterValues.NewIDNVariantDefault.NotSet
 					$host_decoded = idn_to_utf8( $hostname );
 					array_push( $hosts, $host_decoded, "www.$host_decoded" );
 				}
 			} else {
 				// If it's not ASCII, then add the punycode encoded version.
-				// Ignoring phpcs here, and not passing the variant so that the correct default can be selected by PHP based on the version. INTL_IDNA_VARIANT_UTS46 for php>=7.4, INTL_IDNA_VARIANT_2003 for php<7.4.
+				// Ignoring phpcs here, and not passing the variant so that the correct default can be selected by PHP based on the
+				// version. INTL_IDNA_VARIANT_UTS46 for PHP>=7.4, INTL_IDNA_VARIANT_2003 for PHP<7.4.
 				// phpcs:ignore PHPCompatibility.ParameterValues.NewIDNVariantDefault.NotSet
 				$host_encoded = idn_to_ascii( $hostname );
 				array_push( $hosts, $host_encoded, "www.$host_encoded" );
