@@ -72,7 +72,7 @@ const baseActions = {
 	/**
 	 * Creates new property audience.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 *
 	 * @param {Object} audience                             The property audience parameters.
 	 * @param {string} [audience.displayName]               Required. The display name of the Audience.
@@ -130,7 +130,7 @@ const baseSelectors = {
 	/**
 	 * Gets the property audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} An array with audiences objects; `undefined` if not loaded.
