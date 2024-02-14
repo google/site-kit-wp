@@ -43,20 +43,29 @@ import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/data
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { accountsPropertiesProfiles } from '../../../../analytics/datastore/__fixtures__';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import SearchFunnelWidgetGA4 from './index';
 
-const propertyID = '1000';
+const { accountSummaries } = fixtures;
+const accounts = accountSummaries.map( ( account ) => ( {
+	...account,
+	propertySummaries: account.propertySummaries.map( ( property ) => ( {
+		...property,
+		createTime: '2014-10-02T15:01:23Z',
+	} ) ),
+} ) );
+const properties = accounts[ 1 ].propertySummaries;
+const propertyID = properties[ 0 ]._id;
+
 const searchConsoleArgs = {
 	startDate: '2021-08-18',
 	endDate: '2021-10-12',
 	dimensions: 'date',
 };
+
 const ga4ReportArgs = [
 	{
 		startDate: '2021-09-15',
@@ -185,7 +194,7 @@ Analytics4GatheringData.args = {
 		).toISOString();
 
 		const property = {
-			...fixtures.properties[ 0 ],
+			...properties[ 0 ],
 			createTime,
 		};
 		registry
@@ -248,11 +257,6 @@ ReadyWithAnalyticsNotActive.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics',
-			},
-			{
-				active: false,
-				connected: false,
 				slug: 'analytics-4',
 			},
 		] );
@@ -270,11 +274,6 @@ ReadyWithActivateAnalyticsCTA.args = {
 				active: true,
 				connected: true,
 				slug: 'search-console',
-			},
-			{
-				active: false,
-				connected: false,
-				slug: 'analytics',
 			},
 			{
 				active: false,
@@ -455,12 +454,6 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics',
-				shareable: false,
-			},
-			{
-				active: true,
-				connected: true,
 				slug: 'analytics-4',
 				shareable: false,
 			},
@@ -472,7 +465,7 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics'
+				'analytics-4'
 			) ]: false,
 		} );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
@@ -510,30 +503,18 @@ export default {
 				{
 					active: true,
 					connected: true,
-					slug: 'analytics',
-				},
-				{
-					active: true,
-					connected: true,
 					slug: 'analytics-4',
 				},
 			] );
 			provideUserAuthentication( registry );
 
-			const accountID = fixtures.properties[ 0 ]._accountID;
-			const accounts = [
-				{
-					...accountsPropertiesProfiles.accounts[ 0 ],
-					id: accountID,
-				},
-			];
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperties( fixtures.properties, {
-					accountID,
+				.receiveGetAccountSummaries( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetProperty( properties[ 0 ], {
+					propertyID,
 				} );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
