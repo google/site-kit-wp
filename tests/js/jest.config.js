@@ -37,6 +37,7 @@ module.exports = {
 		'<rootDir>/.git',
 		'<rootDir>/node_modules',
 		'<rootDir>/build',
+		'<rootDir>/assets/js/modules/analytics',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
 	transformIgnorePatterns: [ '<rootDir>/node_modules/(?!@material/web)/.*' ],
