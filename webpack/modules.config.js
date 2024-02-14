@@ -68,8 +68,6 @@ module.exports = ( mode, rules, ANALYZE ) => {
 			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 			'googlesitekit-modules-adsense':
 				'./assets/js/googlesitekit-modules-adsense.js',
-			'googlesitekit-modules-analytics':
-				'./assets/js/googlesitekit-modules-analytics.js',
 			'googlesitekit-modules-analytics-4':
 				'./assets/js/googlesitekit-modules-analytics-4.js',
 			'googlesitekit-modules-pagespeed-insights':
