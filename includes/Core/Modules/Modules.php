@@ -25,9 +25,9 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Exception;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Exception;
 
 /**
  * Class managing the different modules.
