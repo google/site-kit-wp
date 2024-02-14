@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
-use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -44,7 +43,6 @@ class ModulesTest extends TestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
-				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
@@ -65,7 +63,7 @@ class ModulesTest extends TestCase {
 					$modules,
 					function( $module ) {
 						// Remove Analytics from the list of available modules.
-						return 'analytics' !== $module;
+						return 'analytics-4' !== $module;
 					}
 				);
 			}
@@ -116,7 +114,6 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			$always_on_modules + array(
-				'analytics'   => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
 			),
 			array_map( 'get_class', $modules->get_active_modules() )
@@ -310,7 +307,7 @@ class ModulesTest extends TestCase {
 		$this->assertFalse( $modules->is_module_connected( 'analytics-4' ) );
 
 		// Ensure the method returns false when Analytics-4 is not connected.
-		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
+		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
 
 		// Update the Analytics 4 settings to be connected.
@@ -457,7 +454,6 @@ class ModulesTest extends TestCase {
 			Site_Verification::MODULE_SLUG,
 			Search_Console::MODULE_SLUG,
 			AdSense::MODULE_SLUG,
-			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
@@ -507,9 +503,9 @@ class ModulesTest extends TestCase {
 
 		yield 'should enable only analytics, search console and forced active modules' => array(
 			function ( $modules ) {
-				return array( Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG );
+				return array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG );
 			},
-			array( Site_Verification::MODULE_SLUG, Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+			array( Site_Verification::MODULE_SLUG, Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield 'should ignore non existing modules, and include modules flagged as forced active' => array(
@@ -566,7 +562,6 @@ class ModulesTest extends TestCase {
 			Site_Verification::MODULE_SLUG,
 			Search_Console::MODULE_SLUG,
 			AdSense::MODULE_SLUG,
-			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
@@ -680,7 +675,7 @@ class ModulesTest extends TestCase {
 		// Checks modules that has an owner.
 		$this->assertTrue( $modules->is_module_recoverable( 'analytics' ) );
 
-		$this->assertTrue( $modules->is_module_recoverable( new Analytics( $context ) ) );
+		$this->assertTrue( $modules->is_module_recoverable( new Analytics_4( $context ) ) );
 
 		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$options       = new Options( $context );
