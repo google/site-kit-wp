@@ -62,7 +62,19 @@ export default function ReportErrorActions( props ) {
 
 	const errors = Array.isArray( error ) ? error : [ error ];
 
-	const retryableErrors = errors.filter(
+	const errorsWithSelectorData = useSelect( ( select ) =>
+		errors.map( ( err ) => {
+			const selectorData =
+				select( storeName )?.getSelectorDataForError( err );
+
+			return {
+				...err,
+				selectorData,
+			};
+		} )
+	);
+
+	const retryableErrors = errorsWithSelectorData?.filter(
 		( err ) =>
 			isErrorRetryable( err, err.selectorData ) &&
 			err.selectorData.name === 'getReport'

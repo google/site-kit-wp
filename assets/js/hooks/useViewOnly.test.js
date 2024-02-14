@@ -24,6 +24,8 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import useViewOnly from './useViewOnly';
 
@@ -53,6 +55,22 @@ describe( 'useViewOnly', () => {
 	it( 'should return true when the current view context is VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY', () => {
 		const { result } = renderHook( () => useViewOnly(), {
 			viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( result.current ).toBe( true );
+	} );
+
+	it( 'should return true when the current view context is VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY', () => {
+		const { result } = renderHook( () => useViewOnly(), {
+			viewContext: VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( result.current ).toBe( true );
+	} );
+
+	it( 'should return true when the current view context is VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY', () => {
+		const { result } = renderHook( () => useViewOnly(), {
+			viewContext: VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 		} );
 
 		expect( result.current ).toBe( true );

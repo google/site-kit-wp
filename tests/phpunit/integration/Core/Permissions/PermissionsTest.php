@@ -153,6 +153,8 @@ class PermissionsTest extends TestCase {
 
 		$this->verify_view_shared_dashboard_capability( $author, $contributor );
 
+		$this->verify_view_wp_dashboard_widget_and_admin_bar_capability( $author, $contributor );
+
 		$this->verify_read_shared_module_data_capability( $author, $contributor );
 
 		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
@@ -189,6 +191,13 @@ class PermissionsTest extends TestCase {
 		$dismissed_items     = new Dismissed_Items( $author_user_options );
 		$dismissed_items->add( 'shared_dashboard_splash', 0 );
 		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
+	}
+
+	private function verify_view_wp_dashboard_widget_and_admin_bar_capability( $author, $contributor ) {
+		$this->assertFalse( user_can( $author, Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
+		$this->assertFalse( user_can( $author, Permissions::VIEW_ADMIN_BAR_MENU ) );
+		$this->assertTrue( user_can( $contributor, Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
+		$this->assertTrue( user_can( $contributor, Permissions::VIEW_ADMIN_BAR_MENU ) );
 	}
 
 	private function verify_read_shared_module_data_capability( $author, $contributor ) {

@@ -336,7 +336,7 @@ final class Permissions {
 				$caps[] = self::SETUP;
 			}
 
-			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
+			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS, self::VIEW_WP_DASHBOARD_WIDGET, self::VIEW_ADMIN_BAR_MENU ), true ) ) {
 				// For regular users, require being authenticated.
 				if ( ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
@@ -364,14 +364,16 @@ final class Permissions {
 			// Intentional fallthrough - viewing the dashboard widget and admin bar menu require
 			// a user to be authenticated.
 			case self::VIEW_AUTHENTICATED_DASHBOARD:
-			case self::VIEW_WP_DASHBOARD_WIDGET:
-			case self::VIEW_ADMIN_BAR_MENU:
 				$caps = array_merge( $caps, $this->check_view_authenticated_dashboard_capability( $user_id ) );
 				break;
 			// Intentional fallthrough.
 			case self::VIEW_DASHBOARD:
 			case self::VIEW_POSTS_INSIGHTS:
 				$caps = array_merge( $caps, $this->check_view_dashboard_capability( $user_id ) );
+				break;
+			case self::VIEW_WP_DASHBOARD_WIDGET:
+			case self::VIEW_ADMIN_BAR_MENU:
+				$caps = array_merge( $caps, $this->check_view_wp_dashboard_widget_and_admin_bar_capability( $user_id ) );
 				break;
 		}
 
@@ -448,6 +450,33 @@ final class Permissions {
 		}
 
 		return $view_authenticated_dashboard;
+	}
+
+	/**
+	 * Checks if the VIEW_WP_DASHBOARD_WIDGET and VIEW_ADMIN_BAR_MENU capabilities are allowed for the user.
+	 *
+	 * Allows access to the VIEW_WP_DASHBOARD_WIDGET and VIEW_ADMIN_BAR_MENU capabilities if the user can view
+	 * either the authenticated or shared dashboard and if the user has a shared role for either the Analytics
+	 * or Search Console module.
+	 *
+	 * @since 1.120.0
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_view_wp_dashboard_widget_and_admin_bar_capability( $user_id ) {
+		$view_dashboard_capability = $this->check_view_dashboard_capability( $user_id );
+
+		if ( in_array( self::AUTHENTICATE, $view_dashboard_capability, true ) || in_array( 'do_not_allow', $view_dashboard_capability, true ) ) {
+			return $view_dashboard_capability;
+		}
+
+		if ( ! $this->user_has_shared_role_for_module( $user_id, 'analytics' ) &&
+			! $this->user_has_shared_role_for_module( $user_id, 'search-console' ) ) {
+			return array( 'do_not_allow' );
+		}
+
+		return array();
 	}
 
 	/**
