@@ -24,7 +24,7 @@ import {
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
 import { zeroing } from './utils/adsense-data-zeroing';
-import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
+import DashboardTopEarningPagesWidgetGA4 from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidgetGA4';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
@@ -83,7 +83,7 @@ generateReportBasedWidgetStories( {
 			.dispatch( MODULES_ADSENSE )
 			.finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
-	Component: DashboardTopEarningPagesWidget,
+	Component: DashboardTopEarningPagesWidgetGA4,
 	wrapWidget: false,
 	additionalVariants: {
 		'AdSense Not Linked': {

@@ -35,8 +35,8 @@ import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
-import { isValidAccountID } from '../../../analytics/util';
 import {
+	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamSelection,
