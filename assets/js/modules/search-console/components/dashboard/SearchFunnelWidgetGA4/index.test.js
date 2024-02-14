@@ -33,7 +33,7 @@ import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import SearchFunnelWidgetGA4 from '.';
 
-describe( 'SearchFunnelWidget', () => {
+describe( 'SearchFunnelWidgetGA4', () => {
 	let registry;
 
 	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );

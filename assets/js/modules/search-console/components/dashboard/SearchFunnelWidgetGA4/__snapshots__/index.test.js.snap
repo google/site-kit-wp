@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SearchFunnelWidget should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
+exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--no-padding googlesitekit-widget--with-header"
@@ -182,7 +182,7 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
 </div>
 `;
 
-exports[`SearchFunnelWidget should render the Search Funnel Widget, including the Activate Analytics CTA 1`] = `
+exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including the Activate Analytics CTA 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--no-padding googlesitekit-widget--with-header"

@@ -1,5 +1,5 @@
 /**
- * AnalyticsStats component for SearchFunnelWidget.
+ * AnalyticsStats component for SearchFunnelWidgetGA4.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
