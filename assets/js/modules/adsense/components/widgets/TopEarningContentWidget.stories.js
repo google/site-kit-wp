@@ -65,8 +65,8 @@ const pageTitlesReportOptions = {
 			.sort(),
 	},
 	dimensions: [ 'pagePath', 'pageTitle' ],
-	metrics: [ { name: 'totalAdRevenue' } ],
-	orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
+	metrics: [ { name: 'screenPageViews' } ],
+	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
 };
 
@@ -231,6 +231,11 @@ export default {
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'adsense',
 						active: true,
 						connected: true,
 					},
