@@ -37,10 +37,7 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	EDIT_SCOPE,
-	FORM_SETUP,
-} from '../../../../analytics/datastore/constants';
+import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import {
 	DAY_IN_SECONDS,

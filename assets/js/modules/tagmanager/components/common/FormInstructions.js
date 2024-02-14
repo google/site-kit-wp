@@ -33,7 +33,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
@@ -58,7 +58,7 @@ export default function FormInstructions( { isSetup } ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getPropertyID();
+		return select( MODULES_ANALYTICS_4 ).getPropertyID();
 	} );
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
