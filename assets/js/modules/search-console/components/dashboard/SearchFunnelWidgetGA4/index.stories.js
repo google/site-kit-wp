@@ -306,11 +306,6 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics',
-			},
-			{
-				active: true,
-				connected: false,
 				slug: 'analytics-4',
 			},
 		] );
