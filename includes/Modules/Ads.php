@@ -31,9 +31,7 @@ final class Ads extends Module {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function register() {
-
-	}
+	public function register() {}
 
 	/**
 	 * Sets up information about the module.
