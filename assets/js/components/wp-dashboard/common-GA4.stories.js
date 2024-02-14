@@ -315,6 +315,16 @@ export const setupBaseRegistry = ( registry, args ) => {
 	}
 };
 
+export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
+	setupSearchConsoleGatheringData( registry );
+	setupAnalytics4GatheringData( registry );
+};
+
+export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
+	setupSearchConsoleZeroData( registry );
+	setupAnalytics4ZeroData( registry );
+};
+
 export const widgetDecorators = [
 	( Story ) => (
 		<div id="dashboard-widgets">

@@ -35,12 +35,12 @@ import {
 } from '../../datastore/constants';
 import EnhancedMeasurementSwitch from '../common/EnhancedMeasurementSwitch';
 import {
+	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
-import { isValidAccountID } from '../../../analytics/util';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupEnhancedMeasurementSwitch() {

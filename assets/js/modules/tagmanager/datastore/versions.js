@@ -33,7 +33,7 @@ import {
 	isValidInternalContainerID,
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '../../analytics/util';
+import { isValidPropertyID } from '../../analytics-4/utils/validation';
 const { createRegistrySelector } = Data;
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {

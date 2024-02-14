@@ -18,13 +18,13 @@
  * Internal dependencies
  */
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import { widgetDecorators } from './common.stories';
 import {
 	setupAnalytics4MockReports,
 	setupAnalytics4GatheringData,
 	setupAnalytics4ZeroData,
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
+	widgetDecorators,
 } from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
