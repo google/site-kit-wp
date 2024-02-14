@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../material-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { extractAnalyticsDashboardData } from '../../../analytics/util';
 import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
 import GoogleChart from '../../../../components/GoogleChart';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
@@ -64,26 +63,13 @@ function extractChartData(
 	tooltipDataFormats,
 	chartDataFormats
 ) {
-	if ( moduleSlug === 'analytics-4' ) {
-		return extractAnalytics4DashboardData(
-			data,
-			selectedStats,
-			dateRangeLength,
-			dataLabels,
-			tooltipDataFormats,
-			chartDataFormats
-		);
-	}
-	return (
-		extractAnalyticsDashboardData(
-			data,
-			selectedStats,
-			dateRangeLength,
-			0,
-			1,
-			dataLabels,
-			tooltipDataFormats
-		) || []
+	return extractAnalytics4DashboardData(
+		data,
+		selectedStats,
+		dateRangeLength,
+		dataLabels,
+		tooltipDataFormats,
+		chartDataFormats
 	);
 }
 
