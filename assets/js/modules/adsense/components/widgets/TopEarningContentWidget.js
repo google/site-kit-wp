@@ -104,6 +104,7 @@ function TopEarningContentWidget( { Widget } ) {
 		if ( viewOnlyDashboard && loading ) {
 			return undefined;
 		}
+
 		return select( MODULES_ANALYTICS ).getAdsenseLinked();
 	} );
 

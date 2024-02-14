@@ -91,6 +91,7 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
 	) {
 		return true;
 	}
+
 	return false;
 }
 

@@ -131,6 +131,7 @@ export const registerWidgets = ( widgets ) => {
 				if ( isViewOnly && ! isAdSenseLinked ) {
 					return false;
 				}
+
 				return true;
 			},
 		},
