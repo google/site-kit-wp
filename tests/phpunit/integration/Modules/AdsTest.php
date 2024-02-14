@@ -23,7 +23,7 @@ class AdsTest extends TestCase {
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEquals( 'ads', $ads->slug );
-		$this->assertEquals( 'name', $ads->name );
+		$this->assertEquals( 'Ads', $ads->name );
 		$this->assertEquals( 'https://google.com/ads', $ads->homepage );
 	}
 }
