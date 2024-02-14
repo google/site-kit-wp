@@ -30,8 +30,10 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from '../../modules/analytics-4/datastore/constants';
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
@@ -51,7 +53,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		( select ) =>
 			select( CORE_USER ).getDateRangeDates( {
 				compare: true,
-				offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
+				offsetDays: DATE_RANGE_OFFSET,
 			} )
 	);
 

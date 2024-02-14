@@ -35,12 +35,11 @@ import {
 	provideUserAuthentication,
 } from '../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'SettingsModule', () => {
-	function SettingsModuleWithWrapper( { slug = 'analytics' } ) {
+	function SettingsModuleWithWrapper( { slug = 'analytics-4' } ) {
 		return (
 			<Switch>
 				<Route
@@ -66,10 +65,10 @@ describe( 'SettingsModule', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
-				storeName: MODULES_ANALYTICS,
+				storeName: MODULES_ANALYTICS_4,
 				SettingsEditComponent() {
 					return <div data-testid="edit-component">edit</div>;
 				},
@@ -102,7 +101,6 @@ describe( 'SettingsModule', () => {
 			},
 		] );
 		provideUserAuthentication( registry );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 	} );

@@ -46,7 +46,7 @@ import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 } from '../assets/js/modules/tagmanager/datastore/constants';
-import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import * as modulesFixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import {
@@ -107,7 +107,7 @@ const withRegistry = ( Story ) => {
 	const activeModules = modulesFixtures.withActive( 'tagmanager' );
 	registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
 	registry
-		.dispatch( MODULES_ANALYTICS )
+		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetSettings( { propertyID: '' } );
 
 	return <Story registry={ registry } />;
@@ -130,7 +130,7 @@ const withRegistryPrimaryAMP = ( Story ) => {
 	const activeModules = modulesFixtures.withActive( 'tagmanager' );
 	registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
 	registry
-		.dispatch( MODULES_ANALYTICS )
+		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetSettings( { propertyID: '' } );
 
 	return <Story registry={ registry } />;
@@ -153,7 +153,7 @@ const withRegistrySecondaryAMP = ( Story ) => {
 	const activeModules = modulesFixtures.withActive( 'tagmanager' );
 	registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
 	registry
-		.dispatch( MODULES_ANALYTICS )
+		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetSettings( { propertyID: '' } );
 
 	return <Story registry={ registry } />;
@@ -393,7 +393,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 							internalContainerID
 						);
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( propertyID );
 
 					const { buildAndReceiveWebAndAMP } =
@@ -554,7 +554,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 							internalContainerID
 						);
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( propertyID );
 
 					const { buildAndReceiveWebAndAMP } =
@@ -888,7 +888,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 							internalContainerID
 						);
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( propertyID );
 
 					const { buildAndReceiveWebAndAMP } =

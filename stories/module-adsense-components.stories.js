@@ -27,18 +27,19 @@ import { zeroing } from './utils/adsense-data-zeroing';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
-import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import {
 	getAdSenseMockResponse,
 	provideAdSenseMockReport,
 } from '../assets/js/modules/adsense/util/data-mock';
-import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
+import { getAnalytics4MockResponse } from '../assets/js/modules/analytics-4/utils/data-mock';
 
 const generateAnalyticsData = makeReportDataGenerator(
-	getAnalyticsMockResponse
+	getAnalytics4MockResponse
 );
 const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
 
+// @TODO: Update it to GA4.
 const topEarningPagesArgs = {
 	startDate: '2020-08-15',
 	endDate: '2020-09-11',
@@ -64,15 +65,15 @@ const getCurrencyFromReportOptions = {
 };
 
 generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'adsense', 'analytics' ],
-	datastore: MODULES_ANALYTICS,
+	moduleSlugs: [ 'adsense', 'analytics-4' ],
+	datastore: MODULES_ANALYTICS_4,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
 	...generateAnalyticsData( { ...topEarningPagesArgs } ),
 	options: topEarningPagesArgs,
 	setup: ( registry, variantName ) => {
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 		registry
 			.dispatch( MODULES_ADSENSE )

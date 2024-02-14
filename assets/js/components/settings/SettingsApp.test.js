@@ -34,7 +34,7 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/tracking'
@@ -88,7 +88,7 @@ describe( 'SettingsApp', () => {
 				connected: true,
 			},
 		] );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
 	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', () => {

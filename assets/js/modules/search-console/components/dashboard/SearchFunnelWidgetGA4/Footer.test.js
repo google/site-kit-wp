@@ -32,7 +32,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
 import Footer from './Footer';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import * as analytics4fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
 describe( 'Footer', () => {
@@ -62,7 +62,7 @@ describe( 'Footer', () => {
 
 	it( 'should not make a search console settings requests when the view context is "view only"', () => {
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSettings( analytics4fixtures.defaultSettings );
 
 		const { container } = render(
@@ -85,7 +85,7 @@ describe( 'Footer', () => {
 
 	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSettings( analytics4fixtures.defaultSettings );
 
 		const { container } = render(
@@ -97,7 +97,9 @@ describe( 'Footer', () => {
 		);
 
 		expect( fetchMock ).not.toHaveFetched(
-			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/settings'
+			)
 		);
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();

@@ -30,7 +30,6 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
-import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import {
 	setupAnalytics4ZeroData,
 	provideAnalytics4ReportTitles,
@@ -38,6 +37,8 @@ import {
 	setupAnalytics4MockReports,
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
+	setupSearchConsoleZeroData,
+	widgetDecorators,
 } from './common-GA4.stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 

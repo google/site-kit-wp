@@ -44,7 +44,7 @@ import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
+import { FORM_SETUP } from '../../../modules/analytics-4/datastore/constants';
 import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';

@@ -30,9 +30,11 @@ import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from '../../modules/analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 function AdminBarSessionsGA4( { WidgetReportError } ) {

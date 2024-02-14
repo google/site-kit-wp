@@ -32,7 +32,7 @@ import {
 } from '../util/errors';
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
-import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
 
 describe( 'ReportError', () => {
@@ -83,9 +83,9 @@ describe( 'ReportError', () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 		provideModuleRegistrations( registry );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		invalidateResolutionSpy = jest.spyOn(
-			registry.dispatch( MODULES_ANALYTICS ),
+			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'invalidateResolution'
 		);
 	} );
@@ -184,11 +184,11 @@ describe( 'ReportError', () => {
 			'56789',
 		];
 
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.setInternalWebPropertyID( internalWebPropertyID );
-		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setProfileID( profileID );
 
 		const { container, queryByText, waitForRegistry } = render(
 			<ReportError
@@ -289,11 +289,11 @@ describe( 'ReportError', () => {
 			'56789',
 		];
 
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.setInternalWebPropertyID( internalWebPropertyID );
-		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setProfileID( profileID );
 
 		const { queryByText, waitForRegistry } = render(
 			<ReportError
@@ -319,7 +319,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", async () => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -331,7 +331,7 @@ describe( 'ReportError', () => {
 			[]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
@@ -346,7 +346,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', async () => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -358,7 +358,7 @@ describe( 'ReportError', () => {
 			[]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
@@ -373,7 +373,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error reason is `ERROR_CODE_MISSING_REQUIRED_SCOPE`', async () => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: 'Test error message',
@@ -385,7 +385,7 @@ describe( 'ReportError', () => {
 			[]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
@@ -400,7 +400,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error is an auth error', async () => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -413,7 +413,7 @@ describe( 'ReportError', () => {
 			[]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
@@ -428,7 +428,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render the `Retry` button if the error selector name is `getReport`', async () => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -447,7 +447,7 @@ describe( 'ReportError', () => {
 			]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { getByRole, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
@@ -464,11 +464,11 @@ describe( 'ReportError', () => {
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', async () => {
 		for ( const { error, baseName, args } of newErrors ) {
 			await registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveError( error, baseName, args );
 		}
 		// The following error object is not retry-able.
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: 'Test error message',
@@ -480,7 +480,7 @@ describe( 'ReportError', () => {
 			[]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { getByRole, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
@@ -504,11 +504,11 @@ describe( 'ReportError', () => {
 	it( 'should list all the error descriptions one by one if errors are different', async () => {
 		for ( const { error, baseName, args } of newErrors ) {
 			await registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveError( error, baseName, args );
 		}
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, getByRole, waitForRegistry } = render(
 			<ReportError moduleSlug="analytics" error={ errors } />,
@@ -533,11 +533,11 @@ describe( 'ReportError', () => {
 	it( 'should list only the unique error descriptions', async () => {
 		for ( const { error, baseName, args } of newErrors ) {
 			await registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveError( error, baseName, args );
 		}
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { container, queryByText, getByRole, waitForRegistry } = render(
 			<ReportError
@@ -570,7 +570,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render `Get help` link without prefix text on non-retryable error', async () => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: 'Test error message',
@@ -582,7 +582,7 @@ describe( 'ReportError', () => {
 			[]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { getByRole, queryByText, waitForRegistry } = render(
 			<ReportError
@@ -604,7 +604,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render `Get help` link with prefix text on retryable error', async () => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -623,7 +623,7 @@ describe( 'ReportError', () => {
 			]
 		);
 
-		const errors = registry.select( MODULES_ANALYTICS ).getErrors();
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 		const { getByRole, queryByText, waitForRegistry } = render(
 			<ReportError
 				moduleSlug="analytics"
