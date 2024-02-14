@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import ErrorText from '../../../../components/ErrorText';
@@ -45,8 +45,8 @@ export default function SetupErrorNotice() {
 				return false;
 			}
 
-			const settings = select( MODULES_ANALYTICS ).getSettings();
-			return select( MODULES_ANALYTICS ).getErrorForAction(
+			const settings = select( MODULES_ANALYTICS_4 ).getSettings();
+			return select( MODULES_ANALYTICS_4 ).getErrorForAction(
 				'saveSettings',
 				[ settings ]
 			);

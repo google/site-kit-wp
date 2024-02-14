@@ -33,6 +33,8 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
+	EDIT_SCOPE,
+	FORM_SETUP,
 } from '../../../datastore/constants';
 import {
 	ACTIVATION_STEP_IN_PROGRESS,
@@ -41,10 +43,6 @@ import {
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 } from '../../../constants';
-import {
-	EDIT_SCOPE,
-	FORM_SETUP,
-} from '../../../../analytics/datastore/constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';

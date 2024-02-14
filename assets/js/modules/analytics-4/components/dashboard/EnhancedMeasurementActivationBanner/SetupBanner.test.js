@@ -31,8 +31,7 @@ import {
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4, EDIT_SCOPE } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import { properties } from '../../../datastore/__fixtures__';
 import SetupBanner from './SetupBanner';

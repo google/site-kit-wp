@@ -48,7 +48,7 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 // Invariant error messages.
@@ -133,9 +133,9 @@ export async function submitChanges( { select, dispatch } ) {
 		// Fetch the latest settings in the Analytics store so that we can update
 		// the filtered value of canUseSnippet.
 		const analyticsModuleConnected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics' );
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 		if ( analyticsModuleConnected ) {
-			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
+			await dispatch( MODULES_ANALYTICS_4 ).fetchGetSettings();
 		}
 	}
 
@@ -164,7 +164,7 @@ export function validateCanSubmitChanges( select ) {
 	} = strictSelect( MODULES_TAGMANAGER );
 	const { isAMP, isSecondaryAMP } = strictSelect( CORE_SITE );
 	const { isModuleActive } = strictSelect( CORE_MODULES );
-	const { getPropertyID } = strictSelect( MODULES_ANALYTICS );
+	const { getPropertyID } = strictSelect( MODULES_ANALYTICS_4 );
 
 	const accountID = getAccountID();
 

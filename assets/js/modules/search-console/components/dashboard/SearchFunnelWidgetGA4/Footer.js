@@ -38,8 +38,10 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { generateDateRangeArgs } from '../../../util';
 import { getURLPath, untrailingslashit } from '../../../../../util';
-import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
+} from '../../../../analytics-4/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
 import useViewOnly from '../../../../../hooks/useViewOnly';

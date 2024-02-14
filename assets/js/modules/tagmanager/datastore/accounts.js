@@ -32,7 +32,7 @@ import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { ACCOUNT_CREATE } from '../../analytics/datastore/constants';
+import { ACCOUNT_CREATE } from '../../analytics-4/datastore/constants';
 const { createRegistrySelector } = Data;
 
 // Actions
