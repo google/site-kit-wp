@@ -19,6 +19,8 @@
 /**
  * Internal dependencies
  */
+import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import {
@@ -271,3 +273,73 @@ export function setupAnalytics4Property( registry, createdDayBefore = 10 ) {
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 }
+
+export const setupSearchConsoleZeroData = ( registry ) => {
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+		[
+			{
+				clicks: 0,
+				ctr: 0,
+				impressions: 0,
+				keys: [ '2021-08-18' ],
+				position: 0,
+			},
+		],
+		{
+			options: wpDashboardSearchConsoleOptions,
+		}
+	);
+};
+
+export const setupBaseRegistry = ( registry, args ) => {
+	// Set up the search console and analytics modules stores but provide no data.
+	provideModules( registry, [
+		{
+			slug: 'search-console',
+			active: true,
+			connected: true,
+		},
+		{
+			slug: 'analytics-4',
+			active: true,
+			connected: true,
+		},
+	] );
+
+	// Set some site information.
+	provideSiteInfo( registry );
+
+	// Call story-specific setup.
+	if ( typeof args?.setupRegistry === 'function' ) {
+		args.setupRegistry( registry );
+	}
+};
+
+export const widgetDecorators = [
+	( Story ) => (
+		<div id="dashboard-widgets">
+			<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
+				<div className="inside">
+					<div className="googlesitekit-wp-dashboard">
+						<div className="googlesitekit-widget">
+							<div className="googlesitekit-widget__body">
+								<Story />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	),
+	( Story, { args } ) => {
+		const setupRegistry = ( registry ) => {
+			setupBaseRegistry( registry, args );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];

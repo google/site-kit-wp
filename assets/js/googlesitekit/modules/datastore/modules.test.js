@@ -41,7 +41,7 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/modules modules', () => {
@@ -347,7 +347,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: getModulesBySlugList( [ slugs ], FIXTURES ),
@@ -448,7 +448,7 @@ describe( 'core/modules modules', () => {
 				// Ensure fetchGetSettings have been called.
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: {
@@ -461,7 +461,7 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: {
@@ -539,7 +539,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: getModulesBySlugList( [ slugs ], FIXTURES ),
@@ -633,7 +633,7 @@ describe( 'core/modules modules', () => {
 				// Ensure fetchGetSettings has been called for Analytics.
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: {
@@ -1988,7 +1988,7 @@ describe( 'core/modules modules', () => {
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					)
 				);
 
@@ -2144,7 +2144,7 @@ describe( 'core/modules modules', () => {
 					.getShareableModules();
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( analytics4fixtures.defaultSettings );
 
 				expect(

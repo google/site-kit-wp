@@ -47,10 +47,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/co
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 import {
-	MODULES_ANALYTICS,
 	EDIT_SCOPE,
-} from '../../../modules/analytics/datastore/constants';
-import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
@@ -477,7 +474,7 @@ describe( 'MetricsSelectionPanel', () => {
 			} );
 
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetSettings( analytics4Fixtures.defaultSettings );
 
 			const { waitForRegistry } = render( <MetricsSelectionPanel />, {

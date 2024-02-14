@@ -34,10 +34,12 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	FORM_SETUP,
+} from '../../../modules/analytics-4/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';

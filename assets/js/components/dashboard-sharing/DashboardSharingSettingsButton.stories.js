@@ -29,7 +29,7 @@ import DashboardSharingSettingsButton from './DashboardSharingSettingsButton';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import {
 	sharingSettings,
 	modules,
@@ -100,7 +100,7 @@ export default {
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.receiveGetSettings( { ownerID: 1 } );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( { ownerID: 1 } );
 
 				// Call story-specific setup.
