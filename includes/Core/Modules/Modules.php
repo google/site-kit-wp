@@ -146,6 +146,7 @@ final class Modules {
 		Site_Verification::MODULE_SLUG  => Site_Verification::class,
 		Search_Console::MODULE_SLUG     => Search_Console::class,
 		Analytics::MODULE_SLUG          => Analytics::class,
+		Analytics_4::MODULE_SLUG        => Analytics_4::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
 		AdSense::MODULE_SLUG            => AdSense::class,
 		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
