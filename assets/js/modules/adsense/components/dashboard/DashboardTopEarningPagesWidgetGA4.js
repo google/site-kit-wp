@@ -37,7 +37,7 @@ import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
 } from '../../../analytics-4/datastore/constants';
-import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
 import whenActive from '../../../../util/when-active';
 import SourceLink from '../../../../components/SourceLink';
 import SettingsNotice from '../../../../components/SettingsNotice';
