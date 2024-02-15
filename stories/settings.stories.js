@@ -96,7 +96,7 @@ storiesOf( 'Settings', module )
 					registry,
 					[
 						'adsense',
-						'analytics',
+						'analytics-4',
 						'pagespeed-insights',
 						'search-console',
 					].map( ( slug ) => ( {
