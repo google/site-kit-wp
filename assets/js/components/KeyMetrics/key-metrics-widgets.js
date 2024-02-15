@@ -87,7 +87,7 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
 
 	if (
 		isViewOnlyDashboard &&
-		select( MODULES_ANALYTICS_4 ).hasAdSenseLinked()
+		select( MODULES_ANALYTICS_4 ).getAdSenseLinked()
 	) {
 		return true;
 	}
