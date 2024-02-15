@@ -274,7 +274,9 @@ final class Modules {
 
 				try {
 					$analytics = $this->get_module( Analytics_4::MODULE_SLUG );
-					$analytics->handle_token_response_data( $token_response );
+					// @TODO: We don't have this method in Analytics_4 module.
+					// Investigate if we need to add this method in Analytics_4 module or not.
+					// $analytics->handle_token_response_data( $token_response );
 				} catch ( Exception $e ) {
 					return;
 				}
