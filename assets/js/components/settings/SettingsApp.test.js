@@ -73,12 +73,6 @@ describe( 'SettingsApp', () => {
 					return <div data-testid="edit-component">edit</div>;
 				},
 			},
-			// @TODO: Remove this once we remove the legacy analytics module.
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'tagmanager',
 				active: true,
