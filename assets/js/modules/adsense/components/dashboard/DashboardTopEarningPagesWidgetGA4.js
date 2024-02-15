@@ -42,7 +42,7 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import whenActive from '../../../../util/when-active';
 import AdBlockerWarning from '../common/AdBlockerWarning';
-import { AdSenseLinkCTA } from '../../../analytics-4/components/common';
+import { AdSenseLinkCTA } from '../common';
 import SourceLink from '../../../../components/SourceLink';
 import SettingsNotice from '../../../../components/SettingsNotice';
 import useViewOnly from '../../../../hooks/useViewOnly';
