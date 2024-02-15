@@ -48,7 +48,7 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsEnhancedMeasurementSwitch( {
-	hasAnalytics4Access,
+	hasModuleAccess,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -71,7 +71,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	const isLoadingWebDataStreams = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).isLoadingWebDataStreams( {
-			hasModuleAccess: hasAnalytics4Access,
+			hasModuleAccess,
 		} );
 	} );
 
@@ -199,7 +199,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	return (
 		<EnhancedMeasurementSwitch
-			disabled={ ! hasAnalytics4Access }
+			disabled={ ! hasModuleAccess }
 			loading={ isLoading }
 			isEnhancedMeasurementAlreadyEnabled={
 				isEnhancedMeasurementAlreadyEnabled
@@ -225,5 +225,5 @@ export default function SettingsEnhancedMeasurementSwitch( {
 }
 
 SettingsEnhancedMeasurementSwitch.propTypes = {
-	hasAnalytics4Access: PropTypes.bool,
+	hasModuleAccess: PropTypes.bool,
 };

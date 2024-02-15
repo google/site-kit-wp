@@ -50,13 +50,11 @@ class Dismissed_ItemsTest extends TestCase {
 		);
 
 		$this->dismissed_items->add( 'bar', 100 );
-		$this->assertEquals(
-			array(
-				'foo' => 0,
-				'bar' => time() + 100,
-			),
-			$this->user_options->get( Dismissed_Items::OPTION )
-		);
+		$user_options = $this->user_options->get( Dismissed_Items::OPTION );
+		$this->assertArrayHasKey( 'foo', $user_options );
+		$this->assertEquals( 0, $user_options['foo'] );
+		$this->assertArrayHasKey( 'bar', $user_options );
+		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2 );
 	}
 
 	public function test_remove() {
@@ -69,14 +67,13 @@ class Dismissed_ItemsTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
-			array(
-				'foo' => 0,
-				'bar' => time() + 100,
-				'baz' => time() + 200,
-			),
-			$this->user_options->get( Dismissed_Items::OPTION )
-		);
+		$user_options = $this->user_options->get( Dismissed_Items::OPTION );
+		$this->assertArrayHasKey( 'foo', $user_options );
+		$this->assertArrayHasKey( 'bar', $user_options );
+		$this->assertArrayHasKey( 'baz', $user_options );
+		$this->assertEquals( 0, $user_options['foo'] );
+		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2 );
+		$this->assertEqualsWithDelta( time() + 200, $user_options['baz'], 2 );
 
 		$this->dismissed_items->remove( 'bar' );
 

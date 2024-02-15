@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -66,6 +67,14 @@ final class Admin_Bar {
 	private $admin_bar_enabled;
 
 	/**
+	 * Authentication instance.
+	 *
+	 * @since 1.120.0
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -85,6 +94,7 @@ final class Admin_Bar {
 
 		$options                 = new Options( $this->context );
 		$this->admin_bar_enabled = new Admin_Bar_Enabled( $options );
+		$this->authentication    = new Authentication( $this->context );
 	}
 
 	/**
@@ -259,6 +269,7 @@ final class Admin_Bar {
 	 * This is only relevant if the current context is AMP.
 	 *
 	 * @since 1.1.0
+	 * @since 1.120.0 Added the `data-view-only` attribute.
 	 *
 	 * @return bool True if AMP dev mode is enabled, false otherwise.
 	 */
@@ -275,11 +286,13 @@ final class Admin_Bar {
 		// Start buffer output.
 		ob_start();
 
+		$is_view_only = ! $this->authentication->is_authenticated();
+
 		?>
 		<div class="googlesitekit-plugin ab-sub-wrapper">
 			<?php $this->render_noscript_html(); ?>
 
-			<div id="js-googlesitekit-adminbar" class="googlesitekit-adminbar">
+			<div id="js-googlesitekit-adminbar" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" class="googlesitekit-adminbar">
 
 				<?php
 				/**
