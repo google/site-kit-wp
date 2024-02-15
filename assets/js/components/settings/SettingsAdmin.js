@@ -58,7 +58,10 @@ export default function SettingsAdmin() {
 			return true;
 		}
 
-		// Following resolvers are not resolved if Analytics is disconnected.
+		// The resolvers below are never resolved if Analytics is disconnected,
+		// so if it's disconnected, return early.
+		//
+		// Because they're never called nothing else can be loading.
 		if ( isAnalyticsConnected === false ) {
 			return false;
 		}
