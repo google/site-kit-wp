@@ -21,6 +21,8 @@
  */
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 import Widget from '../../../../googlesitekit/widgets/components/Widget';
 
@@ -28,13 +30,34 @@ function Template() {
 	return <DashboardTopEarningPagesWidgetGA4 Widget={ Widget } />;
 }
 
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
+export const Default = Template.bind( {} );
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
+	},
+};
+Default.storyName = 'Default';
+
+export const AdSenseNotLinked = Template.bind( {} );
+AdSenseNotLinked.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
+	},
+};
+AdSenseNotLinked.storyName = 'AdSense Not Linked';
+
+export const AdBlockerActive = Template.bind( {} );
+AdBlockerActive.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
+	},
+};
+AdBlockerActive.storyName = 'Ad Blocker Active';
 
 export default {
 	title: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -48,6 +71,8 @@ export default {
 						slug: 'analytics-4',
 					},
 				] );
+
+				args?.setupRegistry( registry );
 			};
 
 			return (

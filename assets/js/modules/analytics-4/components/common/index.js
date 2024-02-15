@@ -25,4 +25,5 @@ export { default as WebDataStreamSelect } from './WebDataStreamSelect';
 export { default as PropertySelect } from './PropertySelect';
 export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
+export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as Notice } from './Notice';
