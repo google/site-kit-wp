@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -1109,6 +1110,47 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_ads_conversion_id',
+			),
+			array_keys( $this->analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__AdSense_disabled() {
+		$this->assertEqualSets(
+			array(
+				'analytics_4_account_id',
+				'analytics_4_ads_conversion_id',
+				'analytics_4_available_custom_dimensions',
+				'analytics_4_measurement_id',
+				'analytics_4_property_id',
+				'analytics_4_use_snippet',
+				'analytics_4_web_data_stream_id',
+			),
+			array_keys( $this->analytics->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__AdSense_enabled() {
+
+		$adsense_settings = new AdSense_Settings( $this->options );
+		$adsense_settings->merge(
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		$this->assertEqualSets(
+			array(
+				'analytics_4_account_id',
+				'analytics_4_ads_conversion_id',
+				'analytics_4_available_custom_dimensions',
+				'analytics_4_measurement_id',
+				'analytics_4_property_id',
+				'analytics_4_use_snippet',
+				'analytics_4_web_data_stream_id',
+				'adsense_linked',
+				'adsense_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);

@@ -134,10 +134,12 @@ describe( 'SettingsApp', () => {
 
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
-		const { getAllByRole } = render( <SettingsApp />, {
+		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
 			history,
 			registry,
 		} );
+
+		await waitForRegistry();
 
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'admin-settings' ) ]

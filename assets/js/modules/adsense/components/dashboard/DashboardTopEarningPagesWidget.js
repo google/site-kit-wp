@@ -41,10 +41,8 @@ import Link from '../../../../components/Link';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import UACutoffWarning from '../../../analytics/components/common/UACutoffWarning';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
-import {
-	ZeroDataMessage,
-	AdSenseLinkCTA,
-} from '../../../analytics/components/common';
+import { AdSenseLinkCTA } from '../common';
+import { ZeroDataMessage } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
 import useViewOnly from '../../../../hooks/useViewOnly';
