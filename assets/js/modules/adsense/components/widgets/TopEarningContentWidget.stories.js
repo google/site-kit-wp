@@ -39,7 +39,6 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -250,7 +249,7 @@ export default {
 				];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -261,7 +260,9 @@ export default {
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
-				registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.getAdSenseLinked( true );
 
 				provideKeyMetrics( registry );
 
