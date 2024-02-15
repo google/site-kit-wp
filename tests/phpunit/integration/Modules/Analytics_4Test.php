@@ -1118,11 +1118,13 @@ class Analytics_4Test extends TestCase {
 	public function test_get_debug_fields__AdSense_disabled() {
 		$this->assertEqualSets(
 			array(
-				'analytics_4_property_id',
-				'analytics_4_web_data_stream_id',
-				'analytics_4_measurement_id',
-				'analytics_4_use_snippet',
+				'analytics_4_account_id',
+				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
+				'analytics_4_measurement_id',
+				'analytics_4_property_id',
+				'analytics_4_use_snippet',
+				'analytics_4_web_data_stream_id',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -1140,11 +1142,13 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'analytics_4_property_id',
-				'analytics_4_web_data_stream_id',
-				'analytics_4_measurement_id',
-				'analytics_4_use_snippet',
+				'analytics_4_account_id',
+				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
+				'analytics_4_measurement_id',
+				'analytics_4_property_id',
+				'analytics_4_use_snippet',
+				'analytics_4_web_data_stream_id',
 				'adsense_linked',
 				'adsense_linked_last_synced_at',
 			),
