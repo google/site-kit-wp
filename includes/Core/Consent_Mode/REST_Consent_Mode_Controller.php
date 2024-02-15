@@ -68,7 +68,7 @@ class REST_Consent_Mode_Controller {
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
 							$this->consent_mode_settings->set(
-								$request['data']
+								$request['data']['settings']
 							);
 
 							return new WP_REST_Response( $this->consent_mode_settings->get() );

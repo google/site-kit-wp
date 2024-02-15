@@ -2,103 +2,108 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
+use Closure;
+
 class Gtag_JS {
-	use Tag_With_DNS_Prefetch_Trait;
-
 	const HANDLE = 'google_gtagjs';
-	protected $measurement_id;
 
-	public function __construct( $measurement_id ) {
-		$this->measurement_id = (string) $measurement_id;
-	}
-
-	public function register() {
-		wp_register_script(
+	/**
+	 * Enqueues gtag for the given measurement ID.
+	 *
+	 * Everything in this method should be safe to call multiple times.
+	 */
+	public static function enqueue( $measurement_id ) {
+		wp_enqueue_script(
 			self::HANDLE,
-			'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->measurement_id ),
-			array(), // Deps
-			null // Version: omit ?ver=
-			// Core async strategy puts the script in the footer, and removes async when setting inline scripts
+			'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $measurement_id ),
+			array(),
+			null
 		);
 
+		// Core async strategy puts the script in the footer, and removes async when adding inline scripts.
 		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
 
-		add_filter(
-			'wp_resource_hints',
-			$this->get_dns_prefetch_hints_callback( '//www.googletagmanager.com' ),
-			10,
-			2
-		);
-
-		add_action(
-			'wp_print_scripts',
-			function () {
-				if (
-					! wp_script_is( self::HANDLE, 'queue' )
-					|| wp_script_is( self::HANDLE, 'done' )
-				) {
-					return;
-				}
-
-				$this->print_comment( __( 'Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
-				$this->print_tag_before();
-				wp_scripts()->do_items( self::HANDLE );
-				$this->print_tag_after();
-				$this->print_comment( __( 'End Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
-			}
-		);
+		// static callbacks are only added once.
+		add_filter( 'wp_resource_hints', array( self::class, 'wp_resource_hints' ), 10, 2 );
+		add_action( 'wp_print_scripts', array( self::class, 'wp_print_scripts' ) );
 	}
 
-	public static function enqueue() {
-		wp_enqueue_script( self::HANDLE );
+	public static function wp_resource_hints( $urls, $relation_type ) {
+		if ( 'dns-prefetch' === $relation_type ) {
+			$urls[] = '//www.googletagmanager.com';
+		}
+
+		return $urls;
 	}
 
-	private function print_tag_before() {
+	public static function wp_print_scripts() {
+		if (
+			! wp_script_is( self::HANDLE, 'enqueued' )
+			|| wp_script_is( self::HANDLE, 'done' )
+		) {
+			return;
+		}
+
+		self::print_comment( __( 'Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
+		self::print_tag_before();
+		wp_scripts()->do_items( self::HANDLE );
+		self::print_tag_after();
+		self::print_comment( __( 'End Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
+	}
+
+	private static function print_tag_before() {
 		// Limit the earliest commands to configuring consent only.
-		$gtag = new Gtag( [ 'consent' ] );
-		$func = $this->gtag_func( $gtag );
+		$gtag = new Gtag( array( 'consent' ) );
+		$func = self::gtag_func( $gtag );
 
 		do_action( 'googlesitekit_gtag_before', $func );
 
 		if ( $gtag->has_calls() ) {
-			$this->print_commands( $gtag );
+			self::print_commands( $gtag );
 		}
 	}
 
-	private function gtag_func( Gtag $gtag ) {
+	private static function print_tag_after() {
+		$gtag = new Gtag();
+		$gtag( 'js', '{newDate}' );
+		$gtag( 'set', 'developer_id.dZTNiMT', true );
+		$func = static::gtag_func( $gtag );
+
+		do_action( 'googlesitekit_gtag', $func );
+
+		static::print_commands( $gtag );
+	}
+
+	/**
+	 * Wrap the gtag instance to avoid type coupling with consumers.
+	 *
+	 * @param Gtag $gtag
+	 *
+	 * @return Closure
+	 */
+	private static function gtag_func( Gtag $gtag ) {
 		return static function ( ...$args ) use ( $gtag ) {
 			return $gtag( ...$args );
 		};
 	}
 
-	private function print_tag_after() {
-		$gtag = new Gtag();
-		$gtag( 'js', '{newDate}' );
-		$gtag( 'set', 'developer_id.dZTNiMT', true );
-		$func = $this->gtag_func( $gtag );
-
-		do_action( 'googlesitekit_gtag', $func );
-
-		$this->print_commands( $gtag );
-	}
-
-	private function print_commands( Gtag $gtag ) {
-		$javascript = $this->commands_to_js( $gtag->get_calls() );
+	private static function print_commands( Gtag $gtag ) {
+		$javascript = static::commands_to_js( $gtag->get_calls() );
 
 		wp_print_inline_script_tag(
-			join( "\n", $javascript ),
-			[
+			join( PHP_EOL, $javascript ),
+			array(
 				'data-googlesitekit' => true,
-			]
+			)
 		);
 	}
 
-	private function commands_to_js( $commands ) {
+	private static function commands_to_js( $commands ) {
 		// Initialize with common JS.
-		$javascript = [
+		$javascript = array(
 			'window.dataLayer = window.dataLayer || [];',
 			'function gtag(){dataLayer.push(arguments);}',
-		];
+		);
 
 		foreach ( $commands as $command_args ) {
 			$command_js = array_map(
@@ -116,7 +121,7 @@ class Gtag_JS {
 		return $javascript;
 	}
 
-	protected function print_comment( $text ) {
-		printf( "<!-- %s -->\n", esc_html( $text ) );
+	private static function print_comment( $text ) {
+		printf( '<!-- %s -->' . PHP_EOL, esc_html( $text ) );
 	}
 }

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
+use Google\Site_Kit\Core\Tags\Gtag_JS;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -88,15 +89,23 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.31.0
 	 */
 	public function register() {
-		add_action(
-			'googlesitekit_gtag',
-			[ $this, 'gtag_commands' ]
-		);
+		Gtag_JS::enqueue( $this->tag_id );
+
+		add_action( 'googlesitekit_gtag', array( $this, 'gtag_commands' ) );
+
 		$this->do_init_tag_action();
 	}
 
 	public function gtag_commands( $gtag ) {
-		$legacy = $this->get_tag_config();
+		$config = array();
+
+		if ( ! empty( $this->home_domain ) ) {
+			$config['linker'] = array( 'domains' => array( $this->home_domain ) );
+		}
+
+		if ( ! empty( $this->custom_dimensions ) ) {
+			$config = array_merge( $config, $this->custom_dimensions );
+		}
 
 		/**
 		 * Filters the gtag configuration options for the Analytics snippet.
@@ -107,9 +116,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		 *
 		 * @see https://developers.google.com/gtagjs/devguide/configure
 		 *
-		 * @param array $gtag_opt gtag config options.
+		 * @param array $config gtag config options.
 		 */
-		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $legacy );
+		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $config );
 
 		if ( ! empty( $gtag_opt['linker'] ) ) {
 			$gtag( 'set', 'linker', $gtag_opt['linker'] );
@@ -117,7 +126,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 		unset( $gtag_opt['linker'] );
 
-		$gtag( 'config', $this->tag_id, $gtag_opt );
+		$gtag( 'config', $this->tag_id, (object) $gtag_opt );
 
 		if ( $this->ads_conversion_id ) {
 			$gtag( 'config', $this->ads_conversion_id );
@@ -131,26 +140,5 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 */
 	protected function render() {
 		// Do nothing, gtag script is enqueued.
-	}
-
-	/**
-	 * Gets the tag config as used in the gtag data vars.
-	 *
-	 * @since 1.113.0
-	 *
-	 * @return array Tag configuration.
-	 */
-	protected function get_tag_config() {
-		$config = array();
-
-		if ( ! empty( $this->home_domain ) ) {
-			$config['linker'] = array( 'domains' => array( $this->home_domain ) );
-		}
-
-		if ( ! empty( $this->custom_dimensions ) ) {
-			$config = array_merge( $config, $this->custom_dimensions );
-		}
-
-		return $config;
 	}
 }

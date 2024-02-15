@@ -23,7 +23,6 @@ import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 const { getRegistry } = Data.commonActions;
-// createReducer()
 
 const SET_CONSENT_MODE_ENABLED = 'SET_CONSENT_MODE_ENABLED';
 const SET_CONSENT_MODE_REGIONS = 'SET_CONSENT_MODE_REGIONS';
@@ -55,7 +54,7 @@ const fetchSaveConsentModeSettingsStore = createFetchStore( {
 	},
 	validateParams: ( { settings } ) => {
 		invariant(
-			! isPlainObject( settings ),
+			isPlainObject( settings ),
 			'settings must be a plain object.'
 		);
 	},
@@ -70,7 +69,7 @@ const baseActions = {
 		const { select } = yield getRegistry();
 		const settings = select( CORE_SITE ).getConsentModeSettings();
 
-		yield fetchSaveConsentModeSettingsStore.actions.saveConsentModeSettings(
+		yield fetchSaveConsentModeSettingsStore.actions.fetchSaveConsentModeSettings(
 			settings
 		);
 	},
