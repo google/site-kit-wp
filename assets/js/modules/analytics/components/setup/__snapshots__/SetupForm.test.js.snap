@@ -211,33 +211,3 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
   </form>
 </div>
 `;
-
-exports[`SetupForm renders the form with a progress bar when GTM containers are not resolved 1`] = `
-<div>
-  <div
-    class="mdc-linear-progress mdc-linear-progress--indeterminate"
-    role="progressbar"
-  >
-    <div
-      class="mdc-linear-progress__buffering-dots"
-    />
-    <div
-      class="mdc-linear-progress__buffer"
-    />
-    <div
-      class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
-    >
-      <span
-        class="mdc-linear-progress__bar-inner"
-      />
-    </div>
-    <div
-      class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
-    >
-      <span
-        class="mdc-linear-progress__bar-inner"
-      />
-    </div>
-  </div>
-</div>
-`;
