@@ -30,12 +30,10 @@ import {
 	createTestRegistry,
 	provideModules,
 	muteFetch,
-	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
@@ -82,15 +80,10 @@ describe( 'SettingsModules', () => {
 	} );
 
 	it( 'should redirect from #admin to #/admin-settings', async () => {
-		provideUserAuthentication( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-
 		const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 			'^/google-site-kit/v1/core/user/data/tracking'
 		);
-		muteFetch(
-			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
-		);
+
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/modules/search-console/data' )
 		);
