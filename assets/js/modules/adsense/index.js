@@ -126,7 +126,7 @@ export const registerWidgets = ( widgets ) => {
 				}
 
 				const isAdSenseLinked =
-					select( MODULES_ANALYTICS_4 ).getAdsenseLinked();
+					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
 				if ( isViewOnly && ! isAdSenseLinked ) {
 					return false;
