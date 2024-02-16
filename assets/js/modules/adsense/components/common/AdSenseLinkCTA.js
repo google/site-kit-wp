@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -29,7 +34,7 @@ import CTA from '../../../../components/notifications/CTA';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-export default function AdSenseLinkCTA() {
+export default function AdSenseLinkCTA( { onClick = () => {} } ) {
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
@@ -46,6 +51,11 @@ export default function AdSenseLinkCTA() {
 			ctaLink={ supportURL }
 			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
 			ctaLinkExternal
+			onClick={ onClick }
 		/>
 	);
 }
+
+AdSenseLinkCTA.propTypes = {
+	onClick: PropTypes.func,
+};

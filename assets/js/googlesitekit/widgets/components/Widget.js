@@ -29,6 +29,7 @@ function Widget( {
 	noPadding,
 	Header,
 	Footer,
+	innerRef,
 } ) {
 	return (
 		<div
@@ -39,6 +40,7 @@ function Widget( {
 				{ 'googlesitekit-widget--with-header': Header },
 				className
 			) }
+			ref={ innerRef }
 		>
 			{ Header && (
 				<div className="googlesitekit-widget__header">

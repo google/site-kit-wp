@@ -20,12 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
 import { __, _x } from '@wordpress/i18n';
+import { useRef, useEffect, useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,10 +52,15 @@ import ReportTable from '../../../../components/ReportTable';
 import Null from '../../../../components/Null';
 import InfoIcon from '../../../../../svg/icons/info-circle.svg';
 import { Grid } from '../../../../material-components';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
+	const viewContext = useViewContext();
+	const widgetRef = useRef();
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( DISMISSED_KEY )
@@ -83,6 +90,39 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
 
+	const intersectionEntry = useIntersection( widgetRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const eventCategory = `${ viewContext }_top-earning-pages-widget`;
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
+				trackEvent( eventCategory, 'view_notification' );
+			}
+
+			if ( isAdSenseLinked ) {
+				trackEvent( eventCategory, 'view_widget' );
+			}
+
+			setHasBeenInView( true );
+		}
+	}, [
+		inView,
+		hasBeenInView,
+		isAdSenseLinked,
+		viewContext,
+		viewOnlyDashboard,
+		eventCategory,
+	] );
+
+	const handleAdSenseLinkCTAClick = useCallback( () => {
+		trackEvent( eventCategory, 'click_learn_more_link' );
+	}, [ eventCategory ] );
+
 	if ( isDismissed ) {
 		return <WidgetNull />;
 	}
@@ -101,8 +141,8 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 
 	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
-			<Widget Footer={ Footer }>
-				<AdSenseLinkCTA />
+			<Widget Footer={ Footer } innerRef={ widgetRef }>
+				<AdSenseLinkCTA onClick={ handleAdSenseLinkCTAClick } />
 			</Widget>
 		);
 	}
@@ -128,7 +168,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer }>
+		<Widget noPadding Footer={ Footer } innerRef={ widgetRef }>
 			<ReportTable rows={ [] } columns={ tableColumns } />
 
 			<Grid className="googlesitekit-padding-top-0">
