@@ -70,18 +70,13 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
 	isViewOnlyDashboard
 ) {
 	if (
-		! select( CORE_MODULES ).isModuleActive( 'analytics-4' ) ||
-		! select( CORE_MODULES ).isModuleActive( 'adsense' )
+		! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ||
+		! select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	) {
 		return false;
 	}
 
-	if (
-		! isViewOnlyDashboard &&
-		select( CORE_USER ).isKeyMetricActive(
-			KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
-		)
-	) {
+	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
 

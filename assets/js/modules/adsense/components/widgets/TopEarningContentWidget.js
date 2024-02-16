@@ -47,7 +47,6 @@ import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/Con
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { AdSenseLinkCTA } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 const { useSelect, useInViewSelect } = Data;
 
@@ -105,7 +104,7 @@ function TopEarningContentWidget( { Widget } ) {
 			return undefined;
 		}
 
-		return select( MODULES_ANALYTICS ).getAdsenseLinked();
+		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
 	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
@@ -115,8 +114,6 @@ function TopEarningContentWidget( { Widget } ) {
 			</Widget>
 		);
 	}
-
-	const currency = report?.metadata?.currencyCode;
 
 	const { rows = [] } = report || {};
 
@@ -168,7 +165,7 @@ function TopEarningContentWidget( { Widget } ) {
 					<strong>
 						{ numFmt( fieldValue, {
 							style: 'currency',
-							currency,
+							currency: report?.metadata?.currencyCode,
 						} ) }
 					</strong>
 				);

@@ -20,7 +20,6 @@
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideKeyMetrics,
-	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
@@ -39,7 +38,6 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -217,9 +215,20 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
-
 InsufficientPermissions.scenario = {
 	label: 'KeyMetrics/PopularContent/InsufficientPermissions',
+	delay: 250,
+};
+
+export const AdSenseNotLinked = Template.bind( {} );
+AdSenseNotLinked.storyName = 'AdSense Not Linked';
+AdSenseNotLinked.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
+	},
+};
+AdSenseNotLinked.scenario = {
+	label: 'KeyMetrics/TopEarningContentWidget/AdSenseNotLinked',
 	delay: 250,
 };
 
@@ -230,40 +239,24 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: 'adsense',
 						active: true,
 						connected: true,
 					},
 					{
-						slug: 'adsense',
+						slug: 'analytics-4',
 						active: true,
 						connected: true,
 					},
 				] );
 
-				provideModuleRegistrations( registry );
-
-				const [ accountID, propertyID, webDataStreamID ] = [
-					'12345',
-					'34567',
-					'56789',
-				];
-
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setAccountID( accountID );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setPropertyID( propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setWebDataStreamID( webDataStreamID );
-
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
-				registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
-
 				provideKeyMetrics( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAdSenseLinked( true );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
