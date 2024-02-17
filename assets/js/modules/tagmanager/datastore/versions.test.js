@@ -1226,6 +1226,28 @@ describe( 'modules/tagmanager versions', () => {
 					MODULES_TAGMANAGER
 				).getLiveContainerVersion( accountID, internalContainerID );
 			} );
+
+			it( 'gets the googleTagID associated with a constant variable', () => {
+				const liveContainerVersion =
+					fixtures.liveContainerVersions.web.googleTagWithVariable;
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toBe( 'G-ABC12DE34F' );
+			} );
 		} );
 	} );
 } );
