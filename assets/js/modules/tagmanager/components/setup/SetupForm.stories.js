@@ -28,6 +28,7 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import * as fixtures from '../../../../modules/tagmanager/datastore/__fixtures__';
 
 function Template() {
 	return <ModuleSetup moduleSlug="tagmanager" />;
@@ -44,6 +45,30 @@ Loading.decorators = [
 				)
 			);
 		};
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const Start = Template.bind( null );
+Start.storyName = 'Start';
+Start.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountID: fixtures.accounts[ 0 ].accountId,
+				} );
+		};
+
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
