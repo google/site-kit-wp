@@ -30,11 +30,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function FormInstructions( { isSetup } ) {
+	const isSecondaryAMP = useSelect( ( select ) =>
+		select( CORE_SITE ).isSecondaryAMP()
+	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
@@ -58,6 +62,22 @@ export default function FormInstructions( { isSetup } ) {
 					'Looks like you may be using Google Analytics within your Google Tag Manager configuration. Activate the Google Analytics module in Site Kit to see relevant insights in your dashboard.',
 					'google-site-kit'
 				) }
+			</p>
+		);
+	}
+
+	if ( isSecondaryAMP ) {
+		return (
+			<p>
+				{ isSetup
+					? __(
+							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
+							'google-site-kit'
+					  )
+					: __(
+							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below.',
+							'google-site-kit'
+					  ) }
 			</p>
 		);
 	}
