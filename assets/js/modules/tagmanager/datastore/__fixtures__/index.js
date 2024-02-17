@@ -26,6 +26,7 @@ import liveContainerVersionAMPNoGA from './live-container-version--amp-no-ga.jso
 import liveContainerVersionWebNoGAWithVariable from './live-container-version--web-no-ga-with-variable.json';
 import liveContainerVersionWebGAWithOverride from './live-container-version--web-ga-with-override.json';
 import liveContainerVersionWebGAWithVariable from './live-container-version--web-ga-with-variable.json';
+import liveContainerVersionWebGoogleTag from './live-container-version--web-google-tag.json';
 
 export { default as accounts } from './accounts.json';
 export { default as createContainer } from './create-container.json';
@@ -46,5 +47,6 @@ export const liveContainerVersions = {
 		gaWithOverride: liveContainerVersionWebGAWithOverride,
 		gaWithVariable: liveContainerVersionWebGAWithVariable,
 		noGAWithVariable: liveContainerVersionWebNoGAWithVariable,
+		googleTag: liveContainerVersionWebGoogleTag,
 	},
 };
