@@ -334,16 +334,14 @@ const baseSelectors = {
 				const internalContainerID =
 					select( MODULES_TAGMANAGER ).getInternalContainerID();
 
-				if ( isValidInternalContainerID( internalContainerID ) ) {
-					return select(
-						MODULES_TAGMANAGER
-					).getLiveContainerGoogleTagID(
-						accountID,
-						internalContainerID
-					);
+				if ( ! isValidInternalContainerID( internalContainerID ) ) {
+					return null;
 				}
 
-				return null;
+				return select( MODULES_TAGMANAGER ).getLiveContainerGoogleTagID(
+					accountID,
+					internalContainerID
+				);
 			}
 	),
 
