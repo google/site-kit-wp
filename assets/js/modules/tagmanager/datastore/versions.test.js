@@ -1058,5 +1058,102 @@ describe( 'modules/tagmanager versions', () => {
 				).toBe( false );
 			} );
 		} );
+
+		describe( 'getLiveContainerGoogleTag', () => {
+			it( 'returns the Google tag object from the live container object', () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersion( {
+						googleTagID: 'GT-123456789',
+					} );
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toMatchObject( { type: 'googtag' } );
+				expect( tagObject ).toEqual(
+					liveContainerVersion.tag.find(
+						( { type } ) => type === 'googtag'
+					)
+				);
+			} );
+
+			it( 'returns null if the live container version does not contain a Google tag', () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toStrictEqual( null );
+			} );
+
+			it( 'returns null if no live container version exists', () => {
+				const accountID = '12345';
+				const internalContainerID = '98765';
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( null, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toStrictEqual( null );
+			} );
+
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
+				const accountID = '12345';
+				const internalContainerID = '98765';
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
+				);
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '12345', '98765' );
+			} );
+		} );
 	} );
 } );
