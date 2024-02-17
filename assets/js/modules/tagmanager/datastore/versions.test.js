@@ -1155,5 +1155,77 @@ describe( 'modules/tagmanager versions', () => {
 				).getLiveContainerVersion( '12345', '98765' );
 			} );
 		} );
+
+		describe( 'getLiveContainerGoogleTagID', () => {
+			it( 'gets the googleTagID associated with the Google tag when provided directly', () => {
+				const liveContainerVersion =
+					fixtures.liveContainerVersions.web.googleTag;
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toBe( 'G-ABC12DE34F' );
+			} );
+
+			it( 'returns null if no Google tag exists in the container', () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toStrictEqual( null );
+			} );
+
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
+				);
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( accountID, internalContainerID );
+			} );
+		} );
 	} );
 } );
