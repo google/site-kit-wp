@@ -27,6 +27,7 @@ import liveContainerVersionWebNoGAWithVariable from './live-container-version--w
 import liveContainerVersionWebGAWithOverride from './live-container-version--web-ga-with-override.json';
 import liveContainerVersionWebGAWithVariable from './live-container-version--web-ga-with-variable.json';
 import liveContainerVersionWebGoogleTag from './live-container-version--web-google-tag.json';
+import liveContainerVersionWebGoogleTagWithVariable from './live-container-version--web-google-tag-with-variable.json';
 
 export { default as accounts } from './accounts.json';
 export { default as createContainer } from './create-container.json';
@@ -48,5 +49,6 @@ export const liveContainerVersions = {
 		gaWithVariable: liveContainerVersionWebGAWithVariable,
 		noGAWithVariable: liveContainerVersionWebNoGAWithVariable,
 		googleTag: liveContainerVersionWebGoogleTag,
+		googleTagWithVariable: liveContainerVersionWebGoogleTagWithVariable,
 	},
 };
