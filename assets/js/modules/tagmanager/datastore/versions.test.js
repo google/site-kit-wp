@@ -1249,5 +1249,30 @@ describe( 'modules/tagmanager versions', () => {
 				expect( googleTagID ).toBe( 'G-ABC12DE34F' );
 			} );
 		} );
+
+		describe( 'getCurrentGTMGoogleTagID', () => {
+			it( 'gets the googleTagID associated with the currently selected GTM account and container', () => {
+				const liveContainerVersion =
+					fixtures.liveContainerVersions.web.googleTag;
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
+					accountID,
+					internalContainerID,
+				} );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getCurrentGTMGoogleTagID( accountID, internalContainerID );
+
+				expect( googleTagID ).toBe( 'G-ABC12DE34F' );
+			} );
+		} );
 	} );
 } );
