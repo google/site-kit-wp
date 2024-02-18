@@ -69,6 +69,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 		} )
 	);
 
+	const adsenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
 	const args = {
 		startDate,
 		endDate,
@@ -79,7 +83,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 				fieldName: 'adSourceName',
 				stringFilter: {
 					matchType: 'EXACT',
-					value: 'Google AdSense account (pub-XXXXX)',
+					value: `Google AdSense account (${ adsenseAccountID })`,
 				},
 			},
 		},
