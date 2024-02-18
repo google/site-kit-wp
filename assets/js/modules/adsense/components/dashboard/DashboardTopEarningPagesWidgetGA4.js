@@ -46,7 +46,6 @@ import { DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import { getCurrencyFormat } from '../../util/currency';
 import { AdSenseLinkCTA } from '../common';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 
@@ -95,14 +94,6 @@ function DashboardTopEarningPagesWidgetGA4( {
 		select( MODULES_ANALYTICS_4 ).getReport( args )
 	);
 
-	const adsenseData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( {
-			startDate,
-			endDate,
-			metrics: 'ESTIMATED_EARNINGS',
-		} )
-	);
-
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			args,
@@ -116,8 +107,6 @@ function DashboardTopEarningPagesWidgetGA4( {
 				[ args ]
 			)
 	);
-
-	const currencyFormat = getCurrencyFormat( adsenseData );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( DISMISSED_KEY )
@@ -198,7 +187,8 @@ function DashboardTopEarningPagesWidgetGA4( {
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
 			Component( { row } ) {
-				const [ title, url ] = row.dimensionValues;
+				const [ { value: title }, { value: url } ] =
+					row.dimensionValues;
 				const serviceURL = useSelect( ( select ) => {
 					return ! viewOnlyDashboard
 						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
@@ -215,13 +205,16 @@ function DashboardTopEarningPagesWidgetGA4( {
 						  )
 						: null;
 				} );
+
 				return (
 					<Link
 						href={ serviceURL }
-						children={ title }
+						title={ title }
 						external
 						hideExternalIndicator
-					/>
+					>
+						{ title }
+					</Link>
 				);
 			},
 		},
@@ -230,7 +223,14 @@ function DashboardTopEarningPagesWidgetGA4( {
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			field: 'metricValues.0.value',
 			Component( { fieldValue } ) {
-				return <span>{ numFmt( fieldValue, currencyFormat ) }</span>;
+				return (
+					<span>
+						{ numFmt( fieldValue, {
+							style: 'currency',
+							currency: data?.metadata?.currencyCode,
+						} ) }
+					</span>
+				);
 			},
 		},
 	];
