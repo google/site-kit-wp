@@ -244,10 +244,6 @@ final class Modules {
 		add_action(
 			'googlesitekit_authorize_user',
 			function( $token_response ) {
-				if ( empty( $token_response['analytics_configuration'] ) ) {
-					return;
-				}
-
 				// Do nothing if the Analytics module is already activated.
 				if ( $this->is_module_active( Analytics_4::MODULE_SLUG ) ) {
 					return;
@@ -270,15 +266,6 @@ final class Modules {
 							$this->user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $auth_scopes );
 						}
 					}
-				}
-
-				try {
-					$analytics = $this->get_module( Analytics_4::MODULE_SLUG );
-					// @TODO: We don't have this method in Analytics_4 module.
-					// Investigate if we need to add this method in Analytics_4 module or not.
-					// $analytics->handle_token_response_data( $token_response );
-				} catch ( Exception $e ) {
-					return;
 				}
 			},
 			1
