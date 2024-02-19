@@ -27,7 +27,12 @@ import {
 } from '../../../../../../tests/js/utils';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	CONTAINER_CREATE,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+} from '../../datastore/constants';
 import * as fixtures from '../../../../modules/tagmanager/datastore/__fixtures__';
 
 function Template() {
@@ -83,6 +88,43 @@ NoAccounts.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const CreateNonUniqueContainer = Template.bind( null );
+CreateNonUniqueContainer.storyName = 'Create non-unique container';
+CreateNonUniqueContainer.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const webContainerVersion =
+				fixtures.liveContainerVersions.web.gaWithVariable;
+			const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
+
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.web, {
+					accountID,
+				} );
+			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.setContainerID( CONTAINER_CREATE );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.setInternalContainerID( '' );
+			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+				containerName: fixtures.getContainers.web[ 0 ].name,
+			} );
 		};
 
 		return (
