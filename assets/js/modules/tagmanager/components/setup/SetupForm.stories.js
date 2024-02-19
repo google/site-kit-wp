@@ -35,6 +35,20 @@ import {
 } from '../../datastore/constants';
 import * as fixtures from '../../../../modules/tagmanager/datastore/__fixtures__';
 
+function selectFirstWebContainer( registry, accountID ) {
+	const [ webContainer ] = registry
+		.select( MODULES_TAGMANAGER )
+		.getWebContainers( accountID );
+	registry
+		.dispatch( MODULES_TAGMANAGER )
+		// eslint-disable-next-line sitekit/acronym-case
+		.setContainerID( webContainer.publicId );
+	registry
+		.dispatch( MODULES_TAGMANAGER )
+		// eslint-disable-next-line sitekit/acronym-case
+		.setInternalContainerID( webContainer.containerId );
+}
+
 function Template() {
 	return <ModuleSetup moduleSlug="tagmanager" />;
 }
@@ -155,6 +169,42 @@ ExistingTag.decorators = [
 				} );
 
 			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const ExistingGoogleTagInContainer = Template.bind( null );
+ExistingGoogleTagInContainer.storyName = 'Existing Google tag in GTM Container';
+ExistingGoogleTagInContainer.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const webContainerVersion =
+				fixtures.liveContainerVersions.web.googleTag;
+			const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
+			const internalContainerID = webContainerVersion.containerId; // eslint-disable-line sitekit/acronym-case
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( [ webContainerVersion.container ], {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetLiveContainerVersion( webContainerVersion, {
+					accountID,
+					internalContainerID,
+				} );
+
+			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+			selectFirstWebContainer( registry, accountID );
 		};
 
 		return (
