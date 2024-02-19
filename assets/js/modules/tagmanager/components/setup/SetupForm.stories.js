@@ -34,6 +34,7 @@ import {
 	MODULES_TAGMANAGER,
 } from '../../datastore/constants';
 import * as fixtures from '../../../../modules/tagmanager/datastore/__fixtures__';
+import { AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
 
 function selectFirstWebContainer( registry, accountID ) {
 	const [ webContainer ] = registry
@@ -72,11 +73,36 @@ Loading.decorators = [
 	},
 ];
 
-export const Start = Template.bind( null );
-Start.storyName = 'Start';
-Start.decorators = [
+export const Default = Template.bind( null );
+Default.storyName = 'Default';
+Default.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountID: fixtures.accounts[ 0 ].accountId,
+				} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithPrimaryAMP = Template.bind( null );
+WithPrimaryAMP.storyName = 'With Primary AMP';
+WithPrimaryAMP.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				.receiveGetAccounts( fixtures.accounts );
