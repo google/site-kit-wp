@@ -50,6 +50,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	averageSessionDuration: 'TYPE_SECONDS',
 	sessionConversionRate: 'TYPE_FLOAT',
 	sessionsPerUser: 'TYPE_FLOAT',
+	totalAdRevenue: 'TYPE_INTEGER',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {

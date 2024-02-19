@@ -41,10 +41,10 @@ import {
 	WithTestRegistry,
 	untilResolved,
 } from '../tests/js/utils';
-import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import settingsData from '../.storybook/__fixtures__/_googlesitekitLegacyData';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../tests/js/WithRegistrySetup';
 
 /**
@@ -157,6 +157,7 @@ storiesOf( 'Settings', module )
 
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
+				provideModules( registry );
 
 				registry
 					.dispatch( CORE_USER )

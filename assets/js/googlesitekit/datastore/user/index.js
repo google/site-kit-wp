@@ -31,6 +31,7 @@ import keyMetrics from './key-metrics';
 import notifications from './notifications';
 import nonces from './nonces';
 import permissions from './permissions';
+import prompts from './prompts';
 import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
@@ -47,6 +48,7 @@ const store = Data.combineStores(
 	keyMetrics,
 	notifications,
 	permissions,
+	prompts,
 	nonces,
 	surveys,
 	tracking,

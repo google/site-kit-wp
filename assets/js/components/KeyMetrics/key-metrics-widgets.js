@@ -45,9 +45,50 @@ import {
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+
+/**
+ * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
+ *
+ * For admin dashboards, the widget will be shown if both modules are activate so that
+ * the connection CTA can be shown if they have not been linked.
+ *
+ * For view-only dashboards, the widget will only be displayed if both modules are linked.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
+	select,
+	isViewOnlyDashboard
+) {
+	if (
+		! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ||
+		! select( CORE_MODULES ).isModuleConnected( 'adsense' )
+	) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	if (
+		isViewOnlyDashboard &&
+		select( MODULES_ANALYTICS_4 ).getAdSenseLinked()
+	) {
+		return true;
+	}
+
+	return false;
+}
 
 /**
  * Determines whether to display a widget that requires custom dimensions in the key
@@ -82,6 +123,18 @@ function shouldDisplayWidgetWithCustomDimensions(
 }
 
 const KEY_METRICS_WIDGETS = {
+	[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+		title: __( 'Top earning pages', 'google-site-kit' ),
+		description: __(
+			'Pages that generated the most AdSense revenue',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Pages that generated the most AdSense revenue',
+			'google-site-kit'
+		),
+		displayInList: shouldDisplayWidgetWithAnalytics4AndAdSenseLinked,
+	},
 	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 		title: __( 'Top recent trending pages', 'google-site-kit' ),
 		description: __(

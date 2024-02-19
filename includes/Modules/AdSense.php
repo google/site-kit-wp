@@ -54,6 +54,7 @@ use Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
+use Google\Site_Kit\Core\Prompts\Dismissed_Prompts;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
@@ -157,6 +158,9 @@ final class AdSense extends Module
 				}
 			}
 		);
+
+		// Set up the site reset hook to reset the ad blocking recovery notification.
+		add_action( 'googlesitekit_reset', array( $this, 'reset_ad_blocking_recovery_notification' ) );
 	}
 
 	/**
@@ -205,6 +209,9 @@ final class AdSense extends Module
 
 		// Reset AdSense link settings in Analytics.
 		$this->reset_analytics_adsense_linked_settings();
+
+		// Reset the ad blocking recovery notification.
+		$this->reset_ad_blocking_recovery_notification();
 	}
 
 	/**
@@ -1108,7 +1115,7 @@ final class AdSense extends Module
 	/**
 	 * Resets the AdSense linked settings in the Analytics module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.120.0
 	 */
 	protected function reset_analytics_adsense_linked_settings() {
 		$analytics_settings = new Analytics_Settings( $this->options );
@@ -1124,4 +1131,20 @@ final class AdSense extends Module
 			)
 		);
 	}
+
+	/**
+	 * Resets the Ad Blocking Recovery notification.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function reset_ad_blocking_recovery_notification() {
+		$dismissed_prompts = ( new Dismissed_Prompts( $this->user_options ) );
+
+		$current_dismissals = $dismissed_prompts->get();
+
+		if ( isset( $current_dismissals['ad-blocking-recovery-notification'] ) && $current_dismissals['ad-blocking-recovery-notification']['count'] < 3 ) {
+			$dismissed_prompts->remove( 'ad-blocking-recovery-notification' );
+		}
+	}
+
 }

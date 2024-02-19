@@ -86,10 +86,16 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
+		select( CORE_USER ).isPromptDismissed(
 			AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
 		)
 	);
+	const dismissCount = useSelect( ( select ) =>
+		select( CORE_USER ).getPromptDismissCount(
+			AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
+		)
+	);
+
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
 			return null;
@@ -129,7 +135,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).getReferenceDate()
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { dismissPrompt } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const referenceDateInMilliseconds = stringToDate( referenceDate ).getTime();
@@ -177,8 +183,19 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'dismiss_notification'
 		);
-		showTooltip();
-		await dismissItem( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY );
+
+		// For the first two dismissals, we show the notification again in two weeks.
+		if ( dismissCount < 2 ) {
+			showTooltip();
+
+			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
+			await dismissPrompt( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY, {
+				expiresInSeconds: twoWeeksInSeconds,
+			} );
+		} else {
+			// For the third dismissal, dismiss permanently.
+			await dismissPrompt( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY );
+		}
 	};
 
 	const handleLearnMoreClick = () => {
@@ -263,7 +280,11 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 						ctaCallback={ handleCTAClick }
 						dismissCallback={ handleDismissClick }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
+						dismissLabel={
+							dismissCount < 2
+								? __( 'Maybe later', 'google-site-kit' )
+								: __( 'Don’t show again', 'google-site-kit' )
+						}
 					/>
 				</Cell>
 
