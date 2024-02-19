@@ -241,6 +241,9 @@ class Reset {
 							$this->all();
 							$this->maybe_hard_reset();
 
+							// Call hooks on plugin reset. This is used to reset the ad blocking recovery notification.
+							do_action( 'googlesitekit_reset' );
+
 							return new WP_REST_Response( true );
 						},
 						'permission_callback' => $can_setup,
@@ -265,6 +268,9 @@ class Reset {
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You don’t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
+
+		// Call hooks on plugin reset. This is used to reset the ad blocking recovery notification.
+		do_action( 'googlesitekit_reset' );
 
 		$this->all();
 		$this->maybe_hard_reset();
