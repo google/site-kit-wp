@@ -253,6 +253,13 @@ const baseReducer = ( state, { type } ) => {
 			return {
 				...state,
 				accountSummaries: undefined,
+				settings: {
+					...state.settings,
+					// Reset the accountID, otherwise it will retain the last selected value.
+					// When creating an account ACCOUNT_CREATE value remains even account summaries
+					// are re-fetched/reset in order to pull latest data.
+					accountID: undefined,
+				},
 			};
 		}
 
