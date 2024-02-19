@@ -135,6 +135,36 @@ CreateNonUniqueContainer.decorators = [
 	},
 ];
 
+export const ExistingTag = Template.bind( null );
+ExistingTag.storyName = 'Existing tag';
+ExistingTag.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			// eslint-disable-next-line sitekit/acronym-case
+			const accountID = fixtures.accounts[ 0 ].accountId;
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( 'GTM-S1T3K1T' );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+
+			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export default {
 	title: 'Modules/TagManager/Setup/SetupForm',
 	decorators: [
