@@ -118,7 +118,7 @@ CreateNonUniqueContainer.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const webContainerVersion =
-				fixtures.liveContainerVersions.web.gaWithVariable;
+				fixtures.liveContainerVersions.web.googleTag;
 			const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
 			registry
@@ -149,9 +149,9 @@ CreateNonUniqueContainer.decorators = [
 	},
 ];
 
-export const ExistingTag = Template.bind( null );
-ExistingTag.storyName = 'Existing tag';
-ExistingTag.decorators = [
+export const ExistingTagOnSite = Template.bind( null );
+ExistingTagOnSite.storyName = 'Existing tag on site';
+ExistingTagOnSite.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// eslint-disable-next-line sitekit/acronym-case
