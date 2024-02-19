@@ -25,6 +25,8 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
 
 /**
@@ -146,6 +148,7 @@ final class Modules {
 		Site_Verification::MODULE_SLUG  => Site_Verification::class,
 		Search_Console::MODULE_SLUG     => Search_Console::class,
 		Analytics::MODULE_SLUG          => Analytics::class,
+		Analytics_4::MODULE_SLUG        => Analytics_4::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
 		AdSense::MODULE_SLUG            => AdSense::class,
 		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
@@ -176,7 +179,9 @@ final class Modules {
 		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets           = $assets ?: new Assets( $this->context );
 
-		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
+		if ( Feature_Flags::enabled( 'adsModule' ) ) {
+			$this->core_modules[ Ads::MODULE_SLUG ] = Ads::class;
+		}
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
