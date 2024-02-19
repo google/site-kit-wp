@@ -34,7 +34,10 @@ import {
 	MODULES_TAGMANAGER,
 } from '../../datastore/constants';
 import * as fixtures from '../../../../modules/tagmanager/datastore/__fixtures__';
-import { AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
+import {
+	AMP_MODE_PRIMARY,
+	AMP_MODE_SECONDARY,
+} from '../../../../googlesitekit/datastore/site/constants';
 
 function selectFirstWebContainer( registry, accountID ) {
 	const [ webContainer ] = registry
@@ -122,8 +125,33 @@ WithPrimaryAMP.decorators = [
 	},
 ];
 
+export const WithSecondaryAMP = Template.bind( null );
+WithSecondaryAMP.storyName = 'With Secondary AMP';
+WithSecondaryAMP.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountID: fixtures.accounts[ 0 ].accountId,
+				} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export const NoAccounts = Template.bind( null );
-NoAccounts.storyName = 'No accounts (Create account)';
+NoAccounts.storyName = 'Create account (no accouts)';
 NoAccounts.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
