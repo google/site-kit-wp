@@ -77,6 +77,22 @@ Start.decorators = [
 	},
 ];
 
+export const NoAccounts = Template.bind( null );
+NoAccounts.storyName = 'No accounts (Create account)';
+NoAccounts.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export default {
 	title: 'Modules/TagManager/Setup/SetupForm',
 	decorators: [
