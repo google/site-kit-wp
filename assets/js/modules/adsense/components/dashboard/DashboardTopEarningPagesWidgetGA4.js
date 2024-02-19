@@ -68,24 +68,11 @@ function DashboardTopEarningPagesWidgetGA4( {
 		} )
 	);
 
-	const adsenseAccountID = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountID()
-	);
-
 	const args = {
 		startDate,
 		endDate,
-		dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
+		dimensions: [ 'pageTitle', 'pagePath' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		dimensionFilter: {
-			filter: {
-				fieldName: 'adSourceName',
-				stringFilter: {
-					matchType: 'EXACT',
-					value: `Google AdSense account (${ adsenseAccountID })`,
-				},
-			},
-		},
 		orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
 		limit: 5,
 	};

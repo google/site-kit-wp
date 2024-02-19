@@ -220,9 +220,8 @@ class Request extends Report {
 				'sessions',
 				'sessionConversionRate',
 				'sessionsPerUser',
-				'totalUsers',
-				// Metrics for Top Earning Pages Widget.
 				'totalAdRevenue',
+				'totalUsers',
 			)
 		);
 
@@ -275,6 +274,7 @@ class Request extends Report {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
+				'adSourceName',
 				'city',
 				'country',
 				'date',
@@ -284,13 +284,10 @@ class Request extends Report {
 				'pageTitle',
 				'sessionDefaultChannelGroup',
 				'sessionDefaultChannelGrouping',
-				// Custom dimensions for Key Metrics Widgets.
 				'customEvent:googlesitekit_post_author',
 				'customEvent:googlesitekit_post_categories',
 				'customEvent:googlesitekit_post_date',
 				'customEvent:googlesitekit_post_type',
-				// Dimensions for Top Earning Pages Widget.
-				'adSourceName',
 			)
 		);
 
