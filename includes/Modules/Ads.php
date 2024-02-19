@@ -10,7 +10,10 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 
 /**
  * Class representing the Ads module.
@@ -19,7 +22,8 @@ use Google\Site_Kit\Core\Modules\Module;
  * @access private
  * @ignore
  */
-final class Ads extends Module {
+final class Ads extends Module implements Module_With_Assets {
+	use Module_With_Assets_Trait;
 
 	/**
 	 * Module slug name.
@@ -32,6 +36,35 @@ final class Ads extends Module {
 	 * @since n.e.x.t
 	 */
 	public function register() {}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-ads',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-ads.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
+						'googlesitekit-components',
+					),
+				)
+			),
+		);
+	}
 
 	/**
 	 * Sets up information about the module.
