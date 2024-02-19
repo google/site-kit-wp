@@ -31,32 +31,35 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET,
-} from '../../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
-import whenActive from '../../../../util/when-active';
-import AdBlockerWarning from '../common/AdBlockerWarning';
-import { AdSenseLinkCTA } from '../common';
-import SourceLink from '../../../../components/SourceLink';
-import SettingsNotice from '../../../../components/SettingsNotice';
-import useViewOnly from '../../../../hooks/useViewOnly';
+import Link from '../../../../components/Link';
+import PreviewTable from '../../../../components/PreviewTable';
 import ReportTable from '../../../../components/ReportTable';
-import Null from '../../../../components/Null';
-import InfoIcon from '../../../../../svg/icons/info-circle.svg';
-import { Grid } from '../../../../material-components';
-const { useSelect } = Data;
+import SourceLink from '../../../../components/SourceLink';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import { numFmt } from '../../../../util';
+import whenActive from '../../../../util/when-active';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { ZeroDataMessage } from '../../../analytics/components/common';
+import { DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
+import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { AdSenseLinkCTA } from '../common';
+import AdBlockerWarning from '../common/AdBlockerWarning';
 
-function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
+const { useSelect, useInViewSelect } = Data;
+
+function DashboardTopEarningPagesWidgetGA4( {
+	WidgetNull,
+	WidgetReportError,
+	Widget,
+} ) {
 	const viewOnlyDashboard = useViewOnly();
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( DISMISSED_KEY )
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
 	const { startDate, endDate } = useSelect( ( select ) =>
@@ -65,11 +68,42 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		} )
 	);
 
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [ 'pageTitle', 'pagePath' ],
+		metrics: [ { name: 'totalAdRevenue' } ],
+		orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
+		limit: 5,
+	};
+
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( args )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			args,
+		] )
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ args ]
+			)
+	);
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( DISMISSED_KEY )
+	);
+
 	const analyticsMainURL = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
 			return null;
 		}
-		return select( MODULES_ANALYTICS ).getServiceReportURL(
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 			'content-publisher-overview',
 			generateDateRangeArgs( { startDate, endDate } )
 		);
@@ -99,10 +133,26 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 		);
 	}
 
+	if ( loading || isGatheringData === undefined ) {
+		return (
+			<Widget noPadding Footer={ Footer }>
+				<PreviewTable rows={ 5 } padding />
+			</Widget>
+		);
+	}
+
 	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
 			<Widget Footer={ Footer }>
 				<AdSenseLinkCTA />
+			</Widget>
+		);
+	}
+
+	if ( error ) {
+		return (
+			<Widget Footer={ Footer }>
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
 			</Widget>
 		);
 	}
@@ -123,30 +173,65 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 			title: __( 'Top Earning Pages', 'google-site-kit' ),
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
-			Component: Null,
+			Component( { row } ) {
+				const [ { value: title }, { value: url } ] =
+					row.dimensionValues;
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url,
+									},
+									dates: {
+										startDate,
+										endDate,
+									},
+								}
+						  )
+						: null;
+				} );
+
+				return (
+					<Link
+						href={ serviceURL }
+						title={ title }
+						external
+						hideExternalIndicator
+					>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			title: __( 'Earnings', 'google-site-kit' ),
+			tooltip: __( 'Earnings', 'google-site-kit' ),
+			field: 'metricValues.0.value',
+			Component( { fieldValue } ) {
+				return (
+					<span>
+						{ numFmt( fieldValue, {
+							style: 'currency',
+							currency: data?.metadata?.currencyCode,
+						} ) }
+					</span>
+				);
+			},
 		},
 	];
 
 	return (
 		<Widget noPadding Footer={ Footer }>
-			<ReportTable rows={ [] } columns={ tableColumns } />
-
-			<Grid className="googlesitekit-padding-top-0">
-				<SettingsNotice
-					Icon={ InfoIcon }
-					notice={ __(
-						'Top earning pages are not yet available in Google Analytics 4',
-						'google-site-kit'
-					) }
-					dismiss={ DISMISSED_KEY }
-					className="googlesitekit-margin-top-0 googlesitekit-margin-bottom-0 googlesitekit-settings-notice-adsense-top-earning-pages-widget"
-				>
-					{ __(
-						'Site Kit will notify you as soon as you can connect AdSense and Analytics again',
-						'google-site-kit'
-					) }
-				</SettingsNotice>
-			</Grid>
+			<TableOverflowContainer>
+				<ReportTable
+					rows={ data?.rows || [] }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
+				/>
+			</TableOverflowContainer>
 		</Widget>
 	);
 }
@@ -154,6 +239,7 @@ function DashboardTopEarningPagesWidgetGA4( { WidgetNull, Widget } ) {
 DashboardTopEarningPagesWidgetGA4.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
 export default compose(
