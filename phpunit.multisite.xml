@@ -6,6 +6,8 @@
     <testsuites>
         <testsuite name="Site Kit Test Suite">
             <directory suffix=".php">./tests/phpunit/integration</directory>
+            <exclude>./tests/phpunit/integration/Modules/Analytics</exclude>
+            <exclude>./tests/phpunit/integration/Modules/AnalyticsTest.php</exclude>
         </testsuite>
     </testsuites>
     <groups>
