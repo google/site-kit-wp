@@ -151,7 +151,7 @@ WithSecondaryAMP.decorators = [
 ];
 
 export const NoAccounts = Template.bind( null );
-NoAccounts.storyName = 'Create account (no accouts)';
+NoAccounts.storyName = 'Create account (no accounts)';
 NoAccounts.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {

@@ -264,7 +264,7 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the fist Google Tag ID within the live container for the given account and container ID.
+	 * Gets the first Google Tag ID within the live container for the given account and container ID.
 	 *
 	 * @since n.e.x.t
 	 *
