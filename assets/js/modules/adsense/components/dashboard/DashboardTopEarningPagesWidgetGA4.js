@@ -121,6 +121,19 @@ function DashboardTopEarningPagesWidgetGA4( {
 	);
 
 	const trackingRef = useRef();
+
+	// This function works around the fact that useRef does not trigger a re-render when its value changes.
+	// This meant that if you scrolled slowly, the trackingRef would be null when the intersection observer
+	// was created, and the observer would never detect the component as in view.
+	// Full discussion: https://github.com/google/site-kit-wp/issues/8212#issuecomment-1954275748
+	const [ trackingRefReady, setTrackingRefReady ] = useState( false );
+	const updateTrackingRef = ( el ) => {
+		trackingRef.current = el;
+		if ( el && ! trackingRefReady ) {
+			setTrackingRefReady( true );
+		}
+	};
+
 	const viewContext = useViewContext();
 
 	const intersectionEntry = useIntersection( trackingRef, {
@@ -147,7 +160,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 
 			setHasBeenInView( true );
 		}
-	}, [ trackingRef, inView, viewContext, isAdSenseLinked, hasBeenInView ] );
+	}, [ inView, viewContext, isAdSenseLinked, hasBeenInView ] );
 
 	const onClickAdSenseLinkedCTA = () => {
 		trackEvent(
@@ -182,7 +195,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 
 	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
-			<Widget Footer={ Footer } ref={ trackingRef }>
+			<Widget Footer={ Footer } ref={ updateTrackingRef }>
 				<AdSenseLinkCTA onClick={ onClickAdSenseLinkedCTA } />
 			</Widget>
 		);
@@ -262,7 +275,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer } ref={ trackingRef }>
+		<Widget noPadding Footer={ Footer } ref={ updateTrackingRef }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.rows || [] }
