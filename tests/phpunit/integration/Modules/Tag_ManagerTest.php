@@ -358,7 +358,7 @@ class Tag_ManagerTest extends TestCase {
 				'googlesitekit-datastore-site',
 				'googlesitekit-modules',
 				'googlesitekit-vendor',
-				'googlesitekit-modules-analytics',
+				'googlesitekit-modules-analytics-4',
 				'googlesitekit-components',
 			),
 			$dependency->deps
