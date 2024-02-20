@@ -766,11 +766,7 @@ const baseResolvers = {
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable && ! module.internal ) {
-					if ( moduleSlug === 'analytics' ) {
-						moduleList.push( 'analytics-4' );
-					} else {
-						moduleList.push( moduleSlug );
-					}
+					moduleList.push( moduleSlug );
 				}
 
 				return moduleList;
