@@ -21,7 +21,6 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -55,7 +54,6 @@ use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -722,8 +720,6 @@ final class Analytics_4 extends Module
 		$new_settings['accountID'] = $account_id;
 
 		$this->get_settings()->merge( $new_settings );
-		// TODO: Remove this when the original Analytics (UA) accountID is not referred to anymore.
-		( new Analytics_Settings( $this->options ) )->merge( $new_settings );
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
@@ -1682,9 +1678,8 @@ final class Analytics_4 extends Module
 			$tag->set_custom_dimensions( $custom_dimensions_data );
 		}
 
-		// TODO: This should be replaced with the Analytics 4 adsConversionID module setting once the settings are migrated.
 		$tag->set_ads_conversion_id(
-			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
+			$this->get_settings()->get()['adsConversionID']
 		);
 
 		$tag->register();
