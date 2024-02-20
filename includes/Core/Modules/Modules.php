@@ -247,36 +247,6 @@ final class Modules {
 			}
 		);
 
-		add_action(
-			'googlesitekit_authorize_user',
-			function( $token_response ) {
-				// Do nothing if the Analytics module is already activated.
-				if ( $this->is_module_active( Analytics_4::MODULE_SLUG ) ) {
-					return;
-				}
-
-				$this->activate_module( Analytics_4::MODULE_SLUG );
-
-				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
-				if ( is_array( $extra_scopes ) ) {
-					$readonly_scope_index = array_search( Analytics_4::READONLY_SCOPE, $extra_scopes, true );
-					if ( $readonly_scope_index >= 0 ) {
-						unset( $extra_scopes[ $readonly_scope_index ] );
-
-						$auth_scopes = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
-						if ( is_array( $auth_scopes ) ) {
-							$auth_scopes[] = Analytics_4::READONLY_SCOPE;
-							$auth_scopes   = array_unique( $auth_scopes );
-
-							$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
-							$this->user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $auth_scopes );
-						}
-					}
-				}
-			},
-			1
-		);
-
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_data' ) );
 		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_data' ) );
 
