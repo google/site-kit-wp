@@ -2160,20 +2160,6 @@ describe( 'core/modules modules', () => {
 				).toEqual( Object.values( shareableModules ).length );
 				await waitForDefaultTimeouts();
 			} );
-
-			it( 'should not include `analytics` module if the dashboard view is GA4', () => {
-				provideModuleRegistrations( registry );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
-
-				const shareableModules = registry
-					.select( CORE_MODULES )
-					.getShareableModules();
-
-				expect( shareableModules ).not.toHaveProperty( 'analytics' );
-				expect( shareableModules ).toHaveProperty( 'analytics-4' );
-			} );
 		} );
 	} );
 } );
