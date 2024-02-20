@@ -50,6 +50,7 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '../../features';
 
 /**
  * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
@@ -69,6 +70,10 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
 	select,
 	isViewOnlyDashboard
 ) {
+	if ( ! isFeatureEnabled( 'ga4AdSenseIntegration' ) ) {
+		return false;
+	}
+
 	if (
 		! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ||
 		! select( CORE_MODULES ).isModuleConnected( 'adsense' )
