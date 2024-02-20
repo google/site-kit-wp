@@ -42,7 +42,6 @@ import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -58,10 +57,6 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
-	);
-
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
 	const ga4ModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
@@ -113,9 +108,6 @@ export default function BannerNotifications() {
 			) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			{ analyticsModuleConnected && ga4ModuleConnected && (
-				<SwitchedToGA4Banner />
-			) }
 			{ ! keyMetricsSetupCTARendered && (
 				<EnhancedMeasurementActivationBanner />
 			) }
