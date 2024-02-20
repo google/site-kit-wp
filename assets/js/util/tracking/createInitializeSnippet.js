@@ -53,7 +53,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			groups: 'site_kit',
 			send_page_view: config.isSiteKitScreen,
 			dimension1: referenceSiteURL,
-			dimension2: userRoles.join( ',' ),
+			dimension2: userRoles.length ? userRoles.join( ',' ) : '',
 			dimension3: userIDHash,
 			dimension4: pluginVersion || '',
 			dimension5: Array.from( enabledFeatures ).join( ',' ),
@@ -69,7 +69,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			active_modules: activeModules.join( ',' ),
 			authenticated: isAuthenticated ? '1' : '0',
 			user_properties: {
-				user_roles: userRoles.join( ',' ),
+				user_roles: userRoles.length ? userRoles.join( ',' ) : '',
 				user_identifier: userIDHash,
 			},
 		} );
