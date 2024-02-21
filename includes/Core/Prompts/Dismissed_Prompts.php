@@ -41,12 +41,15 @@ class Dismissed_Prompts extends User_Setting {
 	public function add( $prompt, $expires_in_seconds = self::DISMISS_PROMPT_PERMANENTLY ) {
 		$prompts = $this->get();
 
+		$reference_date    = apply_filters( 'googlesitekit_reference_date', null );
+		$current_timestamp = $reference_date ? strtotime( $reference_date ) : time();
+
 		if ( array_key_exists( $prompt, $prompts ) ) {
-			$prompts[ $prompt ]['expires'] = $expires_in_seconds ? time() + $expires_in_seconds : 0;
+			$prompts[ $prompt ]['expires'] = $expires_in_seconds ? $current_timestamp + $expires_in_seconds : 0;
 			$prompts[ $prompt ]['count']   = $prompts[ $prompt ]['count'] + 1;
 		} else {
 			$prompts[ $prompt ] = array(
-				'expires' => $expires_in_seconds ? time() + $expires_in_seconds : 0,
+				'expires' => $expires_in_seconds ? $current_timestamp + $expires_in_seconds : 0,
 				'count'   => 1,
 			);
 		}

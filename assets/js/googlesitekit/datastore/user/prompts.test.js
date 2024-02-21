@@ -25,6 +25,7 @@ import {
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { stringToDate } from '../../../util';
 
 describe( 'core/user dismissed-prompts', () => {
 	const fetchGetDismissedPrompts = new RegExp(
@@ -34,10 +35,14 @@ describe( 'core/user dismissed-prompts', () => {
 		'^/google-site-kit/v1/core/user/data/dismiss-prompt'
 	);
 
+	const referenceDate = '2023-06-22';
+
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 	} );
 
 	describe( 'actions', () => {
@@ -132,13 +137,21 @@ describe( 'core/user dismissed-prompts', () => {
 			} );
 
 			it( 'should not return dismissed prompts once they have expired', async () => {
-				const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+				const referenceDateInSeconds = Math.floor(
+					stringToDate( referenceDate ).getTime() / 1000
+				);
 
 				fetchMock.getOnce( fetchGetDismissedPrompts, {
 					body: {
 						foo: { expires: 0, count: 1 },
-						bar: { expires: currentTimeInSeconds + 2000, count: 1 },
-						baz: { expires: currentTimeInSeconds - 2000, count: 1 },
+						bar: {
+							expires: referenceDateInSeconds + 2000,
+							count: 1,
+						},
+						baz: {
+							expires: referenceDateInSeconds - 2000,
+							count: 1,
+						},
 					},
 				} );
 

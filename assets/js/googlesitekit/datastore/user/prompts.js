@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
+import { stringToDate } from '../../../util';
 
 const { createRegistrySelector, commonActions } = Data;
 const { getRegistry } = commonActions;
@@ -86,7 +87,7 @@ const baseActions = {
 	dismissPrompt: createValidatedAction(
 		( slug, options = {} ) => {
 			const { expiresInSeconds = 0 } = options;
-			invariant( slug, 'A tour slug is required to dismiss a tour.' );
+			invariant( slug, 'A prompt slug is required to dismiss a prompt.' );
 			invariant(
 				Number.isInteger( expiresInSeconds ),
 				'expiresInSeconds must be an integer.'
@@ -123,12 +124,16 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of dismissed prompt keys, `undefined` if there are none.
 	 */
-	getDismissedPrompts( state ) {
+	getDismissedPrompts: createRegistrySelector( ( select ) => ( state ) => {
 		if ( state.dismissedPrompts === undefined ) {
 			return undefined;
 		}
 
-		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+		const referenceDate = select( CORE_USER ).getReferenceDate();
+
+		const currentTimeInSeconds = Math.floor(
+			stringToDate( referenceDate ).getTime() / 1000
+		);
 		return Object.entries( state.dismissedPrompts ).reduce(
 			( acc, [ slug, { expires } ] ) => {
 				if ( expires === 0 || expires > currentTimeInSeconds ) {
@@ -138,7 +143,7 @@ const baseSelectors = {
 			},
 			[]
 		);
-	},
+	} ),
 
 	/**
 	 * Gets the count of a dismissed prompt.
