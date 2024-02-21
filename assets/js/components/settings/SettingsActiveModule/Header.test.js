@@ -70,11 +70,6 @@ describe( 'Header', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'pagespeed-insights',
 				active: true,
 				connected: true,
