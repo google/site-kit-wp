@@ -22,8 +22,8 @@
 import { provideModules, provideSiteInfo } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
-import { provideAnalyticsMockReport } from '../../../modules/analytics/util/data-mock';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { provideAnalytics4MockReport } from '../../../modules/analytics-4/utils/data-mock';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { provideSearchConsoleMockReport } from '../../../modules/search-console/util/data-mock';
 import ZeroDataStateNotifications from './';
@@ -36,69 +36,66 @@ const searchConsoleArgs = {
 
 const analyticsArgs = [
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
 		metrics: [
 			{
-				expression: 'ga:goalCompletionsAll',
-				alias: 'Goal Completions',
+				name: 'totalUsers',
 			},
-			'ga:bounceRate',
 		],
 	},
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
-		dimensions: 'ga:date',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		dimensions: [
+			{
+				name: 'date',
+			},
+		],
+		limit: 10,
 		metrics: [
 			{
-				expression: 'ga:goalCompletionsAll',
-				alias: 'Goal Completions',
+				name: 'averageSessionDuration',
 			},
-			'ga:bounceRate',
 		],
 	},
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
-		metrics: [
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [ { name: 'totalUsers' } ],
+		dimensions: [ 'date' ],
+		orderby: [
 			{
-				expression: 'ga:users',
-				alias: 'Total Users',
+				dimension: {
+					dimensionName: 'date',
+				},
 			},
 		],
-		dimensions: [ 'ga:channelGrouping' ],
-		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
 	},
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		dimensions: [ 'pagePath' ],
 		metrics: [
 			{
-				expression: 'ga:users',
-				alias: 'Total Users',
+				name: 'screenPageViews',
 			},
 		],
-		dimensions: [ 'ga:date' ],
-		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-	},
-	{
-		dimensions: [ 'ga:date' ],
-		metrics: [
+		orderby: [
 			{
-				expression: 'ga:users',
+				metric: {
+					metricName: 'screenPageViews',
+				},
+				desc: true,
 			},
 		],
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
+		limit: 5,
 	},
 ];
 
@@ -117,7 +114,7 @@ NoNotificationsAvailable.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 
 		for ( const options of analyticsArgs ) {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 		}
 	},
 };
@@ -129,7 +126,7 @@ AnalyticsGatheringData.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 		for ( const options of analyticsArgs ) {
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( [], { options } );
 		}
 	},
@@ -143,7 +140,7 @@ SearchConsoleGatheringData.args = {
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveGetReport( [], { options: searchConsoleArgs } );
 		for ( const options of analyticsArgs ) {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 		}
 	},
 };
@@ -158,7 +155,7 @@ SearchConsoleAndAnalyticsGatheringData.args = {
 			.receiveGetReport( [], { options: searchConsoleArgs } );
 		for ( const options of analyticsArgs ) {
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( [], { options } );
 		}
 	},
@@ -183,7 +180,7 @@ ZeroDataState.args = {
 			}
 		);
 		for ( const options of analyticsArgs ) {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 		}
 	},
 };
@@ -208,7 +205,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics',
+						slug: 'analytics-4',
 					},
 				] );
 

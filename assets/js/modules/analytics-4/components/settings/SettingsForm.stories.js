@@ -25,7 +25,6 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const {
 	accountSummaries,
@@ -211,13 +210,6 @@ export default {
 					canUseSnippet: true,
 					anonymizeIP: true,
 					trackingDisabled: [ 'loggedinUsers' ],
-				} );
-
-				// @TODO: This is temporarily needed here as the certain components
-				// still rely on the `analytics` datastore. This should be removed
-				// once the two Analytics modules are entirely decoupled.
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					accountID,
 				} );
 
 				registry
