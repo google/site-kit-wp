@@ -30,6 +30,13 @@ class Consent_Mode {
 	 */
 	protected $consent_mode_settings;
 
+	/**
+	 * REST_Consent_Mode_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Consent_Mode_Controller
+	 */
+	protected $rest_controller;
 
 	/**
 	 * Constructor.
@@ -42,6 +49,7 @@ class Consent_Mode {
 	public function __construct( Context $context, Options $options = null ) {
 		$options                     = $options ?: new Options( $context );
 		$this->consent_mode_settings = new Consent_Mode_Settings( $options );
+		$this->rest_controller       = new REST_Consent_Mode_Controller( $this->consent_mode_settings );
 	}
 
 	/**
@@ -51,5 +59,6 @@ class Consent_Mode {
 	 */
 	public function register() {
 		$this->consent_mode_settings->register();
+		$this->rest_controller->register();
 	}
 }
