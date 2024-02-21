@@ -1007,125 +1007,6 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 		} );
 
-		describe( 'hasMultipleAnalyticsPropertyIDs', () => {
-			// Having multiple propertyIDs is currently only possible in secondary AMP
-			// so we'll use that context for all of these tests.
-			beforeEach( () =>
-				registry
-					.dispatch( CORE_SITE )
-					.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } )
-			);
-
-			it( 'returns true if there are multiple IDs returned from getAnalyticsPropertyIDs', () => {
-				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-12345-1',
-					ampPropertyID: 'UA-99999-9',
-				} );
-
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.getAnalyticsPropertyIDs()
-				).toHaveLength( 2 );
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasMultipleAnalyticsPropertyIDs()
-				).toBe( true );
-			} );
-
-			it( 'returns true if one container has a property ID and the other does not', () => {
-				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-12345-1',
-				} );
-
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.getAnalyticsPropertyIDs()
-				).toHaveLength( 2 );
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasMultipleAnalyticsPropertyIDs()
-				).toBe( true );
-			} );
-
-			it( 'returns false if both containers reference the same propertyID', () => {
-				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-12345-1',
-					ampPropertyID: 'UA-12345-1',
-				} );
-
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.getAnalyticsPropertyIDs()
-				).toHaveLength( 1 );
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasMultipleAnalyticsPropertyIDs()
-				).toBe( false );
-			} );
-
-			it( 'returns undefined if either container’s live container version is not loaded yet', async () => {
-				const accountID = '12345';
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.setAccountID( accountID );
-				const liveContainerVersionWeb =
-					factories.buildLiveContainerVersionWeb( { accountID } );
-				parseIDs(
-					liveContainerVersionWeb,
-					( { containerID, internalContainerID } ) => {
-						registry
-							.dispatch( MODULES_TAGMANAGER )
-							.setContainerID( containerID );
-						registry
-							.dispatch( MODULES_TAGMANAGER )
-							.setInternalContainerID( internalContainerID );
-						registry
-							.dispatch( MODULES_TAGMANAGER )
-							.receiveGetLiveContainerVersion(
-								liveContainerVersionWeb,
-								{ accountID, internalContainerID }
-							);
-					}
-				);
-				const liveContainerVersionAMP =
-					factories.buildLiveContainerVersionAMP( { accountID } );
-				parseIDs(
-					liveContainerVersionAMP,
-					( { containerID, internalContainerID } ) => {
-						registry
-							.dispatch( MODULES_TAGMANAGER )
-							.setAMPContainerID( containerID );
-						registry
-							.dispatch( MODULES_TAGMANAGER )
-							.setInternalAMPContainerID( internalContainerID );
-						// Live container version not received for AMP yet.
-					}
-				);
-
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
-					)
-				);
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasMultipleAnalyticsPropertyIDs()
-				).toStrictEqual( undefined );
-
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getLiveContainerVersion( '12345', '291' );
-			} );
-		} );
-
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
 				jest.useFakeTimers();
@@ -1175,6 +1056,222 @@ describe( 'modules/tagmanager versions', () => {
 							internalContainerID
 						)
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getLiveContainerGoogleTag', () => {
+			it( 'returns the Google tag object from the live container object', () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersion( {
+						googleTagID: 'GT-123456789',
+					} );
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toMatchObject( { type: 'googtag' } );
+				expect( tagObject ).toEqual(
+					liveContainerVersion.tag.find(
+						( { type } ) => type === 'googtag'
+					)
+				);
+			} );
+
+			it( 'returns null if the live container version does not contain a Google tag', () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toStrictEqual( null );
+			} );
+
+			it( 'returns null if no live container version exists', () => {
+				const accountID = '12345';
+				const internalContainerID = '98765';
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( null, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toStrictEqual( null );
+			} );
+
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
+				const accountID = '12345';
+				const internalContainerID = '98765';
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
+				);
+				const tagObject = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTag(
+						accountID,
+						internalContainerID
+					);
+
+				expect( tagObject ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '12345', '98765' );
+			} );
+		} );
+
+		describe( 'getLiveContainerGoogleTagID', () => {
+			it( 'gets the googleTagID associated with the Google tag when provided directly', () => {
+				const liveContainerVersion =
+					fixtures.liveContainerVersions.web.googleTag;
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toBe( 'G-ABC12DE34F' );
+			} );
+
+			it( 'returns null if no Google tag exists in the container', () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toStrictEqual( null );
+			} );
+
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
+				);
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( accountID, internalContainerID );
+			} );
+
+			it( 'gets the googleTagID associated with a constant variable', () => {
+				const liveContainerVersion =
+					fixtures.liveContainerVersions.web.googleTagWithVariable;
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerGoogleTagID(
+						accountID,
+						internalContainerID
+					);
+
+				expect( googleTagID ).toBe( 'G-ABC12DE34F' );
+			} );
+		} );
+
+		describe( 'getCurrentGTMGoogleTagID', () => {
+			it( 'gets the googleTagID associated with the currently selected GTM account and container', () => {
+				const liveContainerVersion =
+					fixtures.liveContainerVersions.web.googleTag;
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
+					accountID,
+					internalContainerID,
+				} );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetLiveContainerVersion( liveContainerVersion, {
+						accountID,
+						internalContainerID,
+					} );
+
+				const googleTagID = registry
+					.select( MODULES_TAGMANAGER )
+					.getCurrentGTMGoogleTagID( accountID, internalContainerID );
+
+				expect( googleTagID ).toBe( 'G-ABC12DE34F' );
 			} );
 		} );
 	} );

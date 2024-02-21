@@ -48,12 +48,20 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 
 		hasInsertedTag = true;
 
+		// Sometimes the user roles returned by Site Kit/WordPress is not an
+		// array, as expected, so we guard against it here.
+		//
+		// See: https://github.com/google/site-kit-wp/issues/8266
+		const userRolesAsString = userRoles?.length
+			? userRoles.join( ',' )
+			: '';
+
 		dataLayerPush( 'js', new Date() );
 		dataLayerPush( 'config', config.trackingID, {
 			groups: 'site_kit',
 			send_page_view: config.isSiteKitScreen,
 			dimension1: referenceSiteURL,
-			dimension2: userRoles.join( ',' ),
+			dimension2: userRolesAsString,
 			dimension3: userIDHash,
 			dimension4: pluginVersion || '',
 			dimension5: Array.from( enabledFeatures ).join( ',' ),
@@ -69,7 +77,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			active_modules: activeModules.join( ',' ),
 			authenticated: isAuthenticated ? '1' : '0',
 			user_properties: {
-				user_roles: userRoles.join( ',' ),
+				user_roles: userRolesAsString,
 				user_identifier: userIDHash,
 			},
 		} );
