@@ -275,6 +275,46 @@ export const liveContainerVersionBuilder = build(
 	}
 );
 
+const googleTag = ( googleTagID, { accountId, containerId } = {} ) => {
+	return {
+		accountId,
+		blockingRuleId: null,
+		blockingTriggerId: null,
+		containerId,
+		fingerprint: '1704031882618',
+		firingRuleId: null,
+		firingTriggerId: [ '2147479553' ],
+		liveOnly: null,
+		monitoringMetadataTagNameKey: null,
+		name: 'Google Tag',
+		notes: null,
+		parentFolderId: null,
+		path: null,
+		paused: null,
+		scheduleEndMs: null,
+		scheduleStartMs: null,
+		tagFiringOption: 'oncePerEvent',
+		tagId: '3',
+		tagManagerUrl: null,
+		type: 'googtag',
+		workspaceId: null,
+		parameter: [
+			{
+				key: 'tagId',
+				type: 'template',
+				value: googleTagID,
+			},
+		],
+		monitoringMetadata: {
+			key: null,
+			type: 'map',
+			value: null,
+		},
+		consentSettings: {
+			consentStatus: 'notSet',
+		},
+	};
+};
 const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
 	return {
 		accountId,
@@ -360,6 +400,26 @@ const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
 	};
 };
 /* eslint-enable sitekit/acronym-case */
+
+export const buildLiveContainerVersion = ( {
+	accountID = '100',
+	googleTagID,
+} = {} ) => {
+	return liveContainerVersionBuilder( {
+		overrides: {
+			accountId: accountID, // eslint-disable-line sitekit/acronym-case
+			container: {
+				usageContext: [ CONTEXT_WEB ],
+			},
+		},
+		map( object ) {
+			if ( googleTagID ) {
+				object.tag = [ googleTag( googleTagID, object ) ];
+			}
+			return object;
+		},
+	} );
+};
 
 export const buildLiveContainerVersionWeb = ( {
 	accountID = '100',

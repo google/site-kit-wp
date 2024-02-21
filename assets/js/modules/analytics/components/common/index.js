@@ -20,7 +20,6 @@ export { default as AccountCreate } from './AccountCreate';
 export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as AccountSelect } from './AccountSelect';
 export { default as AdsConversionIDTextField } from './AdsConversionIDTextField';
-export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as AnonymizeIPSwitch } from './AnonymizeIPSwitch';
 export { default as ExistingGTMPropertyNotice } from './ExistingGTMPropertyNotice';
 export { default as ProfileNameTextField } from './ProfileNameTextField';

@@ -220,6 +220,7 @@ class Request extends Report {
 				'sessions',
 				'sessionConversionRate',
 				'sessionsPerUser',
+				'totalAdRevenue',
 				'totalUsers',
 			)
 		);
@@ -273,6 +274,7 @@ class Request extends Report {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
+				'adSourceName',
 				'city',
 				'country',
 				'date',

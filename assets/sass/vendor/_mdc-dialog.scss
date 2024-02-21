@@ -3,19 +3,59 @@
 	z-index: 10000;
 
 	.mdc-dialog__surface {
-		padding: $grid-gap-desktop $grid-gap-desktop * 2;
+		border-radius: $br-xs;
+		box-shadow: 0 10px 40px 0 rgba($c-black, 0.35);
+		max-width: 76vw;
+		padding: $grid-gap-desktop;
+
+		@media (min-width: $bp-tablet) {
+			max-width: 478px;
+			padding: 36px;
+		}
+
+		@media (min-width: $bp-desktop) {
+			max-width: 590px;
+		}
 	}
 
 	.mdc-dialog__lead,
 	.mdc-dialog__title {
 		color: $c-surfaces-on-surface;
-		text-align: center;
+	}
+
+	.mdc-dialog__title {
+		align-items: flex-start;
+		column-gap: 9px;
+		display: flex;
+		flex-direction: column;
+		font-size: $fs-headline-sm;
+		letter-spacing: 0;
+		padding: 0 0 4px;
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			flex-direction: row;
+			padding: 0 0 $grid-gap-desktop - 10px; // 14px.
+		}
+
+		&::before {
+			display: none;
+		}
+
+		svg {
+			color: $c-red-r-500;
+			margin-bottom: 4px;
+
+			@media (min-width: $bp-tablet) {
+				margin-bottom: 0;
+			}
+		}
 	}
 
 	.mdc-dialog__lead {
-		font-size: $fs-body-lg;
-		font-weight: $fw-light;
-		letter-spacing: $ls-m;
+		font-size: $fs-label-md;
+		font-weight: $fw-medium;
+		line-height: $lh-label-md;
 		margin: 0;
 		max-width: 430px;
 	}
@@ -27,17 +67,74 @@
 		padding: 0;
 	}
 
-	.mdc-dialog__provides {
-		overflow: initial;
-		padding: 20px 16px;
+	.mdc-dialog__dependencies {
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+		margin: 1em 0;
+
+		strong {
+			font-weight: $fw-medium;
+		}
 	}
 
-	.mdc-dialog__dependencies {
-		margin: 1em 0;
+	.mdc-dialog__provides {
+		overflow: initial;
+		padding: 8px 0;
+	}
+
+	.mdc-list {
+
+		&:first-child:last-child {
+			padding: 0;
+		}
+
+		&.mdc-list--underlined {
+
+			.mdc-list-item {
+				font-size: $fs-body-md;
+				height: unset;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+				min-height: 32px;
+				padding-left: 10px;
+
+				&::before {
+					background-color: $c-surfaces-on-surface;
+					border-radius: 50%;
+					content: " ";
+					height: 4px;
+					left: 0;
+					position: absolute;
+					top: 50%;
+					transform: translateY(-50%);
+					width: 4px;
+				}
+			}
+		}
 	}
 
 	.mdc-dialog__actions {
-		justify-content: space-between;
-		margin: 1em 0;
+		column-gap: 10px;
+		margin: 2em 0 0;
+		min-height: 40px;
+		padding: 0;
+	}
+
+	// Size variants
+	&.googlesitekit-dialog-md {
+		.mdc-dialog__surface {
+			@media (min-width: $bp-tablet) {
+				max-width: 441px;
+			}
+		}
+	}
+
+	&.googlesitekit-dialog-sm {
+		.mdc-dialog__surface {
+			@media (min-width: $bp-tablet) {
+				max-width: 402px;
+			}
+		}
 	}
 }

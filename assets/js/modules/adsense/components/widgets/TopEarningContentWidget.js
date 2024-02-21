@@ -29,15 +29,161 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+} from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '../../../../components/KeyMetrics';
+import Link from '../../../../components/Link';
+import { ZeroDataMessage } from '../../../analytics/components/common';
+import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/ConnectGA4CTATileWidget';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import { AdSenseLinkCTA } from '../common';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
+const { useSelect, useInViewSelect } = Data;
 
 function TopEarningContentWidget( { Widget } ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const reportOptions = {
+		...dates,
+		dimensions: [ 'pagePath' ],
+		metrics: [ { name: 'totalAdRevenue' } ],
+		orderby: [
+			{
+				metric: { metricName: 'totalAdRevenue' },
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	const report = useInViewSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+	} );
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] )
+	);
+
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
+			: undefined
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			) || titles === undefined
+	);
+
+	const isAdSenseLinked = useSelect( ( select ) => {
+		if ( viewOnlyDashboard && loading ) {
+			return undefined;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+	} );
+
+	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
+		return (
+			<Widget>
+				<AdSenseLinkCTA />
+			</Widget>
+		);
+	}
+
+	const { rows = [] } = report || {};
+
+	const columns = [
+		{
+			field: 'dimensionValues.0.value',
+			Component( { fieldValue } ) {
+				const url = fieldValue;
+				const title = titles[ url ];
+				// Utilizing `useSelect` inside the component rather than
+				// returning its direct value to the `columns` array.
+				// This pattern ensures that the component re-renders correctly based on changes in state,
+				// preventing potential issues with stale or out-of-sync data.
+				// Note: This pattern is replicated in a few other spots within our codebase.
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url,
+									},
+									dates,
+								}
+						  )
+						: null;
+				} );
+
+				if ( viewOnlyDashboard ) {
+					return <MetricTileTablePlainText content={ title } />;
+				}
+
+				return (
+					<Link
+						href={ serviceURL }
+						title={ title }
+						external
+						hideExternalIndicator
+					>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			field: 'metricValues.0.value',
+			Component( { fieldValue } ) {
+				return (
+					<strong>
+						{ numFmt( fieldValue, {
+							style: 'currency',
+							currency: report?.metadata?.currencyCode,
+						} ) }
+					</strong>
+				);
+			},
+		},
+	];
+
 	return (
-		<Widget>
-			<div>TODO: UI for TopEarningContentWidget</div>
-		</Widget>
+		<MetricTileTable
+			Widget={ Widget }
+			widgetSlug={ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT }
+			loading={ loading }
+			rows={ rows }
+			columns={ columns }
+			ZeroState={ ZeroDataMessage }
+			error={ error }
+			moduleSlug="analytics-4"
+		/>
 	);
 }
 

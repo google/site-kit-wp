@@ -242,7 +242,9 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( { ...fixtures.defaultSettings } );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( null );
@@ -435,14 +437,14 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Nothing selected',
 		( args, { registry } ) => {
-			const { accounts, properties, profiles } =
+			const { properties, profiles } =
 				fixtures.accountsPropertiesProfiles;
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProperties( properties, {
