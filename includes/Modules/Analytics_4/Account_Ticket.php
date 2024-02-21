@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 /**
- * Class representing an account ticket for Analytics account provisioning with associated parameters.
+ * Class representing an account ticket for Analytics 4 account provisioning with associated parameters.
  *
  * @since 1.98.0
  * @access private
