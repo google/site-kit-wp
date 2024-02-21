@@ -33,8 +33,8 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function FormInstructions( { isSetup } ) {
@@ -48,17 +48,17 @@ export default function FormInstructions( { isSetup } ) {
 		select( MODULES_TAGMANAGER ).hasMultipleAnalyticsPropertyIDs()
 	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const analyticsPropertyID = useSelect( ( select ) => {
 		if ( ! analyticsModuleAvailable ) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getPropertyID();
+		return select( MODULES_ANALYTICS_4 ).getPropertyID();
 	} );
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
