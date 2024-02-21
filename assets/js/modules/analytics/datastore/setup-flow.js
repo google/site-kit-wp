@@ -23,7 +23,6 @@ import Data from 'googlesitekit-data';
 import { SETUP_FLOW_MODE_GA4, FORM_SETUP } from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 
 const { createRegistrySelector } = Data;
 
@@ -63,40 +62,6 @@ const baseSelectors = {
 
 		return uaConnected === ga4Connected;
 	} ),
-
-	/**
-	 * Determines whether the live container version has finished loading.
-	 *
-	 * @since 1.94.0
-	 *
-	 * @return {boolean} TRUE if the GTM module is not available or the live container version has finished loading, otherwise FALSE.
-	 */
-	hasFinishedLoadingGTMContainers: createRegistrySelector(
-		( select ) => () => {
-			const tagmanagerModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'tagmanager' );
-			if ( ! tagmanagerModuleConnected ) {
-				return true;
-			}
-
-			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
-			const internalContainerID =
-				select( MODULES_TAGMANAGER ).getInternalContainerID();
-			const internalAMPContainerID =
-				select( MODULES_TAGMANAGER ).getInternalAMPContainerID();
-
-			return (
-				select( MODULES_TAGMANAGER ).hasFinishedResolution(
-					'getLiveContainerVersion',
-					[ accountID, internalContainerID ]
-				) ||
-				select( MODULES_TAGMANAGER ).hasFinishedResolution(
-					'getLiveContainerVersion',
-					[ accountID, internalAMPContainerID ]
-				)
-			);
-		}
-	),
 };
 
 const store = Data.combineStores( {

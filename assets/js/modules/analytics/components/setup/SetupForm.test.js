@@ -62,22 +62,6 @@ describe( 'SetupForm', () => {
 		provideModules( registry, [ { slug: 'analytics', active: true } ] );
 	} );
 
-	it( 'renders the form with a progress bar when GTM containers are not resolved', () => {
-		provideModules( registry, [
-			{ slug: 'analytics', active: true, connected: true },
-			{ slug: 'tagmanager', active: true, connected: true },
-		] );
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-
-		const { container, getByRole } = render( <SetupForm />, { registry } );
-
-		expect( container ).toMatchSnapshot();
-
-		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
-	} );
-
 	it( 'renders the form correctly when setup flow mode is GA4', async () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
