@@ -35,7 +35,7 @@ import {
 } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import defaultModules, * as modulesFixtures from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
@@ -110,7 +110,7 @@ describe( 'modules/tagmanager settings', () => {
 		// TODO: the analytics module should not be connected by default in the module fixtures assets/js/googlesitekit/modules/datastore/fixtures.json
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: false,
 			},
 		] );
@@ -696,12 +696,12 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in the web container', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
+					const modules = modulesFixtures.withActive( 'analytics-4' );
 					registry
 						.dispatch( CORE_MODULES )
 						.receiveGetModules( modules );
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID: '' } );
 					const liveContainerVersion = buildLiveContainerVersionWeb( {
 						propertyID: 'UA-12345-1',
@@ -735,7 +735,7 @@ describe( 'modules/tagmanager settings', () => {
 					).toBe( true );
 					// Matching property ID in Analytics and GTM
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( 'UA-12345-1' );
 					registry
 						.select( MODULES_TAGMANAGER )
@@ -745,7 +745,7 @@ describe( 'modules/tagmanager settings', () => {
 					).toBe( true );
 					// Non-matching property IDs
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( 'UA-99999-9' );
 					expect( () =>
 						registry
@@ -957,12 +957,12 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in the AMP container', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
+					const modules = modulesFixtures.withActive( 'analytics-4' );
 					registry
 						.dispatch( CORE_MODULES )
 						.receiveGetModules( modules );
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID: '' } );
 					const liveContainerVersion = buildLiveContainerVersionAMP( {
 						propertyID: 'UA-12345-1',
@@ -1001,7 +1001,7 @@ describe( 'modules/tagmanager settings', () => {
 					).toBe( true );
 					// Matching property ID in Analytics and GTM
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( 'UA-12345-1' );
 					registry
 						.select( MODULES_TAGMANAGER )
@@ -1011,7 +1011,7 @@ describe( 'modules/tagmanager settings', () => {
 					).toBe( true );
 					// Non-matching property IDs
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( 'UA-99999-9' );
 					expect( () =>
 						registry
@@ -1312,7 +1312,7 @@ describe( 'modules/tagmanager settings', () => {
 
 				it( 'requires both containers to reference the same propertyID when an Analytics tag is present', () => {
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID: '' } );
 					const { buildAndReceiveWebAndAMP } =
 						createBuildAndReceivers( registry );
@@ -1331,12 +1331,12 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in both containers', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
+					const modules = modulesFixtures.withActive( 'analytics-4' );
 					registry
 						.dispatch( CORE_MODULES )
 						.receiveGetModules( modules );
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID: '' } );
 					const { buildAndReceiveWebAndAMP } =
 						createBuildAndReceivers( registry );
@@ -1359,7 +1359,7 @@ describe( 'modules/tagmanager settings', () => {
 					).toBe( true );
 					// Matching property ID in Analytics and GTM
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( 'UA-12345-1' );
 					registry
 						.select( MODULES_TAGMANAGER )
@@ -1369,7 +1369,7 @@ describe( 'modules/tagmanager settings', () => {
 					).toBe( true );
 					// Non-matching property IDs
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.setPropertyID( 'UA-99999-9' );
 					expect( () =>
 						registry
