@@ -104,11 +104,11 @@ final class Analytics_4 extends Module
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
 
+	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
+
 	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
 	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
 	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
-
-	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
 	 * Module slug name.
