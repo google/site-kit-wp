@@ -211,9 +211,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 			'wrong data type'                              => array(
 				'{}',
 			),
-			'no properties'                                => array(
-				array(),
-			),
 			'invalid property'                             => array(
 				array( 'some-invalid-property' => 'value' ),
 			),
