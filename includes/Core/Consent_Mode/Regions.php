@@ -18,6 +18,10 @@ namespace Google\Site_Kit\Core\Consent_Mode;
  * @ignore
  */
 class Regions {
+
+	/**
+	 * List of countries in the European Economic Area (EEA).
+	 */
 	const EEA = array(
 		'AT',
 		'BE',

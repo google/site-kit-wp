@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Storage\Options;
  * @ignore
  */
 class Consent_Mode {
+
 	/**
 	 * Consent_Mode_Settings instance.
 	 *
