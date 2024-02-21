@@ -298,12 +298,18 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		setValue,
 	] );
 
-	if ( pieChartError ) {
+	const retryableErrors = [
+		pieChartError,
+		totalUsersError,
+		userCountGraphError,
+	].filter( Boolean );
+
+	if ( pieChartError || totalUsersError || userCountGraphError ) {
 		return (
 			<Widget>
 				<WidgetReportError
 					moduleSlug="analytics-4"
-					error={ pieChartError }
+					error={ retryableErrors }
 				/>
 			</Widget>
 		);
