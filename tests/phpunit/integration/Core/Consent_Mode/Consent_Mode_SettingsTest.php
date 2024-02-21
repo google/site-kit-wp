@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
-use Google\Service\Compute\Region;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Consent_Mode\Regions;
