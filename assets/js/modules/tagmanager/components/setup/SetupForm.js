@@ -59,8 +59,8 @@ export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).canSubmitChanges()
 	);
-	const singleAnalyticsPropertyID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	const currentGTMGoogleTagID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getCurrentGTMGoogleTagID()
 	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
@@ -163,7 +163,7 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, initialAutoSubmit, submitForm, initialSubmitMode ] );
 
 	const isSetupWithAnalytics = !! (
-		singleAnalyticsPropertyID &&
+		currentGTMGoogleTagID &&
 		analyticsModuleAvailable &&
 		! analyticsModuleActive
 	);

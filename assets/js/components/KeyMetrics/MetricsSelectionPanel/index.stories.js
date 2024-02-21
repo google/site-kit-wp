@@ -61,6 +61,7 @@ ViewOnly.args = {
 export default {
 	title: 'Key Metrics/MetricsSelectionPanel',
 	component: MetricsSelectionPanel,
+	parameters: { features: [ 'ga4AdSenseIntegration' ] },
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
