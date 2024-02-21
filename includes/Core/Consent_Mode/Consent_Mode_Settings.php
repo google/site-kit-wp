@@ -62,8 +62,8 @@ class Consent_Mode_Settings extends Setting {
 		return function ( $value ) {
 			$new_value = $this->get();
 
-			if ( ! empty( $value['enabled'] ) ) {
-				$new_value['enabled'] = true;
+			if ( isset( $value['enabled'] ) ) {
+				$new_value['enabled'] = (bool) $value['enabled'];
 			}
 
 			if ( ! empty( $value['regions'] ) && is_array( $value['regions'] ) ) {
