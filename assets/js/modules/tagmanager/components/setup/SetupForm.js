@@ -63,10 +63,10 @@ export default function SetupForm( { finishSetup } ) {
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -125,7 +125,7 @@ export default function SetupForm( { finishSetup } ) {
 					! analyticsModuleActive
 				) {
 					const { response, error } = await activateModule(
-						'analytics'
+						'analytics-4'
 					);
 					if ( error ) {
 						throw error;
