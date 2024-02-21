@@ -233,7 +233,7 @@ const baseSelectors = {
 	/**
 	 * Gets the first Google Tag object within the current live container for the given account and internal container ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.
@@ -266,7 +266,7 @@ const baseSelectors = {
 	/**
 	 * Gets the first Google Tag ID within the live container for the given account and container ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.
@@ -318,7 +318,7 @@ const baseSelectors = {
 	/**
 	 * Gets a Google Tag ID, if any, for the currently selected GTM account and container.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return {(string|null|undefined)} Google Tag ID string, or `null` if none, or `undefined` if not fully loaded.
 	 */

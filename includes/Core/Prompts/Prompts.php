@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling prompts.
  *
- * @since n.e.x.t
+ * @since 1.121.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Prompts {
 	/**
 	 * Dismissed_Prompts instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 * @var Dismissed_Prompts
 	 */
 	protected $dismissed_prompts;
@@ -33,7 +33,7 @@ class Prompts {
 	/**
 	 * REST_Prompts_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 * @var REST_Prompts_Controller
 	 */
 	protected $rest_controller;
@@ -41,7 +41,7 @@ class Prompts {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -54,7 +54,7 @@ class Prompts {
 	/**
 	 * Gets the reference to the Dismissed_Prompts instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return Dismissed_Prompts An instance of the Dismissed_Prompts class.
 	 */
@@ -65,7 +65,7 @@ class Prompts {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 */
 	public function register() {
 		$this->dismissed_prompts->register();

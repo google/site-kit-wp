@@ -76,7 +76,7 @@ const baseActions = {
 	/**
 	 * Dismisses the given prompt by slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param {string} slug                       Prompt slug to dismiss.
 	 * @param {Object} options                    Dismiss prompt options.
@@ -118,7 +118,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of dismissed prompts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of dismissed prompt keys, `undefined` if there are none.
@@ -143,7 +143,7 @@ const baseSelectors = {
 	/**
 	 * Gets the count of a dismissed prompt.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Prompt slug.
@@ -160,7 +160,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the prompt is dismissed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Prompt slug.
@@ -175,7 +175,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether or not the prompt is being dismissed for the given slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Prompt slug.

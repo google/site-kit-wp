@@ -336,7 +336,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Checks whether the AdSense module is connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return bool True if AdSense is connected, false otherwise.
 	 */
@@ -596,7 +596,7 @@ final class Analytics_4 extends Module
 	 * E.g. via Tag Manager, etc.
 	 *
 	 * @since 1.5.0
-	 * @since n.e.x.t Migrated from the Analytics (UA) class and adapted to only work for GA4 properties.
+	 * @since 1.121.0 Migrated from the Analytics (UA) class and adapted to only work for GA4 properties.
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
@@ -631,7 +631,7 @@ final class Analytics_4 extends Module
 	 * Checks whether or not tracking snippet should be contextually disabled for this request.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Migrated here from the Analytics (UA) class.
+	 * @since 1.121.0 Migrated here from the Analytics (UA) class.
 	 *
 	 * @return bool
 	 */
@@ -664,7 +664,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.9.0
 	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
-	 * @since n.e.x.t Migrated method from original Analytics class to Analytics_4 class.
+	 * @since 1.121.0 Migrated method from original Analytics class to Analytics_4 class.
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {

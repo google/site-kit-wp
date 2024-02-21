@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Module;
 /**
  * Class representing the Ads module.
  *
- * @since n.e.x.t
+ * @since 1.121.0
  * @access private
  * @ignore
  */
@@ -29,14 +29,14 @@ final class Ads extends Module {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 */
 	public function register() {}
 
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return array Associative array of module info.
 	 */

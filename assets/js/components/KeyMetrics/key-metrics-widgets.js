@@ -60,7 +60,7 @@ import { isFeatureEnabled } from '../../features';
  *
  * For view-only dashboards, the widget will only be displayed if both modules are linked.
  *
- * @since n.e.x.t
+ * @since 1.121.0
  *
  * @param {Function} select              Data store select function.
  * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.

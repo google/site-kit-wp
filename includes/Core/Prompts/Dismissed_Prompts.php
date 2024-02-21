@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for representing a user's dismissed prompts.
  *
- * @since n.e.x.t
+ * @since 1.121.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Dismissed_Prompts extends User_Setting {
 	/**
 	 * Adds one prompt to the list of dismissed prompts or updates the triggered count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param string $prompt             Prompt to dismiss.
 	 * @param int    $expires_in_seconds TTL for the prompt.
@@ -57,7 +57,7 @@ class Dismissed_Prompts extends User_Setting {
 	/**
 	 * Removes one or more prompts from the list of dismissed prompts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param string $prompt Item to remove.
 	 */
@@ -77,7 +77,7 @@ class Dismissed_Prompts extends User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return array Value set for the option, or default if not set.
 	 */
@@ -89,7 +89,7 @@ class Dismissed_Prompts extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return string The type name.
 	 */
@@ -100,7 +100,7 @@ class Dismissed_Prompts extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return array The default value.
 	 */
@@ -111,7 +111,7 @@ class Dismissed_Prompts extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
