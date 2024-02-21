@@ -1135,7 +1135,7 @@ final class AdSense extends Module
 	/**
 	 * Resets the Ad Blocking Recovery notification.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 */
 	public function reset_ad_blocking_recovery_notification() {
 		$dismissed_prompts = ( new Dismissed_Prompts( $this->user_options ) );
