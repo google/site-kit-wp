@@ -31,6 +31,7 @@ import {
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import {
 	createBuildAndReceivers,
@@ -490,10 +491,8 @@ describe( 'modules/tagmanager versions', () => {
 
 				expect( propertyID ).toStrictEqual( undefined );
 
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getLiveContainerVersion( '100', '235' );
+				// Use fixed small timeout instead of waiting for resolver to prevent test failing due to the timeout.
+				await waitForTimeouts( 20 );
 			} );
 		} );
 
@@ -592,10 +591,8 @@ describe( 'modules/tagmanager versions', () => {
 
 				expect( variableObject ).toStrictEqual( undefined );
 
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getLiveContainerVersion( '100', '239' );
+				// Use fixed small timeout instead of waiting for resolver to prevent test failing due to the timeout.
+				await waitForTimeouts( 20 );
 			} );
 		} );
 
