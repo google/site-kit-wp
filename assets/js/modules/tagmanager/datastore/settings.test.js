@@ -61,7 +61,6 @@ import {
 import { getNormalizedContainerName } from '../util';
 import {
 	INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH,
-	INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS,
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_AMP_CONTAINER_SELECTION,
 	INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID,
@@ -1329,20 +1328,6 @@ describe( 'modules/tagmanager settings', () => {
 					expect(
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( true );
-
-					// Non-matching property IDs
-					buildAndReceiveWebAndAMP( {
-						webPropertyID: 'UA-12345-1',
-						ampPropertyID: 'UA-12345-99',
-					} );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS );
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in both containers', () => {

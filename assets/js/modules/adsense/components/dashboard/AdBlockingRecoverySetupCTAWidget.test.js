@@ -96,7 +96,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			},
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	afterEach( () => {
@@ -110,7 +110,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			siteStatus: SITE_STATUS_READY,
 			adBlockingRecoverySetupStatus: '',
 			isModuleConnected: true,
-			isNotificationDismissed: false,
+			isNotificationDismissedPermanently: false,
+			isNotificationAboveDismissedWithExpiry: false,
 			setupCompletedTimestamp: timestampThreeWeeksPrior,
 			existingAdBlockingRecoveryTag: null,
 		};
@@ -130,10 +131,17 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				},
 			],
 			[
-				'notification is dismissed',
+				'notification is dismissed with 0 expiry',
 				{
 					...shouldRender,
-					isNotificationDismissed: true,
+					isNotificationDismissedPermanently: true,
+				},
+			],
+			[
+				'notification is dismissed for count > 2',
+				{
+					...shouldRender,
+					isNotificationAboveDismissedWithExpiry: true,
 				},
 			],
 			[
@@ -184,7 +192,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					siteStatus,
 					adBlockingRecoverySetupStatus,
 					isModuleConnected,
-					isNotificationDismissed,
+					isNotificationDismissedPermanently,
+					isNotificationAboveDismissedWithExpiry,
 					setupCompletedTimestamp,
 					existingAdBlockingRecoveryTag,
 				}
@@ -209,13 +218,28 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					.receiveGetExistingAdBlockingRecoveryTag(
 						existingAdBlockingRecoveryTag
 					);
+				let notificationMock = {};
+				if ( isNotificationDismissedPermanently ) {
+					notificationMock = {
+						[ AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY ]: {
+							expires: 0, // Expiry of 0 permanently dismisses the prompt.
+							count: 1,
+						},
+					};
+				}
+				if ( isNotificationAboveDismissedWithExpiry ) {
+					notificationMock = {
+						[ AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY ]: {
+							expires:
+								Math.floor( new Date().getTime() / 1000 ) +
+								1000, // If expiry is in the future the prompt will be dismissed until that time.
+							count: 1,
+						},
+					};
+				}
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						...( isNotificationDismissed
-							? [ 'ad-blocking-recovery-notification' ]
-							: [] ),
-					] );
+					.receiveGetDismissedPrompts( notificationMock );
 
 				const { container } = render(
 					<AdBlockingRecoverySetupCTAWidget
@@ -332,12 +356,26 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		mockLocation();
 
 		beforeEach( () => {
-			fetchMock.postOnce(
-				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismissed-prompts'
+				),
 				{
-					body: JSON.stringify( [
-						AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
-					] ),
+					body: {},
+					status: 200,
+				}
+			);
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+				),
+				{
+					body: {
+						[ AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY ]: {
+							expires: 0, // Expiry of 0 permanently dismisses the prompt.
+							count: 3,
+						},
+					},
 					status: 200,
 				}
 			);
@@ -557,6 +595,37 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			// due to the `survey-timeouts` call losing the `fetchMock`
 			// context.
 			await waitForDefaultTimeouts();
+		} );
+
+		it( 'should show the `Don’t show again` CTA when the dismissCount is 2', async () => {
+			fetchMock.getOnce( surveyTimeoutsEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				[ AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY ]: {
+					expires: 1000,
+					count: 2,
+				},
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<AdBlockingRecoverySetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', { name: /Don’t show again/i } )
+			).toBeInTheDocument();
 		} );
 	} );
 } );
