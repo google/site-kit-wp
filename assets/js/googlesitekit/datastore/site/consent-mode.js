@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
