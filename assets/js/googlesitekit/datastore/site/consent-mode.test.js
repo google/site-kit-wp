@@ -188,10 +188,22 @@ describe( 'core/site Consent Mode', () => {
 					status: 500,
 				} );
 
+				const initialSettings = registry
+					.select( CORE_SITE )
+					.getConsentModeSettings();
+
+				expect( initialSettings ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getConsentModeSettings();
+
 				const settings = registry
 					.select( CORE_SITE )
 					.getConsentModeSettings();
 
+				// Verify the settings are still undefined after the selector is resolved.
 				expect( settings ).toBeUndefined();
 
 				await waitForDefaultTimeouts();
@@ -214,6 +226,76 @@ describe( 'core/site Consent Mode', () => {
 				expect(
 					registry.select( CORE_SITE ).isConsentModeEnabled()
 				).toBe( true );
+			} );
+		} );
+
+		describe( 'getConsentAPIInfo', () => {
+			const consentAPIInfoEndpointRegExp = new RegExp(
+				'^/google-site-kit/v1/core/site/data/consent-api-info'
+			);
+
+			it( 'uses a resolver to make a network request', async () => {
+				const consentAPIInfo = {
+					hasConsentAPI: false,
+					wpConsentPlugin: {
+						installed: false,
+						activateURL:
+							'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
+						installURL:
+							'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
+					},
+				};
+
+				fetchMock.getOnce( consentAPIInfoEndpointRegExp, {
+					body: consentAPIInfo,
+					status: 200,
+				} );
+
+				const initialAPIInfo = registry
+					.select( CORE_SITE )
+					.getConsentAPIInfo();
+
+				expect( initialAPIInfo ).toBeUndefined();
+
+				await untilResolved( registry, CORE_SITE ).getConsentAPIInfo();
+
+				const apiInfo = registry
+					.select( CORE_SITE )
+					.getConsentAPIInfo();
+
+				expect( apiInfo ).toEqual( consentAPIInfo );
+
+				expect( fetchMock ).toHaveFetched(
+					consentAPIInfoEndpointRegExp
+				);
+			} );
+
+			it( 'returns undefined if the request fails', async () => {
+				fetchMock.getOnce( consentAPIInfoEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
+				} );
+
+				const initialAPIInfo = registry
+					.select( CORE_SITE )
+					.getConsentAPIInfo();
+
+				expect( initialAPIInfo ).toBeUndefined();
+
+				await untilResolved( registry, CORE_SITE ).getConsentAPIInfo();
+
+				const apiInfo = registry
+					.select( CORE_SITE )
+					.getConsentAPIInfo();
+
+				// Verify the API info is still undefined after the selector is resolved.
+				expect( apiInfo ).toBeUndefined();
+
+				expect( fetchMock ).toHaveFetched(
+					consentAPIInfoEndpointRegExp
+				);
+
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

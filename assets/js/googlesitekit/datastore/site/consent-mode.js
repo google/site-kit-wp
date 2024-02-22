@@ -61,9 +61,22 @@ const fetchSaveConsentModeSettingsStore = createFetchStore( {
 	},
 } );
 
+const fetchGetConsentAPIInfoStore = createFetchStore( {
+	baseName: 'getConsentAPIInfo',
+	controlCallback: () => {
+		return API.get( 'core', 'site', 'consent-api-info', null, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: createReducer( ( state, apiInfo ) => {
+		state.consentMode.apiInfo = apiInfo;
+	} ),
+} );
+
 const baseInitialState = {
 	consentMode: {
 		settings: undefined,
+		apiInfo: undefined,
 	},
 };
 
@@ -139,6 +152,18 @@ const baseSelectors = {
 
 		return enabled;
 	} ),
+
+	/**
+	 * Gets the WP Consent Mode API info.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object|undefined} WP Consent Mode API info, or `undefined` if not loaded.
+	 */
+	getConsentAPIInfo: ( state ) => {
+		return state.consentMode.apiInfo;
+	},
 };
 
 const baseResolvers = {
@@ -151,11 +176,22 @@ const baseResolvers = {
 
 		yield fetchGetConsentModeSettingsStore.actions.fetchGetConsentModeSettings();
 	},
+
+	*getConsentAPIInfo() {
+		const { select } = yield getRegistry();
+
+		if ( select( CORE_SITE ).getConsentAPIInfo() ) {
+			return;
+		}
+
+		yield fetchGetConsentAPIInfoStore.actions.fetchGetConsentAPIInfo();
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetConsentModeSettingsStore,
 	fetchSaveConsentModeSettingsStore,
+	fetchGetConsentAPIInfoStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

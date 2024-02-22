@@ -185,7 +185,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider provider_wrong_data
+	 * @dataProvider provider_wrong_settings_data
 	 */
 	public function test_set_settings__wrong_data( $settings ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
@@ -206,7 +206,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
 	}
 
-	public function provider_wrong_data() {
+	public function provider_wrong_settings_data() {
 		return array(
 			'wrong data type'                              => array(
 				'{}',
@@ -221,6 +221,80 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 				array( 'regions' => array( 123 ) ),
 			),
 		);
+	}
+
+	/**
+	 * @group ms-excluded
+	 */
+	public function test_get_api_info() {
+		if ( is_multisite() ) {
+			$this->markTestSkipped( 'This test does not run on multisite.' );
+		}
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		// Setup the site and admin user to make a successful REST request.
+		$this->grant_manage_options_permission();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/consent-api-info' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['hasConsentAPI'] );
+		$this->assertIsArray( $response_data['wpConsentPlugin'] );
+
+		$wp_consent_plugin = $response_data['wpConsentPlugin'];
+
+		$this->assertFalse( $wp_consent_plugin['installed'] );
+
+		$this->assertStringStartsWith( 'http://example.org/wp-admin/plugins.php?action=activate&plugin=wp-consent-api%2Fwp-consent-api.php&_wpnonce=', $wp_consent_plugin['activateURL'] );
+		$this->assertStringStartsWith( 'http://example.org/wp-admin/update.php?action=install-plugin&plugin=wp-consent-api&_wpnonce=', $wp_consent_plugin['installURL'] );
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_get_api_info__multisite() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		// Setup the site and admin user to make a successful REST request.
+		$this->grant_manage_options_permission();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/consent-api-info' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['hasConsentAPI'] );
+		$this->assertIsArray( $response_data['wpConsentPlugin'] );
+
+		$wp_consent_plugin = $response_data['wpConsentPlugin'];
+
+		$this->assertFalse( $wp_consent_plugin['installed'] );
+
+		// We don't expect the ability to install or activate plugins on multisite.
+		$this->assertFalse( $wp_consent_plugin['activateURL'] );
+		$this->assertFalse( $wp_consent_plugin['installURL'] );
+	}
+
+	public function test_get_api_info__requires_authenticated_admin() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/consent-api-info' );
+		$response = rest_get_server()->dispatch( $request );
+
+		// This admin hasn't authenticated with the Site Kit proxy service yet,
+		// so they aren't allowed to modify Dashboard Sharing settings.
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 
 	private function grant_manage_options_permission() {

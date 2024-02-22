@@ -132,6 +132,52 @@ class REST_Consent_Mode_Controller {
 					),
 				)
 			),
+			new REST_Route(
+				'core/site/data/consent-api-info',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							$is_active = function_exists( 'wp_set_consent' );
+							$installed = $is_active;
+							$slug      = 'wp-consent-api';
+							$plugin    = "$slug/$slug.php";
+
+							$response = array(
+								'hasConsentAPI' => $is_active,
+							);
+
+							if ( ! $is_active ) {
+								if ( ! function_exists( 'get_plugins' ) ) {
+									require_once ABSPATH . 'wp-admin/includes/plugin.php';
+								}
+								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
+									if ( $installed_plugin === $plugin ) {
+										$installed = true;
+										break;
+									}
+								}
+
+								// Alternate wp_nonce_url without esc_html breaking query parameters.
+								$nonce_url = function ( $action_url, $action ) {
+									return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
+								};
+								$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
+								$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ), 'install-plugin_' . $slug );
+
+								$response['wpConsentPlugin'] = array(
+									'installed'   => $installed,
+									'activateURL' => current_user_can( 'activate_plugin', $plugin ) ? esc_url_raw( $activate_url ) : false,
+									'installURL'  => current_user_can( 'install_plugins' ) ? esc_url_raw( $install_url ) : false,
+								);
+							}
+
+							return new WP_REST_Response( $response );
+						},
+						'permission_callback' => $can_manage_options,
+					),
+				)
+			),
 		);
 	}
 }
