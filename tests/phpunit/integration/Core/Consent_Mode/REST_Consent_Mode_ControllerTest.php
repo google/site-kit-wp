@@ -223,7 +223,14 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @group ms-excluded
+	 */
 	public function test_get_api_info() {
+		if ( is_multisite() ) {
+			$this->markTestSkipped( 'This test does not run on multisite.' );
+		}
+
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -241,8 +248,40 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$wp_consent_plugin = $response_data['wpConsentPlugin'];
 
 		$this->assertFalse( $wp_consent_plugin['installed'] );
-		$this->assertStringStartsWith( 'http://example.org/wp-admin/plugins.php?action=activate&plugin=wp-consent-api%2Fwp-consent-api.php&_wpnonce=', (string) $wp_consent_plugin['activateURL'] );
-		$this->assertStringStartsWith( 'http://example.org/wp-admin/update.php?action=install-plugin&plugin=wp-consent-api&_wpnonce=', (string) $wp_consent_plugin['installURL'] );
+
+		$this->assertStringStartsWith( 'http://example.org/wp-admin/plugins.php?action=activate&plugin=wp-consent-api%2Fwp-consent-api.php&_wpnonce=', $wp_consent_plugin['activateURL'] );
+		$this->assertStringStartsWith( 'http://example.org/wp-admin/update.php?action=install-plugin&plugin=wp-consent-api&_wpnonce=', $wp_consent_plugin['installURL'] );
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_get_api_info__multisite() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		// Setup the site and admin user to make a successful REST request.
+		$this->grant_manage_options_permission();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/consent-api-info' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['hasConsentAPI'] );
+		$this->assertIsArray( $response_data['wpConsentPlugin'] );
+
+		$wp_consent_plugin = $response_data['wpConsentPlugin'];
+
+		$this->assertFalse( $wp_consent_plugin['installed'] );
+
+		// We don't expect the ability to install or activate plugins on multisite.
+		$this->assertFalse( $wp_consent_plugin['activateURL'] );
+		$this->assertFalse( $wp_consent_plugin['installURL'] );
 	}
 
 	public function test_get_api_info__requires_authenticated_admin() {
