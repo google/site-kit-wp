@@ -105,6 +105,7 @@ const baseControls = {};
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_CONSENT_MODE_ENABLED:
+			state.consentMode.settings = state.consentMode.settings || {};
 			state.consentMode.settings.enabled = !! payload.enabled;
 			break;
 
