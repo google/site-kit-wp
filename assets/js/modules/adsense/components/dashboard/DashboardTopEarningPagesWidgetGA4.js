@@ -127,9 +127,9 @@ function DashboardTopEarningPagesWidgetGA4( {
 	// was created, and the observer would never detect the component as in view.
 	// Full discussion: https://github.com/google/site-kit-wp/issues/8212#issuecomment-1954275748
 	const [ trackingRefReady, setTrackingRefReady ] = useState( false );
-	const updateTrackingRef = ( el ) => {
-		trackingRef.current = el;
-		if ( el && ! trackingRefReady ) {
+	const updateTrackingRef = ( element ) => {
+		trackingRef.current = element;
+		if ( element && ! trackingRefReady ) {
 			setTrackingRefReady( true );
 		}
 	};
