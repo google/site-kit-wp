@@ -38,21 +38,19 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import useViewContext from '../../../../../hooks/useViewContext';
 import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
 import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 
 function AudienceSegmentationSetupCTAWidget( { Widget, title, description } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
-	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
 	const onEnableGroups = useCallback( () => {
 		setIsSaving( true );
-	}, [ viewContext ] );
+	}, [] );
 
 	return (
 		<Widget
