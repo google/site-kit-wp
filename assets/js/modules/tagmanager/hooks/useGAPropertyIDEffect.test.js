@@ -85,7 +85,7 @@ describe( 'useGAPropertyIDEffect', () => {
 			const { buildAndReceiveWebAndAMP } =
 				createBuildAndReceivers( registry );
 
-			const TEST_GA_PROPERTY_ID = 'UA-123456789-1';
+			const TEST_GA_PROPERTY_ID = '12345678';
 
 			buildAndReceiveWebAndAMP( {
 				webPropertyID: TEST_GA_PROPERTY_ID,

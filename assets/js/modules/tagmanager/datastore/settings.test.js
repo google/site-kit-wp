@@ -704,7 +704,7 @@ describe( 'modules/tagmanager settings', () => {
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID: '' } );
 					const liveContainerVersion = buildLiveContainerVersionWeb( {
-						propertyID: 'UA-12345-1',
+						propertyID: '12345678',
 					} );
 					parseLiveContainerVersionIDs(
 						liveContainerVersion,
@@ -736,7 +736,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Matching property ID in Analytics and GTM
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyID( 'UA-12345-1' );
+						.setPropertyID( '12345678' );
 					registry
 						.select( MODULES_TAGMANAGER )
 						.__dangerousCanSubmitChanges();
@@ -746,7 +746,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Non-matching property IDs
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyID( 'UA-99999-9' );
+						.setPropertyID( '123456789' );
 					expect( () =>
 						registry
 							.select( MODULES_TAGMANAGER )
@@ -965,7 +965,7 @@ describe( 'modules/tagmanager settings', () => {
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID: '' } );
 					const liveContainerVersion = buildLiveContainerVersionAMP( {
-						propertyID: 'UA-12345-1',
+						propertyID: '12345678',
 					} );
 					parseLiveContainerVersionIDs(
 						liveContainerVersion,
@@ -1002,7 +1002,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Matching property ID in Analytics and GTM
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyID( 'UA-12345-1' );
+						.setPropertyID( '12345678' );
 					registry
 						.select( MODULES_TAGMANAGER )
 						.__dangerousCanSubmitChanges();
@@ -1012,7 +1012,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Non-matching property IDs
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyID( 'UA-99999-9' );
+						.setPropertyID( '123456789' );
 					expect( () =>
 						registry
 							.select( MODULES_TAGMANAGER )
@@ -1341,8 +1341,8 @@ describe( 'modules/tagmanager settings', () => {
 					const { buildAndReceiveWebAndAMP } =
 						createBuildAndReceivers( registry );
 					buildAndReceiveWebAndAMP( {
-						webPropertyID: 'UA-12345-1',
-						ampPropertyID: 'UA-12345-1',
+						webPropertyID: '12345678',
+						ampPropertyID: '12345678',
 					} );
 
 					// This test only checks matching between the singular propertyID in containers
@@ -1360,7 +1360,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Matching property ID in Analytics and GTM
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyID( 'UA-12345-1' );
+						.setPropertyID( '12345678' );
 					registry
 						.select( MODULES_TAGMANAGER )
 						.__dangerousCanSubmitChanges();
@@ -1370,7 +1370,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Non-matching property IDs
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyID( 'UA-99999-9' );
+						.setPropertyID( '123456789' );
 					expect( () =>
 						registry
 							.select( MODULES_TAGMANAGER )

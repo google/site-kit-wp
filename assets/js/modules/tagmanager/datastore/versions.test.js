@@ -110,7 +110,7 @@ describe( 'modules/tagmanager versions', () => {
 				it( 'returns an array including the property ID found in the current web container', () => {
 					const liveContainerVersion =
 						factories.buildLiveContainerVersionWeb( {
-							propertyID: 'UA-12345-1',
+							propertyID: '12345678',
 						} );
 					const { accountID, containerID, internalContainerID } =
 						parseIDs( liveContainerVersion );
@@ -134,7 +134,7 @@ describe( 'modules/tagmanager versions', () => {
 						.select( MODULES_TAGMANAGER )
 						.getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [ 'UA-12345-1' ] );
+					expect( propertyIDs ).toEqual( [ '12345678' ] );
 				} );
 
 				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
@@ -212,7 +212,7 @@ describe( 'modules/tagmanager versions', () => {
 				it( 'returns an array including the property ID found in the current AMP container', () => {
 					const liveContainerVersion =
 						factories.buildLiveContainerVersionAMP( {
-							propertyID: 'UA-12345-1',
+							propertyID: '12345678',
 						} );
 					const { accountID, containerID, internalContainerID } =
 						parseIDs( liveContainerVersion );
@@ -236,7 +236,7 @@ describe( 'modules/tagmanager versions', () => {
 						.select( MODULES_TAGMANAGER )
 						.getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [ 'UA-12345-1' ] );
+					expect( propertyIDs ).toEqual( [ '12345678' ] );
 				} );
 
 				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
@@ -313,30 +313,30 @@ describe( 'modules/tagmanager versions', () => {
 
 				it( 'returns an array including property IDs found in both the web and AMP containers', () => {
 					buildAndReceiveWebAndAMP( {
-						webPropertyID: 'UA-123456789-1',
-						ampPropertyID: 'UA-9999999-9',
+						webPropertyID: '12345678',
+						ampPropertyID: '123456789',
 					} );
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
 						.getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toEqual( [
-						'UA-123456789-1',
-						'UA-9999999-9',
+						'12345678',
+						'123456789',
 					] );
 				} );
 
 				it( 'returns an array of unique property IDs of both the web and AMP containers', () => {
 					buildAndReceiveWebAndAMP( {
-						webPropertyID: 'UA-123456789-1',
-						ampPropertyID: 'UA-123456789-1',
+						webPropertyID: '12345678',
+						ampPropertyID: '12345678',
 					} );
 
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
 						.getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [ 'UA-123456789-1' ] );
+					expect( propertyIDs ).toEqual( [ '12345678' ] );
 				} );
 
 				it( 'returns an array of `null` if the selected containers have no Analytics property tags', () => {
@@ -402,86 +402,6 @@ describe( 'modules/tagmanager versions', () => {
 		} );
 
 		describe( 'getLiveContainerAnalyticsTag', () => {
-			it( 'returns the Universal Analytics tag object from the live container object', () => {
-				const liveContainerVersion =
-					factories.buildLiveContainerVersionWeb( {
-						propertyID: 'UA-12345-1',
-					} );
-				const { accountID, internalContainerID } =
-					parseIDs( liveContainerVersion );
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.receiveGetLiveContainerVersion( liveContainerVersion, {
-						accountID,
-						internalContainerID,
-					} );
-
-				const tagObject = registry
-					.select( MODULES_TAGMANAGER )
-					.getLiveContainerAnalyticsTag(
-						accountID,
-						internalContainerID
-					);
-
-				expect( tagObject ).toMatchObject( { type: 'ua' } );
-				expect( tagObject ).toEqual(
-					liveContainerVersion.tag.find(
-						( { type } ) => type === 'ua'
-					)
-				);
-			} );
-
-			it( 'returns the Universal Analytics tag object from the live container object for an AMP container', () => {
-				const liveContainerVersion =
-					factories.buildLiveContainerVersionAMP( {
-						propertyID: 'UA-12345-1',
-					} );
-				const { accountID, internalContainerID } =
-					parseIDs( liveContainerVersion );
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.receiveGetLiveContainerVersion( liveContainerVersion, {
-						accountID,
-						internalContainerID,
-					} );
-
-				const tagObject = registry
-					.select( MODULES_TAGMANAGER )
-					.getLiveContainerAnalyticsTag(
-						accountID,
-						internalContainerID
-					);
-
-				expect( tagObject ).toMatchObject( { type: 'ua_amp' } );
-				expect( tagObject ).toEqual(
-					liveContainerVersion.tag.find(
-						( { type } ) => type === 'ua_amp'
-					)
-				);
-			} );
-
-			it( 'returns null if the live container version does not contain a Universal Analytics tag', () => {
-				const liveContainerVersion =
-					factories.buildLiveContainerVersionWeb();
-				const { accountID, internalContainerID } =
-					parseIDs( liveContainerVersion );
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.receiveGetLiveContainerVersion( liveContainerVersion, {
-						accountID,
-						internalContainerID,
-					} );
-
-				const tagObject = registry
-					.select( MODULES_TAGMANAGER )
-					.getLiveContainerAnalyticsTag(
-						accountID,
-						internalContainerID
-					);
-
-				expect( tagObject ).toStrictEqual( null );
-			} );
-
 			it( 'returns null if no live container version exists', () => {
 				const accountID = '12345';
 				const internalContainerID = '98765';
@@ -528,74 +448,6 @@ describe( 'modules/tagmanager versions', () => {
 		} );
 
 		describe( 'getLiveContainerAnalyticsPropertyID', () => {
-			it( 'gets the propertyID associated with the Universal Analytics tag settings variable', () => {
-				const liveContainerVersion =
-					fixtures.liveContainerVersions.web.gaWithVariable;
-				const { accountID, internalContainerID } =
-					parseIDs( liveContainerVersion );
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.receiveGetLiveContainerVersion( liveContainerVersion, {
-						accountID,
-						internalContainerID,
-					} );
-
-				const propertyID = registry
-					.select( MODULES_TAGMANAGER )
-					.getLiveContainerAnalyticsPropertyID(
-						accountID,
-						internalContainerID
-					);
-
-				expect( propertyID ).toBe( 'UA-123456789-1' );
-			} );
-
-			it( 'gets the propertyID associated with the Universal Analytics tag settings when provided directly', () => {
-				const liveContainerVersion =
-					fixtures.liveContainerVersions.web.gaWithOverride;
-				const { accountID, internalContainerID } =
-					parseIDs( liveContainerVersion );
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.receiveGetLiveContainerVersion( liveContainerVersion, {
-						accountID,
-						internalContainerID,
-					} );
-
-				const propertyID = registry
-					.select( MODULES_TAGMANAGER )
-					.getLiveContainerAnalyticsPropertyID(
-						accountID,
-						internalContainerID
-					);
-
-				expect( propertyID ).toBe( 'UA-1234567-99' );
-			} );
-
-			it( 'gets the propertyID associated with the Universal Analytics tag for an AMP container', () => {
-				const liveContainerVersion =
-					factories.buildLiveContainerVersionAMP( {
-						propertyID: 'UA-123456789-1',
-					} );
-				const { accountID, internalContainerID } =
-					parseIDs( liveContainerVersion );
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.receiveGetLiveContainerVersion( liveContainerVersion, {
-						accountID,
-						internalContainerID,
-					} );
-
-				const propertyID = registry
-					.select( MODULES_TAGMANAGER )
-					.getLiveContainerAnalyticsPropertyID(
-						accountID,
-						internalContainerID
-					);
-
-				expect( propertyID ).toBe( 'UA-123456789-1' );
-			} );
-
 			it( 'returns null if no Analytics tag exists in the container', () => {
 				const liveContainerVersion =
 					factories.buildLiveContainerVersionWeb();
@@ -918,20 +770,20 @@ describe( 'modules/tagmanager versions', () => {
 
 			it( 'returns the single common property ID used by both containers', () => {
 				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-123456789-1',
-					ampPropertyID: 'UA-123456789-1',
+					webPropertyID: '12345678',
+					ampPropertyID: '12345678',
 				} );
 
 				const singleAnalyticsPropertyID = registry
 					.select( MODULES_TAGMANAGER )
 					.getSingleAnalyticsPropertyID();
-				expect( singleAnalyticsPropertyID ).toBe( 'UA-123456789-1' );
+				expect( singleAnalyticsPropertyID ).toBe( '12345678' );
 			} );
 
 			it( 'returns false if both containers don’t reference the same property ID', () => {
 				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-123456789-1',
-					ampPropertyID: 'UA-9999999-9',
+					webPropertyID: '12345678',
+					ampPropertyID: '123456789',
 				} );
 
 				const singleAnalyticsPropertyID = registry
@@ -961,7 +813,7 @@ describe( 'modules/tagmanager versions', () => {
 
 			it( 'returns true if the web container has a property ID and the AMP container does not', () => {
 				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-12345-1',
+					webPropertyID: '12345678',
 				} );
 
 				expect(
@@ -973,7 +825,7 @@ describe( 'modules/tagmanager versions', () => {
 
 			it( 'returns true if the AMP container has a property ID and the web container does not', () => {
 				buildAndReceiveWebAndAMP( {
-					ampPropertyID: 'UA-12345-1',
+					ampPropertyID: '12345678',
 				} );
 
 				expect(
@@ -985,8 +837,8 @@ describe( 'modules/tagmanager versions', () => {
 
 			it( 'returns true if both containers have a property ID, regardless of matching', () => {
 				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-99999-9',
-					ampPropertyID: 'UA-12345-1',
+					webPropertyID: '123456789',
+					ampPropertyID: '12345678',
 				} );
 
 				expect(
