@@ -1,0 +1,172 @@
+/**
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { createFetchStore } from '../../data/create-fetch-store';
+import { createReducer } from '../../data/create-reducer';
+import { CORE_SITE } from './constants';
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+const { createRegistrySelector } = Data;
+const { getRegistry } = Data.commonActions;
+
+const SET_CONSENT_MODE_ENABLED = 'SET_CONSENT_MODE_ENABLED';
+
+const settingsReducerCallback = createReducer( ( state, settings ) => {
+	state.consentMode.settings = settings;
+} );
+
+const fetchGetConsentModeSettingsStore = createFetchStore( {
+	baseName: 'getConsentModeSettings',
+	controlCallback: () => {
+		return API.get( 'core', 'site', 'consent-mode', null, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: settingsReducerCallback,
+} );
+
+const fetchSaveConsentModeSettingsStore = createFetchStore( {
+	baseName: 'saveConsentModeSettings',
+	controlCallback: ( { settings } ) => {
+		return API.set( 'core', 'site', 'consent-mode', { settings } );
+	},
+	reducerCallback: settingsReducerCallback,
+	argsToParams: ( settings ) => {
+		return { settings };
+	},
+	validateParams: ( { settings } ) => {
+		invariant(
+			isPlainObject( settings ),
+			'settings must be a plain object.'
+		);
+	},
+} );
+
+const baseInitialState = {
+	consentMode: {
+		settings: undefined,
+	},
+};
+
+const baseActions = {
+	/**
+	 * Saves the Consent Mode settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*saveConsentModeSettings() {
+		const { select } = yield getRegistry();
+		const settings = select( CORE_SITE ).getConsentModeSettings();
+
+		return yield fetchSaveConsentModeSettingsStore.actions.fetchSaveConsentModeSettings(
+			settings
+		);
+	},
+
+	/**
+	 * Sets the Consent Mode enabled status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} enabled Consent Mode enabled status.
+	 * @return {Object} Redux-style action.
+	 */
+	setConsentModeEnabled( enabled ) {
+		return {
+			type: SET_CONSENT_MODE_ENABLED,
+			payload: { enabled },
+		};
+	},
+};
+
+const baseControls = {};
+
+const baseReducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_CONSENT_MODE_ENABLED:
+			state.consentMode.settings.enabled = !! payload.enabled;
+			break;
+
+		default:
+			break;
+	}
+} );
+
+const baseSelectors = {
+	/**
+	 * Gets the Consent Mode settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object|undefined} Consent Mode settings, or `undefined` if not loaded.
+	 */
+	getConsentModeSettings: ( state ) => {
+		return state.consentMode.settings;
+	},
+
+	/**
+	 * Gets the Consent Mode enabled status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Consent Mode enabled status, or `undefined` if not loaded.
+	 */
+	isConsentModeEnabled: createRegistrySelector( ( select ) => () => {
+		const { enabled } = select( CORE_SITE ).getConsentModeSettings() || {};
+
+		return enabled;
+	} ),
+};
+
+const baseResolvers = {
+	*getConsentModeSettings() {
+		const { select } = yield getRegistry();
+
+		if ( select( CORE_SITE ).getConsentModeSettings() ) {
+			return;
+		}
+
+		yield fetchGetConsentModeSettingsStore.actions.fetchGetConsentModeSettings();
+	},
+};
+
+const store = Data.combineStores(
+	fetchGetConsentModeSettingsStore,
+	fetchSaveConsentModeSettingsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
