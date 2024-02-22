@@ -62,7 +62,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 		let result;
 		await act( async () => {
 			( { result } = await renderHook(
-				() => useCompleteModuleActivationCallback( 'analytics' ),
+				() => useCompleteModuleActivationCallback( 'analytics-4' ),
 				{ registry }
 			) );
 
@@ -99,7 +99,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 		let result;
 		await act( async () => {
 			( { result } = await renderHook(
-				() => useCompleteModuleActivationCallback( 'analytics' ),
+				() => useCompleteModuleActivationCallback( 'analytics-4' ),
 				{ registry }
 			) );
 

@@ -101,7 +101,7 @@ describe( 'Footer', () => {
 				'^/google-site-kit/v1/modules/analytics-4/data/settings'
 			)
 		);
-		expect( container ).not.toHaveTextContent( 'Analytics' );
+		expect( container ).not.toHaveTextContent( 'analytics-4' );
 		expect( container.firstChild ).toBeNull();
 	} );
 

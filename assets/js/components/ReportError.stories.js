@@ -122,13 +122,13 @@ export const ReportErrorWithInsufficientPermissionsWithRequestAccess =
 ReportErrorWithInsufficientPermissionsWithRequestAccess.storyName =
 	'ReportError with insufficient permissions with request access';
 ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
-	moduleSlug: 'analytics',
+	moduleSlug: 'analytics-4',
 	setupRegistry: async ( registry ) => {
 		provideModules( registry, [
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 

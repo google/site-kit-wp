@@ -110,7 +110,7 @@ describe( 'modules/tagmanager settings', () => {
 		// TODO: the analytics module should not be connected by default in the module fixtures assets/js/googlesitekit/modules/datastore/fixtures.json
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: false,
 			},
 		] );
@@ -696,7 +696,7 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in the web container', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
+					const modules = modulesFixtures.withActive( 'analytics-4' );
 					registry
 						.dispatch( CORE_MODULES )
 						.receiveGetModules( modules );
@@ -957,7 +957,7 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in the AMP container', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
+					const modules = modulesFixtures.withActive( 'analytics-4' );
 					registry
 						.dispatch( CORE_MODULES )
 						.receiveGetModules( modules );
@@ -1331,7 +1331,7 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in both containers', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
+					const modules = modulesFixtures.withActive( 'analytics-4' );
 					registry
 						.dispatch( CORE_MODULES )
 						.receiveGetModules( modules );

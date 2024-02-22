@@ -87,7 +87,7 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: false,
 			},

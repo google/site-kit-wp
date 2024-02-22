@@ -40,9 +40,9 @@ import {
 	provideUserInfo,
 	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -69,11 +69,6 @@ describe( 'Header', () => {
 
 		provideUserInfo( registry );
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'pagespeed-insights',
 				active: true,
@@ -114,39 +109,18 @@ describe( 'Header', () => {
 		expect( button ).toHaveTextContent( 'Complete setup for Tag Manager' );
 	} );
 
-	it( 'should render a button to connect GA4 if Analytics is connected but GA4 is not', () => {
+	it( 'should render a button to complete GA4 setup if it is connected', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setOwnerID( 1 );
-		const { queryByRole } = render( <Header slug="analytics" />, {
+		const { queryByRole } = render( <Header slug="analytics-4" />, {
 			registry,
 		} );
 
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveTextContent( 'Connect Google Analytics 4' );
+		expect( button ).toHaveTextContent( 'Complete setup for Analytics' );
 	} );
 
-	it( 'should not render the button to connect GA4 if Analytics is connected without access to it but GA4 is not', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setOwnerID( 99 );
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckModuleAccess(
-				{ access: false },
-				{ slug: 'analytics' }
-			);
-		const { container } = render( <Header slug="analytics" />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-module__status'
-				)
-			).toHaveTextContent( 'Google Analytics 4 is not connected' );
-		} );
-	} );
-
-	it( 'should render a GA4 not connected status if Analytics is connected without access to it but GA4 is not', async () => {
+	it( 'should render a GA4 not connected status if it is connected without access to it', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSettings( { ownerID: 100 } );
@@ -154,15 +128,15 @@ describe( 'Header', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: 'analytics' }
+				{ slug: 'analytics-4' }
 			);
-		const { queryByRole } = render( <Header slug="analytics" />, {
+		const { queryByRole } = render( <Header slug="analytics-4" />, {
 			registry,
 		} );
 
 		await waitFor( () => {
 			expect(
-				queryByRole( 'button', { name: /connect google analytics 4/i } )
+				queryByRole( 'button', { name: /connect google analytics/i } )
 			).not.toBeInTheDocument();
 		} );
 	} );

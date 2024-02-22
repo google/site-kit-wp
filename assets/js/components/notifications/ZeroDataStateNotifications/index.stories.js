@@ -36,16 +36,13 @@ const searchConsoleArgs = {
 
 const analyticsArgs = [
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
 		metrics: [
 			{
-				name: 'conversions',
-			},
-			{
-				name: 'engagementRate',
+				name: 'totalUsers',
 			},
 		],
 		dimensionFilters: {
@@ -53,26 +50,29 @@ const analyticsArgs = [
 		},
 	},
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
 		dimensions: [
 			{
 				name: 'date',
 			},
 		],
+		limit: 10,
 		metrics: [
 			{
-				name: 'conversions',
-			},
-			{
-				name: 'engagementRate',
+				name: 'averageSessionDuration',
 			},
 		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
+	},
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [ { name: 'totalUsers' } ],
+		dimensions: [ 'date' ],
 		orderby: [
 			{
 				dimension: {
@@ -82,44 +82,23 @@ const analyticsArgs = [
 		],
 	},
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		dimensions: [ 'pagePath' ],
 		metrics: [
 			{
-				name: 'totalUsers',
+				name: 'screenPageViews',
 			},
 		],
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
 		orderby: [
 			{
-				dimension: {
-					dimensionName: 'date',
+				metric: {
+					metricName: 'screenPageViews',
 				},
+				desc: true,
 			},
 		],
-	},
-	{
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
+		limit: 5,
 	},
 ];
 
@@ -229,7 +208,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics',
+						slug: 'analytics-4',
 					},
 				] );
 

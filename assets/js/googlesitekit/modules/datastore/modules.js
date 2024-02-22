@@ -755,7 +755,7 @@ const baseResolvers = {
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
-		if ( modules?.analytics?.recoverable ) {
+		if ( modules?.[ 'analytics-4' ]?.recoverable ) {
 			yield Data.commonActions.await(
 				registry
 					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
@@ -766,11 +766,7 @@ const baseResolvers = {
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable && ! module.internal ) {
-					if ( moduleSlug === 'analytics' ) {
-						moduleList.push( 'analytics-4' );
-					} else {
-						moduleList.push( moduleSlug );
-					}
+					moduleList.push( moduleSlug );
 				}
 
 				return moduleList;
@@ -1389,10 +1385,6 @@ const baseSelectors = {
 		}
 
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
-			if ( slug === 'analytics' ) {
-				return acc;
-			}
-
 			if ( modules[ slug ].shareable ) {
 				return { [ slug ]: modules[ slug ], ...acc };
 			}

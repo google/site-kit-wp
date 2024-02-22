@@ -26,7 +26,7 @@ import { useHistory, useParams } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef, useState, useEffect } from '@wordpress/element';
+import { useCallback, useRef } from '@wordpress/element';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -34,7 +34,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
@@ -43,17 +43,13 @@ import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { FORM_SETUP } from '../../../modules/analytics-4/datastore/constants';
 import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function Header( { slug } ) {
-	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
-
 	const viewContext = useViewContext();
 	const history = useHistory();
 	const headerRef = useRef();
@@ -71,19 +67,15 @@ export default function Header( { slug } ) {
 		select( CORE_MODULES ).getModule( slug )
 	);
 
-	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
 	const hasAnalyticsAccess = useSelect( ( select ) => {
-		if ( ! ( slug === 'analytics' && module?.connected ) ) {
+		if ( ! ( slug === 'analytics-4' && module?.connected ) ) {
 			return false;
 		}
 
-		return select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' );
+		return select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+			'analytics-4'
+		);
 	} );
-
-	const { setValues } = useDispatch( CORE_FORMS );
 
 	const openHeader = useCallback( () => {
 		if ( isOpen ) {
@@ -125,78 +117,14 @@ export default function Header( { slug } ) {
 
 	const { name, connected } = module;
 
-	const eventCategory = `${ viewContext }_module-list`;
-	useEffect( () => {
-		// Only trigger the view event if the notification is visible and we haven't
-		// already sent this notification.
-		if (
-			! viewNotificationSent &&
-			connected &&
-			slug === 'analytics' &&
-			! isGA4Connected
-		) {
-			trackEvent( eventCategory, 'view_ga4_button' );
-			// Don't send the view event again.
-			setViewNotificationSent( true );
-		}
-	}, [
-		eventCategory,
-		connected,
-		slug,
-		viewNotificationSent,
-		isGA4Connected,
-	] );
-
-	const handleConnectGA4ButtonClick = useCallback(
-		async ( event ) => {
-			// Prevent this click from toggling the header, which is
-			// the default action for a click on any element in the header.
-			event.stopPropagation();
-
-			await trackEvent( eventCategory, 'click_ga4_button' );
-
-			setValues( FORM_SETUP, {
-				// Pre-enable GA4 controls.
-				enableGA4: true,
-				// Enable tooltip highlighting GA4 property select.
-				enableGA4PropertyTooltip: true,
-			} );
-			history.push( `/connected-services/${ slug }/edit` );
-		},
-		[ eventCategory, history, setValues, slug ]
-	);
-
 	if ( ! module ) {
 		return null;
 	}
 
-	// Do not show a "Connected" status for the Analytics module if GA4 is not connected.
-	const showAsConnected =
-		connected && ( 'analytics' !== slug || isGA4Connected );
-
 	let moduleStatus = null;
 
-	if ( showAsConnected ) {
+	if ( connected ) {
 		moduleStatus = <p>{ __( 'Connected', 'google-site-kit' ) }</p>;
-	} else if ( 'analytics' === slug && connected && ! isGA4Connected ) {
-		if ( hasAnalyticsAccess ) {
-			moduleStatus = (
-				<Button onClick={ handleConnectGA4ButtonClick }>
-					{ __( 'Connect Google Analytics 4', 'google-site-kit' ) }
-				</Button>
-			);
-		} else if ( hasAnalyticsAccess !== undefined ) {
-			moduleStatus = (
-				<p>
-					{ __(
-						'Google Analytics 4 is not connected',
-						'google-site-kit'
-					) }
-				</p>
-			);
-		} else {
-			moduleStatus = <ProgressBar height={ 36 } small />;
-		}
 	} else {
 		moduleStatus = (
 			<Button href={ adminReauthURL } onClick={ onActionClick }>
@@ -269,12 +197,11 @@ export default function Header( { slug } ) {
 								'googlesitekit-settings-module__status',
 								{
 									'googlesitekit-settings-module__status--connected':
-										showAsConnected,
+										connected,
 									'googlesitekit-settings-module__status--not-connected':
-										! showAsConnected,
+										! connected,
 									'googlesitekit-settings-module__status--loading':
-										'analytics' === slug &&
-										! isGA4Connected &&
+										'analytics-4' === slug &&
 										! hasAnalyticsAccess,
 								}
 							) }
@@ -285,13 +212,13 @@ export default function Header( { slug } ) {
 									'googlesitekit-settings-module__status-icon',
 									{
 										'googlesitekit-settings-module__status-icon--connected':
-											showAsConnected,
+											connected,
 										'googlesitekit-settings-module__status-icon--not-connected':
-											! showAsConnected,
+											! connected,
 									}
 								) }
 							>
-								{ showAsConnected ? (
+								{ connected ? (
 									<ConnectedIcon width={ 10 } height={ 8 } />
 								) : (
 									<WarningIcon width={ 19 } height={ 17 } />

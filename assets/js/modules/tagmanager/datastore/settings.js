@@ -48,8 +48,8 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -242,7 +242,7 @@ export function validateCanSubmitChanges( select ) {
 	}
 
 	if (
-		isModuleActive( 'analytics' ) &&
+		isModuleActive( 'analytics-4' ) &&
 		getPropertyID() &&
 		hasAnyAnalyticsPropertyID()
 	) {

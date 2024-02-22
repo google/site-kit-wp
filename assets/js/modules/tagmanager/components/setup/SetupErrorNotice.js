@@ -21,22 +21,22 @@
  */
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import ErrorText from '../../../../components/ErrorText';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function SetupErrorNotice() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 
 	const analyticsErrors = [
 		// Check if activating Analytics failed.
 		useSelect( ( select ) =>
 			select( CORE_MODULES ).getErrorForAction( 'activateModule', [
-				'analytics',
+				'analytics-4',
 			] )
 		),
 		// Check if saving Analytics settings failed.

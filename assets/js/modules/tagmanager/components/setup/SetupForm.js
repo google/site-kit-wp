@@ -125,7 +125,7 @@ export default function SetupForm( { finishSetup } ) {
 					! analyticsModuleActive
 				) {
 					const { response, error } = await activateModule(
-						'analytics'
+						'analytics-4'
 					);
 					if ( error ) {
 						throw error;

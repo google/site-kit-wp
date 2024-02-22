@@ -59,7 +59,7 @@ describe( 'useActivateModuleCallback', () => {
 
 	it( 'should return a callback that activates the specified module', async () => {
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics' ),
+			() => useActivateModuleCallback( 'analytics-4' ),
 			{ registry }
 		);
 
@@ -77,7 +77,7 @@ describe( 'useActivateModuleCallback', () => {
 		expect(
 			registry
 				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( 'analytics' )
+				.isDoingSetModuleActivation( 'analytics-4' )
 		).toBe( false );
 
 		await result.current();
@@ -85,7 +85,7 @@ describe( 'useActivateModuleCallback', () => {
 		expect(
 			registry
 				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( 'analytics' )
+				.isDoingSetModuleActivation( 'analytics-4' )
 		).toBe( true );
 	} );
 
@@ -93,7 +93,7 @@ describe( 'useActivateModuleCallback', () => {
 		mockTrackEvent.mockClear();
 
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics' ),
+			() => useActivateModuleCallback( 'analytics-4' ),
 			{ viewContext: VIEW_CONTEXT_MAIN_DASHBOARD, registry }
 		);
 
@@ -113,7 +113,7 @@ describe( 'useActivateModuleCallback', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboard_widget-activation-cta',
 			'activate_module',
-			'analytics'
+			'analytics-4'
 		);
 
 		const reauthURL = registry
@@ -124,7 +124,7 @@ describe( 'useActivateModuleCallback', () => {
 
 	it( 'should set internal error state when module activation fails', async () => {
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics' ),
+			() => useActivateModuleCallback( 'analytics-4' ),
 			{ registry }
 		);
 
@@ -140,12 +140,12 @@ describe( 'useActivateModuleCallback', () => {
 		expect(
 			registry
 				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( 'analytics' )
+				.isDoingSetModuleActivation( 'analytics-4' )
 		).toBe( false );
 
 		expect( registry.select( CORE_SITE ).getInternalServerError() ).toEqual(
 			expect.objectContaining( {
-				id: 'analytics-setup-error',
+				id: 'analytics-4-setup-error',
 				description: 'This is an error',
 			} )
 		);
@@ -175,7 +175,7 @@ describe( 'useActivateModuleCallback', () => {
 		} );
 
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics' ),
+			() => useActivateModuleCallback( 'analytics-4' ),
 			{ registry }
 		);
 
