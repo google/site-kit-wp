@@ -134,8 +134,8 @@ export default function Stats( props ) {
 	};
 
 	if (
-		isZeroReport( currentRangeData ) &&
-		isZeroReport( previousRangeData )
+		isZeroReport( currentRangeData, selectedStats + 1 ) &&
+		isZeroReport( previousRangeData, selectedStats + 1 )
 	) {
 		options.vAxis.viewWindow.max = 100;
 	} else {
