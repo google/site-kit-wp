@@ -15,25 +15,23 @@ export const logIgnoreList = {
 		'PHP Notice:  Trying to access array offset on value of type bool in /var/www/html/wp-admin/includes/update.php',
 		'PHP Notice:  Trying to access array offset on value of type null in /var/www/html/wp-includes/rest-api/class-wp-rest-request.php',
 		'PHP Notice:  Trying to access array offset on value of type bool in /var/www/html/wp-includes/theme.php',
+
+		// These Site Kit deprecations should be updated as deprecated code is removed.
+		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is <strong>deprecated</strong> since version',
+		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is <strong>deprecated</strong> since version',
+	],
+	latest: [
+		// These Site Kit deprecations should be updated as deprecated code is removed.
+		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
+		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is deprecated since version',
 	],
 	nightly: [
 		// Can be removed once WordPress AMP Plugin removes the deprecated function call.
 		// See: https://github.com/ampproject/amp-wp/issues/7619
 		'PHP Deprecated:  Function _admin_bar_bump_cb is deprecated since version 6.4.0! Use wp_enqueue_admin_bar_bump_styles instead. in /var/www/html/wp-includes/functions.php',
+
+		// These Site Kit deprecations should be updated as deprecated code is removed.
+		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
+		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is deprecated since version',
 	],
 };
-
-/**
- * Site Kit deprecation errors to ignore.
- *
- * This list should be updated as deprecated code is removed.
- *
- * @since n.e.x.t
- *
- * @type {Array} Site Kit deprecation errors to ignore.
- */
-export const siteKitDeprecationLogIgnoreList = [
-	// These are regular expressions as "deprecated" is wrapped in a <strong> tag in CI but typically not when running locally.
-	/PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is .*deprecated.* since version/,
-	/PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is .*deprecated.* since version/,
-];

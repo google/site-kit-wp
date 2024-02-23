@@ -30,10 +30,7 @@ import { printReceived } from 'jest-matcher-utils';
 /**
  * Internal dependencies
  */
-import {
-	logIgnoreList,
-	siteKitDeprecationLogIgnoreList,
-} from './log-ignore-list';
+import { logIgnoreList } from './log-ignore-list';
 
 const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
 
@@ -125,10 +122,7 @@ function resetDebugLog() {
 
 async function assertEmptyDebugLog() {
 	// Filter out some lines from WP core that we can't do anything about.
-	const errorsToIgnore = [
-		...( logIgnoreList[ process.env.WP_VERSION ] || [] ),
-		...siteKitDeprecationLogIgnoreList,
-	];
+	const ignoreList = logIgnoreList[ process.env.WP_VERSION ] || [];
 
 	// Wait 1 second for any log data to finish propagating.
 	// Without this, node can disconnect from the log stream
@@ -139,10 +133,8 @@ async function assertEmptyDebugLog() {
 	const filteredDebugLog = debugLogData.filter( ( line ) => {
 		const lineWithoutTimestamp = line.replace( /^\[[^\]]+\]\s+/, '' );
 
-		return ! errorsToIgnore.some( ( ignoreLine ) =>
-			ignoreLine instanceof RegExp
-				? ignoreLine.test( lineWithoutTimestamp )
-				: lineWithoutTimestamp.startsWith( ignoreLine )
+		return ! ignoreList.some( ( ignoreLine ) =>
+			lineWithoutTimestamp.startsWith( ignoreLine )
 		);
 	} );
 
