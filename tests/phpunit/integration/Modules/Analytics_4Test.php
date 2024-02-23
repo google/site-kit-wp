@@ -33,6 +33,7 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
+use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -2875,6 +2876,11 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
+		if ( $settings['useSnippet'] && $settings['measurementID'] ) {
+			$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
+			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
+		}
+
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
@@ -3586,6 +3592,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register_template_redirect_non_amp() {
+		$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
+
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$analytics = new Analytics_4( $context );
 
@@ -3627,6 +3635,9 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $enabled
 	 */
 	public function test_block_on_consent_non_amp( $enabled ) {
+		$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
+		$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
+
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->merge(
 			array(
