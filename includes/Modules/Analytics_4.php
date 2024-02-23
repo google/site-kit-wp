@@ -1696,8 +1696,10 @@ final class Analytics_4 extends Module
 			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
 		);
 
-		$consent_mode_settings = new Consent_Mode_Settings( $this->options );
-		$tag->set_consent_mode_enabled( $consent_mode_settings->get()['enabled'] );
+		if ( ! $this->context->is_amp() ) {
+			$consent_mode_settings = new Consent_Mode_Settings( $this->options );
+			$tag->set_consent_mode_enabled( $consent_mode_settings->get()['enabled'] );
+		}
 
 		$tag->register();
 	}
