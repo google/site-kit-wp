@@ -1978,7 +1978,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'No connected Google Analytics 4 property ID.', $data );
+		$this->assertWPErrorWithMessage( 'No connected Google Analytics property ID.', $data );
 		$this->assertEquals( 'missing_required_setting', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 500 ), $data->get_error_data( 'missing_required_setting' ) );
 	}
@@ -2143,7 +2143,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 		$this->assertEquals(
 			array(
@@ -2292,7 +2292,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 		$this->assertEquals(
 			array(
@@ -3341,7 +3341,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 		$this->assertEquals(
 			array(

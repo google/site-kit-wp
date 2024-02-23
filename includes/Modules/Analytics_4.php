@@ -353,37 +353,37 @@ final class Analytics_4 extends Module
 
 		$debug_fields = array(
 			'analytics_4_account_id'                  => array(
-				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
+				'label' => __( 'Analytics account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
+				'label' => __( 'Analytics ads conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			'analytics_4_property_id'                 => array(
-				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
+				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id'          => array(
-				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
+				'label' => __( 'Analytics web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
 			'analytics_4_measurement_id'              => array(
-				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
+				'label' => __( 'Analytics measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
 			),
 			'analytics_4_use_snippet'                 => array(
-				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
+				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 			'analytics_4_available_custom_dimensions' => array(
-				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
+				'label' => __( 'Analytics available custom dimensions', 'google-site-kit' ),
 				'value' => empty( $settings['availableCustomDimensions'] )
 					? __( 'None', 'google-site-kit' )
 					: join(
@@ -456,12 +456,12 @@ final class Analytics_4 extends Module
 			'POST:create-property'                 => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-webdatastream'            => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream for this site on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
 			'GET:properties'                       => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                         => array( 'service' => 'analyticsadmin' ),
@@ -475,12 +475,12 @@ final class Analytics_4 extends Module
 			'POST:enhanced-measurement-settings'   => array(
 				'service'                => 'analyticsenhancedmeasurement',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-custom-dimension'         => array(
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', 'google-site-kit' ),
 			),
 			'POST:sync-custom-dimensions'          => array(
 				'service' => 'analyticsadmin',
@@ -495,7 +495,7 @@ final class Analytics_4 extends Module
 			$datapoints['POST:create-audience'] = array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			);
 		}
 
@@ -871,7 +871,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -887,7 +887,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -1033,7 +1033,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -1224,7 +1224,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -1356,7 +1356,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
