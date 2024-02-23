@@ -54,7 +54,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Boolean flag for whether Consent Mode is enabled.
 	 *
 	 * @since n.e.x.t
-	 * @deprecated This property is deprecated and should be removed when the legacy blocking mechanism
+	 * @deprecated This property is deprecated and should be removed when the legacy tag blocking mechanism
 	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
 	 * @var bool
 	 */
@@ -97,7 +97,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Sets whether Consent Mode is enabled.
 	 *
 	 * @since n.e.x.t
-	 * @deprecated This method is deprecated and should be removed when the legacy blocking mechanism
+	 * @deprecated This method is deprecated and should be removed when the legacy tag blocking mechanism
 	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
 	 *
 	 * @param bool $is_consent_mode_enabled Whether consent mode is enabled.
