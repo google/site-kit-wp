@@ -16,11 +16,17 @@ export const logIgnoreList = {
 		'PHP Notice:  Trying to access array offset on value of type null in /var/www/html/wp-includes/rest-api/class-wp-rest-request.php',
 		'PHP Notice:  Trying to access array offset on value of type bool in /var/www/html/wp-includes/theme.php',
 
+		// TODO: See if we can avoid this error in a follow-up.
+		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
+
 		// These Site Kit deprecation errors should be updated as deprecated code is removed.
 		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is <strong>deprecated</strong> since version',
 		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is <strong>deprecated</strong> since version',
 	],
 	latest: [
+		// TODO: See if we can avoid this error in a follow-up.
+		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
+
 		// These Site Kit deprecation errors should be updated as deprecated code is removed.
 		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
 		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is deprecated since version',
