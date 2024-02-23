@@ -22,3 +22,17 @@ export const logIgnoreList = {
 		'PHP Deprecated:  Function _admin_bar_bump_cb is deprecated since version 6.4.0! Use wp_enqueue_admin_bar_bump_styles instead. in /var/www/html/wp-includes/functions.php',
 	],
 };
+
+/**
+ * Site Kit deprecation errors to ignore.
+ *
+ * This list should be updated as deprecated code is removed.
+ *
+ * @since n.e.x.t
+ *
+ * @type {Array} Site Kit deprecation errors to ignore.
+ */
+export const siteKitDeprecationLogIgnoreList = [
+	'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
+	'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is deprecated since version',
+];
