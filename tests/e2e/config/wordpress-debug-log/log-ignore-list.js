@@ -33,6 +33,7 @@ export const logIgnoreList = {
  * @type {Array} Site Kit deprecation errors to ignore.
  */
 export const siteKitDeprecationLogIgnoreList = [
-	'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
-	'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is deprecated since version',
+	// These are regular expressions as "deprecated" is wrapped in a <strong> tag in CI but typically not when running locally.
+	/PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is .*deprecated.* since version/,
+	/PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is .*deprecated.* since version/,
 ];

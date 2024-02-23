@@ -140,7 +140,9 @@ async function assertEmptyDebugLog() {
 		const lineWithoutTimestamp = line.replace( /^\[[^\]]+\]\s+/, '' );
 
 		return ! errorsToIgnore.some( ( ignoreLine ) =>
-			lineWithoutTimestamp.startsWith( ignoreLine )
+			ignoreLine instanceof RegExp
+				? ignoreLine.test( lineWithoutTimestamp )
+				: lineWithoutTimestamp.startsWith( ignoreLine )
 		);
 	} );
 
