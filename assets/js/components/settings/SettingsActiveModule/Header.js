@@ -67,16 +67,6 @@ export default function Header( { slug } ) {
 		select( CORE_MODULES ).getModule( slug )
 	);
 
-	const hasAnalyticsAccess = useSelect( ( select ) => {
-		if ( ! ( slug === 'analytics-4' && module?.connected ) ) {
-			return false;
-		}
-
-		return select( CORE_MODULES ).hasModuleOwnershipOrAccess(
-			'analytics-4'
-		);
-	} );
-
 	const openHeader = useCallback( () => {
 		if ( isOpen ) {
 			return;
@@ -200,9 +190,6 @@ export default function Header( { slug } ) {
 										connected,
 									'googlesitekit-settings-module__status--not-connected':
 										! connected,
-									'googlesitekit-settings-module__status--loading':
-										'analytics-4' === slug &&
-										! hasAnalyticsAccess,
 								}
 							) }
 						>
