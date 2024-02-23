@@ -16,15 +16,12 @@ export const logIgnoreList = {
 		'PHP Notice:  Trying to access array offset on value of type null in /var/www/html/wp-includes/rest-api/class-wp-rest-request.php',
 		'PHP Notice:  Trying to access array offset on value of type bool in /var/www/html/wp-includes/theme.php',
 
-		// TODO: See if we can avoid this error in a follow-up.
-		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
-
 		// These Site Kit deprecation errors should be updated as deprecated code is removed.
 		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is <strong>deprecated</strong> since version',
 		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is <strong>deprecated</strong> since version',
 	],
 	latest: [
-		// TODO: See if we can avoid this error in a follow-up.
+		// TODO: See if we can avoid this error in a follow-up. It occurs when running the E2E tests in `specs/modules/analytics/admin-bar.test.js`.
 		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
 
 		// These Site Kit deprecation errors should be updated as deprecated code is removed.
@@ -35,6 +32,9 @@ export const logIgnoreList = {
 		// Can be removed once WordPress AMP Plugin removes the deprecated function call.
 		// See: https://github.com/ampproject/amp-wp/issues/7619
 		'PHP Deprecated:  Function _admin_bar_bump_cb is deprecated since version 6.4.0! Use wp_enqueue_admin_bar_bump_styles instead. in /var/www/html/wp-includes/functions.php',
+
+		// TODO: See if we can avoid this error in a follow-up. It occurs when running the E2E tests in `specs/modules/analytics/admin-bar.test.js`.
+		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
 
 		// These Site Kit deprecation errors should be updated as deprecated code is removed.
 		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
