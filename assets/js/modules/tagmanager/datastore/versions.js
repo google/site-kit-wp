@@ -434,31 +434,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the single property ID used by all selected containers.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @return {(string|null|boolean|undefined)} String property ID used by all containers,
-	 *                                           `null` if no property ID was found in either container,
-	 *                                           `false` if a single property ID could not be determined,
-	 *                                           or `undefined` if live container data is not loaded yet.
-	 */
-	getSingleAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
-		const propertyIDs =
-			select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
-
-		if ( propertyIDs === undefined ) {
-			return undefined;
-		}
-
-		if ( propertyIDs.length === 1 ) {
-			return propertyIDs[ 0 ]; // (string|null)
-		}
-
-		return false;
-	} ),
-
-	/**
 	 * Checks whether any Analytics property ID is present in either selected container.
 	 *
 	 * @since 1.18.0
