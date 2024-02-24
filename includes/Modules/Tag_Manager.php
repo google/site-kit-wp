@@ -101,8 +101,6 @@ final class Tag_Manager extends Module
 
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
-		// Filter the Analytics `canUseSnippet` value.
-		add_filter( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ), 10, 2 );
 		// Filter whether certain users can be excluded from tracking.
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
@@ -580,26 +578,6 @@ final class Tag_Manager extends Module
 	 */
 	public function get_tag_matchers() {
 		return new Tag_Matchers();
-	}
-
-	/**
-	 * Filters whether or not the Analytics module's snippet should be controlled by its `useSnippet` setting.
-	 *
-	 * @since 1.28.0
-	 * @since 1.75.0 Now requires current UA property ID as second parameter.
-	 *
-	 * @param boolean $original_value Original value of useSnippet setting.
-	 * @param string  $ua_property_id Current UA property.
-	 * @return boolean Filtered value.
-	 */
-	private function can_analytics_use_snippet( $original_value, $ua_property_id ) {
-		$settings = $this->get_settings()->get();
-
-		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] && $settings['gaPropertyID'] === $ua_property_id ) {
-			return false;
-		}
-
-		return $original_value;
 	}
 
 	/**
