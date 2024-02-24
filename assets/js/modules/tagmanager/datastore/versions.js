@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_TAGMANAGER, CONTEXT_WEB } from './constants';
+import { MODULES_TAGMANAGER } from './constants';
 import {
 	isValidAccountID,
 	isValidInternalContainerID,
@@ -227,44 +227,6 @@ const baseSelectors = {
 					accountID,
 					internalContainerID
 				);
-			}
-	),
-
-	/**
-	 * Gets the live container Universal Analytics tag object for the given account and container ID.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @param {Object} state               Data store's state.
-	 * @param {string} accountID           Account ID the container belongs to.
-	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
-	 * @return {(Object|null|undefined)} Live container Universal Analytics tag object, `null` if none exists, or `undefined` if not loaded yet.
-	 */
-	getLiveContainerAnalyticsTag: createRegistrySelector(
-		( select ) =>
-			function ( state, accountID, internalContainerID ) {
-				const liveContainerVersion = select(
-					MODULES_TAGMANAGER
-				).getLiveContainerVersion( accountID, internalContainerID );
-
-				if ( liveContainerVersion === undefined ) {
-					return undefined;
-				}
-
-				if ( liveContainerVersion?.tag ) {
-					const tagType =
-						liveContainerVersion.container.usageContext[ 0 ] ===
-						CONTEXT_WEB
-							? 'ua'
-							: 'ua_amp';
-					return (
-						liveContainerVersion.tag.find(
-							( { type } ) => type === tagType
-						) || null
-					);
-				}
-
-				return null;
 			}
 	),
 
