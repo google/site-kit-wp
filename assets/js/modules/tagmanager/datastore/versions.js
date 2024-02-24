@@ -434,26 +434,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks whether any Analytics property ID is present in either selected container.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @return {(boolean|undefined)} `true` if an Analytics property ID is present in either container,
-	 *                               `false` if no Analytics property ID is present in either container,
-	 *                               `undefined` if live container version data is not loaded yet.
-	 */
-	hasAnyAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
-		const propertyIDs =
-			select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
-
-		if ( propertyIDs === undefined ) {
-			return undefined;
-		}
-
-		return propertyIDs.some( ( propertyID ) => propertyID !== null );
-	} ),
-
-	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
 	 *
 	 * @since 1.11.0
