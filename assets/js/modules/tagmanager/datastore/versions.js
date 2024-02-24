@@ -32,7 +32,6 @@ import {
 	isValidInternalContainerID,
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '../../analytics/util';
 import { isValidGoogleTagID } from '../../analytics-4/utils/validation';
 const { createRegistrySelector } = Data;
 
@@ -116,65 +115,6 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
-	/**
-	 * Gets the live container Universal Analytics property ID for the given account and container ID.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @param {Object} state               Data store's state.
-	 * @param {string} accountID           Account ID the container belongs to.
-	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
-	 * @return {(string|null|undefined)} Analytics property ID if present and valid, `null` if none exists or not valid, or `undefined` if not loaded yet.
-	 */
-	getLiveContainerAnalyticsPropertyID: createRegistrySelector(
-		( select ) =>
-			function ( state, accountID, internalContainerID ) {
-				const analyticsTag = select(
-					MODULES_TAGMANAGER
-				).getLiveContainerAnalyticsTag(
-					accountID,
-					internalContainerID
-				);
-
-				if ( analyticsTag === undefined ) {
-					return undefined;
-				}
-
-				if ( analyticsTag?.parameter ) {
-					// Check if property ID is provided directly on the tag first.
-					let propertyID = analyticsTag.parameter.find(
-						( { key } ) => key === 'trackingId'
-					)?.value;
-					// If not, check if there is a gaSettings variable referenced.
-					if ( ! propertyID ) {
-						propertyID = analyticsTag.parameter.find(
-							( { key } ) => key === 'gaSettings'
-						)?.value;
-					}
-					// If the propertyID is a variable, parse out the name and look up its value.
-					if ( propertyID?.startsWith( '{{' ) ) {
-						propertyID = propertyID.replace( /(\{\{|\}\})/g, '' );
-						const gaSettingsVariable = select(
-							MODULES_TAGMANAGER
-						).getLiveContainerVariable(
-							accountID,
-							internalContainerID,
-							propertyID
-						);
-						propertyID = gaSettingsVariable?.parameter.find(
-							( { key } ) => key === 'trackingId'
-						)?.value;
-					}
-					// Finally, check that whatever was found is a valid ID.
-					if ( isValidPropertyID( propertyID ) ) {
-						return propertyID;
-					}
-				}
-
-				return null;
-			}
-	),
-
 	/**
 	 * Gets the first Google Tag object within the current live container for the given account and internal container ID.
 	 *
