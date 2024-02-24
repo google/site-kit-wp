@@ -97,7 +97,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'measurementID'             => '',
 			'trackingDisabled'          => array( 'loggedinUsers' ),
 			'useSnippet'                => true,
-			'canUseSnippet'             => true,
 			'googleTagID'               => '',
 			'googleTagAccountID'        => '',
 			'googleTagContainerID'      => '',
@@ -121,9 +120,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			if ( is_array( $option ) ) {
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
-				}
-				if ( isset( $option['canUseSnippet'] ) ) {
-					$option['canUseSnippet'] = (bool) $option['canUseSnippet'];
 				}
 				if ( isset( $option['googleTagID'] ) ) {
 					if ( ! preg_match( '/^(G|GT|AW)-[a-zA-Z0-9]+$/', $option['googleTagID'] ) ) {
@@ -200,7 +196,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		$keys_to_check      = array(
 			'accountID',
 			'adsConversionID',
-			'canUseSnippet',
 			'trackingDisabled',
 		);
 		$missing_settings   = array_diff( $keys_to_check, array_keys( $option ) );
