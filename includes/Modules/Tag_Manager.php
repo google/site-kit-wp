@@ -102,7 +102,6 @@ final class Tag_Manager extends Module
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 		// Filter whether certain users can be excluded from tracking.
-		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 	}
 
@@ -601,31 +600,6 @@ final class Tag_Manager extends Module
 			)
 		);
 
-	}
-
-	/**
-	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
-	 *
-	 * If Site Kit does not place the Analytics snippet (neither via Analytics nor via Tag Manager),
-	 * the option to exclude certain users from tracking should not be displayed.
-	 *
-	 * @since 1.36.0
-	 *
-	 * @param boolean $allowed Whether to allow tracking exclusion.
-	 * @return boolean Filtered value.
-	 */
-	private function filter_analytics_allow_tracking_disabled( $allowed ) {
-		if ( $allowed ) {
-			return true;
-		}
-
-		$settings = $this->get_settings()->get();
-
-		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] ) {
-			return true;
-		}
-
-		return $allowed;
 	}
 
 	/**
