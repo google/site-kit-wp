@@ -907,49 +907,6 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 		} );
 
-		describe( 'getSingleAnalyticsPropertyID', () => {
-			// Having multiple propertyIDs is currently only possible in secondary AMP
-			// so we'll use that context for all of these tests.
-			beforeEach( () =>
-				registry
-					.dispatch( CORE_SITE )
-					.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } )
-			);
-
-			it( 'returns the single common property ID used by both containers', () => {
-				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-123456789-1',
-					ampPropertyID: 'UA-123456789-1',
-				} );
-
-				const singleAnalyticsPropertyID = registry
-					.select( MODULES_TAGMANAGER )
-					.getSingleAnalyticsPropertyID();
-				expect( singleAnalyticsPropertyID ).toBe( 'UA-123456789-1' );
-			} );
-
-			it( 'returns false if both containers don’t reference the same property ID', () => {
-				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-123456789-1',
-					ampPropertyID: 'UA-9999999-9',
-				} );
-
-				const singleAnalyticsPropertyID = registry
-					.select( MODULES_TAGMANAGER )
-					.getSingleAnalyticsPropertyID();
-				expect( singleAnalyticsPropertyID ).toBe( false );
-			} );
-
-			it( 'returns null if no Analytics property ID was found', () => {
-				buildAndReceiveWebAndAMP();
-
-				const singleAnalyticsPropertyID = registry
-					.select( MODULES_TAGMANAGER )
-					.getSingleAnalyticsPropertyID();
-				expect( singleAnalyticsPropertyID ).toBe( null );
-			} );
-		} );
-
 		describe( 'hasAnyAnalyticsPropertyID', () => {
 			// Having multiple propertyIDs is currently only possible in secondary AMP
 			// so we'll use that context for all of these tests.
