@@ -45,10 +45,7 @@ export default function AdsConversionIDTextField() {
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
 	const snippetEnabled = useSelect( ( select ) => {
-		return (
-			select( MODULES_ANALYTICS ).getCanUseSnippet() &&
-			select( MODULES_ANALYTICS ).getUseSnippet()
-		);
+		return select( MODULES_ANALYTICS ).getUseSnippet();
 	} );
 	const ga4SnippetEnabled = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
