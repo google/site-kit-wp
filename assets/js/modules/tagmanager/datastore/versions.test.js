@@ -907,63 +907,6 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 		} );
 
-		describe( 'hasAnyAnalyticsPropertyID', () => {
-			// Having multiple propertyIDs is currently only possible in secondary AMP
-			// so we'll use that context for all of these tests.
-			beforeEach( () =>
-				registry
-					.dispatch( CORE_SITE )
-					.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } )
-			);
-
-			it( 'returns true if the web container has a property ID and the AMP container does not', () => {
-				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-12345-1',
-				} );
-
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasAnyAnalyticsPropertyID()
-				).toBe( true );
-			} );
-
-			it( 'returns true if the AMP container has a property ID and the web container does not', () => {
-				buildAndReceiveWebAndAMP( {
-					ampPropertyID: 'UA-12345-1',
-				} );
-
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasAnyAnalyticsPropertyID()
-				).toBe( true );
-			} );
-
-			it( 'returns true if both containers have a property ID, regardless of matching', () => {
-				buildAndReceiveWebAndAMP( {
-					webPropertyID: 'UA-99999-9',
-					ampPropertyID: 'UA-12345-1',
-				} );
-
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasAnyAnalyticsPropertyID()
-				).toBe( true );
-			} );
-
-			it( 'returns false if neither container has a property ID', () => {
-				buildAndReceiveWebAndAMP();
-
-				expect(
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasAnyAnalyticsPropertyID()
-				).toBe( false );
-			} );
-		} );
-
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
 				jest.useFakeTimers();
