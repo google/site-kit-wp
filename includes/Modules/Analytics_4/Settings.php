@@ -14,7 +14,6 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
