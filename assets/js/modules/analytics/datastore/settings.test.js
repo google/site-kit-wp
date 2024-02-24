@@ -74,7 +74,6 @@ describe( 'modules/analytics settings', () => {
 		useSnippet: true,
 		trackingDisabled: [],
 		anonymizeIP: true,
-		canUseSnippet: true,
 	};
 	const tagWithPermission = {
 		accountID: '12345',
