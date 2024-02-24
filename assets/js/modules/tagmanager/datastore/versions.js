@@ -27,7 +27,6 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB } from './constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	isValidAccountID,
 	isValidInternalContainerID,
@@ -117,60 +116,6 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
-	/**
-	 * Gets a unique list of Analytics property IDs for all effective containers based on current selections.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @return {(Array|undefined)} Array of unique property IDs, including `null` if none, or `undefined` if not fully loaded.
-	 */
-	getAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
-		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
-		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
-
-		if ( ! isValidAccountID( accountID ) ) {
-			return [];
-		}
-
-		const propertyIDs = new Set();
-		const internalContainerID =
-			select( MODULES_TAGMANAGER ).getInternalContainerID();
-		if (
-			( ! isAMP() || isSecondaryAMP() ) &&
-			isValidInternalContainerID( internalContainerID )
-		) {
-			propertyIDs.add(
-				select(
-					MODULES_TAGMANAGER
-				).getLiveContainerAnalyticsPropertyID(
-					accountID,
-					internalContainerID
-				)
-			);
-		}
-
-		const internalAMPContainerID =
-			select( MODULES_TAGMANAGER ).getInternalAMPContainerID();
-		if ( isAMP() && isValidInternalContainerID( internalAMPContainerID ) ) {
-			propertyIDs.add(
-				select(
-					MODULES_TAGMANAGER
-				).getLiveContainerAnalyticsPropertyID(
-					accountID,
-					internalAMPContainerID
-				)
-			);
-		}
-
-		// If either selector returned undefined, return undefined here as well.
-		// We do this here to ensure resolvers are triggered for both.
-		if ( propertyIDs.has( undefined ) ) {
-			return undefined;
-		}
-
-		return Array.from( propertyIDs );
-	} ),
-
 	/**
 	 * Gets the live container Universal Analytics property ID for the given account and container ID.
 	 *
