@@ -150,4 +150,22 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 		$this->settings->set( $input );
 		$this->assertEqualSetsWithIndex( $expected, $this->settings->get() );
 	}
+
+	public function test_is_consent_mode_enabled() {
+		$this->assertFalse( $this->settings->is_consent_mode_enabled() );
+
+		$this->settings->set( array( 'enabled' => true ) );
+		$this->assertTrue( $this->settings->is_consent_mode_enabled() );
+
+		$this->settings->set( array( 'enabled' => false ) );
+		$this->assertFalse( $this->settings->is_consent_mode_enabled() );
+	}
+
+	public function test_get_regions() {
+		$this->assertEquals( Regions::EEA, $this->settings->get_regions() );
+
+		$regions = array( 'SG', 'UA-AS' );
+		$this->settings->set( array( 'regions' => $regions ) );
+		$this->assertEquals( $regions, $this->settings->get_regions() );
+	}
 }
