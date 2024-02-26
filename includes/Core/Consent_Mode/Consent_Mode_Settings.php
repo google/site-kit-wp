@@ -88,4 +88,27 @@ class Consent_Mode_Settings extends Setting {
 			return $new_value;
 		};
 	}
+
+
+	/**
+	 * Accessor for the `enabled` setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool TRUE if Consent Mode is enabled, otherwise FALSE.
+	 */
+	public function is_consent_mode_enabled() {
+		return $this->get()['enabled'];
+	}
+
+	/**
+	 * Accessor for the `regions` setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array<string> Array of ISO 3166-2 region codes.
+	 */
+	public function get_regions() {
+		return $this->get()['regions'];
+	}
 }
