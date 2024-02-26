@@ -16,9 +16,6 @@ use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
-/**
- * @group tracking
- */
 class Consent_ModeTest extends TestCase {
 
 	/**
