@@ -19,13 +19,6 @@ use Google\Site_Kit\Tests\TestCase;
 class Consent_ModeTest extends TestCase {
 
 	/**
-	 * Consent Mode Settings instance.
-	 *
-	 * @var Consent_Mode_Settings
-	 */
-	private $settings;
-
-	/**
 	 * Context instance.
 	 *
 	 * @var Context

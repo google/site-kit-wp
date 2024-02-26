@@ -81,10 +81,10 @@ class Consent_Mode {
 	 */
 	protected function render_gtag_consent_snippet() {
 			$consent_defaults = array(
-				'analytics_storage'  => 'denied',
+				'ad_personalization' => 'denied',
 				'ad_storage'         => 'denied',
 				'ad_user_data'       => 'denied',
-				'ad_personalization' => 'denied',
+				'analytics_storage'  => 'denied',
 				'regions'            => $this->consent_mode_settings->get_regions(),
 			);
 			?>
