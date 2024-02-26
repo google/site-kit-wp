@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for handling Consent Mode.
@@ -22,6 +23,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
  * @ignore
  */
 class Consent_Mode {
+	use Method_Proxy_Trait;
 
 	/**
 	 * Consent_Mode_Settings instance.
@@ -66,9 +68,7 @@ class Consent_Mode {
 			// The `wp_head` action is used to ensure the snippets are printed in the head on the front-end only, not admin pages.
 			add_action(
 				'wp_head',
-				function() {
-						$this->render_gtag_consent_snippet();
-				},
+				$this->get_method_proxy( 'render_gtag_consent_snippet' ),
 				1 // Set priority to 1 to ensure the snippet is printed with top priority in the head.
 			);
 		}
