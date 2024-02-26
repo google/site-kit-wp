@@ -80,18 +80,54 @@ class Consent_Mode {
 	 * @since n.e.x.t
 	 */
 	protected function render_gtag_consent_snippet() {
-			$consent_defaults = array(
-				'ad_personalization' => 'denied',
-				'ad_storage'         => 'denied',
-				'ad_user_data'       => 'denied',
-				'analytics_storage'  => 'denied',
-				'regions'            => $this->consent_mode_settings->get_regions(),
-			);
-			?>
+		$consent_defaults = array(
+			'ad_personalization' => 'denied',
+			'ad_storage'         => 'denied',
+			'ad_user_data'       => 'denied',
+			'analytics_storage'  => 'denied',
+			'regions'            => $this->consent_mode_settings->get_regions(),
+			'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
+		);
+
+		$consent_category_map = apply_filters(
+			'googlesitekit_consent_category_map',
+			array(
+				'statistics' => array( 'analytics_storage' ),
+				'marketing'  => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
+			)
+		);
+
+		if ( function_exists( 'wp_get_consent_type' ) && function_exists( 'wp_get_consent_type' ) && false !== \wp_get_consent_type() ) {
+			foreach ( $consent_category_map as $category => $parameters ) {
+				if ( \wp_has_consent( $category ) ) {
+					foreach ( $parameters as $parameter ) {
+						$consent_defaults[ $parameter ] = 'granted';
+					}
+				}
+			}
+		}
+		?>
 <!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 <script id='google_gtagjs-js-consent-mode'>
 window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
-gtag("consent","default", <?php echo wp_json_encode( $consent_defaults ); ?>);
+gtag("consent","default",<?php echo wp_json_encode( $consent_defaults ); ?>);
+window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
+document.addEventListener('wp_listen_for_consent_change', function(event) {
+	console.log('Consent change event received', event.detail);
+	const consentData = event.detail;
+	if (consentData) {
+		const consentParameters = Object.entries(consentData).reduce((parameters,[category,value]) => {
+			if (window._googlesitekitConsentCategoryMap[category]) {
+				const mappedValue = value === 'allow' ? 'granted' : 'denied';
+				window._googlesitekitConsentCategoryMap[category].forEach((parameter) => {
+					parameters[parameter] = mappedValue;
+				});
+			}
+			return parameters;
+		}, {});
+		gtag('consent','update',consentData);
+	}
+});
 </script>
 <!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php
