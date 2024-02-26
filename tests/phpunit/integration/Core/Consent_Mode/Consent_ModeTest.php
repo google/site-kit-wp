@@ -47,7 +47,6 @@ class Consent_ModeTest extends TestCase {
 		( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
 
 		$consent_mode = new Consent_Mode( $this->context, $this->options );
-
 		$consent_mode->register();
 
 		$output = $this->capture_action( 'wp_head' );
@@ -59,7 +58,6 @@ class Consent_ModeTest extends TestCase {
 		remove_all_actions( 'wp_head' );
 
 		$consent_mode = new Consent_Mode( $this->context, $this->options );
-
 		$consent_mode->register();
 
 		$output = $this->capture_action( 'wp_head' );
