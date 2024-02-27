@@ -28,6 +28,8 @@
 	background-color: $c-surfaces-surface-1;
 	border-radius: $br-sm;
 	font-size: $fs-body-md;
+	grid-column: span 3;
+	grid-row: span 2;
 	height: 100%;
 	letter-spacing: $ls-s;
 	line-height: $lh-body-md;

@@ -227,9 +227,9 @@
 			// Required for correct order of button and text elements.
 			.googlesitekit-report-error-actions {
 				align-items: flex-start;
+				display: flex;
 				flex-direction: row-reverse;
 				gap: 0;
-				overflow: hidden;
 
 				@media (min-width: $bp-nonMobile) {
 					flex-direction: column-reverse;
@@ -304,7 +304,8 @@
 			}
 		}
 
-		.googlesitekit-km-widget-tile {
+		.googlesitekit-km-widget-tile,
+		.googlesitekit-cta.googlesitekit-cta--error {
 			@media (min-width: $bp-tablet) {
 				display: grid;
 				gap: 0;
@@ -315,7 +316,8 @@
 			}
 		}
 
-		.googlesitekit-km-widget-tile > div {
+		.googlesitekit-km-widget-tile > div,
+		.googlesitekit-cta.googlesitekit-cta--error > div {
 			@media (min-width: $bp-tablet) {
 				grid-column: 1 / -1;
 			}
