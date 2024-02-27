@@ -108,8 +108,8 @@ export default function GA4AdSenseLinkedNotification() {
 	if (
 		viewOnly ||
 		isDismissed ||
-		! hasFinishedResolution ||
-		report?.rowCount !== null
+		report?.rowCount !== null ||
+		! hasFinishedResolution
 	) {
 		return null;
 	}
