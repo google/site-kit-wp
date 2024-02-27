@@ -98,7 +98,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'renders GA4AdSenseLinkedNotification when both Analytics and AdSense modules are active', async () => {
+	it( 'renders GA4AdSenseLinkedNotification when both Analytics and AdSense modules are active and linked', async () => {
 		fetchMock.getOnce( analyticsReport, {
 			body: {
 				rowCount: null,
