@@ -190,7 +190,7 @@ describe( 'Tag Manager module setup', () => {
 
 			await pageWait( 1000 );
 			await expect( page ).toClick( 'button', {
-				text: new RegExp( 'confirm & continue', 'i' ),
+				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
 			await page.waitForSelector(
@@ -286,7 +286,7 @@ describe( 'Tag Manager module setup', () => {
 
 			await pageWait( 1000 );
 			await expect( page ).toClick( 'button', {
-				text: new RegExp( 'confirm & continue', 'i' ),
+				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
 			await page.waitForSelector(
@@ -412,7 +412,7 @@ describe( 'Tag Manager module setup', () => {
 						}
 					);
 					await expect( page ).toClick( 'button:not(:disabled)', {
-						text: new RegExp( 'confirm & continue', 'i' ),
+						text: new RegExp( 'complete setup', 'i' ),
 					} );
 					await page.waitForSelector(
 						'.googlesitekit-publisher-win--win-success'

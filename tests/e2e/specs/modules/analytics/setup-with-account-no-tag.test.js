@@ -301,7 +301,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await step( 'wait and click configure button', async () => {
 				await pageWait( 500 );
 				await expect( page ).toClick( 'button', {
-					text: /configure analytics/i,
+					text: /complete setup/i,
 				} );
 			} );
 
@@ -331,7 +331,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			);
 
 			await expect( page ).toMatchElement( 'button[disabled]', {
-				text: /configure analytics/i,
+				text: /complete setup/i,
 			} );
 
 			// Select Test Account A
