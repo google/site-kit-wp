@@ -96,16 +96,7 @@ class Consent_Mode {
 				'marketing'  => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
 			)
 		);
-
-		if ( function_exists( 'wp_get_consent_type' ) && function_exists( 'wp_get_consent_type' ) && false !== \wp_get_consent_type() ) {
-			foreach ( $consent_category_map as $category => $parameters ) {
-				if ( \wp_has_consent( $category ) ) {
-					foreach ( $parameters as $parameter ) {
-						$consent_defaults[ $parameter ] = 'granted';
-					}
-				}
-			}
-		}
+		// TODO: We should extract this JS and make it a bit more readable.
 		?>
 <!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 <script id='google_gtagjs-js-consent-mode'>
@@ -113,19 +104,38 @@ window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(argumen
 gtag("consent","default",<?php echo wp_json_encode( $consent_defaults ); ?>);
 window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
 document.addEventListener('wp_listen_for_consent_change', function(event) {
-	console.log('Consent change event received', event.detail);
-	const consentData = event.detail;
-	if (consentData) {
-		const consentParameters = Object.entries(consentData).reduce((parameters,[category,value]) => {
+	if (event.detail) {
+		var consentParameters = Object.entries(event.detail).reduce((parameters,[category,status]) => {
 			if (window._googlesitekitConsentCategoryMap[category]) {
-				const mappedValue = value === 'allow' ? 'granted' : 'denied';
+				var mappedStatus = status === 'allow' ? 'granted' : 'denied';
 				window._googlesitekitConsentCategoryMap[category].forEach((parameter) => {
-					parameters[parameter] = mappedValue;
+					parameters[parameter] = mappedStatus;
 				});
 			}
 			return parameters;
 		}, {});
-		gtag('consent','update',consentData);
+		if (Object.keys(consentParameters).length) {
+			gtag('consent','update',consentParameters);
+		}
+	}
+});
+function updateGrantedConsent(){
+	if (!(window.wp_consent_type || window.wp_fallback_consent_type)){ return; }
+	if (window._googlesitekitHasUpdatedConsent) {	return; } else { window._googlesitekitHasUpdatedConsent = true; }
+	var consentParameters = Object.entries(window._googlesitekitConsentCategoryMap).reduce((consentParams,[category,parameters]) => {
+		if (window.wp_has_consent && window.wp_has_consent(category)) {
+			parameters.forEach((parameter) => consentParams[parameter] = 'granted');
+		}
+		return consentParams;
+	},{});
+	if (Object.keys(consentParameters).length) {
+		gtag('consent','update',consentParameters);
+	}
+}
+document.addEventListener('wp_consent_type_defined',updateGrantedConsent);
+document.addEventListener("DOMContentLoaded",() => {
+	if (!window.waitfor_consent_hook) {
+		updateGrantedConsent();
 	}
 });
 </script>
