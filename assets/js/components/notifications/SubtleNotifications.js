@@ -35,8 +35,11 @@ export default function SubtleNotifications() {
 	const isGA4AdSenseIntegrationEnabled = useFeature(
 		'ga4AdSenseIntegration'
 	);
+	const ga4AdSenseIntegration = useAnalyticsAdSenseIntegrationCheck();
 	const renderGA4AdSenseLinkedNotification =
-		useAnalyticsAdSenseIntegrationCheck() && isGA4AdSenseIntegrationEnabled;
+		ga4AdSenseIntegration.connected &&
+		ga4AdSenseIntegration.linked &&
+		isGA4AdSenseIntegrationEnabled;
 
 	if ( viewOnly ) {
 		return null;
