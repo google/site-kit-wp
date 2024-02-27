@@ -28,6 +28,9 @@ export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
 export const FORM_SETUP = 'analyticsSetup';
 
+export const GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY =
+	'ga4_adsense_linked_notification_dimissed_item';
+
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 // Date range offset days for Analytics 4 report requests.
