@@ -31,11 +31,20 @@ import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-moc
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 
+const adSenseAccountID = 'pub-1234567890';
+
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: [ 'pageTitle', 'pagePath' ],
+	dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
 	metrics: [ { name: 'totalAdRevenue' } ],
+	filter: {
+		fieldName: 'adSourceName',
+		stringFilter: {
+			matchType: 'EXACT',
+			value: `Google AdSense account (${ adSenseAccountID })`,
+		},
+	},
 	orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
 	limit: 5,
 };
@@ -168,6 +177,10 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
+
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.setAccountID( adSenseAccountID );
 
 				args?.setupRegistry( registry );
 			};
