@@ -26,6 +26,7 @@ import {
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { parseLiveContainerVersionIDs as parseIDs } from './__factories__/utils';
 import * as factories from './__factories__';
@@ -184,10 +185,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				expect( variableObject ).toStrictEqual( undefined );
 
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getLiveContainerVersion( '100', '239' );
+				await waitForDefaultTimeouts();
 			} );
 		} );
 
