@@ -30,25 +30,28 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 
 /**
- * Checks if both Analytics 4 and AdSense modules are active and linked.
+ * Checks if both Analytics 4 and AdSense modules are connected and linked.
  *
  * Needed for checks related to GA4 + AdSense integration
- * logic, which requires checks that both modules are active and linked.
+ * logic, which requires checks that both modules are connected and linked.
  *
  * @since n.e.x.t
  *
- * @return {boolean} TRUE if both modules are active, otherwise FALSE.
+ * @return {boolean} TRUE if both modules are connected, otherwise FALSE.
  */
 export function useAnalyticsAdSenseIntegrationCheck() {
-	const adSenseModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'adsense' )
+	const adSenseModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
-	const AnalyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+	const AnalyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const isAdSenseLinked = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdSenseLinked()
 	);
 
-	return adSenseModuleActive && AnalyticsModuleActive && isAdSenseLinked;
+	return {
+		connected: adSenseModuleConnected && AnalyticsModuleConnected,
+		linked: isAdSenseLinked,
+	};
 }
