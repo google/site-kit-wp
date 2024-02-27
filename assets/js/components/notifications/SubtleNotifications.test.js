@@ -28,7 +28,7 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
-describe( 'GA4AdSenseLinkedNotification', () => {
+describe( 'SubtleNotifications', () => {
 	let registry;
 
 	const analyticsReport = new RegExp(
