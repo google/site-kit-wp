@@ -272,18 +272,18 @@
 		.mdc-layout-grid__inner {
 
 			@media (min-width: $bp-tablet) {
-				grid-template-rows: auto 1fr auto 1fr;
+				grid-template-rows: auto 1fr auto auto 1fr auto;
 			}
 
 			@media (min-width: $bp-desktop) {
-				grid-template-rows: auto 1fr;
+				grid-template-rows: auto 1fr auto;
 			}
 		}
 
 		.mdc-layout-grid__cell {
 			@media (min-width: $bp-tablet) {
 				display: grid;
-				grid-row: span 2;
+				grid-row: span 3;
 				grid-template-columns: subgrid;
 				grid-template-rows: subgrid;
 			}
@@ -304,8 +304,19 @@
 			}
 		}
 
-		.googlesitekit-km-widget-tile,
-		.googlesitekit-cta.googlesitekit-cta--error {
+		.googlesitekit-cta--error,
+		.googlesitekit-km-widget-tile--error {
+			@media (min-width: $bp-tablet) {
+				display: grid;
+				grid-column: 1 / -1;
+				grid-row: 1 / -1;
+
+				// grid-template-columns: subgrid;
+				grid-template-rows: subgrid;
+			}
+		}
+
+		.googlesitekit-km-widget-tile {
 			@media (min-width: $bp-tablet) {
 				display: grid;
 				gap: 0;
@@ -316,19 +327,24 @@
 			}
 		}
 
-		.googlesitekit-km-widget-tile > div,
-		.googlesitekit-cta.googlesitekit-cta--error > div {
+		.googlesitekit-widget--connectModuleCTATile,
+		.googlesitekit-widget--addMetricCTATile .googlesitekit-km-add-metric-cta-tile {
+			@media (min-width: $bp-tablet) {
+				grid-column: 1 / -1;
+				grid-row: 1 / -1;
+			}
+		}
+
+		.googlesitekit-km-widget-tile > div {
 			@media (min-width: $bp-tablet) {
 				grid-column: 1 / -1;
 			}
 		}
 
-		.googlesitekit-widget--connectModuleCTATile,
-		.googlesitekit-km-widget-tile--error,
-		.googlesitekit-widget--addMetricCTATile .googlesitekit-km-add-metric-cta-tile {
+		.googlesitekit-cta--error > div,
+		.googlesitekit-cta--error > h3 {
 			@media (min-width: $bp-tablet) {
 				grid-column: 1 / -1;
-				grid-row: 1 / -1;
 			}
 		}
 
