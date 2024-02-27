@@ -45,7 +45,9 @@ import SetupErrorNotification from './notifications/SetupErrorNotification';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
+import SubtleNotifications from './notifications/SubtleNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+
 const { useSelect } = Data;
 
 function Header( { children, subHeader, showNavigation } ) {
@@ -116,6 +118,8 @@ function Header( { children, subHeader, showNavigation } ) {
 			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
+
+			{ isDashboard && ! isViewOnly && <SubtleNotifications /> }
 
 			<EntityHeader />
 		</Fragment>
