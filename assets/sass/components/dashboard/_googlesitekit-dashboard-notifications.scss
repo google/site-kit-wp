@@ -1,0 +1,30 @@
+.googlesitekit-dashboard-notifications {
+	align-items: center;
+	background-color: $c-content-primary-container;
+	border-radius: $br-sm;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: $grid-gap-phone;
+	text-align: center;
+
+	@media (min-width: $bp-tablet) {
+		flex-direction: row;
+		gap: $grid-gap-phone;
+		padding: 18px $grid-gap-desktop;
+		text-align: initial;
+	}
+}
+
+.googlesitekit-dashboard-notifications__content {
+	color: $c-content-on-primary-container;
+	font-family: $f-primary;
+	font-size: $fs-title-md;
+	font-weight: $fw-medium;
+	line-height: $lh-title-lg;
+
+	@media (min-width: $bp-tablet) {
+		flex: 1;
+		font-size: $fs-title-lg;
+	}
+}
