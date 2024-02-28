@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.4
 Requires PHP:      5.6
-Stable tag:        1.120.0
+Stable tag:        1.121.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
@@ -108,6 +108,35 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.121.0 =
+
+**Added**
+
+* Add a new module class for the Ads module. See [#8222](https://github.com/google/site-kit-wp/issues/8222).
+* Use Google Analytics 4 API to get revenue data for pages in the "Top earning pages" widget when user has linked AdSense and Analytics account. See [#8059](https://github.com/google/site-kit-wp/issues/8059).
+* Add `adSenseLinked` to Site Health information. See [#8051](https://github.com/google/site-kit-wp/issues/8051).
+
+**Enhanced**
+
+* Implement refreshed UI for the modal dialog component. See [#8110](https://github.com/google/site-kit-wp/issues/8110).
+* Update setup flow for Tag Manager to be GA4 aware. See [#7990](https://github.com/google/site-kit-wp/issues/7990).
+* Create module settings edit component for Analytics 4. See [#7930](https://github.com/google/site-kit-wp/issues/7930).
+* Relocate infrastructure from legacy Analytics module. See [#7926](https://github.com/google/site-kit-wp/issues/7926).
+* Fix bug that caused a layout shift during loading of Key Metrics data in Site Kit Settings. See [#7570](https://github.com/google/site-kit-wp/issues/7570).
+* Improve logic for dismissal/appearance of Ad Blocking Recovery widget. See [#7316](https://github.com/google/site-kit-wp/issues/7316).
+* Add the "Top Earning Content" Key Metric widget tile. See [#6248](https://github.com/google/site-kit-wp/issues/6248).
+
+**Changed**
+
+* Replace use of the abandoned `true/punycode` package with `symfony/polyfill-intl-idn`. See [#8094](https://github.com/google/site-kit-wp/issues/8094).
+* Display CTA for users with AdSense and Analytics connected to link their accounts. See [#8050](https://github.com/google/site-kit-wp/issues/8050).
+
+**Fixed**
+
+* Fix bug that could cause AdSense setup to display an error during setup when refocusing the tab after a period of inactivity. See [#8294](https://github.com/google/site-kit-wp/issues/8294).
+* Fix issue that could cause a dashboard error when the current user's roles return an unexpected result. See [#8266](https://github.com/google/site-kit-wp/issues/8266).
+* Fix bug preventing Analytics from being setup when Tag Manager is connected. See [#7937](https://github.com/google/site-kit-wp/issues/7937).
 
 = 1.120.0 =
 

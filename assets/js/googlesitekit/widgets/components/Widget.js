@@ -22,38 +22,39 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-function Widget( {
-	children,
-	className,
-	widgetSlug,
-	noPadding,
-	Header,
-	Footer,
-} ) {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-widget',
-				`googlesitekit-widget--${ widgetSlug }`,
-				{ 'googlesitekit-widget--no-padding': noPadding },
-				{ 'googlesitekit-widget--with-header': Header },
-				className
-			) }
-		>
-			{ Header && (
-				<div className="googlesitekit-widget__header">
-					<Header />
-				</div>
-			) }
-			<div className="googlesitekit-widget__body">{ children }</div>
-			{ Footer && (
-				<div className="googlesitekit-widget__footer">
-					<Footer />
-				</div>
-			) }
-		</div>
-	);
-}
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+const Widget = forwardRef(
+	( { children, className, widgetSlug, noPadding, Header, Footer }, ref ) => {
+		return (
+			<div
+				className={ classnames(
+					'googlesitekit-widget',
+					`googlesitekit-widget--${ widgetSlug }`,
+					{ 'googlesitekit-widget--no-padding': noPadding },
+					{ 'googlesitekit-widget--with-header': Header },
+					className
+				) }
+				ref={ ref }
+			>
+				{ Header && (
+					<div className="googlesitekit-widget__header">
+						<Header />
+					</div>
+				) }
+				<div className="googlesitekit-widget__body">{ children }</div>
+				{ Footer && (
+					<div className="googlesitekit-widget__footer">
+						<Footer />
+					</div>
+				) }
+			</div>
+		);
+	}
+);
 
 Widget.defaultProps = {
 	children: undefined,

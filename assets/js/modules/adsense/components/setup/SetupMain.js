@@ -60,7 +60,6 @@ export default function SetupMain( { finishSetup } ) {
 	const eventCategory = `${ viewContext }_adsense`;
 
 	const {
-		clearError,
 		resetAccounts,
 		resetClients,
 		resetSites,
@@ -226,13 +225,11 @@ export default function SetupMain( { finishSetup } ) {
 			return;
 		}
 
-		// Unset any potential error.
-		clearError();
 		// Reset all data to force re-fetch.
 		resetAccounts();
 		resetClients();
 		resetSites();
-	}, [ accountStatus, clearError, resetAccounts, resetClients, resetSites ] );
+	}, [ accountStatus, resetAccounts, resetClients, resetSites ] );
 
 	// Reset all fetched data when user re-focuses window.
 	useRefocus( reset, 15000 );

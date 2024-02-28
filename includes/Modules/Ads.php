@@ -11,15 +11,23 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Modules\Ads\Settings;
 
 /**
  * Class representing the Ads module.
  *
- * @since n.e.x.t
+ * @since 1.121.0
  * @access private
  * @ignore
  */
-final class Ads extends Module {
+final class Ads extends Module implements Module_With_Settings, Module_With_Data_Available_State {
+	use Module_With_Settings_Trait;
+	use Module_With_Data_Available_State_Trait;
 
 	/**
 	 * Module slug name.
@@ -29,14 +37,14 @@ final class Ads extends Module {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 */
 	public function register() {}
 
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -48,6 +56,42 @@ final class Ads extends Module {
 			'order'       => 1,
 			'homepage'    => __( 'https://google.com/ads', 'google-site-kit' ),
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
+	}
+
+	/**
+	 * Checks whether the module is connected.
+	 *
+	 * A module being connected means that all steps required as part of its activation are completed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$options = $this->get_settings()->get();
+
+		return parent::is_connected() && ! empty( $options['adsConversionID'] );
+	}
+
+	/**
+	 * Cleans up when the module is deactivated.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function on_deactivation() {
+		$this->get_settings()->delete();
+		$this->reset_data_available();
 	}
 
 }
