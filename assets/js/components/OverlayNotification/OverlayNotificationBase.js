@@ -15,3 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * External dependencies
+ */
+import { Slide } from '@material-ui/core';
+
+export default function OverlayNotificationBase( {
+	animateNotification,
+	handleAnimationOnExited,
+	children,
+} ) {
+	return (
+		<Slide
+			direction="up"
+			in={ animateNotification }
+			onExited={ handleAnimationOnExited }
+		>
+			<div className="googlesitekit-overlay-notification">
+				{ children }
+			</div>
+		</Slide>
+	);
+}
