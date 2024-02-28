@@ -103,8 +103,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @param bool $is_consent_mode_enabled Whether consent mode is enabled.
 	 */
 	public function set_consent_mode_enabled( $is_consent_mode_enabled ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t' );
-
 		$this->is_consent_mode_enabled = $is_consent_mode_enabled;
 	}
 
