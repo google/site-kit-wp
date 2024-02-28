@@ -81,13 +81,15 @@ describe( 'Consent Mode snippet', () => {
 		} );
 	} );
 
+	beforeEach( async () => {
+		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
+	} );
+
 	afterEach( async () => {
 		await clearCookiesByPrefix( 'wp_consent_' );
 	} );
 
 	it( 'configures the Consent Mode defaults', async () => {
-		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
-
 		const dataLayer = await page.evaluate( () => window.dataLayer );
 
 		expect( dataLayer ).toEqual( [
@@ -107,8 +109,6 @@ describe( 'Consent Mode snippet', () => {
 	} );
 
 	it( 'enqueues a Consent Mode update in response to a `wp_set_consent()` call', async () => {
-		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
-
 		await page.evaluate( () => {
 			window.wp_set_consent( 'marketing', 'allow' );
 		} );
@@ -141,10 +141,8 @@ describe( 'Consent Mode snippet', () => {
 	} );
 
 	it( 'enqueues a Consent Mode update on page load when a CMP plugin is present', async () => {
-		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
-
-		// Setting consent to allow will persist the consent state in the cookie.
 		await page.evaluate( () => {
+			// `wp_set_consent()` will persist the consent choice in a cookie.
 			window.wp_set_consent( 'marketing', 'allow' );
 		} );
 
