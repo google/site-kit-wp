@@ -117,6 +117,10 @@ else
 	wp plugin update amp --minor --quiet
 fi
 
+# Install the WP Consent API plugin
+status_message "Installing the WP Consent API plugin..."
+wp plugin install wp-consent-api --force --quiet
+
 # Install a placeholder favicon to avoid 404 errors.
 status_message "Installing a placeholder favicon..."
 container touch /var/www/html/favicon.ico
