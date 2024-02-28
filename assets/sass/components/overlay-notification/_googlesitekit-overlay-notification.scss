@@ -1,0 +1,16 @@
+.googlesitekit-overlay-notification {
+	bottom: 24px;
+	position: fixed;
+	right: 24px;
+	z-index: 99999;
+
+	@media (max-width: $bp-xsmallOnly) {
+		bottom: 0;
+		right: 0;
+	}
+
+	@media (min-width: $bp-xlarge) {
+		bottom: 34px;
+		right: 34px;
+	}
+}
