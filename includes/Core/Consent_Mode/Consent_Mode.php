@@ -133,7 +133,7 @@ function updateGrantedConsent(){
 	}
 }
 document.addEventListener('wp_consent_type_defined',updateGrantedConsent);
-document.addEventListener("DOMContentLoaded",() => {
+document.addEventListener('DOMContentLoaded',() => {
 	if (!window.waitfor_consent_hook) {
 		updateGrantedConsent();
 	}
