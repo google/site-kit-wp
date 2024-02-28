@@ -29,7 +29,6 @@ import {
 	setSearchConsoleProperty,
 	enableFeature,
 	wpApiFetch,
-	clearCookiesByPrefix,
 } from '../../utils';
 
 const eeaRegions = [
@@ -86,7 +85,10 @@ describe( 'Consent Mode snippet', () => {
 	} );
 
 	afterEach( async () => {
-		await clearCookiesByPrefix( 'wp_consent_' );
+		const cookies = ( await page.cookies() ).filter( ( cookie ) =>
+			cookie.name.startsWith( 'wp_consent_' )
+		);
+		await page.deleteCookie( ...cookies );
 	} );
 
 	it( 'configures the Consent Mode defaults', async () => {

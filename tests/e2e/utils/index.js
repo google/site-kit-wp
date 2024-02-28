@@ -18,7 +18,6 @@
 
 export { activateAMPWithMode, setAMPMode } from './activate-amp-and-set-mode';
 export { activatePlugins, deactivatePlugins } from './activate-plugins';
-export { clearCookiesByPrefix } from './clear-cookies';
 export { clearSessionStorage } from './clear-session-storage';
 export { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
