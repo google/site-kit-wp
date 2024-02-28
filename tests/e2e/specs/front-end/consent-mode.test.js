@@ -169,7 +169,9 @@ describe( 'Consent Mode snippet', () => {
 		] );
 
 		// Activate the stub CMP plugin.
-		await activatePlugin( 'e2e-tests-stub-consent-mode-platform-plugin' );
+		await activatePlugin(
+			'e2e-tests-stub-consent-management-platform-plugin'
+		);
 		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
 
 		dataLayer = await page.evaluate( () => window.dataLayer );

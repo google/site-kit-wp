@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: E2E Tests Stub Consent Mode Platform Plugin
+ * Plugin Name: E2E Tests Stub Consent Management Platform Plugin
  * Plugin URI:  https://github.com/google/site-kit-wp
  * Description: Utility plugin for stubbing the presence of a CMP plugin during E2E tests.
  * Author:      Google
