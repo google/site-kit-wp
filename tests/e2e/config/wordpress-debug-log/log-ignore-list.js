@@ -16,16 +16,14 @@ export const logIgnoreList = {
 		'PHP Notice:  Trying to access array offset on value of type null in /var/www/html/wp-includes/rest-api/class-wp-rest-request.php',
 		'PHP Notice:  Trying to access array offset on value of type bool in /var/www/html/wp-includes/theme.php',
 
-		// These Site Kit deprecation errors should be updated as deprecated code is removed.
-		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is <strong>deprecated</strong> since version',
+		// This Site Kit deprecation error should be removed when the deprecated code is removed.
 		'PHP Notice:  Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is <strong>deprecated</strong> since version',
 	],
 	latest: [
 		// TODO: See if we can avoid this error in a follow-up. It occurs when running the E2E tests in `specs/modules/analytics/admin-bar.test.js`.
 		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
 
-		// These Site Kit deprecation errors should be updated as deprecated code is removed.
-		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
+		// This Site Kit deprecation error should be removed when the deprecated code is removed.
 		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is deprecated since version',
 	],
 	nightly: [
@@ -36,8 +34,7 @@ export const logIgnoreList = {
 		// TODO: See if we can avoid this error in a follow-up. It occurs when running the E2E tests in `specs/modules/analytics/admin-bar.test.js`.
 		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
 
-		// These Site Kit deprecation errors should be updated as deprecated code is removed.
-		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::set_consent_mode_enabled is deprecated since version',
+		// This Site Kit deprecation error should be removed when the deprecated code is removed.
 		'PHP Deprecated:  Function Google\\Site_Kit\\Modules\\Analytics_4\\Web_Tag::add_legacy_block_on_consent_attributes is deprecated since version',
 	],
 };

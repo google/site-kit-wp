@@ -2878,7 +2878,6 @@ class Analytics_4Test extends TestCase {
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
 		if ( $settings['useSnippet'] && $settings['measurementID'] ) {
-			$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
 			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
 		}
 
@@ -3597,8 +3596,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register_template_redirect_non_amp() {
-		$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
-
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$analytics = new Analytics_4( $context );
 
@@ -3656,8 +3653,6 @@ class Analytics_4Test extends TestCase {
 		} else {
 			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
 		}
-
-		$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
 
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->merge(
