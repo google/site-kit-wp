@@ -181,7 +181,11 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
 			if ( ! ( Feature_Flags::enabled( 'consentMode' ) && $this->is_consent_mode_enabled ) ) {
-				$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src );
+				$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
+
+				if ( $block_on_consent_attrs ) {
+						$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
+				}
 			}
 
 			return $snippet_comment_begin . $tag . $snippet_comment_end;
@@ -246,16 +250,11 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @param string $tag     The script tag.
 	 * @param string $gtag_src The gtag script source URL.
+	 * @param string $block_on_consent_attrs The attributes to add to the script tag to block it until user consent is granted.
 	 * @return string The script tag with the added attributes.
 	 */
-	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src ) {
+	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs ) {
 		_deprecated_function( __METHOD__, 'n.e.x.t' );
-
-		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
-
-		if ( ! $block_on_consent_attrs ) {
-			return $tag;
-		}
 
 		return str_replace(
 			array(
