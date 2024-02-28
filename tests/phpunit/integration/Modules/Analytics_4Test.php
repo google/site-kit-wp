@@ -2877,10 +2877,6 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
-		if ( $settings['useSnippet'] && $settings['measurementID'] ) {
-			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
-		}
-
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
@@ -3650,8 +3646,6 @@ class Analytics_4Test extends TestCase {
 
 		if ( $test_parameters['consent_mode_enabled'] ) {
 			( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
-		} else {
-			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
 		}
 
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -3686,6 +3680,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=A1B2C3D4E5', $output );
 
 		if ( $test_parameters['expected_block_on_consent'] ) {
+			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
 			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
 			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
