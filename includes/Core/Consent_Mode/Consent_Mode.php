@@ -113,7 +113,7 @@ document.addEventListener('wp_listen_for_consent_change', function(event) {
 				});
 			}
 			return parameters;
-		}, {});
+		},{});
 		if (Object.keys(consentParameters).length) {
 			gtag('consent','update',consentParameters);
 		}
