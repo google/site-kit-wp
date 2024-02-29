@@ -102,7 +102,7 @@ class Consent_Mode {
 				'marketing'  => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
 			)
 		);
-		// TODO: We should extract this JS so it can be transpiled and rewrite it using modern language features.
+		// TODO: We may want to extract some of this JS so it can be transpiled and rewrite it using modern language features.
 		?>
 <!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 <script id='google_gtagjs-js-consent-mode'>
