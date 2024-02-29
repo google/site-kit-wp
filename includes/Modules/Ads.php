@@ -13,8 +13,6 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
-use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Modules\Ads\Settings;
@@ -26,9 +24,8 @@ use Google\Site_Kit\Modules\Ads\Settings;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Settings, Module_With_Data_Available_State {
+final class Ads extends Module implements Module_With_Settings {
 	use Module_With_Settings_Trait;
-	use Module_With_Data_Available_State_Trait;
 
 	/**
 	 * Module slug name.
