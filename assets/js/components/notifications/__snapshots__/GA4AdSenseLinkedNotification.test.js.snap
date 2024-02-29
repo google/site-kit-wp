@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SubtleNotifications renders GA4AdSenseLinkedNotification when both Analytics and AdSense modules are active and linked 1`] = `
+exports[`GA4AdSenseLinkedNotification renders when both Analytics and AdSense modules are active and linked 1`] = `
 <div>
   <div
     class="mdc-layout-grid"
@@ -9,22 +9,22 @@ exports[`SubtleNotifications renders GA4AdSenseLinkedNotification when both Anal
       class="mdc-layout-grid__inner"
     >
       <div
-        class="googlesitekit-dashboard-notifications mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        class="googlesitekit-subtle-notifications mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
       >
         <div
-          class="googlesitekit-dashboard-notifications__icon"
+          class="googlesitekit-subtle-notifications__icon"
         >
           <svg />
         </div>
         <div
-          class="googlesitekit-dashboard-notifications__content"
+          class="googlesitekit-subtle-notifications__content"
         >
-          <div>
+          <p>
             Your AdSense and Analytics accounts are linked.
-          </div>
-          <div>
+          </p>
+          <p>
             We’ll let you know as soon as there’s enough data available.
-          </div>
+          </p>
         </div>
         <button
           class="mdc-button mdc-button--tertiary"
