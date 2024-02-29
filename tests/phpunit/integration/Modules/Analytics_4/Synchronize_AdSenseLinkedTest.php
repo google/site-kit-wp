@@ -117,10 +117,28 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		// Force modules to be connected.
 		add_filter(
 			'googlesitekit_is_module_connected',
-			function() {
-				return true;
-			}
+			array(
+				$this,
+				'force_module_connection',
+			)
 		);
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+
+		// Remove filter that forces modules to be connected.
+		remove_filter(
+			'googlesitekit_is_module_connected',
+			array(
+				$this,
+				'force_module_connection',
+			)
+		);
+	}
+
+	public function force_module_connection() {
+		return true;
 	}
 
 	public function fake_adsense_linked_response( $property_id ) {
