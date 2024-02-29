@@ -28,7 +28,6 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 describe( 'GA4AdSenseLinkedNotification', () => {
 	let registry;
@@ -80,7 +79,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		await waitForRegistry();
@@ -119,7 +117,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		await waitForRegistry();
@@ -144,7 +141,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		await waitForRegistry();
@@ -203,7 +199,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		await waitForRegistry();
@@ -240,7 +235,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		await waitForRegistry();

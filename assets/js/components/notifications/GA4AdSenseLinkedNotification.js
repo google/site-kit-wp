@@ -33,7 +33,6 @@ import CheckFill from '../../../svg/icons/check-fill.svg';
 import { Button } from 'googlesitekit-components';
 import { Grid, Cell, Row } from '../../material-components';
 import useViewOnly from '../../hooks/useViewOnly';
-import useDashboardType from '../../hooks/useDashboardType';
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -42,7 +41,6 @@ const { useSelect, useInViewSelect, useDispatch } = Data;
 
 export default function GA4AdSenseLinkedNotification() {
 	const viewOnly = useViewOnly();
-	const isDashboard = !! useDashboardType();
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -94,7 +92,6 @@ export default function GA4AdSenseLinkedNotification() {
 	const report = useInViewSelect( ( select ) => {
 		if (
 			viewOnly ||
-			! isDashboard ||
 			isDismissed ||
 			! analyticsAndAdsenseConnectedAndLinked ||
 			! isGA4AdSenseIntegrationEnabled
@@ -125,7 +122,6 @@ export default function GA4AdSenseLinkedNotification() {
 			! isZeroReport( report ) &&
 			! isDismissed &&
 			! viewOnly &&
-			isDashboard &&
 			analyticsAndAdsenseConnectedAndLinked &&
 			! isGA4AdSenseIntegrationEnabled
 		) {
@@ -135,37 +131,16 @@ export default function GA4AdSenseLinkedNotification() {
 		report,
 		isDismissed,
 		viewOnly,
-		isDashboard,
 		hasFinishedResolution,
 		analyticsAndAdsenseConnectedAndLinked,
 		isGA4AdSenseIntegrationEnabled,
 		dismissNotificationForUser,
 	] );
 
-	// console.log(
-	// 	viewOnly ||
-	// 		! isDashboard ||
-	// 		isDismissed ||
-	// 		! isZeroReport( report ) ||
-	// 		! hasFinishedResolution ||
-	// 		! analyticsAndAdsenseConnectedAndLinked ||
-	// 		! isGA4AdSenseIntegrationEnabled
-	// );
-	// console.log(
-	// 	viewOnly,
-	// 	! isDashboard,
-	// 	isDismissed,
-	// 	! isZeroReport( report ),
-	// 	! hasFinishedResolution,
-	// 	! analyticsAndAdsenseConnectedAndLinked,
-	// 	! isGA4AdSenseIntegrationEnabled
-	// );
-
 	// Ensure resolution of the report has completed before showing this notification, since
 	// it should only appear when the user has no data in the report.
 	if (
 		viewOnly ||
-		! isDashboard ||
 		isDismissed ||
 		! isZeroReport( report ) ||
 		! hasFinishedResolution ||
