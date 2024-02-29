@@ -9,15 +9,15 @@ exports[`GA4AdSenseLinkedNotification renders when both Analytics and AdSense mo
       class="mdc-layout-grid__inner"
     >
       <div
-        class="googlesitekit-subtle-notifications mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        class="googlesitekit-subtle-notification mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
       >
         <div
-          class="googlesitekit-subtle-notifications__icon"
+          class="googlesitekit-subtle-notification__icon"
         >
           <svg />
         </div>
         <div
-          class="googlesitekit-subtle-notifications__content"
+          class="googlesitekit-subtle-notification__content"
         >
           <p>
             Your AdSense and Analytics accounts are linked.

@@ -156,12 +156,12 @@ export default function GA4AdSenseLinkedNotification() {
 				<Cell
 					alignMiddle
 					size={ 12 }
-					className="googlesitekit-subtle-notifications"
+					className="googlesitekit-subtle-notification"
 				>
-					<div className="googlesitekit-subtle-notifications__icon">
+					<div className="googlesitekit-subtle-notification__icon">
 						<CheckFill width={ 24 } height={ 24 } />
 					</div>
-					<div className="googlesitekit-subtle-notifications__content">
+					<div className="googlesitekit-subtle-notification__content">
 						<p>
 							{ __(
 								'Your AdSense and Analytics accounts are linked.',

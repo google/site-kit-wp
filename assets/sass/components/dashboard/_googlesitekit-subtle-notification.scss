@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-.googlesitekit-subtle-notifications {
+.googlesitekit-subtle-notification {
 	align-items: center;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
@@ -32,7 +32,7 @@
 	}
 }
 
-.googlesitekit-subtle-notifications__icon {
+.googlesitekit-subtle-notification__icon {
 	display: none;
 
 	@media (min-width: $bp-tablet) {
@@ -40,7 +40,7 @@
 	}
 }
 
-.googlesitekit-subtle-notifications__content {
+.googlesitekit-subtle-notification__content {
 	color: $c-content-on-primary-container;
 	font-family: $f-primary;
 	font-size: $fs-title-md;
