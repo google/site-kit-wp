@@ -26,21 +26,20 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { getDateString } from '../../util';
 
 // Generate referenced dates.
 const today = new Date();
+
 const endDate = new Date( today );
 endDate.setDate( endDate.getDate() - 1 );
 
 const startDate = new Date( today );
 startDate.setDate( startDate.getDate() - 28 );
 
-const startDateStr = startDate.toISOString().split( 'T' )[ 0 ];
-const endDateStr = endDate.toISOString().split( 'T' )[ 0 ];
-
 const reportOptions = {
-	startDate: startDateStr,
-	endDate: endDateStr,
+	startDate: getDateString( startDate ),
+	endDate: getDateString( endDate ),
 	dimensions: [ 'pagePath' ],
 	metrics: [ { name: 'totalAdRevenue' } ],
 	orderby: [
