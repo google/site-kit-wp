@@ -118,7 +118,6 @@ final class Ads extends Module implements Module_With_Settings {
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
-		$this->reset_data_available();
 	}
 
 }
