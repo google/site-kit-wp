@@ -32,13 +32,17 @@ import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
+import SettingsCardConsentMode from './SettingsCardConsentMode';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
 import PreviewBlock from '../PreviewBlock';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
+	const isConsentModeEnabled = useFeature( 'consentMode' );
+
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -132,6 +136,12 @@ export default function SettingsAdmin() {
 
 	return (
 		<Row>
+			{ isConsentModeEnabled && (
+				<Cell size={ 12 }>
+					<SettingsCardConsentMode />
+				</Cell>
+			) }
+
 			{ showKeyMetricsSettings && (
 				<Cell size={ 12 }>
 					<SettingsCardKeyMetrics />
