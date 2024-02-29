@@ -117,9 +117,8 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		// Force modules to be connected.
 		add_filter(
 			'googlesitekit_is_module_connected',
-			function( $slug ) {
-				$slug = true;
-				return $slug;
+			function() {
+				return true;
 			}
 		);
 	}
