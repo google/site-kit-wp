@@ -38,7 +38,7 @@ import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useDashboardType from '../../hooks/useDashboardType';
 
-const { useSelect, useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function GA4AdSenseLinkedNotification() {
 	const isGA4AdSenseIntegrationEnabled = useFeature(
@@ -115,7 +115,7 @@ export default function GA4AdSenseLinkedNotification() {
 		limit: 3,
 	};
 
-	const report = useInViewSelect( ( select ) => {
+	const report = useSelect( ( select ) => {
 		if (
 			viewOnly ||
 			isDismissed ||
@@ -152,7 +152,7 @@ export default function GA4AdSenseLinkedNotification() {
 			isDismissed === false &&
 			isGA4AdSenseIntegrationEnabled &&
 			hasFinishedResolution &&
-			! isZeroReport( report ) &&
+			isZeroReport( report ) === false &&
 			analyticsAndAdsenseConnectedAndLinked
 		) {
 			dismissNotificationForUser();
