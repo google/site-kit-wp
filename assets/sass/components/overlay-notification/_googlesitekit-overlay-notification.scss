@@ -1,16 +1,41 @@
 .googlesitekit-overlay-notification {
-	bottom: 24px;
+	background-color: $c-white;
+	border-radius: $br-sm;
+	bottom: 0;
+	box-shadow: 0 8px 25px 0 #00000040;
+	max-width: 70vw;
 	position: fixed;
-	right: 24px;
+	right: 0;
 	z-index: 99999;
 
-	@media (max-width: $bp-xsmallOnly) {
-		bottom: 0;
-		right: 0;
+	@media (min-width: $bp-tablet) {
+		bottom: 36px;
+		max-width: 296px;
+		right: 36px;
 	}
 
-	@media (min-width: $bp-xlarge) {
-		bottom: 34px;
-		right: 34px;
+	.googlesitekit-overlay-notification__body {
+		padding: 25px;
+		padding-bottom: 0;
+
+		h3 {
+			color: $c-neutral-n-500;
+			margin: 0 0 5px;
+		}
+
+		p {
+			font-weight: $fw-medium;
+			letter-spacing: 0;
+			margin: 0 0 23px;
+		}
+	}
+
+	.googlesitekit-overlay-notification__actions {
+		align-items: center;
+		display: flex;
+		gap: 7px;
+		justify-content: flex-end;
+		padding: 25px;
+		padding-top: 0;
 	}
 }
