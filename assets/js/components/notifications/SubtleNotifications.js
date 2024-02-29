@@ -24,32 +24,12 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import useViewOnly from '../../hooks/useViewOnly';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import { useAnalyticsAdSenseIntegrationCheck } from '../../hooks/useAnalyticsAdSenseIntegrationCheck';
-import { useFeature } from '../../hooks/useFeature';
 
 export default function SubtleNotifications() {
-	const viewOnly = useViewOnly();
-
-	const isGA4AdSenseIntegrationEnabled = useFeature(
-		'ga4AdSenseIntegration'
-	);
-	const ga4AdSenseIntegration = useAnalyticsAdSenseIntegrationCheck();
-	const renderGA4AdSenseLinkedNotification =
-		ga4AdSenseIntegration.connected &&
-		ga4AdSenseIntegration.linked &&
-		isGA4AdSenseIntegrationEnabled;
-
-	if ( viewOnly ) {
-		return null;
-	}
-
 	return (
 		<Fragment>
-			{ renderGA4AdSenseLinkedNotification && (
-				<GA4AdSenseLinkedNotification />
-			) }
+			<GA4AdSenseLinkedNotification />
 		</Fragment>
 	);
 }
