@@ -36,10 +36,16 @@ import useViewOnly from '../../hooks/useViewOnly';
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import useDashboardType from '../../hooks/useDashboardType';
 
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 export default function GA4AdSenseLinkedNotification() {
+	const isGA4AdSenseIntegrationEnabled = useFeature(
+		'ga4AdSenseIntegration'
+	);
+
+	const dashboardType = useDashboardType();
 	const viewOnly = useViewOnly();
 
 	const isDismissed = useSelect( ( select ) =>
@@ -48,13 +54,10 @@ export default function GA4AdSenseLinkedNotification() {
 		)
 	);
 
-	const isGA4AdSenseIntegrationEnabled = useFeature(
-		'ga4AdSenseIntegration'
-	);
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
-	const AnalyticsModuleConnected = useSelect( ( select ) =>
+	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const isAdSenseLinked = useSelect( ( select ) =>
@@ -62,7 +65,7 @@ export default function GA4AdSenseLinkedNotification() {
 	);
 
 	const analyticsAndAdsenseConnectedAndLinked =
-		adSenseModuleConnected && AnalyticsModuleConnected && isAdSenseLinked;
+		adSenseModuleConnected && analyticsModuleConnected && isAdSenseLinked;
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
@@ -96,16 +99,18 @@ export default function GA4AdSenseLinkedNotification() {
 			! analyticsAndAdsenseConnectedAndLinked ||
 			! isGA4AdSenseIntegrationEnabled
 		) {
-			return undefined;
+			return null;
 		}
 
 		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
+
 	const hasFinishedResolution = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 			reportOptions,
 		] )
 	);
+
 	const dismissNotificationForUser = useCallback( () => {
 		dismissItem( GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY );
 	}, [ dismissItem ] );
@@ -118,12 +123,13 @@ export default function GA4AdSenseLinkedNotification() {
 	// showing it.
 	useEffect( () => {
 		if (
+			!! dashboardType &&
+			! viewOnly &&
+			! isDismissed &&
+			isGA4AdSenseIntegrationEnabled &&
 			hasFinishedResolution &&
 			! isZeroReport( report ) &&
-			! isDismissed &&
-			! viewOnly &&
-			analyticsAndAdsenseConnectedAndLinked &&
-			! isGA4AdSenseIntegrationEnabled
+			analyticsAndAdsenseConnectedAndLinked
 		) {
 			dismissNotificationForUser();
 		}
@@ -135,17 +141,23 @@ export default function GA4AdSenseLinkedNotification() {
 		analyticsAndAdsenseConnectedAndLinked,
 		isGA4AdSenseIntegrationEnabled,
 		dismissNotificationForUser,
+		dashboardType,
 	] );
 
-	// Ensure resolution of the report has completed before showing this notification, since
-	// it should only appear when the user has no data in the report.
+	// Ensure resolution of the report has completed before showing this
+	// notification, since it should only appear when the user has no data in
+	// the report.
 	if (
+		// Only show this notification on the main/entity dashboard, not on the
+		// settings page, etc.
+		! dashboardType ||
+		// Don't show this notification on the view-only dashboard.
 		viewOnly ||
 		isDismissed ||
-		! isZeroReport( report ) ||
+		! isGA4AdSenseIntegrationEnabled ||
 		! hasFinishedResolution ||
-		! analyticsAndAdsenseConnectedAndLinked ||
-		! isGA4AdSenseIntegrationEnabled
+		! isZeroReport( report ) ||
+		! analyticsAndAdsenseConnectedAndLinked
 	) {
 		return null;
 	}

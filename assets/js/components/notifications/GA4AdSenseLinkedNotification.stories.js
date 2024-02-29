@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '../../components/Root/ViewContextContext';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
@@ -27,6 +28,7 @@ import {
 } from '../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { getDateString } from '../../util';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 // Generate referenced dates.
 const today = new Date();
@@ -51,8 +53,14 @@ const reportOptions = {
 	limit: 3,
 };
 
-function Template() {
-	return <GA4AdSenseLinkedNotification />;
+function Template( { viewContext } ) {
+	return (
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<GA4AdSenseLinkedNotification />
+		</ViewContextProvider>
+	);
 }
 
 export const Default = Template.bind( {} );

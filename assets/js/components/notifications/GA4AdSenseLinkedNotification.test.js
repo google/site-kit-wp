@@ -28,6 +28,7 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
 
 describe( 'GA4AdSenseLinkedNotification', () => {
 	let registry;
@@ -160,6 +161,44 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched(
+			'/google-site-kit/v1/modules/analytics-4/data'
+		);
+
+		expect( container.childElementCount ).toBe( 0 );
+	} );
+
+	it( 'does not render when not on dashboard', async () => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics-4',
+			},
+			{
+				active: true,
+				connected: true,
+				slug: 'adsense',
+			},
+		] );
+
+		fetchMock.getOnce( analyticsReport, {
+			body: {
+				rowCount: null,
+			},
+			status: 200,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<GA4AdSenseLinkedNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_SETTINGS,
 			}
 		);
 		await waitForRegistry();
