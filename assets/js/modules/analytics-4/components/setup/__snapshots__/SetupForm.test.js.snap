@@ -204,7 +204,7 @@ exports[`SetupForm renders the form correctly 1`] = `
         <span
           class="mdc-button__label"
         >
-          Configure Analytics
+          Complete setup
         </span>
       </button>
     </div>
