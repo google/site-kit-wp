@@ -21,7 +21,7 @@ use WP_REST_Server;
 /**
  * Class for handling dismissed prompts rest routes.
  *
- * @since n.e.x.t
+ * @since 1.121.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class REST_Prompts_Controller {
 	/**
 	 * Dismissed_Prompts instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 * @var Dismissed_Prompts
 	 */
 	protected $dismissed_prompts;
@@ -38,7 +38,7 @@ class REST_Prompts_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @param Dismissed_Prompts $dismissed_prompts Dismissed prompts instance.
 	 */
@@ -49,7 +49,7 @@ class REST_Prompts_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 */
 	public function register() {
 		add_filter(
@@ -75,7 +75,7 @@ class REST_Prompts_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

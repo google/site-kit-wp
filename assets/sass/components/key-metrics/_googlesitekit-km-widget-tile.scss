@@ -189,6 +189,8 @@
 
 	// Styles for KMW tile error state.
 	.googlesitekit-km-widget-tile--error {
+		height: 100%;
+
 		.googlesitekit-cta--error {
 			background: $c-white;
 			border: 2px solid $c-utility-on-error-container;
@@ -225,9 +227,9 @@
 			// Required for correct order of button and text elements.
 			.googlesitekit-report-error-actions {
 				align-items: flex-start;
+				display: flex;
 				flex-direction: row-reverse;
 				gap: 0;
-				overflow: hidden;
 
 				@media (min-width: $bp-nonMobile) {
 					flex-direction: column-reverse;
@@ -261,6 +263,119 @@
 					color: $c-teal-t-500;
 				}
 			}
+		}
+	}
+
+	// Align the title and body of the widgets using subgrid.
+	.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary .googlesitekit-widget-area-widgets {
+
+		.mdc-layout-grid__inner {
+
+			@media (min-width: $bp-tablet) {
+				grid-template-rows: auto 1fr auto auto 1fr auto;
+			}
+
+			@media (min-width: $bp-desktop) {
+				grid-template-rows: auto 1fr auto;
+			}
+		}
+
+		.mdc-layout-grid__cell {
+			@media (min-width: $bp-tablet) {
+				display: grid;
+				grid-row: span 3;
+				grid-template-columns: subgrid;
+				grid-template-rows: subgrid;
+			}
+
+			@media (min-width: $bp-desktop) {
+				grid-row: 1 / -1;
+			}
+		}
+
+		.googlesitekit-widget__body,
+		.googlesitekit-widget {
+			@media (min-width: $bp-tablet) {
+				display: grid;
+				grid-column: 1 / -1;
+				grid-row: 1 / -1;
+				grid-template-columns: subgrid;
+				grid-template-rows: subgrid;
+			}
+		}
+
+		.googlesitekit-cta--error,
+		.googlesitekit-km-widget-tile--error {
+			@media (min-width: $bp-tablet) {
+				display: grid;
+				grid-column: 1 / -1;
+				grid-row: 1 / -1;
+
+				grid-template-rows: subgrid;
+			}
+		}
+
+		.googlesitekit-km-widget-tile {
+			@media (min-width: $bp-tablet) {
+				display: grid;
+				gap: 0;
+				grid-column: 1 / -1;
+				grid-row: 1 / -1;
+				grid-template-columns: subgrid;
+				grid-template-rows: subgrid;
+			}
+		}
+
+		.googlesitekit-widget--connectModuleCTATile,
+		.googlesitekit-widget--addMetricCTATile .googlesitekit-km-add-metric-cta-tile {
+			@media (min-width: $bp-tablet) {
+				grid-column: 1 / -1;
+				grid-row: 1 / -1;
+			}
+		}
+
+		.googlesitekit-km-widget-tile > div {
+			@media (min-width: $bp-tablet) {
+				grid-column: 1 / -1;
+			}
+		}
+
+		.googlesitekit-cta--error > div,
+		.googlesitekit-cta--error > h3 {
+			@media (min-width: $bp-tablet) {
+				grid-column: 1 / -1;
+			}
+		}
+
+		.googlesitekit-widget--keyMetricsConnectGA4All,
+		.googlesitekit-widget--keyMetricsSetupCTA {
+			grid-template-columns: auto;
+			grid-template-rows: auto;
+
+			.mdc-layout-grid__inner {
+
+				@media (min-width: $bp-tablet) {
+					grid-template-rows: auto;
+				}
+			}
+
+			.mdc-layout-grid__cell {
+				@media (min-width: $bp-tablet) {
+					grid-template-columns: auto;
+					grid-template-rows: auto;
+				}
+			}
+
+			.googlesitekit-widget__body {
+				@media (min-width: $bp-tablet) {
+					display: block;
+				}
+			}
+		}
+
+		// Reduce the size of the module disconnected Maybe Later CTA.
+		.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
+			display: inline-block;
 		}
 	}
 }

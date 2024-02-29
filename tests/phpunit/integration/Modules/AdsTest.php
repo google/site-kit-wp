@@ -26,4 +26,27 @@ class AdsTest extends TestCase {
 		$this->assertEquals( 'Ads', $ads->name );
 		$this->assertEquals( 'https://google.com/ads', $ads->homepage );
 	}
+
+	public function test_is_connected_when_ads_conversion_id_is_set() {
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertFalse( $ads->is_connected() );
+
+		$ads->get_settings()->set( array( 'adsConversionID' => 'AW-123456789' ) );
+
+		$this->assertTrue( $ads->is_connected() );
+	}
+
+	public function test_settings_reset_on_deactivation() {
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$ads->get_settings()->set( array( 'adsConversionID' => 'AW-123456789' ) );
+
+		$ads->on_deactivation();
+
+		$ads_settings = $ads->get_settings()->get();
+
+		$this->assertFalse( $ads_settings );
+	}
+
 }

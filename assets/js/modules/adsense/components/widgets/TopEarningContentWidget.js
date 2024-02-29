@@ -34,7 +34,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -59,10 +59,21 @@ function TopEarningContentWidget( { Widget } ) {
 		} )
 	);
 
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pagePath' ],
+		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
+		filter: {
+			fieldName: 'adSourceName',
+			stringFilter: {
+				matchType: 'EXACT',
+				value: `Google AdSense account (${ adSenseAccountID })`,
+			},
+		},
 		orderby: [
 			{
 				metric: { metricName: 'totalAdRevenue' },
