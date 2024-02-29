@@ -48,24 +48,47 @@ export default function GA4AdSenseLinkedNotification() {
 	const dashboardType = useDashboardType();
 	const viewOnly = useViewOnly();
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY
-		)
-	);
+	const adSenseModuleConnected = useSelect( ( select ) => {
+		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+			return null;
+		}
 
-	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
-	);
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-	const isAdSenseLinked = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdSenseLinked()
-	);
+		return select( CORE_MODULES ).isModuleConnected( 'adsense' );
+	} );
+
+	const analyticsModuleConnected = useSelect( ( select ) => {
+		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+			return null;
+		}
+
+		return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+	} );
+
+	const isAdSenseLinked = useSelect( ( select ) => {
+		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+	} );
 
 	const analyticsAndAdsenseConnectedAndLinked =
 		adSenseModuleConnected && analyticsModuleConnected && isAdSenseLinked;
+
+	const isDismissed = useSelect( ( select ) => {
+		if (
+			! isGA4AdSenseIntegrationEnabled ||
+			! dashboardType ||
+			viewOnly ||
+			! analyticsAndAdsenseConnectedAndLinked
+		) {
+			return null;
+		}
+
+		return select( CORE_USER ).isItemDismissed(
+			GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY
+		);
+	} );
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
@@ -105,11 +128,12 @@ export default function GA4AdSenseLinkedNotification() {
 		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
 
-	const hasFinishedResolution = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-			reportOptions,
-		] )
-	);
+	const hasFinishedResolution = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getReport',
+			[ reportOptions ]
+		);
+	} );
 
 	const dismissNotificationForUser = useCallback( () => {
 		dismissItem( GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY );
@@ -125,7 +149,7 @@ export default function GA4AdSenseLinkedNotification() {
 		if (
 			!! dashboardType &&
 			! viewOnly &&
-			! isDismissed &&
+			isDismissed === false &&
 			isGA4AdSenseIntegrationEnabled &&
 			hasFinishedResolution &&
 			! isZeroReport( report ) &&
@@ -153,6 +177,9 @@ export default function GA4AdSenseLinkedNotification() {
 		! dashboardType ||
 		// Don't show this notification on the view-only dashboard.
 		viewOnly ||
+		// Don't show this notification if `isDismissed` call is still loading.
+		isDismissed === undefined ||
+		// Don't show this notification if the user has dismissed it.
 		isDismissed ||
 		! isGA4AdSenseIntegrationEnabled ||
 		! hasFinishedResolution ||
