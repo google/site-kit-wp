@@ -124,7 +124,7 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		);
 	}
 
-	public function fake_analytics_4_property_response( $property_id ) {
+	public function fake_adsense_linked_response( $property_id ) {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics_4->get_client(),
 			function ( Request $request ) use ( $property_id ) {
@@ -175,7 +175,7 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 	public function test_schedule_synchronize_adsense_linked__cron_callback() {
 		$property_id = '987654321';
 
-		$this->fake_analytics_4_property_response( $property_id );
+		$this->fake_adsense_linked_response( $property_id );
 
 		// Confirm that module is connected, as it will be needed in the cron callback.
 		$this->assertTrue( $this->analytics_4->is_connected() );
