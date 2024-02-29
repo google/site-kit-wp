@@ -80,7 +80,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'internalContainerID'    => '',
 			'internalAMPContainerID' => '',
 			'useSnippet'             => true,
-			'gaPropertyID'           => '',
 		);
 	}
 
