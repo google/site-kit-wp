@@ -107,51 +107,64 @@ class Consent_Mode {
 window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
 gtag('consent', 'default', <?php echo wp_json_encode( $consent_defaults ); ?>);
 window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
-document.addEventListener( 'wp_listen_for_consent_change', function ( event ) {
-	if ( event.detail ) {
+( function () {
+	document.addEventListener(
+		'wp_listen_for_consent_change',
+		function ( event ) {
+			if ( event.detail ) {
+				var consentParameters = {};
+				var hasConsentParameters = false;
+				for ( var category in event.detail ) {
+					if ( window._googlesitekitConsentCategoryMap[ category ] ) {
+						var status = event.detail[ category ];
+						var mappedStatus =
+							status === 'allow' ? 'granted' : 'denied';
+						var parameters =
+							window._googlesitekitConsentCategoryMap[ category ];
+						for ( var i = 0; i < parameters.length; i++ ) {
+							consentParameters[ parameters[ i ] ] = mappedStatus;
+						}
+						hasConsentParameters = !! parameters.length;
+					}
+				}
+				if ( hasConsentParameters ) {
+					gtag( 'consent', 'update', consentParameters );
+				}
+			}
+		}
+	);
+
+	function updateGrantedConsent() {
+		if ( ! ( window.wp_consent_type || window.wp_fallback_consent_type ) ) {
+			return;
+		}
 		var consentParameters = {};
 		var hasConsentParameters = false;
-		for ( var category in event.detail ) {
-			if ( window._googlesitekitConsentCategoryMap[ category ] ) {
-				var status = event.detail[ category ];
-				var mappedStatus = status === 'allow' ? 'granted' : 'denied';
+		for ( var category in window._googlesitekitConsentCategoryMap ) {
+			if ( window.wp_has_consent && window.wp_has_consent( category ) ) {
 				var parameters =
 					window._googlesitekitConsentCategoryMap[ category ];
 				for ( var i = 0; i < parameters.length; i++ ) {
-					consentParameters[ parameters[ i ] ] = mappedStatus;
+					consentParameters[ parameters[ i ] ] = 'granted';
 				}
-				hasConsentParameters = !! parameters.length;
+				hasConsentParameters =
+					hasConsentParameters || !! parameters.length;
 			}
 		}
 		if ( hasConsentParameters ) {
 			gtag( 'consent', 'update', consentParameters );
 		}
 	}
-} );
-
-document.addEventListener( 'DOMContentLoaded', function () {
-	if (
-		! ( window.wp_consent_type || window.wp_fallback_consent_type ) ||
-		window.waitfor_consent_hook
-	) {
-		return;
-	}
-	var consentParameters = {};
-	var hasConsentParameters = false;
-	for ( var category in window._googlesitekitConsentCategoryMap ) {
-		if ( window.wp_has_consent && window.wp_has_consent( category ) ) {
-			var parameters =
-				window._googlesitekitConsentCategoryMap[ category ];
-			for ( var i = 0; i < parameters.length; i++ ) {
-				consentParameters[ parameters[ i ] ] = 'granted';
-			}
-			hasConsentParameters = hasConsentParameters || !! parameters.length;
+	document.addEventListener(
+		'wp_consent_type_defined',
+		updateGrantedConsent
+	);
+	document.addEventListener( 'DOMContentLoaded', function () {
+		if ( ! window.waitfor_consent_hook ) {
+			updateGrantedConsent();
 		}
-	}
-	if ( hasConsentParameters ) {
-		gtag( 'consent', 'update', consentParameters );
-	}
-} );
+	} );
+} )();
 </script>
 <!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php
