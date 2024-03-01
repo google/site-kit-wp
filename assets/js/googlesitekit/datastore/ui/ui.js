@@ -74,6 +74,83 @@ export const actions = {
 	},
 
 	/**
+	 * Sets `isShowingOverlayNotification` state.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} overlayNotification Overlay notification component name.
+	 * @return {Object} Redux-style action.
+	 */
+	*setOverlayNotificationToShow( overlayNotification ) {
+		invariant( overlayNotification, 'overlayNotification is required.' );
+
+		const registry = yield Data.commonActions.getRegistry();
+
+		const dismissedOverlayNotifications = registry
+			.select( CORE_UI )
+			.getValue( 'dismissedOverlayNotifications' );
+
+		const isShowingOverlayNotification = registry
+			.select( CORE_UI )
+			.getValue( 'isShowingOverlayNotification' );
+
+		// If `isShowingOverlayNotification` already has a value, do not override it,
+		// or if overlay notification has been dismissed/in process of being dismissed,
+		// do no not re-surface it.
+		if (
+			isShowingOverlayNotification ||
+			dismissedOverlayNotifications?.includes( overlayNotification )
+		) {
+			return;
+		}
+
+		return yield actions.setValue(
+			'isShowingOverlayNotification',
+			overlayNotification
+		);
+	},
+
+	/**
+	 * Resets the `isShowingOverlayNotification` state.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} overlayNotification Overlay notification component name.
+	 * @return {Object} Redux-style action.
+	 */
+	*dismissOverlayNotification( overlayNotification ) {
+		invariant( overlayNotification, 'overlayNotification is required.' );
+
+		const registry = yield Data.commonActions.getRegistry();
+
+		const isShowingOverlayNotification = registry
+			.select( CORE_UI )
+			.getValue( 'isShowingOverlayNotification' );
+
+		const dismissedOverlayNotifications = registry
+			.select( CORE_UI )
+			.getValue( 'dismissedOverlayNotifications' );
+
+		if (
+			isShowingOverlayNotification &&
+			overlayNotification === isShowingOverlayNotification
+		) {
+			return yield actions.setValues( {
+				isShowingOverlayNotification: undefined,
+				dismissedOverlayNotifications:
+					dismissedOverlayNotifications?.length
+						? [
+								...dismissedOverlayNotifications,
+								overlayNotification,
+						  ]
+						: [ overlayNotification ],
+			} );
+		}
+	},
+
+	/**
 	 * Stores site ui information.
 	 *
 	 * @since 1.27.0
@@ -180,6 +257,25 @@ export const selectors = {
 	 */
 	getIsOnline( state ) {
 		return state.isOnline;
+	},
+
+	/**
+	 * Checks if current overlay notification, or any
+	 * overlay notification in general, is showing.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state               Data store's state.
+	 * @param {string} overlayNotification Overlay notification component name.
+	 * @return {string|boolean} `isShowingOverlayNotification` value, or boolean if ovelray notification component name is passed.
+	 */
+	isShowingOverlayNotification( state, overlayNotification ) {
+		if ( overlayNotification ) {
+			return overlayNotification === state.isShowingOverlayNotification;
+		}
+
+		return state.isShowingOverlayNotification;
 	},
 };
 
