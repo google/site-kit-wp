@@ -1,5 +1,5 @@
 /**
- * Ads module initialization.
+ * `modules/ads` base data store.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,20 +19,17 @@
 /**
  * Internal dependencies
  */
-import AdsIcon from '../../../svg/graphics/ads.svg';
-import { isFeatureEnabled } from '../../features';
-import { SettingsEdit, SettingsView } from './components/settings';
-import { MODULES_ADS } from './datastore/constants';
+import Modules from 'googlesitekit-modules';
+import { MODULES_ADS } from './constants';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
-export { registerStore } from './datastore';
+const baseModuleStore = Modules.createModuleStore( 'ads', {
+	ownedSettingsSlugs: [ 'adsConversionID' ],
+	storeName: MODULES_ADS,
+	settingSlugs: [ 'adsConversionID' ],
+	requiresSetup: false,
+	submitChanges,
+	validateCanSubmitChanges,
+} );
 
-export const registerModule = ( modules ) => {
-	if ( isFeatureEnabled( 'adsModule' ) ) {
-		modules.registerModule( 'ads', {
-			storeName: MODULES_ADS,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			Icon: AdsIcon,
-		} );
-	}
-};
+export default baseModuleStore;
