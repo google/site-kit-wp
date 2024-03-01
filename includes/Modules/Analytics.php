@@ -132,7 +132,7 @@ final class Analytics extends Module
 	/**
 	 * Gets Module public name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return string Formatted module name.
 	 */

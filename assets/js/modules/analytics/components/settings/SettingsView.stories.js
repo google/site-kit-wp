@@ -145,7 +145,6 @@ export default {
 					} );
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					useSnippet: true,
-					canUseSnippet: true,
 				} );
 				registry
 					.dispatch( MODULES_ANALYTICS )

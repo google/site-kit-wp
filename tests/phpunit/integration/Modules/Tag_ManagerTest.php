@@ -45,7 +45,6 @@ class Tag_ManagerTest extends TestCase {
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
 
 		$tagmanager->register();
 
@@ -53,38 +52,6 @@ class Tag_ManagerTest extends TestCase {
 			$tagmanager->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
-		$this->assertTrue( has_filter( 'googlesitekit_analytics_can_use_snippet' ) );
-	}
-
-	public function test_analytics_can_use_snippet() {
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
-		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options            = new Options( $context );
-		$analytics_settings = new AnalyticsSettings( $options );
-		$analytics_settings->delete();
-		$tagmanager = new Tag_Manager( $context );
-		$settings   = $tagmanager->get_settings();
-
-		// The value should be `true` by default.
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Delayed to differentiate between initial value and post-registration value.
-		$tagmanager->register();
-		$analytics_settings->register();
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Should be `true` if there is a `gaPropertyID` set and is not the same as analytics property ID.
-		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
-		$analytics_settings->merge( array( 'propertyID' => 'UA-9999999-1' ) );
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Should be `false` if there is a `gaPropertyID` set and is the same as analytics property ID.
-		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
-		$analytics_settings->merge( array( 'propertyID' => 'UA-S1T3K1T-1' ) );
-		$this->assertFalse( $analytics_settings->get()['canUseSnippet'] );
-		// Should be `true` even with a `gaPropertyID` if GTM's snippet is disabled.
-		$settings->merge( array( 'useSnippet' => false ) );
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Still `true` if no `gaPropertyID` and no GTM snippet.
-		$settings->merge( array( 'gaPropertyID' => '' ) );
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
 	}
 
 	public function test_register_template_redirect_amp() {

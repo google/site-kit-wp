@@ -42,12 +42,22 @@ export default function SettingsAdmin() {
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
-	const showKeyMetricsSettings = useSelect(
-		( select ) =>
-			isAnalyticsConnected &&
-			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
-			select( MODULES_ANALYTICS_4 ).isGatheringData() === false
+	const isSearchConsoleGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
+	const isAnalyticsGatheringData = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).isGatheringData();
+	} );
+
+	const showKeyMetricsSettings =
+		isAnalyticsConnected &&
+		isSearchConsoleGatheringData === false &&
+		isAnalyticsGatheringData === false;
+
 	const showKeyMetricsSettingsLoading = useSelect( ( select ) => {
 		if (
 			! select( CORE_MODULES ).hasFinishedResolution(

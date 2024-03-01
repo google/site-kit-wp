@@ -23,7 +23,7 @@ final class AMP_Config_Injector {
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
 	 * @since 1.18.0.
-	 * @since n.e.x.t Migrated from the Analytics (UA) namespace.
+	 * @since 1.121.0 Migrated from the Analytics (UA) namespace.
 	 *
 	 * @param array $gtag_amp_opt gtag config options for AMP.
 	 * @param array $events       The map of Event objects, keyed by their unique ID.

@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
  * Class for registering third party event lists.
  *
  * @since 1.18.0.
- * @since n.e.x.t Migrated from the Analytics (UA) namespace.
+ * @since 1.121.0 Migrated from the Analytics (UA) namespace.
  * @access private
  * @ignore
  */

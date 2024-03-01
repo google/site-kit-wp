@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
@@ -336,7 +337,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Checks whether the AdSense module is connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.121.0
 	 *
 	 * @return bool True if AdSense is connected, false otherwise.
 	 */
@@ -596,7 +597,7 @@ final class Analytics_4 extends Module
 	 * E.g. via Tag Manager, etc.
 	 *
 	 * @since 1.5.0
-	 * @since n.e.x.t Migrated from the Analytics (UA) class and adapted to only work for GA4 properties.
+	 * @since 1.121.0 Migrated from the Analytics (UA) class and adapted to only work for GA4 properties.
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
@@ -631,21 +632,21 @@ final class Analytics_4 extends Module
 	 * Checks whether or not tracking snippet should be contextually disabled for this request.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Migrated here from the Analytics (UA) class.
+	 * @since 1.121.0 Migrated here from the Analytics (UA) class.
 	 *
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		$settings = $this->get_settings()->get();
+		// @TODO Revert this when we use the new GA4 SettingsEdit form once #7932 is merged and we save all settings to the Analytics-4 module.
+		$settings = ( new Analytics( $this->context ) )->get_settings()->get();
+
 		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
 		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
 			return false;
 		}
 
-		$option = $this->get_settings()->get();
-
-		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
-		$disable_content_creators = in_array( 'contentCreators', $option['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
+		$disable_logged_in_users  = in_array( 'loggedinUsers', $settings['trackingDisabled'], true ) && is_user_logged_in();
+		$disable_content_creators = in_array( 'contentCreators', $settings['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
 
 		$disabled = $disable_logged_in_users || $disable_content_creators;
 
@@ -664,7 +665,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.9.0
 	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
-	 * @since n.e.x.t Migrated method from original Analytics class to Analytics_4 class.
+	 * @since 1.121.0 Migrated method from original Analytics class to Analytics_4 class.
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -1694,6 +1695,11 @@ final class Analytics_4 extends Module
 		$tag->set_ads_conversion_id(
 			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
 		);
+
+		if ( ! $this->context->is_amp() ) {
+			$consent_mode_settings = new Consent_Mode_Settings( $this->options );
+			$tag->set_consent_mode_enabled( $consent_mode_settings->get()['enabled'] );
+		}
 
 		$tag->register();
 	}

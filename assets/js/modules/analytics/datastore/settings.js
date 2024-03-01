@@ -24,7 +24,6 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -53,11 +52,7 @@ import {
 	FORM_SETUP,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import ga4ReportingTour from '../../../feature-tours/ga4-reporting';
-
-const { createRegistrySelector } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -240,42 +235,3 @@ export function validateCanSubmitChanges( select ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }
-
-/**
- * Gets the value of canUseSnippet based on the gaPropertyID of tagmanager module and propertyID.
- *
- * @since 1.75.0
- *
- * @return {boolean|undefined} Computed value of canUseSnippet. `undefined` if not loaded.
- */
-export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
-	const analyticsSettings = select( MODULES_ANALYTICS ).getSettings();
-
-	if ( ! analyticsSettings ) {
-		return undefined;
-	}
-
-	const isTagManagerAvailable =
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' );
-	const isTagManagerConnected =
-		isTagManagerAvailable &&
-		select( CORE_MODULES ).isModuleConnected( 'tagmanager' );
-
-	if ( ! isTagManagerConnected || ! select( MODULES_TAGMANAGER ) ) {
-		return analyticsSettings.canUseSnippet;
-	}
-
-	const tagManagerUseSnippet = select( MODULES_TAGMANAGER ).getUseSnippet();
-
-	if ( ! tagManagerUseSnippet ) {
-		return analyticsSettings.canUseSnippet;
-	}
-
-	const gtmGAPropertyID = select( MODULES_TAGMANAGER ).getGAPropertyID();
-
-	if ( isValidPropertyID( gtmGAPropertyID ) ) {
-		return gtmGAPropertyID !== analyticsSettings.propertyID;
-	}
-
-	return analyticsSettings.canUseSnippet;
-} );

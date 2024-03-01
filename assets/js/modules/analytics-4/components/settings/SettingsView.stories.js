@@ -76,7 +76,6 @@ export default {
 					webDataStreamID,
 					measurementID,
 					useSnippet: true,
-					canUseSnippet: true,
 					...googleTagSettings,
 				} );
 

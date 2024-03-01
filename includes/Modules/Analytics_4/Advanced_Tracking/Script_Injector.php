@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Util\BC_Functions;
  * Class for injecting JavaScript based on the registered event configurations.
  *
  * @since 1.18.0.
- * @since n.e.x.t Migrated from the Analytics (UA) namespace.
+ * @since 1.121.0 Migrated from the Analytics (UA) namespace.
  * @access private
  * @ignore
  */

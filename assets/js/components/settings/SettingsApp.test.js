@@ -31,10 +31,12 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/tracking'
@@ -91,22 +93,32 @@ describe( 'SettingsApp', () => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
-	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', () => {
+	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
 		fetchMock.getOnce(
 			coreUserTrackingSettingsEndpointRegExp,
 			coreUserTrackingResponse
 		);
 
+		muteFetch(
+			new RegExp( '^/google-site-kit/v1/modules/search-console/data' )
+		);
+		muteFetch(
+			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
+		);
+
 		history.push( '/admin-settings' );
 
-		const { getAllByRole } = render( <SettingsApp />, {
+		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
 			history,
 			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
+		await waitForRegistry();
 
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'connected-services' ) ]
 		);
+
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
@@ -114,6 +126,7 @@ describe( 'SettingsApp', () => {
 		const { getAllByRole } = render( <SettingsApp />, {
 			history,
 			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		fireEvent.click(
@@ -132,11 +145,19 @@ describe( 'SettingsApp', () => {
 			coreUserTrackingResponse
 		);
 
+		muteFetch(
+			new RegExp( '^/google-site-kit/v1/modules/search-console/data' )
+		);
+		muteFetch(
+			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
+		);
+
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
 		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
 			history,
 			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		await waitForRegistry();
