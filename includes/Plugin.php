@@ -106,8 +106,12 @@ final class Plugin {
 					return;
 				}
 
-				$google_proxy         = new Google_Proxy( $this->context );
-				$remote_features_sync = new Remote_Features_Sync( $remote_features, $credentials, $google_proxy );
+				$google_proxy   = new Google_Proxy( $this->context );
+				$fetch_features = static function () use ( $google_proxy, $credentials ) {
+					return $google_proxy->get_features( $credentials );
+				};
+
+				$remote_features_sync = new Remote_Features_Sync( $remote_features, $fetch_features );
 
 				$remote_features_sync->register();
 				$remote_features_sync->maybe_schedule_cron();
