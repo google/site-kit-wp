@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { Grid, Cell, Row } from '../../material-components';
 import Badge from '../../components/Badge';
 import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
@@ -36,7 +37,10 @@ import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 const { useSelect } = Data;
 
 export default function SettingsCardConsentMode() {
-	const isAdsConnected = true;
+	const isAdsConnected = useSelect( ( select ) =>
+		// TODO: Replace this with the `analytics-4` or `ads` version of the `getAdsConversionID()` selector once it's migrated.
+		select( MODULES_ANALYTICS ).getAdsConversionID()
+	);
 
 	const consentAPIInfo = useSelect( ( select ) =>
 		select( CORE_SITE ).getConsentAPIInfo()
@@ -61,7 +65,7 @@ export default function SettingsCardConsentMode() {
 							<ConsentModeSwitch />
 						</Cell>
 					</Row>
-					{ isAdsConnected && (
+					{ consentAPIInfo?.hasConsentAPI && isAdsConnected && (
 						<Row>
 							<Cell size={ 12 }>
 								<SettingsNotice

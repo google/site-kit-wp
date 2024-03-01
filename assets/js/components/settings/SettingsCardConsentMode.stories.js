@@ -25,6 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
 
@@ -52,6 +53,10 @@ WithAdsConnected.args = {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetSettings( { adsConversionID: 'AW-123456789' } );
 	},
 };
 WithAdsConnected.scenario = {
