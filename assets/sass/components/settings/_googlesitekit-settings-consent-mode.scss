@@ -56,24 +56,24 @@
 				line-height: $lh-body-sm;
 			}
 		}
-	}
 
-	.googlesitekit-settings-notice {
-		border-radius: $br-xs;
-		display: flex;
-		flex-direction: column;
-
-		@media (min-width: $bp-nonMobile) {
-			flex-direction: row;
-		}
-
-		.googlesitekit-settings-notice__icon {
-			align-self: start;
-			margin-bottom: 6px;
+		.googlesitekit-settings-notice {
+			border-radius: $br-xs;
+			display: flex;
+			flex-direction: column;
 
 			@media (min-width: $bp-nonMobile) {
-				align-self: center;
-				margin-bottom: 0;
+				flex-direction: row;
+			}
+
+			.googlesitekit-settings-notice__icon {
+				align-self: start;
+				margin-bottom: 6px;
+
+				@media (min-width: $bp-nonMobile) {
+					align-self: center;
+					margin-bottom: 0;
+				}
 			}
 		}
 	}
