@@ -27,20 +27,12 @@ import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import InfoCircle from '../../../../assets/svg/icons/info-circle.svg';
 import Link from '../Link';
-import SettingsNotice, { TYPE_SUGGESTION } from '../SettingsNotice';
+import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
+import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 
 const { useSelect } = Data;
-
-// TODO: Extract this to a separate file.
-function WPConsentAPIRequirement( { title, children } ) {
-	return (
-		<div className="googlesitekit-settings-consent-mode-requirement">
-			<h4>{ title }</h4>
-			{ children }
-		</div>
-	);
-}
 
 export default function WPConsentAPIRequirements() {
 	const wpConsentAPIDocumentationURL = useSelect( ( select ) =>
@@ -54,6 +46,12 @@ export default function WPConsentAPIRequirements() {
 
 	const installURL = 'http://#';
 
+	const cellProps = {
+		smSize: 4,
+		mdSize: 4,
+		lgSize: 6,
+	};
+
 	return (
 		<Fragment>
 			<p className="googlesitekit-settings-consent-mode-requirements__description">
@@ -64,77 +62,80 @@ export default function WPConsentAPIRequirements() {
 			</p>
 			<Grid className="googlesitekit-settings-consent-mode-requirements__grid">
 				<Row>
-					<Cell size={ 6 }>
+					<Cell { ...cellProps }>
 						<WPConsentAPIRequirement
 							title={ __(
 								'Install WP Consent API',
 								'google-site-kit'
 							) }
-						>
-							<p>
-								{ createInterpolateElement(
-									__(
-										'WP Consent API is a plugin that standardizes the communication of accepted consent categories between plugins. <a>Learn more</a>',
-										'google-site-kit'
+							description={ createInterpolateElement(
+								__(
+									'WP Consent API is a plugin that standardizes the communication of accepted consent categories between plugins. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										<Link
+											href={
+												wpConsentAPIDocumentationURL
+											}
+											external
+											aria-label={ __(
+												'Learn more about consent mode',
+												'google-site-kit'
+											) }
+										/>
 									),
-									{
-										a: (
-											<Link
-												href={
-													wpConsentAPIDocumentationURL
-												}
-												external
-												aria-label={ __(
-													'Learn more about consent mode',
-													'google-site-kit'
-												) }
-											/>
-										),
-									}
-								) }
-							</p>
-							<Button href={ installURL }>
-								{ __( 'Install', 'google-site-kit' ) }
-							</Button>
-						</WPConsentAPIRequirement>
+								}
+							) }
+							footer={
+								<Button
+									className="googlesitekit-settings-consent-mode-requirement__install-button"
+									href={ installURL }
+								>
+									{ __( 'Install', 'google-site-kit' ) }
+								</Button>
+							}
+						/>
 					</Cell>
-					<Cell size={ 6 }>
+					<Cell { ...cellProps }>
 						<WPConsentAPIRequirement
 							title={ __(
 								'Install consent management plugin',
 								'google-site-kit'
 							) }
-						>
-							<p>
-								{ createInterpolateElement(
-									__(
-										'You’ll need a plugin compatible with the WP Consent API to display a notice to site visitors and get their consent for tracking. WordPress offers a variety of consent plugins you can choose from. <a>See suggested plugins</a>',
-										'google-site-kit'
-									),
-									{
-										a: (
-											<Link
-												href={
-													consentManagementPlatformDocumentationURL
-												}
-												external
-												aria-label={ __(
-													'Suggested consent management plugins',
-													'google-site-kit'
-												) }
-											/>
-										),
-									}
-								) }
-							</p>
-							<SettingsNotice
-								type={ TYPE_SUGGESTION }
-								notice={ __(
-									"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",
+							description={ createInterpolateElement(
+								__(
+									'You’ll need a plugin compatible with the WP Consent API to display a notice to site visitors and get their consent for tracking. WordPress offers a variety of consent plugins you can choose from. <a>See suggested plugins</a>',
 									'google-site-kit'
-								) }
-							/>
-						</WPConsentAPIRequirement>
+								),
+								{
+									a: (
+										<Link
+											href={
+												consentManagementPlatformDocumentationURL
+											}
+											external
+											aria-label={ __(
+												'Suggested consent management plugins',
+												'google-site-kit'
+											) }
+										/>
+									),
+								}
+							) }
+							footer={
+								<SettingsNotice
+									className="googlesitekit-settings-consent-mode-requirement__consent-management-plugin-notice"
+									type={ TYPE_INFO }
+									Icon={ InfoCircle }
+									notice={ __(
+										"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",
+										'google-site-kit'
+									) }
+								/>
+							}
+						/>
 					</Cell>
 				</Row>
 			</Grid>
