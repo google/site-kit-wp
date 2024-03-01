@@ -19,7 +19,7 @@
 .googlesitekit-plugin {
 	.googlesitekit-audience-segmentation-setup-cta-widget {
 		.googlesitekit-widget-audience-segmentation-primary-cell {
-			padding: 25px;
+			padding: 0 24px 24px;
 
 			@media (max-width: $bp-mobileOnly) {
 				padding-bottom: 0;
