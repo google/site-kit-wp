@@ -35,8 +35,7 @@ export default function ConsentModeSwitch() {
 		select( CORE_SITE ).isConsentModeEnabled()
 	);
 
-	// TODO: Ensure this is the correct documentation link.
-	const documentationURL = useSelect( ( select ) =>
+	const consentModeDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'consent-mode' )
 	);
 
@@ -87,7 +86,7 @@ export default function ConsentModeSwitch() {
 						br: <br />,
 						a: (
 							<Link
-								href={ documentationURL }
+								href={ consentModeDocumentationURL }
 								external
 								aria-label={ __(
 									'Learn more about consent mode',

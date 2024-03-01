@@ -43,13 +43,12 @@ function WPConsentAPIRequirement( { title, children } ) {
 }
 
 export default function WPConsentAPIRequirements() {
-	// TODO: Ensure these are the correct documentation links.
-	const learnMoreURL = useSelect( ( select ) =>
+	const wpConsentAPIDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'wp-consent-api' )
 	);
-	const suggestedPluginsURL = useSelect( ( select ) =>
+	const consentManagementPlatformDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
-			'consent-mode-suggested-plugins'
+			'consent-management-platform'
 		)
 	);
 
@@ -81,7 +80,9 @@ export default function WPConsentAPIRequirements() {
 									{
 										a: (
 											<Link
-												href={ learnMoreURL }
+												href={
+													wpConsentAPIDocumentationURL
+												}
 												external
 												aria-label={ __(
 													'Learn more about consent mode',
@@ -113,7 +114,9 @@ export default function WPConsentAPIRequirements() {
 									{
 										a: (
 											<Link
-												href={ suggestedPluginsURL }
+												href={
+													consentManagementPlatformDocumentationURL
+												}
 												external
 												aria-label={ __(
 													'Suggested consent management plugins',
