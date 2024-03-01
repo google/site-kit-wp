@@ -24,6 +24,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
@@ -58,6 +59,10 @@ export default {
 						connected: true,
 					},
 				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					adSenseLinked: false,
+				} );
 			};
 
 			return (
