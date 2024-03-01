@@ -28,19 +28,19 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED,
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from './constants';
-import OverlayNotificationBase from './OverlayNotificationBase';
 import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adsense-connect.svg';
+import OverlayNotificationBase from './OverlayNotificationBase';
 import OverlayNotificationActions from './OverlayNotificationActions';
 import OverlayNotificationContent from './OverlayNotificationContent';
 import useViewOnly from '../../hooks/useViewOnly';
 import { isFeatureEnabled } from '../../features';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
