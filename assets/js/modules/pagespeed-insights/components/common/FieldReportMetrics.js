@@ -66,7 +66,6 @@ export default function FieldReportMetrics( { data, error } ) {
 	if (
 		! largestContentfulPaint &&
 		! cumulativeLayoutShift &&
-		// ! firstInputDelay &&
 		! interactionToNextPaint
 	) {
 		return (
