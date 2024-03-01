@@ -45,13 +45,13 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 const { useSelect, useDispatch } = Data;
 
 export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
+	const isViewOnly = useViewOnly();
+
 	const isShowingOverlayNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		)
 	);
-
-	const isViewOnly = useViewOnly();
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setOverlayNotificationToShow, dismissOverlayNotification } =
@@ -69,23 +69,37 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		)
 	);
 	const ga4AdSenseIntegration = isFeatureEnabled( 'ga4AdSenseIntegration' );
-	// @TODO replace with `useAnalyticsAdSenseIntegrationCheck` when #8238 is merged.
-	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
-	);
-	const AnalyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-	const isAdSenseLinked = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdSenseLinked()
-	);
+
+	const AnalyticsModuleConnected = useSelect( ( select ) => {
+		if ( isViewOnly ) {
+			return null;
+		}
+
+		return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+	} );
+	const adSenseModuleConnected = useSelect( ( select ) => {
+		if ( isViewOnly ) {
+			return null;
+		}
+
+		return select( CORE_MODULES ).isModuleConnected( 'adsense' );
+	} );
+	const isAdSenseLinked = useSelect( ( select ) => {
+		if ( isViewOnly ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+	} );
+
+	const analyticsAndAdSenseAreConnected =
+		AnalyticsModuleConnected && adSenseModuleConnected;
 
 	const shouldShowNotification =
 		! isViewOnly &&
-		! isDismissed &&
-		adSenseModuleConnected &&
-		AnalyticsModuleConnected &&
-		! isAdSenseLinked &&
+		false === isDismissed &&
+		analyticsAndAdSenseAreConnected &&
+		false === isAdSenseLinked &&
 		ga4AdSenseIntegration;
 
 	const dismissCallback = useCallback( () => {
@@ -96,7 +110,11 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	}, [ dismissItem, dismissOverlayNotification ] );
 
 	useEffect( () => {
-		if ( shouldShowNotification && ! isShowingOverlayNotification ) {
+		if (
+			shouldShowNotification &&
+			! isShowingOverlayNotification &&
+			! isViewOnly
+		) {
 			setOverlayNotificationToShow(
 				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 			);
@@ -104,10 +122,15 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	}, [
 		shouldShowNotification,
 		isShowingOverlayNotification,
+		isViewOnly,
 		setOverlayNotificationToShow,
 	] );
 
-	if ( ! shouldShowNotification || ! isShowingOverlayNotification ) {
+	if (
+		! shouldShowNotification ||
+		! isShowingOverlayNotification ||
+		isViewOnly
+	) {
 		return null;
 	}
 
