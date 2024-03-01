@@ -43,7 +43,6 @@ export default function FieldReportMetrics( { data, error } ) {
 	const {
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
 		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
-		FIRST_INPUT_DELAY_MS: firstInputDelay,
 		INTERACTION_TO_NEXT_PAINT: interactionToNextPaint,
 	} = data?.loadingExperience?.metrics || {};
 
@@ -67,7 +66,7 @@ export default function FieldReportMetrics( { data, error } ) {
 	if (
 		! largestContentfulPaint &&
 		! cumulativeLayoutShift &&
-		! firstInputDelay &&
+		// ! firstInputDelay &&
 		! interactionToNextPaint
 	) {
 		return (
@@ -154,7 +153,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						category={ cumulativeLayoutShift?.category }
 						isUnavailable={ ! cumulativeLayoutShift }
 					/>
-					<ReportMetric
+					{ /*<ReportMetric
 						title={ _x(
 							'First Input Delay',
 							'core web vitals name',
@@ -165,13 +164,12 @@ export default function FieldReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={ sprintf(
-							/* translators: %s: number of milliseconds */
 							_x( '%s ms', 'duration', 'google-site-kit' ),
 							firstInputDelay?.percentile
 						) }
 						category={ firstInputDelay?.category }
 						isUnavailable={ ! firstInputDelay }
-					/>
+					/>*/ }
 					<ReportMetric
 						title={ _x(
 							'Interaction to Next Paint',
@@ -194,7 +192,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						isUnavailable={ ! interactionToNextPaint }
 						hintText={ createInterpolateElement(
 							__(
-								'INP will replace FID in March 2024. <LearnMoreLink />',
+								'INP is a new Core Web Vital that replaced FID in March 2024. <LearnMoreLink />',
 								'google-site-kit'
 							),
 							{
