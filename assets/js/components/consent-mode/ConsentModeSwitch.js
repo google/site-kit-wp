@@ -30,12 +30,14 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import ErrorText from '../../components/ErrorText';
 import Link from '../Link';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 
 const { useDispatch, useSelect } = Data;
 
 export default function ConsentModeSwitch() {
+	const [ saveError, setSaveError ] = useState( null );
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
@@ -63,6 +65,16 @@ export default function ConsentModeSwitch() {
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
 
+	async function saveSettings() {
+		setSaveError( null );
+
+		const { error } = await saveConsentModeSettings();
+
+		if ( error ) {
+			setSaveError( error );
+		}
+	}
+
 	return (
 		<Fragment>
 			<div>
@@ -75,11 +87,12 @@ export default function ConsentModeSwitch() {
 							setShowConfirmDialog( true );
 						} else {
 							setConsentModeEnabled( true );
-							saveConsentModeSettings();
+							saveSettings();
 						}
 					} }
 					hideLabel={ false }
 				/>
+				{ saveError && <ErrorText message={ saveError.message } /> }
 				{ isConsentModeEnabled && (
 					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
 						{ __(
@@ -113,9 +126,9 @@ export default function ConsentModeSwitch() {
 			{ showConfirmDialog && (
 				<ConfirmDisableConsentModeDialog
 					onConfirm={ () => {
-						setConsentModeEnabled( ! isConsentModeEnabled );
-						saveConsentModeSettings();
+						setConsentModeEnabled( false );
 						setShowConfirmDialog( false );
+						saveSettings();
 					} }
 					onCancel={ () => {
 						setShowConfirmDialog( false );
