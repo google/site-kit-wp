@@ -41,7 +41,7 @@ function Template() {
 				'google-site-kit'
 			) }
 			description={ __(
-				'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning. To set up these new groups, Site Kit needs to update your Google Analytics property.',
+				'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
 				'google-site-kit'
 			) }
 		/>
