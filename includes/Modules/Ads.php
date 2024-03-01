@@ -27,8 +27,8 @@ use Google\Site_Kit\Modules\Ads\Settings;
  * @ignore
  */
 final class Ads extends Module implements Module_With_Settings, Module_With_Assets {
-	use Module_With_Settings_Trait;
 	use Module_With_Assets_Trait;
+	use Module_With_Settings_Trait;
 
 	/**
 	 * Module slug name.
