@@ -1,5 +1,5 @@
 /**
- * `modules/ads` data store.
+ * `modules/ads` base data store tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,20 +19,29 @@
 /**
  * Internal dependencies
  */
+import {
+	createTestRegistry,
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 import { MODULES_ADS } from './constants';
-import baseModuleStore from './base';
 
-const store = baseModuleStore;
+describe( 'modules/ads base data store', () => {
+	let registry;
+	let store;
 
-export const initialState = store.initialState;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
+	beforeEach( () => {
+		jest.resetModules();
 
-export const registerStore = ( registry ) => {
-	registry.registerStore( MODULES_ADS, store );
-};
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+	} );
 
-export default store;
+	it( 'does not define the admin page', () => {
+		store = require( './base' ).default;
+		registry.registerStore( MODULES_ADS, store );
+
+		expect( registry.select( MODULES_ADS ).getAdminScreenURL() ).toBe(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
+	} );
+} );
