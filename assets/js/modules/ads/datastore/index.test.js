@@ -1,5 +1,5 @@
 /**
- * Ads module initialization.
+ * `modules/ads` data store: selectors test.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,20 +19,28 @@
 /**
  * Internal dependencies
  */
-import AdsIcon from '../../../svg/graphics/ads.svg';
-import { isFeatureEnabled } from '../../features';
-import { SettingsEdit, SettingsView } from './components/settings';
-import { MODULES_ADS } from './datastore/constants';
+import { MODULES_ADS } from './constants';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+} from '../../../../../tests/js/utils';
 
-export { registerStore } from './datastore';
+describe( 'modules/ads properties', () => {
+	let registry;
 
-export const registerModule = ( modules ) => {
-	if ( isFeatureEnabled( 'adsModule' ) ) {
-		modules.registerModule( 'ads', {
-			storeName: MODULES_ADS,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			Icon: AdsIcon,
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'store', () => {
+		it( 'is registered correctly', () => {
+			const selectors = registry.select( MODULES_ADS );
+
+			expect( selectors.getAdsConversionID ).toBeInstanceOf( Function );
 		} );
-	}
-};
+	} );
+} );
