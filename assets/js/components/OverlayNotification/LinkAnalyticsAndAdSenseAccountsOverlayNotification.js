@@ -113,11 +113,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	}, [ dismissItem, dismissOverlayNotification ] );
 
 	useEffect( () => {
-		if (
-			shouldShowNotification &&
-			! isShowingCurrentOverlayNotification &&
-			! isViewOnly
-		) {
+		if ( shouldShowNotification && ! isShowingCurrentOverlayNotification ) {
 			// It is safe to trigger current overlay notification with check for
 			// `isShowingCurrentOverlayNotification`, without checking if any overlay
 			// notification is showing instead, because `setOverlayNotificationToShow`
