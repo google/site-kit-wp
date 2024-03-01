@@ -152,23 +152,6 @@ export default function FieldReportMetrics( { data, error } ) {
 						category={ cumulativeLayoutShift?.category }
 						isUnavailable={ ! cumulativeLayoutShift }
 					/>
-					{ /*<ReportMetric
-						title={ _x(
-							'First Input Delay',
-							'core web vitals name',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Time it takes for the browser to respond when people first interact with the page',
-							'google-site-kit'
-						) }
-						displayValue={ sprintf(
-							_x( '%s ms', 'duration', 'google-site-kit' ),
-							firstInputDelay?.percentile
-						) }
-						category={ firstInputDelay?.category }
-						isUnavailable={ ! firstInputDelay }
-					/>*/ }
 					<ReportMetric
 						title={ _x(
 							'Interaction to Next Paint',
