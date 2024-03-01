@@ -48,13 +48,13 @@
 				line-height: $lh-title-md;
 				margin: 0;
 			}
+		}
 
-			.googlesitekit-settings-consent-mode-requirement__description {
-				flex: 1;
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
-			}
+		.googlesitekit-settings-consent-mode-requirement__description {
+			flex: 1;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 		}
 
 		.googlesitekit-settings-notice {
