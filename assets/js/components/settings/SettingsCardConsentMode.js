@@ -50,10 +50,12 @@ export default function SettingsCardConsentMode() {
 		<Layout
 			title={ __( 'Consent Mode', 'google-site-kit' ) }
 			badge={
-				<Badge
-					className="googlesitekit-badge--primary"
-					label={ __( 'Recommended', 'google-site-kit' ) }
-				/>
+				isAdsConnected ? (
+					<Badge
+						className="googlesitekit-badge--primary"
+						label={ __( 'Recommended', 'google-site-kit' ) }
+					/>
+				) : null
 			}
 			header
 			rounded
