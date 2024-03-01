@@ -33,7 +33,6 @@ import { __, _x } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
-import { CATEGORY_AVERAGE } from '../../util/constants';
 import { getReportErrorMessage } from '../../../../util/errors';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import ErrorText from '../../../../components/ErrorText';
@@ -130,18 +129,8 @@ export default function LabReportMetrics( { data, error } ) {
 						category={ getScoreCategory(
 							totalBlockingTime?.score || 0
 						) }
+						hintText=<br />
 						isLast
-					/>
-					<ReportMetric
-						title={ __( 'Filler Content', 'google-site-kit' ) }
-						description={ __(
-							'This is a piece of filler content which is hidden in order to provide a consistent height for the widget.',
-							'google-site-kit'
-						) }
-						displayValue="0"
-						category={ CATEGORY_AVERAGE }
-						experimental
-						isHidden
 					/>
 				</tbody>
 			</table>
