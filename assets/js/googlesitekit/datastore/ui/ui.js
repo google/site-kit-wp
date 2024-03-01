@@ -260,8 +260,9 @@ export const selectors = {
 	},
 
 	/**
-	 * Checks if current overlay notification, or any
-	 * overlay notification in general, is showing.
+	 * Returns boolean if current overlay notification is showing,
+	 * when `overlayNotification` parameter is passed, or
+	 * `isShowingOverlayNotification` value.
 	 *
 	 * @since n.e.x.t
 	 * @private
