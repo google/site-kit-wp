@@ -21,6 +21,7 @@
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_UI } from './constants';
+import { LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION } from '../../../components/OverlayNotification/constants';
 
 describe( 'core/ui store', () => {
 	let registry;
@@ -63,6 +64,164 @@ describe( 'core/ui store', () => {
 					.getIsOnline();
 
 				expect( updatedIsOnline ).toBe( false );
+			} );
+		} );
+
+		describe( 'setOverlayNotificationToShow', () => {
+			it( 'sets the isShowingOverlayNotification value', async () => {
+				const isShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( isShowingOverlayNotification ).toBe( undefined );
+
+				await registry
+					.dispatch( CORE_UI )
+					.setOverlayNotificationToShow(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const updatedIsShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( updatedIsShowingOverlayNotification ).toBe(
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				);
+			} );
+
+			it( 'it does not set the isShowingOverlayNotification value if it is already set', () => {
+				const isShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( isShowingOverlayNotification ).toBe( undefined );
+
+				// Awaiting is itentionally omitted to simulate race condition.
+				registry
+					.dispatch( CORE_UI )
+					.setOverlayNotificationToShow(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				registry
+					.dispatch( CORE_UI )
+					.setOverlayNotificationToShow( 'TestNotification' );
+
+				const updatedIsShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( updatedIsShowingOverlayNotification ).toBe(
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				);
+			} );
+
+			it( 'it does not set the isShowingOverlayNotification value if it is already dismissed', async () => {
+				await registry
+					.dispatch( CORE_UI )
+					.setOverlayNotificationToShow(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const isShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( isShowingOverlayNotification ).toBe(
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				);
+
+				registry
+					.dispatch( CORE_UI )
+					.dismissOverlayNotification(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				registry
+					.dispatch( CORE_UI )
+					.setOverlayNotificationToShow(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const updatedIsShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( updatedIsShowingOverlayNotification ).toBe( undefined );
+			} );
+		} );
+
+		describe( 'dismissOverlayNotification', () => {
+			it( 'resets the isShowingOverlayNotification value and adds overlay notification in `dismissedOverlayNotifications` state value', async () => {
+				await registry
+					.dispatch( CORE_UI )
+					.setOverlayNotificationToShow(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const isShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				const dismissedOverlayNotifications = registry
+					.select( CORE_UI )
+					.getValue( 'dismissedOverlayNotifications' );
+
+				expect( isShowingOverlayNotification ).toBe(
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				);
+
+				expect( dismissedOverlayNotifications ).toBe( undefined );
+
+				await registry
+					.dispatch( CORE_UI )
+					.dismissOverlayNotification(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const updatedIsShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				const updatedDismissedOverlayNotifications = registry
+					.select( CORE_UI )
+					.getValue( 'dismissedOverlayNotifications' );
+
+				expect( updatedIsShowingOverlayNotification ).toBe( undefined );
+
+				expect( updatedDismissedOverlayNotifications.length ).toBe( 1 );
+				expect( updatedDismissedOverlayNotifications ).toEqual( [
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+				] );
+			} );
+
+			it( 'it does not reset the isShowingOverlayNotification value if differnet overlay notification component is showing', async () => {
+				await registry
+					.dispatch( CORE_UI )
+					.setOverlayNotificationToShow(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const isShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( isShowingOverlayNotification ).toBe(
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				);
+
+				await registry
+					.dispatch( CORE_UI )
+					.dismissOverlayNotification( 'TestNotification' );
+
+				const updatedIsShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( updatedIsShowingOverlayNotification ).toBe(
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				);
 			} );
 		} );
 
@@ -305,6 +464,54 @@ describe( 'core/ui store', () => {
 					.getIsOnline();
 
 				expect( updatedIsOnline ).toBe( false );
+			} );
+		} );
+
+		describe( 'isShowingOverlayNotification', () => {
+			it( 'returns isShowingOverlayNotification value from the state', () => {
+				const isShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( isShowingOverlayNotification ).toBe( undefined );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue(
+						'isShowingOverlayNotification',
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const updatedIsShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( updatedIsShowingOverlayNotification ).toBe(
+					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				);
+			} );
+
+			it( 'returns boolean if `overlayNotification` parameter is passed', () => {
+				const isShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification();
+
+				expect( isShowingOverlayNotification ).toBe( undefined );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue(
+						'isShowingOverlayNotification',
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				const updatedIsShowingOverlayNotification = registry
+					.select( CORE_UI )
+					.isShowingOverlayNotification(
+						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+					);
+
+				expect( updatedIsShowingOverlayNotification ).toBe( true );
 			} );
 		} );
 	} );
