@@ -47,7 +47,7 @@ const { useSelect, useDispatch } = Data;
 export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const isViewOnly = useViewOnly();
 
-	const isShowingOverlayNotification = useSelect( ( select ) =>
+	const isShowingCurrentOverlayNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		)
@@ -102,8 +102,11 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		false === isAdSenseLinked &&
 		ga4AdSenseIntegration;
 
-	const dismissCallback = useCallback( () => {
+	const dismissNotification = useCallback( () => {
 		dismissItem( LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED );
+		// Dismiss current overlay notification in UI store as well,
+		// so another one can show if needed, and to notify any other component
+		// that current overlay notification stopped showing.
 		dismissOverlayNotification(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		);
@@ -112,23 +115,27 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	useEffect( () => {
 		if (
 			shouldShowNotification &&
-			! isShowingOverlayNotification &&
+			! isShowingCurrentOverlayNotification &&
 			! isViewOnly
 		) {
+			// It is safe to trigger current overlay notification with check for
+			// `isShowingCurrentOverlayNotification`, without checking if any overlay
+			// notification is showing instead, because `setOverlayNotificationToShow`
+			// action will not show it if another overlay notification is already showing.
 			setOverlayNotificationToShow(
 				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 			);
 		}
 	}, [
 		shouldShowNotification,
-		isShowingOverlayNotification,
+		isShowingCurrentOverlayNotification,
 		isViewOnly,
 		setOverlayNotificationToShow,
 	] );
 
 	if (
 		! shouldShowNotification ||
-		! isShowingOverlayNotification ||
+		! isShowingCurrentOverlayNotification ||
 		isViewOnly
 	) {
 		return null;
@@ -136,7 +143,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 	return (
 		<OverlayNotificationBase
-			animateNotification={ isShowingOverlayNotification }
+			animateNotification={ isShowingCurrentOverlayNotification }
 		>
 			<AnalyticsAdsenseConnectGraphic />
 			<OverlayNotificationContent
@@ -158,9 +165,9 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 				ctaLink={ supportURL }
 				ctaLabel={ __( 'Learn how', 'google-site-kit' ) }
 				ctaTarget="_blank"
-				ctaCallback={ dismissCallback }
+				ctaCallback={ dismissNotification }
 				dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-				dismissCallback={ dismissCallback }
+				dismissCallback={ dismissNotification }
 			/>
 		</OverlayNotificationBase>
 	);
