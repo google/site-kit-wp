@@ -17,7 +17,11 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,10 +31,13 @@ import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
+import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 
 const { useDispatch, useSelect } = Data;
 
 export default function ConsentModeSwitch() {
+	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
+
 	const isConsentModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConsentModeEnabled()
 	);
@@ -57,46 +64,64 @@ export default function ConsentModeSwitch() {
 		useDispatch( CORE_SITE );
 
 	return (
-		<div>
-			<Switch
-				label={ __( 'Enable consent mode', 'google-site-kit' ) }
-				checked={ isConsentModeEnabled }
-				disabled={ isLoading }
-				onClick={ () => {
-					setConsentModeEnabled( ! isConsentModeEnabled );
-					saveConsentModeSettings();
-				} }
-				hideLabel={ false }
-			/>
-			{ isConsentModeEnabled && (
-				<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
-					{ __(
-						'Site Kit added the necessary code to your tag to comply with Consent Mode.',
-						'google-site-kit'
+		<Fragment>
+			<div>
+				<Switch
+					label={ __( 'Enable consent mode', 'google-site-kit' ) }
+					checked={ isConsentModeEnabled }
+					disabled={ isLoading }
+					onClick={ () => {
+						if ( isConsentModeEnabled ) {
+							setShowConfirmDialog( true );
+						} else {
+							setConsentModeEnabled( true );
+							saveConsentModeSettings();
+						}
+					} }
+					hideLabel={ false }
+				/>
+				{ isConsentModeEnabled && (
+					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
+						{ __(
+							'Site Kit added the necessary code to your tag to comply with Consent Mode.',
+							'google-site-kit'
+						) }
+					</p>
+				) }
+				<p>
+					{ createInterpolateElement(
+						__(
+							'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked.<br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							br: <br />,
+							a: (
+								<Link
+									href={ consentModeDocumentationURL }
+									external
+									aria-label={ __(
+										'Learn more about consent mode',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
 					) }
 				</p>
+			</div>
+			{ showConfirmDialog && (
+				<ConfirmDisableConsentModeDialog
+					onConfirm={ () => {
+						setConsentModeEnabled( ! isConsentModeEnabled );
+						saveConsentModeSettings();
+						setShowConfirmDialog( false );
+					} }
+					onCancel={ () => {
+						setShowConfirmDialog( false );
+					} }
+				/>
 			) }
-			<p>
-				{ createInterpolateElement(
-					__(
-						'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked.<br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						br: <br />,
-						a: (
-							<Link
-								href={ consentModeDocumentationURL }
-								external
-								aria-label={ __(
-									'Learn more about consent mode',
-									'google-site-kit'
-								) }
-							/>
-						),
-					}
-				) }
-			</p>
-		</div>
+		</Fragment>
 	);
 }

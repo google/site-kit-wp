@@ -28,6 +28,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
+import { provideModules } from '../../../../tests/js/utils';
 
 function Template() {
 	return <SettingsCardConsentMode />;
@@ -56,7 +57,7 @@ WithAdsConnected.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS )
-			.receiveGetSettings( { adsConversionID: 'AW-123456789' } );
+			.setSettings( { adsConversionID: 'AW-123456789' } );
 	},
 };
 WithAdsConnected.scenario = {
@@ -108,9 +109,19 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: 'analytics-4',
+					},
+				] );
+
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetConsentModeSettings( { enabled: true } );
+
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 
 				// Mock the consent mode endpoint to allow toggling the switch.
 				fetchMock.post(
