@@ -24,16 +24,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../layout/Layout';
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Grid, Cell, Row } from '../../material-components';
 import Badge from '../../components/Badge';
 import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
 import WPConsentAPIRequirements from '../consent-mode/WPConsentAPIRequirements';
+import Layout from '../layout/Layout';
 import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
+
+const { useSelect } = Data;
 
 export default function SettingsCardConsentMode() {
 	const isAdsConnected = true;
-	const hasWPConsentAPI = false;
+
+	const consentAPIInfo = useSelect( ( select ) =>
+		select( CORE_SITE ).getConsentAPIInfo()
+	);
 
 	return (
 		<Layout
@@ -68,7 +75,7 @@ export default function SettingsCardConsentMode() {
 							</Cell>
 						</Row>
 					) }
-					{ ! hasWPConsentAPI && (
+					{ !! consentAPIInfo && ! consentAPIInfo.hasConsentAPI && (
 						<Row>
 							<Cell size={ 12 }>
 								<WPConsentAPIRequirements />

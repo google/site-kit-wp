@@ -39,6 +39,6 @@ export default function WPConsentAPIRequirement( {
 
 WPConsentAPIRequirement.propTypes = {
 	title: PropTypes.string.isRequired,
-	description: PropTypes.string.isRequired,
+	description: PropTypes.node.isRequired,
 	footer: PropTypes.node.isRequired,
 };

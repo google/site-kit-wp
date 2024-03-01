@@ -44,7 +44,9 @@ export default function WPConsentAPIRequirements() {
 		)
 	);
 
-	const installURL = 'http://#';
+	const { wpConsentPlugin } = useSelect( ( select ) =>
+		select( CORE_SITE ).getConsentAPIInfo()
+	);
 
 	const cellProps = {
 		smSize: 4,
@@ -64,10 +66,17 @@ export default function WPConsentAPIRequirements() {
 				<Row>
 					<Cell { ...cellProps }>
 						<WPConsentAPIRequirement
-							title={ __(
-								'Install WP Consent API',
-								'google-site-kit'
-							) }
+							title={
+								wpConsentPlugin.installed
+									? __(
+											'Activate WP Consent API',
+											'google-site-kit'
+									  )
+									: __(
+											'Install WP Consent API',
+											'google-site-kit'
+									  )
+							}
 							description={ createInterpolateElement(
 								__(
 									'WP Consent API is a plugin that standardizes the communication of accepted consent categories between plugins. <a>Learn more</a>',
@@ -89,12 +98,30 @@ export default function WPConsentAPIRequirements() {
 								}
 							) }
 							footer={
-								<Button
-									className="googlesitekit-settings-consent-mode-requirement__install-button"
-									href={ installURL }
-								>
-									{ __( 'Install', 'google-site-kit' ) }
-								</Button>
+								<Fragment>
+									{ wpConsentPlugin.installed && (
+										<Button
+											className="googlesitekit-settings-consent-mode-requirement__install-button"
+											href={ wpConsentPlugin.activateURL }
+										>
+											{ __(
+												'Activate',
+												'google-site-kit'
+											) }
+										</Button>
+									) }
+									{ ! wpConsentPlugin.installed && (
+										<Button
+											className="googlesitekit-settings-consent-mode-requirement__install-button"
+											href={ wpConsentPlugin.installURL }
+										>
+											{ __(
+												'Install',
+												'google-site-kit'
+											) }
+										</Button>
+									) }
+								</Fragment>
 							}
 						/>
 					</Cell>

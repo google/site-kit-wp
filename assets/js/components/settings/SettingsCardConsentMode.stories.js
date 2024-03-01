@@ -33,18 +33,76 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'SettingsCardConsentMode';
+Default.storyName = 'Default';
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
+	},
+};
 Default.scenario = {
 	label: 'ConsentMode/SettingsCardConsentMode',
-	delay: 250,
+};
+
+export const WithAdsConnected = Template.bind( {} );
+WithAdsConnected.storyName = 'WithAdsConnected';
+WithAdsConnected.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
+	},
+};
+WithAdsConnected.scenario = {
+	label: 'ConsentMode/WithAdsConnected',
+};
+
+export const WithoutConsentAPI = Template.bind( {} );
+WithoutConsentAPI.storyName = 'WithoutConsentAPI';
+WithoutConsentAPI.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
+			hasConsentAPI: false,
+			wpConsentPlugin: {
+				installed: false,
+				activateURL:
+					'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
+				installURL:
+					'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
+			},
+		} );
+	},
+};
+WithoutConsentAPI.scenario = {
+	label: 'ConsentMode/WithoutConsentAPI',
+};
+
+export const WithConsentAPINotActivated = Template.bind( {} );
+WithConsentAPINotActivated.storyName = 'WithConsentAPINotActivated';
+WithConsentAPINotActivated.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
+			hasConsentAPI: false,
+			wpConsentPlugin: {
+				installed: true,
+				activateURL:
+					'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
+				installURL:
+					'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
+			},
+		} );
+	},
+};
+WithConsentAPINotActivated.scenario = {
+	label: 'ConsentMode/WithConsentAPINotActivated',
 };
 
 export default {
 	title: 'Consent Mode',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				// provideUserAuthentication( registry );
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetConsentModeSettings( { enabled: true } );
@@ -58,6 +116,10 @@ export default {
 						return { body: data.settings };
 					}
 				);
+
+				if ( args.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (

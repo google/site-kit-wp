@@ -26,12 +26,26 @@ import { Redirect, Route, Switch } from 'react-router-dom';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import SettingsAdmin from './SettingsAdmin';
 import SettingsActiveModules from './SettingsActiveModules';
 import SettingsInactiveModules from './SettingsInactiveModules';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function SettingsModules() {
+	const isConsentModeEnabled = useFeature( 'consentMode' );
+
+	useSelect( ( select ) => {
+		if ( isConsentModeEnabled ) {
+			// Ensure the preloaded consent responses are fetched so as to avoid a loading state in
+			// the Consent Mode section at the top of the Admin Settings tab.
+			// TODO: We can consider adding a loading state in a future iteration.
+			select( CORE_SITE ).getConsentModeSettings();
+			select( CORE_SITE ).getConsentAPIInfo();
+		}
+	} );
+
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
