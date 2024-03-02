@@ -26,7 +26,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
-import { provideModules } from '../../../../tests/js/utils';
+import { freezeFetch, provideModules } from '../../../../tests/js/utils';
 
 function Template() {
 	return <SettingsCardConsentMode />;
@@ -42,7 +42,7 @@ Default.args = {
 	},
 };
 Default.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode',
+	label: 'ConsentMode/Default',
 };
 
 export const WithAdsConnected = Template.bind( {} );
@@ -100,6 +100,19 @@ WithConsentAPINotActivated.args = {
 };
 WithConsentAPINotActivated.scenario = {
 	label: 'ConsentMode/WithConsentAPINotActivated',
+};
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	setupRegistry: () => {
+		freezeFetch(
+			new RegExp( '^/google-site-kit/v1/core/site/data/consent-api-info' )
+		);
+	},
+};
+Loading.scenario = {
+	label: 'ConsentMode/Loading',
 };
 
 export default {

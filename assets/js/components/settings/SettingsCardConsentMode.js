@@ -31,6 +31,8 @@ import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
 import WPConsentAPIRequirements from '../consent-mode/WPConsentAPIRequirements';
 import Layout from '../layout/Layout';
 import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
+import { Fragment } from '@wordpress/element';
+import classNames from 'classnames';
 
 const { useSelect } = Data;
 
@@ -43,6 +45,17 @@ export default function SettingsCardConsentMode() {
 	const consentAPIInfo = useSelect( ( select ) =>
 		select( CORE_SITE ).getConsentAPIInfo()
 	);
+
+	const isLoading = useSelect( ( select ) => {
+		const { isResolving, hasFinishedResolution } = select( CORE_SITE );
+
+		return (
+			! hasFinishedResolution( 'getConsentModeSettings' ) ||
+			! hasFinishedResolution( 'getConsentAPIInfo' ) ||
+			isResolving( 'getConsentModeSettings' ) ||
+			isResolving( 'getConsentAPIInfo' )
+		);
+	} );
 
 	return (
 		<Layout
@@ -61,30 +74,40 @@ export default function SettingsCardConsentMode() {
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-consent-mode">
 				<Grid>
 					<Row>
-						<Cell size={ 12 }>
-							<ConsentModeSwitch />
+						<Cell
+							size={ 12 }
+							className={ classNames( {
+								'googlesitekit-overflow-hidden': isLoading,
+							} ) }
+						>
+							<ConsentModeSwitch loading={ isLoading } />
 						</Cell>
 					</Row>
-					{ consentAPIInfo?.hasConsentAPI && isAdsConnected && (
-						<Row>
-							<Cell size={ 12 }>
-								<SettingsNotice
-									className="googlesitekit-settings-consent-mode__recommendation-notice"
-									type={ TYPE_INFO }
-									notice={ __(
-										'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
-										'google-site-kit'
-									) }
-								/>
-							</Cell>
-						</Row>
-					) }
-					{ !! consentAPIInfo && ! consentAPIInfo.hasConsentAPI && (
-						<Row>
-							<Cell size={ 12 }>
-								<WPConsentAPIRequirements />
-							</Cell>
-						</Row>
+					{ ! isLoading && (
+						<Fragment>
+							{ consentAPIInfo?.hasConsentAPI && isAdsConnected && (
+								<Row>
+									<Cell size={ 12 }>
+										<SettingsNotice
+											className="googlesitekit-settings-consent-mode__recommendation-notice"
+											type={ TYPE_INFO }
+											notice={ __(
+												'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
+												'google-site-kit'
+											) }
+										/>
+									</Cell>
+								</Row>
+							) }
+							{ !! consentAPIInfo &&
+								! consentAPIInfo.hasConsentAPI && (
+									<Row>
+										<Cell size={ 12 }>
+											<WPConsentAPIRequirements />
+										</Cell>
+									</Row>
+								) }
+						</Fragment>
 					) }
 				</Grid>
 			</div>
