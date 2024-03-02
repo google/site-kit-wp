@@ -111,6 +111,16 @@ Loading.args = {
 		);
 	},
 };
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 Loading.scenario = {
 	label: 'ConsentMode/Loading',
 };
