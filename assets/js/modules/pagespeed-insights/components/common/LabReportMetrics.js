@@ -129,7 +129,7 @@ export default function LabReportMetrics( { data, error } ) {
 						category={ getScoreCategory(
 							totalBlockingTime?.score || 0
 						) }
-						hintText=<br />
+						hintText={ <br /> }
 						isLast
 					/>
 				</tbody>
