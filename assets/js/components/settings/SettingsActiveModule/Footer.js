@@ -200,7 +200,7 @@ export default function Footer( props ) {
 	let buttonText = __( 'Save', 'google-site-kit' );
 
 	if ( canSubmitChanges ) {
-		buttonText = __( 'Apply changes', 'google-site-kit' );
+		buttonText = __( 'Confirm changes', 'google-site-kit' );
 	}
 	if ( isSaving ) {
 		buttonText = __( 'Saving…', 'google-site-kit' );
