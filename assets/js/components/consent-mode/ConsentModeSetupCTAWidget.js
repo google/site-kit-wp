@@ -47,11 +47,6 @@ import {
 } from '../AdminMenuTooltip';
 import ErrorText from '../ErrorText';
 import Link from '../Link';
-// import {
-// 	BREAKPOINT_SMALL,
-// 	BREAKPOINT_TABLET,
-// 	useBreakpoint,
-// } from '../../hooks/useBreakpoint';
 import useViewOnly from '../../hooks/useViewOnly';
 import { WEEK_IN_SECONDS } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
@@ -63,11 +58,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ saveError, setSaveError ] = useState( null );
 
 	const viewOnlyDashboard = useViewOnly();
-	// const breakpoint = useBreakpoint();
-
-	// const isMobile = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
-	// 	breakpoint
-	// );
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConsentModeEnabled()
@@ -246,10 +236,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 										mdSize={ 8 }
 										lgSize={ 6 }
 									>
-										{
-											// Note that for desktop we show the SVG as a background image in order to best fill the entire cell.
-											// isMobile && <BannerGraphicsSVG />
-										 }
 										<BannerGraphicsSVG />
 									</Cell>
 								</Row>
