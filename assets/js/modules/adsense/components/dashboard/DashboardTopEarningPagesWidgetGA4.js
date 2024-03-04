@@ -87,7 +87,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 				value: `Google AdSense account (${ adSenseAccountID })`,
 			},
 		},
-		orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
+		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 5,
 	};
 
