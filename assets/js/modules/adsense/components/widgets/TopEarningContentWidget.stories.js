@@ -33,7 +33,6 @@ import {
 import TopEarningContentWidget from './TopEarningContentWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import {
-	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
@@ -45,7 +44,7 @@ const adSenseAccountID = 'pub-1234567890';
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: [ 'pagePath', 'adSourceName' ],
+	dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
 	metrics: [ { name: 'totalAdRevenue' } ],
 	filter: {
 		fieldName: 'adSourceName',
@@ -61,21 +60,6 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
-};
-
-const pageTitlesReportOptions = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	dimensionFilters: {
-		pagePath: new Array( 3 )
-			.fill( '' )
-			.map( ( _, i ) => `/test-post-${ i + 1 }/` )
-			.sort(),
-	},
-	dimensions: [ 'pagePath', 'pageTitle' ],
-	metrics: [ { name: 'screenPageViews' } ],
-	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-	limit: 15,
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -98,20 +82,6 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		const pageTitlesReport = getAnalytics4MockResponse(
-			pageTitlesReportOptions,
-			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
-			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
-			// page paths to page titles.
-			{ dimensionCombinationStrategy: STRATEGY_ZIP }
-		);
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( pageTitlesReport, {
-				options: pageTitlesReportOptions,
-			} );
-
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
@@ -124,17 +94,6 @@ export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
 ReadyViewOnly.args = {
 	setupRegistry: ( registry ) => {
-		const pageTitlesReport = getAnalytics4MockResponse(
-			pageTitlesReportOptions,
-			{ dimensionCombinationStrategy: STRATEGY_ZIP }
-		);
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( pageTitlesReport, {
-				options: pageTitlesReportOptions,
-			} );
-
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
