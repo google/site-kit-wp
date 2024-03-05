@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -180,7 +179,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
-			if ( ! ( Feature_Flags::enabled( 'consentMode' ) && $this->is_consent_mode_enabled ) ) {
+			if ( ! $this->is_consent_mode_enabled ) {
 				$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
 				if ( $block_on_consent_attrs ) {

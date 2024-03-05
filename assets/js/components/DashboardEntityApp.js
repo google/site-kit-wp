@@ -63,13 +63,10 @@ import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharing
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
-
-	const isConsentModeEnabled = useFeature( 'consentMode' );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -222,7 +219,7 @@ function DashboardEntityApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ isConsentModeEnabled && <ConsentModeSetupCTAWidget /> }
+			<ConsentModeSetupCTAWidget />
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }

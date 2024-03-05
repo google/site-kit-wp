@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	muteFetch,
+	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -60,6 +61,19 @@ describe( 'SettingsApp', () => {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetAdminBarSettings( { enabled: true } );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConsentModeSettings( { enabled: false } );
+		registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
+			hasConsentAPI: false,
+			wpConsentPlugin: {
+				installed: false,
+				activateURL:
+					'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
+				installURL:
+					'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
+			},
+		} );
 
 		provideSiteInfo( registry, {
 			proxySupportLinkURL: 'https://test.com',
@@ -165,6 +179,9 @@ describe( 'SettingsApp', () => {
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'admin-settings' ) ]
 		);
+
+		await act( waitForRegistry );
+
 		expect( global.location.hash ).toEqual( '#/admin-settings' );
 	} );
 } );

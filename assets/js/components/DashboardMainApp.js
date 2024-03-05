@@ -74,13 +74,10 @@ import {
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-import { useFeature } from '../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
-
-	const isConsentModeEnabled = useFeature( 'consentMode' );
 
 	const viewOnlyDashboard = useViewOnly();
 
@@ -250,7 +247,7 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ isConsentModeEnabled && <ConsentModeSetupCTAWidget /> }
+			<ConsentModeSetupCTAWidget />
 			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
