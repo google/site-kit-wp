@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -29,8 +30,9 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { listFormat } from '../../util';
+import { listFormat, trackEvent } from '../../util';
 import ModalDialog from '../ModalDialog';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useSelect } = Data;
 
@@ -38,6 +40,8 @@ export default function ConfirmDisableConsentModeDialog( {
 	onConfirm,
 	onCancel,
 } ) {
+	const viewContext = useViewContext();
+
 	const dependentModuleNames = useSelect( ( select ) =>
 		// TODO: Add the Ads module to this list when the Ads Conversion ID is migrated to it.
 		[ 'analytics-4' ].reduce( ( names, slug ) => {
@@ -62,6 +66,10 @@ export default function ConfirmDisableConsentModeDialog( {
 					listFormat( dependentModuleNames )
 			  )
 			: null;
+
+	useMount( () => {
+		trackEvent( `${ viewContext }_CoMo`, 'view_modal' );
+	} );
 
 	return (
 		<ModalDialog
