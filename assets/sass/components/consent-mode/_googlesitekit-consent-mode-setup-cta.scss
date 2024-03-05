@@ -77,17 +77,20 @@
 		position: relative;
 
 		svg {
-			max-height: 200px;
+			max-height: 136px;
 
 			// Increase the SVG size via scale in order to achieve the desired clipping effect
 			// in conjunction with the parent's overflow: hidden.
-			scale: 1.2;
+			scale: 1.26;
+			transform-origin: center 2px;
 
 			@media (min-width: $width-desktop + 1 + px) {
 				height: 100%;
 				max-height: 346px;
 				position: absolute;
-				top: 10px;
+				scale: 1.31;
+				top: 18px;
+				transform-origin: initial;
 			}
 		}
 	}
