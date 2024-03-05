@@ -126,8 +126,6 @@ Loading.scenario = {
 };
 
 export default {
-	// TODO: Move this to a ConsentModeSetupCTAWidget subfolder.
-	// title: 'Consent Mode/ConsentModeSetupCTAWidget',
 	title: 'Consent Mode',
 	decorators: [
 		( Story, { args } ) => {
