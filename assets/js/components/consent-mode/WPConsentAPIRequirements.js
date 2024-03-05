@@ -139,6 +139,12 @@ export default function WPConsentAPIRequirements() {
 													href={
 														wpConsentPlugin.activateURL
 													}
+													onClick={ async () => {
+														await trackEvent(
+															`${ viewContext }_CoMo`,
+															'wp_consent_api_activate'
+														);
+													} }
 												>
 													{ __(
 														'Activate',
