@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -26,6 +27,8 @@ import { __ } from '@wordpress/i18n';
 import {
 	Fragment,
 	createInterpolateElement,
+	useEffect,
+	useRef,
 	useState,
 } from '@wordpress/element';
 
@@ -48,8 +51,9 @@ import {
 } from '../AdminMenuTooltip';
 import ErrorText from '../ErrorText';
 import Link from '../Link';
+import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
-import { WEEK_IN_SECONDS } from '../../util';
+import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 const { useSelect, useDispatch } = Data;
@@ -58,6 +62,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ saveError, setSaveError ] = useState( null );
 
+	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
@@ -98,6 +103,32 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissPrompt } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const trackingRef = useRef();
+
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const shouldShowWidget =
+		! viewOnlyDashboard &&
+		( isSaving ||
+			( isDismissed === false &&
+				! isConsentModeEnabled &&
+				isAdsConnected ) );
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView && shouldShowWidget ) {
+			trackEvent(
+				`${ viewContext }_CoMo-ads-setup-notification`,
+				'view_notification'
+			);
+
+			setHasBeenInView( true );
+		}
+	}, [ hasBeenInView, inView, shouldShowWidget, viewContext ] );
+
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
@@ -115,13 +146,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	const shouldShowWidget =
-		! viewOnlyDashboard &&
-		( isSaving ||
-			( isDismissed === false &&
-				! isConsentModeEnabled &&
-				isAdsConnected ) );
-
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
 	}
@@ -132,6 +156,11 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 
 		setConsentModeEnabled( true );
 		const { error } = await saveConsentModeSettings();
+
+		await trackEvent(
+			`${ viewContext }_CoMo-ads-setup-notification`,
+			'confirm_notification'
+		);
 
 		if ( error ) {
 			setSaveError( error );
@@ -144,6 +173,11 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 
 	const handleDismissClick = async () => {
+		trackEvent(
+			`${ viewContext }_CoMo-ads-setup-notification`,
+			'dismiss_notification'
+		);
+
 		// For the first two dismissals, we show the notification again in two weeks.
 		if ( dismissCount < 2 ) {
 			showTooltip();
@@ -167,7 +201,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 							noPadding
 							className="googlesitekit-consent-mode-setup-cta-widget"
 						>
-							<Grid collapsed>
+							<Grid collapsed ref={ trackingRef }>
 								<Row>
 									<Cell
 										smSize={ 6 }
