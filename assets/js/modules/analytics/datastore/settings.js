@@ -43,8 +43,8 @@ import {
 	isValidProfileSelection,
 	isValidPropertyID,
 	isValidProfileName,
-	isValidAdsConversionID,
 } from '../util';
+import { isValidAdsConversionID } from '../../ads/utils/validation';
 import {
 	MODULES_ANALYTICS,
 	PROPERTY_CREATE,
