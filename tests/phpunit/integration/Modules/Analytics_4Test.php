@@ -3629,16 +3629,11 @@ class Analytics_4Test extends TestCase {
 	 *     Parameters for the test.
 	 *
 	 *     @type bool $block_on_consent_filter_enabled Whether the block on consent filter is enabled.
-	 *     @type bool $consent_mode_feature_flag_enabled Whether the Consent Mode feature flag is enabled.
 	 *     @type bool $consent_mode_enabled Whether Consent Mode is enabled.
 	 *     @type bool $expected_block_on_consent Whether the block on consent attributes are expected to be present.
 	 * }
 	 */
 	public function test_block_on_consent_non_amp( $test_parameters ) {
-		if ( $test_parameters['consent_mode_feature_flag_enabled'] ) {
-			$this->enable_feature( 'consentMode' );
-		}
-
 		if ( $test_parameters['consent_mode_enabled'] ) {
 			( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
 		}
@@ -3686,34 +3681,23 @@ class Analytics_4Test extends TestCase {
 		return array(
 			'default (disabled)'             => array(
 				array(
-					'block_on_consent_filter_enabled'   => false,
-					'consent_mode_feature_flag_enabled' => false,
-					'consent_mode_enabled'              => false,
-					'expected_block_on_consent'         => false,
-				),
-			),
-			'enabled'                        => array(
-				array(
-					'block_on_consent_filter_enabled'   => true,
-					'consent_mode_feature_flag_enabled' => false,
-					'consent_mode_enabled'              => false,
-					'expected_block_on_consent'         => true,
+					'block_on_consent_filter_enabled' => false,
+					'consent_mode_enabled'            => false,
+					'expected_block_on_consent'       => false,
 				),
 			),
 			'enabled (consentMode enabled)'  => array(
 				array(
-					'block_on_consent_filter_enabled'   => true,
-					'consent_mode_feature_flag_enabled' => true,
-					'consent_mode_enabled'              => true,
-					'expected_block_on_consent'         => false,
+					'block_on_consent_filter_enabled' => true,
+					'consent_mode_enabled'            => true,
+					'expected_block_on_consent'       => false,
 				),
 			),
 			'enabled (consentMode disabled)' => array(
 				array(
-					'block_on_consent_filter_enabled'   => true,
-					'consent_mode_feature_flag_enabled' => true,
-					'consent_mode_enabled'              => false,
-					'expected_block_on_consent'         => true,
+					'block_on_consent_filter_enabled' => true,
+					'consent_mode_enabled'            => false,
+					'expected_block_on_consent'       => true,
 				),
 			),
 		);

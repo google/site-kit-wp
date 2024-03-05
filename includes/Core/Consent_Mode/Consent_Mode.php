@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -64,19 +63,17 @@ class Consent_Mode {
 		$this->consent_mode_settings->register();
 		$this->rest_controller->register();
 
-		if ( Feature_Flags::enabled( 'consentMode' ) ) {
-			// Declare that the plugin is compatible with the WP Consent API.
-			$plugin = GOOGLESITEKIT_PLUGIN_BASENAME;
-			add_filter( "wp_consent_api_registered_{$plugin}", '__return_true' );
+		// Declare that the plugin is compatible with the WP Consent API.
+		$plugin = GOOGLESITEKIT_PLUGIN_BASENAME;
+		add_filter( "wp_consent_api_registered_{$plugin}", '__return_true' );
 
-			if ( $this->consent_mode_settings->is_consent_mode_enabled() ) {
-				// The `wp_head` action is used to ensure the snippets are printed in the head on the front-end only, not admin pages.
-				add_action(
-					'wp_head',
-					$this->get_method_proxy( 'render_gtag_consent_snippet' ),
-					1 // Set priority to 1 to ensure the snippet is printed with top priority in the head.
-				);
-			}
+		if ( $this->consent_mode_settings->is_consent_mode_enabled() ) {
+			// The `wp_head` action is used to ensure the snippets are printed in the head on the front-end only, not admin pages.
+			add_action(
+				'wp_head',
+				$this->get_method_proxy( 'render_gtag_consent_snippet' ),
+				1 // Set priority to 1 to ensure the snippet is printed with top priority in the head.
+			);
 		}
 	}
 

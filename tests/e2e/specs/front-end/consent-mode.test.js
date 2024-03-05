@@ -27,7 +27,6 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
 import {
 	setSiteVerification,
 	setSearchConsoleProperty,
-	enableFeature,
 	wpApiFetch,
 } from '../../utils';
 
@@ -72,7 +71,6 @@ describe( 'Consent Mode snippet', () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
-		await enableFeature( 'consentMode' );
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/core/site/data/consent-mode',
 			method: 'post',
