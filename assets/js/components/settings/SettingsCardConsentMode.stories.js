@@ -49,6 +49,9 @@ export const WithAdsConnected = Template.bind( {} );
 WithAdsConnected.storyName = 'WithAdsConnected';
 WithAdsConnected.args = {
 	setupRegistry: ( registry ) => {
+		// Set consent mode to disabled in order to show the additional Ads related notice.
+		registry.dispatch( CORE_SITE ).setConsentModeEnabled( false );
+
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );

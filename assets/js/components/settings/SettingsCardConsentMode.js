@@ -42,6 +42,10 @@ export default function SettingsCardConsentMode() {
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
 
+	const isConsentModeEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isConsentModeEnabled()
+	);
+
 	const consentAPIInfo = useSelect( ( select ) =>
 		select( CORE_SITE ).getConsentAPIInfo()
 	);
@@ -85,28 +89,29 @@ export default function SettingsCardConsentMode() {
 					</Row>
 					{ ! isLoading && (
 						<Fragment>
-							{ consentAPIInfo?.hasConsentAPI && isAdsConnected && (
-								<Row>
-									<Cell size={ 12 }>
-										<SettingsNotice
-											className="googlesitekit-settings-consent-mode__recommendation-notice"
-											type={ TYPE_INFO }
-											notice={ __(
-												'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
-												'google-site-kit'
-											) }
-										/>
-									</Cell>
-								</Row>
-							) }
-							{ !! consentAPIInfo &&
-								! consentAPIInfo.hasConsentAPI && (
+							{ consentAPIInfo?.hasConsentAPI &&
+								isAdsConnected &&
+								! isConsentModeEnabled && (
 									<Row>
 										<Cell size={ 12 }>
-											<WPConsentAPIRequirements />
+											<SettingsNotice
+												className="googlesitekit-settings-consent-mode__recommendation-notice"
+												type={ TYPE_INFO }
+												notice={ __(
+													'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
+													'google-site-kit'
+												) }
+											/>
 										</Cell>
 									</Row>
 								) }
+							{ !! consentAPIInfo && isConsentModeEnabled && (
+								<Row>
+									<Cell size={ 12 }>
+										<WPConsentAPIRequirements />
+									</Cell>
+								</Row>
+							) }
 						</Fragment>
 					) }
 				</Grid>

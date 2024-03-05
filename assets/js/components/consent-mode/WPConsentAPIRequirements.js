@@ -31,6 +31,7 @@ import InfoCircle from '../../../../assets/svg/icons/info-circle.svg';
 import Link from '../Link';
 import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
+import Tick from '../../../svg/icons/tick.svg';
 
 const { useSelect } = Data;
 
@@ -44,7 +45,7 @@ export default function WPConsentAPIRequirements() {
 		)
 	);
 
-	const { wpConsentPlugin } = useSelect( ( select ) =>
+	const { hasConsentAPI, wpConsentPlugin } = useSelect( ( select ) =>
 		select( CORE_SITE ).getConsentAPIInfo()
 	);
 
@@ -67,7 +68,7 @@ export default function WPConsentAPIRequirements() {
 					<Cell { ...cellProps }>
 						<WPConsentAPIRequirement
 							title={
-								wpConsentPlugin.installed
+								wpConsentPlugin?.installed
 									? __(
 											'Activate WP Consent API',
 											'google-site-kit'
@@ -99,27 +100,46 @@ export default function WPConsentAPIRequirements() {
 							) }
 							footer={
 								<Fragment>
-									{ wpConsentPlugin.installed && (
-										<Button
-											className="googlesitekit-settings-consent-mode-requirement__install-button"
-											href={ wpConsentPlugin.activateURL }
-										>
+									{ hasConsentAPI && (
+										<div className="googlesitekit-settings-consent-mode-requirement__consent-api-detected-wrapper">
+											<span className="googlesitekit-settings-consent-mode-requirement__consent-api-detected-icon">
+												<Tick />
+											</span>
 											{ __(
-												'Activate',
+												'Site Kit detected WP Consent API for your site',
 												'google-site-kit'
 											) }
-										</Button>
+										</div>
 									) }
-									{ ! wpConsentPlugin.installed && (
-										<Button
-											className="googlesitekit-settings-consent-mode-requirement__install-button"
-											href={ wpConsentPlugin.installURL }
-										>
-											{ __(
-												'Install',
-												'google-site-kit'
+									{ ! hasConsentAPI && (
+										<Fragment>
+											{ wpConsentPlugin.installed && (
+												<Button
+													className="googlesitekit-settings-consent-mode-requirement__install-button"
+													href={
+														wpConsentPlugin.activateURL
+													}
+												>
+													{ __(
+														'Activate',
+														'google-site-kit'
+													) }
+												</Button>
 											) }
-										</Button>
+											{ ! wpConsentPlugin.installed && (
+												<Button
+													className="googlesitekit-settings-consent-mode-requirement__install-button"
+													href={
+														wpConsentPlugin.installURL
+													}
+												>
+													{ __(
+														'Install',
+														'google-site-kit'
+													) }
+												</Button>
+											) }
+										</Fragment>
 									) }
 								</Fragment>
 							}
