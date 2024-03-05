@@ -55,7 +55,25 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_available_modules__missing_dependency() {
-		// Currently there are no modules with dependency. @TODO Add when one shows up.
+		$modules     = new Modules( new Context(GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+    	$fake_module = new FakeModule( new Context(GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+    	$fake_module->set_force_active( true );
+
+    	$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		$available = array_map(
+			function( $instance ) {
+				return get_class( $instance );
+			},
+			$modules->get_available_modules()
+		);
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'fake-module'		=> 'Google\\Site_Kit\\Tests\\Core\\Modules\\FakeModule',
+			),
+			$available
+		);
 	}
 
 	public function test_get_active_modules() {
@@ -143,7 +161,28 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_module_dependencies() {
-		// Currently there are no modules with dependency. @TODO Add when one shows up.
+		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+    	$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+    	$fake_module->set_force_active( true );
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		$this->force_set_property( $modules, 'dependencies', array( 'fake-module' => array(
+			'analytics-4',
+			'search-console',
+			'adsense',
+		) ) );
+
+		$dependencies = $modules->get_module_dependencies( 'fake-module' );
+		var_dump($dependencies);
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'analytics-4',
+				'search-console',
+				'adsense',
+			),
+			$dependencies
+		);
 	}
 
 	public function test_get_module_dependencies_exception() {
@@ -563,7 +602,7 @@ class ModulesTest extends TestCase {
 		$modules = new Modules( $context );
 
 		// Checks an invalid module returns false.
-		// $this->assertFalse( $modules->is_module_recoverable( 'invalid-module' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'invalid-module' ) );
 
 		// Checks Module isn't an instance of Module_With_Owner.
 		$this->assertFalse( $modules->is_module_recoverable( 'site-verification' ) );
@@ -591,7 +630,7 @@ class ModulesTest extends TestCase {
 
 		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$options       = new Options( $context );
-		$options->set( 'googlesitekit_analytics_settings', array( 'ownerID' => $administrator->ID ) );
+		$options->set( 'googlesitekit_analytics-4_settings', array( 'ownerID' => $administrator->ID ) );
 
 		$this->assertTrue( $modules->is_module_recoverable( 'analytics-4' ) );
 		$administrator_auth = new Authentication( $context, null, new User_Options( $context, $administrator->ID ) );
@@ -602,7 +641,7 @@ class ModulesTest extends TestCase {
 		);
 
 		// Checks the default return false.
-		$this->assertFalse( $modules->is_module_recoverable( 'search-console' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'analytics-4' ) );
 	}
 
 	private function setup_all_admin_module_ownership_change() {
