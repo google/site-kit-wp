@@ -46,8 +46,8 @@ import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
-import { EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import {
+	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
