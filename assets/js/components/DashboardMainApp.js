@@ -247,7 +247,7 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			{ <ConsentModeSetupCTAWidget /> }
+			<ConsentModeSetupCTAWidget />
 			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
