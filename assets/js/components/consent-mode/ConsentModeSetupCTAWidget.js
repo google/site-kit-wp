@@ -37,6 +37,7 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../material-components';
 import BannerGraphicsSVG from '../../../svg/graphics/consent-mode-setup.svg';
@@ -61,6 +62,11 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConsentModeEnabled()
+	);
+
+	const isAdsConnected = useSelect( ( select ) =>
+		// TODO: Replace this with the `analytics-4` or `ads` version of the `getAdsConversionID()` selector once it's migrated.
+		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
 
 	const settingsURL = useSelect( ( select ) =>
@@ -111,7 +117,10 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const shouldShowWidget =
 		! viewOnlyDashboard &&
-		( isSaving || ( isDismissed === false && ! isConsentModeEnabled ) );
+		( isSaving ||
+			( isDismissed === false &&
+				! isConsentModeEnabled &&
+				isAdsConnected ) );
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
