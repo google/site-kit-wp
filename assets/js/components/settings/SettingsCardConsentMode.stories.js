@@ -59,7 +59,7 @@ WithAdsConnected.args = {
 	},
 };
 WithAdsConnected.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithAdsConnected',
+	label: 'ConsentMode/WithAdsConnected',
 };
 
 export const WithoutConsentAPI = Template.bind( {} );
@@ -79,7 +79,7 @@ WithoutConsentAPI.args = {
 	},
 };
 WithoutConsentAPI.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithoutConsentAPI',
+	label: 'ConsentMode/WithoutConsentAPI',
 };
 
 export const WithConsentAPINotActivated = Template.bind( {} );
@@ -99,7 +99,7 @@ WithConsentAPINotActivated.args = {
 	},
 };
 WithConsentAPINotActivated.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithConsentAPINotActivated',
+	label: 'ConsentMode/WithConsentAPINotActivated',
 };
 
 export const Loading = Template.bind( {} );
@@ -122,11 +122,13 @@ Loading.decorators = [
 	},
 ];
 Loading.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/Loading',
+	label: 'ConsentMode/Loading',
 };
 
 export default {
-	title: 'Consent Mode/SettingsCardConsentMode',
+	// TODO: Move this to a ConsentModeSetupCTAWidget subfolder.
+	// title: 'Consent Mode/ConsentModeSetupCTAWidget',
+	title: 'Consent Mode',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
