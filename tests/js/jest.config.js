@@ -37,6 +37,7 @@ module.exports = {
 		'<rootDir>/.git',
 		'<rootDir>/node_modules',
 		'<rootDir>/build',
+		// @TODO: Remove this ignore pattern as part of #7843.
 		'<rootDir>/assets/js/modules/analytics',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
