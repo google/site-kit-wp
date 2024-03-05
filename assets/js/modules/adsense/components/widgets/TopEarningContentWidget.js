@@ -34,7 +34,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -59,10 +59,21 @@ function TopEarningContentWidget( { Widget } ) {
 		} )
 	);
 
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pagePath' ],
+		dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
+		filter: {
+			fieldName: 'adSourceName',
+			stringFilter: {
+				matchType: 'EXACT',
+				value: `Google AdSense account (${ adSenseAccountID })`,
+			},
+		},
 		orderby: [
 			{
 				metric: { metricName: 'totalAdRevenue' },
@@ -82,21 +93,12 @@ function TopEarningContentWidget( { Widget } ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
-	);
-
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
 				[ reportOptions ]
-			) || titles === undefined
+			)
 	);
 
 	const isAdSenseLinked = useSelect( ( select ) => {
@@ -121,8 +123,11 @@ function TopEarningContentWidget( { Widget } ) {
 		{
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
-				const url = fieldValue;
-				const title = titles[ url ];
+				const title = fieldValue;
+				const url = rows.find(
+					( row ) => row.dimensionValues[ 0 ].value === title
+				).dimensionValues[ 1 ].value;
+
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,

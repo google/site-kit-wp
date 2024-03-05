@@ -72,7 +72,6 @@ class SettingsTest extends SettingsTestCase {
 				'measurementID'             => '',
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
-				'canUseSnippet'             => true,
 				'ownerID'                   => 0,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
@@ -181,7 +180,6 @@ class SettingsTest extends SettingsTestCase {
 		$keys_to_check = array(
 			'accountID',
 			'adsConversionID',
-			'canUseSnippet',
 			'trackingDisabled',
 		);
 		$settings      = $options->get( Settings::OPTION );
