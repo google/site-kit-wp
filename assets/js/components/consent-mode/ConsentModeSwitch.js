@@ -34,10 +34,14 @@ import ErrorText from '../../components/ErrorText';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useDispatch, useSelect } = Data;
 
 export default function ConsentModeSwitch( { loading } ) {
+	const viewContext = useViewContext();
+
 	const [ saveError, setSaveError ] = useState( null );
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
 
@@ -83,9 +87,18 @@ export default function ConsentModeSwitch( { loading } ) {
 							checked={ isConsentModeEnabled }
 							disabled={ loading || isSaving }
 							onClick={ () => {
+								// If Consent Mode is currently enabled, show a confirmation
+								// dialog warning users about the impact of disabling it.
 								if ( isConsentModeEnabled ) {
+									trackEvent(
+										`${ viewContext }_CoMo`,
+										'como_disable'
+									);
+
 									setShowConfirmDialog( true );
 								} else {
+									// Consent Mode is not currently enabled, so this toggle
+									// enables it.
 									setConsentModeEnabled( true );
 									saveSettings();
 								}
@@ -130,6 +143,12 @@ export default function ConsentModeSwitch( { loading } ) {
 												'Learn more about consent mode',
 												'google-site-kit'
 											) }
+											onClick={ async () => {
+												await trackEvent(
+													`${ viewContext }_CoMo`,
+													'como_learn_more'
+												);
+											} }
 										/>
 									),
 								}
@@ -141,11 +160,21 @@ export default function ConsentModeSwitch( { loading } ) {
 			{ showConfirmDialog && (
 				<ConfirmDisableConsentModeDialog
 					onConfirm={ () => {
+						trackEvent(
+							`${ viewContext }_CoMo`,
+							'confirm_disconnect'
+						);
+
 						setConsentModeEnabled( false );
 						setShowConfirmDialog( false );
 						saveSettings();
 					} }
 					onCancel={ () => {
+						trackEvent(
+							`${ viewContext }_CoMo`,
+							'cancel_disconnect'
+						);
+
 						setShowConfirmDialog( false );
 					} }
 				/>

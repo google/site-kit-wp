@@ -15,8 +15,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import classNames from 'classnames';
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,12 +38,14 @@ import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
 import WPConsentAPIRequirements from '../consent-mode/WPConsentAPIRequirements';
 import Layout from '../layout/Layout';
 import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
-import { Fragment } from '@wordpress/element';
-import classNames from 'classnames';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useSelect } = Data;
 
 export default function SettingsCardConsentMode() {
+	const viewContext = useViewContext();
+
 	const isAdsConnected = useSelect( ( select ) =>
 		// TODO: Replace this with the `analytics-4` or `ads` version of the `getAdsConversionID()` selector once it's migrated.
 		select( MODULES_ANALYTICS ).getAdsConversionID()
@@ -59,6 +68,11 @@ export default function SettingsCardConsentMode() {
 			isResolving( 'getConsentModeSettings' ) ||
 			isResolving( 'getConsentAPIInfo' )
 		);
+	} );
+
+	useMount( () => {
+		// Track an event when the user sees the Consent Mode settings.
+		trackEvent( `${ viewContext }_CoMo`, 'view_requirements' );
 	} );
 
 	return (

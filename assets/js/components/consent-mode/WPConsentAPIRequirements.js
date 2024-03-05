@@ -17,7 +17,11 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,10 +36,14 @@ import Link from '../Link';
 import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useSelect } = Data;
 
 export default function WPConsentAPIRequirements() {
+	const viewContext = useViewContext();
+
 	const wpConsentAPIDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'wp-consent-api' )
 	);
@@ -54,6 +62,12 @@ export default function WPConsentAPIRequirements() {
 		mdSize: 4,
 		lgSize: 6,
 	};
+
+	useEffect( () => {
+		if ( hasConsentAPI ) {
+			trackEvent( `${ viewContext }_CoMo`, 'wp_consent_api_active' );
+		}
+	}, [ hasConsentAPI, viewContext ] );
 
 	return (
 		<Fragment>
@@ -91,9 +105,15 @@ export default function WPConsentAPIRequirements() {
 											}
 											external
 											aria-label={ __(
-												'Learn more about consent mode',
+												'Learn more about the WP Consent API',
 												'google-site-kit'
 											) }
+											onClick={ async () => {
+												await trackEvent(
+													`${ viewContext }_CoMo`,
+													'wp_consent_api_learn_more'
+												);
+											} }
 										/>
 									),
 								}
@@ -132,6 +152,12 @@ export default function WPConsentAPIRequirements() {
 													href={
 														wpConsentPlugin.installURL
 													}
+													onClick={ async () => {
+														await trackEvent(
+															`${ viewContext }_CoMo`,
+															'wp_consent_api_install'
+														);
+													} }
 												>
 													{ __(
 														'Install',
@@ -167,6 +193,12 @@ export default function WPConsentAPIRequirements() {
 												'Suggested consent management plugins',
 												'google-site-kit'
 											) }
+											onClick={ async () => {
+												await trackEvent(
+													`${ viewContext }_CoMo`,
+													'consent_mgmt_plugin_learn_more'
+												);
+											} }
 										/>
 									),
 								}
