@@ -43,7 +43,6 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
-	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -165,8 +164,6 @@ export async function submitChanges( { select, dispatch } ) {
 }
 
 export function rollbackChanges( { select, dispatch } ) {
-	dispatch( CORE_FORMS ).setValues( FORM_SETUP, { enableGA4: undefined } );
-
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 	}
