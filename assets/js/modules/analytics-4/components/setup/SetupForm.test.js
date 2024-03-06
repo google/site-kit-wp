@@ -94,9 +94,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const { container, getByText, waitForRegistry } = render(
@@ -144,9 +141,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const finishSetup = jest.fn();
@@ -243,9 +237,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
@@ -352,9 +343,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
