@@ -88,7 +88,11 @@ export default function SettingsCardConsentMode() {
 			// Track an event when the user sees the Consent Mode settings.
 			trackEvent( `${ viewContext }_CoMo`, 'view_requirements' );
 
-			if ( isAdsConnected && ! isConsentModeEnabled && usingProxy ) {
+			if (
+				isAdsConnected &&
+				isConsentModeEnabled === false &&
+				usingProxy
+			) {
 				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
 			}
 

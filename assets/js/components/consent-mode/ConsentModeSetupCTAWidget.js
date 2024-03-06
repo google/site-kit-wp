@@ -119,7 +119,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		! viewOnlyDashboard &&
 		( isSaving ||
 			( isDismissed === false &&
-				! isConsentModeEnabled &&
+				isConsentModeEnabled === false &&
 				isAdsConnected ) );
 
 	useEffect( () => {
