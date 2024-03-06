@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for handling Consent Mode.
  *
- * @since n.e.x.t
+ * @since 1.122.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Consent_Mode {
 	/**
 	 * Consent_Mode_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 * @var Consent_Mode_Settings
 	 */
 	protected $consent_mode_settings;
@@ -35,7 +35,7 @@ class Consent_Mode {
 	/**
 	 * REST_Consent_Mode_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 * @var REST_Consent_Mode_Controller
 	 */
 	protected $rest_controller;
@@ -43,7 +43,7 @@ class Consent_Mode {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
@@ -57,7 +57,7 @@ class Consent_Mode {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 */
 	public function register() {
 		$this->consent_mode_settings->register();
@@ -80,7 +80,7 @@ class Consent_Mode {
 	/**
 	 * Prints the gtag consent snippet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 */
 	protected function render_gtag_consent_snippet() {
 		$consent_defaults = array(

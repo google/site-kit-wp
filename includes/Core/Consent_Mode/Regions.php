@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 /**
  * Class containing Consent Mode Regions.
  *
- * @since n.e.x.t
+ * @since 1.122.0
  * @access private
  * @ignore
  */
