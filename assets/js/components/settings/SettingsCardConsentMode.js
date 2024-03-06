@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { Grid, Cell, Row } from '../../material-components';
 import Badge from '../../components/Badge';
 import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
@@ -47,8 +47,8 @@ export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
 
 	const isAdsConnected = useSelect( ( select ) =>
-		// TODO: Replace this with the `analytics-4` or `ads` version of the `getAdsConversionID()` selector once it's migrated.
-		select( MODULES_ANALYTICS ).getAdsConversionID()
+		// TODO: Replace this with the `ads` version of the `getAdsConversionID()` selector once it's implemented.
+		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
