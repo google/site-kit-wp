@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
+import GA4AdSenseLinkedNotification, {
+	GA4_ADSENSE_LINKED_NOTIFICATION,
+} from './GA4AdSenseLinkedNotification';
 import {
 	render,
 	createTestRegistry,
@@ -35,9 +37,6 @@ import {
 
 describe( 'GA4AdSenseLinkedNotification', () => {
 	let registry;
-
-	const GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY =
-		'ga4_adsense_linked_notification_dimissed_item';
 
 	const fetchDismissItem = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -59,9 +58,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		muteFetch( analyticsReport );
 
 		fetchMock.postOnce( fetchDismissItem, {
-			body: JSON.stringify( [
-				GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY,
-			] ),
+			body: JSON.stringify( [ GA4_ADSENSE_LINKED_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -95,9 +92,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		muteFetch( analyticsReport );
 
 		fetchMock.postOnce( fetchDismissItem, {
-			body: JSON.stringify( [
-				GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY,
-			] ),
+			body: JSON.stringify( [ GA4_ADSENSE_LINKED_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -134,9 +129,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		muteFetch( analyticsReport );
 
 		fetchMock.postOnce( fetchDismissItem, {
-			body: JSON.stringify( [
-				GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY,
-			] ),
+			body: JSON.stringify( [ GA4_ADSENSE_LINKED_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -158,9 +151,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 	it( 'does not render if already dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY,
-			] );
+			.receiveGetDismissedItems( [ GA4_ADSENSE_LINKED_NOTIFICATION ] );
 
 		const { container, waitForRegistry } = render(
 			<GA4AdSenseLinkedNotification />,

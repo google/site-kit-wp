@@ -53,7 +53,7 @@ import ErrorText from '../ErrorText';
 import Link from '../Link';
 import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
-import { WEEK_IN_SECONDS, trackEvent } from '../../util';
+import { DAY_IN_SECONDS, WEEK_IN_SECONDS, trackEvent } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 const { useSelect, useDispatch } = Data;
@@ -98,9 +98,13 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
-	const { dismissPrompt } = useDispatch( CORE_USER );
+	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const trackingRef = useRef();
@@ -115,7 +119,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		! viewOnlyDashboard &&
 		( isSaving ||
 			( isDismissed === false &&
-				! isConsentModeEnabled &&
+				isConsentModeEnabled === false &&
 				isAdsConnected ) );
 
 	useEffect( () => {
@@ -125,9 +129,20 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 				'view_notification'
 			);
 
+			if ( usingProxy ) {
+				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
+			}
+
 			setHasBeenInView( true );
 		}
-	}, [ hasBeenInView, inView, shouldShowWidget, viewContext ] );
+	}, [
+		hasBeenInView,
+		inView,
+		shouldShowWidget,
+		triggerSurvey,
+		usingProxy,
+		viewContext,
+	] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -155,12 +170,22 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		setIsSaving( true );
 
 		setConsentModeEnabled( true );
-		const { error } = await saveConsentModeSettings();
 
-		await trackEvent(
-			`${ viewContext }_CoMo-ads-setup-notification`,
-			'confirm_notification'
-		);
+		const promises = [
+			saveConsentModeSettings(),
+			trackEvent(
+				`${ viewContext }_CoMo-ads-setup-notification`,
+				'confirm_notification'
+			),
+		];
+
+		if ( usingProxy ) {
+			promises.push(
+				triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } )
+			);
+		}
+
+		const [ { error } ] = await Promise.all( promises );
 
 		if ( error ) {
 			setSaveError( error );

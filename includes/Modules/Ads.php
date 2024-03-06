@@ -45,7 +45,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -91,7 +91,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -104,7 +104,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -117,7 +117,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();

@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 /**
  * Class for Ads settings.
  *
- * @since n.e.x.t
+ * @since 1.122.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 */
 	public function register() {
 		parent::register();
@@ -40,7 +40,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return array An array of default settings values.
 	 */
@@ -53,7 +53,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Returns keys for owned settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
