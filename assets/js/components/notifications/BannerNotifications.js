@@ -36,7 +36,6 @@ import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
-import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
@@ -99,7 +98,6 @@ export default function BannerNotifications() {
 		<Fragment>
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			<ModuleRecoveryAlert />
-			<ActivationBanner />
 			{ 'authentication_success' === notification && (
 				<SetupSuccessBannerNotification />
 			) }
