@@ -38,7 +38,7 @@ module.exports = {
 		'<rootDir>/node_modules',
 		'<rootDir>/build',
 		// @TODO: Remove this ignore pattern as part of #7843.
-		'<rootDir>/assets/js/modules/analytics/*',
+		'<rootDir>/assets/js/modules/analytics/',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
 	transformIgnorePatterns: [ '<rootDir>/node_modules/(?!@material/web)/.*' ],
