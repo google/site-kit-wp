@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -64,7 +63,11 @@ class Consent_Mode {
 		$this->consent_mode_settings->register();
 		$this->rest_controller->register();
 
-		if ( Feature_Flags::enabled( 'consentMode' ) && $this->consent_mode_settings->is_consent_mode_enabled() ) {
+		// Declare that the plugin is compatible with the WP Consent API.
+		$plugin = GOOGLESITEKIT_PLUGIN_BASENAME;
+		add_filter( "wp_consent_api_registered_{$plugin}", '__return_true' );
+
+		if ( $this->consent_mode_settings->is_consent_mode_enabled() ) {
 			// The `wp_head` action is used to ensure the snippets are printed in the head on the front-end only, not admin pages.
 			add_action(
 				'wp_head',
@@ -80,18 +83,87 @@ class Consent_Mode {
 	 * @since n.e.x.t
 	 */
 	protected function render_gtag_consent_snippet() {
-			$consent_defaults = array(
-				'ad_personalization' => 'denied',
-				'ad_storage'         => 'denied',
-				'ad_user_data'       => 'denied',
-				'analytics_storage'  => 'denied',
-				'regions'            => $this->consent_mode_settings->get_regions(),
-			);
-			?>
+		$consent_defaults = array(
+			'ad_personalization' => 'denied',
+			'ad_storage'         => 'denied',
+			'ad_user_data'       => 'denied',
+			'analytics_storage'  => 'denied',
+			'regions'            => $this->consent_mode_settings->get_regions(),
+			'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
+		);
+
+		$consent_category_map = apply_filters(
+			'googlesitekit_consent_category_map',
+			array(
+				'statistics' => array( 'analytics_storage' ),
+				'marketing'  => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
+			)
+		);
+		// TODO: We may want to extract some of this JS so it can be transpiled and rewrite it using modern language features.
+		?>
 <!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 <script id='google_gtagjs-js-consent-mode'>
 window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
-gtag("consent","default", <?php echo wp_json_encode( $consent_defaults ); ?>);
+gtag('consent', 'default', <?php echo wp_json_encode( $consent_defaults ); ?>);
+window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
+( function () {
+	document.addEventListener(
+		'wp_listen_for_consent_change',
+		function ( event ) {
+			if ( event.detail ) {
+				var consentParameters = {};
+				var hasConsentParameters = false;
+				for ( var category in event.detail ) {
+					if ( window._googlesitekitConsentCategoryMap[ category ] ) {
+						var status = event.detail[ category ];
+						var mappedStatus =
+							status === 'allow' ? 'granted' : 'denied';
+						var parameters =
+							window._googlesitekitConsentCategoryMap[ category ];
+						for ( var i = 0; i < parameters.length; i++ ) {
+							consentParameters[ parameters[ i ] ] = mappedStatus;
+						}
+						hasConsentParameters = !! parameters.length;
+					}
+				}
+				if ( hasConsentParameters ) {
+					gtag( 'consent', 'update', consentParameters );
+				}
+			}
+		}
+	);
+
+	function updateGrantedConsent() {
+		if ( ! ( window.wp_consent_type || window.wp_fallback_consent_type ) ) {
+			return;
+		}
+		var consentParameters = {};
+		var hasConsentParameters = false;
+		for ( var category in window._googlesitekitConsentCategoryMap ) {
+			if ( window.wp_has_consent && window.wp_has_consent( category ) ) {
+				var parameters =
+					window._googlesitekitConsentCategoryMap[ category ];
+				for ( var i = 0; i < parameters.length; i++ ) {
+					consentParameters[ parameters[ i ] ] = 'granted';
+				}
+				hasConsentParameters =
+					hasConsentParameters || !! parameters.length;
+			}
+		}
+		if ( hasConsentParameters ) {
+			gtag( 'consent', 'update', consentParameters );
+		}
+	}
+	document.addEventListener(
+		'wp_consent_type_defined',
+		updateGrantedConsent
+	);
+	document.addEventListener( 'DOMContentLoaded', function () {
+		if ( ! window.waitfor_consent_hook ) {
+			updateGrantedConsent();
+		}
+	} );
+} )();
 </script>
 <!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php

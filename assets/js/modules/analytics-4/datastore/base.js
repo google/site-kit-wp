@@ -48,7 +48,6 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'webDataStreamID',
 		'measurementID',
 		'useSnippet',
-		'canUseSnippet',
 		'ownerID',
 		'googleTagID',
 		'googleTagAccountID',

@@ -14,7 +14,6 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -97,7 +96,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'measurementID'             => '',
 			'trackingDisabled'          => array( 'loggedinUsers' ),
 			'useSnippet'                => true,
-			'canUseSnippet'             => true,
 			'googleTagID'               => '',
 			'googleTagAccountID'        => '',
 			'googleTagContainerID'      => '',
@@ -121,9 +119,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			if ( is_array( $option ) ) {
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
-				}
-				if ( isset( $option['canUseSnippet'] ) ) {
-					$option['canUseSnippet'] = (bool) $option['canUseSnippet'];
 				}
 				if ( isset( $option['googleTagID'] ) ) {
 					if ( ! preg_match( '/^(G|GT|AW)-[a-zA-Z0-9]+$/', $option['googleTagID'] ) ) {
@@ -200,7 +195,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		$keys_to_check      = array(
 			'accountID',
 			'adsConversionID',
-			'canUseSnippet',
 			'trackingDisabled',
 		);
 		$missing_settings   = array_diff( $keys_to_check, array_keys( $option ) );

@@ -69,6 +69,18 @@ class REST_Consent_Mode_Controller {
 				);
 			}
 		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/site/data/consent-api-info',
+					)
+				);
+			}
+		);
 	}
 
 	/**
