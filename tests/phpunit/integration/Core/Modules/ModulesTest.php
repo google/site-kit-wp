@@ -173,7 +173,6 @@ class ModulesTest extends TestCase {
 		) ) );
 
 		$dependencies = $modules->get_module_dependencies( 'fake-module' );
-		var_dump($dependencies);
 
 		$this->assertEqualSetsWithIndex(
 			array(
