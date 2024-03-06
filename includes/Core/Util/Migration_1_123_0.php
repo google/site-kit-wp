@@ -86,30 +86,29 @@ class Migration_1_123_0 {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-
-			if ( ! $this->analytics_settings->has() ) {
-				return;
-			}
-
-			$this->migrate_legacy_settings();
+			$this->migrate_legacy_analytics_settings();
 
 			$this->options->set( 'googlesitekit_db_version', self::DB_VERSION );
 		}
 	}
 
 	/**
-	 * Migrates the legacy analytics settings over to the analytics 4 settings.
+	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function migrate_legacy_settings() {
-		$legacy_settings    = $this->options->get( 'googlesitekit_analytics_settings' );
-		$recovered_settings = array();
+	protected function migrate_legacy_analytics_settings() {
+		if ( ! $this->analytics_settings->has() ) {
+			return;
+		}
+
+		$legacy_settings = $this->options->get( 'googlesitekit_analytics_settings' );
 
 		if ( empty( $legacy_settings ) ) {
 			return;
 		}
 
+		$recovered_settings = array();
 		$options_to_migrate = array(
 			'accountID',
 			'adsConversionID',
