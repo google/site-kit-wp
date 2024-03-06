@@ -303,6 +303,10 @@ describe( 'modules/analytics-4 settings', () => {
 						status: 200,
 						body: enabledSettingsMock,
 					} );
+					fetchMock.postOnce( settingsEndpoint, {
+						status: 200,
+						body: {},
+					} );
 				} );
 
 				it( 'should save the enhanced measurement settings and dismiss the activation banner if the setting has been changed', async () => {
