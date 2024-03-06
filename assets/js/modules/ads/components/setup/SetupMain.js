@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -42,6 +42,18 @@ export default function SetupMain( { finishSetup } ) {
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
 			</h2>
+
+			<div className="googlesitekit-setup-module__description">
+				{ __(
+					'Ad your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.',
+					'google-site-kit'
+				) }
+				<br />
+				{ __(
+					'You can always change this later in Site Kit Settings.',
+					'google-site-kit'
+				) }
+			</div>
 
 			<SetupForm finishSetup={ finishSetup } />
 		</div>

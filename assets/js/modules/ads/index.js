@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import AdsIcon from '../../../svg/graphics/ads.svg';
@@ -35,6 +40,16 @@ export const registerModule = ( modules ) => {
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: AdsIcon,
+			features: [
+				__(
+					'tagging necessary for your ads campaigns to work',
+					'google-site-kit'
+				),
+				__(
+					'conversion tracking for your ads campaigns',
+					'google-site-kit'
+				),
+			],
 		} );
 	}
 };
