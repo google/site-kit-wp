@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 
 /**
@@ -87,6 +89,7 @@ class Migration_1_123_0 {
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
 			$this->migrate_legacy_analytics_settings();
+			$this->activate_analytics();
 
 			$this->options->set( 'googlesitekit_db_version', self::DB_VERSION );
 		}
@@ -126,6 +129,38 @@ class Migration_1_123_0 {
 			$this->analytics_settings->merge(
 				$recovered_settings
 			);
+		}
+	}
+
+	/**
+	 * Activates the analytics-4 module if the legacy analytics module was active.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function activate_analytics() {
+		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+
+		if ( ! is_array( $option ) ) {
+			$option = $this->options->get( 'googlesitekit-active-modules' );
+		}
+
+		if ( ! is_array( $option ) ) {
+			return;
+		}
+
+		$analytics_active = in_array( Analytics_4::MODULE_SLUG, $option, true );
+
+		// If analytics-4 is already active, bail.
+		if ( $analytics_active ) {
+			return;
+		}
+
+		$legacy_analytics_active = in_array( 'analytics', $option, true );
+
+		if ( $legacy_analytics_active ) {
+			$option[] = Analytics_4::MODULE_SLUG;
+
+			$this->options->set( Modules::OPTION_ACTIVE_MODULES, $option );
 		}
 	}
 }

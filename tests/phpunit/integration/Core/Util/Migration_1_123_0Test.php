@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_1_123_0;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
@@ -68,20 +69,31 @@ class Migration_1_123_0Test extends TestCase {
 
 		$this->reset_analytics_4_options();
 
-		$migrated_keys = array(
-			'accountID',
-			'adsConversionID',
-			'trackingDisabled',
+		// Set initial active modules where it doesn't include analytics-4.
+		$this->options->set(
+			Modules::OPTION_ACTIVE_MODULES,
+			array( 'pagespeed-insights', 'analytics' )
 		);
 
 		$migration->migrate();
 
 		$legacy_settings      = get_option( 'googlesitekit_analytics_settings' );
 		$analytics_4_settings = $this->analytics_settings->get();
+		$migrated_keys        = array(
+			'accountID',
+			'adsConversionID',
+			'trackingDisabled',
+		);
 
 		$this->assertEquals(
 			$this->filter_settings( $analytics_4_settings, $migrated_keys ),
 			$this->filter_settings( $legacy_settings, $migrated_keys )
+		);
+
+		// Verify that analytics-4 is now included in active modules.
+		$this->assertEquals(
+			$this->options->get( Modules::OPTION_ACTIVE_MODULES ),
+			array( 'pagespeed-insights', 'analytics', 'analytics-4' )
 		);
 
 		$this->assertEquals( Migration_1_123_0::DB_VERSION, $this->get_db_version() );
