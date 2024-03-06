@@ -432,7 +432,6 @@ export default {
 				} );
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					useSnippet: true,
-					canUseSnippet: true,
 					anonymizeIP: true,
 					trackingDisabled: [ 'loggedinUsers' ],
 				} );

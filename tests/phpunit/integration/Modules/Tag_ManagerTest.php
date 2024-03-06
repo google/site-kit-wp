@@ -13,11 +13,9 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Analytics\Settings as AnalyticsSettings;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -45,7 +43,6 @@ class Tag_ManagerTest extends TestCase {
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
 
 		$tagmanager->register();
 
@@ -53,7 +50,6 @@ class Tag_ManagerTest extends TestCase {
 			$tagmanager->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
-		$this->assertTrue( has_filter( 'googlesitekit_analytics_can_use_snippet' ) );
 	}
 
 	public function test_register_template_redirect_amp() {

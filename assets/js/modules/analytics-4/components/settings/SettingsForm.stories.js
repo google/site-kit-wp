@@ -207,7 +207,6 @@ export default {
 					webDataStreamID,
 					measurementID,
 					useSnippet: true,
-					canUseSnippet: true,
 					anonymizeIP: true,
 					trackingDisabled: [ 'loggedinUsers' ],
 				} );

@@ -226,7 +226,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 
 		await pageWait( 1000 );
 		await expect( page ).toClick( 'button', {
-			text: /configure analytics/i,
+			text: /complete setup/i,
 		} );
 
 		await page.waitForSelector(

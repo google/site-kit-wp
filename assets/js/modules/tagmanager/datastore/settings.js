@@ -154,14 +154,10 @@ export function validateCanSubmitChanges( select ) {
 		getAMPContainerID,
 		getInternalContainerID,
 		getInternalAMPContainerID,
-		getSingleAnalyticsPropertyID,
-		hasAnyAnalyticsPropertyID,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
 	} = strictSelect( MODULES_TAGMANAGER );
 	const { isAMP, isSecondaryAMP } = strictSelect( CORE_SITE );
-	const { isModuleActive } = strictSelect( CORE_MODULES );
-	const { getPropertyID } = strictSelect( MODULES_ANALYTICS_4 );
 
 	const accountID = getAccountID();
 
@@ -239,16 +235,5 @@ export function validateCanSubmitChanges( select ) {
 				INVARIANT_INVALID_INTERNAL_CONTAINER_ID
 			);
 		}
-	}
-
-	if (
-		isModuleActive( 'analytics-4' ) &&
-		getPropertyID() &&
-		hasAnyAnalyticsPropertyID()
-	) {
-		invariant(
-			getSingleAnalyticsPropertyID() === getPropertyID(),
-			INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH
-		);
 	}
 }

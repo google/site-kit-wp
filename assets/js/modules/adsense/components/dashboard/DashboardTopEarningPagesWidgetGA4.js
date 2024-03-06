@@ -20,12 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
 import { __, _x } from '@wordpress/i18n';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,7 +40,7 @@ import SourceLink from '../../../../components/SourceLink';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import { numFmt } from '../../../../util';
+import { numFmt, trackEvent } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { ZeroDataMessage } from '../../../analytics/components/common';
@@ -48,6 +50,7 @@ import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KE
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { AdSenseLinkCTA } from '../common';
 import AdBlockerWarning from '../common/AdBlockerWarning';
+import useViewContext from '../../../../hooks/useViewContext';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -68,12 +71,23 @@ function DashboardTopEarningPagesWidgetGA4( {
 		} )
 	);
 
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
 	const args = {
 		startDate,
 		endDate,
-		dimensions: [ 'pageTitle', 'pagePath' ],
+		dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
+		filter: {
+			fieldName: 'adSourceName',
+			stringFilter: {
+				matchType: 'EXACT',
+				value: `Google AdSense account (${ adSenseAccountID })`,
+			},
+		},
+		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 5,
 	};
 
@@ -117,6 +131,55 @@ function DashboardTopEarningPagesWidgetGA4( {
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
 
+	const trackingRef = useRef();
+
+	// This function works around the fact that useRef does not trigger a re-render when its value changes.
+	// This meant that if you scrolled slowly, the trackingRef would be null when the intersection observer
+	// was created, and the observer would never detect the component as in view.
+	// Full discussion: https://github.com/google/site-kit-wp/issues/8212#issuecomment-1954275748
+	const [ trackingRefReady, setTrackingRefReady ] = useState( false );
+	const updateTrackingRef = ( element ) => {
+		trackingRef.current = element;
+		if ( element && ! trackingRefReady ) {
+			setTrackingRefReady( true );
+		}
+	};
+
+	const viewContext = useViewContext();
+
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			if ( isAdSenseLinked ) {
+				trackEvent(
+					`${ viewContext }_top-earning-pages-widget`,
+					'view_widget'
+				);
+			}
+
+			if ( ! isAdSenseLinked ) {
+				trackEvent(
+					`${ viewContext }_top-earning-pages-widget`,
+					'view_notification'
+				);
+			}
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, viewContext, isAdSenseLinked, hasBeenInView ] );
+
+	const onClickAdSenseLinkedCTA = () => {
+		trackEvent(
+			`${ viewContext }_top-earning-pages-widget`,
+			'click_learn_more_link'
+		);
+	};
+
 	if ( isDismissed ) {
 		return <WidgetNull />;
 	}
@@ -143,8 +206,8 @@ function DashboardTopEarningPagesWidgetGA4( {
 
 	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
-			<Widget Footer={ Footer }>
-				<AdSenseLinkCTA />
+			<Widget Footer={ Footer } ref={ updateTrackingRef }>
+				<AdSenseLinkCTA onClick={ onClickAdSenseLinkedCTA } />
 			</Widget>
 		);
 	}
@@ -223,7 +286,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer }>
+		<Widget noPadding Footer={ Footer } ref={ updateTrackingRef }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.rows || [] }

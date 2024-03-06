@@ -101,7 +101,6 @@ export default {
 					.receiveGetExistingTag( null );
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					adsConversionID: '',
-					canUseSnippet: true,
 				} );
 				registry
 					.dispatch( MODULES_ANALYTICS )

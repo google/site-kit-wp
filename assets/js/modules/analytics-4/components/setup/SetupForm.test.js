@@ -186,7 +186,7 @@ describe( 'SetupForm', () => {
 
 		act( () => {
 			fireEvent.click(
-				getByRole( 'button', { name: /Configure Analytics/i } )
+				getByRole( 'button', { name: /Complete setup/i } )
 			);
 		} );
 
@@ -304,7 +304,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Configure Analytics/i } )
+			getByRole( 'button', { name: /Complete setup/i } )
 		).toBeInTheDocument();
 
 		await waitForRegistry();
@@ -384,7 +384,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Configure Analytics/i } )
+			getByRole( 'button', { name: /Complete setup/i } )
 		).toBeInTheDocument();
 
 		// While not strictly needed, add waits to match the successful auto-submit test case to help avoid a false positive result.

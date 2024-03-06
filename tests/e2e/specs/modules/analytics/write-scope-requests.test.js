@@ -292,7 +292,7 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await expect( page ).toClick( '.mdc-button--raised', {
-			text: /configure analytics/i,
+			text: /complete setup/i,
 		} );
 
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
@@ -373,7 +373,7 @@ describe( 'Analytics write scope requests', () => {
 		} );
 
 		await expect( page ).toClick( '.mdc-button--raised', {
-			text: /configure analytics/i,
+			text: /complete setup/i,
 		} );
 
 		await page.waitForRequest( ( req ) =>

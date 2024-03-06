@@ -105,5 +105,21 @@
 			"Top pages",
 			"Top acquisition channels"
 		]
+	},
+	{
+		"slug": "ads",
+		"name": "Ads",
+		"description": "Track conversions for your existing Google Ads campaigns.",
+		"homepage": "https://google.com/ads",
+		"internal": false,
+		"order": 1,
+		"active": true,
+		"connected": true,
+		"dependencies": [],
+		"dependants": [],
+		"owner": null,
+		"forceActive": true,
+		"shareable": false,
+		"recoverable": false
 	}
 ]

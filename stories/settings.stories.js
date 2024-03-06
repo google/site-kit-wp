@@ -165,6 +165,19 @@ storiesOf( 'Settings', module )
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetAdminBarSettings( { enabled: true } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConsentModeSettings( { enabled: false } );
+				registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
+					hasConsentAPI: false,
+					wpConsentPlugin: {
+						installed: false,
+						activateURL:
+							'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
+						installURL:
+							'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
+					},
+				} );
 			};
 
 			return (

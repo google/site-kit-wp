@@ -35,32 +35,13 @@ export default function SetupUseSnippetSwitch() {
 		select( MODULES_ANALYTICS ).getExistingTag()
 	);
 
-	const canUseSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getCanUseSnippet()
-	);
-
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
 	// Only render if there is an existing tag or the snippet has been disabled by GTM.
-	if ( ! ( Boolean( existingTag ) || canUseSnippet === false ) ) {
+	if ( ! Boolean( existingTag ) ) {
 		return null;
-	}
-
-	if ( canUseSnippet === false ) {
-		return (
-			<UseSnippetSwitch
-				description={
-					<p>
-						{ __(
-							'The code is controlled by the Tag Manager module',
-							'google-site-kit'
-						) }
-					</p>
-				}
-			/>
-		);
 	}
 
 	const description =

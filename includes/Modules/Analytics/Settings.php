@@ -58,13 +58,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$default['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 				}
 
-				// `canUseSnippet` is a computed setting, so this sets the value if settings have not been saved yet.
-				// This filter is documented below.
-				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, '' );
-				if ( is_bool( $can_use_snippet ) ) {
-					$default['canUseSnippet'] = $can_use_snippet;
-				}
-
 				return $default;
 			}
 		);
@@ -135,23 +128,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$option['adsenseLinked'] = $adsense_linked;
 				}
 
-				/**
-				 * Filters the state of the can use snipped setting.
-				 *
-				 * This filter exists so that useSnippet can be restored to true when the Tag Manager module
-				 * is disconnected, ensuring the Analytics snippet is always included.
-				 *
-				 * @since 1.28.0
-				 * @since 1.75.0 Added the `$property_id` parameter.
-				 *
-				 * @param bool   $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
-				 * @param string $property_id     The current property ID.
-				 */
-				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, $property_id );
-				if ( is_bool( $can_use_snippet ) ) {
-					$option['canUseSnippet'] = $can_use_snippet;
-				}
-
 				return $option;
 			}
 		);
@@ -192,7 +168,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'propertyID'            => '',
 			'trackingDisabled'      => array( 'loggedinUsers' ),
 			'useSnippet'            => true,
-			'canUseSnippet'         => true,
 		);
 	}
 
@@ -208,9 +183,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			if ( is_array( $option ) ) {
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
-				}
-				if ( isset( $option['canUseSnippet'] ) ) {
-					$option['canUseSnippet'] = (bool) $option['canUseSnippet'];
 				}
 				if ( isset( $option['anonymizeIP'] ) ) {
 					$option['anonymizeIP'] = (bool) $option['anonymizeIP'];
