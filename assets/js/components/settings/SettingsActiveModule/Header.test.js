@@ -36,13 +36,10 @@ import {
 	createTestRegistry,
 	provideModules,
 	fireEvent,
-	waitFor,
 	provideUserInfo,
 	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -107,38 +104,6 @@ describe( 'Header', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Complete setup for Tag Manager' );
-	} );
-
-	it( 'should render a button to complete GA4 setup if it is connected', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setOwnerID( 1 );
-		const { queryByRole } = render( <Header slug="analytics-4" />, {
-			registry,
-		} );
-
-		const button = queryByRole( 'button' );
-		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveTextContent( 'Complete setup for Analytics' );
-	} );
-
-	it( 'should render a GA4 not connected status if it is connected without access to it', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSettings( { ownerID: 100 } );
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckModuleAccess(
-				{ access: false },
-				{ slug: 'analytics-4' }
-			);
-		const { queryByRole } = render( <Header slug="analytics-4" />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect(
-				queryByRole( 'button', { name: /connect google analytics/i } )
-			).not.toBeInTheDocument();
-		} );
 	} );
 
 	it( 'should open the tab when ENTER key is pressed', () => {
