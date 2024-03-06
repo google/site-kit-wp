@@ -160,7 +160,7 @@ export default function Ready( { site, finishSetup } ) {
 			  );
 
 		uiProps.primaryButton = {
-			label: __( 'Configure AdSense', 'google-site-kit' ),
+			label: __( 'Complete setup', 'google-site-kit' ),
 			onClick: continueSetupHandler,
 		};
 	}

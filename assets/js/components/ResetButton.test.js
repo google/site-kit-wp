@@ -133,7 +133,7 @@ describe( 'ResetButton', () => {
 			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are applied to the .mdc-dialog element.
 			expect(
 				document.querySelector( '.mdc-dialog' ).classList.length
-			).toBe( 1 );
+			).toBe( 2 );
 		} );
 
 		it( 'should close the modal on pressing escape key', async () => {
@@ -152,7 +152,7 @@ describe( 'ResetButton', () => {
 			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are applied to the .mdc-dialog element.
 			expect(
 				document.querySelector( '.mdc-dialog' ).classList.length
-			).toBe( 1 );
+			).toBe( 2 );
 		} );
 
 		it( 'should reset the plugin, delete local and session storage', async () => {

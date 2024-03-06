@@ -59,14 +59,14 @@ export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).canSubmitChanges()
 	);
-	const singleAnalyticsPropertyID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	const currentGTMGoogleTagID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getCurrentGTMGoogleTagID()
 	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -163,7 +163,7 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, initialAutoSubmit, submitForm, initialSubmitMode ] );
 
 	const isSetupWithAnalytics = !! (
-		singleAnalyticsPropertyID &&
+		currentGTMGoogleTagID &&
 		analyticsModuleAvailable &&
 		! analyticsModuleActive
 	);
@@ -245,7 +245,7 @@ export default function SetupForm( { finishSetup } ) {
 						disabled={ ! canSubmitChanges || isSaving }
 						isSaving={ isSaving }
 					>
-						{ __( 'Confirm & Continue', 'google-site-kit' ) }
+						{ __( 'Complete setup', 'google-site-kit' ) }
 					</SpinnerButton>
 				) }
 			</div>

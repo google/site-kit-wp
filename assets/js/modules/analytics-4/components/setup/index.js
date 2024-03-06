@@ -18,3 +18,6 @@
 
 export { default as SetupEnhancedMeasurementSwitch } from './SetupEnhancedMeasurementSwitch';
 export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
+export { default as SetupFormFields } from './SetupFormFields';
+export { default as SetupForm } from './SetupForm';
+export { default as SetupMain } from './SetupMain';

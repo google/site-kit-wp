@@ -25,25 +25,43 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../googlesitekit/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import MetricsSelectionPanel from './';
 
-function Template() {
-	return <MetricsSelectionPanel />;
+function Template( { viewContext } ) {
+	return (
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<MetricsSelectionPanel />
+		</ViewContextProvider>
+	);
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'MetricsSelectionPanel';
+Default.storyName = 'Default';
 Default.scenario = {
 	label: 'KeyMetrics/MetricsSelectionPanel',
+};
+
+export const ViewOnly = Template.bind( {} );
+ViewOnly.storyName = 'View-only user';
+ViewOnly.args = {
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
 export default {
 	title: 'Key Metrics/MetricsSelectionPanel',
 	component: MetricsSelectionPanel,
+	parameters: { features: [ 'ga4AdSenseIntegration' ] },
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

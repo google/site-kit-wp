@@ -31,6 +31,7 @@ import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Row, Cell } from '../../material-components';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
@@ -64,29 +65,60 @@ export default function AdminBarWidgets() {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
+	const canViewSharedAnalytics = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
+	);
+	const canViewSharedSearchConsole = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule( 'search-console' )
+	);
+
+	const searchConsoleSize = canViewSharedAnalytics
+		? { lg: 3, md: 2 }
+		: { lg: 6, md: 4 };
+	const analyticsSize = canViewSharedSearchConsole
+		? { lg: 3, md: 2 }
+		: { lg: 6, md: 4 };
 
 	return (
 		<Fragment>
 			<Row>
-				<Cell lgSize={ 3 } mdSize={ 2 }>
-					<AdminBarImpressionsWidget />
-				</Cell>
-				<Cell lgSize={ 3 } mdSize={ 2 }>
-					<AdminBarClicksWidget />
-				</Cell>
-
-				{ analyticsModuleConnected && analyticsModuleActive && (
+				{ canViewSharedSearchConsole && (
 					<Fragment>
-						<Fragment>
-							<Cell lgSize={ 3 } mdSize={ 2 }>
-								<AdminBarUniqueVisitorsGA4Widget />
-							</Cell>
-							<Cell lgSize={ 3 } mdSize={ 2 }>
-								<AdminBarSessionsGA4Widget />
-							</Cell>
-						</Fragment>
+						<Cell
+							lgSize={ searchConsoleSize.lg }
+							mdSize={ searchConsoleSize.md }
+						>
+							<AdminBarImpressionsWidget />
+						</Cell>
+						<Cell
+							lgSize={ searchConsoleSize.lg }
+							mdSize={ searchConsoleSize.md }
+						>
+							<AdminBarClicksWidget />
+						</Cell>
 					</Fragment>
 				) }
+
+				{ analyticsModuleConnected &&
+					analyticsModuleActive &&
+					canViewSharedAnalytics && (
+						<Fragment>
+							<Fragment>
+								<Cell
+									lgSize={ analyticsSize.lg }
+									mdSize={ analyticsSize.md }
+								>
+									<AdminBarUniqueVisitorsGA4Widget />
+								</Cell>
+								<Cell
+									lgSize={ analyticsSize.lg }
+									mdSize={ analyticsSize.md }
+								>
+									<AdminBarSessionsGA4Widget />
+								</Cell>
+							</Fragment>
+						</Fragment>
+					) }
 
 				{ analyticsModuleAvailable &&
 					( ! analyticsModuleConnected ||

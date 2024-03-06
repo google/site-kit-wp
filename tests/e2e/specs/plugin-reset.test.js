@@ -15,10 +15,30 @@ import {
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
+	useRequestInterception,
 } from '../utils';
 
 describe( 'Plugin Reset', () => {
 	beforeAll( async () => {
+		await page.setRequestInterception( true );
+
+		useRequestInterception( ( request ) => {
+			const url = request.url();
+
+			if (
+				url.match(
+					'/google-site-kit/v1/modules/search-console/data/searchanalytics?'
+				)
+			) {
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
+			} else {
+				request.continue();
+			}
+		} );
+
 		await activatePlugin( 'e2e-tests-proxy-credentials-plugin' );
 		await setClientConfig();
 		await setAuthToken();

@@ -39,11 +39,18 @@ import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 describe( 'module/analytics-4 service store', () => {
 	const baseURI = 'https://analytics.google.com/analytics/web/';
 
+	const userData = {
+		id: 1,
+		email: 'admin@example.com',
+		name: 'admin',
+		picture: 'https://path/to/image',
+	};
+
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideUserInfo( registry );
+		provideUserInfo( registry, userData );
 		provideSiteInfo( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -61,7 +68,7 @@ describe( 'module/analytics-4 service store', () => {
 					.getServiceURL();
 
 				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F&Email=wapuu.wordpress%40gmail.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F&Email=admin%40example.com"'
 				);
 			} );
 
@@ -71,7 +78,7 @@ describe( 'module/analytics-4 service store', () => {
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 
 				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=wapuu.wordpress%40gmail.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
 				);
 
 				const serviceURLWithLeadingSlash = registry
@@ -79,14 +86,14 @@ describe( 'module/analytics-4 service store', () => {
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
 				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=wapuu.wordpress%40gmail.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
 				);
 			} );
 
 			it( 'adds query args', () => {
 				const path = '/test/path/to/deeplink';
 				const query = {
-					authuser: 'wapuu.wordpress@gmail.com',
+					authuser: userData.email,
 					param1: '1',
 					param2: '2',
 				};
@@ -102,7 +109,6 @@ describe( 'module/analytics-4 service store', () => {
 				expect( decodedServiceURL ).toMatchQueryParameters( query );
 			} );
 		} );
-
 		describe( 'getServiceReportURL', () => {
 			const type = 'test-type';
 

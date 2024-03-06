@@ -32,14 +32,12 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Account_Ticket;
@@ -110,13 +108,7 @@ final class Analytics extends Module
 		 */
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
-		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 		add_action( 'googlesitekit_authorize_user', array( $this, 'handle_token_response_data' ) );
-
-		// For non-AMP and AMP.
-		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
-		// For Web Stories plugin.
-		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
@@ -138,34 +130,14 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Checks whether or not tracking snippet should be contextually disabled for this request.
+	 * Gets Module public name.
 	 *
-	 * @since 1.1.0
+	 * @since 1.121.0
 	 *
-	 * @return bool
+	 * @return string Formatted module name.
 	 */
-	protected function is_tracking_disabled() {
-		$settings = $this->get_settings()->get();
-		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
-		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
-			return false;
-		}
-
-		$option = $this->get_settings()->get();
-
-		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
-		$disable_content_creators = in_array( 'contentCreators', $option['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
-
-		$disabled = $disable_logged_in_users || $disable_content_creators;
-
-		/**
-		 * Filters whether or not the Analytics tracking snippet is output for the current request.
-		 *
-		 * @since 1.1.0
-		 *
-		 * @param $disabled bool Whether to disable tracking or not.
-		 */
-		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
+	public function get_public_name() {
+		return 'Analytics';
 	}
 
 	/**
@@ -253,94 +225,6 @@ final class Analytics extends Module
 		);
 
 		return $fields;
-	}
-
-	/**
-	 * Handles the provisioning callback after the user completes the terms of service.
-	 *
-	 * @since 1.9.0
-	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
-	 */
-	protected function handle_provisioning_callback() {
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
-
-		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			return;
-		}
-
-		$input = $this->context->input();
-
-		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
-			return;
-		}
-
-		// First check that the accountTicketId matches one stored for the user.
-		// This is always provided, even in the event of an error.
-		$account_ticket_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) );
-		// The create-account-ticket request stores the created account ticket in a transient before
-		// sending the user off to the terms of service page.
-		$account_ticket_transient_key = self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
-		$account_ticket_params        = $this->transients->get( $account_ticket_transient_key );
-		$account_ticket               = new Account_Ticket( $account_ticket_params );
-
-		// Backwards compat for previous storage type which stored ID only.
-		if ( is_scalar( $account_ticket_params ) ) {
-			$account_ticket->set_id( $account_ticket_params );
-		}
-
-		if ( $account_ticket->get_id() !== $account_ticket_id ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'dashboard', array( 'error_code' => 'account_ticket_id_mismatch' ) )
-			);
-			exit;
-		}
-
-		// At this point, the accountTicketId is a match and params are loaded, so we can safely delete the transient.
-		$this->transients->delete( $account_ticket_transient_key );
-
-		// Next, check for a returned error.
-		$error = $input->filter( INPUT_GET, 'error' );
-		if ( ! empty( $error ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'dashboard', array( 'error_code' => htmlspecialchars( $error ) ) )
-			);
-			exit;
-		}
-
-		$account_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) );
-
-		if ( empty( $account_id ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
-			);
-			exit;
-		}
-
-		$new_settings = array();
-
-		// At this point, account creation was successful.
-		$new_settings['accountID'] = $account_id;
-
-		$this->get_settings()->merge( $new_settings );
-
-		do_action(
-			'googlesitekit_analytics_handle_provisioning_callback',
-			$account_id,
-			$account_ticket
-		);
-
-		wp_safe_redirect(
-			$this->context->admin_url(
-				'dashboard',
-				array(
-					'notification' => 'authentication_success',
-					'slug'         => 'analytics',
-				)
-			)
-		);
-		exit;
 	}
 
 	/**
@@ -1144,43 +1028,6 @@ final class Analytics extends Module
 	 */
 	private function is_adsense_metric( $metric ) {
 		return 0 === strpos( $metric, 'ga:adsense' );
-	}
-
-	/**
-	 * Outputs the user tracking opt-out script.
-	 *
-	 * This script opts out of all Google Analytics tracking, for all measurement IDs, regardless of implementation.
-	 * E.g. via Tag Manager, etc.
-	 *
-	 * @since 1.5.0
-	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
-	 */
-	private function print_tracking_opt_out() {
-		$settings    = $this->get_settings()->get();
-		$account_id  = $settings['accountID'];
-		$property_id = $settings['propertyID'];
-
-		if ( ! $this->is_tracking_disabled() ) {
-			return;
-		}
-
-		if ( $this->context->is_amp() ) : ?>
-			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
-			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-		<?php else : ?>
-			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
-			if ( ! empty( $property_id ) ) {
-				BC_Functions::wp_print_inline_script_tag(
-					sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $property_id ) )
-				);
-			}
-			?>
-			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
-			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
-		endif;
 	}
 
 	/**

@@ -101,7 +101,6 @@ class SettingsTest extends SettingsTestCase {
 				'profileID'             => '',
 				'internalWebPropertyID' => '',
 				'useSnippet'            => true,
-				'canUseSnippet'         => true,
 				'ownerID'               => 0,
 				'anonymizeIP'           => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),
@@ -241,64 +240,6 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertNotWPError( $data );
 
 		$this->assertTrue( $settings->get()['adsenseLinked'] );
-	}
-
-	public function test_can_use_snippet__default_value() {
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
-		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$settings = new Settings( new Options( $context ) );
-		$settings->register();
-
-		// Defaults to `true`
-		$this->assertTrue( $settings->get()['canUseSnippet'] );
-		// Only filters returning a boolean are allowed.
-		$filter_return = 'a string';
-		add_filter(
-			'googlesitekit_analytics_can_use_snippet',
-			function () use ( &$filter_return ) {
-				return $filter_return;
-			}
-		);
-		$this->assertTrue( $settings->get()['canUseSnippet'] );
-		$filter_return = false;
-		$this->assertFalse( $settings->get()['canUseSnippet'] );
-	}
-
-	public function test_can_use_snippet__saved_value() {
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
-		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$settings = new Settings( new Options( $context ) );
-		$settings->register();
-
-		// Defaults to `true`
-		$this->assertTrue( $settings->get()['canUseSnippet'] );
-		// Save with defaults.
-		$settings->merge( array() );
-		$this->assertTrue( $settings->get()['canUseSnippet'] );
-		// Saved value may be inconsistent with filtered return.
-		$settings->merge( array( 'canUseSnippet' => false ) );
-		$raw_value = $this->queryOption( Settings::OPTION )['option_value'];
-		// Here we show that the raw value in the DB is `false` but the setting returns `true`.
-		$this->assertFalse( maybe_unserialize( $raw_value )['canUseSnippet'] );
-		$this->assertTrue( $settings->get()['canUseSnippet'] );
-		// Keep in mind the saved value is still `false` below.
-
-		// Only filters returning a boolean are allowed.
-		$filter_return = 'a string';
-		add_filter(
-			'googlesitekit_analytics_can_use_snippet',
-			function () use ( &$filter_return ) {
-				return $filter_return;
-			}
-		);
-		// Non-boolean filter return defaults to setting value (saved `false` above).
-		$this->assertFalse( $settings->get()['canUseSnippet'] );
-		$filter_return = false;
-		$this->assertFalse( $settings->get()['canUseSnippet'] );
-
-		// No filters restores the default of `true`.
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
-		$this->assertTrue( $settings->get()['canUseSnippet'] );
 	}
 
 	public function test_tracking_disabled() {

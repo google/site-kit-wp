@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import cache from './cache';
 import connection from './connection';
+import consentMode from './consent-mode';
 import errors from './errors';
 import html from './html';
 import info from './info';
@@ -37,6 +38,7 @@ import { createErrorStore } from '../../data/create-error-store';
 const store = Data.combineStores(
 	Data.commonStore,
 	connection,
+	consentMode,
 	errors,
 	html,
 	info,

@@ -38,6 +38,7 @@ import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
 import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
+import * as modulesAds from '../../assets/js/modules/ads';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics from '../../assets/js/modules/analytics';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
@@ -70,6 +71,7 @@ const allCoreStores = [
 	coreWidgets,
 ];
 const allCoreModules = [
+	modulesAds,
 	modulesAdSense,
 	modulesAnalytics,
 	modulesAnalytics4,

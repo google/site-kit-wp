@@ -18,3 +18,5 @@
 
 export { default as ActivationBanner } from './ActivationBanner';
 export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';
+// @todo clean up the below AudienceSegmentation export, it is only present to satisfy the Jest test for now.
+export { default as AudienceSegmentation } from './AudienceSegmentation/AudienceSegmentationSetupCTAWidget';

@@ -20,6 +20,35 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
             class="googlesitekit-cta"
           >
             
+            <div
+              class="googlesitekit-cta__body"
+            >
+              <h3
+                class="googlesitekit-cta__title"
+              >
+                Data Unavailable
+              </h3>
+              <p
+                class="googlesitekit-cta__description"
+              >
+                Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.
+              </p>
+              
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-hidden"
+      >
+        <div
+          class="googlesitekit-cta"
+        >
+          
+          <div
+            class="googlesitekit-cta__body"
+          >
             <h3
               class="googlesitekit-cta__title"
             >
@@ -33,27 +62,6 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
             
             
           </div>
-        </div>
-      </div>
-      <div
-        class="googlesitekit-hidden"
-      >
-        <div
-          class="googlesitekit-cta"
-        >
-          
-          <h3
-            class="googlesitekit-cta__title"
-          >
-            Data Unavailable
-          </h3>
-          <p
-            class="googlesitekit-cta__description"
-          >
-            Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.
-          </p>
-          
-          
         </div>
       </div>
     </div>
@@ -70,18 +78,22 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
             class="googlesitekit-cta"
           >
             
-            <h3
-              class="googlesitekit-cta__title"
+            <div
+              class="googlesitekit-cta__body"
             >
-              Data Unavailable
-            </h3>
-            <p
-              class="googlesitekit-cta__description"
-            >
-              Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.
-            </p>
-            
-            
+              <h3
+                class="googlesitekit-cta__title"
+              >
+                Data Unavailable
+              </h3>
+              <p
+                class="googlesitekit-cta__description"
+              >
+                Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.
+              </p>
+              
+              
+            </div>
           </div>
         </div>
       </div>

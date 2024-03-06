@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
@@ -26,13 +25,8 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\MutableInput;
-use Google\Site_Kit\Tests\Exception\RedirectException;
-use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\ReportRequest as Google_Service_AnalyticsReporting_ReportRequest;
-use Google\Site_Kit_Dependencies\Google\Service\Analytics_Resource\ManagementWebproperties as Google_Service_Analytics_Resource_ManagementWebproperties;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\OrderBy as Google_Service_AnalyticsReporting_OrderBy;
-use Google\Site_Kit_Dependencies\Google\Service\Analytics\Webproperty as Google_Service_Analytics_Webproperty;
 use \ReflectionMethod;
 
 /**
@@ -49,8 +43,6 @@ class AnalyticsTest extends TestCase {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
-		remove_all_actions( 'wp_head' );
-		remove_all_actions( 'web_stories_story_head' );
 
 		$analytics->register();
 
@@ -62,10 +54,6 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertFalse( get_option( 'googlesitekit_analytics_adsense_linked' ) );
 		$this->assertFalse( $analytics->is_connected() );
-
-		// Test actions for tracking opt-out are added.
-		$this->assertTrue( has_action( 'wp_head' ) );
-		$this->assertTrue( has_action( 'web_stories_story_head' ) );
 	}
 
 	public function test_is_connected() {
@@ -84,24 +72,6 @@ class AnalyticsTest extends TestCase {
 			),
 			$analytics->get_scopes()
 		);
-	}
-
-	public function test_data_available_reset_on_property_change() {
-		$analytics = new Analytics( $this->get_amp_primary_context() );
-		$analytics->register();
-		$analytics->get_settings()->merge(
-			array(
-				'propertyID' => 'UA-12345678-1',
-			)
-		);
-		$analytics->set_data_available();
-		$analytics->get_settings()->merge(
-			array(
-				'propertyID' => 'UA-87654321-1',
-			)
-		);
-
-		$this->assertFalse( $analytics->is_data_available() );
 	}
 
 	public function test_on_deactivation() {
@@ -132,108 +102,6 @@ class AnalyticsTest extends TestCase {
 			),
 			$analytics->get_datapoints()
 		);
-	}
-
-	public function test_handle_provisioning_callback() {
-		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$analytics = new Analytics( $context );
-
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
-		add_filter(
-			'map_meta_cap',
-			function( $caps, $cap ) {
-				if ( Permissions::MANAGE_OPTIONS === $cap ) {
-					return array( 'manage_options' );
-				}
-				return $caps;
-			},
-			99,
-			2
-		);
-
-		$dashboard_url               = $context->admin_url();
-		$account_ticked_id_transient = Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
-
-		$_GET['gatoscallback']   = '1';
-		$_GET['accountTicketId'] = '123456';
-
-		$class  = new \ReflectionClass( Analytics::class );
-		$method = $class->getMethod( 'handle_provisioning_callback' );
-		$method->setAccessible( true );
-
-		// Results in an error for a mismatch (or no account ticket ID stored from before at all).
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
-				$redirect->get_location()
-			);
-		}
-
-		// Results in an error when there is an error parameter.
-		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
-		$_GET['error'] = 'user_cancel';
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "user_cancel" error' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg( 'error_code', 'user_cancel', $dashboard_url ),
-				$redirect->get_location()
-			);
-			// Ensure transient was deleted by the method despite error.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
-		}
-		unset( $_GET['error'] );
-
-		// Set up mock for Analytics web properties API request handler for success case below.
-		$webproperties_mock = $this->getMockBuilder( Google_Service_Analytics_Resource_ManagementWebproperties::class )
-			->disableOriginalConstructor()
-			->setMethods( array( 'get' ) )
-			->getMock();
-
-		$analytics_service_mock = $this->getMockBuilder( Google_Service_Analytics::class )
-			->disableOriginalConstructor()
-			->getMock();
-
-		$analytics_service_mock->management_webproperties = $webproperties_mock;
-
-		$google_services = $class->getParentClass()->getProperty( 'google_services' );
-		$google_services->setAccessible( true );
-		$google_services->setValue( $analytics, array( 'analytics' => $analytics_service_mock ) );
-
-		// Results in an dashboard redirect on success, with new data being stored.
-		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
-		$_GET['accountId'] = '12345678';
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_handle_provisioning_callback' ) );
-			$this->assertEquals(
-				add_query_arg(
-					array(
-						'page'         => 'googlesitekit-dashboard',
-						'notification' => 'authentication_success',
-						'slug'         => 'analytics',
-					),
-					admin_url( 'admin.php' )
-				),
-				$redirect->get_location()
-			);
-
-			// Ensure transient was deleted by the method.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
-			// Ensure settings were set correctly.
-			$settings = $analytics->get_settings()->get();
-
-			$this->assertEquals( $_GET['accountId'], $settings['accountID'] );
-			$this->assertEquals( $admin_id, $settings['ownerID'] );
-		}
 	}
 
 	/**

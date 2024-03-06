@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
@@ -26,7 +25,8 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
 
 /**
@@ -148,6 +148,7 @@ final class Modules {
 		Site_Verification::MODULE_SLUG  => Site_Verification::class,
 		Search_Console::MODULE_SLUG     => Search_Console::class,
 		Analytics::MODULE_SLUG          => Analytics::class,
+		Analytics_4::MODULE_SLUG        => Analytics_4::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
 		AdSense::MODULE_SLUG            => AdSense::class,
 		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
@@ -178,7 +179,9 @@ final class Modules {
 		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets           = $assets ?: new Assets( $this->context );
 
-		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
+		if ( Feature_Flags::enabled( 'adsModule' ) ) {
+			$this->core_modules[ Ads::MODULE_SLUG ] = Ads::class;
+		}
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
@@ -261,13 +264,13 @@ final class Modules {
 
 				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
 				if ( is_array( $extra_scopes ) ) {
-					$readonly_scope_index = array_search( Analytics::READONLY_SCOPE, $extra_scopes, true );
+					$readonly_scope_index = array_search( Analytics_4::READONLY_SCOPE, $extra_scopes, true );
 					if ( $readonly_scope_index >= 0 ) {
 						unset( $extra_scopes[ $readonly_scope_index ] );
 
 						$auth_scopes = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
 						if ( is_array( $auth_scopes ) ) {
-							$auth_scopes[] = Analytics::READONLY_SCOPE;
+							$auth_scopes[] = Analytics_4::READONLY_SCOPE;
 							$auth_scopes   = array_unique( $auth_scopes );
 
 							$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );

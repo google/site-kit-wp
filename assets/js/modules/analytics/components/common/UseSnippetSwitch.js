@@ -42,9 +42,6 @@ export default function UseSnippetSwitch( { description } ) {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const canUseSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getCanUseSnippet()
-	);
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
@@ -71,10 +68,9 @@ export default function UseSnippetSwitch( { description } ) {
 					'Place Universal Analytics code',
 					'google-site-kit'
 				) }
-				checked={ canUseSnippet === false ? false : useSnippet }
+				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
-				disabled={ canUseSnippet === false }
 			/>
 			{ description }
 		</div>
