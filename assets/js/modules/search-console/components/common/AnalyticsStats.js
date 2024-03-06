@@ -76,7 +76,7 @@ export default function AnalyticsStats( props ) {
 			{
 				date: getDateString( new Date( propertyCreateTime ) ),
 				text: __(
-					'Google Analytics 4 property created',
+					'Google Analytics property created',
 					'google-site-kit'
 				),
 			},
