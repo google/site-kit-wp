@@ -37,6 +37,7 @@ export default function OverlayNotificationActions( props ) {
 			<Button tertiary onClick={ dismissCallback }>
 				{ dismissLabel }
 			</Button>
+
 			<Button
 				href={ ctaLink }
 				target={ ctaTarget }

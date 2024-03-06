@@ -73,7 +73,7 @@ import {
 } from '../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
 import OfflineNotification from './notifications/OfflineNotification';
-import OverlayRenderer from './OverlayNotification/OverlayRenderer';
+import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 const { useSelect, useDispatch } = Data;
 
@@ -301,7 +301,7 @@ export default function DashboardMainApp() {
 
 			<MetricsSelectionPanel />
 
-			<OverlayRenderer />
+			<OverlayNotificationsRenderer />
 
 			<OfflineNotification />
 		</Fragment>

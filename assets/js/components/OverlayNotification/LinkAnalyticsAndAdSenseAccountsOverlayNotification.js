@@ -36,9 +36,8 @@ import {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from './constants';
 import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adsense-connect.svg';
-import OverlayNotificationBase from './OverlayNotificationBase';
+import OverlayNotification from './OverlayNotification';
 import OverlayNotificationActions from './OverlayNotificationActions';
-import OverlayNotificationContent from './OverlayNotificationContent';
 import useViewOnly from '../../hooks/useViewOnly';
 import { isFeatureEnabled } from '../../features';
 import useDashboardType, {
@@ -143,20 +142,25 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	}
 
 	return (
-		<OverlayNotificationBase
+		<OverlayNotification
 			animateNotification={ isShowingCurrentOverlayNotification }
 		>
 			<AnalyticsAdsenseConnectGraphic />
-			<OverlayNotificationContent
-				heading={ __(
-					'See which content earns you the most',
-					'google-site-kit'
-				) }
-				text={ __(
-					'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
-					'google-site-kit'
-				) }
-			/>
+
+			<div className="googlesitekit-overlay-notification__body">
+				<h3>
+					{ __(
+						'See which content earns you the most',
+						'google-site-kit'
+					) }
+				</h3>
+				<p>
+					{ __(
+						'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
+						'google-site-kit'
+					) }
+				</p>
+			</div>
 
 			<OverlayNotificationActions
 				ariaLabel={ __(
@@ -170,6 +174,6 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 				dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 				dismissCallback={ dismissNotification }
 			/>
-		</OverlayNotificationBase>
+		</OverlayNotification>
 	);
 }

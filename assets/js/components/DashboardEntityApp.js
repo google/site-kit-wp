@@ -63,7 +63,7 @@ import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharing
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-import OverlayRenderer from './OverlayNotification/OverlayRenderer';
+import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
@@ -255,7 +255,7 @@ function DashboardEntityApp() {
 				} ) }
 			/>
 
-			<OverlayRenderer />
+			<OverlayNotificationsRenderer />
 
 			<OfflineNotification />
 		</Fragment>
