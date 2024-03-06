@@ -41,11 +41,17 @@ import OverlayNotificationActions from './OverlayNotificationActions';
 import OverlayNotificationContent from './OverlayNotificationContent';
 import useViewOnly from '../../hooks/useViewOnly';
 import { isFeatureEnabled } from '../../features';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../../hooks/useDashboardType';
 
 const { useSelect, useDispatch } = Data;
 
 export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const isViewOnly = useViewOnly();
+	const dashboardType = useDashboardType();
+
+	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
 
 	const isShowingCurrentOverlayNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification(
@@ -77,6 +83,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 		return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 	} );
+
 	const adSenseModuleConnected = useSelect( ( select ) => {
 		if ( isViewOnly ) {
 			return null;
@@ -84,6 +91,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 		return select( CORE_MODULES ).isModuleConnected( 'adsense' );
 	} );
+
 	const isAdSenseLinked = useSelect( ( select ) => {
 		if ( isViewOnly ) {
 			return null;
@@ -97,9 +105,10 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 	const shouldShowNotification =
 		! isViewOnly &&
-		false === isDismissed &&
+		isMainDashboard &&
+		isDismissed === false &&
 		analyticsAndAdSenseAreConnected &&
-		false === isAdSenseLinked &&
+		isAdSenseLinked === false &&
 		ga4AdSenseIntegration;
 
 	const dismissNotification = useCallback( () => {
@@ -129,11 +138,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		setOverlayNotificationToShow,
 	] );
 
-	if (
-		! shouldShowNotification ||
-		! isShowingCurrentOverlayNotification ||
-		isViewOnly
-	) {
+	if ( ! shouldShowNotification || ! isShowingCurrentOverlayNotification ) {
 		return null;
 	}
 
