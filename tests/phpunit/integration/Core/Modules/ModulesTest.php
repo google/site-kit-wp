@@ -55,11 +55,11 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_available_modules__missing_dependency() {
-		$modules     = new Modules( new Context(GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-    	$fake_module = new FakeModule( new Context(GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-    	$fake_module->set_force_active( true );
+		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$fake_module->set_force_active( true );
 
-    	$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
 		$available = array_map(
 			function( $instance ) {
@@ -70,7 +70,7 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'fake-module'		=> 'Google\\Site_Kit\\Tests\\Core\\Modules\\FakeModule',
+				'fake-module' => 'Google\\Site_Kit\\Tests\\Core\\Modules\\FakeModule',
 			),
 			$available
 		);
@@ -162,15 +162,21 @@ class ModulesTest extends TestCase {
 
 	public function test_get_module_dependencies() {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-    	$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-    	$fake_module->set_force_active( true );
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$fake_module->set_force_active( true );
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
-		$this->force_set_property( $modules, 'dependencies', array( 'fake-module' => array(
-			'analytics-4',
-			'search-console',
-			'adsense',
-		) ) );
+		$this->force_set_property(
+			$modules,
+			'dependencies',
+			array(
+				'fake-module' => array(
+					'analytics-4',
+					'search-console',
+					'adsense',
+				),
+			)
+		);
 
 		$dependencies = $modules->get_module_dependencies( 'fake-module' );
 
