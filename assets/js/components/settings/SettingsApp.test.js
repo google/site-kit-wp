@@ -36,7 +36,6 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/tracking'
@@ -91,13 +90,6 @@ describe( 'SettingsApp', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
-			options: {
-				startDate: '2023-12-21',
-				endDate: '2024-02-14',
-				dimensions: 'date',
-			},
-		} );
 	} );
 
 	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
