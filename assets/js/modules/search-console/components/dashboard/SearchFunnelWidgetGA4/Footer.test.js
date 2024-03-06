@@ -99,7 +99,7 @@ describe( 'Footer', () => {
 		expect( fetchMock ).not.toHaveFetched(
 			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
-		expect( container ).not.toHaveTextContent( 'analytics-4' );
+		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
 	} );
 
