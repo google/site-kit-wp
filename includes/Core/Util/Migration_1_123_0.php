@@ -31,6 +31,21 @@ class Migration_1_123_0 {
 	const DB_VERSION = '1.123.0';
 
 	/**
+	 * DB version option name.
+	 */
+	const DB_VERSION_OPTION = 'googlesitekit_db_version';
+
+	/**
+	 * Legacy analytics module slug.
+	 */
+	const LEGACY_ANALYTICS_MODULE_SLUG = 'analytics';
+
+	/**
+	 * Legacy analytics option name.
+	 */
+	const LEGACY_ANALYTICS_OPTION = 'googlesitekit_analytics_settings';
+
+	/**
 	 * Context instance.
 	 *
 	 * @since n.e.x.t
@@ -86,14 +101,14 @@ class Migration_1_123_0 {
 	 * @since n.e.x.t
 	 */
 	public function migrate() {
-		$db_version = $this->options->get( 'googlesitekit_db_version' );
+		$db_version = $this->options->get( self::DB_VERSION_OPTION );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
 			$this->migrate_legacy_analytics_settings();
 			$this->activate_analytics();
 			$this->migrate_legacy_analytics_sharing_settings();
 
-			$this->options->set( 'googlesitekit_db_version', self::DB_VERSION );
+			$this->options->set( self::DB_VERSION_OPTION, self::DB_VERSION );
 		}
 	}
 
@@ -107,7 +122,7 @@ class Migration_1_123_0 {
 			return;
 		}
 
-		$legacy_settings = $this->options->get( 'googlesitekit_analytics_settings' );
+		$legacy_settings = $this->options->get( self::LEGACY_ANALYTICS_OPTION );
 
 		if ( empty( $legacy_settings ) ) {
 			return;
@@ -142,6 +157,7 @@ class Migration_1_123_0 {
 	protected function activate_analytics() {
 		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
+		// Check legacy option.
 		if ( ! is_array( $option ) ) {
 			$option = $this->options->get( 'googlesitekit-active-modules' );
 		}
@@ -157,7 +173,11 @@ class Migration_1_123_0 {
 			return;
 		}
 
-		$legacy_analytics_active = in_array( 'analytics', $option, true );
+		$legacy_analytics_active = in_array(
+			self::LEGACY_ANALYTICS_MODULE_SLUG,
+			$option,
+			true
+		);
 
 		if ( $legacy_analytics_active ) {
 			$option[] = Analytics_4::MODULE_SLUG;
@@ -183,8 +203,8 @@ class Migration_1_123_0 {
 			return;
 		}
 
-		if ( isset( $option['analytics'] ) ) {
-			$option[ Analytics_4::MODULE_SLUG ] = $option['analytics'];
+		if ( isset( $option[ self::LEGACY_ANALYTICS_MODULE_SLUG ] ) ) {
+			$option[ Analytics_4::MODULE_SLUG ] = $option[ self::LEGACY_ANALYTICS_MODULE_SLUG ];
 
 			$this->options->set( Module_Sharing_Settings::OPTION, $option );
 		}

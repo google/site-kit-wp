@@ -166,7 +166,7 @@ class Migration_1_123_0Test extends TestCase {
 
 	protected function set_legacy_options() {
 		$this->options->set(
-			'googlesitekit_analytics_settings',
+			Migration_1_123_0::LEGACY_ANALYTICS_OPTION,
 			array(
 				'ownerID'               => get_current_user_id(),
 				'accountID'             => '12345678',
@@ -183,10 +183,10 @@ class Migration_1_123_0Test extends TestCase {
 	}
 
 	protected function get_db_version() {
-		return $this->options->get( 'googlesitekit_db_version' );
+		return $this->options->get( Migration_1_123_0::DB_VERSION_OPTION );
 	}
 
 	protected function delete_db_version() {
-		$this->options->delete( 'googlesitekit_db_version' );
+		$this->options->delete( Migration_1_123_0::DB_VERSION_OPTION );
 	}
 }
