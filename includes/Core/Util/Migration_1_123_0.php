@@ -1,6 +1,6 @@
 <?php
 /**
- * Migration for 1.121.0
+ * Migration for 1.123.0
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2024 Google LLC
@@ -15,17 +15,17 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 
 /**
- * Class Migration_1_121_0
+ * Class Migration_1_123_0
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Migration_1_121_0 {
+class Migration_1_123_0 {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = '1.121.0';
+	const DB_VERSION = '1.123.0';
 
 	/**
 	 * Context instance.

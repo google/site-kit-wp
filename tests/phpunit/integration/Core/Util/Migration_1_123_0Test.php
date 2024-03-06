@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_1_121_0Test
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_123_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2024 Google LLC
@@ -12,11 +12,11 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_1_121_0;
+use Google\Site_Kit\Core\Util\Migration_1_123_0;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_1_121_0Test extends TestCase {
+class Migration_1_123_0Test extends TestCase {
 
 	/**
 	 * @var Context
@@ -47,7 +47,7 @@ class Migration_1_121_0Test extends TestCase {
 	}
 
 	public function get_new_migration_instance() {
-		return new Migration_1_121_0(
+		return new Migration_1_123_0(
 			$this->context,
 			$this->options
 		);
@@ -84,7 +84,7 @@ class Migration_1_121_0Test extends TestCase {
 			$this->filter_settings( $legacy_settings, $migrated_keys )
 		);
 
-		$this->assertEquals( Migration_1_121_0::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_123_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	protected function filter_settings( $settings, $keys_to_filter ) {
