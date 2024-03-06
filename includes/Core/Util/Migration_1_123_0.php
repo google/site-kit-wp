@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -90,6 +91,7 @@ class Migration_1_123_0 {
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
 			$this->migrate_legacy_analytics_settings();
 			$this->activate_analytics();
+			$this->migrate_legacy_analytics_sharing_settings();
 
 			$this->options->set( 'googlesitekit_db_version', self::DB_VERSION );
 		}
@@ -161,6 +163,30 @@ class Migration_1_123_0 {
 			$option[] = Analytics_4::MODULE_SLUG;
 
 			$this->options->set( Modules::OPTION_ACTIVE_MODULES, $option );
+		}
+	}
+
+	/**
+	 * Replicates sharing settings from the legacy analytics module to analytics-4.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function migrate_legacy_analytics_sharing_settings() {
+		$option = $this->options->get( Module_Sharing_Settings::OPTION );
+
+		if ( ! is_array( $option ) ) {
+			return;
+		}
+
+		// If sharing settings for analytics-4 already exist, bail.
+		if ( isset( $option[ Analytics_4::MODULE_SLUG ] ) ) {
+			return;
+		}
+
+		if ( isset( $option['analytics'] ) ) {
+			$option[ Analytics_4::MODULE_SLUG ] = $option['analytics'];
+
+			$this->options->set( Module_Sharing_Settings::OPTION, $option );
 		}
 	}
 }

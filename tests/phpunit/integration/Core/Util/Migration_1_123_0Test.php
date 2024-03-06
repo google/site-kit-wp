@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_1_123_0;
@@ -75,6 +76,21 @@ class Migration_1_123_0Test extends TestCase {
 			array( 'pagespeed-insights', 'analytics' )
 		);
 
+		// Set initial sharing settings where it doesn't include analytics-4.
+		$this->options->set(
+			Module_Sharing_Settings::OPTION,
+			array(
+				'pagespeed-insights' => array(
+					'sharedRoles' => array(),
+					'management'  => 'all_admins',
+				),
+				'analytics'          => array(
+					'sharedRoles' => array( 'administrator' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+
 		$migration->migrate();
 
 		$legacy_settings      = get_option( 'googlesitekit_analytics_settings' );
@@ -94,6 +110,25 @@ class Migration_1_123_0Test extends TestCase {
 		$this->assertEquals(
 			$this->options->get( Modules::OPTION_ACTIVE_MODULES ),
 			array( 'pagespeed-insights', 'analytics', 'analytics-4' )
+		);
+
+		// Verify that analytics-4 now has duplicate sharing settings.
+		$this->assertEquals(
+			$this->options->get( Module_Sharing_Settings::OPTION ),
+			array(
+				'pagespeed-insights' => array(
+					'sharedRoles' => array(),
+					'management'  => 'all_admins',
+				),
+				'analytics'          => array(
+					'sharedRoles' => array( 'administrator' ),
+					'management'  => 'owner',
+				),
+				'analytics-4'        => array(
+					'sharedRoles' => array( 'administrator' ),
+					'management'  => 'owner',
+				),
+			)
 		);
 
 		$this->assertEquals( Migration_1_123_0::DB_VERSION, $this->get_db_version() );
