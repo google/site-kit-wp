@@ -182,16 +182,7 @@ export function validateCanSubmitChanges( select ) {
 		getWebDataStreamID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
-	const { haveSettingsChanged: haveUASettingsChanged } =
-		createStrictSelect( select )( MODULES_ANALYTICS_4 );
-
-	// Check if GA4 / enhanced measurement settings are changed only if we are sure that there are no UA changes.
-	if ( ! haveUASettingsChanged() ) {
-		invariant(
-			haveAnyGA4SettingsChanged(),
-			INVARIANT_SETTINGS_NOT_CHANGED
-		);
-	}
+	invariant( haveAnyGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
