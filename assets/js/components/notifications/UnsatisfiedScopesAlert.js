@@ -67,7 +67,13 @@ function mapScopesToModuleNames( scopes, modules ) {
 				)
 			)
 			// Map each match into a module slug, if any.
-			.map( ( [ , id ] ) => scopeIDToSlug[ id ] || id )
+			.map( ( [ , id ] ) => {
+				// Exception for analytics to map to analytics-4
+				if ( id === 'analytics' ) {
+					return 'analytics-4';
+				}
+				return scopeIDToSlug[ id ] || id;
+			} )
 			// Map module slugs into module names. If there is no matched module, set to `false`.
 			.map( ( slug ) => modules[ slug ]?.name || false )
 	);
