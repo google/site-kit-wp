@@ -18,12 +18,12 @@
  * External dependencies
  */
 import classNames from 'classnames';
-import { useMount } from 'react-use';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useEffect, useRef, useState, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { Grid, Cell, Row } from '../../material-components';
 import Badge from '../../components/Badge';
@@ -38,10 +39,10 @@ import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
 import WPConsentAPIRequirements from '../consent-mode/WPConsentAPIRequirements';
 import Layout from '../layout/Layout';
 import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
-import { trackEvent } from '../../util';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
@@ -70,10 +71,38 @@ export default function SettingsCardConsentMode() {
 		);
 	} );
 
-	useMount( () => {
-		// Track an event when the user sees the Consent Mode settings.
-		trackEvent( `${ viewContext }_CoMo`, 'view_requirements' );
+	const trackingRef = useRef();
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
 	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			// Track an event when the user sees the Consent Mode settings.
+			trackEvent( `${ viewContext }_CoMo`, 'view_requirements' );
+
+			if ( isAdsConnected && ! isConsentModeEnabled && usingProxy ) {
+				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
+			}
+
+			setHasBeenInView( true );
+		}
+	}, [
+		inView,
+		hasBeenInView,
+		viewContext,
+		usingProxy,
+		triggerSurvey,
+		isAdsConnected,
+		isConsentModeEnabled,
+	] );
 
 	return (
 		<Layout
@@ -89,7 +118,10 @@ export default function SettingsCardConsentMode() {
 			header
 			rounded
 		>
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-consent-mode">
+			<div
+				className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-consent-mode"
+				ref={ trackingRef }
+			>
 				<Grid>
 					<Row>
 						<Cell
