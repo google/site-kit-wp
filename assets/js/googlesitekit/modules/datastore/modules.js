@@ -46,7 +46,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -754,14 +753,6 @@ const baseResolvers = {
 		const modules = yield Data.commonActions.await(
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
-
-		if ( modules?.[ 'analytics-4' ]?.recoverable ) {
-			yield Data.commonActions.await(
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getSettings()
-			);
-		}
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
