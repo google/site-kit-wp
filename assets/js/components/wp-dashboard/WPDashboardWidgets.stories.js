@@ -30,14 +30,15 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
-import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import {
 	setupAnalytics4ZeroData,
+	setupSearchConsoleZeroData,
 	provideAnalytics4ReportTitles,
 	setupSearchConsoleMockReports,
 	setupAnalytics4MockReports,
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
+	widgetDecorators,
 } from './common-GA4.stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 
@@ -118,7 +119,7 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideSiteInfo( registry );
