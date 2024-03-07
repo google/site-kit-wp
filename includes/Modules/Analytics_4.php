@@ -495,7 +495,7 @@ final class Analytics_4 extends Module
 			$datapoints['GET:audiences']        = array( 'service' => 'analyticsaudiences' );
 			$datapoints['POST:create-audience'] = array(
 				'service'                => 'analyticsaudiences',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
 			);
 		}
