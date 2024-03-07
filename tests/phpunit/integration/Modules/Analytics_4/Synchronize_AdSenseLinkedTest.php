@@ -217,10 +217,11 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		$settings              = $this->analytics_4->get_settings()->get();
 		$adsense_linked_status = $settings['adSenseLinked'];
 
-		// Assert that the account status is linked when clientID and adsense-linked values are identical.
+		// Assert that the adSenseLinked status is true when the adClientCode from AdSense
+		// links data and clientID from adSense settings are identical.
 		$this->assertTrue( $adsense_linked_status );
 
-		// Set non-matching clientID, link status should resolve as true following this.
+		// Set non-matching clientID, link status should resolve as false following this.
 		( new Adsense_Settings( $this->options ) )->merge(
 			array(
 				'clientID' => 'ca-pub-54321',
@@ -234,7 +235,8 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		$adsense_linked_status = $settings['adSenseLinked'];
 		$adsense_linked_time   = $settings['adSenseLinkedLastSyncedAt'];
 
-		// Assert that the account status is NOT linked when clientID and adsense-linked values are identical.
+		// Assert that the adSenseLinked status is false when the adClientCode from AdSense
+		// links data and clientID from adSense settings are identical.
 		$this->assertFalse( $adsense_linked_status );
 
 		// Assert that the updated time is the same as the current time.
