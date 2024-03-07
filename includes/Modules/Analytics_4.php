@@ -628,8 +628,7 @@ final class Analytics_4 extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		// @TODO Revert this when we use the new GA4 SettingsEdit form once #7932 is merged and we save all settings to the Analytics-4 module.
-		$settings = ( new Analytics( $this->context ) )->get_settings()->get();
+		$settings = $this->get_settings()->get();
 
 		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
 		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
