@@ -185,16 +185,18 @@ final class Analytics_4 extends Module
 
 		add_action(
 			'admin_init',
-			function() use ( $synchronize_property ) {
-				$synchronize_property->maybe_schedule_synchronize_property();
-			}
+			array(
+				$synchronize_property,
+				'maybe_schedule_synchronize_property',
+			)
 		);
 
 		add_action(
 			'admin_init',
-			function() use ( $synchronize_adsense_linked ) {
-				$synchronize_adsense_linked->maybe_schedule_synchronize_adsense_linked();
-			}
+			array(
+				$synchronize_adsense_linked,
+				'maybe_schedule_synchronize_adsense_linked',
+			)
 		);
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
