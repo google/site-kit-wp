@@ -50,16 +50,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	private $ads_conversion_id;
 
 	/**
-	 * Boolean flag for whether Consent Mode is enabled.
-	 *
-	 * @since 1.122.0
-	 * @deprecated This property is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the method `Module_Web_Tag::is_tag_blocked_on_consent`).
-	 * @var bool
-	 */
-	private $is_consent_mode_enabled;
-
-	/**
 	 * Sets custom dimensions data.
 	 *
 	 * @since 1.113.0
@@ -181,12 +171,10 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
-			if ( ! $this->is_consent_mode_enabled ) {
-				$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
+			$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
-				if ( $block_on_consent_attrs ) {
-						$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
-				}
+			if ( $block_on_consent_attrs ) {
+				$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
 			}
 
 			return $snippet_comment_begin . $tag . $snippet_comment_end;
