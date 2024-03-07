@@ -106,7 +106,7 @@ describe( 'SettingsModule', () => {
 	} );
 
 	it( 'should display SettingsViewComponent when on module view route', () => {
-		history.push( '/connected-services/analytics' );
+		history.push( '/connected-services/analytics-4' );
 
 		const { queryByTestID } = render( <SettingsModuleWithWrapper />, {
 			history,
@@ -117,7 +117,7 @@ describe( 'SettingsModule', () => {
 	} );
 
 	it( 'should display SettingsEditComponent when on module edit route', () => {
-		history.push( '/connected-services/analytics/edit' );
+		history.push( '/connected-services/analytics-4/edit' );
 
 		const { queryByTestID } = render( <SettingsModuleWithWrapper />, {
 			history,
@@ -143,7 +143,7 @@ describe( 'SettingsModule', () => {
 	} );
 
 	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent', () => {
-		history.push( '/connected-services/analytics' );
+		history.push( '/connected-services/analytics-4' );
 
 		const { getByRole, queryByTestID } = render(
 			<SettingsModuleWithWrapper />,
@@ -153,13 +153,13 @@ describe( 'SettingsModule', () => {
 		fireEvent.click( getByRole( 'link', { name: /edit/i } ) );
 
 		expect( global.location.hash ).toEqual(
-			'#/connected-services/analytics/edit'
+			'#/connected-services/analytics-4/edit'
 		);
 		expect( queryByTestID( 'edit-component' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should change route when "Cancel" link is clicked and switch to SettingsViewComponent', async () => {
-		history.push( '/connected-services/analytics/edit' );
+		history.push( '/connected-services/analytics-4/edit' );
 
 		const { getByRole, queryByTestID, findByTestID } = render(
 			<SettingsModuleWithWrapper />,
@@ -171,7 +171,7 @@ describe( 'SettingsModule', () => {
 		await findByTestID( 'view-component' );
 
 		expect( global.location.hash ).toEqual(
-			'#/connected-services/analytics'
+			'#/connected-services/analytics-4'
 		);
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
@@ -207,13 +207,13 @@ describe( 'SettingsModule', () => {
 
 		fireEvent.click( getByRole( 'tab' ) );
 		expect( global.location.hash ).toEqual(
-			'#/connected-services/analytics'
+			'#/connected-services/analytics-4'
 		);
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should close accordion on click and change route & DOM correctly', () => {
-		history.push( '/connected-services/analytics' );
+		history.push( '/connected-services/analytics-4' );
 
 		const { getByRole, queryByTestID } = render(
 			<SettingsModuleWithWrapper />,
@@ -226,7 +226,7 @@ describe( 'SettingsModule', () => {
 	} );
 
 	it( 'should render a submit button when editing a connected module with settings', () => {
-		history.push( '/connected-services/analytics/edit' );
+		history.push( '/connected-services/analytics-4/edit' );
 
 		const { queryByRole } = render( <SettingsModuleWithWrapper />, {
 			history,

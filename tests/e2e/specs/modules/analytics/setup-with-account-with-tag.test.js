@@ -161,7 +161,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			text: /connect more services/i,
 		} );
 		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics'
+			'.googlesitekit-settings-connect-module--analytics-4'
 		);
 	} );
 
@@ -202,7 +202,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		);
 
 		await expect( page ).toClick( 'button', {
-			text: /configure analytics/i,
+			text: /complete setup/i,
 		} );
 
 		await page.waitForSelector(
@@ -226,7 +226,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await proceedToSetUpAnalytics();
 
 		await expect( page ).toClick( 'button', {
-			text: /configure analytics/i,
+			text: /complete setup/i,
 		} );
 
 		await page.waitForSelector(

@@ -253,6 +253,13 @@ const baseReducer = ( state, { type } ) => {
 			return {
 				...state,
 				accountSummaries: undefined,
+				settings: {
+					...state.settings,
+					accountID: undefined,
+					propertyID: undefined,
+					measurementID: undefined,
+					webDataStreamID: undefined,
+				},
 			};
 		}
 

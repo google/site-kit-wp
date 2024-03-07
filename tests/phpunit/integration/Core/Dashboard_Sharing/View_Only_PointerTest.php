@@ -157,7 +157,7 @@ class View_Only_PointerTest extends TestCase {
 	private function grant_editors_view_only_dashboard_access() {
 		$settings              = new Module_Sharing_Settings( new Options( $this->context ) );
 		$test_sharing_settings = array(
-			'analytics' => array(
+			'analytics-4' => array(
 				'sharedRoles' => array( 'editor' ),
 				'management'  => 'all_admins',
 			),

@@ -39,40 +39,6 @@ import useViewOnly from '../../../../hooks/useViewOnly';
 import { getDateString } from '../../../../util';
 const { useSelect } = Data;
 
-/**
- * Extracts chart data from analytics row data.
- *
- * @since 1.96.0
- * @since 1.98.0 Added chartDataFormats parameter.
- *
- * @param {string} moduleSlug         The module slug.
- * @param {Object} data               The data returned from the Analytics API call.
- * @param {Array}  selectedStats      The currently selected stat we need to return data for.
- * @param {number} dateRangeLength    The number of days to extract data for. Pads empty data days.
- * @param {Array}  dataLabels         The labels to be displayed.
- * @param {Array}  tooltipDataFormats The formats to be used for the tooltip data.
- * @param {Array}  chartDataFormats   The formats to be used for the chart data (GA4 only).
- * @return {Array} The dataMap ready for charting.
- */
-function extractChartData(
-	moduleSlug,
-	data,
-	selectedStats,
-	dateRangeLength,
-	dataLabels,
-	tooltipDataFormats,
-	chartDataFormats
-) {
-	return extractAnalytics4DashboardData(
-		data,
-		selectedStats,
-		dateRangeLength,
-		dataLabels,
-		tooltipDataFormats,
-		chartDataFormats
-	);
-}
-
 export default function AnalyticsStats( props ) {
 	const {
 		data,
@@ -110,7 +76,7 @@ export default function AnalyticsStats( props ) {
 			{
 				date: getDateString( new Date( propertyCreateTime ) ),
 				text: __(
-					'Google Analytics 4 property created',
+					'Google Analytics property created',
 					'google-site-kit'
 				),
 			},
@@ -121,8 +87,7 @@ export default function AnalyticsStats( props ) {
 		return null;
 	}
 
-	const googleChartData = extractChartData(
-		moduleSlug,
+	const googleChartData = extractAnalytics4DashboardData(
 		data,
 		selectedStats,
 		dateRangeLength,

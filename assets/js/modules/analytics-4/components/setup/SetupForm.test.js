@@ -61,21 +61,6 @@ describe( 'SetupForm', () => {
 		provideModules( registry, [ { slug: 'analytics-4', active: true } ] );
 	} );
 
-	it( 'renders the form with a progress bar when GTM containers are not resolved', () => {
-		provideModules( registry, [
-			{ slug: 'analytics-4', active: true, connected: true },
-			{ slug: 'tagmanager', active: true, connected: true },
-		] );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-
-		const { container, getByRole } = render( <SetupForm />, { registry } );
-
-		expect( container ).toMatchSnapshot();
-
-		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
-	} );
-
 	it( 'renders the form correctly', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
@@ -109,9 +94,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const { container, getByText, waitForRegistry } = render(
@@ -159,9 +141,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const finishSetup = jest.fn();
@@ -207,7 +186,7 @@ describe( 'SetupForm', () => {
 
 		act( () => {
 			fireEvent.click(
-				getByRole( 'button', { name: /Configure Analytics/i } )
+				getByRole( 'button', { name: /Complete setup/i } )
 			);
 		} );
 
@@ -258,9 +237,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
@@ -328,7 +304,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Configure Analytics/i } )
+			getByRole( 'button', { name: /Complete setup/i } )
 		).toBeInTheDocument();
 
 		await waitForRegistry();
@@ -367,9 +343,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
@@ -411,7 +384,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Configure Analytics/i } )
+			getByRole( 'button', { name: /Complete setup/i } )
 		).toBeInTheDocument();
 
 		// While not strictly needed, add waits to match the successful auto-submit test case to help avoid a false positive result.

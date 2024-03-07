@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { provideModules, provideSiteInfo } from '../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
@@ -36,16 +40,13 @@ const searchConsoleArgs = {
 
 const analyticsArgs = [
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
 		metrics: [
 			{
-				name: 'conversions',
-			},
-			{
-				name: 'engagementRate',
+				name: 'totalUsers',
 			},
 		],
 		dimensionFilters: {
@@ -53,26 +54,29 @@ const analyticsArgs = [
 		},
 	},
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
 		dimensions: [
 			{
 				name: 'date',
 			},
 		],
+		limit: 10,
 		metrics: [
 			{
-				name: 'conversions',
-			},
-			{
-				name: 'engagementRate',
+				name: 'averageSessionDuration',
 			},
 		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
+	},
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [ { name: 'totalUsers' } ],
+		dimensions: [ 'date' ],
 		orderby: [
 			{
 				dimension: {
@@ -82,44 +86,23 @@ const analyticsArgs = [
 		],
 	},
 	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		dimensions: [ 'pagePath' ],
 		metrics: [
 			{
-				name: 'totalUsers',
+				name: 'screenPageViews',
 			},
 		],
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
 		orderby: [
 			{
-				dimension: {
-					dimensionName: 'date',
+				metric: {
+					metricName: 'screenPageViews',
 				},
+				desc: true,
 			},
 		],
-	},
-	{
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
+		limit: 5,
 	},
 ];
 
@@ -148,11 +131,8 @@ AnalyticsGatheringData.storyName = 'Analytics Gathering Data';
 AnalyticsGatheringData.args = {
 	setupRegistry: ( registry ) => {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
-		for ( const options of analyticsArgs ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetReport( [], { options } );
-		}
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 	},
 };
 
@@ -160,9 +140,16 @@ export const SearchConsoleGatheringData = Template.bind( {} );
 SearchConsoleGatheringData.storyName = 'Search Console Gathering Data';
 SearchConsoleGatheringData.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveGetReport( [], { options: searchConsoleArgs } );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyCreateTime: 1662715085968,
+		} );
+
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+			options: searchConsoleArgs,
+		} );
+
 		for ( const options of analyticsArgs ) {
 			provideAnalytics4MockReport( registry, options );
 		}
@@ -177,11 +164,7 @@ SearchConsoleAndAnalyticsGatheringData.args = {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveGetReport( [], { options: searchConsoleArgs } );
-		for ( const options of analyticsArgs ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetReport( [], { options } );
-		}
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 	},
 };
 
@@ -203,9 +186,10 @@ ZeroDataState.args = {
 				options: searchConsoleArgs,
 			}
 		);
-		for ( const options of analyticsArgs ) {
-			provideAnalytics4MockReport( registry, options );
-		}
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyCreateTime: 1662715085968,
+		} );
 	},
 };
 
@@ -215,10 +199,8 @@ export default {
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 				registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
-				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
-					needsReauthentication: false,
-				} );
 
 				provideModules( registry, [
 					{
@@ -229,7 +211,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics',
+						slug: 'analytics-4',
 					},
 				] );
 

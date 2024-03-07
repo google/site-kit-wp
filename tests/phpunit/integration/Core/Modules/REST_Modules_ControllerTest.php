@@ -260,25 +260,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_activation_rest_endpoint__prevent_inactive_dependencies_activation() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$this->modules->deactivate_module( 'analytics' );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug'   => 'analytics-4',
-					'active' => true,
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'inactive_dependencies', $response->get_data()['code'] );
-		$this->assertEquals( 500, $response->get_status() );
+		// Currently there are no modules with dependency. @TODO Add when one shows up.
 	}
 
 	public function test_activation_rest_endpoint__activate_module() {
@@ -290,7 +272,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug'   => 'analytics',
+					'slug'   => 'analytics-4',
 					'active' => true,
 				),
 			)
@@ -310,7 +292,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug'   => 'analytics',
+					'slug'   => 'analytics-4',
 					'active' => false,
 				),
 			)
@@ -326,7 +308,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$this->modules->activate_module( 'analytics' );
 		$this->modules->activate_module( 'analytics-4' );
 
 		$this->assertTrue( $this->modules->is_module_active( 'analytics-4' ) );
@@ -335,7 +316,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug'   => 'analytics',
+					'slug'   => 'analytics-4',
 					'active' => false,
 				),
 			)
@@ -393,7 +374,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
-		$request->set_query_params( array( 'slug' => 'analytics' ) );
+		$request->set_query_params( array( 'slug' => 'analytics-4' ) );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertNotEmpty( $response->get_data() );
@@ -432,7 +413,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'analytics',
+					'slug' => 'analytics-4',
 				),
 			)
 		);
@@ -466,16 +447,16 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$analytics = $this->modules->get_module( 'analytics' );
+		$analytics = $this->modules->get_module( 'analytics-4' );
 
 		FakeHttp::fake_google_http_handler( $analytics->get_client() );
 
 		$analytics->get_settings()->merge(
 			array(
-				'accountID'             => '12345678',
-				'profileID'             => '12345678',
-				'propertyID'            => '987654321',
-				'internalWebPropertyID' => '1234567890',
+				'accountID'       => '12345678',
+				'propertyID'      => '12345678',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-123',
 			)
 		);
 
@@ -483,7 +464,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'analytics',
+					'slug' => 'analytics-4',
 				),
 			)
 		);
@@ -935,6 +916,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$analytics_4 = $this->modules->get_module( 'analytics-4' );
 		$analytics_4->get_settings()->merge(
 			array(
+				'accountID'       => '123456789',
 				'propertyID'      => '123456789',
 				'measurementID'   => 'G-1234567',
 				'webDataStreamID' => '123456789',

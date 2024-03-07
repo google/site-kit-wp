@@ -36,7 +36,6 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
-use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
@@ -101,11 +100,6 @@ final class Tag_Manager extends Module
 
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
-		// Filter the Analytics `canUseSnippet` value.
-		add_filter( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ), 10, 2 );
-		// Filter whether certain users can be excluded from tracking.
-		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
-		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 	}
 
 	/**
@@ -526,12 +520,12 @@ final class Tag_Manager extends Module
 			'googlesitekit-components',
 		);
 
-		$analytics_exists = apply_filters( 'googlesitekit_module_exists', false, 'analytics' );
+		$analytics_exists = apply_filters( 'googlesitekit_module_exists', false, 'analytics-4' );
 
 		// Note that the Tag Manager bundle will make use of the Analytics bundle if it's available,
 		// but can also function without it, hence the conditional include of the Analytics bundle here.
 		if ( $analytics_exists ) {
-			$dependencies[] = 'googlesitekit-modules-analytics';
+			$dependencies[] = 'googlesitekit-modules-analytics-4';
 		}
 
 		return array(
@@ -580,74 +574,6 @@ final class Tag_Manager extends Module
 	 */
 	public function get_tag_matchers() {
 		return new Tag_Matchers();
-	}
-
-	/**
-	 * Filters whether or not the Analytics module's snippet should be controlled by its `useSnippet` setting.
-	 *
-	 * @since 1.28.0
-	 * @since 1.75.0 Now requires current UA property ID as second parameter.
-	 *
-	 * @param boolean $original_value Original value of useSnippet setting.
-	 * @param string  $ua_property_id Current UA property.
-	 * @return boolean Filtered value.
-	 */
-	private function can_analytics_use_snippet( $original_value, $ua_property_id ) {
-		$settings = $this->get_settings()->get();
-
-		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] && $settings['gaPropertyID'] === $ua_property_id ) {
-			return false;
-		}
-
-		return $original_value;
-	}
-
-	/**
-	 * Handles Analytics measurement opt-out for the configured Analytics property in the container(s).
-	 *
-	 * @since 1.41.0
-	 *
-	 * @param string $property_id Analytics property_id.
-	 */
-	private function analytics_tracking_opt_out( $property_id ) {
-		$settings       = $this->get_settings()->get();
-		$ga_property_id = $settings['gaPropertyID'];
-		if ( ! $ga_property_id || $ga_property_id === $property_id ) {
-			return;
-		}
-
-		BC_Functions::wp_print_inline_script_tag(
-			sprintf(
-				'window["ga-disable-%s"] = true;',
-				esc_attr( $ga_property_id )
-			)
-		);
-
-	}
-
-	/**
-	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
-	 *
-	 * If Site Kit does not place the Analytics snippet (neither via Analytics nor via Tag Manager),
-	 * the option to exclude certain users from tracking should not be displayed.
-	 *
-	 * @since 1.36.0
-	 *
-	 * @param boolean $allowed Whether to allow tracking exclusion.
-	 * @return boolean Filtered value.
-	 */
-	private function filter_analytics_allow_tracking_disabled( $allowed ) {
-		if ( $allowed ) {
-			return true;
-		}
-
-		$settings = $this->get_settings()->get();
-
-		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] ) {
-			return true;
-		}
-
-		return $allowed;
 	}
 
 	/**

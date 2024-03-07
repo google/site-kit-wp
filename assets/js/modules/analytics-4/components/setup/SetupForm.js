@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { SpinnerButton, ProgressBar } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import {
 	FORM_SETUP,
 	EDIT_SCOPE,
@@ -109,10 +109,6 @@ export default function SetupForm( { finishSetup } ) {
 		]
 	);
 
-	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedLoadingGTMContainers()
-	);
-
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
@@ -120,10 +116,6 @@ export default function SetupForm( { finishSetup } ) {
 			submitForm( { preventDefault: () => {} } );
 		}
 	}, [ hasEditScope, autoSubmit, submitForm ] );
-
-	if ( ! gtmContainersResolved ) {
-		return <ProgressBar />;
-	}
 
 	return (
 		<form
@@ -140,7 +132,7 @@ export default function SetupForm( { finishSetup } ) {
 					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 				>
-					{ __( 'Configure Analytics', 'google-site-kit' ) }
+					{ __( 'Complete setup', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</form>

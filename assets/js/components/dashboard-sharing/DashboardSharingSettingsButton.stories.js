@@ -52,7 +52,7 @@ DefaultDashboardSharingSettingsButton.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
 		} );
 	},
 };
@@ -69,7 +69,7 @@ MultipleAdminsDashboardSharingSettingsButton.args = {
 			'googlesitekit_delegate_module_sharing_management::["search-console"]': true,
 			'googlesitekit_delegate_module_sharing_management::["pagespeed-insights"]': true,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
 		} );
 	},
 };

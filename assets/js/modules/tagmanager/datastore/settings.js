@@ -48,8 +48,8 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -64,8 +64,6 @@ export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID =
 	'a valid internalContainerID is required to submit changes';
 export const INVARIANT_INVALID_CONTAINER_NAME =
 	'a valid container name is required to submit changes';
-export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS =
-	'containers with Analytics tags must reference a single property ID to submit changes';
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
 
@@ -156,15 +154,10 @@ export function validateCanSubmitChanges( select ) {
 		getAMPContainerID,
 		getInternalContainerID,
 		getInternalAMPContainerID,
-		getSingleAnalyticsPropertyID,
-		hasAnyAnalyticsPropertyID,
-		hasMultipleAnalyticsPropertyIDs,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
 	} = strictSelect( MODULES_TAGMANAGER );
 	const { isAMP, isSecondaryAMP } = strictSelect( CORE_SITE );
-	const { isModuleActive } = strictSelect( CORE_MODULES );
-	const { getPropertyID } = strictSelect( MODULES_ANALYTICS_4 );
 
 	const accountID = getAccountID();
 
@@ -242,21 +235,5 @@ export function validateCanSubmitChanges( select ) {
 				INVARIANT_INVALID_INTERNAL_CONTAINER_ID
 			);
 		}
-	}
-
-	invariant(
-		! hasMultipleAnalyticsPropertyIDs(),
-		INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS
-	);
-
-	if (
-		isModuleActive( 'analytics' ) &&
-		getPropertyID() &&
-		hasAnyAnalyticsPropertyID()
-	) {
-		invariant(
-			getSingleAnalyticsPropertyID() === getPropertyID(),
-			INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH
-		);
 	}
 }

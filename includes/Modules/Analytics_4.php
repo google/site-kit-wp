@@ -17,11 +17,11 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -53,8 +53,8 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
-use Google\Site_Kit\Modules\Analytics\Account_Ticket;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -105,11 +105,11 @@ final class Analytics_4 extends Module
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
 
+	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
+
 	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
 	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
 	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
-
-	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
 	 * Module slug name.
@@ -326,6 +326,23 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Checks whether the AdSense module is connected.
+	 *
+	 * @since 1.121.0
+	 *
+	 * @return bool True if AdSense is connected, false otherwise.
+	 */
+	private function is_adsense_connected() {
+		$adsense_settings = ( new AdSense_Settings( $this->options ) )->get();
+
+		if ( empty( $adsense_settings['accountSetupComplete'] ) || empty( $adsense_settings['siteSetupComplete'] ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.30.0
@@ -336,51 +353,64 @@ final class Analytics_4 extends Module
 		$settings = $this->get_settings()->get();
 
 		$debug_fields = array(
-			'analytics_4_account_id'         => array(
+			'analytics_4_account_id'                  => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
-			'analytics_4_property_id'        => array(
-				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
-				'value' => $settings['propertyID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
-			),
-			'analytics_4_web_data_stream_id' => array(
-				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
-				'value' => $settings['webDataStreamID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
-			),
-			'analytics_4_measurement_id'     => array(
-				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
-				'value' => $settings['measurementID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
-			),
-			'analytics_4_use_snippet'        => array(
-				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
-				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
-				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
-			),
-			'analytics_4_ads_conversion_id'  => array(
+			'analytics_4_ads_conversion_id'           => array(
 				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
+			'analytics_4_property_id'                 => array(
+				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
+				'value' => $settings['propertyID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
+			),
+			'analytics_4_web_data_stream_id'          => array(
+				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
+				'value' => $settings['webDataStreamID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
+			),
+			'analytics_4_measurement_id'              => array(
+				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
+				'value' => $settings['measurementID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
+			),
+			'analytics_4_use_snippet'                 => array(
+				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
+				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+			'analytics_4_available_custom_dimensions' => array(
+				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
+				'value' => empty( $settings['availableCustomDimensions'] )
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$settings['availableCustomDimensions']
+					),
+				'debug' => empty( $settings['availableCustomDimensions'] )
+					? 'none'
+					: join( ', ', $settings['availableCustomDimensions'] ),
+			),
 		);
 
-		$debug_fields['analytics_4_available_custom_dimensions'] = array(
-			'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
-			'value' => empty( $settings['availableCustomDimensions'] )
-				? __( 'None', 'google-site-kit' )
-				: join(
-					/* translators: used between list items, there is a space after the comma */
-					__( ', ', 'google-site-kit' ),
-					$settings['availableCustomDimensions']
-				),
-			'debug' => empty( $settings['availableCustomDimensions'] )
-				? 'none'
-				: join( ', ', $settings['availableCustomDimensions'] ),
-		);
+		if ( $this->is_adsense_connected() ) {
+			$debug_fields['adsense_linked'] = array(
+				'label' => __( 'AdSense Linked', 'google-site-kit' ),
+				'value' => $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
+				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
+			);
+
+			$debug_fields['adsense_linked_last_synced_at'] = array(
+				'label' => __( 'AdSense Linked Last Synced At', 'google-site-kit' ),
+				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
+				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
+			);
+		}
 
 		return $debug_fields;
 	}
@@ -558,7 +588,7 @@ final class Analytics_4 extends Module
 	 * E.g. via Tag Manager, etc.
 	 *
 	 * @since 1.5.0
-	 * @since n.e.x.t Migrated from the Analytics (UA) class and adapted to only work for GA4 properties.
+	 * @since 1.121.0 Migrated from the Analytics (UA) class and adapted to only work for GA4 properties.
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
@@ -593,21 +623,21 @@ final class Analytics_4 extends Module
 	 * Checks whether or not tracking snippet should be contextually disabled for this request.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Migrated here from the Analytics (UA) class.
+	 * @since 1.121.0 Migrated here from the Analytics (UA) class.
 	 *
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		$settings = $this->get_settings()->get();
+		// @TODO Revert this when we use the new GA4 SettingsEdit form once #7932 is merged and we save all settings to the Analytics-4 module.
+		$settings = ( new Analytics( $this->context ) )->get_settings()->get();
+
 		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
 		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
 			return false;
 		}
 
-		$option = $this->get_settings()->get();
-
-		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
-		$disable_content_creators = in_array( 'contentCreators', $option['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
+		$disable_logged_in_users  = in_array( 'loggedinUsers', $settings['trackingDisabled'], true ) && is_user_logged_in();
+		$disable_content_creators = in_array( 'contentCreators', $settings['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
 
 		$disabled = $disable_logged_in_users || $disable_content_creators;
 
@@ -626,7 +656,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.9.0
 	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
-	 * @since n.e.x.t Migrated method from original Analytics class to Analytics_4 class.
+	 * @since 1.121.0 Migrated method from original Analytics class to Analytics_4 class.
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -691,8 +721,6 @@ final class Analytics_4 extends Module
 		$new_settings['accountID'] = $account_id;
 
 		$this->get_settings()->merge( $new_settings );
-		// TODO: Remove this when the original Analytics (UA) accountID is not referred to anymore.
-		( new Analytics_Settings( $this->options ) )->merge( $new_settings );
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
@@ -1651,10 +1679,14 @@ final class Analytics_4 extends Module
 			$tag->set_custom_dimensions( $custom_dimensions_data );
 		}
 
-		// TODO: This should be replaced with the Analytics 4 adsConversionID module setting once the settings are migrated.
 		$tag->set_ads_conversion_id(
-			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
+			$this->get_settings()->get()['adsConversionID']
 		);
+
+		if ( ! $this->context->is_amp() ) {
+			$consent_mode_settings = new Consent_Mode_Settings( $this->options );
+			$tag->set_consent_mode_enabled( $consent_mode_settings->get()['enabled'] );
+		}
 
 		$tag->register();
 	}

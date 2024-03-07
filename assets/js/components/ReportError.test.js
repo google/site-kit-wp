@@ -38,7 +38,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constant
 describe( 'ReportError', () => {
 	let registry;
 	let invalidateResolutionSpy;
-	const moduleName = 'analytics';
+	const moduleName = 'analytics-4';
 
 	const newErrors = [
 		{
@@ -173,26 +173,26 @@ describe( 'ReportError', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideUserInfo( registry, userData );
 
-		const [ accountID, internalWebPropertyID, profileID ] = [
+		const [ accountID, propertyID, webDataStreamID ] = [
 			'12345',
 			'34567',
-			'56789',
+			'G-123',
 		];
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setInternalWebPropertyID( internalWebPropertyID );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setProfileID( profileID );
+			.setWebDataStreamID( webDataStreamID );
 
 		const { container, queryByText, waitForRegistry } = render(
 			<ReportError
-				moduleSlug="analytics"
+				moduleSlug={ moduleName }
 				error={ {
 					code: 'test-error-code',
 					message: 'Test error message',
@@ -278,26 +278,26 @@ describe( 'ReportError', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideUserInfo( registry, userData );
 
-		const [ accountID, internalWebPropertyID, profileID ] = [
+		const [ accountID, propertyID, webDataStreamID ] = [
 			'12345',
 			'34567',
-			'56789',
+			'G-123',
 		];
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setInternalWebPropertyID( internalWebPropertyID );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setProfileID( profileID );
+			.setWebDataStreamID( webDataStreamID );
 
 		const { queryByText, waitForRegistry } = render(
 			<ReportError
-				moduleSlug="analytics"
+				moduleSlug={ moduleName }
 				error={ {
 					code: 'test-error-code',
 					message: 'Test error message',
@@ -334,7 +334,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
 			{
 				registry,
 			}
@@ -361,7 +361,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
 			{
 				registry,
 			}
@@ -388,7 +388,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
 			{
 				registry,
 			}
@@ -416,7 +416,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, waitForRegistry } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
 			{
 				registry,
 			}
@@ -450,7 +450,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { getByRole, waitForRegistry } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
 			{
 				registry,
 			}
@@ -483,7 +483,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { getByRole, waitForRegistry } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
 			{
 				registry,
 			}
@@ -511,7 +511,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
 		const { queryByText, getByRole, waitForRegistry } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
 			{
 				registry,
 			}
@@ -541,7 +541,7 @@ describe( 'ReportError', () => {
 
 		const { container, queryByText, getByRole, waitForRegistry } = render(
 			<ReportError
-				moduleSlug="analytics"
+				moduleSlug={ moduleName }
 				error={ [ ...errors, ...errors ] }
 			/>,
 			{
@@ -586,7 +586,7 @@ describe( 'ReportError', () => {
 
 		const { getByRole, queryByText, waitForRegistry } = render(
 			<ReportError
-				moduleSlug="analytics"
+				moduleSlug={ moduleName }
 				// Non-Retryable Error
 				error={ errors }
 			/>,
@@ -626,7 +626,7 @@ describe( 'ReportError', () => {
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 		const { getByRole, queryByText, waitForRegistry } = render(
 			<ReportError
-				moduleSlug="analytics"
+				moduleSlug={ moduleName }
 				// Retryable Error
 				error={ errors }
 			/>,

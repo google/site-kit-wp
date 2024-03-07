@@ -38,19 +38,21 @@ import { Grid, Cell, Row } from '../../material-components';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
+import PreviewBlock from '../PreviewBlock';
 
 const { useSelect } = Data;
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();
 	const inView = useInView();
+
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const loading = useSelect( ( select ) => {
+	const isGetUserInputSettingsLoading = useSelect( ( select ) => {
 		// Ensure that `getUserInputSettings()` is called here in order to trigger its resolver, which we
 		// want to track for the loading state. Invoking the selector here rather than relying on one of
 		// the child components to call it avoids a brief flicker of the loaded state.
@@ -58,6 +60,15 @@ export default function SettingsCardKeyMetrics() {
 
 		return select( CORE_USER ).isResolving( 'getUserInputSettings', [] );
 	} );
+	const hasUserPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+	const isUserInputCompletedLoading = useSelect(
+		( select ) =>
+			! select( CORE_USER ).hasFinishedResolution(
+				'isUserInputCompleted'
+			)
+	);
 
 	const gaEventCategory = `${ viewContext }_kmw`;
 
@@ -67,10 +78,6 @@ export default function SettingsCardKeyMetrics() {
 		}
 	}, [ isUserInputCompleted, gaEventCategory ] );
 
-	const hasUserPickedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
-	);
-
 	const ctaLabel = !! hasUserPickedMetrics?.length
 		? __( 'Set your site goals', 'google-site-kit' )
 		: __( 'Personalize your metrics', 'google-site-kit' );
@@ -78,16 +85,28 @@ export default function SettingsCardKeyMetrics() {
 	return (
 		<Layout title={ __( 'Key Metrics', 'google-site-kit' ) } header rounded>
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
+				{ isUserInputCompletedLoading && (
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="117px"
+					/>
+				) }
 				{ isUserInputCompleted && (
 					<Fragment>
-						<SettingsKeyMetrics loading={ loading } />
+						<SettingsKeyMetrics
+							loading={ isGetUserInputSettingsLoading }
+						/>
 
 						<Grid>
 							<Row>
 								<Cell size={ 12 }>
 									<UserInputPreview
 										settingsView
-										loading={ loading }
+										loading={
+											isGetUserInputSettingsLoading
+										}
 									/>
 								</Cell>
 							</Row>
@@ -106,7 +125,9 @@ export default function SettingsCardKeyMetrics() {
 									size={ 12 }
 								>
 									<LoadingWrapper
-										loading={ loading }
+										loading={
+											isGetUserInputSettingsLoading
+										}
 										className="googlesitekit-user-input__notification-text-loading"
 										width="500px"
 										height="20.5px"
@@ -124,7 +145,9 @@ export default function SettingsCardKeyMetrics() {
 									</LoadingWrapper>
 
 									<LoadingWrapper
-										loading={ loading }
+										loading={
+											isGetUserInputSettingsLoading
+										}
 										width="200px"
 										height="20.5px"
 									>

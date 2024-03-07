@@ -52,27 +52,6 @@
 		]
 	},
 	{
-		"slug": "analytics",
-		"name": "Analytics",
-		"description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
-		"homepage": "https://analytics.google.com/analytics/web",
-		"internal": false,
-		"order": 3,
-		"active": false,
-		"connected": false,
-		"dependencies": [],
-		"dependants": [ "analytics-4" ],
-		"owner": null,
-		"forceActive": false,
-		"shareable": true,
-		"recoverable": false,
-		"features": [
-			"Audience overview",
-			"Top pages",
-			"Top acquisition channels"
-		]
-	},
-	{
 		"slug": "pagespeed-insights",
 		"name": "PageSpeed Insights",
 		"description": "Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.",
@@ -112,7 +91,7 @@
 		"description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
 		"homepage": "https://analytics.google.com/analytics/web",
 		"internal": false,
-		"order": 7,
+		"order": 3,
 		"active": false,
 		"connected": false,
 		"dependencies": [],
@@ -126,5 +105,21 @@
 			"Top pages",
 			"Top acquisition channels"
 		]
+	},
+	{
+		"slug": "ads",
+		"name": "Ads",
+		"description": "Track conversions for your existing Google Ads campaigns.",
+		"homepage": "https://google.com/ads",
+		"internal": false,
+		"order": 1,
+		"active": true,
+		"connected": true,
+		"dependencies": [],
+		"dependants": [],
+		"owner": null,
+		"forceActive": true,
+		"shareable": false,
+		"recoverable": false
 	}
 ]

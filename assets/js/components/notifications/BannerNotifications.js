@@ -57,7 +57,6 @@ export default function BannerNotifications() {
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
-
 	const ga4ModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);

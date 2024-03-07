@@ -32,6 +32,11 @@ import WidgetRecoverableModules from '../components/WidgetRecoverableModules';
 import WPDashboardReportError from '../components/WPDashboardReportError';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Gets the props to pass to a widget's component.
  *
  * @since 1.25.0
@@ -57,9 +62,15 @@ export const getWidgetComponentProps = memize( ( widgetSlug ) => {
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {
-		function WithWidgetSlug( props ) {
-			return <WrappedComponent { ...props } widgetSlug={ widgetSlug } />;
-		}
+		const WithWidgetSlug = forwardRef( function ( props, ref ) {
+			return (
+				<WrappedComponent
+					{ ...props }
+					ref={ ref }
+					widgetSlug={ widgetSlug }
+				/>
+			);
+		} );
 		WithWidgetSlug.displayName = 'WithWidgetSlug';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
 			WithWidgetSlug.displayName += `(${

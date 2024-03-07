@@ -7,7 +7,6 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	setupAnalytics,
 	setSiteVerification,
 	setSearchConsoleProperty,
 	useRequestInterception,
@@ -83,7 +82,6 @@ describe( 'Site Kit admin bar component display', () => {
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
 
-		await setupAnalytics();
 		await setupAnalytics4();
 
 		await page.reload();

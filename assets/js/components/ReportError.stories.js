@@ -122,20 +122,21 @@ export const ReportErrorWithInsufficientPermissionsWithRequestAccess =
 ReportErrorWithInsufficientPermissionsWithRequestAccess.storyName =
 	'ReportError with insufficient permissions with request access';
 ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
-	moduleSlug: 'analytics',
+	moduleSlug: 'analytics-4',
 	setupRegistry: async ( registry ) => {
 		provideModules( registry, [
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 
-		const [ accountID, internalWebPropertyID, profileID ] = [
+		const [ accountID, propertyID, measurementID, webDataStreamID ] = [
 			'12345',
 			'34567',
 			'56789',
+			'78901',
 		];
 
 		await registry
@@ -143,10 +144,13 @@ ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
 			.setAccountID( accountID );
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setInternalWebPropertyID( internalWebPropertyID );
+			.setPropertyID( propertyID );
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setProfileID( profileID );
+			.setMeasurementID( measurementID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setWebDataStreamID( webDataStreamID );
 		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',

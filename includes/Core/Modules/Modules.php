@@ -24,6 +24,8 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
 
 /**
@@ -175,6 +177,10 @@ final class Modules {
 		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets           = $assets ?: new Assets( $this->context );
 
+		if ( Feature_Flags::enabled( 'adsModule' ) ) {
+			$this->core_modules[ Ads::MODULE_SLUG ] = Ads::class;
+		}
+
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
 	}
@@ -238,47 +244,6 @@ final class Modules {
 			function( Module $module ) {
 				$module->register();
 			}
-		);
-
-		add_action(
-			'googlesitekit_authorize_user',
-			function( $token_response ) {
-				if ( empty( $token_response['analytics_configuration'] ) ) {
-					return;
-				}
-
-				// Do nothing if the Analytics module is already activated.
-				if ( $this->is_module_active( Analytics_4::MODULE_SLUG ) ) {
-					return;
-				}
-
-				$this->activate_module( Analytics_4::MODULE_SLUG );
-
-				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
-				if ( is_array( $extra_scopes ) ) {
-					$readonly_scope_index = array_search( Analytics_4::READONLY_SCOPE, $extra_scopes, true );
-					if ( $readonly_scope_index >= 0 ) {
-						unset( $extra_scopes[ $readonly_scope_index ] );
-
-						$auth_scopes = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
-						if ( is_array( $auth_scopes ) ) {
-							$auth_scopes[] = Analytics_4::READONLY_SCOPE;
-							$auth_scopes   = array_unique( $auth_scopes );
-
-							$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
-							$this->user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $auth_scopes );
-						}
-					}
-				}
-
-				try {
-					$analytics = $this->get_module( Analytics_4::MODULE_SLUG );
-					$analytics->handle_token_response_data( $token_response );
-				} catch ( Exception $e ) {
-					return;
-				}
-			},
-			1
 		);
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_data' ) );

@@ -36,7 +36,6 @@ import SetupForm from './SetupForm';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate } from '../common';
-import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -56,8 +55,6 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Set useSnippet to `false` if there is an existing tag and it is the same as the selected container ID.
 	useExistingTagEffect();
-	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
-	useGAPropertyIDEffect();
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

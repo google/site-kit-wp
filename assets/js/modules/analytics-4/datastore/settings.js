@@ -43,7 +43,6 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
-	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -165,8 +164,6 @@ export async function submitChanges( { select, dispatch } ) {
 }
 
 export function rollbackChanges( { select, dispatch } ) {
-	dispatch( CORE_FORMS ).setValues( FORM_SETUP, { enableGA4: undefined } );
-
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 	}
@@ -182,16 +179,7 @@ export function validateCanSubmitChanges( select ) {
 		getWebDataStreamID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
-	const { haveSettingsChanged: haveUASettingsChanged } =
-		createStrictSelect( select )( MODULES_ANALYTICS_4 );
-
-	// Check if GA4 / enhanced measurement settings are changed only if we are sure that there are no UA changes.
-	if ( ! haveUASettingsChanged() ) {
-		invariant(
-			haveAnyGA4SettingsChanged(),
-			INVARIANT_SETTINGS_NOT_CHANGED
-		);
-	}
+	invariant( haveAnyGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 

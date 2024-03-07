@@ -43,16 +43,9 @@ const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
 const topEarningPagesArgs = {
 	startDate: '2020-08-15',
 	endDate: '2020-09-11',
-	dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-	metrics: [
-		{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-		{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-		{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-	],
-	orderby: {
-		fieldName: 'ga:adsenseRevenue',
-		sortOrder: 'DESCENDING',
-	},
+	dimensions: [ 'pageTitle', 'pagePath' ],
+	metrics: [ { name: 'totalAdRevenue' } ],
+	orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
 	limit: 5,
 };
 

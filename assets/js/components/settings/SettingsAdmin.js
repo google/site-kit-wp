@@ -32,21 +32,111 @@ import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
+import SettingsCardConsentMode from './SettingsCardConsentMode';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
+import PreviewBlock from '../PreviewBlock';
 const { useSelect } = Data;
 
 export default function SettingsAdmin() {
-	const showKeyMetricsSettings = useSelect(
-		( select ) =>
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) &&
-			select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false &&
-			select( MODULES_ANALYTICS_4 ).isGatheringData() === false
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
+	const isSearchConsoleGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const isAnalyticsGatheringData = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).isGatheringData();
+	} );
+
+	const showKeyMetricsSettings =
+		isAnalyticsConnected &&
+		isSearchConsoleGatheringData === false &&
+		isAnalyticsGatheringData === false;
+
+	const showKeyMetricsSettingsLoading = useSelect( ( select ) => {
+		if (
+			! select( CORE_MODULES ).hasFinishedResolution(
+				'isModuleConnected',
+				[ 'analytics-4' ]
+			)
+		) {
+			return true;
+		}
+
+		// The resolvers below are never resolved if Analytics is disconnected,
+		// so if it's disconnected, return early.
+		//
+		// Because they're never called nothing else can be loading.
+		if ( isAnalyticsConnected === false ) {
+			return false;
+		}
+
+		if (
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'isGatheringData'
+			) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'isGatheringData'
+			)
+		) {
+			return true;
+		}
+
+		return false;
+	} );
+
+	// Show a loading skeleton to prevent a layout shift.
+	if ( showKeyMetricsSettingsLoading ) {
+		return (
+			<Row>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<PreviewBlock
+						width="100%"
+						smallHeight="100px"
+						tabletHeight="100px"
+						desktopHeight="200px"
+					/>
+				</Cell>
+			</Row>
+		);
+	}
 
 	return (
 		<Row>
+			<Cell size={ 12 }>
+				<SettingsCardConsentMode />
+			</Cell>
+
 			{ showKeyMetricsSettings && (
 				<Cell size={ 12 }>
 					<SettingsCardKeyMetrics />

@@ -27,7 +27,6 @@
 	letter-spacing: $ls-xs;
 	line-height: 1;
 	padding: 6px 12px;
-	text-transform: uppercase;
 	vertical-align: middle;
 	white-space: nowrap;
 }
@@ -37,8 +36,8 @@
 }
 
 .googlesitekit-badge--primary {
-	background-color: $c-content-primary-container;
-	color: $c-content-on-primary-container;
+	background-color: $c-blue-b-500;
+	color: $c-violet-v-0;
 }
 
 .googlesitekit-badge--hidden {
