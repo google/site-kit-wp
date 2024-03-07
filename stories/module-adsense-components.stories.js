@@ -33,6 +33,7 @@ import {
 	provideAdSenseMockReport,
 } from '../assets/js/modules/adsense/util/data-mock';
 import { getAnalytics4MockResponse } from '../assets/js/modules/analytics-4/utils/data-mock';
+import { provideUserAuthentication } from '../tests/js/utils';
 
 const generateAnalyticsData = makeReportDataGenerator(
 	getAnalytics4MockResponse
@@ -62,12 +63,16 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ANALYTICS_4,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
-	...generateAnalyticsData( { ...topEarningPagesArgs } ),
+	...generateAnalyticsData( topEarningPagesArgs ),
 	options: topEarningPagesArgs,
 	setup: ( registry, variantName ) => {
+		provideUserAuthentication( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+			.receiveIsGatheringData( false );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAdSenseLinked( variantName !== 'AdSense Not Linked' );
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
