@@ -54,7 +54,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @since 1.122.0
 	 * @deprecated This property is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
+	 *             is removed (see the method `Module_Web_Tag::is_tag_blocked_on_consent`).
 	 * @var bool
 	 */
 	private $is_consent_mode_enabled;
@@ -97,7 +97,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @since 1.122.0
 	 * @deprecated This method is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
+	 *             is removed (see the method `Module_Web_Tag::is_tag_blocked_on_consent`).
 	 *
 	 * @return array args to pass to apply_filters_deprecated if deprecated ($version, $replacement, $message)
 	 */
@@ -248,6 +248,8 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @since 1.122.0
 	 * @deprecated This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
+	 *             This method should be removed when the legacy tag blocking mechanism is removed (see the method
+	 *             `Module_Web_Tag::is_tag_blocked_on_consent`).
 	 *
 	 * @param string $tag     The script tag.
 	 * @param string $gtag_src The gtag script source URL.
@@ -255,8 +257,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @return string The script tag with the added attributes.
 	 */
 	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs ) {
-		_deprecated_function( __METHOD__, '1.122.0' );
-
 		return str_replace(
 			array(
 				"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
