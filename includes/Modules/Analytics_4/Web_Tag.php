@@ -50,16 +50,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	private $ads_conversion_id;
 
 	/**
-	 * Boolean flag for whether Consent Mode is enabled.
-	 *
-	 * @since n.e.x.t
-	 * @deprecated This property is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
-	 * @var bool
-	 */
-	private $is_consent_mode_enabled;
-
-	/**
 	 * Sets custom dimensions data.
 	 *
 	 * @since 1.113.0
@@ -93,16 +83,16 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	}
 
 	/**
-	 * Sets whether Consent Mode is enabled.
+	 * Gets args to use if blocked_on_consent is deprecated.
 	 *
-	 * @since n.e.x.t
-	 * @deprecated This method is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
+	 * @since 1.122.0
 	 *
-	 * @param bool $is_consent_mode_enabled Whether consent mode is enabled.
+	 * @return array args to pass to apply_filters_deprecated if deprecated ($version, $replacement, $message)
 	 */
-	public function set_consent_mode_enabled( $is_consent_mode_enabled ) {
-		$this->is_consent_mode_enabled = $is_consent_mode_enabled;
+	protected function get_tag_blocked_on_consent_deprecated_args() {
+		return array(
+			'1.122.0', // Deprecated in this version.
+		);
 	}
 
 	/**
