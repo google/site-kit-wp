@@ -1,18 +1,18 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Analytics\Advanced_Tracking\Script_InjectorTest
+ * Class Google\Site_Kit\Tests\Modules\Analytics_4\Advanced_Tracking\Script_InjectorTest
  *
- * @package   Google\Site_Kit\Tests\Modules\Analytics
+ * @package   Google\Site_Kit\Tests\Modules\Analytics_4
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Modules\Analytics\Advanced_Tracking;
+namespace Google\Site_Kit\Tests\Modules\Analytics_4\Advanced_Tracking;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
+use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking\Script_Injector;
+use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking\Event;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
