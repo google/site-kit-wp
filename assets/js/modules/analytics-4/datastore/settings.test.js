@@ -446,6 +446,7 @@ describe( 'modules/analytics-4 settings', () => {
 
 			it( 'should dispatch saveSettings', async () => {
 				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
 					propertyID: fixtures.createProperty._id,
 					webDataStreamID: fixtures.createWebDataStream._id,
 				};
