@@ -46,6 +46,7 @@ const { useSelect } = Data;
 const scopeIDToSlug = {
 	siteverification: 'site-verification',
 	webmasters: 'search-console',
+	analytics: 'analytics-4',
 };
 const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';
@@ -67,13 +68,7 @@ function mapScopesToModuleNames( scopes, modules ) {
 				)
 			)
 			// Map each match into a module slug, if any.
-			.map( ( [ , id ] ) => {
-				// Exception for analytics to map to analytics-4
-				if ( id === 'analytics' ) {
-					return 'analytics-4';
-				}
-				return scopeIDToSlug[ id ] || id;
-			} )
+			.map( ( [ , id ] ) => scopeIDToSlug[ id ] || id )
 			// Map module slugs into module names. If there is no matched module, set to `false`.
 			.map( ( slug ) => modules[ slug ]?.name || false )
 	);
