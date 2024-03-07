@@ -66,10 +66,10 @@ export const ModuleWithDescription = Template.bind( {} );
 ModuleWithDescription.storyName =
 	'Authentication Success - Module with description';
 ModuleWithDescription.parameters = {
-	module: { slug: 'analytics' },
+	module: { slug: 'analytics-4' },
 	query: {
 		notification: 'authentication_success',
-		slug: 'analytics',
+		slug: 'analytics-4',
 	},
 };
 ModuleWithDescription.scenario = {
