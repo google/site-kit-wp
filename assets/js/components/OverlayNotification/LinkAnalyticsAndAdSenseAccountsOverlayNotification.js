@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -33,7 +34,6 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adsense-connect.svg';
 import OverlayNotification from './OverlayNotification';
-import OverlayNotificationActions from './OverlayNotificationActions';
 import useViewOnly from '../../hooks/useViewOnly';
 import { isFeatureEnabled } from '../../features';
 
@@ -43,6 +43,8 @@ export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
+	const ga4AdSenseIntegration = isFeatureEnabled( 'ga4AdSenseIntegration' );
+
 	const isViewOnly = useViewOnly();
 
 	const isShowingNotification = useSelect( ( select ) =>
@@ -65,7 +67,12 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		)
 	);
-	const ga4AdSenseIntegration = isFeatureEnabled( 'ga4AdSenseIntegration' );
+
+	const isDismissing = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem(
+			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+		)
+	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
 		if ( isViewOnly || isDismissed ) {
@@ -149,18 +156,28 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 				</p>
 			</div>
 
-			<OverlayNotificationActions
-				ariaLabel={ __(
-					'Learn how (opens in a new tab)',
-					'google-site-kit'
-				) }
-				ctaLink={ supportURL }
-				ctaLabel={ __( 'Learn how', 'google-site-kit' ) }
-				ctaTarget="_blank"
-				ctaCallback={ dismissNotification }
-				dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-				dismissCallback={ dismissNotification }
-			/>
+			<div className="googlesitekit-overlay-notification__actions">
+				<Button
+					tertiary
+					disabled={ isDismissing }
+					onClick={ dismissNotification }
+				>
+					{ __( 'Maybe later', 'google-site-kit' ) }
+				</Button>
+
+				<Button
+					disabled={ isDismissing }
+					href={ supportURL }
+					target="_blank"
+					onClick={ dismissNotification }
+					aria-label={ __(
+						'Learn how (opens in a new tab)',
+						'google-site-kit'
+					) }
+				>
+					{ __( 'Learn how', 'google-site-kit' ) }
+				</Button>
+			</div>
 		</OverlayNotification>
 	);
 }
