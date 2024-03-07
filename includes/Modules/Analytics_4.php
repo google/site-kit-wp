@@ -728,7 +728,7 @@ final class Analytics_4 extends Module
 				'dashboard',
 				array(
 					'notification' => 'authentication_success',
-					'slug'         => 'analytics',
+					'slug'         => 'analytics-4',
 				)
 			)
 		);
