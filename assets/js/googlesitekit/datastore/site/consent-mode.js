@@ -84,7 +84,7 @@ const baseActions = {
 	/**
 	 * Saves the Consent Mode settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -100,7 +100,7 @@ const baseActions = {
 	/**
 	 * Sets the Consent Mode enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @param {string} enabled Consent Mode enabled status.
 	 * @return {Object} Redux-style action.
@@ -131,7 +131,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Consent Mode settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Consent Mode settings, or `undefined` if not loaded.
@@ -143,7 +143,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Consent Mode enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return {boolean|undefined} Consent Mode enabled status, or `undefined` if not loaded.
 	 */
@@ -156,7 +156,7 @@ const baseSelectors = {
 	/**
 	 * Gets the WP Consent Mode API info.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} WP Consent Mode API info, or `undefined` if not loaded.

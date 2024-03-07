@@ -50,6 +50,16 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	private $ads_conversion_id;
 
 	/**
+	 * Boolean flag for whether Consent Mode is enabled.
+	 *
+	 * @since 1.122.0
+	 * @deprecated This property is deprecated and should be removed when the legacy tag blocking mechanism
+	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
+	 * @var bool
+	 */
+	private $is_consent_mode_enabled;
+
+	/**
 	 * Sets custom dimensions data.
 	 *
 	 * @since 1.113.0
@@ -86,6 +96,8 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Gets args to use if blocked_on_consent is deprecated.
 	 *
 	 * @since 1.122.0
+	 * @deprecated This method is deprecated and should be removed when the legacy tag blocking mechanism
+	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
 	 *
 	 * @return array args to pass to apply_filters_deprecated if deprecated ($version, $replacement, $message)
 	 */
@@ -234,7 +246,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Adds HTML attributes to the gtag script tag to block it until user consent is granted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 * @deprecated This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
 	 *
 	 * @param string $tag     The script tag.
@@ -243,7 +255,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @return string The script tag with the added attributes.
 	 */
 	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t' );
+		_deprecated_function( __METHOD__, '1.122.0' );
 
 		return str_replace(
 			array(
