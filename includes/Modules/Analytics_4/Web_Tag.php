@@ -52,7 +52,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Boolean flag for whether Consent Mode is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 * @deprecated This property is deprecated and should be removed when the legacy tag blocking mechanism
 	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
 	 * @var bool
@@ -95,7 +95,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Sets whether Consent Mode is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 * @deprecated This method is deprecated and should be removed when the legacy tag blocking mechanism
 	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
 	 *
@@ -244,7 +244,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Adds HTML attributes to the gtag script tag to block it until user consent is granted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 * @deprecated This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
 	 *
 	 * @param string $tag     The script tag.
@@ -253,7 +253,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @return string The script tag with the added attributes.
 	 */
 	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t' );
+		_deprecated_function( __METHOD__, '1.122.0' );
 
 		return str_replace(
 			array(

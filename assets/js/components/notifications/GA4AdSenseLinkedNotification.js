@@ -40,6 +40,9 @@ import useDashboardType from '../../hooks/useDashboardType';
 
 const { useSelect, useDispatch } = Data;
 
+export const GA4_ADSENSE_LINKED_NOTIFICATION =
+	'ga4_adsense_linked_notification';
+
 export default function GA4AdSenseLinkedNotification() {
 	const isGA4AdSenseIntegrationEnabled = useFeature(
 		'ga4AdSenseIntegration'
@@ -76,17 +79,12 @@ export default function GA4AdSenseLinkedNotification() {
 		adSenseModuleConnected && analyticsModuleConnected && isAdSenseLinked;
 
 	const isDismissed = useSelect( ( select ) => {
-		if (
-			! isGA4AdSenseIntegrationEnabled ||
-			! dashboardType ||
-			viewOnly ||
-			! analyticsAndAdsenseConnectedAndLinked
-		) {
+		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
 			return null;
 		}
 
 		return select( CORE_USER ).isItemDismissed(
-			GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY
+			GA4_ADSENSE_LINKED_NOTIFICATION
 		);
 	} );
 
@@ -97,9 +95,6 @@ export default function GA4AdSenseLinkedNotification() {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-
-	const GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY =
-		'ga4_adsense_linked_notification_dimissed_item';
 
 	const reportOptions = {
 		startDate,
@@ -135,8 +130,8 @@ export default function GA4AdSenseLinkedNotification() {
 		);
 	} );
 
-	const dismissNotificationForUser = useCallback( () => {
-		dismissItem( GA4_ADSENSE_LINKED_NOTIFICATION_DISMISSED_ITEM_KEY );
+	const dismissNotificationForUser = useCallback( async () => {
+		await dismissItem( GA4_ADSENSE_LINKED_NOTIFICATION );
 	}, [ dismissItem ] );
 
 	// This notification should only appear when the user has connected their

@@ -30,11 +30,12 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import ErrorText from '../../components/ErrorText';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
-import { trackEvent } from '../../util';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
 const { useDispatch, useSelect } = Data;
@@ -60,10 +61,23 @@ export default function ConsentModeSwitch( { loading } ) {
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
 	async function saveSettings() {
 		setSaveError( null );
 
-		const { error } = await saveConsentModeSettings();
+		const promises = [ saveConsentModeSettings() ];
+
+		if ( usingProxy ) {
+			promises.push(
+				triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } )
+			);
+		}
+
+		const [ { error } ] = await Promise.all( promises );
 
 		if ( error ) {
 			setSaveError( error );
