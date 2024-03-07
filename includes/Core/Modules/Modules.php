@@ -322,9 +322,6 @@ final class Modules {
 			2
 		);
 
-		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
-		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
-
 		add_filter(
 			'googlesitekit_is_module_connected',
 			function ( $connected, $slug ) {
@@ -333,6 +330,9 @@ final class Modules {
 			10,
 			2
 		);
+
+		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 
 		$this->sharing_settings->on_change(
 			function( $old_values, $values ) {
