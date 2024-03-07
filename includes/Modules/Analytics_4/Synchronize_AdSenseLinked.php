@@ -130,14 +130,24 @@ class Synchronize_AdSenseLinked {
 		$current_adsense_options   = ( new AdSense_Settings( $this->options ) )->get();
 		$current_adsense_client_id = ! empty( $current_adsense_options['clientID'] ) ? $current_adsense_options['clientID'] : '';
 
-		if ( is_wp_error( $property_adsense_links ) ) {
+		if ( is_wp_error( $property_adsense_links ) || empty( $property_adsense_links ) ) {
 			return null;
+		}
+
+		$found_adsense_linked_for_client_id = false;
+
+		// Iterate over returned adsense links and set true if one is found matching the same client ID.
+		foreach ( $property_adsense_links as $property_adsense_link ) {
+			if ( $current_adsense_client_id === $property_adsense_link['adClientCode'] ) {
+				$found_adsense_linked_for_client_id = true;
+				break;
+			}
 		}
 
 		// Update the AdSenseLinked status and timestamp regardless.
 		$this->analytics_4->get_settings()->merge(
 			array(
-				'adSenseLinked'             => ! empty( $property_adsense_links[0]['adClientCode'] ) && $current_adsense_client_id === $property_adsense_links[0]['adClientCode'],
+				'adSenseLinked'             => $found_adsense_linked_for_client_id,
 				'adSenseLinkedLastSyncedAt' => time(),
 			)
 		);
