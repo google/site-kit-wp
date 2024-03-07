@@ -98,9 +98,9 @@ class Synchronize_AdSenseLinked {
 	}
 
 	/**
-	 * Schedules single cron which will synchronize the property data.
+	 * Schedules single cron which will synchronize the adSenseLinked status.
 	 *
-	 * @since 1.116.0
+	 * @since n.e.x.t
 	 */
 	public function maybe_schedule_synchronize_adsense_linked() {
 		$analytics_4_connected  = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
