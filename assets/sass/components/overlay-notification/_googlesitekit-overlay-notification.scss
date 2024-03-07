@@ -20,11 +20,11 @@
 	background-color: $c-white;
 	border-radius: $br-sm;
 	bottom: 0;
-	box-shadow: 0 8px 25px 0 #00000040;
+	box-shadow: 0 8px 24px 0 #00000040;
 	max-width: 70vw;
 	position: fixed;
 	right: 0;
-	z-index: 99999;
+	z-index: $z-index-sk-overlay-notification;
 
 	@media (min-width: $bp-tablet) {
 		bottom: 36px;
@@ -33,27 +33,27 @@
 	}
 
 	.googlesitekit-overlay-notification__body {
-		padding: 25px;
+		padding: 24px;
 		padding-bottom: 0;
 
 		h3 {
 			color: $c-neutral-n-500;
-			margin: 0 0 5px;
+			margin: 0 0 4px;
 		}
 
 		p {
 			font-weight: $fw-medium;
 			letter-spacing: 0;
-			margin: 0 0 23px;
+			margin: 0 0 24px;
 		}
 	}
 
 	.googlesitekit-overlay-notification__actions {
 		align-items: center;
 		display: flex;
-		gap: 7px;
+		gap: 8px;
 		justify-content: flex-end;
-		padding: 25px;
+		padding: 24px;
 		padding-top: 0;
 	}
 }
