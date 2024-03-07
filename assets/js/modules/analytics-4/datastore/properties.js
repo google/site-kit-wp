@@ -44,11 +44,11 @@ import {
 import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
+	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
 } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
-import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 const { commonActions, createRegistryControl } = Data;

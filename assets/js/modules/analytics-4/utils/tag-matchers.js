@@ -59,3 +59,5 @@ export function getTagMatchers() {
 
 	return tagMatchers;
 }
+
+export default getTagMatchers();

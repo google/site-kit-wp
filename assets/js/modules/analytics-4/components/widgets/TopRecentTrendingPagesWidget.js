@@ -32,7 +32,7 @@ import { compose } from '@wordpress/compose';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
 import { getPreviousDate, numFmt } from '../../../../util';
 import {
 	MetricTileTable,

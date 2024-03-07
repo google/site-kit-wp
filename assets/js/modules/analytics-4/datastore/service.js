@@ -33,7 +33,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { REPORT_ARGS_NAV_KEY } from '../constants';
-import { generateDateRangeArgs } from '../../analytics/util/report-date-range-args';
+import { generateDateRangeArgs } from '../../analytics-4/utils/report-date-range-args';
 import { escapeURI } from '../../../util/escape-uri';
 import {
 	generateReportDetailArgs,

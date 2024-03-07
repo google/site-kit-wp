@@ -24,7 +24,6 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 import AccountSelect from '../assets/js/modules/analytics-4/components/common/AccountSelect';
@@ -46,13 +45,11 @@ storiesOf( 'Analytics-4 Module', module ).add(
 	() => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 				fixtures.accountSummaries
 			);
-			dispatch( MODULES_ANALYTICS ).finishResolution(
+			dispatch( MODULES_ANALYTICS_4 ).finishResolution(
 				'getAccountSummaries',
 				[]
 			);

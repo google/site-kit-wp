@@ -29,10 +29,12 @@ import { useEffect, useRef } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	EDIT_SCOPE as ANALYTICS_EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { elementsOverlap } from '../../../util/geometry';
 import whenActive from '../../../util/when-active';
 const { useSelect } = Data;

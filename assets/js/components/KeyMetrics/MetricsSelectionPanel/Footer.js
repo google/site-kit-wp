@@ -53,11 +53,11 @@ import {
 	MAX_SELECTED_METRICS_COUNT,
 } from '../constants';
 import {
+	EDIT_SCOPE as ANALYTICS_EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';

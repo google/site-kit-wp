@@ -37,8 +37,10 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
-import { isValidAccountID } from '../../../analytics/util';
-import { isValidPropertySelection } from '../../utils/validation';
+import {
+	isValidAccountID,
+	isValidPropertySelection,
+} from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;

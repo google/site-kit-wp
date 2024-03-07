@@ -42,10 +42,12 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { numFmt, trackEvent } from '../../../../util';
 import whenActive from '../../../../util/when-active';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { ZeroDataMessage } from '../../../analytics/components/common';
-import { DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
-import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../analytics-4/datastore/constants';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
+import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
 import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { AdSenseLinkCTA } from '../common';

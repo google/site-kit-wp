@@ -27,8 +27,10 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import CheckFill from '../../../svg/icons/check-fill.svg';
 import { Button } from 'googlesitekit-components';
 import { Grid, Cell, Row } from '../../material-components';
