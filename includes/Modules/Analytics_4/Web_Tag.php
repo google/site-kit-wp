@@ -86,8 +86,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Gets args to use if blocked_on_consent is deprecated.
 	 *
 	 * @since 1.122.0
-	 * @deprecated This method is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the method `Module_Web_Tag::is_tag_blocked_on_consent`).
 	 *
 	 * @return array args to pass to apply_filters_deprecated if deprecated ($version, $replacement, $message)
 	 */
@@ -234,10 +232,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Adds HTML attributes to the gtag script tag to block it until user consent is granted.
 	 *
+	 * This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
+	 *
 	 * @since 1.122.0
-	 * @deprecated This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
-	 *             This method should be removed when the legacy tag blocking mechanism is removed (see the method
-	 *             `Module_Web_Tag::is_tag_blocked_on_consent`).
 	 *
 	 * @param string $tag     The script tag.
 	 * @param string $gtag_src The gtag script source URL.
