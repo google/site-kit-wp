@@ -204,7 +204,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
         <span
           class="mdc-button__label"
         >
-          Configure Analytics
+          Complete setup
         </span>
       </button>
     </div>

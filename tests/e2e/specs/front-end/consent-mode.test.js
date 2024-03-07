@@ -27,7 +27,6 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
 import {
 	setSiteVerification,
 	setSearchConsoleProperty,
-	enableFeature,
 	wpApiFetch,
 } from '../../utils';
 
@@ -68,10 +67,10 @@ const eeaRegions = [
 
 describe( 'Consent Mode snippet', () => {
 	beforeAll( async () => {
+		await activatePlugin( 'wp-consent-api' );
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
-		await enableFeature( 'consentMode' );
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/core/site/data/consent-mode',
 			method: 'post',
@@ -81,6 +80,13 @@ describe( 'Consent Mode snippet', () => {
 
 	beforeEach( async () => {
 		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
+	} );
+
+	afterEach( async () => {
+		const cookies = ( await page.cookies() ).filter( ( cookie ) =>
+			cookie.name.startsWith( 'wp_consent_' )
+		);
+		await page.deleteCookie( ...cookies );
 	} );
 
 	it( 'configures the Consent Mode defaults', async () => {
@@ -96,6 +102,99 @@ describe( 'Consent Mode snippet', () => {
 					ad_user_data: 'denied',
 					analytics_storage: 'denied',
 					regions: eeaRegions,
+					wait_for_update: 500,
+				},
+			},
+		] );
+	} );
+
+	it( 'enqueues a Consent Mode update in response to a `wp_set_consent()` call', async () => {
+		await page.evaluate( () => {
+			window.wp_set_consent( 'marketing', 'allow' );
+		} );
+
+		const dataLayer = await page.evaluate( () => window.dataLayer );
+
+		expect( dataLayer ).toEqual( [
+			{
+				0: 'consent',
+				1: 'default',
+				2: {
+					ad_personalization: 'denied',
+					ad_storage: 'denied',
+					ad_user_data: 'denied',
+					analytics_storage: 'denied',
+					regions: eeaRegions,
+					wait_for_update: 500,
+				},
+			},
+			{
+				0: 'consent',
+				1: 'update',
+				2: {
+					ad_personalization: 'granted',
+					ad_storage: 'granted',
+					ad_user_data: 'granted',
+				},
+			},
+		] );
+	} );
+
+	it( 'enqueues a Consent Mode update on page load when a CMP plugin is present', async () => {
+		await page.evaluate( () => {
+			// `wp_set_consent()` will persist the consent choice in a cookie.
+			window.wp_set_consent( 'marketing', 'allow' );
+		} );
+
+		await page.reload();
+
+		let dataLayer = await page.evaluate( () => window.dataLayer );
+
+		// However, without a CMP plugin present, the consent state will not be updated on page load.
+		expect( dataLayer ).toEqual( [
+			{
+				0: 'consent',
+				1: 'default',
+				2: {
+					ad_personalization: 'denied',
+					ad_storage: 'denied',
+					ad_user_data: 'denied',
+					analytics_storage: 'denied',
+					regions: eeaRegions,
+					wait_for_update: 500,
+				},
+			},
+		] );
+
+		// Activate the stub CMP plugin.
+		await activatePlugin(
+			'e2e-tests-stub-consent-management-platform-plugin'
+		);
+		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
+
+		dataLayer = await page.evaluate( () => window.dataLayer );
+
+		// Now, the consent state will be updated on page load.
+		expect( dataLayer ).toEqual( [
+			{
+				0: 'consent',
+				1: 'default',
+				2: {
+					ad_personalization: 'denied',
+					ad_storage: 'denied',
+					ad_user_data: 'denied',
+					analytics_storage: 'denied',
+					regions: eeaRegions,
+					wait_for_update: 500,
+				},
+			},
+			{
+				0: 'consent',
+				1: 'update',
+				2: {
+					ad_personalization: 'granted',
+					ad_storage: 'granted',
+					ad_user_data: 'granted',
 				},
 			},
 		] );

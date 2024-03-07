@@ -430,7 +430,6 @@ class Analytics_4Test extends TestCase {
 				'adsConversionID'           => '',
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
-				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -457,7 +456,6 @@ class Analytics_4Test extends TestCase {
 				'adsConversionID'           => '',
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
-				'canUseSnippet'             => true,
 				'googleTagID'               => 'GT-123',
 				'googleTagAccountID'        => $google_tag_account_id,
 				'googleTagContainerID'      => $google_tag_container_id,
@@ -577,7 +575,6 @@ class Analytics_4Test extends TestCase {
 				'adsConversionID'           => '',
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
-				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -698,7 +695,6 @@ class Analytics_4Test extends TestCase {
 				'adsConversionID'           => '',
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
-				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -728,7 +724,6 @@ class Analytics_4Test extends TestCase {
 				'adsConversionID'           => '',
 				'trackingDisabled'          => array( 'loggedinUsers' ),
 				'useSnippet'                => true,
-				'canUseSnippet'             => true,
 				'googleTagID'               => '',
 				'googleTagAccountID'        => '',
 				'googleTagContainerID'      => '',
@@ -2877,11 +2872,6 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
-		if ( $settings['useSnippet'] && $settings['measurementID'] ) {
-			$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
-			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
-		}
-
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
@@ -3597,8 +3587,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register_template_redirect_non_amp() {
-		$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
-
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$analytics = new Analytics_4( $context );
 
@@ -3641,24 +3629,10 @@ class Analytics_4Test extends TestCase {
 	 *     Parameters for the test.
 	 *
 	 *     @type bool $block_on_consent_filter_enabled Whether the block on consent filter is enabled.
-	 *     @type bool $consent_mode_feature_flag_enabled Whether the Consent Mode feature flag is enabled.
-	 *     @type bool $consent_mode_enabled Whether Consent Mode is enabled.
 	 *     @type bool $expected_block_on_consent Whether the block on consent attributes are expected to be present.
 	 * }
 	 */
 	public function test_block_on_consent_non_amp( $test_parameters ) {
-		if ( $test_parameters['consent_mode_feature_flag_enabled'] ) {
-			$this->enable_feature( 'consentMode' );
-		}
-
-		if ( $test_parameters['consent_mode_enabled'] ) {
-			( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
-		} else {
-			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
-		}
-
-		$this->setExpectedDeprecated( Web_Tag::class . '::set_consent_mode_enabled' );
-
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->merge(
 			array(
@@ -3680,6 +3654,7 @@ class Analytics_4Test extends TestCase {
 		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
 
 		if ( $test_parameters['block_on_consent_filter_enabled'] ) {
+			$this->setExpectedDeprecated( 'googlesitekit_analytics-4_tag_block_on_consent' );
 			add_filter( 'googlesitekit_analytics-4_tag_block_on_consent', '__return_true' );
 		}
 
@@ -3699,36 +3674,16 @@ class Analytics_4Test extends TestCase {
 
 	public function block_on_consent_provider_non_amp() {
 		return array(
-			'default (disabled)'             => array(
+			'default (disabled)' => array(
 				array(
-					'block_on_consent_filter_enabled'   => false,
-					'consent_mode_feature_flag_enabled' => false,
-					'consent_mode_enabled'              => false,
-					'expected_block_on_consent'         => false,
+					'block_on_consent_filter_enabled' => false,
+					'expected_block_on_consent'       => false,
 				),
 			),
-			'enabled'                        => array(
+			'enabled'            => array(
 				array(
-					'block_on_consent_filter_enabled'   => true,
-					'consent_mode_feature_flag_enabled' => false,
-					'consent_mode_enabled'              => false,
-					'expected_block_on_consent'         => true,
-				),
-			),
-			'enabled (consentMode enabled)'  => array(
-				array(
-					'block_on_consent_filter_enabled'   => true,
-					'consent_mode_feature_flag_enabled' => true,
-					'consent_mode_enabled'              => true,
-					'expected_block_on_consent'         => false,
-				),
-			),
-			'enabled (consentMode disabled)' => array(
-				array(
-					'block_on_consent_filter_enabled'   => true,
-					'consent_mode_feature_flag_enabled' => true,
-					'consent_mode_enabled'              => false,
-					'expected_block_on_consent'         => true,
+					'block_on_consent_filter_enabled' => true,
+					'expected_block_on_consent'       => true,
 				),
 			),
 		);

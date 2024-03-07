@@ -38,9 +38,6 @@ export default function OptionalSettingsView() {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const canUseSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getCanUseSnippet()
-	);
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
@@ -64,7 +61,7 @@ export default function OptionalSettingsView() {
 		useSnippet && ampMode !== 'primary' && isUAConnected;
 
 	const showAdsConversionIDSettings =
-		canUseSnippet && ( ( isUAConnected && useSnippet ) || useGA4Snippet );
+		( isUAConnected && useSnippet ) || useGA4Snippet;
 
 	return (
 		<Fragment>

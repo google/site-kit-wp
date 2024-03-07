@@ -82,46 +82,50 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
           <svg />
         </span>
       </div>
-      <h3
-        class="googlesitekit-cta__title"
-      >
-        Data loading failed
-      </h3>
-      
-      
-      
-      
       <div
-        class="googlesitekit-report-error-actions"
+        class="googlesitekit-cta__body"
       >
-        <button
-          class="mdc-button mdc-button--raised"
-          target="_self"
+        <h3
+          class="googlesitekit-cta__title"
         >
-          <span
-            class="mdc-button__label"
-          >
-            Retry
-          </span>
-        </button>
-        <span
-          class="googlesitekit-error-retry-text"
+          Data loading failed
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
         >
-          Retry didn’t work? 
-          <a
-            aria-label="Get help (opens in a new tab)"
-            class="googlesitekit-cta-link"
-            href="undefined?error_id=invalid_json"
-            rel="noopener noreferrer"
-            target="_blank"
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
           >
             <span
-              class="googlesitekit-cta-link__contents"
+              class="mdc-button__label"
             >
-              Get help
+              Retry
             </span>
-          </a>
-        </span>
+          </button>
+          <span
+            class="googlesitekit-error-retry-text"
+          >
+            Retry didn’t work? 
+            <a
+              aria-label="Get help (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?error_id=invalid_json"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Get help
+              </span>
+            </a>
+          </span>
+        </div>
       </div>
     </div>
   </div>

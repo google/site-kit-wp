@@ -22,8 +22,6 @@
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -76,7 +74,6 @@ describe( 'modules/analytics settings', () => {
 		useSnippet: true,
 		trackingDisabled: [],
 		anonymizeIP: true,
-		canUseSnippet: true,
 	};
 	const tagWithPermission = {
 		accountID: '12345',
@@ -1415,115 +1412,6 @@ describe( 'modules/analytics settings', () => {
 							.__dangerousCanSubmitChanges()
 					).not.toThrow();
 				} );
-			} );
-		} );
-
-		describe( 'getCanUseSnippet', () => {
-			beforeEach( () => {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.setSettings( validSettings );
-			} );
-			it( 'should return the value from analytics settings if tag manager is not available', () => {
-				const { ...modules } = registry
-					.select( CORE_MODULES )
-					.getModules();
-				delete modules.tagmanager;
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( Object.values( modules ) );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
-				).toBe( validSettings.canUseSnippet );
-			} );
-
-			it( 'should return the value from analytics settings if tag manager is not connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'tagmanager',
-						active: true,
-						connected: false,
-					},
-				] );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
-				).toBe( validSettings.canUseSnippet );
-			} );
-
-			it( 'should return the value from analytics settings if tag manager useSnippet is false', () => {
-				provideModules( registry, [
-					{
-						slug: 'tagmanager',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.setSettings( { useSnippet: false } );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
-				).toBe( validSettings.canUseSnippet );
-			} );
-
-			it( 'should return the value from analytics settings if there is no GA property in tag manager', () => {
-				provideModules( registry, [
-					{
-						slug: 'tagmanager',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.setSettings( { useSnippet: true } );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
-				).toBe( validSettings.canUseSnippet );
-			} );
-
-			it( 'should return `true` if GA property in tag manager is not the same as analytics', () => {
-				provideModules( registry, [
-					{
-						slug: 'tagmanager',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
-					useSnippet: true,
-					gaPropertyID: 'UA-24680-1',
-				} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
-				).toBe( true );
-			} );
-
-			it( 'should return `false` if GA property in tag manager is the same as analytics', () => {
-				provideModules( registry, [
-					{
-						slug: 'tagmanager',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
-					useSnippet: true,
-					gaPropertyID: validSettings.propertyID,
-				} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
-				).toBe( false );
 			} );
 		} );
 	} );

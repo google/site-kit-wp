@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
@@ -1712,11 +1711,6 @@ final class Analytics_4 extends Module
 		$tag->set_ads_conversion_id(
 			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
 		);
-
-		if ( ! $this->context->is_amp() ) {
-			$consent_mode_settings = new Consent_Mode_Settings( $this->options );
-			$tag->set_consent_mode_enabled( $consent_mode_settings->get()['enabled'] );
-		}
 
 		$tag->register();
 	}

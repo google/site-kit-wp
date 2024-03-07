@@ -35,8 +35,6 @@ class Consent_ModeTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->enable_feature( 'consentMode' );
-
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options = new Options( $this->context );
 	}

@@ -34,7 +34,7 @@ import Link from '../Link';
 
 class LayoutHeader extends Component {
 	render() {
-		const { title, ctaLabel, ctaLink } = this.props;
+		const { title, badge, ctaLabel, ctaLink } = this.props;
 
 		const titleCellProps = ctaLink
 			? {
@@ -57,6 +57,7 @@ class LayoutHeader extends Component {
 							<Cell { ...titleCellProps }>
 								<h3 className="googlesitekit-subheading-1 googlesitekit-layout__header-title">
 									{ title }
+									{ badge }
 								</h3>
 							</Cell>
 						) }
@@ -81,12 +82,14 @@ class LayoutHeader extends Component {
 
 LayoutHeader.propTypes = {
 	title: PropTypes.string,
+	badge: PropTypes.node,
 	ctaLabel: PropTypes.string,
 	ctaLink: PropTypes.string,
 };
 
 LayoutHeader.defaultProps = {
 	title: '',
+	badge: null,
 	ctaLabel: '',
 	ctaLink: '',
 };
