@@ -31,34 +31,26 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import {
-	LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED,
-	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-} from './constants';
 import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adsense-connect.svg';
 import OverlayNotification from './OverlayNotification';
 import OverlayNotificationActions from './OverlayNotificationActions';
 import useViewOnly from '../../hooks/useViewOnly';
 import { isFeatureEnabled } from '../../features';
-import useDashboardType, {
-	DASHBOARD_TYPE_MAIN,
-} from '../../hooks/useDashboardType';
 
 const { useSelect, useDispatch } = Data;
 
+export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
+	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+
 export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const isViewOnly = useViewOnly();
-	const dashboardType = useDashboardType();
 
-	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
-
-	const isShowingCurrentOverlayNotification = useSelect( ( select ) =>
+	const isShowingNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		)
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
 	const { setOverlayNotificationToShow, dismissOverlayNotification } =
 		useDispatch( CORE_UI );
 
@@ -70,13 +62,13 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED
+			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		)
 	);
 	const ga4AdSenseIntegration = isFeatureEnabled( 'ga4AdSenseIntegration' );
 
-	const AnalyticsModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly ) {
+	const analyticsModuleConnected = useSelect( ( select ) => {
+		if ( isViewOnly || isDismissed ) {
 			return null;
 		}
 
@@ -84,7 +76,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly ) {
+		if ( isViewOnly || isDismissed ) {
 			return null;
 		}
 
@@ -92,7 +84,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( isViewOnly ) {
+		if ( isViewOnly || isDismissed ) {
 			return null;
 		}
 
@@ -100,28 +92,25 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const analyticsAndAdSenseAreConnected =
-		AnalyticsModuleConnected && adSenseModuleConnected;
+		analyticsModuleConnected && adSenseModuleConnected;
 
 	const shouldShowNotification =
+		ga4AdSenseIntegration &&
 		! isViewOnly &&
-		isMainDashboard &&
-		isDismissed === false &&
 		analyticsAndAdSenseAreConnected &&
 		isAdSenseLinked === false &&
-		ga4AdSenseIntegration;
+		isDismissed === false;
 
 	const dismissNotification = useCallback( () => {
-		dismissItem( LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED );
-		// Dismiss current overlay notification in UI store as well,
-		// so another one can show if needed, and to notify any other component
-		// that current overlay notification stopped showing.
+		// Dismiss the notification, which also dismisses it from
+		// the current users profile with the `dismissItem` action.
 		dismissOverlayNotification(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		);
-	}, [ dismissItem, dismissOverlayNotification ] );
+	}, [ dismissOverlayNotification ] );
 
 	useEffect( () => {
-		if ( shouldShowNotification && ! isShowingCurrentOverlayNotification ) {
+		if ( shouldShowNotification && ! isShowingNotification ) {
 			// It is safe to trigger current overlay notification with check for
 			// `isShowingCurrentOverlayNotification`, without checking if any overlay
 			// notification is showing instead, because `setOverlayNotificationToShow`
@@ -132,19 +121,17 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		}
 	}, [
 		shouldShowNotification,
-		isShowingCurrentOverlayNotification,
+		isShowingNotification,
 		isViewOnly,
 		setOverlayNotificationToShow,
 	] );
 
-	if ( ! shouldShowNotification || ! isShowingCurrentOverlayNotification ) {
+	if ( ! shouldShowNotification || ! isShowingNotification ) {
 		return null;
 	}
 
 	return (
-		<OverlayNotification
-			animateNotification={ isShowingCurrentOverlayNotification }
-		>
+		<OverlayNotification animateNotification={ isShowingNotification }>
 			<AnalyticsAdsenseConnectGraphic />
 
 			<div className="googlesitekit-overlay-notification__body">

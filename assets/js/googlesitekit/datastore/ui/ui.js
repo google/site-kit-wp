@@ -27,6 +27,7 @@ import { isPlainObject, isBoolean } from 'lodash';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from './constants';
+import { CORE_USER } from '../user/constants';
 
 const SET_VALUES = 'SET_VALUES';
 const SET_VALUE = 'SET_VALUE';
@@ -74,7 +75,7 @@ export const actions = {
 	},
 
 	/**
-	 * Sets `isShowingOverlayNotification` state.
+	 * Sets `activeOverlayNotification` state.
 	 *
 	 * @since n.e.x.t
 	 * @private
@@ -87,32 +88,24 @@ export const actions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		const dismissedOverlayNotifications = registry
+		const activeOverlayNotification = registry
 			.select( CORE_UI )
-			.getValue( 'dismissedOverlayNotifications' );
+			.getValue( 'activeOverlayNotification' );
 
-		const isShowingOverlayNotification = registry
-			.select( CORE_UI )
-			.getValue( 'isShowingOverlayNotification' );
-
-		// If `isShowingOverlayNotification` already has a value, do not override it,
-		// or if overlay notification has been dismissed/in process of being dismissed,
-		// do no not re-surface it.
-		if (
-			isShowingOverlayNotification ||
-			dismissedOverlayNotifications?.includes( overlayNotification )
-		) {
+		// If `activeOverlayNotification` is already set, don't override it.
+		if ( activeOverlayNotification ) {
 			return;
 		}
 
 		return yield actions.setValue(
-			'isShowingOverlayNotification',
+			'activeOverlayNotification',
 			overlayNotification
 		);
 	},
 
 	/**
-	 * Resets the `isShowingOverlayNotification` state.
+	 * Resets the `activeOverlayNotification` state and dismiss the overlay from
+	 * the user's profile.
 	 *
 	 * @since n.e.x.t
 	 * @private
@@ -125,27 +118,20 @@ export const actions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		const isShowingOverlayNotification = registry
+		const activeOverlayNotification = registry
 			.select( CORE_UI )
-			.getValue( 'isShowingOverlayNotification' );
+			.getValue( 'activeOverlayNotification' );
 
-		const dismissedOverlayNotifications = registry
-			.select( CORE_UI )
-			.getValue( 'dismissedOverlayNotifications' );
+		yield Data.commonActions.await(
+			registry.dispatch( CORE_USER ).dismissItem( overlayNotification )
+		);
 
 		if (
-			isShowingOverlayNotification &&
-			overlayNotification === isShowingOverlayNotification
+			activeOverlayNotification &&
+			overlayNotification === activeOverlayNotification
 		) {
 			return yield actions.setValues( {
-				isShowingOverlayNotification: undefined,
-				dismissedOverlayNotifications:
-					dismissedOverlayNotifications?.length
-						? [
-								...dismissedOverlayNotifications,
-								overlayNotification,
-						  ]
-						: [ overlayNotification ],
+				activeOverlayNotification: undefined,
 			} );
 		}
 	},
@@ -260,23 +246,18 @@ export const selectors = {
 	},
 
 	/**
-	 * Returns boolean if current overlay notification is showing,
-	 * when `overlayNotification` parameter is passed, or
-	 * `isShowingOverlayNotification` value.
+	 * Returns `true` if the overlay notification name passed is currently
+	 * active, `false` otherwise.
 	 *
 	 * @since n.e.x.t
 	 * @private
 	 *
 	 * @param {Object} state               Data store's state.
-	 * @param {string} overlayNotification Overlay notification component name.
-	 * @return {string|boolean} `isShowingOverlayNotification` value, or boolean if ovelray notification component name is passed.
+	 * @param {string} overlayNotification Overlay notification name.
+	 * @return {boolean} `true` if the overlay notification is currently active.
 	 */
 	isShowingOverlayNotification( state, overlayNotification ) {
-		if ( overlayNotification ) {
-			return overlayNotification === state.isShowingOverlayNotification;
-		}
-
-		return state.isShowingOverlayNotification;
+		return state.activeOverlayNotification === overlayNotification;
 	},
 };
 

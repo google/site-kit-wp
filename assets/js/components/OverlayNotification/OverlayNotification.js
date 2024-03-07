@@ -1,5 +1,5 @@
 /**
- * OverlayNotification constants.
+ * OverlayNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,10 +16,25 @@
  * limitations under the License.
  */
 
-export const LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED =
-	'link-analytics-and-adsense-overlay';
+/**
+ * External dependencies
+ */
+import { Slide } from '@material-ui/core';
 
-export const OVERLAY_NOTIFICATION_TO_SHOW = 'overlayNotificationToShow';
-
-export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
-	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+export default function OverlayNotification( {
+	animateNotification,
+	handleAnimationOnExited,
+	children,
+} ) {
+	return (
+		<Slide
+			direction="up"
+			in={ animateNotification }
+			onExited={ handleAnimationOnExited }
+		>
+			<div className="googlesitekit-overlay-notification">
+				{ children }
+			</div>
+		</Slide>
+	);
+}

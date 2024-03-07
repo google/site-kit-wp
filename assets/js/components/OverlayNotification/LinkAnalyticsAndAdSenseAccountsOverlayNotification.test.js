@@ -19,28 +19,29 @@
 /**
  * Internal dependencies
  */
-import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 import {
 	render,
 	createTestRegistry,
 	provideModules,
-	muteFetch,
 	fireEvent,
+	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import {
-	LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED,
-	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-} from './constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	let registry;
 
-	const dismissItemEndpointRegExp = RegExp(
+	const fetchGetDismissedItems = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
+	);
+	const fetchDismissItem = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
@@ -109,7 +110,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED,
+				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 			] );
 
 		const { container } = render(
@@ -124,14 +125,18 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 	} );
 
-	it( 'does not render if it was dismissed by dismissOverlayNotification action', async () => {
-		// Dismissing notification will prevent `isShowingOverlayNotification` from
-		// being set to the current notification.
+	it( 'does not render if it was dismissed by the `dismissItem` action', async () => {
+		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+		fetchMock.postOnce( fetchDismissItem, {
+			body: [ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ],
+		} );
+
+		// Dismissing the notification should cause it to not render.
 		await registry
 			.dispatch( CORE_UI )
-			.setValue( 'dismissedOverlayNotifications', [
-				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-			] );
+			.dismissOverlayNotification(
+				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+			);
 
 		const { container } = render(
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
@@ -148,10 +153,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	it( 'does not render if another notification is showing', async () => {
 		await registry
 			.dispatch( CORE_UI )
-			.setValue(
-				'isShowingOverlayNotification',
-				'TestOverlayNotification'
-			);
+			.setOverlayNotificationToShow( 'TestOverlayNotification' );
 
 		const { container } = render(
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
@@ -183,7 +185,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				LINK_ANALYTICS_ADSENSE_OVERLAY_DISMISSED,
+				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 			] );
 
 		const { container } = render(
@@ -233,9 +235,12 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	} );
 
 	it( 'clicking the `Learn how` button dismisses the notification', async () => {
-		muteFetch( dismissItemEndpointRegExp );
+		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+		fetchMock.postOnce( fetchDismissItem, {
+			body: [ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ],
+		} );
 
-		const { container, getByRole, waitForRegistry } = render(
+		const { container, getByRole, rerender, waitForRegistry } = render(
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
@@ -249,18 +254,11 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			'Link your Analytics and AdSense accounts to find out'
 		);
 
-		fireEvent.click( getByRole( 'button', { name: /learn how/i } ) );
+		act( () => {
+			fireEvent.click( getByRole( 'button', { name: /learn how/i } ) );
+		} );
 
-		const isShowingOverlayNotification = await registry
-			.select( CORE_UI )
-			.isShowingOverlayNotification();
-
-		expect( fetchMock ).toHaveBeenCalledTimes(
-			1,
-			dismissItemEndpointRegExp
-		);
-
-		expect( isShowingOverlayNotification ).toBe( undefined );
+		rerender();
 
 		expect( container ).not.toHaveTextContent(
 			'Link your Analytics and AdSense accounts to find out'
@@ -268,9 +266,12 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	} );
 
 	it( 'clicking the `Maybe later` button dismisses the notification', async () => {
-		muteFetch( dismissItemEndpointRegExp );
+		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+		fetchMock.postOnce( fetchDismissItem, {
+			body: [ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ],
+		} );
 
-		const { container, getByRole, waitForRegistry } = render(
+		const { container, getByRole, rerender, waitForRegistry } = render(
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
@@ -284,18 +285,11 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			'Link your Analytics and AdSense accounts to find out'
 		);
 
-		fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
+		act( () => {
+			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
+		} );
 
-		const isShowingOverlayNotification = await registry
-			.select( CORE_UI )
-			.isShowingOverlayNotification();
-
-		expect( fetchMock ).toHaveBeenCalledTimes(
-			1,
-			dismissItemEndpointRegExp
-		);
-
-		expect( isShowingOverlayNotification ).toBe( undefined );
+		rerender();
 
 		expect( container ).not.toHaveTextContent(
 			'Link your Analytics and AdSense accounts to find out'
