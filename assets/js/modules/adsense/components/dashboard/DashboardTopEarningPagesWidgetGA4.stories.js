@@ -161,6 +161,9 @@ ZeroData.scenario = {
 export const AdSenseNotLinked = Template.bind( {} );
 AdSenseNotLinked.args = {
 	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( {}, { options: reportOptions } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
 	},
 };
