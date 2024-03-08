@@ -37,7 +37,7 @@ describe( 'core/modules sharing-settings', () => {
 			sharedRoles: [ 'editor', 'subscriber' ],
 			management: 'all_admins',
 		},
-		analytics: {
+		'analytics-4': {
 			sharedRoles: [ 'editor' ],
 			management: 'owner',
 		},
@@ -103,7 +103,7 @@ describe( 'core/modules sharing-settings', () => {
 				'search-console': {
 					sharedRoles: [ 'editor', 'subscriber' ],
 				},
-				analytics: {
+				'analytics-4': {
 					sharedRoles: [ 'editor' ],
 				},
 				'pagespeed-insights': {
@@ -138,7 +138,7 @@ describe( 'core/modules sharing-settings', () => {
 					.setSharingManagement( 'analytics-4', 'owner' );
 
 				expect(
-					store.getState().sharingSettings.analytics.management
+					store.getState().sharingSettings[ 'analytics-4' ].management
 				).toBe( 'owner' );
 				expect(
 					store.getState().sharingSettings[ 'search-console' ]
@@ -611,7 +611,7 @@ describe( 'core/modules sharing-settings', () => {
 					.getSharingSettings();
 
 				// Update the sharing settings so they differ. Only `search-console` should trigger
-				// a truthy return value. `analytics` should return a falsy value.
+				// a truthy return value. `analytics-4` should return a falsy value.
 				registry
 					.dispatch( CORE_MODULES )
 					.setSharingManagement( 'search-console', 'owner' );
@@ -1045,7 +1045,7 @@ describe( 'core/modules sharing-settings', () => {
 					.getSharingSettings();
 
 				// Update the sharing settings so they differ. Only `search-console` should trigger
-				// a truthy return value. `analytics` should return a falsy value.
+				// a truthy return value. `analytics-4` should return a falsy value.
 				registry
 					.dispatch( CORE_MODULES )
 					.setSharingManagement( moduleSlug, 'owner' );
@@ -1167,7 +1167,7 @@ describe( 'core/modules sharing-settings', () => {
 					.receiveSharedOwnershipModules( sharedOwnershipModules );
 
 				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
-					analytics: {
+					'analytics-4': {
 						sharedRoles: [],
 						management: 'all_admins',
 					},
