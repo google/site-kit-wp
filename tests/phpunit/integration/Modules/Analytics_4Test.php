@@ -307,7 +307,7 @@ class Analytics_4Test extends TestCase {
 					array(
 						'page'         => 'googlesitekit-dashboard',
 						'notification' => 'authentication_success',
-						'slug'         => 'analytics',
+						'slug'         => 'analytics-4',
 					),
 					admin_url( 'admin.php' )
 				),
