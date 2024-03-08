@@ -61,7 +61,7 @@ SingleAdminWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				shareable: true,
 				owner: {
 					id: 1,
@@ -138,7 +138,7 @@ MultiAdminsWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				shareable: true,
 				owner: {
 					id: 1,
@@ -215,7 +215,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				shareable: true,
 				owner: {
 					id: 1,
@@ -240,7 +240,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 			.dispatch( CORE_MODULES )
 			.receiveSharedOwnershipModules( [
 				'search-console',
-				'analytics',
+				'analytics-4',
 				'adsense',
 				'pagespeed-insights',
 			] );

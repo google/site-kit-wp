@@ -79,7 +79,7 @@ describe( 'core/modules sharing-settings', () => {
 		},
 	};
 	const sharedOwnershipModules = [
-		'analytics',
+		'analytics-4',
 		'search-console',
 		'tagmanager',
 	];
@@ -121,7 +121,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_MODULES )
-						.setSharingManagement( 'analytics' );
+						.setSharingManagement( 'analytics-4' );
 				} ).toThrow( 'management must be one of: all_admins, owner.' );
 			} );
 
@@ -135,7 +135,7 @@ describe( 'core/modules sharing-settings', () => {
 					.setSharingManagement( 'search-console', 'all_admins' );
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharingManagement( 'analytics', 'owner' );
+					.setSharingManagement( 'analytics-4', 'owner' );
 
 				expect(
 					store.getState().sharingSettings.analytics.management
@@ -318,7 +318,10 @@ describe( 'core/modules sharing-settings', () => {
 				// Make changes to the shared settings to verify the rollback.
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharedRoles( 'analytics', [ 'editor', 'subscriber' ] );
+					.setSharedRoles( 'analytics-4', [
+						'editor',
+						'subscriber',
+					] );
 
 				// Assert that the changed settings and saved settings aren't same.
 				expect( store.getState().sharingSettings ).not.toMatchObject(
@@ -620,7 +623,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
-						.haveSharingSettingsChanged( [ 'analytics' ] )
+						.haveSharingSettingsChanged( [ 'analytics-4' ] )
 				).toBe( false );
 
 				// Checking all values should be possible.
@@ -629,7 +632,7 @@ describe( 'core/modules sharing-settings', () => {
 						.select( CORE_MODULES )
 						.haveSharingSettingsChanged( [
 							'search-console',
-							'analytics',
+							'analytics-4',
 						] )
 				).toBe( true );
 
@@ -773,7 +776,7 @@ describe( 'core/modules sharing-settings', () => {
 				// True after updating module's `management` from `owner` to `all_admins` on the client.
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharingManagement( 'analytics', 'all_admins' );
+					.setSharingManagement( 'analytics-4', 'all_admins' );
 				expect(
 					registry
 						.select( CORE_MODULES )
@@ -783,7 +786,7 @@ describe( 'core/modules sharing-settings', () => {
 				// False after updating module's `management` back to original server value on client.
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharingManagement( 'analytics', 'owner' );
+					.setSharingManagement( 'analytics-4', 'owner' );
 				expect(
 					registry
 						.select( CORE_MODULES )
@@ -1058,7 +1061,7 @@ describe( 'core/modules sharing-settings', () => {
 					registry
 						.select( CORE_MODULES )
 						.haveModuleSharingSettingsChanged(
-							'analytics',
+							'analytics-4',
 							'management'
 						)
 				).toBe( false );
@@ -1075,7 +1078,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
-						.haveModuleSharingSettingsChanged( 'analytics', [
+						.haveModuleSharingSettingsChanged( 'analytics-4', [
 							'management',
 							'sharedRoles',
 						] )

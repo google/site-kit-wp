@@ -116,13 +116,8 @@ export const setupBaseRegistry = ( registry, args ) => {
 	// leaving the `GA4` widgets in loading state.
 	provideUserAuthentication( registry );
 
-	// Set up analytics and analytics-4 modules stores but provide no data.
+	// Set up analytics-4 modules stores but provide no data.
 	provideModules( registry, [
-		{
-			slug: 'analytics',
-			active: true,
-			connected: true,
-		},
 		{
 			slug: 'analytics-4',
 			active: true,
