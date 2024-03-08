@@ -260,7 +260,9 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_activation_rest_endpoint__prevent_inactive_dependencies_activation() {
-		// Currently there are no modules with dependency. @TODO Add when one shows up.
+		// TODO: As Site Kit doesn't have any dependent modules at this moment,
+		// update this test case so that a dependency relationship can be
+		// mocked without referencing an actual module, e.g. using FakeModule.
 	}
 
 	public function test_activation_rest_endpoint__activate_module() {
