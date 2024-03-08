@@ -182,22 +182,8 @@ final class Analytics_4 extends Module
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
-		add_action(
-			'admin_init',
-			array(
-				$synchronize_property,
-				'maybe_schedule_synchronize_property',
-			)
-		);
-
-		add_action(
-			'admin_init',
-			array(
-				$synchronize_adsense_linked,
-				'maybe_schedule_synchronize_adsense_linked',
-			)
-		);
-
+		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
+		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.
