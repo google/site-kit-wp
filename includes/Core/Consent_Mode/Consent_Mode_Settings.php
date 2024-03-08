@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class to store user Consent Mode settings.
  *
- * @since n.e.x.t
+ * @since 1.122.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Consent_Mode_Settings extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return string The type name.
 	 */
@@ -40,7 +40,7 @@ class Consent_Mode_Settings extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return array The default value.
 	 */
@@ -54,7 +54,7 @@ class Consent_Mode_Settings extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -93,7 +93,7 @@ class Consent_Mode_Settings extends Setting {
 	/**
 	 * Accessor for the `enabled` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return bool TRUE if Consent Mode is enabled, otherwise FALSE.
 	 */
@@ -104,7 +104,7 @@ class Consent_Mode_Settings extends Setting {
 	/**
 	 * Accessor for the `regions` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return array<string> Array of ISO 3166-2 region codes.
 	 */

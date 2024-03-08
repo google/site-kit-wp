@@ -35,7 +35,7 @@ import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics-4/datastore/constants';
-import { ZeroDataMessage } from '../../modules/analytics/components/common';
+import { ZeroDataMessage } from '../../modules/analytics-4/components/common';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../PreviewTable';
 import TableOverflowContainer from '../TableOverflowContainer';

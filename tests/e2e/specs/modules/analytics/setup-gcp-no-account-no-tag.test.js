@@ -159,7 +159,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			text: /connect more services/i,
 		} );
 		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics'
+			'.googlesitekit-settings-connect-module--analytics-4'
 		);
 
 		await Promise.all( [

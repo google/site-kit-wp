@@ -50,16 +50,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	private $ads_conversion_id;
 
 	/**
-	 * Boolean flag for whether Consent Mode is enabled.
-	 *
-	 * @since n.e.x.t
-	 * @deprecated This property is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
-	 * @var bool
-	 */
-	private $is_consent_mode_enabled;
-
-	/**
 	 * Sets custom dimensions data.
 	 *
 	 * @since 1.113.0
@@ -93,16 +83,16 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	}
 
 	/**
-	 * Sets whether Consent Mode is enabled.
+	 * Gets args to use if blocked_on_consent is deprecated.
 	 *
-	 * @since n.e.x.t
-	 * @deprecated This method is deprecated and should be removed when the legacy tag blocking mechanism
-	 *             is removed (see the `add_legacy_block_on_consent_attributes()` method below).
+	 * @since 1.122.0
 	 *
-	 * @param bool $is_consent_mode_enabled Whether consent mode is enabled.
+	 * @return array args to pass to apply_filters_deprecated if deprecated ($version, $replacement, $message)
 	 */
-	public function set_consent_mode_enabled( $is_consent_mode_enabled ) {
-		$this->is_consent_mode_enabled = $is_consent_mode_enabled;
+	protected function get_tag_blocked_on_consent_deprecated_args() {
+		return array(
+			'1.122.0', // Deprecated in this version.
+		);
 	}
 
 	/**
@@ -179,12 +169,10 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
-			if ( ! $this->is_consent_mode_enabled ) {
-				$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
+			$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
-				if ( $block_on_consent_attrs ) {
-						$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
-				}
+			if ( $block_on_consent_attrs ) {
+				$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
 			}
 
 			return $snippet_comment_begin . $tag . $snippet_comment_end;
@@ -244,8 +232,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Adds HTML attributes to the gtag script tag to block it until user consent is granted.
 	 *
-	 * @since n.e.x.t
-	 * @deprecated This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
+	 * This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
+	 *
+	 * @since 1.122.0
 	 *
 	 * @param string $tag     The script tag.
 	 * @param string $gtag_src The gtag script source URL.
@@ -253,8 +242,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @return string The script tag with the added attributes.
 	 */
 	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t' );
-
 		return str_replace(
 			array(
 				"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript

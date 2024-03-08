@@ -12,6 +12,7 @@ const defaultAnalyticsSettings = {
 };
 
 const defaultAnalytics4Settings = {
+	accountID: '100',
 	propertyID: '500',
 	webDataStreamID: '600',
 	measurementID: 'G-700',
@@ -65,7 +66,7 @@ export async function setupAnalytics4( settingsOverrides = {} ) {
 		method: 'post',
 		path: 'google-site-kit/v1/core/modules/data/activation',
 		data: {
-			data: { slug: 'analytics', active: true },
+			data: { slug: 'analytics-4', active: true },
 		},
 	} );
 	// Set placeholder connection data.

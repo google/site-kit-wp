@@ -46,7 +46,7 @@ export default function Notice() {
 				</Link>
 			) }
 			notice={ __(
-				'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?',
+				'Got a Google Analytics property and want to find out how to use it with Site Kit?',
 				'google-site-kit'
 			) }
 		/>

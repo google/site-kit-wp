@@ -439,6 +439,10 @@ export default {
 				await registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectAccount( accountID );
 			};
 
 			return (

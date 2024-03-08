@@ -99,6 +99,9 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.selectAccount( accountID );
 			};
 
 			return (

@@ -20,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for handling Consent Mode.
  *
- * @since n.e.x.t
+ * @since 1.122.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class REST_Consent_Mode_Controller {
 	/**
 	 * Consent_Mode_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 * @var Consent_Mode_Settings
 	 */
 	private $consent_mode_settings;
@@ -37,7 +37,7 @@ class REST_Consent_Mode_Controller {
 		/**
 		 * Constructor.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.122.0
 		 *
 		 * @param Consent_Mode_Settings $consent_mode_settings Consent_Mode_Settings instance.
 		 */
@@ -48,7 +48,7 @@ class REST_Consent_Mode_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 */
 	public function register() {
 		add_filter(
@@ -86,7 +86,7 @@ class REST_Consent_Mode_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

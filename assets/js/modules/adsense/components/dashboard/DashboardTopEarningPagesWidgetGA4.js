@@ -42,10 +42,12 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { numFmt, trackEvent } from '../../../../util';
 import whenActive from '../../../../util/when-active';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { ZeroDataMessage } from '../../../analytics/components/common';
-import { DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
-import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../analytics-4/datastore/constants';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
+import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
 import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { AdSenseLinkCTA } from '../common';
@@ -78,7 +80,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	const args = {
 		startDate,
 		endDate,
-		dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
+		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
 		filter: {
 			fieldName: 'adSourceName',
@@ -101,12 +103,19 @@ function DashboardTopEarningPagesWidgetGA4( {
 		] )
 	);
 
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS_4 ).getPageTitles( data, args )
+			: undefined
+	);
+
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
 				[ args ]
-			)
+			) ||
+			( ! error && titles === undefined )
 	);
 
 	const isDismissed = useSelect( ( select ) =>
@@ -237,8 +246,9 @@ function DashboardTopEarningPagesWidgetGA4( {
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
 			Component( { row } ) {
-				const [ { value: title }, { value: url } ] =
-					row.dimensionValues;
+				const [ { value: url } ] = row.dimensionValues;
+				const title = titles[ url ];
+
 				const serviceURL = useSelect( ( select ) => {
 					return ! viewOnlyDashboard
 						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(

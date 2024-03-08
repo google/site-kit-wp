@@ -27,8 +27,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
-use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
@@ -159,23 +157,6 @@ class Analytics_4Test extends TestCase {
 		// Test actions for tracking opt-out are added.
 		$this->assertTrue( has_action( 'wp_head' ) );
 		$this->assertTrue( has_action( 'web_stories_story_head' ) );
-	}
-
-	/**
-	 * @dataProvider analytics_sharing_settings_data_provider
-	 * @param array $sharing_settings
-	 * @param array $expected
-	 */
-	public function test_register__replicate_analytics_sharing_settings( $sharing_settings, $expected ) {
-		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
-		$this->assertFalse( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
-
-		$this->analytics->register();
-
-		$this->assertTrue( has_filter( 'option_' . Module_Sharing_Settings::OPTION ) );
-
-		update_option( Module_Sharing_Settings::OPTION, $sharing_settings );
-		$this->assertEquals( $expected, get_option( Module_Sharing_Settings::OPTION ) );
 	}
 
 	public function test_register__reset_adsense_link_settings() {
@@ -326,7 +307,7 @@ class Analytics_4Test extends TestCase {
 					array(
 						'page'         => 'googlesitekit-dashboard',
 						'notification' => 'authentication_success',
-						'slug'         => 'analytics',
+						'slug'         => 'analytics-4',
 					),
 					admin_url( 'admin.php' )
 				),
@@ -444,7 +425,7 @@ class Analytics_4Test extends TestCase {
 
 		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
 		$method->setAccessible( true );
-		$method->invoke( $this->analytics, $account_id, new Analytics\Account_Ticket() );
+		$method->invoke( $this->analytics, $account_id, new Analytics_4\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -589,7 +570,7 @@ class Analytics_4Test extends TestCase {
 
 		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
 		$method->setAccessible( true );
-		$method->invoke( $this->analytics, $account_id, new Analytics\Account_Ticket() );
+		$method->invoke( $this->analytics, $account_id, new Analytics_4\Account_Ticket() );
 
 		$this->assertArrayIntersection(
 			array(
@@ -707,7 +688,7 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		$account_ticket = new Analytics\Account_Ticket();
+		$account_ticket = new Analytics_4\Account_Ticket();
 		$account_ticket->set_enhanced_measurement_stream_enabled( true );
 
 		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
@@ -1149,26 +1130,6 @@ class Analytics_4Test extends TestCase {
 				'adsense_linked',
 				'adsense_linked_last_synced_at',
 			),
-			array_keys( $this->analytics->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__keyMetrics_disabled() {
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertNotContains(
-			'analytics_4_available_custom_dimensions',
-			array_keys( $analytics->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__keyMetrics_enabled() {
-		// Given: Analytics 4 is registered with a specific propertyID.
-		$this->analytics->register();
-		$this->analytics->get_settings()->register();
-
-		$this->assertContains(
-			'analytics_4_available_custom_dimensions',
 			array_keys( $this->analytics->get_debug_fields() )
 		);
 	}
@@ -1789,7 +1750,7 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->get_data( 'report', array() );
 
-		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics 4 because you haven’t granted all permissions requested during setup.', $data );
+		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics because you haven’t granted all permissions requested during setup.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 	}
 
@@ -2801,16 +2762,13 @@ class Analytics_4Test extends TestCase {
 		wp_set_current_user( $admin->ID );
 
 		// Ensure the Analytics 4 module is connected and the owner ID is set.
-		delete_option( Analytics_Settings::OPTION );
 		delete_option( Settings::OPTION );
-
-		$analytics_settings = new Analytics_Settings( $this->options );
-		$analytics_settings->register();
 
 		$analytics_4_settings = new Settings( $this->options );
 		$analytics_4_settings->register();
 		$analytics_4_settings->merge(
 			array(
+				'accountID'       => '100',
 				'propertyID'      => '123',
 				'webDataStreamID' => '456',
 				'measurementID'   => 'G-789',
@@ -2889,10 +2847,6 @@ class Analytics_4Test extends TestCase {
 
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->set( $settings );
-
-		// TODO Remove this when #7932 and #8082 are merged which save and migrate the new GA4 settings.
-		// This saves the trackingDisabled setting to the Analytics module which is being used temporarily.
-		( new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->get_settings()->merge( array( 'trackingDisabled' => $settings['trackingDisabled'] ) );
 
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
@@ -3629,15 +3583,10 @@ class Analytics_4Test extends TestCase {
 	 *     Parameters for the test.
 	 *
 	 *     @type bool $block_on_consent_filter_enabled Whether the block on consent filter is enabled.
-	 *     @type bool $consent_mode_enabled Whether Consent Mode is enabled.
 	 *     @type bool $expected_block_on_consent Whether the block on consent attributes are expected to be present.
 	 * }
 	 */
 	public function test_block_on_consent_non_amp( $test_parameters ) {
-		if ( $test_parameters['consent_mode_enabled'] ) {
-			( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
-		}
-
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->merge(
 			array(
@@ -3659,6 +3608,7 @@ class Analytics_4Test extends TestCase {
 		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
 
 		if ( $test_parameters['block_on_consent_filter_enabled'] ) {
+			$this->setExpectedDeprecated( 'googlesitekit_analytics-4_tag_block_on_consent' );
 			add_filter( 'googlesitekit_analytics-4_tag_block_on_consent', '__return_true' );
 		}
 
@@ -3670,7 +3620,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=A1B2C3D4E5', $output );
 
 		if ( $test_parameters['expected_block_on_consent'] ) {
-			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
 			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
 			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
@@ -3679,24 +3628,15 @@ class Analytics_4Test extends TestCase {
 
 	public function block_on_consent_provider_non_amp() {
 		return array(
-			'default (disabled)'             => array(
+			'default (disabled)' => array(
 				array(
 					'block_on_consent_filter_enabled' => false,
-					'consent_mode_enabled'            => false,
 					'expected_block_on_consent'       => false,
 				),
 			),
-			'enabled (consentMode enabled)'  => array(
+			'enabled'            => array(
 				array(
 					'block_on_consent_filter_enabled' => true,
-					'consent_mode_enabled'            => true,
-					'expected_block_on_consent'       => false,
-				),
-			),
-			'enabled (consentMode disabled)' => array(
-				array(
-					'block_on_consent_filter_enabled' => true,
-					'consent_mode_enabled'            => false,
 					'expected_block_on_consent'       => true,
 				),
 			),

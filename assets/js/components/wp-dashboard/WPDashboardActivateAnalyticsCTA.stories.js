@@ -22,7 +22,7 @@
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { widgetDecorators } from './common.stories';
+import { widgetDecorators } from './common-GA4.stories';
 import {
 	provideModules,
 	provideModuleRegistrations,

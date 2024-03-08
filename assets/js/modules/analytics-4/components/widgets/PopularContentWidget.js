@@ -38,7 +38,7 @@ import {
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';

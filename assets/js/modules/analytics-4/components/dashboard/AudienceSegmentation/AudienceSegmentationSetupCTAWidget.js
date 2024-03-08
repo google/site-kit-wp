@@ -78,7 +78,15 @@ function AudienceSegmentationSetupCTAWidget( { Widget, title, description } ) {
 									onClick={ onEnableGroups }
 									isSaving={ isSaving }
 								>
-									{ __( 'Enable groups', 'google-site-kit' ) }
+									{ isSaving
+										? __(
+												'Enabling groups',
+												'google-site-kit'
+										  )
+										: __(
+												'Enable groups',
+												'google-site-kit'
+										  ) }
 								</SpinnerButton>
 								<Button
 									tertiary

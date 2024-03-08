@@ -26,8 +26,8 @@ import {
 	setupAnalytics4ZeroData,
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
+	widgetDecorators,
 } from './common-GA4.stories';
-import { widgetDecorators } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 

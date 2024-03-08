@@ -1,0 +1,286 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Overview should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+          >
+            <div
+              aria-label="Total Impressions"
+              aria-pressed="true"
+              class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="googlesitekit-data-block__title-datapoint-wrapper"
+              >
+                <h3
+                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                >
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Impressions
+                  </span>
+                </h3>
+                <div
+                  class="googlesitekit-data-block__datapoint"
+                >
+                  7.9K
+                </div>
+              </div>
+              <div
+                class="googlesitekit-data-block__change-source-wrapper"
+              >
+                <div
+                  class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                >
+                  <span
+                    class="googlesitekit-data-block__value"
+                  >
+                    0%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+          >
+            <div
+              aria-label="Total Clicks"
+              aria-pressed="false"
+              class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="googlesitekit-data-block__title-datapoint-wrapper"
+              >
+                <h3
+                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                >
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Clicks
+                  </span>
+                </h3>
+                <div
+                  class="googlesitekit-data-block__datapoint"
+                >
+                  123
+                </div>
+              </div>
+              <div
+                class="googlesitekit-data-block__change-source-wrapper"
+              >
+                <div
+                  class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                >
+                  <span
+                    class="googlesitekit-data-block__value"
+                  >
+                    0%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Overview should render the Search Funnel Overview, including the Activate Analytics CTA 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+          >
+            <div
+              aria-label="Total Impressions"
+              aria-pressed="true"
+              class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="googlesitekit-data-block__title-datapoint-wrapper"
+              >
+                <h3
+                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                >
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Impressions
+                  </span>
+                </h3>
+                <div
+                  class="googlesitekit-data-block__datapoint"
+                >
+                  7.9K
+                </div>
+              </div>
+              <div
+                class="googlesitekit-data-block__change-source-wrapper"
+              >
+                <div
+                  class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                >
+                  <span
+                    class="googlesitekit-data-block__value"
+                  >
+                    0%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+          >
+            <div
+              aria-label="Total Clicks"
+              aria-pressed="false"
+              class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="googlesitekit-data-block__title-datapoint-wrapper"
+              >
+                <h3
+                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                >
+                  <span
+                    class="googlesitekit-data-block__title-inner"
+                  >
+                    Total Clicks
+                  </span>
+                </h3>
+                <div
+                  class="googlesitekit-data-block__datapoint"
+                >
+                  123
+                </div>
+              </div>
+              <div
+                class="googlesitekit-data-block__change-source-wrapper"
+              >
+                <div
+                  class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                >
+                  <span
+                    class="googlesitekit-data-block__value"
+                  >
+                    0%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+      >
+        <div
+          class="googlesitekit-analytics-cta"
+        >
+          <div
+            class="googlesitekit-analytics-cta__preview-graphs"
+          >
+            <div
+              class="googlesitekit-analytics-cta__preview-graph"
+            >
+              <h3
+                class="googlesitekit-analytics-cta__preview-graph--title"
+              >
+                Unique visitors from Search
+              </h3>
+              <div>
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-analytics-cta__preview-graph--icons"
+              >
+                <svg />
+                <span
+                  class="googlesitekit-analytics-cta__preview-graph--bar"
+                />
+              </div>
+            </div>
+            <div
+              class="googlesitekit-analytics-cta__preview-graph"
+            >
+              <h3
+                class="googlesitekit-analytics-cta__preview-graph--title"
+              >
+                Conversions completed
+              </h3>
+              <div>
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-analytics-cta__preview-graph--icons"
+              >
+                <svg />
+                <span
+                  class="googlesitekit-analytics-cta__preview-graph--bar"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-analytics-cta__details"
+          >
+            <p
+              class="googlesitekit-analytics-cta--description"
+            >
+              See how many people visit your site from Search and track how you’re achieving your goals
+            </p>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Set up Google Analytics
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -68,10 +68,10 @@ import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import {
+	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../modules/analytics-4/datastore/constants';
-import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 const { useSelect, useDispatch } = Data;

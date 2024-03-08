@@ -17,12 +17,10 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -55,8 +53,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
-use Google\Site_Kit\Modules\Analytics\Account_Ticket;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -109,8 +106,9 @@ final class Analytics_4 extends Module
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
-	const READONLY_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
-	const EDIT_SCOPE     = 'https://www.googleapis.com/auth/analytics.edit';
+	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.
@@ -228,12 +226,6 @@ final class Analytics_4 extends Module
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 
-		// Replicate Analytics settings for Analytics-4 if not set.
-		add_filter(
-			'option_' . Module_Sharing_Settings::OPTION,
-			$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
-		);
-
 		add_filter(
 			'googlesitekit_auth_scopes',
 			function( array $scopes ) {
@@ -295,9 +287,7 @@ final class Analytics_4 extends Module
 	 */
 	public function is_connected() {
 		$required_keys = array(
-			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-			/* 'accountID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			/* 'adsConversionID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			'accountID',
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -504,7 +494,7 @@ final class Analytics_4 extends Module
 			$datapoints['GET:audiences']        = array( 'service' => 'analyticsaudiences' );
 			$datapoints['POST:create-audience'] = array(
 				'service'                => 'analyticsaudiences',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
 			);
 		}
@@ -637,8 +627,7 @@ final class Analytics_4 extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		// @TODO Revert this when we use the new GA4 SettingsEdit form once #7932 is merged and we save all settings to the Analytics-4 module.
-		$settings = ( new Analytics( $this->context ) )->get_settings()->get();
+		$settings = $this->get_settings()->get();
 
 		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
 		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
@@ -730,8 +719,6 @@ final class Analytics_4 extends Module
 		$new_settings['accountID'] = $account_id;
 
 		$this->get_settings()->merge( $new_settings );
-		// TODO: Remove this when the original Analytics (UA) accountID is not referred to anymore.
-		( new Analytics_Settings( $this->options ) )->merge( $new_settings );
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
@@ -740,7 +727,7 @@ final class Analytics_4 extends Module
 				'dashboard',
 				array(
 					'notification' => 'authentication_success',
-					'slug'         => 'analytics',
+					'slug'         => 'analytics-4',
 				)
 			)
 		);
@@ -1520,18 +1507,17 @@ final class Analytics_4 extends Module
 	 * Sets up information about the module.
 	 *
 	 * @since 1.30.0
+	 * @since n.e.x.t Updated to include in the module setup.
 	 *
 	 * @return array Associative array of module info.
 	 */
 	protected function setup_info() {
 		return array(
 			'slug'        => self::MODULE_SLUG,
-			'name'        => _x( 'Analytics 4', 'Service name', 'google-site-kit' ),
+			'name'        => _x( 'Analytics', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
-			'internal'    => true,
-			'depends_on'  => array( 'analytics' ),
 		);
 	}
 
@@ -1691,15 +1677,9 @@ final class Analytics_4 extends Module
 			$tag->set_custom_dimensions( $custom_dimensions_data );
 		}
 
-		// TODO: This should be replaced with the Analytics 4 adsConversionID module setting once the settings are migrated.
 		$tag->set_ads_conversion_id(
-			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
+			$this->get_settings()->get()['adsConversionID']
 		);
-
-		if ( ! $this->context->is_amp() ) {
-			$consent_mode_settings = new Consent_Mode_Settings( $this->options );
-			$tag->set_consent_mode_enabled( $consent_mode_settings->get()['enabled'] );
-		}
 
 		$tag->register();
 	}
@@ -2042,27 +2022,6 @@ final class Analytics_4 extends Module
 		}
 
 		return $modules_data;
-	}
-
-	/**
-	 * Returns sharing settings with settings for Analytics-4 replicated from Analytics.
-	 *
-	 * Module sharing settings for Analytics and Analytics-4 are always kept "in-sync" when
-	 * setting these settings in the datastore. However, this function ensures backwards
-	 * compatibility before this replication was introduced, i.e. when sharing settings were
-	 * saved for Analytics but not copied to Analytics-4.
-	 *
-	 * @since 1.98.0
-	 *
-	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
-	 * @return array Dashboard sharing settings option with Analytics-4 settings.
-	 */
-	protected function replicate_analytics_sharing_settings( $sharing_settings ) {
-		if ( ! isset( $sharing_settings[ self::MODULE_SLUG ] ) && isset( $sharing_settings[ Analytics::MODULE_SLUG ] ) ) {
-			$sharing_settings[ self::MODULE_SLUG ] = $sharing_settings[ Analytics::MODULE_SLUG ];
-		}
-
-		return $sharing_settings;
 	}
 
 	/**

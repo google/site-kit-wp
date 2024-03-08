@@ -40,7 +40,7 @@ import {
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/ConnectGA4CTATileWidget';
@@ -65,7 +65,7 @@ function TopEarningContentWidget( { Widget } ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
+		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
 		filter: {
 			fieldName: 'adSourceName',
@@ -93,12 +93,21 @@ function TopEarningContentWidget( { Widget } ) {
 		] )
 	);
 
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS_4 ).getPageTitles(
+					report,
+					reportOptions
+			  )
+			: undefined
+	);
+
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
 				[ reportOptions ]
-			)
+			) || titles === undefined
 	);
 
 	const isAdSenseLinked = useSelect( ( select ) => {
@@ -123,11 +132,8 @@ function TopEarningContentWidget( { Widget } ) {
 		{
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
-				const title = fieldValue;
-				const url = rows.find(
-					( row ) => row.dimensionValues[ 0 ].value === title
-				).dimensionValues[ 1 ].value;
-
+				const url = fieldValue;
+				const title = titles[ url ];
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,

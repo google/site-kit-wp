@@ -1,0 +1,447 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--no-padding googlesitekit-widget--with-header"
+  >
+    <div
+      class="googlesitekit-widget__header"
+    >
+      <h3
+        class="googlesitekit-subheading-1 googlesitekit-widget__header-title"
+      >
+        Search traffic over the last 28 days
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+          >
+            <div
+              class="mdc-layout-grid__inner"
+            >
+              <div
+                class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+              >
+                <div
+                  aria-label="Total Impressions"
+                  aria-pressed="true"
+                  class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected"
+                  role="button"
+                  tabindex="0"
+                >
+                  <div
+                    class="googlesitekit-data-block__title-datapoint-wrapper"
+                  >
+                    <h3
+                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                    >
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Impressions
+                      </span>
+                    </h3>
+                    <div
+                      class="googlesitekit-data-block__datapoint"
+                    >
+                      7.9K
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-data-block__change-source-wrapper"
+                  >
+                    <div
+                      class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                    >
+                      <span
+                        class="googlesitekit-data-block__value"
+                      >
+                        0%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+              >
+                <div
+                  aria-label="Total Clicks"
+                  aria-pressed="false"
+                  class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button"
+                  role="button"
+                  tabindex="0"
+                >
+                  <div
+                    class="googlesitekit-data-block__title-datapoint-wrapper"
+                  >
+                    <h3
+                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                    >
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Clicks
+                      </span>
+                    </h3>
+                    <div
+                      class="googlesitekit-data-block__datapoint"
+                    >
+                      123
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-data-block__change-source-wrapper"
+                  >
+                    <div
+                      class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                    >
+                      <span
+                        class="googlesitekit-data-block__value"
+                      >
+                        0%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mdc-layout-grid googlesitekit-search-console-site-stats"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          >
+            <div
+              class="googlesitekit-chart googlesitekit-chart--LineChart"
+              id="googlesitekit-chart-1"
+              tabindex="-1"
+            >
+              <div
+                class="googlesitekit-chart-loading"
+              >
+                <div
+                  class="googlesitekit-preview-block googlesitekit-chart-loading__wrapper"
+                  style="width: 100%; height: 270px;"
+                >
+                  <div
+                    class="googlesitekit-preview-block__wrapper"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget__footer"
+    >
+      <div
+        class="googlesitekit-source-link"
+      >
+        Source: 
+        <a
+          aria-label="Search Console (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20201231%26end_date%3D20210127&Email=wapuu.wordpress%40gmail.com"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including the Activate Analytics CTA 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--no-padding googlesitekit-widget--with-header"
+  >
+    <div
+      class="googlesitekit-widget__header"
+    >
+      <h3
+        class="googlesitekit-subheading-1 googlesitekit-widget__header-title"
+      >
+        Search traffic over the last 28 days
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+          >
+            <div
+              class="mdc-layout-grid__inner"
+            >
+              <div
+                class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+              >
+                <div
+                  aria-label="Total Impressions"
+                  aria-pressed="true"
+                  class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected"
+                  role="button"
+                  tabindex="0"
+                >
+                  <div
+                    class="googlesitekit-data-block__title-datapoint-wrapper"
+                  >
+                    <h3
+                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                    >
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Impressions
+                      </span>
+                    </h3>
+                    <div
+                      class="googlesitekit-data-block__datapoint"
+                    >
+                      7.9K
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-data-block__change-source-wrapper"
+                  >
+                    <div
+                      class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                    >
+                      <span
+                        class="googlesitekit-data-block__value"
+                      >
+                        0%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+              >
+                <div
+                  aria-label="Total Clicks"
+                  aria-pressed="false"
+                  class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button"
+                  role="button"
+                  tabindex="0"
+                >
+                  <div
+                    class="googlesitekit-data-block__title-datapoint-wrapper"
+                  >
+                    <h3
+                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                    >
+                      <span
+                        class="googlesitekit-data-block__title-inner"
+                      >
+                        Total Clicks
+                      </span>
+                    </h3>
+                    <div
+                      class="googlesitekit-data-block__datapoint"
+                    >
+                      123
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-data-block__change-source-wrapper"
+                  >
+                    <div
+                      class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                    >
+                      <span
+                        class="googlesitekit-data-block__value"
+                      >
+                        0%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+          />
+        </div>
+      </div>
+      <div
+        class="mdc-layout-grid googlesitekit-search-console-site-stats"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          >
+            <div
+              class="googlesitekit-chart googlesitekit-chart--LineChart"
+              id="googlesitekit-chart-0"
+              tabindex="-1"
+            >
+              <div
+                class="googlesitekit-chart-loading"
+              >
+                <div
+                  class="googlesitekit-preview-block googlesitekit-chart-loading__wrapper"
+                  style="width: 100%; height: 270px;"
+                >
+                  <div
+                    class="googlesitekit-preview-block__wrapper"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mdc-layout-grid"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell"
+          >
+            <div
+              class="googlesitekit-analytics-cta"
+            >
+              <div
+                class="googlesitekit-analytics-cta__preview-graphs"
+              >
+                <div
+                  class="googlesitekit-analytics-cta__preview-graph"
+                >
+                  <h3
+                    class="googlesitekit-analytics-cta__preview-graph--title"
+                  >
+                    Unique visitors from Search
+                  </h3>
+                  <div>
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-analytics-cta__preview-graph--icons"
+                  >
+                    <svg />
+                    <span
+                      class="googlesitekit-analytics-cta__preview-graph--bar"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-analytics-cta__preview-graph"
+                >
+                  <h3
+                    class="googlesitekit-analytics-cta__preview-graph--title"
+                  >
+                    Conversions completed
+                  </h3>
+                  <div>
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-analytics-cta__preview-graph--icons"
+                  >
+                    <svg />
+                    <span
+                      class="googlesitekit-analytics-cta__preview-graph--bar"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-analytics-cta__details"
+              >
+                <p
+                  class="googlesitekit-analytics-cta--description"
+                >
+                  See how many people visit your site from Search and track how you’re achieving your goals
+                </p>
+                <button
+                  class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Set up Google Analytics
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget__footer"
+    >
+      <div
+        class="googlesitekit-source-link"
+      >
+        Source: 
+        <a
+          aria-label="Search Console (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20201231%26end_date%3D20210127&Email=wapuu.wordpress%40gmail.com"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
