@@ -264,11 +264,6 @@ export const setupAnalytics4ZeroData = (
 	} );
 };
 
-export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
-	setupSearchConsoleGatheringData( registry );
-	setupAnalytics4GatheringData( registry );
-};
-
 export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
 	setupSearchConsoleZeroData( registry );
 	setupAnalytics4ZeroData( registry );
@@ -307,9 +302,4 @@ export const setupAnalytics4Error = (
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	} );
-};
-
-export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
-	setupSearchConsoleZeroData( registry );
-	setupAnalytics4ZeroData( registry );
 };
