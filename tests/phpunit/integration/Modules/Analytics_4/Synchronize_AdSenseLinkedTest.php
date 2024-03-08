@@ -15,17 +15,18 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\AdSense\Settings as Adsense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
+use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
-use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse;
 use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink;
-use Google\Site_Kit\Modules\AdSense\Settings as Adsense_Settings;
+use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse;
 
 /**
  * @group Modules
@@ -34,6 +35,7 @@ use Google\Site_Kit\Modules\AdSense\Settings as Adsense_Settings;
 class Synchronize_AdSenseLinkedTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use ModulesHelperTrait;
 
 	/**
 	 * @var Synchronize_AdSenseLinked
@@ -113,38 +115,14 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 			$this->user_options,
 			$this->options
 		);
-
-		// Force modules to be connected.
-		add_filter(
-			'googlesitekit_is_module_connected',
-			array(
-				$this,
-				'force_module_connection',
-			)
-		);
 	}
 
-	public function tear_down() {
-		parent::tear_down();
+	protected function fake_adsense_linked_response( $client_id ) {
+		$property_id = $this->analytics_4->get_settings()->get()['propertyID'];
 
-		// Remove filter that forces modules to be connected.
-		remove_filter(
-			'googlesitekit_is_module_connected',
-			array(
-				$this,
-				'force_module_connection',
-			)
-		);
-	}
-
-	public function force_module_connection() {
-		return true;
-	}
-
-	public function fake_adsense_linked_response( $property_id ) {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics_4->get_client(),
-			function ( Request $request ) use ( $property_id ) {
+			function ( Request $request ) use ( $property_id, $client_id ) {
 				$url = parse_url( $request->getUri() );
 
 				$property = new GoogleAnalyticsAdminV1betaProperty();
@@ -153,7 +131,7 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 				if ( "/v1alpha/properties/{$property_id}/adSenseLinks" === $url['path'] ) {
 					$mock_adSenseLink = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink();
 					$mock_adSenseLink->setName( "properties/{$property_id}/adSenseLinks/{$property_id}" );
-					$mock_adSenseLink->setAdClientCode( 'ca-pub-12345' );
+					$mock_adSenseLink->setAdClientCode( $client_id );
 
 					$response = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse();
 					$response->setAdsenseLinks( array( $mock_adSenseLink ) );
@@ -181,6 +159,7 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 
 	public function test_maybe_schedule_synchronize_adsense_linked() {
 		remove_all_actions( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+		$this->force_connect_modules( Analytics_4::MODULE_SLUG, AdSense::MODULE_SLUG );
 
 		$this->synchronize_adsense_linked->maybe_schedule_synchronize_adsense_linked();
 
@@ -189,57 +168,69 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		);
 	}
 
-	public function test_schedule_synchronize_adsense_linked__cron_callback() {
-		$property_id = '987654321';
+	/**
+	 * @dataProvider data_adsense_linked
+	 * @param array $test_parameters {
+	 *     Parameters for the test.
+	 *
+	 *     @type string $adSenseLink_clientID The client ID to be returned in the adSenseLinks response.
+	 *     @type string $adSenseSettings_clientID The client ID to be set in AdSense module settings.
+	 *     @type bool $expected_match Whether the two are expected to match.
+	 * }
+	 */
+	public function test_cron_synchronize_adsense_linked_data( $test_parameters ) {
+		$adsense_settings = new Adsense_Settings( $this->options );
 
-		$this->fake_adsense_linked_response( $property_id );
+		$this->fake_adsense_linked_response( $test_parameters['adSenseLink_clientID'] );
 
 		// Confirm that module is connected, as it will be needed in the cron callback.
 		$this->assertTrue( $this->analytics_4->is_connected() );
 
+		$settings = $this->analytics_4->get_settings()->get();
 		$this->synchronize_adsense_linked->register();
 
-		$settings              = $this->analytics_4->get_settings()->get();
-		$adsense_linked_status = $settings['adSenseLinked'];
+		$this->assertFalse( $settings['adSenseLinked'] );
 
-		$this->assertFalse( $adsense_linked_status );
-
-		// Set matching clientID, link status should resolve as true following this.
-		( new Adsense_Settings( $this->options ) )->merge(
-			array(
-				'clientID' => 'ca-pub-12345',
-			)
+		$adsense_settings->merge(
+			array( 'clientID' => $test_parameters['adSenseSettings_clientID'] )
 		);
 
 		// Invoke cron callback function.
 		do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+		$test_synced_at = time();
 
-		$settings              = $this->analytics_4->get_settings()->get();
-		$adsense_linked_status = $settings['adSenseLinked'];
-
+		$settings = $this->analytics_4->get_settings()->get();
 		// Assert that the adSenseLinked status is true when the adClientCode from AdSense
 		// links data and clientID from adSense settings are identical.
-		$this->assertTrue( $adsense_linked_status );
+		$this->assertSame( $test_parameters['expected_match'], $settings['adSenseLinked'] );
 
-		// Set non-matching clientID, link status should resolve as false following this.
-		( new Adsense_Settings( $this->options ) )->merge(
-			array(
-				'clientID' => 'ca-pub-54321',
-			)
+		// Assert that the timestamp is always updated.
+		$this->assertEqualsWithDelta(
+			$test_synced_at,
+			$settings['adSenseLinkedLastSyncedAt'],
+			1 // 1 second threshold to allow for micro changes at runtime.
 		);
+	}
 
-		// Invoke cron callback function.
-		do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+	public function data_adsense_linked() {
+		$client_id_alpha = 'ca-pub-12345';
+		$client_id_beta  = 'ca-pub-99999';
 
-		$settings              = $this->analytics_4->get_settings()->get();
-		$adsense_linked_status = $settings['adSenseLinked'];
-		$adsense_linked_time   = $settings['adSenseLinkedLastSyncedAt'];
-
-		// Assert that the adSenseLinked status is false when the adClientCode from AdSense
-		// links data and clientID from adSense settings are identical.
-		$this->assertFalse( $adsense_linked_status );
-
-		// Assert that the updated time is the same as the current time.
-		$this->assertEquals( $adsense_linked_time, time() );
+		return array(
+			'matching client ID'      => array(
+				array(
+					'adSenseLink_clientID'     => $client_id_alpha,
+					'adSenseSettings_clientID' => $client_id_alpha,
+					'expected_match'           => true,
+				),
+			),
+			'non-matching client IDs' => array(
+				array(
+					'adSenseLink_clientID'     => $client_id_alpha,
+					'adSenseSettings_clientID' => $client_id_beta,
+					'expected_match'           => false,
+				),
+			),
+		);
 	}
 }
