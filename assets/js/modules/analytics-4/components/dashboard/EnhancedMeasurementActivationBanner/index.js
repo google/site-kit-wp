@@ -30,11 +30,11 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
+	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
-	MODULES_ANALYTICS_4,
-	EDIT_SCOPE,
 	FORM_SETUP,
+	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import {
 	ACTIVATION_STEP_IN_PROGRESS,

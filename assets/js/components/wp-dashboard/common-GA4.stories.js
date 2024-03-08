@@ -23,6 +23,7 @@ import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
@@ -32,7 +33,6 @@ import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storyb
 import { DAY_IN_SECONDS } from '../../util';
 import * as __fixtures__ from '../../modules/analytics-4/datastore/__fixtures__';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
 const wpDashboardSearchConsoleOptions = {
 	startDate: '2020-12-03',
@@ -140,6 +140,30 @@ const pageTitlesReportOptions = {
 	limit: 25,
 };
 
+export const setupBaseRegistry = ( registry, args ) => {
+	// Set up the search console and analytics modules stores but provide no data.
+	provideModules( registry, [
+		{
+			slug: 'search-console',
+			active: true,
+			connected: true,
+		},
+		{
+			slug: 'analytics-4',
+			active: true,
+			connected: true,
+		},
+	] );
+
+	// Set some site information.
+	provideSiteInfo( registry );
+
+	// Call story-specific setup.
+	if ( typeof args?.setupRegistry === 'function' ) {
+		args.setupRegistry( registry );
+	}
+};
+
 export const provideAnalytics4ReportTitles = (
 	registry,
 	options = pageTitlesReportOptions
@@ -189,11 +213,57 @@ export const setupSearchConsoleMockReports = ( registry, data ) => {
 	}
 };
 
+export const widgetDecorators = [
+	( Story ) => (
+		<div id="dashboard-widgets">
+			<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
+				<div className="inside">
+					<div className="googlesitekit-wp-dashboard">
+						<div className="googlesitekit-widget">
+							<div className="googlesitekit-widget__body">
+								<Story />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	),
+	( Story, { args } ) => {
+		const setupRegistry = ( registry ) => {
+			setupBaseRegistry( registry, args );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export const setupSearchConsoleGatheringData = ( registry ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
 		options: wpDashboardSearchConsoleOptions,
 	} );
+};
+
+export const setupSearchConsoleZeroData = ( registry ) => {
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+		[
+			{
+				clicks: 0,
+				ctr: 0,
+				impressions: 0,
+				keys: [ '2021-08-18' ],
+				position: 0,
+			},
+		],
+		{
+			options: wpDashboardSearchConsoleOptions,
+		}
+	);
 };
 
 export const setupAnalytics4GatheringData = ( registry ) => {
@@ -219,6 +289,11 @@ export function setupAnalytics4ZeroData(
 
 	setupAnalytics4Property( registry );
 }
+
+export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
+	setupSearchConsoleZeroData( registry );
+	setupAnalytics4ZeroData( registry );
+};
 
 export function setupAnalytics4Loading(
 	registry,

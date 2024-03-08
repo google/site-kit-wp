@@ -38,8 +38,8 @@ import {
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
 import {
-	isValidPropertySelection,
 	isValidAccountID,
+	isValidPropertySelection,
 } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';

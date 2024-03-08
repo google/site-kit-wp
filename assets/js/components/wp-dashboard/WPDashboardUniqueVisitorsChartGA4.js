@@ -31,8 +31,8 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
-	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';

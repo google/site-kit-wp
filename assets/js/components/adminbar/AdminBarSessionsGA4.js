@@ -32,8 +32,8 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { calculateChange } from '../../util';
 import {
-	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
 const { useSelect } = Data;
 

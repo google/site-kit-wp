@@ -21,10 +21,25 @@
  */
 import { extractExistingTag } from '../tag';
 import { default as adsenseTagMatchers } from '../../modules/adsense/util/tag-matchers';
+import { default as analyticsTagMatchers } from '../../modules/analytics-4/utils/tag-matchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../../modules/tagmanager/util';
 
 const valuesToTest = [
-	// @TODO: Add tests for GA4 tags.
+	[
+		"<script>__gaTracker('create','G-2B7M8YQ1K6','auto');</script>",
+		analyticsTagMatchers,
+		'G-2B7M8YQ1K6',
+	],
+	[
+		"<script>var _gaq = _gaq || [];_gaq.push(['_setAccount', 'G-2B7M8YQ1K6']);_gaq.push(['_trackPageview']);</script>",
+		analyticsTagMatchers,
+		'G-2B7M8YQ1K6',
+	],
+	[
+		'<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
+		analyticsTagMatchers,
+		false,
+	],
 	[
 		'<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
 		adsenseTagMatchers,
@@ -49,6 +64,11 @@ const valuesToTest = [
 		'<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = window.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
 		adsenseTagMatchers,
 		'ca-pub-123456789',
+	],
+	[
+		"<script async src='https://googletagmanager.com/gtag/js?id=G-2B7M8YQ1K6'></script>",
+		analyticsTagMatchers,
+		'G-2B7M8YQ1K6',
 	],
 	[
 		'<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXXXXX"></script>',

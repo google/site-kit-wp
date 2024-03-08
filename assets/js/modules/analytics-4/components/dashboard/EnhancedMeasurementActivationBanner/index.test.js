@@ -35,9 +35,9 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
-	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 	FORM_SETUP,
+	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import * as analytics4Fixtures from '../../../datastore/__fixtures__';

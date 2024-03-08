@@ -39,8 +39,8 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { generateDateRangeArgs } from '../../../util';
 import { getURLPath, untrailingslashit } from '../../../../../util';
 import {
-	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
+	MODULES_ANALYTICS_4,
 } from '../../../../analytics-4/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';

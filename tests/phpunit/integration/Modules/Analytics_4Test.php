@@ -256,7 +256,7 @@ class Analytics_4Test extends TestCase {
 					array(
 						'page'         => 'googlesitekit-dashboard',
 						'notification' => 'authentication_success',
-						'slug'         => 'analytics',
+						'slug'         => 'analytics-4',
 					),
 					admin_url( 'admin.php' )
 				),
@@ -1079,17 +1079,6 @@ class Analytics_4Test extends TestCase {
 				'adsense_linked',
 				'adsense_linked_last_synced_at',
 			),
-			array_keys( $this->analytics->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__keyMetrics_enabled() {
-		// Given: Analytics 4 is registered with a specific propertyID.
-		$this->analytics->register();
-		$this->analytics->get_settings()->register();
-
-		$this->assertContains(
-			'analytics_4_available_custom_dimensions',
 			array_keys( $this->analytics->get_debug_fields() )
 		);
 	}
@@ -2728,7 +2717,7 @@ class Analytics_4Test extends TestCase {
 		$analytics_4_settings->register();
 		$analytics_4_settings->merge(
 			array(
-				'accountID'       => '123456',
+				'accountID'       => '100',
 				'propertyID'      => '123',
 				'webDataStreamID' => '456',
 				'measurementID'   => 'G-789',
@@ -2807,10 +2796,6 @@ class Analytics_4Test extends TestCase {
 
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->set( $settings );
-
-		// TODO Remove this when #7932 and #8082 are merged which save and migrate the new GA4 settings.
-		// This saves the trackingDisabled setting to the Analytics module which is being used temporarily.
-		( new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->get_settings()->merge( array( 'trackingDisabled' => $settings['trackingDisabled'] ) );
 
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();

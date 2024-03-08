@@ -22,7 +22,7 @@
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4, FORM_ACCOUNT_CREATE } from './constants';
+import { FORM_ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	provideModules,
