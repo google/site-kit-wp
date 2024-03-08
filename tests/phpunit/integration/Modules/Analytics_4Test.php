@@ -3583,15 +3583,10 @@ class Analytics_4Test extends TestCase {
 	 *     Parameters for the test.
 	 *
 	 *     @type bool $block_on_consent_filter_enabled Whether the block on consent filter is enabled.
-	 *     @type bool $consent_mode_enabled Whether Consent Mode is enabled.
 	 *     @type bool $expected_block_on_consent Whether the block on consent attributes are expected to be present.
 	 * }
 	 */
 	public function test_block_on_consent_non_amp( $test_parameters ) {
-		if ( $test_parameters['consent_mode_enabled'] ) {
-			( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
-		}
-
 		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->merge(
 			array(
@@ -3613,6 +3608,7 @@ class Analytics_4Test extends TestCase {
 		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
 
 		if ( $test_parameters['block_on_consent_filter_enabled'] ) {
+			$this->setExpectedDeprecated( 'googlesitekit_analytics-4_tag_block_on_consent' );
 			add_filter( 'googlesitekit_analytics-4_tag_block_on_consent', '__return_true' );
 		}
 
@@ -3624,7 +3620,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=A1B2C3D4E5', $output );
 
 		if ( $test_parameters['expected_block_on_consent'] ) {
-			$this->setExpectedDeprecated( Web_Tag::class . '::add_legacy_block_on_consent_attributes' );
 			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
 			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
@@ -3633,24 +3628,15 @@ class Analytics_4Test extends TestCase {
 
 	public function block_on_consent_provider_non_amp() {
 		return array(
-			'default (disabled)'             => array(
+			'default (disabled)' => array(
 				array(
 					'block_on_consent_filter_enabled' => false,
-					'consent_mode_enabled'            => false,
 					'expected_block_on_consent'       => false,
 				),
 			),
-			'enabled (consentMode enabled)'  => array(
+			'enabled'            => array(
 				array(
 					'block_on_consent_filter_enabled' => true,
-					'consent_mode_enabled'            => true,
-					'expected_block_on_consent'       => false,
-				),
-			),
-			'enabled (consentMode disabled)' => array(
-				array(
-					'block_on_consent_filter_enabled' => true,
-					'consent_mode_enabled'            => false,
 					'expected_block_on_consent'       => true,
 				),
 			),
