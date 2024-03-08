@@ -35,8 +35,8 @@ import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../analytics/datastore/constants';
 import {
+	EDIT_SCOPE as ANALYTICS_EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';

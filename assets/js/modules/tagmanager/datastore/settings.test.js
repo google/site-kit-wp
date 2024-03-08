@@ -35,7 +35,7 @@ import {
 } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
@@ -104,7 +104,7 @@ describe( 'modules/tagmanager settings', () => {
 		// TODO: the analytics module should not be connected by default in the module fixtures assets/js/googlesitekit/modules/datastore/fixtures.json
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: false,
 			},
 		] );
@@ -1177,7 +1177,7 @@ describe( 'modules/tagmanager settings', () => {
 
 				it( 'requires both containers to reference the same propertyID when an Analytics tag is present', () => {
 					registry
-						.dispatch( MODULES_ANALYTICS )
+						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( { propertyID: '' } );
 					const { buildAndReceiveWebAndAMP } =
 						createBuildAndReceivers( registry );

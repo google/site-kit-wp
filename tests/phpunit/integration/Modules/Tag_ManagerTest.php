@@ -13,11 +13,9 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Analytics\Settings as AnalyticsSettings;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -356,7 +354,7 @@ class Tag_ManagerTest extends TestCase {
 				'googlesitekit-datastore-site',
 				'googlesitekit-modules',
 				'googlesitekit-vendor',
-				'googlesitekit-modules-analytics',
+				'googlesitekit-modules-analytics-4',
 				'googlesitekit-components',
 			),
 			$dependency->deps
@@ -372,7 +370,7 @@ class Tag_ManagerTest extends TestCase {
 		add_filter(
 			'googlesitekit_module_exists',
 			function( $exists, $slug ) {
-				return 'analytics' === $slug ? false : true;
+				return 'analytics-4' === $slug ? false : true;
 			},
 			10,
 			2
@@ -403,7 +401,7 @@ class Tag_ManagerTest extends TestCase {
 
 		// This is implied from the above assertion, but let's be explicit about what we are trying to test.
 		$this->assertNotContains(
-			'googlesitekit-module-analytics',
+			'googlesitekit-module-analytics-4',
 			$dependency->deps
 		);
 	}

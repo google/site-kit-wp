@@ -38,7 +38,7 @@ import {
 	calculateDifferenceBetweenChartValues,
 } from '../../../util';
 import { partitionAnalytics4Report } from './partition-report';
-import parseDimensionStringToDate from '../../analytics/util/parseDimensionStringToDate';
+import parseDimensionStringToDate from './parseDimensionStringToDate';
 
 /**
  * Reduces and processes an array of analytics-4 row data.

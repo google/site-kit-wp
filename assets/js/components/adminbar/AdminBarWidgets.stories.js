@@ -27,11 +27,9 @@ import {
 } from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleMockReports,
-	setupSearchConsoleAnalyticsGatheringData,
-	setupSearchConsoleAnalyticsZeroData,
+	setupSearchConsoleAnalytics4GatheringData,
+	setupSearchConsoleAnalytics4ZeroData,
 	widgetDecorators,
-} from './common.stories';
-import {
 	setupAnalytics4Loading,
 	setupAnalytics4MockReports,
 } from './common-GA4.stories';
@@ -89,7 +87,7 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: false,
 			},
@@ -234,13 +232,13 @@ ViewOnlySearchConsole.args = {
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
+	setupRegistry: setupSearchConsoleAnalytics4GatheringData,
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+	setupRegistry: setupSearchConsoleAnalytics4ZeroData,
 };
 
 export default {

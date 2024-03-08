@@ -28,7 +28,6 @@ import { pick, difference } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -452,7 +451,8 @@ const baseSelectors = {
 			// Sort summaries to have the current account at the very beginning,
 			// so we can check it first because its more likely that the current
 			// account will contain a measurement ID that we are looking for.
-			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
+			const currentAccountID =
+				select( MODULES_ANALYTICS_4 ).getAccountID();
 			// Clone summaries to avoid mutating the original array.
 			summaries = [ ...summaries ].sort( ( { _id: accountID } ) =>
 				accountID === currentAccountID ? -1 : 0
@@ -579,7 +579,7 @@ const baseSelectors = {
 
 				if (
 					select(
-						MODULES_ANALYTICS
+						MODULES_ANALYTICS_4
 					).hasFinishedSelectingAccount() === false
 				) {
 					return true;

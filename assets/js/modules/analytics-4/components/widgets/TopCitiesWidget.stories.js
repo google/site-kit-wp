@@ -32,7 +32,6 @@ import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCitiesWidget from './TopCitiesWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -197,7 +196,7 @@ export default {
 				];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

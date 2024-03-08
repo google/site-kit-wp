@@ -25,7 +25,6 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
@@ -217,13 +216,18 @@ export const setupAnalytics4GatheringData = (
 		.receiveGetProperty( property, { propertyID } );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	mockOptionSets.forEach( ( options ) => {
-		const report = getAnalyticsMockResponse( options );
+		const report = getAnalytics4MockResponse( options );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options,
 		} );
 	} );
+};
+
+export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
+	setupSearchConsoleGatheringData( registry );
+	setupAnalytics4GatheringData( registry );
 };
 
 export const setupSearchConsoleZeroData = ( registry ) => {
@@ -251,7 +255,7 @@ export const setupAnalytics4ZeroData = (
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 
 	mockOptionSets.forEach( ( options ) => {
-		const report = getAnalyticsMockResponse( options );
+		const report = getAnalytics4MockResponse( options );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
@@ -293,4 +297,9 @@ export const setupAnalytics4Error = (
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	} );
+};
+
+export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
+	setupSearchConsoleZeroData( registry );
+	setupAnalytics4ZeroData( registry );
 };

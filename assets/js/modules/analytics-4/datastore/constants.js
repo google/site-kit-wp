@@ -50,6 +50,13 @@ export const PROVISIONING_SCOPE =
 	'https://www.googleapis.com/auth/analytics.provision';
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 
+// Dashboard widget constants.
+export const UI_DIMENSION_NAME = 'dashboardAllTrafficWidgetDimensionName';
+export const UI_DIMENSION_COLOR = 'dashboardAllTrafficWidgetDimensionColor';
+export const UI_DIMENSION_VALUE = 'dashboardAllTrafficWidgetDimensionValue';
+export const UI_ACTIVE_ROW_INDEX = 'dashboardAllTrafficWidgetActiveRowIndex';
+export const UI_ALL_TRAFFIC_LOADED = 'dashboardAllTrafficWidgetLoaded';
+
 // Note: names and descriptions are not translated as these are not surfaced in Site Kit
 // and are also subject to hard limits on the length which would be unpredictable if translated.
 // See https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1beta/properties.customDimensions#CustomDimension
