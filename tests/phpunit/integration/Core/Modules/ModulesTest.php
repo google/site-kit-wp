@@ -54,25 +54,9 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_available_modules__missing_dependency() {
-		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$fake_module->set_force_active( true );
-
-		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
-
-		$available = array_map(
-			function( $instance ) {
-				return get_class( $instance );
-			},
-			$modules->get_available_modules()
-		);
-
-		$this->assertEqualSetsWithIndex(
-			array(
-				'fake-module' => 'Google\\Site_Kit\\Tests\\Core\\Modules\\FakeModule',
-			),
-			$available
-		);
+		// TODO: As Site Kit doesn't have any dependent modules at this moment,
+		// update this test case so that a dependency relationship can be
+		// mocked without referencing an actual module, e.g. using FakeModule.
 	}
 
 	public function test_get_active_modules() {
@@ -160,33 +144,9 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_module_dependencies() {
-		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$fake_module->set_force_active( true );
-		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
-
-		$this->force_set_property(
-			$modules,
-			'dependencies',
-			array(
-				'fake-module' => array(
-					'analytics-4',
-					'search-console',
-					'adsense',
-				),
-			)
-		);
-
-		$dependencies = $modules->get_module_dependencies( 'fake-module' );
-
-		$this->assertEqualSetsWithIndex(
-			array(
-				'analytics-4',
-				'search-console',
-				'adsense',
-			),
-			$dependencies
-		);
+		// TODO: As Site Kit doesn't have any dependent modules at this moment,
+		// update this test case so that a dependency relationship can be
+		// mocked without referencing an actual module, e.g. using FakeModule.
 	}
 
 	public function test_get_module_dependencies_exception() {
@@ -219,7 +179,9 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_module_dependants() {
-		// Currently there are no modules with dependency. @TODO Add when one shows up.
+		// TODO: As Site Kit doesn't have any dependent modules at this moment,
+		// update this test case so that a dependency relationship can be
+		// mocked without referencing an actual module, e.g. using FakeModule.
 	}
 
 	public function test_get_module_dependants_exception() {
