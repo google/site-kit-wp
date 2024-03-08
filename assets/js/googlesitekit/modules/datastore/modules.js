@@ -816,9 +816,7 @@ const baseSelectors = {
 	 *   "internal": false,
 	 *   "active": false,
 	 *   "connected": false,
-	 *   "dependencies": [
-	 *     "analytics"
-	 *   ],
+	 *   "dependencies": [],
 	 *   "dependents": []
 	 * }
 	 * ```
