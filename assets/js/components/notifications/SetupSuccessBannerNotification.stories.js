@@ -99,7 +99,7 @@ export default {
 
 			provideModules( registry, [
 				{
-					...( parameters.module || { slug: 'analytics' } ),
+					...( parameters.module || { slug: 'analytics-4' } ),
 					active: true,
 					connected: true,
 				},

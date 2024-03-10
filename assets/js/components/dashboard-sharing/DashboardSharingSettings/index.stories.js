@@ -49,7 +49,7 @@ SingleAdminDefault.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
 		} );
 	},
 };
@@ -61,7 +61,7 @@ SingleAdminWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				shareable: true,
 				owner: {
 					id: 1,
@@ -80,7 +80,7 @@ SingleAdminWithOwnedModules.args = {
 
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
 			'googlesitekit_manage_module_sharing_options::["adsense"]': true,
 			'googlesitekit_manage_module_sharing_options::["pagespeed-insights"]': true,
 		} );
@@ -126,7 +126,7 @@ MultiAdminsDefault.args = {
 			'googlesitekit_delegate_module_sharing_management::["search-console"]': true,
 			'googlesitekit_delegate_module_sharing_management::["pagespeed-insights"]': true,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
 		} );
 	},
 };
@@ -138,7 +138,7 @@ MultiAdminsWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				shareable: true,
 				owner: {
 					id: 1,
@@ -161,11 +161,11 @@ MultiAdminsWithOwnedModules.args = {
 
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			'googlesitekit_delegate_module_sharing_management::["search-console"]': true,
-			'googlesitekit_delegate_module_sharing_management::["analytics"]': true,
+			'googlesitekit_delegate_module_sharing_management::["analytics-4"]': true,
 			'googlesitekit_delegate_module_sharing_management::["adsense"]': true,
 			'googlesitekit_delegate_module_sharing_management::["pagespeed-insights"]': true,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
 			'googlesitekit_manage_module_sharing_options::["adsense"]': true,
 			'googlesitekit_manage_module_sharing_options::["pagespeed-insights"]': true,
 		} );
@@ -215,7 +215,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				shareable: true,
 				owner: {
 					id: 1,
@@ -240,18 +240,18 @@ MultiAdminsWithSharedOwnershipModules.args = {
 			.dispatch( CORE_MODULES )
 			.receiveSharedOwnershipModules( [
 				'search-console',
-				'analytics',
+				'analytics-4',
 				'adsense',
 				'pagespeed-insights',
 			] );
 
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			'googlesitekit_delegate_module_sharing_management::["search-console"]': true,
-			'googlesitekit_delegate_module_sharing_management::["analytics"]': true,
+			'googlesitekit_delegate_module_sharing_management::["analytics-4"]': true,
 			'googlesitekit_delegate_module_sharing_management::["adsense"]': true,
 			'googlesitekit_delegate_module_sharing_management::["pagespeed-insights"]': true,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
 			'googlesitekit_manage_module_sharing_options::["adsense"]': true,
 			'googlesitekit_manage_module_sharing_options::["pagespeed-insights"]': true,
 		} );

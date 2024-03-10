@@ -39,7 +39,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import { listFormat, numFmt } from '../../../../util';
-import { ZeroDataMessage } from '../../../analytics-4/components/common';
+import { ZeroDataMessage } from '../common';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,

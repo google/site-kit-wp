@@ -42,7 +42,7 @@ import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
-import { ZeroDataMessage } from '../../../analytics-4/components/common';
+import { ZeroDataMessage } from '../common';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';

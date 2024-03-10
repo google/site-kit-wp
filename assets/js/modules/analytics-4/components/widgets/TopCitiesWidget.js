@@ -33,7 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { ZeroDataMessage } from '../../../analytics-4/components/common';
+import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import {
 	MetricTileTable,

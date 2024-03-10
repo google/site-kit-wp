@@ -182,57 +182,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $settings['adSenseLinkedLastSyncedAt'], 0 );
 	}
 
-	public function analytics_sharing_settings_data_provider() {
-		$initial_sharing_settings                                     = array(
-			'search-console' => array(
-				'sharedRoles' => array( 'contributor', 'administrator' ),
-				'management'  => 'all_admins',
-			),
-		);
-		$sharing_settings_with_analytics                              = array_merge(
-			$initial_sharing_settings,
-			array(
-				'analytics' => array(
-					'sharedRoles' => array( 'editor', 'administrator' ),
-					'management'  => 'owner',
-				),
-			)
-		);
-		$sharing_settings_with_both_analytics                         = array_merge(
-			$sharing_settings_with_analytics,
-			array(
-				'analytics-4' => array(
-					'sharedRoles' => array( 'editor', 'administrator' ),
-					'management'  => 'owner',
-				),
-			)
-		);
-		$sharing_settings_with_both_analytics_with_different_settings = array_merge(
-			$sharing_settings_with_analytics,
-			array(
-				'analytics-4' => array(
-					'sharedRoles' => array( 'contributor' ),
-					'management'  => 'all_admins',
-				),
-			)
-		);
-
-		return array(
-			'Analytics and Analytics-4 both not set' => array(
-				$initial_sharing_settings,
-				$initial_sharing_settings,
-			),
-			'Analytics set and Analytics-4 not set'  => array(
-				$sharing_settings_with_analytics,
-				$sharing_settings_with_both_analytics,
-			),
-			'Analytics and Analytics-4 both set'     => array(
-				$sharing_settings_with_both_analytics_with_different_settings,
-				$sharing_settings_with_both_analytics_with_different_settings,
-			),
-		);
-	}
-
 	public function test_handle_provisioning_callback() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$analytics = new Analytics_4( $context );
@@ -2015,7 +1964,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'No connected Google Analytics 4 property ID.', $data );
+		$this->assertWPErrorWithMessage( 'No connected Google Analytics property ID.', $data );
 		$this->assertEquals( 'missing_required_setting', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 500 ), $data->get_error_data( 'missing_required_setting' ) );
 	}
@@ -2180,7 +2129,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 		$this->assertEquals(
 			array(
@@ -2329,7 +2278,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 		$this->assertEquals(
 			array(
@@ -3378,7 +3327,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 		$this->assertEquals(
 			array(

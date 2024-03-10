@@ -49,6 +49,9 @@ const analyticsArgs = [
 				name: 'totalUsers',
 			},
 		],
+		dimensionFilters: {
+			sessionDefaultChannelGrouping: [ 'Organic Search' ],
+		},
 	},
 	{
 		startDate: '2020-12-31',

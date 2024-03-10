@@ -31,7 +31,7 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
-	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
+	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
 import GoogleChart from '../GoogleChart';
@@ -53,7 +53,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		( select ) =>
 			select( CORE_USER ).getDateRangeDates( {
 				compare: true,
-				offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
+				offsetDays: DATE_RANGE_OFFSET,
 			} )
 	);
 

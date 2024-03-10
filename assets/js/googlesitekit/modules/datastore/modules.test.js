@@ -41,8 +41,8 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
