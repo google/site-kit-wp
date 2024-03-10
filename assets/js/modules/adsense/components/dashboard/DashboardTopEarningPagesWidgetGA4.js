@@ -39,20 +39,19 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../analytics-4/datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
+import { numFmt, trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
+import useViewOnly from '../../../../hooks/useViewOnly';
 import whenActive from '../../../../util/when-active';
 import SourceLink from '../../../../components/SourceLink';
-import useViewOnly from '../../../../hooks/useViewOnly';
 import Link from '../../../../components/Link';
 import PreviewTable from '../../../../components/PreviewTable';
 import ReportTable from '../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-import { numFmt, trackEvent } from '../../../../util';
 import { ZeroDataMessage } from '../../../analytics-4/components/common';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { AdSenseLinkCTA } from '../common';
-import AdBlockerWarning from '../common/AdBlockerWarning';
-import useViewContext from '../../../../hooks/useViewContext';
+import { AdSenseLinkCTA, AdBlockerWarning } from '../common';
 
 const { useSelect, useInViewSelect } = Data;
 
