@@ -1,4 +1,6 @@
 /**
+ * Ads Settings styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,5 +16,19 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-ads-setup-module";
-@import "googlesitekit-ads-settings";
+.googlesitekit-plugin {
+
+	.googlesitekit-ads-settings-fields {
+
+		.googlesitekit-settings-module__fields-group-title {
+			margin-bottom: 0;
+		}
+
+		.googlesitekit-settings-module__fields-group-helper-text {
+			color: $c-neutral-n-500;
+			font-weight: $fw-normal;
+			margin-bottom: 20px;
+			margin-top: 0;
+		}
+	}
+}

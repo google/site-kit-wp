@@ -50,7 +50,12 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AdsConversionIDTextField />
+				<AdsConversionIDTextField
+					helperText={ __(
+						'The Ads conversion ID will help track the performance of ad campaigns for the corresponding account',
+						'google-site-kit'
+					) }
+				/>
 			</div>
 
 			{ hasModuleAccess === false && (

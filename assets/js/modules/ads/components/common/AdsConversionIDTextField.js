@@ -1,5 +1,5 @@
 /**
- * Ads Module Ads Conversion ID component.
+ * Ads Module Conversion ID component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -38,7 +38,7 @@ import { isValidAdsConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 const { useSelect, useDispatch } = Data;
 
-export default function AdsConversionIDTextField() {
+export default function AdsConversionIDTextField( { helperText } ) {
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getAdsConversionID()
 	);
@@ -66,8 +66,15 @@ export default function AdsConversionIDTextField() {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Conversion ID', 'google-site-kit' ) }
 			</h4>
+
+			{ helperText && (
+				<p className="googlesitekit-settings-module__fields-group-helper-text">
+					{ helperText }
+				</p>
+			) }
+
 			<TextField
-				label={ __( 'Ads Conversion ID', 'google-site-kit' ) }
+				label={ __( 'Conversion ID', 'google-site-kit' ) }
 				className={ classnames( {
 					'mdc-text-field--error': ! isValidValue,
 				} ) }
