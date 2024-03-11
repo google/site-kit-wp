@@ -31,6 +31,7 @@ export default function SpinnerButton( props ) {
 		className,
 		onClick = () => {},
 		isSaving = false,
+		spinnerOnLeft = false,
 		...restProps
 	} = props;
 
@@ -43,8 +44,15 @@ export default function SpinnerButton( props ) {
 					'googlesitekit-button-icon--spinner__running': isSaving,
 				}
 			) }
+			icon={
+				spinnerOnLeft && isSaving ? (
+					<CircularProgress size={ 14 } />
+				) : undefined
+			}
 			trailingIcon={
-				isSaving ? <CircularProgress size={ 14 } /> : undefined
+				! spinnerOnLeft && isSaving ? (
+					<CircularProgress size={ 14 } />
+				) : undefined
 			}
 			onClick={ onClick }
 			{ ...restProps }
@@ -56,4 +64,5 @@ SpinnerButton.propTypes = {
 	className: PropTypes.string,
 	onClick: PropTypes.func,
 	isSaving: PropTypes.bool,
+	spinnerOnLeft: PropTypes.bool,
 };
