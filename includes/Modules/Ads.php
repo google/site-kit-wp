@@ -21,8 +21,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\Modules\Ads\Settings;
-use Google\Site_Kit\Core\Modules\Ads\Tag_Matchers;
+use Google\Site_Kit\Modules\Ads\Settings;
+use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 
 /**
  * Class representing the Ads module.

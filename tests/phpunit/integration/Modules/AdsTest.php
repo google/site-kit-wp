@@ -16,6 +16,7 @@ use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Modules
+ * @group Ads
  */
 class AdsTest extends TestCase {
 
@@ -51,6 +52,8 @@ class AdsTest extends TestCase {
 
 	public function test_get_debug_fields() {
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$ads->get_settings()->set( array( 'adsConversionID' => 'AW-123456789' ) );
 
 		$this->assertEqualSets(
 			array(
