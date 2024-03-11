@@ -399,9 +399,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 */
 	public function authorize_user() {
-		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) );
-		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) );
 		// If the OAuth redirects with an error code, handle it.
+		$error_code = $this->context->input()->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
 			wp_safe_redirect( $this->authorize_user_redirect_url() );
@@ -415,6 +414,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		}
 
 		try {
+			$code           = $this->context->input()->filter( INPUT_GET, 'code' );
 			$token_response = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Code_Exception $e ) {
 			// Redirect back to proxy immediately with the access code.

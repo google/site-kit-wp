@@ -148,7 +148,7 @@ class Setup {
 	 * @since 1.48.0
 	 */
 	public function handle_action_setup_start() {
-		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) );
+		$nonce        = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 
 		$this->verify_nonce( $nonce, Google_Proxy::ACTION_SETUP_START );
@@ -227,30 +227,29 @@ class Setup {
 	 * @since 1.49.0 Sets the `verify` and `verification_method` and `site_id` query params.
 	 */
 	public function handle_action_verify() {
-		$input               = $this->context->input();
-		$step                = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) );
-		$nonce               = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) );
-		$code                = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) );
-		$site_code           = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) );
-		$verification_token  = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token' ) );
-		$verification_method = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token_type' ) );
-
-		$this->verify_nonce( $nonce );
-
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You don’t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+		$input = $this->context->input();
+
+		$nonce = $input->filter( INPUT_GET, 'nonce' );
+		$this->verify_nonce( $nonce );
+
+		$code = $input->filter( INPUT_GET, 'googlesitekit_code' );
 		if ( ! $code ) {
 			wp_die( esc_html__( 'Invalid request.', 'google-site-kit' ), 400 );
 		}
 
+		$verification_token  = $input->filter( INPUT_GET, 'googlesitekit_verification_token' );
+		$verification_method = $input->filter( INPUT_GET, 'googlesitekit_verification_token_type' );
 		if ( ! $verification_token || ! $verification_method ) {
 			wp_die( esc_html__( 'Verifying site ownership requires a token and verification method.', 'google-site-kit' ), 400 );
 		}
 
 		$this->handle_verification( $verification_token, $verification_method );
 
+		$step               = $input->filter( INPUT_GET, 'step' );
 		$proxy_query_params = array(
 			'step'                => $step,
 			'verify'              => 'true',
@@ -259,6 +258,7 @@ class Setup {
 
 		// If the site does not have a site ID yet, a site code will be passed.
 		// Handling the site code here will save the extra redirect from the proxy if successful.
+		$site_code = $input->filter( INPUT_GET, 'googlesitekit_site_code' );
 		if ( $site_code ) {
 			try {
 				$this->handle_site_code( $code, $site_code );
@@ -286,18 +286,17 @@ class Setup {
 	 * @since 1.48.0
 	 */
 	public function handle_action_exchange_site_code() {
-		$input     = $this->context->input();
-		$step      = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) );
-		$nonce     = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) );
-		$code      = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) );
-		$site_code = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) );
-
-		$this->verify_nonce( $nonce );
-
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You don’t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+		$input = $this->context->input();
+
+		$nonce = $input->filter( INPUT_GET, 'nonce' );
+		$this->verify_nonce( $nonce );
+
+		$code      = $input->filter( INPUT_GET, 'googlesitekit_code' );
+		$site_code = $input->filter( INPUT_GET, 'googlesitekit_site_code' );
 		if ( ! $code || ! $site_code ) {
 			wp_die( esc_html__( 'Invalid request.', 'google-site-kit' ), 400 );
 		}
@@ -312,6 +311,7 @@ class Setup {
 
 		$credentials = $this->credentials->get();
 		$site_id     = ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '';
+		$step        = $input->filter( INPUT_GET, 'step' );
 
 		$this->redirect_to_proxy( $code, compact( 'site_id', 'step' ) );
 	}
