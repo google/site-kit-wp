@@ -49,4 +49,15 @@ class AdsTest extends TestCase {
 		$this->assertFalse( $ads_settings );
 	}
 
+	public function test_get_debug_fields() {
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'ads_ads_conversion_id',
+			),
+			array_keys( $ads->get_debug_fields() )
+		);
+	}
+
 }

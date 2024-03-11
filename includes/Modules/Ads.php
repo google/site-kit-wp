@@ -15,9 +15,14 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
-use Google\Site_Kit\Modules\Ads\Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
+use Google\Site_Kit\Core\Modules\Ads\Settings;
+use Google\Site_Kit\Core\Modules\Ads\Tag_Matchers;
 
 /**
  * Class representing the Ads module.
@@ -26,8 +31,9 @@ use Google\Site_Kit\Modules\Ads\Settings;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Assets, Module_With_Settings {
+final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Settings, Module_With_Tag {
 	use Module_With_Assets_Trait;
+	use Module_With_Tag_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
@@ -121,6 +127,41 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+	}
+
+	/**
+	 * There is no dedicated tag for Ads module.
+	 */
+	public function register_tag() {}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'ads_conversion_id' => array(
+				'label' => __( 'Ads Conversion ID', 'google-site-kit' ),
+				'value' => $settings['adsConversionID'],
+				'debug' => $settings['adsConversionID'] ? 'yes' : 'no',
+			),
+		);
+	}
+
+	/**
+	 * Returns the Module_Tag_Matchers instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
+	 */
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
 	}
 
 }
