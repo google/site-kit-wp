@@ -6,9 +6,6 @@
     <testsuites>
         <testsuite name="Site Kit Test Suite">
             <directory suffix=".php">./tests/phpunit/integration</directory>
-            <!-- @TODO: Remove these ignore patterns as part of #7843. -->
-            <exclude>./tests/phpunit/integration/Modules/Analytics/SettingsTest.php</exclude>
-            <exclude>./tests/phpunit/integration/Modules/AnalyticsTest.php</exclude>
         </testsuite>
     </testsuites>
     <groups>

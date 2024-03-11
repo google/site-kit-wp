@@ -46,7 +46,7 @@ Ready.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -64,7 +64,7 @@ CompleteActivation.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {

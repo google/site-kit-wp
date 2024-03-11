@@ -257,6 +257,12 @@ ZeroData.args = {
 			options: pageViewsReportOptions,
 		} );
 
+		const averagePageViews =
+			Math.round(
+				pageViewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value /
+					pageViewsReport?.rowCount
+			) || 0;
+
 		const reportOptions = {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
@@ -276,7 +282,7 @@ ZeroData.args = {
 				screenPageViews: {
 					filterType: 'numericFilter',
 					operation: 'GREATER_THAN_OR_EQUAL',
-					value: { int64Value: 1 },
+					value: { int64Value: averagePageViews },
 				},
 			},
 			limit: 3,

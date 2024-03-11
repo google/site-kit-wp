@@ -58,7 +58,7 @@ function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
 			<ViewContextProvider
 				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
 			>
-				<ReportErrorWrapper moduleSlug="analytics" { ...args } />
+				<ReportErrorWrapper moduleSlug="analytics-4" { ...args } />
 			</ViewContextProvider>
 		</WithRegistrySetup>
 	);

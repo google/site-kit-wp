@@ -116,13 +116,8 @@ export const setupBaseRegistry = ( registry, args ) => {
 	// leaving the `GA4` widgets in loading state.
 	provideUserAuthentication( registry );
 
-	// Set up analytics and analytics-4 modules stores but provide no data.
+	// Set up analytics-4 modules stores but provide no data.
 	provideModules( registry, [
-		{
-			slug: 'analytics',
-			active: true,
-			connected: true,
-		},
 		{
 			slug: 'analytics-4',
 			active: true,
@@ -264,6 +259,11 @@ export const setupAnalytics4ZeroData = (
 	} );
 };
 
+export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
+	setupSearchConsoleZeroData( registry );
+	setupAnalytics4ZeroData( registry );
+};
+
 export const setupAnalytics4Loading = (
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
@@ -297,9 +297,4 @@ export const setupAnalytics4Error = (
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	} );
-};
-
-export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
-	setupSearchConsoleZeroData( registry );
-	setupAnalytics4ZeroData( registry );
 };

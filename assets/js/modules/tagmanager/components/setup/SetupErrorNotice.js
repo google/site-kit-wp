@@ -22,9 +22,9 @@
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import ErrorText from '../../../../components/ErrorText';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function SetupErrorNotice() {

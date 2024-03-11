@@ -33,26 +33,25 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Link from '../../../../components/Link';
-import PreviewTable from '../../../../components/PreviewTable';
-import ReportTable from '../../../../components/ReportTable';
-import SourceLink from '../../../../components/SourceLink';
-import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import { numFmt, trackEvent } from '../../../../util';
-import whenActive from '../../../../util/when-active';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../analytics-4/datastore/constants';
-import { ZeroDataMessage } from '../../../analytics-4/components/common';
-import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
-import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-import { AdSenseLinkCTA } from '../common';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
+import { numFmt, trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import whenActive from '../../../../util/when-active';
+import SourceLink from '../../../../components/SourceLink';
+import Link from '../../../../components/Link';
+import PreviewTable from '../../../../components/PreviewTable';
+import ReportTable from '../../../../components/ReportTable';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
+import { AdSenseLinkCTA, AdBlockerWarning } from '../common';
 
 const { useSelect, useInViewSelect } = Data;
 

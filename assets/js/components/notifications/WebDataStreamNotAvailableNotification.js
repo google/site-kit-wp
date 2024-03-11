@@ -72,13 +72,13 @@ export default function WebDataStreamNotAvailableNotification() {
 		<BannerNotification
 			id="web-data-stream-not-available"
 			title={ __(
-				'Your Analytics 4 configuration has changed',
+				'Your Analytics configuration has changed',
 				'google-site-kit'
 			) }
 			description={ sprintf(
-				/* translators: 1: Google Analytics 4 Measurement ID. */
+				/* translators: 1: Google Analytics Measurement ID. */
 				__(
-					'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
+					'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics.',
 					'google-site-kit'
 				),
 				measurementID

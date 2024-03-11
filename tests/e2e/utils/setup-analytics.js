@@ -36,7 +36,7 @@ export async function setupAnalytics( settingsOverrides = {} ) {
 		method: 'post',
 		path: 'google-site-kit/v1/core/modules/data/activation',
 		data: {
-			data: { slug: 'analytics', active: true },
+			data: { slug: 'analytics-4', active: true },
 		},
 	} );
 	// Set placeholder connection data.

@@ -30,8 +30,8 @@ import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
-	EDIT_SCOPE as ANALYTICS_EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
+	EDIT_SCOPE,
 } from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
@@ -62,7 +62,7 @@ function CustomDimensionsNotice() {
 		);
 	} );
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
 	// This is called here to ensure that the list of available custom dimensions is

@@ -71,7 +71,7 @@ ReadyWithActivateModuleCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideSiteInfo( registry );
@@ -92,7 +92,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideSiteInfo( registry );
@@ -138,11 +138,6 @@ ViewOnlyAnalyticsAndSearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
@@ -166,11 +161,6 @@ ViewOnlyAnalytics.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
@@ -192,11 +182,6 @@ ViewOnlySearchConsole.storyName = 'View Only Search Console';
 ViewOnlySearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'analytics-4',
 				active: true,
