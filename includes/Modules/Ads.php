@@ -15,8 +15,6 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
-use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Modules\Ads\Settings;
@@ -28,9 +26,8 @@ use Google\Site_Kit\Modules\Ads\Settings;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Assets, Module_With_Owner, Module_With_Settings {
+final class Ads extends Module implements Module_With_Assets, Module_With_Settings {
 	use Module_With_Assets_Trait;
-	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
