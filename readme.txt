@@ -114,7 +114,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 **Added**
 
 * Add the initial datastore implementation for the Ads module. See [#8226](https://github.com/google/site-kit-wp/issues/8226).
-* Create the "Ads" module when the Ads feature flag is available. See [#8225](https://github.com/google/site-kit-wp/issues/8225).
+* Scaffold foundational client-side infrastructure for the Ads module. See [#8225](https://github.com/google/site-kit-wp/issues/8225).
 * Add tracking events for "Top Earning Pages" widget. See [#8212](https://github.com/google/site-kit-wp/issues/8212).
 
 **Enhanced**
@@ -125,7 +125,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Add settings in the Site Kit admin for Consent Mode. See [#8278](https://github.com/google/site-kit-wp/issues/8278).
 * Add front-end integration with WP Consent API for handling consent state updates. See [#8277](https://github.com/google/site-kit-wp/issues/8277).
 * Add functionality for detecting & installing the WP Consent API. See [#8276](https://github.com/google/site-kit-wp/issues/8276).
-* Add deprecation warning to web mode tag block when Consent Mode is enabled. See [#8275](https://github.com/google/site-kit-wp/issues/8275).
+* Deprecate legacy web tag block_on_consent for Analytics when Consent Mode is enabled. See [#8275](https://github.com/google/site-kit-wp/issues/8275).
 * Print gtag configuration for consent mode when enabled. See [#8274](https://github.com/google/site-kit-wp/issues/8274).
 * Add REST endpoints for consent mode. See [#8271](https://github.com/google/site-kit-wp/issues/8271).
 * Add settings model for Consent Mode. See [#8270](https://github.com/google/site-kit-wp/issues/8270).
