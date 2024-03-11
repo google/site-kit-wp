@@ -148,7 +148,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			'ads_conversion_id' => array(
 				'label' => __( 'Ads Conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
-				'debug' => $settings['adsConversionID'] ? 'yes' : 'no',
 			),
 		);
 	}

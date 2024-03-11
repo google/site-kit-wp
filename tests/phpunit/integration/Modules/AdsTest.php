@@ -54,7 +54,7 @@ class AdsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'ads_ads_conversion_id',
+				'ads_conversion_id',
 			),
 			array_keys( $ads->get_debug_fields() )
 		);
