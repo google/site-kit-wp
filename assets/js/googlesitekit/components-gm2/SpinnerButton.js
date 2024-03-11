@@ -42,6 +42,9 @@ export default function SpinnerButton( props ) {
 				'googlesitekit-button-icon--spinner',
 				{
 					'googlesitekit-button-icon--spinner__running': isSaving,
+					'googlesitekit-button-icon--spinner__left': spinnerOnLeft,
+					'googlesitekit-button-icon--spinner__right':
+						! spinnerOnLeft,
 				}
 			) }
 			icon={
