@@ -37,6 +37,14 @@ ButtonWithSpinner.args = {
 	isSaving: true,
 };
 
+export const ButtonWithSpinnerOnLeft = Template.bind( {} );
+ButtonWithSpinnerOnLeft.storyName = 'Button with the Spinner on the left';
+ButtonWithSpinnerOnLeft.args = {
+	children: 'Spinner Button',
+	isSaving: true,
+	spinnerOnLeft: true,
+};
+
 export default {
 	title: 'Components/SpinnerButton',
 	component: SpinnerButton,
