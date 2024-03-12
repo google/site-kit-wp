@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
@@ -61,6 +60,7 @@ use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
@@ -173,15 +173,17 @@ final class Analytics_4 extends Module
 		);
 		$synchronize_property->register();
 
+		$synchronize_adsense_linked = new Synchronize_AdSenseLinked(
+			$this,
+			$this->user_options,
+			$this->options
+		);
+		$synchronize_adsense_linked->register();
+
 		( new Advanced_Tracking( $this->context ) )->register();
 
-		add_action(
-			'admin_init',
-			function() use ( $synchronize_property ) {
-				$synchronize_property->maybe_schedule_synchronize_property();
-			}
-		);
-
+		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
+		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.
@@ -1695,11 +1697,6 @@ final class Analytics_4 extends Module
 		$tag->set_ads_conversion_id(
 			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
 		);
-
-		if ( ! $this->context->is_amp() ) {
-			$consent_mode_settings = new Consent_Mode_Settings( $this->options );
-			$tag->set_consent_mode_enabled( $consent_mode_settings->get()['enabled'] );
-		}
 
 		$tag->register();
 	}
