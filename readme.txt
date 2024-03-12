@@ -138,3 +138,5 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 **Fixed**
 
 * Fix a bug that could cause the AdSense chart to display earnings values below "0" when no earnings have been made. See [#6479](https://github.com/google/site-kit-wp/issues/6479).
+
+[See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
