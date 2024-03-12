@@ -130,9 +130,13 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	}
 
 	/**
-	 * There is no dedicated tag for Ads module.
+	 * Registers the Ads tag.
+	 *
+	 * @since n.e.x.t
 	 */
-	public function register_tag() {}
+	public function register_tag() {
+		// TODO: migrate the ads tag registration here.
+	}
 
 	/**
 	 * Gets an array of debug field definitions.
