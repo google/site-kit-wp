@@ -1,0 +1,33 @@
+.googlesitekit-audience-segmentation-info-notice {
+	align-items: center;
+	background-color: $c-surfaces-surface;
+	border-radius: $br-sm;
+	display: flex;
+	gap: 20px;
+	justify-content: space-between;
+	padding: $grid-gap-phone 40px;
+
+	svg {
+		color: $c-yellow-y-100;
+		flex-shrink: 0;
+	}
+}
+
+.googlesitekit-audience-segmentation-info-notice__body {
+	align-items: center;
+	display: flex;
+	flex-grow: 1;
+	flex-wrap: wrap;
+	gap: 0 60px;
+	min-width: 0;
+
+	p {
+		flex-basis: 400px;
+		flex-grow: 1;
+	}
+}
+
+.googlesitekit-audience-segmentation-info-notice__dismiss {
+	flex-shrink: 0;
+	margin-left: auto;
+}
