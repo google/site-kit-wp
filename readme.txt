@@ -7,7 +7,7 @@ Requires PHP:      5.6
 Stable tag:        1.122.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
-Tags:              google, search-console, analytics, adsense, pagespeed-insights, tag-manager, site-kit
+Tags:              google, search-console, analytics, adsense, pagespeed-insights
 
 Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
