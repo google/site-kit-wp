@@ -72,7 +72,6 @@ class Synchronize_AdSenseLinked {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-
 		add_action(
 			self::CRON_SYNCHRONIZE_ADSENSE_LINKED,
 			function() {
@@ -136,7 +135,8 @@ class Synchronize_AdSenseLinked {
 
 		$found_adsense_linked_for_client_id = false;
 
-		// Iterate over returned adsense links and set true if one is found matching the same client ID.
+		// Iterate over returned AdSense links and set true if one is found
+		// matching the same client ID.
 		foreach ( $property_adsense_links as $property_adsense_link ) {
 			if ( $current_adsense_client_id === $property_adsense_link['adClientCode'] ) {
 				$found_adsense_linked_for_client_id = true;
@@ -144,7 +144,7 @@ class Synchronize_AdSenseLinked {
 			}
 		}
 
-		// Update the AdSenseLinked status and timestamp regardless.
+		// Update the AdSenseLinked status and timestamp.
 		$this->analytics_4->get_settings()->merge(
 			array(
 				'adSenseLinked'             => $found_adsense_linked_for_client_id,
