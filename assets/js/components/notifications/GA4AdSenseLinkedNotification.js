@@ -34,7 +34,6 @@ import { Button } from 'googlesitekit-components';
 import { Grid, Cell, Row } from '../../material-components';
 import useViewOnly from '../../hooks/useViewOnly';
 import { isZeroReport } from '../../modules/analytics-4/utils';
-import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useDashboardType from '../../hooks/useDashboardType';
 
@@ -44,15 +43,11 @@ export const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'ga4_adsense_linked_notification';
 
 export default function GA4AdSenseLinkedNotification() {
-	const isGA4AdSenseIntegrationEnabled = useFeature(
-		'ga4AdSenseIntegration'
-	);
-
 	const dashboardType = useDashboardType();
 	const viewOnly = useViewOnly();
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -60,7 +55,7 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -68,7 +63,7 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -79,7 +74,7 @@ export default function GA4AdSenseLinkedNotification() {
 		adSenseModuleConnected && analyticsModuleConnected && isAdSenseLinked;
 
 	const isDismissed = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -114,8 +109,7 @@ export default function GA4AdSenseLinkedNotification() {
 		if (
 			viewOnly ||
 			isDismissed ||
-			! analyticsAndAdsenseConnectedAndLinked ||
-			! isGA4AdSenseIntegrationEnabled
+			! analyticsAndAdsenseConnectedAndLinked
 		) {
 			return null;
 		}
@@ -145,7 +139,6 @@ export default function GA4AdSenseLinkedNotification() {
 			!! dashboardType &&
 			! viewOnly &&
 			isDismissed === false &&
-			isGA4AdSenseIntegrationEnabled &&
 			hasFinishedResolution &&
 			isZeroReport( report ) === false &&
 			analyticsAndAdsenseConnectedAndLinked
@@ -158,7 +151,6 @@ export default function GA4AdSenseLinkedNotification() {
 		viewOnly,
 		hasFinishedResolution,
 		analyticsAndAdsenseConnectedAndLinked,
-		isGA4AdSenseIntegrationEnabled,
 		dismissNotificationForUser,
 		dashboardType,
 	] );
@@ -176,7 +168,6 @@ export default function GA4AdSenseLinkedNotification() {
 		isDismissed === undefined ||
 		// Don't show this notification if the user has dismissed it.
 		isDismissed ||
-		! isGA4AdSenseIntegrationEnabled ||
 		! hasFinishedResolution ||
 		! isZeroReport( report ) ||
 		! analyticsAndAdsenseConnectedAndLinked

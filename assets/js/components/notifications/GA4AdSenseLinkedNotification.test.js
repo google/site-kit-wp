@@ -79,7 +79,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			<GA4AdSenseLinkedNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -116,7 +115,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			<GA4AdSenseLinkedNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -139,7 +137,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			<GA4AdSenseLinkedNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -157,7 +154,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			<GA4AdSenseLinkedNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -195,7 +191,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			<GA4AdSenseLinkedNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_SETTINGS,
 			}
 		);
@@ -235,7 +230,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			<GA4AdSenseLinkedNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -272,7 +266,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			<GA4AdSenseLinkedNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);

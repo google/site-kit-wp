@@ -99,7 +99,6 @@ Default.scenario = {
 
 export default {
 	title: 'Components/GA4AdSenseLinkedNotification',
-	parameters: { features: [ 'ga4AdSenseIntegration' ] },
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
