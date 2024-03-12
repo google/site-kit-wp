@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InfoNotice should render correctly in the default state 1`] = `
+<div>
+  <div
+    class="googlesitekit-audience-segmentation-info-notice"
+  >
+    <svg />
+    <div
+      class="googlesitekit-audience-segmentation-info-notice__body"
+    >
+      <p>
+        The higher the portion of new visitors you have, the more your audience is growing. Looking at what content brings them to your site may give you insights on how to reach even more people.
+      </p>
+      <button
+        class="mdc-button googlesitekit-audience-segmentation-info-notice__dismiss mdc-button--tertiary"
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Got it
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
