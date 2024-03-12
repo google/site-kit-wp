@@ -58,6 +58,7 @@ use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
@@ -171,15 +172,17 @@ final class Analytics_4 extends Module
 		);
 		$synchronize_property->register();
 
+		$synchronize_adsense_linked = new Synchronize_AdSenseLinked(
+			$this,
+			$this->user_options,
+			$this->options
+		);
+		$synchronize_adsense_linked->register();
+
 		( new Advanced_Tracking( $this->context ) )->register();
 
-		add_action(
-			'admin_init',
-			function() use ( $synchronize_property ) {
-				$synchronize_property->maybe_schedule_synchronize_property();
-			}
-		);
-
+		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
+		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.

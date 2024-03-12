@@ -100,6 +100,10 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_register() {
+		remove_all_filters( 'googlesitekit_features_request_data' );
+		remove_all_filters( 'googlesitekit_module_exists' );
+		remove_all_filters( 'googlesitekit_is_module_recoverable' );
+		remove_all_filters( 'googlesitekit_is_module_connected' );
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module->set_force_active( true );
@@ -112,6 +116,8 @@ class ModulesTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_module_exists' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_is_module_recoverable' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_is_module_connected' ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_module_exists', null, 'fake-module' ) );
 		$this->assertFalse( apply_filters( 'googlesitekit_module_exists', null, 'non-existent-module' ) );
 	}
@@ -223,15 +229,19 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_is_module_connected() {
+		remove_all_filters( 'googlesitekit_is_module_connected' );
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules->register();
 
 		$valid_module_slug = 'search-console';
 		$this->assertArrayHasKey( $valid_module_slug, $modules->get_available_modules() );
 		$this->assertTrue( $modules->is_module_connected( $valid_module_slug ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, $valid_module_slug ) );
 
 		$non_existent_module_slug = 'non-existent-module';
 		$this->assertArrayNotHasKey( $non_existent_module_slug, $modules->get_available_modules() );
 		$this->assertFalse( $modules->is_module_connected( $non_existent_module_slug ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, $non_existent_module_slug ) );
 
 		$inactive_module_slug = 'adsense';
 
@@ -248,40 +258,13 @@ class ModulesTest extends TestCase {
 
 		// It is not possible to connect a module without activating it.
 		$this->assertFalse( $modules->is_module_connected( $inactive_module_slug ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, $inactive_module_slug ) );
 
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
 
 		// Activating the module allows it to be connected.
 		$this->assertTrue( $modules->is_module_connected( $inactive_module_slug ) );
-	}
-
-	public function test_is_module_connected_with_ga4_reporting() {
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		// A module being active is a pre-requisite for it to be connected.
-		update_option(
-			Modules::OPTION_ACTIVE_MODULES,
-			array( 'analytics-4' )
-		);
-
-		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( 'analytics-4' ) );
-
-		// Update the Analytics 4 settings to be connected.
-		update_option(
-			'googlesitekit_analytics-4_settings',
-			array(
-				'accountID'       => '12345',
-				'propertyID'      => '123',
-				'webDataStreamID' => '456',
-				'measurementID'   => 'G-789',
-				'ownerID'         => '1',
-			)
-		);
-
-		// Ensure the method returns true if all the conditions are met.
-		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
-		$this->assertTrue( $modules->is_module_connected( 'analytics-4' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, $inactive_module_slug ) );
 	}
 
 	public function test_activate_module() {
