@@ -91,6 +91,32 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 	} );
 
+	it( 'does not render when AdSense module is not connected', () => {
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: true,
+				connected: false,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		const { container } = render(
+			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+			}
+		);
+		expect( container ).not.toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
+	} );
+
 	it( 'does not render when isAdSenseLinked is `true`', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
 

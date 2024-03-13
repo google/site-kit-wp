@@ -20,7 +20,7 @@
 	background-color: $c-white;
 	border-radius: $br-sm;
 	bottom: 0;
-	box-shadow: 0 8px 24px 0 #00000040;
+	box-shadow: 0 8px $grid-gap-desktop 0 rgba(0, 0, 0, 0.25);
 	max-width: 70vw;
 	position: fixed;
 	right: 0;
@@ -44,7 +44,7 @@
 		p {
 			font-weight: $fw-medium;
 			letter-spacing: 0;
-			margin: 0 0 24px;
+			margin: 0 0 $grid-gap-desktop;
 		}
 	}
 
@@ -53,7 +53,7 @@
 		display: flex;
 		gap: 8px;
 		justify-content: flex-end;
-		padding: 24px;
+		padding: $grid-gap-desktop;
 		padding-top: 0;
 	}
 }
