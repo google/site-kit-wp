@@ -25,7 +25,6 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 function Template() {
