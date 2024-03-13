@@ -203,10 +203,10 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 			'dismiss_notification'
 		);
 
+		showTooltip();
+
 		// For the first two dismissals, we show the notification again in two weeks.
 		if ( dismissCount < 2 ) {
-			showTooltip();
-
 			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
 			await dismissPrompt( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, {
 				expiresInSeconds: twoWeeksInSeconds,
