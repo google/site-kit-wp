@@ -1,5 +1,5 @@
 /**
- * LinkAnalyticsAndAdSenseAccountsOverlayNotification component.
+ * LinkAnalyticsAndAdSenseAccountsOverlayNotification component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
