@@ -37,6 +37,8 @@ import { isZeroReport } from '../../modules/analytics-4/utils';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useDashboardType from '../../hooks/useDashboardType';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 
 const { useSelect, useDispatch } = Data;
 
@@ -96,6 +98,8 @@ export default function GA4AdSenseLinkedNotification() {
 		} )
 	);
 
+	const viewContext = useViewContext();
+
 	const reportOptions = {
 		startDate,
 		endDate,
@@ -131,8 +135,12 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const dismissNotificationForUser = useCallback( async () => {
+		trackEvent(
+			`${ viewContext }_top-earning-pages-success-notification`,
+			'confirm_notification'
+		);
 		await dismissItem( GA4_ADSENSE_LINKED_NOTIFICATION );
-	}, [ dismissItem ] );
+	}, [ dismissItem, viewContext ] );
 
 	// This notification should only appear when the user has connected their
 	// AdSense and Google Analytics accounts, but has not yet received any data
@@ -166,21 +174,30 @@ export default function GA4AdSenseLinkedNotification() {
 	// Ensure resolution of the report has completed before showing this
 	// notification, since it should only appear when the user has no data in
 	// the report.
-	if (
+	const shouldShowNotification =
 		// Only show this notification on the main/entity dashboard, not on the
 		// settings page, etc.
-		! dashboardType ||
+		dashboardType &&
 		// Don't show this notification on the view-only dashboard.
-		viewOnly ||
-		// Don't show this notification if `isDismissed` call is still loading.
-		isDismissed === undefined ||
-		// Don't show this notification if the user has dismissed it.
-		isDismissed ||
-		! isGA4AdSenseIntegrationEnabled ||
-		! hasFinishedResolution ||
-		! isZeroReport( report ) ||
-		! analyticsAndAdsenseConnectedAndLinked
-	) {
+		! viewOnly &&
+		// Don't show this notification if `isDismissed` call is still loading
+		// or the user has dismissed it.
+		! isDismissed &&
+		isGA4AdSenseIntegrationEnabled &&
+		hasFinishedResolution &&
+		isZeroReport( report ) &&
+		analyticsAndAdsenseConnectedAndLinked;
+
+	useEffect( () => {
+		if ( shouldShowNotification ) {
+			trackEvent(
+				`${ viewContext }_top-earning-pages-success-notification`,
+				'view_notification'
+			);
+		}
+	}, [ shouldShowNotification, viewContext ] );
+
+	if ( ! shouldShowNotification ) {
 		return null;
 	}
 
