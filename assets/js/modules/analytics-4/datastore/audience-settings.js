@@ -92,7 +92,19 @@ const baseResolvers = {
 	},
 };
 
-const baseSelectors = {};
+const baseSelectors = {
+	/**
+	 * Gets the audience settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Audience settings; `undefined` if not loaded.
+	 */
+	getAudienceSettings( state ) {
+		return state.audienceSettings;
+	},
+};
 
 const store = Data.combineStores( fetchGetAudienceSettingsStore, {
 	initialState: baseInitialState,
