@@ -25,11 +25,13 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 
 export default function OverlayNotificationsRenderer() {
 	return (
 		<Fragment>
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
 		</Fragment>
 	);
 }
