@@ -1,5 +1,5 @@
 /**
- * LinkAnalyticsAndAdSenseAccountsOverlayNotification component.
+ * LinkAnalyticsAndAdSenseAccountsOverlayNotification component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -25,7 +25,6 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 function Template() {

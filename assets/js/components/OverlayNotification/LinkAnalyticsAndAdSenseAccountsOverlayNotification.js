@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,7 +35,7 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adsense-connect.svg';
 import OverlayNotification from './OverlayNotification';
 import useViewOnly from '../../hooks/useViewOnly';
-import { isFeatureEnabled } from '../../features';
+import { useFeature } from '../../hooks/useFeature';
 
 const { useSelect, useDispatch } = Data;
 
@@ -43,7 +43,9 @@ export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
-	const ga4AdSenseIntegration = isFeatureEnabled( 'ga4AdSenseIntegration' );
+	const isGA4AdSenseIntegrationEnabled = useFeature(
+		'ga4AdSenseIntegration'
+	);
 
 	const isViewOnly = useViewOnly();
 
@@ -102,26 +104,24 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		analyticsModuleConnected && adSenseModuleConnected;
 
 	const shouldShowNotification =
-		ga4AdSenseIntegration &&
+		isGA4AdSenseIntegrationEnabled &&
 		! isViewOnly &&
 		analyticsAndAdSenseAreConnected &&
 		isAdSenseLinked === false &&
 		isDismissed === false;
 
-	const dismissNotification = useCallback( () => {
+	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
 		// the current users profile with the `dismissItem` action.
 		dismissOverlayNotification(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		);
-	}, [ dismissOverlayNotification ] );
+	};
 
 	useEffect( () => {
+		// If the conditions to show this notification are met AND no other
+		// notifications are showing, show this notification.
 		if ( shouldShowNotification && ! isShowingNotification ) {
-			// It is safe to trigger current overlay notification with check for
-			// `isShowingCurrentOverlayNotification`, without checking if any overlay
-			// notification is showing instead, because `setOverlayNotificationToShow`
-			// action will not show it if another overlay notification is already showing.
 			setOverlayNotificationToShow(
 				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 			);
