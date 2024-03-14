@@ -27,7 +27,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-// import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 // import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -78,7 +78,19 @@ const baseReducer = ( state, { type } ) => {
 	}
 };
 
-const baseResolvers = {};
+const baseResolvers = {
+	*getAudienceSettings() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const audienceSettings = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAudienceSettings();
+
+		if ( audienceSettings === undefined ) {
+			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
+		}
+	},
+};
 
 const baseSelectors = {};
 
