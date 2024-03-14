@@ -165,7 +165,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Audience settings; `undefined` if not loaded.
 	 */
 	getAudienceSettings( state ) {
-		return state.audienceSettings;
+		return state.audienceSettings?.settings;
 	},
 };
 
