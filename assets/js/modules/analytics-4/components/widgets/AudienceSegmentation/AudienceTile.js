@@ -33,11 +33,28 @@ import AudienceMetricIconPagesPerVisit from '../../../../../../svg/icons/audienc
 import AudienceMetricIconPageviews from '../../../../../../svg/icons/audience-metric-icon-pageviews.svg';
 import AudienceMetricIconCities from '../../../../../../svg/icons/audience-metric-icon-cities.svg';
 import AudienceMetricIconTopContent from '../../../../../../svg/icons/web.svg';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../../../../../components/Link';
+import useViewOnly from '../../../../../hooks/useViewOnly';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 
 export default function AudienceTile( {
 	title,
@@ -51,6 +68,15 @@ export default function AudienceTile( {
 	topContentTitles,
 	Widget,
 } ) {
+	const breakpoint = useBreakpoint();
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
 	function AudienceTileMetric( { TileIcon, tileTitle, metricValue, Badge } ) {
 		return (
 			<div className="googlesitekit-audience-segmentation-tile__metric">
@@ -58,12 +84,12 @@ export default function AudienceTile( {
 					<TileIcon />
 				</div>
 				<div className="googlesitekit-audience-segmentation-tile__metric-container">
-					<div className="googlesitekit-audience-segmentation-tile__metric">
+					<div className="googlesitekit-audience-segmentation-tile__metric-value">
 						{ numFmt( metricValue ) }
 					</div>
-					<p className="googlesitekit-audience-segmentation-tile__metric-title">
+					<div className="googlesitekit-audience-segmentation-tile__metric-title">
 						{ tileTitle }
-					</p>
+					</div>
 				</div>
 				<div className="googlesitekit-audience-segmentation-tile__metric-badge-container">
 					<Badge />
@@ -72,28 +98,138 @@ export default function AudienceTile( {
 		);
 	}
 
-	function AudienceTileCustomMetric( {
+	function AudienceTileCitiesMetric( {
 		TileIcon,
 		tileTitle,
-		children,
-		Badge = null,
+		topCities: topCitiesColumns,
 	} ) {
 		return (
-			<div className="googlesitekit-audience-segmentation-tile__custom-metric">
-				<div className="googlesitekit-audience-segmentation-tile__custom-metric-icon">
+			<div className="googlesitekit-audience-segmentation-tile__metric googlesitekit-audience-segmentation-tile__cities-metric">
+				<div className="googlesitekit-audience-segmentation-tile__metric-icon">
 					<TileIcon />
 				</div>
-				<div className="googlesitekit-audience-segmentation-tile__custom-metric-container">
-					<p className="googlesitekit-audience-segmentation-tile__custom-metric-title">
+				<div className="googlesitekit-audience-segmentation-tile__metric-container">
+					<div className="googlesitekit-audience-segmentation-tile__metric-title">
 						{ tileTitle }
-						{ Badge && (
-							<div className="googlesitekit-audience-segmentation-tile__metric-badge-container">
-								<Badge />
+					</div>
+					<div className="googlesitekit-audience-segmentation-tile__metric-content">
+						{ topCitiesColumns === null && <NoData /> }
+						{ topCitiesColumns &&
+							topCitiesColumns.dimensionValues.map(
+								( city, index ) => (
+									<div
+										key={ city.value }
+										className="googlesitekit-audience-segmentation-tile__cities-metric-city"
+									>
+										<div className="googlesitekit-audience-segmentation-tile__cities-metric-city-name">
+											{ city.value }
+										</div>
+										<div className="googlesitekit-audience-segmentation-tile__cities-metric-city-value">
+											{ numFmt(
+												topCitiesColumns.metricValues[
+													index
+												].value,
+												{
+													style: 'percent',
+													maximumFractionDigits: 1,
+												}
+											) }
+										</div>
+									</div>
+								)
+							) }
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	function ContentLinkComponent( { content } ) {
+		const contentTitle = topContentTitles[ content.value ];
+		const url = content.value;
+
+		const serviceURL = useSelect( ( select ) => {
+			return ! viewOnlyDashboard
+				? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+						'all-pages-and-screens',
+						{
+							filters: {
+								unifiedPagePathScreen: url,
+							},
+							dates,
+						}
+				  )
+				: null;
+		} );
+
+		if ( viewOnlyDashboard ) {
+			return (
+				<div className="googlesitekit-audience-segmentation-tile__top-content-metric-name">
+					{ contentTitle }
+				</div>
+			);
+		}
+		return (
+			<Link
+				href={ serviceURL }
+				title={ title }
+				external
+				hideExternalIndicator
+			>
+				{ contentTitle }
+			</Link>
+		);
+	}
+
+	function AudienceTilePagesMetric( {
+		TileIcon,
+		tileTitle,
+		topContent: topContentRows,
+	} ) {
+		return (
+			<div className="googlesitekit-audience-segmentation-tile__metric googlesitekit-audience-segmentation-tile__top-content-metric">
+				<div className="googlesitekit-audience-segmentation-tile__metric-icon">
+					<TileIcon />
+				</div>
+				<div className="googlesitekit-audience-segmentation-tile__metric-container">
+					<div className="googlesitekit-audience-segmentation-tile__metric-title">
+						{ tileTitle }
+						{ topContentRows !== null && (
+							<div className="googlesitekit-audience-segmentation-tile__top-content-partial-data-badge">
+								{ __( 'Partial data', 'google-site-kit' ) }
+								<InfoTooltip
+									title={ __(
+										'Partial data tooltip', // TODO: This needs updating to the final tooltip copy is not in the Figma designs.
+										'google-site-kit'
+									) }
+								></InfoTooltip>
 							</div>
 						) }
-					</p>
-					<div className="googlesitekit-audience-segmentation-tile__custom-metric">
-						{ children }
+					</div>
+					<div className="googlesitekit-audience-segmentation-tile__metric-content">
+						{ topContentRows === null && <NoData /> }
+						{ topContentRows &&
+							topContentRows.dimensionValues.map(
+								( content, index ) => {
+									return (
+										<div
+											key={ content.value }
+											className="googlesitekit-audience-segmentation-tile__top-content-metric-page"
+										>
+											<ContentLinkComponent
+												content={ content }
+											/>
+											<div className="googlesitekit-audience-segmentation-tile__top-content-metric-value">
+												{ numFmt(
+													topContent.metricValues[
+														index
+													].value
+												) }
+											</div>
+										</div>
+									);
+								}
+							) }
 					</div>
 				</div>
 			</div>
@@ -102,7 +238,7 @@ export default function AudienceTile( {
 
 	function NoData() {
 		return (
-			<div className="googlesitekit-audience-segmentation-tile__custom-metric-item">
+			<div className="googlesitekit-audience-segmentation-tile__no-data">
 				{ __( 'No data to show yet', 'google-site-kit' ) }
 			</div>
 		);
@@ -111,12 +247,17 @@ export default function AudienceTile( {
 	return (
 		<Widget noPadding>
 			<div className="googlesitekit-audience-segmentation-tile">
-				<div className="googlesitekit-audience-segmentation-tile-header">
-					<div className="googlesitekit-audience-segmentation-tile-header__title">
-						{ title }
-					</div>
-					{ infoTooltip && <InfoTooltip title={ infoTooltip } /> }
-				</div>
+				{ breakpoint !== BREAKPOINT_TABLET &&
+					breakpoint !== BREAKPOINT_SMALL && (
+						<div className="googlesitekit-audience-segmentation-tile-header">
+							<div className="googlesitekit-audience-segmentation-tile-header__title">
+								{ title }
+								{ infoTooltip && (
+									<InfoTooltip title={ infoTooltip } />
+								) }
+							</div>
+						</div>
+					) }
 				<div className="googlesitekit-audience-segmentation-tile__metrics">
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconVisitors }
@@ -161,7 +302,10 @@ export default function AudienceTile( {
 
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconPageviews }
-						tileTitle={ __( 'Pageviews', 'google-site-kit' ) }
+						tileTitle={ __(
+							'33% of total pageviews', // TODO: This title needs to take the dynamic % of total page views.
+							'google-site-kit'
+						) }
 						metricValue={ pageviews.metricValue }
 						Badge={ () => (
 							<ChangeBadge
@@ -171,76 +315,20 @@ export default function AudienceTile( {
 						) }
 					/>
 
-					<AudienceTileCustomMetric
+					<AudienceTileCitiesMetric
 						TileIcon={ AudienceMetricIconCities }
 						tileTitle={ __(
 							'Cities with the most visitors',
 							'google-site-kit'
 						) }
-					>
-						{ topCities === null && <NoData /> }
-						{ topCities &&
-							topCities.dimensionValues.map( ( city, index ) => (
-								<div
-									key={ city.value }
-									className="googlesitekit-audience-segmentation-tile__custom-metric-item"
-								>
-									{ city.value }
-									<span>
-										{ numFmt(
-											topCities.metricValues[ index ]
-												.value,
-											{
-												style: 'percent',
-												maximumFractionDigits: 1,
-											}
-										) }
-									</span>
-								</div>
-							) ) }
-					</AudienceTileCustomMetric>
+						topCities={ topCities }
+					/>
 
-					<AudienceTileCustomMetric
+					<AudienceTilePagesMetric
 						TileIcon={ AudienceMetricIconTopContent }
 						tileTitle={ __( 'Top content', 'google-site-kit' ) }
-						Badge={ () => (
-							<div className="googlesitekit-audience-segmentation-tile__custom-metric-partial-data-badge">
-								{ __( 'Partial data', 'google-site-kit' ) }
-								<InfoTooltip
-									title={ __(
-										'Partial data tooltip', // TODO: This needs updating to the final tooltip copy.
-										'google-site-kit'
-									) }
-								></InfoTooltip>
-							</div>
-						) }
-					>
-						{ topContent === null && <NoData /> }
-						{ topContent &&
-							topContent.dimensionValues.map(
-								( content, index ) => {
-									const contentTitle =
-										topContentTitles[ content.value ];
-
-									return (
-										<div
-											key={ content.value }
-											className="googlesitekit-audience-segmentation-tile__custom-metric-item"
-										>
-											{ /* TODO: link to that page in the GA report. */ }
-											{ contentTitle }
-											<span>
-												{ numFmt(
-													topContent.metricValues[
-														index
-													].value
-												) }
-											</span>
-										</div>
-									);
-								}
-							) }
-					</AudienceTileCustomMetric>
+						topContent={ topContent }
+					/>
 				</div>
 			</div>
 		</Widget>

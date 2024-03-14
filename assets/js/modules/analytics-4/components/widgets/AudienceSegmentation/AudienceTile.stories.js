@@ -1,7 +1,7 @@
 /**
  * AudienceTile Component Stories.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,28 @@
 /**
  * Internal dependencies
  */
-import {
-	provideModules,
-	provideUserAuthentication,
-} from '../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../googlesitekit/constants';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
 import AudienceTile from './AudienceTile';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
 
-function Template( { ...args } ) {
-	return <WidgetWithComponentProps { ...args } />;
+function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ViewContextProvider
+				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+			>
+				<WidgetWithComponentProps { ...args } />
+			</ViewContextProvider>
+		</WithRegistrySetup>
+	);
 }
 
 const ReadyProps = {
@@ -123,7 +131,7 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = ReadyProps;
 Ready.scenario = {
-	label: 'AudienceSegmentation/AudienceTile/Ready',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/Ready',
 	delay: 250,
 };
 
@@ -134,7 +142,18 @@ ReadWithToolTip.args = {
 	infoTooltip: 'This is a tooltip',
 };
 ReadWithToolTip.scenario = {
-	label: 'AudienceSegmentation/AudienceTile/ReadWithToolTip',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/ReadWithToolTip',
+	delay: 250,
+};
+
+export const ReadyViewOnly = Template.bind( {} );
+ReadyViewOnly.storyName = 'ReadyViewOnly';
+ReadyViewOnly.args = {
+	...ReadyProps,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+ReadyViewOnly.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/ReadyViewOnly',
 	delay: 250,
 };
 
@@ -146,36 +165,10 @@ PartialNoData.args = {
 	topContent: null,
 };
 PartialNoData.scenario = {
-	label: 'AudienceSegmentation/AudienceTile/PartialNoData',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/PartialNoData',
 	delay: 250,
 };
 
 export default {
-	title: 'Audience Segmentation',
-	decorators: [
-		( Story ) => {
-			const setupRegistry = ( registry ) => {
-				global._googlesitekitUserData.isUserInputCompleted = false;
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-				provideUserAuthentication( registry );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsDataAvailableOnLoad( true );
-			};
-
-			return (
-				<div>
-					<WithRegistrySetup func={ setupRegistry }>
-						<Story />
-					</WithRegistrySetup>
-				</div>
-			);
-		},
-	],
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile',
 };
