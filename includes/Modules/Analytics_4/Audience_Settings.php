@@ -22,7 +22,7 @@ use Google\Site_Kit\Core\Util\Sanitize;
  */
 class Audience_Settings extends User_Setting {
 
-    /**
+	/**
 	 * The user option name for audience setting.
 	 */
 	const OPTION = 'googlesitekit_audience_settings';
@@ -70,7 +70,7 @@ class Audience_Settings extends User_Setting {
 		);
 
 		$allowed_settings = array(
-			'configuredAudiences'    => true,
+			'configuredAudiences'                => true,
 			'isAudienceSegmentationWidgetHidden' => true,
 		);
 
@@ -105,6 +105,6 @@ class Audience_Settings extends User_Setting {
 			return $sanitized_settings;
 		};
 	}
-	
+
 
 }
