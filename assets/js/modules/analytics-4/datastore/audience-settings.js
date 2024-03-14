@@ -29,11 +29,11 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-// import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
-// import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
-// const { receiveError, clearError } = errorStoreActions;
+const { receiveError, clearError } = errorStoreActions;
 
 const validateAudienceSettings = ( settings ) => {
 	invariant(
@@ -90,7 +90,46 @@ const baseInitialState = {
 	audienceSettings: undefined,
 };
 
-const baseActions = {};
+const baseActions = {
+	/**
+	 * Saves the audience settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	saveAudienceSettings: createValidatedAction(
+		( settings = {} ) => {
+			invariant(
+				isPlainObject( settings ),
+				'audience settings should be an object to save.'
+			);
+		},
+		function* ( settings = {} ) {
+			yield clearError( 'saveAudienceSettings', [] );
+
+			const registry = yield Data.commonActions.getRegistry();
+			const audienceSettings = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getAudienceSettings();
+
+			const { response, error } =
+				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
+					{
+						...audienceSettings,
+						...settings,
+					}
+				);
+
+			if ( error ) {
+				yield receiveError( error, 'saveAudienceSettings', [] );
+			}
+
+			return { response, error };
+		}
+	),
+};
 
 const baseControls = {};
 
