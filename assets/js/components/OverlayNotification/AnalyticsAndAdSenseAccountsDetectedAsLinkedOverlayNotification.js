@@ -76,16 +76,23 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
 
+	const canViewSharedAnalytics = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
+	);
+	const canViewSharedAdSense = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule( 'adsense' )
+	);
+
 	const isAdSenseLinked = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
-	const analyticsAndAdSenseAreConnected =
-		analyticsModuleConnected && adSenseModuleConnected;
-
 	const shouldShowNotification =
 		ga4AdSenseIntegration &&
-		analyticsAndAdSenseAreConnected &&
+		analyticsModuleConnected &&
+		adSenseModuleConnected &&
+		canViewSharedAnalytics &&
+		canViewSharedAdSense &&
 		isAdSenseLinked === true &&
 		isDismissed === false;
 

@@ -28,6 +28,7 @@ import {
 	provideModules,
 	fireEvent,
 	act,
+	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -44,6 +45,27 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
+	const capabilitiesAdSenseNoAccess = {
+		permissions: {
+			'googlesitekit_read_shared_module_data::["adsense"]': false,
+			'googlesitekit_manage_module_sharing_options::["analytics-4"]': true,
+		},
+	};
+
+	const capabilitiesAnalyticsNoAccess = {
+		permissions: {
+			'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+			'googlesitekit_manage_module_sharing_options::["adsense"]': true,
+		},
+	};
+
+	const capabilities = {
+		permissions: {
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+			'googlesitekit_read_shared_module_data::["adsense"]': true,
+		},
+	};
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -58,6 +80,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 				connected: true,
 			},
 		] );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adSenseLinked: true,
@@ -210,7 +233,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
-	it( 'renders if adSenseLinked is not set', () => {
+	it( 'renders if adSenseLinked is `true`', () => {
 		const { container } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
@@ -224,7 +247,49 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
-	it( 'renders in "view only" dashboard', () => {
+	it( 'does not render in "view only" dashboard without Analytics access', () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetCapabilities(
+				capabilitiesAnalyticsNoAccess.permissions
+			);
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'does not render in "view only" dashboard without AdSense access', () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetCapabilities( capabilitiesAdSenseNoAccess.permissions );
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'renders in "view only" dashboard with Analytics and AdSense access', () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetCapabilities( capabilities.permissions );
 		const { container } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
