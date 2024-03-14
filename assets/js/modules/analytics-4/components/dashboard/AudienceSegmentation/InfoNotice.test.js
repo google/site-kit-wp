@@ -21,30 +21,34 @@
  */
 import { render } from '../../../../../../../tests/js/test-utils';
 import InfoNotice from './InfoNotice';
-import { Default as InfoNoticeStory } from './InfoNotice.stories';
 
 describe( 'InfoNotice', () => {
 	it( 'should render correctly in the default state', () => {
 		const { container, getByText } = render(
-			<InfoNotice { ...InfoNoticeStory.args } />
+			<InfoNotice
+				content="Test content"
+				dismissLabel="Test dismiss label"
+			/>
 		);
 
 		expect( container ).toMatchSnapshot();
-		expect( getByText( InfoNoticeStory.args.content ) ).toBeInTheDocument();
+		expect( getByText( 'Test content' ) ).toBeInTheDocument();
 
-		expect(
-			getByText( InfoNoticeStory.args.dismissLabel )
-		).toBeInTheDocument();
+		expect( getByText( 'Test dismiss label' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should invoke the onDismiss callback when clicked', () => {
 		const onClick = jest.fn();
 
 		const { getByText } = render(
-			<InfoNotice { ...InfoNoticeStory.args } onDismiss={ onClick } />
+			<InfoNotice
+				content="Test content"
+				dismissLabel="Test dismiss label"
+				onDismiss={ onClick }
+			/>
 		);
 
-		const button = getByText( InfoNoticeStory.args.dismissLabel );
+		const button = getByText( 'Test dismiss label' );
 
 		button.click();
 

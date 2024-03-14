@@ -10,7 +10,7 @@ exports[`InfoNotice should render correctly in the default state 1`] = `
       class="googlesitekit-audience-segmentation-info-notice__body"
     >
       <p>
-        The higher the portion of new visitors you have, the more your audience is growing. Looking at what content brings them to your site may give you insights on how to reach even more people.
+        Test content
       </p>
       <button
         class="mdc-button googlesitekit-audience-segmentation-info-notice__dismiss mdc-button--tertiary"
@@ -19,7 +19,7 @@ exports[`InfoNotice should render correctly in the default state 1`] = `
         <span
           class="mdc-button__label"
         >
-          Got it
+          Test dismiss label
         </span>
       </button>
     </div>

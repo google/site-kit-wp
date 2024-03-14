@@ -26,5 +26,3 @@ export { default as PropertySelect } from './PropertySelect';
 export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as Notice } from './Notice';
-// @todo clean up the below AudienceSegmentation export, it is only present to satisfy the Jest test for now.
-export { default as AudienceSegmentation } from './AudienceSegmentation/InfoNotice';
