@@ -5,7 +5,11 @@
 	display: flex;
 	gap: 20px;
 	justify-content: space-between;
-	padding: $grid-gap-phone 40px;
+	padding: $grid-gap-phone;
+
+	@media (min-width: $bp-desktop) {
+		padding: $grid-gap-phone 40px;
+	}
 
 	svg {
 		color: $c-yellow-y-100;
