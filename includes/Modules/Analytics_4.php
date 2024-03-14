@@ -58,6 +58,7 @@ use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
@@ -136,6 +137,14 @@ final class Analytics_4 extends Module
 	protected $custom_dimensions_data_available;
 
 	/**
+	 * Audience_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -155,6 +164,7 @@ final class Analytics_4 extends Module
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
+		$this->audience_settings                = new Audience_Settings( $this->user_options );
 	}
 
 	/**
@@ -505,6 +515,12 @@ final class Analytics_4 extends Module
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
+			);
+			$datapoints['GET:audience-settings'] = array(
+				'service' => '',
+			);
+			$datapoints['POST:audience-settings'] = array(
+				'service' => '',
 			);
 		}
 
@@ -942,6 +958,53 @@ final class Analytics_4 extends Module
 						$property_id,
 						$post_body
 					);
+			case 'GET:audience-settings':
+				return function() {
+					return $this->audience_settings->get();
+				};
+			case 'POST:audience-settings':
+				$settings = $data['settings'];
+				if ( ! isset( $settings['configuredAudiences'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'configuredAudiences' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! is_array( $settings['configuredAudiences'] ) ) {
+					return new WP_Error(
+						'rest_invalid_param',
+						/* translators: %s: Invalid parameter */
+						sprintf( __( 'Invalid parameter: %s.', 'google-site-kit' ), 'configuredAudiences' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'isAudienceSegmentationWidgetHidden' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! is_bool( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					return new WP_Error(
+						'rest_invalid_param',
+						/* translators: %s: Invalid parameter */
+						sprintf( __( 'Invalid parameter: %s.', 'google-site-kit' ), 'isAudienceSegmentationWidgetHidden' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$this->audience_settings->merge( $data['settings'] );
+
+				return function() {
+					return $this->audience_settings->get();
+				};
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
