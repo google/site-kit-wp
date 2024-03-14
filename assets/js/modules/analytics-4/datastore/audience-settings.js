@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-// import invariant from 'invariant';
-// import { isPlainObject } from 'lodash';
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -34,6 +34,21 @@ import { createReducer } from '../../../googlesitekit/data/create-reducer';
 // import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 // const { receiveError, clearError } = errorStoreActions;
+
+const validateAudienceSettings = ( settings ) => {
+	invariant(
+		isPlainObject( settings ),
+		'Audience settings should be an object.'
+	);
+	invariant(
+		Array.isArray( settings.configuredAudiences ),
+		'Configured audiences should be an array.'
+	);
+	invariant(
+		typeof settings.isAudienceSegmentationWidgetHidden === 'boolean',
+		'Audience segmentation widget visibility should be a boolean.'
+	);
+};
 
 const fetchStoreReducerCallback = createReducer(
 	( state, audienceSettings ) => {
@@ -60,6 +75,15 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 		);
 	},
 	reducerCallback: fetchStoreReducerCallback,
+} );
+
+const fetchSaveAudienceSettingsStore = createFetchStore( {
+	baseName: 'saveAudienceSettings',
+	controlCallback: ( settings ) =>
+		API.set( 'modules', 'analytics-4', 'audience-settings', { settings } ),
+	reducerCallback: fetchStoreReducerCallback,
+	argsToParams: ( settings ) => settings,
+	validateParams: validateAudienceSettings,
 } );
 
 const baseInitialState = {
@@ -106,14 +130,18 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetAudienceSettingsStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	controls: baseControls,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetAudienceSettingsStore,
+	fetchSaveAudienceSettingsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
