@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -167,6 +172,21 @@ const baseSelectors = {
 	getAudienceSettings( state ) {
 		return state.audienceSettings?.settings;
 	},
+
+	/**
+	 * Gets the configured audiences from the audience settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} An array with configured audiences; `undefined` if not loaded.
+	 */
+	getConfiguredAudiences: createRegistrySelector( ( select ) => () => {
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
+		return audienceSettings?.configuredAudiences;
+	} ),
 };
 
 const store = Data.combineStores(
