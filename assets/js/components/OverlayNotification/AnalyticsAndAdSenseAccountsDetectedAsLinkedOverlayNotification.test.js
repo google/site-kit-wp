@@ -29,20 +29,49 @@ import {
 	fireEvent,
 	act,
 	provideUserAuthentication,
+	freezeFetch,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
+import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '../../modules/analytics-4/utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
 	let registry;
 
-	const fetchGetDismissedItems = new RegExp(
+	const adSenseAccountID = 'pub-1234567890';
+
+	const reportOptions = {
+		startDate: '2020-08-11',
+		endDate: '2020-09-07',
+		dimensions: [ 'pagePath', 'adSourceName' ],
+		metrics: [ { name: 'totalAdRevenue' } ],
+		filter: {
+			fieldName: 'adSourceName',
+			stringFilter: {
+				matchType: 'EXACT',
+				value: `Google AdSense account (${ adSenseAccountID })`,
+			},
+		},
+		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
+		limit: 1,
+	};
+
+	const fetchGetDismissedItemsRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismissed-items'
 	);
-	const fetchDismissItem = new RegExp(
+	const fetchDismissItemRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
+
+	const fetchAnalyticsReportRegExp = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	const capabilitiesAdSenseNoAccess = {
@@ -82,8 +111,12 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		] );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			adSenseLinked: true,
+		} );
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			accountID: adSenseAccountID,
 		} );
 	} );
 
@@ -174,8 +207,8 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	} );
 
 	it( 'does not render if it was dismissed by the `dismissItem` action', async () => {
-		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-		fetchMock.postOnce( fetchDismissItem, {
+		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
+		fetchMock.postOnce( fetchDismissItemRegExp, {
 			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
 		} );
 
@@ -199,6 +232,8 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	} );
 
 	it( 'does not render if another notification is showing', async () => {
+		freezeFetch( fetchAnalyticsReportRegExp );
+
 		await registry
 			.dispatch( CORE_UI )
 			.setOverlayNotificationToShow( 'TestOverlayNotification' );
@@ -233,7 +268,51 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
-	it( 'renders if adSenseLinked is `true`', () => {
+	it( 'does not render if adSenseLinked is `true` but data is not available', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( {}, { options: reportOptions } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+			}
+		);
+
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'does not render if adSenseLinked is `true` when in zero data state', () => {
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( zeroReport, { options: reportOptions } );
+
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+			}
+		);
+
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'renders if adSenseLinked is `true` and data is available', () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+
 		const { container } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
@@ -290,6 +369,8 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetCapabilities( capabilities.permissions );
+		provideAnalytics4MockReport( registry, reportOptions );
+
 		const { container } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
@@ -304,6 +385,8 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	} );
 
 	it( 'renders `Show me` and `Maybe later` buttons`', () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+
 		const { container } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
@@ -317,8 +400,9 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	} );
 
 	it( 'clicking the `Show me` button dismisses the notification', async () => {
-		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-		fetchMock.postOnce( fetchDismissItem, {
+		provideAnalytics4MockReport( registry, reportOptions );
+		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
+		fetchMock.postOnce( fetchDismissItemRegExp, {
 			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
 		} );
 
@@ -348,8 +432,9 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	} );
 
 	it( 'clicking the `Maybe later` button dismisses the notification', async () => {
-		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-		fetchMock.postOnce( fetchDismissItem, {
+		provideAnalytics4MockReport( registry, reportOptions );
+		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
+		fetchMock.postOnce( fetchDismissItemRegExp, {
 			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
 		} );
 

@@ -107,9 +107,13 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
-	const adSenseAccountID = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountID()
-	);
+	const adSenseAccountID = useSelect( ( select ) => {
+		if ( adSenseModuleConnected ) {
+			return select( MODULES_ADSENSE ).getAccountID();
+		}
+
+		return null;
+	} );
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -134,11 +138,18 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 	};
 
 	const data = useSelect( ( select ) => {
-		if ( isDismissed ) {
-			return null;
+		if (
+			! isDismissed &&
+			isAdSenseLinked &&
+			adSenseModuleConnected &&
+			analyticsModuleConnected &&
+			canViewSharedAdSense &&
+			canViewSharedAnalytics
+		) {
+			return select( MODULES_ANALYTICS_4 ).getReport( args );
 		}
 
-		return select( MODULES_ANALYTICS_4 ).getReport( args );
+		return null;
 	} );
 
 	const dataAvailable = !! data?.rows?.length;
@@ -150,7 +161,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		adSenseModuleConnected &&
 		canViewSharedAnalytics &&
 		canViewSharedAdSense &&
-		isAdSenseLinked === true &&
+		isAdSenseLinked &&
 		dataAvailable;
 
 	const dismissNotification = useCallback( () => {
