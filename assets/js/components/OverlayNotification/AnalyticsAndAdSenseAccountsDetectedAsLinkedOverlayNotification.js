@@ -34,9 +34,13 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { useFeature } from '../../hooks/useFeature';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { getContextScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
+import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -103,14 +107,51 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [ 'pagePath', 'adSourceName' ],
+		metrics: [ { name: 'totalAdRevenue' } ],
+		filter: {
+			fieldName: 'adSourceName',
+			stringFilter: {
+				matchType: 'EXACT',
+				value: `Google AdSense account (${ adSenseAccountID })`,
+			},
+		},
+		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
+		limit: 1,
+	};
+
+	const data = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getReport( args );
+	} );
+
+	const dataAvailable = !! data?.rows?.length;
+
 	const shouldShowNotification =
+		isDismissed === false &&
 		ga4AdSenseIntegration &&
 		analyticsModuleConnected &&
 		adSenseModuleConnected &&
 		canViewSharedAnalytics &&
 		canViewSharedAdSense &&
 		isAdSenseLinked === true &&
-		isDismissed === false;
+		dataAvailable;
 
 	const dismissNotification = useCallback( () => {
 		// Dismiss the notification, which also dismisses it from
