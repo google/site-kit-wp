@@ -27,6 +27,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 const { useSelect } = Data;
@@ -73,6 +74,8 @@ export default function OptionalSettingsView() {
 					</p>
 				</div>
 			</div>
+
+			<AdsConversionIDSettingsNotice />
 
 			{ useSnippet && (
 				<div className="googlesitekit-settings-module__meta-items">

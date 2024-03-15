@@ -36,5 +36,26 @@
 				margin-top: $grid-gap-phone / 2;
 			}
 		}
+
+		.googlesitekit-settings-analytics-ads-conversion-id-notice {
+			align-items: center;
+			display: flex;
+			margin: 0;
+			padding: $grid-gap-phone - 2px $grid-gap-desktop;
+
+			.googlesitekit-settings-notice__icon {
+				margin-right: $grid-gap-phone;
+			}
+
+			.googlesitekit-settings-notice__text {
+				font-size: $fs-label-md;
+				font-weight: $fw-medium;
+			}
+
+			.googlesitekit-settings-notice__button button {
+				color: $c-surfaces-on-surface;
+				font-family: $f-secondary;
+			}
+		}
 	}
 }
