@@ -141,7 +141,7 @@ const EnableAutoUpdateBannerNotification = () => {
 		siteKitAutoUpdatesEnabled,
 	] );
 
-	if ( isDismissed ) {
+	if ( isDismissed !== false ) {
 		return null;
 	}
 
