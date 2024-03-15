@@ -91,6 +91,11 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 	validateParams: validateAudienceSettings,
 } );
 
+// Actions
+const SET_CONFIGURED_AUDIENCES = 'SET_CONFIGURED_AUDIENCES';
+// const SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN =
+// 	'SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN';
+
 const baseInitialState = {
 	audienceSettings: undefined,
 };
@@ -134,17 +139,51 @@ const baseActions = {
 			return { response, error };
 		}
 	),
+
+	/**
+	 * Sets the configured audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} configuredAudiences Configured audiences.
+	 * @return {Object} Redux-style action.
+	 */
+	setConfiguredAudiences( configuredAudiences ) {
+		invariant(
+			Array.isArray( configuredAudiences ),
+			'Configured audiences should be an array.'
+		);
+
+		return {
+			type: SET_CONFIGURED_AUDIENCES,
+			payload: { configuredAudiences },
+		};
+	},
 };
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
+		case SET_CONFIGURED_AUDIENCES: {
+			const { configuredAudiences } = payload;
+
+			if ( ! state.audienceSettings ) {
+				state.audienceSettings = {};
+			}
+
+			state.audienceSettings.settings = {
+				...state.audienceSettings.settings,
+				configuredAudiences,
+			};
+
+			break;
+		}
 		default: {
 			return state;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAudienceSettings() {
