@@ -187,6 +187,23 @@ const baseSelectors = {
 
 		return audienceSettings?.configuredAudiences;
 	} ),
+
+	/**
+	 * Gets the audience segmentation widget visibility from the audience settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Whether or not the audience segmentation widget is hidden; `undefined` if not loaded.
+	 */
+	isAudienceSegmentationWidgetHidden: createRegistrySelector(
+		( select ) => () => {
+			const audienceSettings =
+				select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
+			return audienceSettings?.isAudienceSegmentationWidgetHidden;
+		}
+	),
 };
 
 const store = Data.combineStores(
