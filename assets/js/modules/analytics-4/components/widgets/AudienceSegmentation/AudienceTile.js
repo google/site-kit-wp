@@ -32,7 +32,7 @@ import AudienceMetricIconVisitsPerVisitor from '../../../../../../svg/icons/audi
 import AudienceMetricIconPagesPerVisit from '../../../../../../svg/icons/audience-metric-icon-pages-per-visit.svg';
 import AudienceMetricIconPageviews from '../../../../../../svg/icons/audience-metric-icon-pageviews.svg';
 import AudienceMetricIconCities from '../../../../../../svg/icons/audience-metric-icon-cities.svg';
-import AudienceMetricIconTopContent from '../../../../../../svg/icons/web.svg';
+import AudienceMetricIconTopContent from '../../../../../../svg/icons/audience-metric-icon-top-content.svg';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
