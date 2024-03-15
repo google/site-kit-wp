@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isEqual, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -204,6 +204,20 @@ const baseSelectors = {
 			return audienceSettings?.isAudienceSegmentationWidgetHidden;
 		}
 	),
+
+	/**
+	 * Checks if the audience settings have changed from the saved settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if settings have changed, otherwise false.
+	 */
+	haveConfiguredAudiencesChanged( state ) {
+		const { settings, savedSettings } = state.audienceSettings || {};
+
+		return ! isEqual( settings, savedSettings );
+	},
 };
 
 const store = Data.combineStores(
