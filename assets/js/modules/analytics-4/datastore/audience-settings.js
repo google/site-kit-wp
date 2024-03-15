@@ -93,8 +93,8 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 
 // Actions
 const SET_CONFIGURED_AUDIENCES = 'SET_CONFIGURED_AUDIENCES';
-// const SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN =
-// 	'SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN';
+const SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN =
+	'SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN';
 
 const baseInitialState = {
 	audienceSettings: undefined,
@@ -145,18 +145,38 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Array} configuredAudiences Configured audiences.
+	 * @param {Array} audienceResourceNames Configured audience resource names.
 	 * @return {Object} Redux-style action.
 	 */
-	setConfiguredAudiences( configuredAudiences ) {
+	setConfiguredAudiences( audienceResourceNames ) {
 		invariant(
-			Array.isArray( configuredAudiences ),
+			Array.isArray( audienceResourceNames ),
 			'Configured audiences should be an array.'
 		);
 
 		return {
 			type: SET_CONFIGURED_AUDIENCES,
-			payload: { configuredAudiences },
+			payload: { audienceResourceNames },
+		};
+	},
+
+	/**
+	 * Sets the audience segmentation widget visibility.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} isWidgetHidden Whether or not the audience segmentation widget is hidden.
+	 * @return {Object} Redux-style action.
+	 */
+	setAudienceSegmentationWidgetHidden( isWidgetHidden ) {
+		invariant(
+			typeof isWidgetHidden === 'boolean',
+			'Audience segmentation widget visibility should be a boolean.'
+		);
+
+		return {
+			type: SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN,
+			payload: { isWidgetHidden },
 		};
 	},
 };
@@ -166,7 +186,7 @@ const baseControls = {};
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_CONFIGURED_AUDIENCES: {
-			const { configuredAudiences } = payload;
+			const { audienceResourceNames } = payload;
 
 			if ( ! state.audienceSettings ) {
 				state.audienceSettings = {};
@@ -174,11 +194,27 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 			state.audienceSettings.settings = {
 				...state.audienceSettings.settings,
-				configuredAudiences,
+				configuredAudiences: audienceResourceNames,
 			};
 
 			break;
 		}
+
+		case SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN: {
+			const { isWidgetHidden } = payload;
+
+			if ( ! state.audienceSettings ) {
+				state.audienceSettings = {};
+			}
+
+			state.audienceSettings.settings = {
+				...state.audienceSettings.settings,
+				isAudienceSegmentationWidgetHidden: isWidgetHidden,
+			};
+
+			break;
+		}
+
 		default: {
 			return state;
 		}
