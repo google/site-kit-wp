@@ -50,15 +50,17 @@
 				stroke: $c-white;
 			}
 
-			.mdc-button__label {
-				margin-right: 8px;
-			}
-
 			&.googlesitekit-button-icon--spinner__left {
 
 				.mdc-button__label {
 					margin-left: 8px;
-					margin-right: 0;
+				}
+			}
+
+			&.googlesitekit-button-icon--spinner__right {
+
+				.mdc-button__label {
+					margin-right: 8px;
 				}
 			}
 		}
