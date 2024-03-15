@@ -52,7 +52,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			<div className="googlesitekit-setup-module__inputs">
 				<AdsConversionIDTextField
 					helperText={ __(
-						'The Ads conversion ID will help track the performance of ad campaigns for the corresponding account',
+						'The Conversion Tracking ID will help track the performance of ad campaigns for the corresponding account',
 						'google-site-kit'
 					) }
 				/>

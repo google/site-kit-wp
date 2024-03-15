@@ -23,7 +23,7 @@
  * @since 1.121.0 Migrated from analytics to analytics-4.
  * @since n.e.x.t Migrated from analytics-4 to ads.
  *
- * @param {*} value Conversion ID to test.
+ * @param {*} value Ads Conversion Tracking ID to test.
  * @return {boolean} Whether or not the given ID is valid.
  */
 export function isValidAdsConversionID( value ) {

@@ -1,5 +1,5 @@
 /**
- * Ads Module Conversion ID component.
+ * Ads Module Conversion Tracking ID component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -64,7 +64,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<h4 className="googlesitekit-settings-module__fields-group-title">
-				{ __( 'Conversion ID', 'google-site-kit' ) }
+				{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
 			</h4>
 
 			{ helperText && (
@@ -74,7 +74,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 			) }
 
 			<TextField
-				label={ __( 'Conversion ID', 'google-site-kit' ) }
+				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
 				className={ classnames( {
 					'mdc-text-field--error': ! isValidValue,
 				} ) }
