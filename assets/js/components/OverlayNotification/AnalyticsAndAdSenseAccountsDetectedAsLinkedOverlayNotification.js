@@ -68,22 +68,38 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		)
 	);
 
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
+	const analyticsModuleConnected = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return null;
+		}
+		return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+	} );
 
-	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
-	);
+	const adSenseModuleConnected = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return null;
+		}
+		return select( CORE_MODULES ).isModuleConnected( 'adsense' );
+	} );
 
-	const canViewSharedAnalytics = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
-	);
-	const canViewSharedAdSense = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'adsense' )
-	);
+	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return null;
+		}
+		return select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' );
+	} );
+	const canViewSharedAdSense = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return null;
+		}
+		return select( CORE_USER ).hasAccessToShareableModule( 'adsense' );
+	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return null;
+		}
+
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
@@ -118,10 +134,8 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	useEffect( () => {
 		if ( shouldShowNotification && ! isShowingNotification ) {
-			// It is safe to trigger current overlay notification with check for
-			// `isShowingCurrentOverlayNotification`, without checking if any overlay
-			// notification is showing instead, because `setOverlayNotificationToShow`
-			// action will not show it if another overlay notification is already showing.
+			// If the conditions to show this notification are met AND no other
+			// notifications are showing, show this notification.
 			setOverlayNotificationToShow(
 				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
 			);
