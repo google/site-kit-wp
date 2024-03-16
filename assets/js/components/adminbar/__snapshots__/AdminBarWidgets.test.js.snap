@@ -225,7 +225,7 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
             See how many people visit your site from Search and track how you’re achieving your goals
           </p>
           <button
-            class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+            class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__right mdc-button--raised"
             target="_self"
           >
             <span

@@ -198,7 +198,7 @@ exports[`SetupForm renders the form correctly when setup flow mode is GA4 1`] = 
       class="googlesitekit-setup-module__action"
     >
       <button
-        class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+        class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__right mdc-button--raised"
         target="_self"
       >
         <span
