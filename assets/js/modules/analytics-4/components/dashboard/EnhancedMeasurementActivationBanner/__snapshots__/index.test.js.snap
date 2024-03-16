@@ -146,7 +146,7 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
             class="googlesitekit-publisher-win__actions"
           >
             <button
-              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__right mdc-button--raised"
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               target="_self"
             >
               <span

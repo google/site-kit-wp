@@ -62,7 +62,7 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
             class="googlesitekit-publisher-win__actions"
           >
             <button
-              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__right mdc-button--raised"
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               target="_self"
             >
               <span
@@ -160,7 +160,7 @@ exports[`SetupBanner should render correctly when the user does not have the edi
             class="googlesitekit-publisher-win__actions"
           >
             <button
-              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__right mdc-button--raised"
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               target="_self"
             >
               <span
