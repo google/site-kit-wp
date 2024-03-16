@@ -1,7 +1,7 @@
 /**
- * GA4 styles.
+ * OverlayNotification component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,25 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-analytics-4-reminder-banner";
-@import "googlesitekit-analytics-4-setup-banner";
-@import "googlesitekit-analytics-settings-module";
-@import "googlesitekit-analytics-setup-module";
-@import "googlesitekit-analytics-enhanced-measurement";
-@import "audience-segmentation/googlesitekit-audience-segmentation-setup-cta";
-@import "audience-segmentation/googlesitekit-audience-segmentation-info-notice";
+/**
+ * External dependencies
+ */
+import { Slide } from '@material-ui/core';
+
+export default function OverlayNotification( {
+	animateNotification,
+	handleAnimationOnExited,
+	children,
+} ) {
+	return (
+		<Slide
+			direction="up"
+			in={ animateNotification }
+			onExited={ handleAnimationOnExited }
+		>
+			<div className="googlesitekit-overlay-notification">
+				{ children }
+			</div>
+		</Slide>
+	);
+}
