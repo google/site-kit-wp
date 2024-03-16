@@ -26,12 +26,16 @@ import classnames from 'classnames';
 import Button from './Button';
 import CircularProgress from './CircularProgress';
 
+export const SPINNER_POSITION = {
+	BEFORE: 'before',
+	AFTER: 'after',
+};
 export default function SpinnerButton( props ) {
 	const {
 		className,
 		onClick = () => {},
 		isSaving = false,
-		spinnerOnLeft = false,
+		spinnerPosition = SPINNER_POSITION.AFTER,
 		...restProps
 	} = props;
 
@@ -42,18 +46,19 @@ export default function SpinnerButton( props ) {
 				'googlesitekit-button-icon--spinner',
 				{
 					'googlesitekit-button-icon--spinner__running': isSaving,
-					'googlesitekit-button-icon--spinner__left': spinnerOnLeft,
-					'googlesitekit-button-icon--spinner__right':
-						! spinnerOnLeft,
+					'googlesitekit-button-icon--spinner__before':
+						spinnerPosition === SPINNER_POSITION.BEFORE,
+					'googlesitekit-button-icon--spinner__after':
+						spinnerPosition === SPINNER_POSITION.AFTER,
 				}
 			) }
 			icon={
-				spinnerOnLeft && isSaving ? (
+				isSaving && spinnerPosition === SPINNER_POSITION.BEFORE ? (
 					<CircularProgress size={ 14 } />
 				) : undefined
 			}
 			trailingIcon={
-				! spinnerOnLeft && isSaving ? (
+				isSaving && spinnerPosition === SPINNER_POSITION.AFTER ? (
 					<CircularProgress size={ 14 } />
 				) : undefined
 			}
@@ -67,5 +72,5 @@ SpinnerButton.propTypes = {
 	className: PropTypes.string,
 	onClick: PropTypes.func,
 	isSaving: PropTypes.bool,
-	spinnerOnLeft: PropTypes.bool,
+	spinnerPosition: PropTypes.oneOf( Object.values( SPINNER_POSITION ) ),
 };
