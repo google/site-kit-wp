@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SettingsNotice, {
 	TYPE_INFO,
@@ -43,7 +44,7 @@ export default function AdsConversionIDSettingsNotice() {
 	return (
 		<SettingsNotice
 			className="googlesitekit-settings-analytics-ads-conversion-id-notice"
-			dismiss="SOMETHING"
+			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
 			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 			type={ TYPE_INFO }
 			Icon={ InfoCircleIcon }

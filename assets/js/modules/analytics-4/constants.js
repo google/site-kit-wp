@@ -50,3 +50,6 @@ export const KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY =
  * @see UA_CUTOFF_DATE.
  */
 export const GA4_AUTO_SWITCH_DATE = '2023-09-25';
+
+export const ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY =
+	'ads-conversion-id-notice-dismissed-item';
