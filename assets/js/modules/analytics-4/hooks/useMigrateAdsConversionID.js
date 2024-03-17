@@ -50,6 +50,9 @@ export default function useMigrateAdsConversionID() {
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isDoingSubmitChanges()
 	);
+	const adsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'ads' )
+	);
 	const adsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'ads' )
 	);
@@ -57,7 +60,7 @@ export default function useMigrateAdsConversionID() {
 		select( CORE_MODULES ).isModuleConnected( 'ads' )
 	);
 
-	const { activateModule } = useDispatch( CORE_MODULES );
+	const { activateModule, fetchGetModules } = useDispatch( CORE_MODULES );
 	const { setAdsConversionID, submitChanges: submitAdsChanges } =
 		useDispatch( MODULES_ADS );
 	const {
@@ -68,7 +71,12 @@ export default function useMigrateAdsConversionID() {
 
 	useEffect( () => {
 		const migrate = async () => {
-			if ( isDoingSubmitChanges || loading || adsModuleConnected ) {
+			if (
+				isDoingSubmitChanges ||
+				loading ||
+				! adsModuleAvailable ||
+				adsModuleConnected
+			) {
 				return;
 			}
 
@@ -79,16 +87,22 @@ export default function useMigrateAdsConversionID() {
 			if ( legacyAdsConversionID ) {
 				setLoading( true );
 
-				if ( ! adsModuleActive ) {
-					await activateModule( 'ads' );
-				}
-
 				await setAdsConversionID( legacyAdsConversionID );
 				await submitAdsChanges();
 
 				await setLegacyAdsConversionID( '' );
 				await setAdsConversionIDMigratedAtMs( Date.now() );
 				await submitAnalyticsChanges();
+
+				// Activate the module after the migration so that it appears
+				// connected immediately.
+				if ( ! adsModuleActive ) {
+					await activateModule( 'ads' );
+
+					// Refresh modules from server to make Ads appear in the list
+					// of connected modules immediately after activation.
+					await fetchGetModules();
+				}
 
 				setLoading( false );
 			}
@@ -99,7 +113,9 @@ export default function useMigrateAdsConversionID() {
 		activateModule,
 		adsConversionID,
 		adsModuleActive,
+		adsModuleAvailable,
 		adsModuleConnected,
+		fetchGetModules,
 		isDoingSubmitChanges,
 		legacyAdsConversionID,
 		loading,
