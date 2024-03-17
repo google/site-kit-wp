@@ -26,23 +26,14 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
-	const useSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getUseSnippet()
-	);
-
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getTrackingDisabled() || []
-	);
-
-	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
 
 	return (
@@ -76,23 +67,6 @@ export default function OptionalSettingsView() {
 			</div>
 
 			<AdsConversionIDSettingsNotice />
-
-			{ useSnippet && (
-				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ !! adsConversionID && (
-								<DisplaySetting value={ adsConversionID } />
-							) }
-							{ ! adsConversionID &&
-								__( 'None', 'google-site-kit' ) }
-						</p>
-					</div>
-				</div>
-			) }
 		</Fragment>
 	);
 }

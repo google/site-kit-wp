@@ -30,9 +30,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { AdsConversionIDTextField, TrackingExclusionSwitches } from '../common';
+import { TrackingExclusionSwitches } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsControls from './SettingsControls';
+import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
 const { useSelect } = Data;
@@ -49,7 +50,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
 					<TrackingExclusionSwitches />
-					<AdsConversionIDTextField />
+					<AdsConversionIDSettingsNotice />
 				</Fragment>
 			) }
 
