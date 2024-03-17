@@ -53,6 +53,9 @@ export default function useMigrateAdsConversionID() {
 	const adsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'ads' )
 	);
+	const adsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'ads' )
+	);
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setAdsConversionID, submitChanges: submitAdsChanges } =
@@ -64,7 +67,7 @@ export default function useMigrateAdsConversionID() {
 
 	useEffect( () => {
 		const migrate = async () => {
-			if ( isDoingSubmitChanges || loading ) {
+			if ( isDoingSubmitChanges || loading || adsModuleConnected ) {
 				return;
 			}
 
@@ -94,6 +97,7 @@ export default function useMigrateAdsConversionID() {
 		activateModule,
 		adsConversionID,
 		adsModuleActive,
+		adsModuleConnected,
 		isDoingSubmitChanges,
 		legacyAdsConversionID,
 		loading,
