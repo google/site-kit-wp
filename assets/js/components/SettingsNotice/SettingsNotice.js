@@ -117,6 +117,7 @@ SettingsNotice.propTypes = {
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
 	OuterCTA: PropTypes.elementType,
+	dismissLabel: PropTypes.string,
 };
 
 SettingsNotice.defaultProps = {
