@@ -62,6 +62,7 @@ export default function useMigrateAdsConversionID() {
 		useDispatch( MODULES_ADS );
 	const {
 		setAdsConversionID: setLegacyAdsConversionID,
+		setAdsConversionIDMigratedAtMs,
 		submitChanges: submitAnalyticsChanges,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
@@ -86,6 +87,7 @@ export default function useMigrateAdsConversionID() {
 				await submitAdsChanges();
 
 				await setLegacyAdsConversionID( '' );
+				await setAdsConversionIDMigratedAtMs( Date.now() );
 				await submitAnalyticsChanges();
 
 				setLoading( false );
@@ -102,6 +104,7 @@ export default function useMigrateAdsConversionID() {
 		legacyAdsConversionID,
 		loading,
 		setAdsConversionID,
+		setAdsConversionIDMigratedAtMs,
 		setLegacyAdsConversionID,
 		submitAdsChanges,
 		submitAnalyticsChanges,

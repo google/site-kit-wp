@@ -28,6 +28,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '../../../../util';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
@@ -40,6 +42,18 @@ export default function AdsConversionIDSettingsNotice() {
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
+	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
+	);
+
+	// If it has been more than 28 days since the migration, do not show
+	// the notice.
+	if (
+		Date.now() - adsConversionIDMigratedAtMs >
+		28 * DAY_IN_SECONDS * 1000
+	) {
+		return null;
+	}
 
 	return (
 		<SettingsNotice
