@@ -149,6 +149,7 @@
 @import "components/dashboard/googlesitekit-entity-dashboard";
 @import "components/dashboard/googlesitekit-DashboardPageSpeed";
 @import "components/dashboard/googlesitekit-ReportMetric";
+@import "components/dashboard/googlesitekit-subtle-notification";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -159,6 +160,9 @@
 @import "components/dashboard/wizard/googlesitekit-wizard-progress";
 @import "components/dashboard/wizard/googlesitekit-wizard-progress-step";
 @import "components/dashboard/wizard/googlesitekit-wizard-step";
+
+// Consent Mode
+@import "components/consent-mode/googlesitekit-consent-mode-setup-cta";
 
 // Key Metrics
 @import "components/key-metrics/googlesitekit-key-metrics-setup-cta";
@@ -172,6 +176,7 @@
 
 // Settings
 @import "components/settings/googlesitekit-settings-connect-module";
+@import "components/settings/googlesitekit-settings-consent-mode";
 @import "components/settings/googlesitekit-settings-meta";
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-module-warning";
@@ -201,6 +206,9 @@
 
 // User Feedback
 @import "components/surveys";
+
+// Overlay Notification
+@import "components/overlay-notification/googlesitekit-overlay-notification";
 
 // Widget Styles
 @import "widgets/widget-area";

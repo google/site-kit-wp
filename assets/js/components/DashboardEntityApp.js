@@ -56,12 +56,14 @@ import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
 import EntityBannerNotifications from './notifications/EntityBannerNotifications';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
+import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
@@ -205,6 +207,7 @@ function DashboardEntityApp() {
 						</Cell>
 					</Row>
 				</Grid>
+
 				<OfflineNotification />
 			</div>
 		);
@@ -218,6 +221,7 @@ function DashboardEntityApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
+			<ConsentModeSetupCTAWidget />
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
@@ -250,6 +254,9 @@ function DashboardEntityApp() {
 						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
 				} ) }
 			/>
+
+			<OverlayNotificationsRenderer />
+
 			<OfflineNotification />
 		</Fragment>
 	);

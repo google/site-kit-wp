@@ -48,6 +48,7 @@ import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
+import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
@@ -72,6 +73,7 @@ import {
 } from '../modules/analytics-4/datastore/constants';
 import { EDIT_SCOPE } from '../modules/analytics/datastore/constants';
 import OfflineNotification from './notifications/OfflineNotification';
+import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 const { useSelect, useDispatch } = Data;
 
@@ -246,6 +248,7 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
+			<ConsentModeSetupCTAWidget />
 			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
@@ -297,6 +300,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			<MetricsSelectionPanel />
+
+			<OverlayNotificationsRenderer />
 
 			<OfflineNotification />
 		</Fragment>

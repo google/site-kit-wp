@@ -36,14 +36,12 @@ import {
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import defaultModules, * as modulesFixtures from '../../../googlesitekit/modules/datastore/__fixtures__';
+import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
 	accountBuilder,
 	containerBuilder,
 	buildAccountWithContainers,
-	buildLiveContainerVersionWeb,
-	buildLiveContainerVersionAMP,
 } from './__factories__';
 import {
 	createTestRegistry,
@@ -54,13 +52,9 @@ import {
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import fetchMock from 'fetch-mock';
-import {
-	parseLiveContainerVersionIDs,
-	createBuildAndReceivers,
-} from './__factories__/utils';
+import { createBuildAndReceivers } from './__factories__/utils';
 import { getNormalizedContainerName } from '../util';
 import {
-	INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH,
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_AMP_CONTAINER_SELECTION,
 	INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID,
@@ -694,68 +688,6 @@ describe( 'modules/tagmanager settings', () => {
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( false );
 				} );
-
-				it( 'requires Analytics propertyID setting to match the propertyID in the web container', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
-					registry
-						.dispatch( CORE_MODULES )
-						.receiveGetModules( modules );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.receiveGetSettings( { propertyID: '' } );
-					const liveContainerVersion = buildLiveContainerVersionWeb( {
-						propertyID: 'UA-12345-1',
-					} );
-					parseLiveContainerVersionIDs(
-						liveContainerVersion,
-						( { accountID, containerID, internalContainerID } ) => {
-							registry
-								.dispatch( MODULES_TAGMANAGER )
-								.setSettings( {
-									...validSettings,
-									accountID,
-									containerID,
-									internalContainerID,
-								} );
-							registry
-								.dispatch( MODULES_TAGMANAGER )
-								.receiveGetLiveContainerVersion(
-									liveContainerVersion,
-									{ accountID, internalContainerID }
-								);
-						}
-					);
-
-					// No property ID set in Analytics
-					registry
-						.select( MODULES_TAGMANAGER )
-						.__dangerousCanSubmitChanges();
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-					// Matching property ID in Analytics and GTM
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setPropertyID( 'UA-12345-1' );
-					registry
-						.select( MODULES_TAGMANAGER )
-						.__dangerousCanSubmitChanges();
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-					// Non-matching property IDs
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setPropertyID( 'UA-99999-9' );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
-				} );
 			} );
 
 			describe( 'with primary AMP', () => {
@@ -954,73 +886,6 @@ describe( 'modules/tagmanager settings', () => {
 							.select( MODULES_TAGMANAGER )
 							.__dangerousCanSubmitChanges()
 					).toThrow( INVARIANT_INVALID_ACCOUNT_ID );
-				} );
-
-				it( 'requires Analytics propertyID setting to match the propertyID in the AMP container', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
-					registry
-						.dispatch( CORE_MODULES )
-						.receiveGetModules( modules );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.receiveGetSettings( { propertyID: '' } );
-					const liveContainerVersion = buildLiveContainerVersionAMP( {
-						propertyID: 'UA-12345-1',
-					} );
-					parseLiveContainerVersionIDs(
-						liveContainerVersion,
-						( {
-							accountID,
-							internalContainerID,
-							ampContainerID,
-							internalAMPContainerID,
-						} ) => {
-							registry
-								.dispatch( MODULES_TAGMANAGER )
-								.setSettings( {
-									...validSettings,
-									accountID,
-									ampContainerID,
-									internalAMPContainerID,
-								} );
-							registry
-								.dispatch( MODULES_TAGMANAGER )
-								.receiveGetLiveContainerVersion(
-									liveContainerVersion,
-									{ accountID, internalContainerID }
-								);
-						}
-					);
-
-					// No property ID set in Analytics
-					registry
-						.select( MODULES_TAGMANAGER )
-						.__dangerousCanSubmitChanges();
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-					// Matching property ID in Analytics and GTM
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setPropertyID( 'UA-12345-1' );
-					registry
-						.select( MODULES_TAGMANAGER )
-						.__dangerousCanSubmitChanges();
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-					// Non-matching property IDs
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setPropertyID( 'UA-99999-9' );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
 				} );
 			} );
 
@@ -1328,57 +1193,6 @@ describe( 'modules/tagmanager settings', () => {
 					expect(
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( true );
-				} );
-
-				it( 'requires Analytics propertyID setting to match the propertyID in both containers', () => {
-					const modules = modulesFixtures.withActive( 'analytics' );
-					registry
-						.dispatch( CORE_MODULES )
-						.receiveGetModules( modules );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.receiveGetSettings( { propertyID: '' } );
-					const { buildAndReceiveWebAndAMP } =
-						createBuildAndReceivers( registry );
-					buildAndReceiveWebAndAMP( {
-						webPropertyID: 'UA-12345-1',
-						ampPropertyID: 'UA-12345-1',
-					} );
-
-					// This test only checks matching between the singular propertyID in containers
-					// and the Analytics propertyID setting. This is because the check for
-					// multiple property IDs (non-matching IDs between containers) happens before this
-					// and results in a different validation error (see above).
-
-					// No property ID set in Analytics
-					registry
-						.select( MODULES_TAGMANAGER )
-						.__dangerousCanSubmitChanges();
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-					// Matching property ID in Analytics and GTM
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setPropertyID( 'UA-12345-1' );
-					registry
-						.select( MODULES_TAGMANAGER )
-						.__dangerousCanSubmitChanges();
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-					// Non-matching property IDs
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.setPropertyID( 'UA-99999-9' );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
 				} );
 			} );
 		} );

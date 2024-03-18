@@ -170,7 +170,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Returns keys for view-only settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.122.0
 	 *
 	 * @return array An array of keys for view-only settings.
 	 */

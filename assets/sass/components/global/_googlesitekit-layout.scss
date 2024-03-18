@@ -26,6 +26,9 @@
 	}
 
 	.googlesitekit-layout__header-title {
+		align-items: center;
+		display: flex;
+		gap: $grid-gap-phone;
 		margin: 0;
 	}
 

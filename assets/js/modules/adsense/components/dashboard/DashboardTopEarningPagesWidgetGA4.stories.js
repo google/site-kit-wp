@@ -27,16 +27,21 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+import {
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '../../../analytics-4/utils/data-mock';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 
 const adSenseAccountID = 'pub-1234567890';
 
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: [ 'pageTitle', 'pagePath', 'adSourceName' ],
+	dimensions: [ 'pagePath', 'adSourceName' ],
 	metrics: [ { name: 'totalAdRevenue' } ],
 	filter: {
 		fieldName: 'adSourceName',
@@ -45,8 +50,23 @@ const reportOptions = {
 			value: `Google AdSense account (${ adSenseAccountID })`,
 		},
 	},
-	orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
+	orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 	limit: 5,
+};
+
+const pageTitlesReportOptions = {
+	startDate: '2020-08-11',
+	endDate: '2020-09-07',
+	dimensionFilters: {
+		pagePath: new Array( 5 )
+			.fill( '' )
+			.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+			.sort(),
+	},
+	dimensions: [ 'pagePath', 'pageTitle' ],
+	metrics: [ { name: 'screenPageViews' } ],
+	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+	limit: 25,
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -60,6 +80,20 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.args = {
 	setupRegistry: ( registry ) => {
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
@@ -81,10 +115,18 @@ Loading.storyName = 'Loading';
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{},
+			{
+				options: pageTitlesReportOptions,
+			}
+		);
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( [], { options: reportOptions } );
+			.receiveGetReport( {}, { options: reportOptions } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 	},
 };
 DataUnavailable.storyName = 'Data Unavailable';
@@ -95,9 +137,20 @@ DataUnavailable.scenario = {
 export const ZeroData = Template.bind( {} );
 ZeroData.args = {
 	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{},
+			{
+				options: pageTitlesReportOptions,
+			}
+		);
+
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( [], { options: reportOptions } );
+			.receiveGetReport( zeroReport, { options: reportOptions } );
 	},
 };
 ZeroData.storyName = 'Zero Data';
