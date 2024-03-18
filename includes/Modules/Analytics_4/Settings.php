@@ -168,6 +168,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 						$option['adSenseLinkedLastSyncedAt'] = 0;
 					}
 				}
+
+				if ( isset( $option['adsConversionIDMigratedAtMs'] ) ) {
+					if ( ! is_int( $option['adsConversionIDMigratedAtMs'] ) ) {
+						$option['adsConversionIDMigratedAtMs'] = 0;
+					}
+				}
 			}
 
 			return $option;
