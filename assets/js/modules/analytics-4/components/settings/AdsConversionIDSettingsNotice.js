@@ -1,5 +1,5 @@
 /**
- * Ads Conversion ID Settings Notice component.
+ * AdsConversionIDSettingsNotice component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -45,6 +45,11 @@ export default function AdsConversionIDSettingsNotice() {
 	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
 	);
+
+	// Do not show the notice if the migration has not been performed yet.
+	if ( ! adsConversionIDMigratedAtMs ) {
+		return null;
+	}
 
 	// If it has been more than 28 days since the migration, do not show
 	// the notice.
