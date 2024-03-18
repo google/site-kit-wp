@@ -20,15 +20,11 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	// freezeFetch,
-	// muteFetch,
+	freezeFetch,
 	provideModules,
-	// provideSiteInfo,
-	// provideUserAuthentication,
-	// provideUserInfo,
 	unsubscribeFromAll,
-	// untilResolved,
-	// waitForDefaultTimeouts,
+	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 
@@ -210,6 +206,196 @@ describe( 'core/user key metrics', () => {
 				} );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getAudienceSettings', () => {
+			it( 'should return undefined while audience settings are loading', async () => {
+				freezeFetch( audienceSettingsEndpoint );
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should not make a network request if audience settings exist', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( audienceSettingsResponse );
+
+				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAudienceSettings();
+
+				expect( fetchMock ).not.toHaveFetched(
+					audienceSettingsEndpoint
+				);
+			} );
+
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAudienceSettings();
+
+				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
+					body: {
+						settings: audienceSettingsResponse,
+					},
+				} );
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+				).toMatchObject( audienceSettingsResponse );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+
+		describe( 'getConfiguredAudiences', () => {
+			it( 'should return undefined while audience settings are loading', async () => {
+				freezeFetch( audienceSettingsEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAudienceSettings();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual( audienceSettingsResponse.configuredAudiences );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should return the configured audiences from the audience settings', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( audienceSettingsResponse );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual( audienceSettingsResponse.configuredAudiences );
+			} );
+		} );
+
+		describe( 'isAudienceSegmentationWidgetHidden', () => {
+			it( 'should return undefined while audience settings are loading', async () => {
+				freezeFetch( audienceSettingsEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceSegmentationWidgetHidden()
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceSegmentationWidgetHidden()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAudienceSettings();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceSegmentationWidgetHidden()
+				).toEqual(
+					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( audienceSettingsResponse );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceSegmentationWidgetHidden()
+				).toEqual(
+					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
+				);
+			} );
+		} );
+
+		describe( 'haveConfiguredAudiencesChanged', () => {
+			it( 'should compare the current configured audiences with the saved ones', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( audienceSettingsResponse );
+
+				const hasChanged = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConfiguredAudiencesChanged();
+
+				expect( hasChanged ).toBe( false );
+
+				// Change the settings.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setConfiguredAudiences( [ 'audienceC' ] );
+
+				const hasChangedAfterSet = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConfiguredAudiencesChanged();
+
+				expect( hasChangedAfterSet ).toBe( true );
 			} );
 		} );
 	} );
