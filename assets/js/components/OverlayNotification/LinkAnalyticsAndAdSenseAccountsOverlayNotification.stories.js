@@ -24,6 +24,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
@@ -33,6 +34,9 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+};
 Default.scenario = {
 	label: 'Components/LinkAnalyticsAndAdSenseAccountsOverlayNotification',
 };
@@ -40,7 +44,9 @@ Default.scenario = {
 export default {
 	title: 'Components/LinkAnalyticsAndAdSenseAccountsOverlayNotification',
 	component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
-	parameters: { features: [ 'ga4AdSenseIntegration' ] },
+	parameters: {
+		features: [ 'ga4AdSenseIntegration' ],
+	},
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
@@ -65,7 +71,7 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithRegistrySetup func={ setupRegistry } v>
 					<Story />
 				</WithRegistrySetup>
 			);
