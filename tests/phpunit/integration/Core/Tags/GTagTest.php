@@ -75,17 +75,6 @@ class GTagTest extends TestCase {
 		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_1 . '");', $script->extra['after'][4] );
 	}
 
-	public function test_gtag_script_contains_gtag_command() {
-		$gtag_test_command = array( 'bar' => 'far' );
-		$this->gtag->add_command( 'foo', $gtag_test_command );
-
-		$scripts = wp_scripts();
-		$script  = $scripts->registered[ GTag::HANDLE ];
-
-		// Assert the array of inline script data contains the necessary gtag config line.
-		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_1 . '");', $script->extra['after'][4] );
-	}
-
 	public function test_gtag_script_commands() {
 		$scripts = wp_scripts();
 		$script  = $scripts->registered[ GTag::HANDLE ];
