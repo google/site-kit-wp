@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { MODULES_ADS } from '../../ads/datastore/constants';
+import { useFeature } from '../../../hooks/useFeature';
 
 const { useSelect, useDispatch } = Data;
 
@@ -41,11 +42,14 @@ const { useSelect, useDispatch } = Data;
 export default function useMigrateAdsConversionID() {
 	const [ loading, setLoading ] = useState( false );
 
+	const adsModuleEnabled = useFeature( 'adsModule' );
+
 	const legacyAdsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
-	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ADS ).getAdsConversionID()
+	const adsConversionID = useSelect(
+		( select ) =>
+			adsModuleEnabled && select( MODULES_ADS ).getAdsConversionID()
 	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isDoingSubmitChanges()
@@ -61,51 +65,49 @@ export default function useMigrateAdsConversionID() {
 	);
 
 	const { activateModule, fetchGetModules } = useDispatch( CORE_MODULES );
-	const { setAdsConversionID, submitChanges: submitAdsChanges } =
-		useDispatch( MODULES_ADS );
 	const {
 		setAdsConversionID: setLegacyAdsConversionID,
 		setAdsConversionIDMigratedAtMs,
 		submitChanges: submitAnalyticsChanges,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
+	// TODO: Destructure actions here when the `adsModule` feature flag is removed.
+	const dispatch = useDispatch( MODULES_ADS );
+
 	useEffect( () => {
+		if (
+			! adsModuleEnabled ||
+			isDoingSubmitChanges ||
+			loading ||
+			! adsModuleAvailable ||
+			adsModuleConnected ||
+			adsConversionID ||
+			! legacyAdsConversionID
+		) {
+			return;
+		}
+
 		const migrate = async () => {
-			if (
-				isDoingSubmitChanges ||
-				loading ||
-				! adsModuleAvailable ||
-				adsModuleConnected
-			) {
-				return;
+			setLoading( true );
+
+			await dispatch.setAdsConversionID( legacyAdsConversionID );
+			await dispatch.submitChanges();
+
+			await setLegacyAdsConversionID( '' );
+			await setAdsConversionIDMigratedAtMs( Date.now() );
+			await submitAnalyticsChanges();
+
+			// Activate the module after the migration so that it appears
+			// connected immediately.
+			if ( ! adsModuleActive ) {
+				await activateModule( 'ads' );
+
+				// Refresh modules from server to make Ads appear in the list
+				// of connected modules immediately after activation.
+				await fetchGetModules();
 			}
 
-			if ( adsConversionID ) {
-				return;
-			}
-
-			if ( legacyAdsConversionID ) {
-				setLoading( true );
-
-				await setAdsConversionID( legacyAdsConversionID );
-				await submitAdsChanges();
-
-				await setLegacyAdsConversionID( '' );
-				await setAdsConversionIDMigratedAtMs( Date.now() );
-				await submitAnalyticsChanges();
-
-				// Activate the module after the migration so that it appears
-				// connected immediately.
-				if ( ! adsModuleActive ) {
-					await activateModule( 'ads' );
-
-					// Refresh modules from server to make Ads appear in the list
-					// of connected modules immediately after activation.
-					await fetchGetModules();
-				}
-
-				setLoading( false );
-			}
+			setLoading( false );
 		};
 
 		migrate();
@@ -115,14 +117,14 @@ export default function useMigrateAdsConversionID() {
 		adsModuleActive,
 		adsModuleAvailable,
 		adsModuleConnected,
+		adsModuleEnabled,
+		dispatch,
 		fetchGetModules,
 		isDoingSubmitChanges,
 		legacyAdsConversionID,
 		loading,
-		setAdsConversionID,
 		setAdsConversionIDMigratedAtMs,
 		setLegacyAdsConversionID,
-		submitAdsChanges,
 		submitAnalyticsChanges,
 	] );
 
