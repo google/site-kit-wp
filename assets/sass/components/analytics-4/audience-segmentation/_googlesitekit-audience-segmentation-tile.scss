@@ -102,35 +102,9 @@
 			&.googlesitekit-audience-segmentation-tile__top-content-metric {
 
 				.googlesitekit-audience-segmentation-tile__metric-title {
-
 					height: 36px;
 					line-height: 28px;
 					padding: 4px 0;
-
-					// $c-golden-rod-yellow
-					.googlesitekit-audience-segmentation-tile__top-content-partial-data-badge {
-						background-color: $c-golden-rod-yellow;
-						border-radius: 14px;
-						color: $c-yellow-y-600;
-						display: block;
-						float: right;
-						font-size: $fs-label-sm;
-						font-weight: $fw-medium;
-						height: 28px;
-						letter-spacing: $ls-xs;
-						line-height: 14px;
-						padding: 6px 10px;
-
-						.googlesitekit-info-tooltip {
-							display: inline-block;
-							margin-left: 5px;
-							vertical-align: middle;
-						}
-
-						svg > path {
-							fill: $c-yellow-y-700;
-						}
-					}
 				}
 
 				.googlesitekit-audience-segmentation-tile__top-content-metric-page {

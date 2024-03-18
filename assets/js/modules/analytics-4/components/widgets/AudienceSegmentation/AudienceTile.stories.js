@@ -157,18 +157,6 @@ ReadyViewOnly.scenario = {
 	delay: 250,
 };
 
-export const PartialNoData = Template.bind( {} );
-PartialNoData.storyName = 'PartialNoData';
-PartialNoData.args = {
-	...ReadyProps,
-	topCities: null,
-	topContent: null,
-};
-PartialNoData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/PartialNoData',
-	delay: 250,
-};
-
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile',
 };

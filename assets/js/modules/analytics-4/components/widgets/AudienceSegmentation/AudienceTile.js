@@ -194,17 +194,6 @@ export default function AudienceTile( {
 				<div className="googlesitekit-audience-segmentation-tile__metric-container">
 					<div className="googlesitekit-audience-segmentation-tile__metric-title">
 						{ tileTitle }
-						{ topContentRows !== null && (
-							<div className="googlesitekit-audience-segmentation-tile__top-content-partial-data-badge">
-								{ __( 'Partial data', 'google-site-kit' ) }
-								<InfoTooltip
-									title={ __(
-										'Partial data tooltip', // TODO: This needs updating to the final tooltip copy is not in the Figma designs.
-										'google-site-kit'
-									) }
-								></InfoTooltip>
-							</div>
-						) }
 					</div>
 					<div className="googlesitekit-audience-segmentation-tile__metric-content">
 						{ topContentRows === null && <NoData /> }
