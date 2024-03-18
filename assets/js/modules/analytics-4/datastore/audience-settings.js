@@ -120,9 +120,11 @@ const baseActions = {
 			yield clearError( 'saveAudienceSettings', [] );
 
 			const registry = yield Data.commonActions.getRegistry();
-			const audienceSettings = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getAudienceSettings();
+			const audienceSettings = yield Data.commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getAudienceSettings()
+			);
 
 			const { response, error } =
 				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
@@ -281,17 +283,20 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Checks if the audience settings have changed from the saved settings.
+	 * Checks if the configured audiences have changed from the saved settings.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} True if settings have changed, otherwise false.
+	 * @return {boolean} True if configured audiences have changed, otherwise false.
 	 */
 	haveConfiguredAudiencesChanged( state ) {
 		const { settings, savedSettings } = state.audienceSettings || {};
 
-		return ! isEqual( settings, savedSettings );
+		return ! isEqual(
+			settings?.configuredAudiences,
+			savedSettings?.configuredAudiences
+		);
 	},
 };
 
