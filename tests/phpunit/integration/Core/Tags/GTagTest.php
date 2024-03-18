@@ -50,17 +50,17 @@ class GTagTest extends TestCase {
 	}
 
 	public function test_gtag_script_enqueue() {
-		$this->assertFalse( wp_script_is( $this->gtag::HANDLE ) );
+		$this->assertFalse( wp_script_is( GTag::HANDLE ) );
 
 		do_action( 'wp_enqueue_scripts' );
 
 		// Assert that the gtag script is enqueued.
-		$this->assertTrue( wp_script_is( $this->gtag::HANDLE ) );
+		$this->assertTrue( wp_script_is( GTag::HANDLE ) );
 	}
 
 	public function test_gtag_script_src() {
 		$scripts = wp_scripts();
-		$script  = $scripts->registered[ $this->gtag::HANDLE ];
+		$script  = $scripts->registered[ GTag::HANDLE ];
 
 		// Assert that the gtag script src is correct.
 		$this->assertEquals( 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_1, $script->src );
@@ -68,7 +68,7 @@ class GTagTest extends TestCase {
 
 	public function test_gtag_script_contains_gtag_call() {
 		$scripts = wp_scripts();
-		$script  = $scripts->registered[ $this->gtag::HANDLE ];
+		$script  = $scripts->registered[ GTag::HANDLE ];
 
 		// Assert the array of inline script data contains the necessary gtag config line.
 		// Should be in index 4, the first registered gtag.
@@ -80,7 +80,7 @@ class GTagTest extends TestCase {
 		$this->gtag->add_command( 'foo', $gtag_test_command );
 
 		$scripts = wp_scripts();
-		$script  = $scripts->registered[ $this->gtag::HANDLE ];
+		$script  = $scripts->registered[ GTag::HANDLE ];
 
 		// Assert the array of inline script data contains the necessary gtag config line.
 		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_1 . '");', $script->extra['after'][4] );
@@ -88,7 +88,7 @@ class GTagTest extends TestCase {
 
 	public function test_gtag_script_commands() {
 		$scripts = wp_scripts();
-		$script  = $scripts->registered[ $this->gtag::HANDLE ];
+		$script  = $scripts->registered[ GTag::HANDLE ];
 
 		// Test commands in the before position.
 		$this->assertEquals( sprintf( 'gtag(%s");', '"' . static::TEST_COMMAND_1 . '","' . implode( '","', static::TEST_COMMAND_1_PARAMS ) ), $script->extra['before'][1] );
@@ -102,12 +102,12 @@ class GTagTest extends TestCase {
 
 		// Remove already enqueued script to avoid duplication of output.
 		global $wp_scripts;
-		unset( $wp_scripts->registered[ $this->gtag::HANDLE ] );
+		unset( $wp_scripts->registered[ GTag::HANDLE ] );
 
 		do_action( 'wp_enqueue_scripts' );
 
 		$scripts = wp_scripts();
-		$script  = $scripts->registered[ $this->gtag::HANDLE ];
+		$script  = $scripts->registered[ GTag::HANDLE ];
 
 		// Assert the array of inline script data contains the necessary gtag entry for the second script.
 		// Should be in index 5, immediately after the first registered gtag.
