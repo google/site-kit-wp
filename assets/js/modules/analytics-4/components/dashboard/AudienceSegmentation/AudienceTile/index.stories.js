@@ -196,4 +196,6 @@ NoData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/NoData',
 };
 
-export default {};
+export default {
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile',
+};
