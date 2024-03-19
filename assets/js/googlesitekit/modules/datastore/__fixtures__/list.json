@@ -52,27 +52,6 @@
 		]
 	},
 	{
-		"slug": "analytics",
-		"name": "Analytics",
-		"description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
-		"homepage": "https://analytics.google.com/analytics/web",
-		"internal": false,
-		"order": 3,
-		"active": false,
-		"connected": false,
-		"dependencies": [],
-		"dependants": [ "analytics-4" ],
-		"owner": null,
-		"forceActive": false,
-		"shareable": true,
-		"recoverable": false,
-		"features": [
-			"Audience overview",
-			"Top pages",
-			"Top acquisition channels"
-		]
-	},
-	{
 		"slug": "pagespeed-insights",
 		"name": "PageSpeed Insights",
 		"description": "Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.",
@@ -108,14 +87,14 @@
 	},
 	{
 		"slug": "analytics-4",
-		"name": "Analytics 4",
+		"name": "Analytics",
 		"description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
 		"homepage": "https://analytics.google.com/analytics/web",
-		"internal": true,
-		"order": 7,
+		"internal": false,
+		"order": 3,
 		"active": false,
 		"connected": false,
-		"dependencies": [ "analytics" ],
+		"dependencies": [],
 		"dependants": [],
 		"owner": null,
 		"forceActive": false,

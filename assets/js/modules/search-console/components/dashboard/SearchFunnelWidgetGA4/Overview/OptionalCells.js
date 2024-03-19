@@ -101,7 +101,7 @@ export default function OptionalCells( {
 				analyticsModuleActiveAndConnected &&
 				showRecoverableGA4 && (
 					<Cell { ...halfCellProps }>
-						<RecoverableModules moduleSlugs={ [ 'analytics' ] } />
+						<RecoverableModules moduleSlugs={ [ 'analytics-4' ] } />
 					</Cell>
 				) }
 		</Fragment>

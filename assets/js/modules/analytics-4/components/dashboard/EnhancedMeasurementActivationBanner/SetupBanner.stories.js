@@ -21,7 +21,7 @@
  */
 import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
+import { EDIT_SCOPE } from '../../../datastore/constants';
 import SetupBanner from './SetupBanner';
 
 function Template( args ) {

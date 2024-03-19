@@ -92,7 +92,7 @@ describe( 'AdminBarWidgets', () => {
 			.dispatch( CORE_MODULES )
 			.receiveGetModules(
 				coreModulesFixture.filter(
-					( { slug } ) => slug !== 'analytics'
+					( { slug } ) => slug !== 'analytics-4'
 				)
 			);
 

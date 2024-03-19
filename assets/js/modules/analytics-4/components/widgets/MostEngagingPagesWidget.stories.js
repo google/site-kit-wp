@@ -39,7 +39,6 @@ import {
 } from '../../../../googlesitekit/constants';
 import MostEngagingPagesWidget from './MostEngagingPagesWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const pageViewsReportOptions = {
 	startDate: '2020-08-11',
@@ -258,6 +257,12 @@ ZeroData.args = {
 			options: pageViewsReportOptions,
 		} );
 
+		const averagePageViews =
+			Math.round(
+				pageViewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value /
+					pageViewsReport?.rowCount
+			) || 0;
+
 		const reportOptions = {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
@@ -277,7 +282,7 @@ ZeroData.args = {
 				screenPageViews: {
 					filterType: 'numericFilter',
 					operation: 'GREATER_THAN_OR_EQUAL',
-					value: { int64Value: 1 },
+					value: { int64Value: averagePageViews },
 				},
 			},
 			limit: 3,
@@ -379,7 +384,7 @@ export default {
 				];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

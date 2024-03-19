@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import parseDimensionStringToDate from '../../analytics/util/parseDimensionStringToDate';
+import parseDimensionStringToDate from './parseDimensionStringToDate';
 import { calculateChange, stringToDate } from '../../../util';
 
 /**

@@ -17,5 +17,4 @@
  */
 
 export { default as DashboardPopularKeywordsWidget } from './DashboardPopularKeywordsWidget';
-export { default as SearchFunnelWidget } from './SearchFunnelWidget';
 export { default as SearchFunnelWidgetGA4 } from './SearchFunnelWidgetGA4';
