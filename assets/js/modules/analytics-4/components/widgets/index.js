@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-export { default as AudienceSegmentation } from './AudienceSegmentation';
 export { default as ConnectGA4CTATileWidget } from './ConnectGA4CTATileWidget';
 export { default as ConnectGA4CTAWidget } from './ConnectGA4CTAWidget';
 export { default as EngagedTrafficSourceWidget } from './EngagedTrafficSourceWidget';

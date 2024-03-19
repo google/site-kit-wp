@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation widget components.
+ * AudienceTileNoData component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,5 +16,15 @@
  * limitations under the License.
  */
 
-// TODO: build the Audience Segmentation widget.
-export default {};
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+export default function AudienceTileNoData() {
+	return (
+		<div className="googlesitekit-audience-segmentation-tile__no-data">
+			{ __( 'No data to show yet', 'google-site-kit' ) }
+		</div>
+	);
+}

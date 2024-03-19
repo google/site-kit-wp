@@ -18,8 +18,9 @@
 
 .googlesitekit-plugin {
 	.googlesitekit-audience-segmentation-tile {
-		.googlesitekit-audience-segmentation-tile-header {
-			border-bottom: 1px solid $c-mercury;
+		.googlesitekit-audience-segmentation-tile__header {
+			border-bottom: 1px solid $c-utility-divider;
+			color: $c-surfaces-on-surface;
 			font-size: $fs-title-sm;
 			line-height: $lh-title-sm;
 			padding: 25px;
@@ -32,39 +33,49 @@
 			}
 		}
 
-		.googlesitekit-audience-segmentation-tile__metric {
-			border-bottom: 1px solid $c-mercury;
+		.googlesitekit-audience-segmentation-tile-metric {
+			border-bottom: 1px solid $c-utility-divider;
 			display: flex;
-			margin: 0 24px;
+			margin: 0 $grid-gap-phone;
 			padding: 12px 0;
+
+			@media (min-width: $width-desktop + 1 + px) {
+				margin: 0 $grid-gap-desktop;
+			}
 
 			&:last-child {
 				border-bottom: none;
 			}
 
-			.googlesitekit-audience-segmentation-tile__metric-icon {
+			.googlesitekit-audience-segmentation-tile-metric__icon {
 				height: 20px;
 				margin: 14px 19px 14px 15px;
+				min-width: 20px;
 				width: 20px;
+
+				@media (min-width: $width-desktop + 1 + px) {
+					margin-left: 15px;
+				}
 			}
-			.googlesitekit-audience-segmentation-tile__metric-container {
+			.googlesitekit-audience-segmentation-tile-metric__container {
 				flex-grow: 1;
 
-				.googlesitekit-audience-segmentation-tile__metric-value {
+				.googlesitekit-audience-segmentation-tile-metric__value {
+					color: $c-surfaces-on-surface;
 					font-size: $fs-headline-md;
 					font-weight: $fw-normal;
 					line-height: $lh-headline-md;
 				}
 
-				.googlesitekit-audience-segmentation-tile__metric-title {
-					color: $c-neutral-n-500;
-					font-size: $fs-title-sm;
+				.googlesitekit-audience-segmentation-tile-metric__title {
+					color: $c-surfaces-on-surface-variant;
+					font-size: $fs-body-md;
 					font-weight: $fw-normal;
-					line-height: $lh-title-sm;
+					line-height: $lh-body-md;
 				}
 			}
 
-			.googlesitekit-audience-segmentation-tile__metric-badge-container {
+			.googlesitekit-audience-segmentation-tile-metric__badge-container {
 				align-items: center;
 				display: flex;
 				flex-direction: row;
@@ -75,39 +86,52 @@
 			}
 
 			// Cities custom metric.
-			&.googlesitekit-audience-segmentation-tile__cities-metric .googlesitekit-audience-segmentation-tile__metric-content {
-				display: flex;
-				margin-top: 14px;
+			&.googlesitekit-audience-segmentation-tile-metric--cities {
+				.googlesitekit-audience-segmentation-tile-metric__container {
+					min-width: 0;
+				}
 
-				.googlesitekit-audience-segmentation-tile__cities-metric-city {
-					flex-grow: 1;
+				.googlesitekit-audience-segmentation-tile-metric__content {
+					display: flex;
+					margin-top: 14px;
 
-					.googlesitekit-audience-segmentation-tile__cities-metric-city-name {
-						color: $c-neutral-n-900;
-						font-size: $fs-title-sm;
-						font-weight: $fw-medium;
-						line-height: $lh-title-sm;
-					}
+					.googlesitekit-audience-segmentation-tile-metric__cities-metric {
+						flex: 1;
 
-					.googlesitekit-audience-segmentation-tile__cities-metric-city-value {
-						color: $c-neutral-n-900;
-						font-size: $fs-body-md;
-						font-weight: $fw-normal;
-						line-height: $lh-body-md;
+						margin-right: 16px;
+						min-width: 0;
+
+						.googlesitekit-audience-segmentation-tile-metric__cities-metric-name {
+							color: $c-surfaces-on-surface;
+							font-size: $fs-title-sm;
+							font-weight: $fw-medium;
+							line-height: $lh-title-sm;
+
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
+
+						.googlesitekit-audience-segmentation-tile-metric__cities-metric-value {
+							color: $c-surfaces-on-surface;
+							font-size: $fs-body-md;
+							font-weight: $fw-normal;
+							line-height: $lh-body-md;
+						}
 					}
 				}
 			}
 
 			// Top content custom metric.
-			&.googlesitekit-audience-segmentation-tile__top-content-metric {
+			&.googlesitekit-audience-segmentation-tile-metric--top-content {
 
-				.googlesitekit-audience-segmentation-tile__metric-title {
+				.googlesitekit-audience-segmentation-tile-metric__title {
 					height: 36px;
 					line-height: 28px;
 					padding: 4px 0;
 				}
 
-				.googlesitekit-audience-segmentation-tile__top-content-metric-page {
+				.googlesitekit-audience-segmentation-tile-metric__page-metric-container {
 					display: flex;
 					font-size: $fs-body-sm;
 					justify-content: space-between;
