@@ -221,7 +221,6 @@ const baseSelectors = {
 	 * Gets viewable module slugs of the current user.
 	 *
 	 * @since 1.72.0
-	 * @since 1.101.0 Filters out the duplicate module slugs if the user has both ‘analytics’ and ‘analytics-4’ and shows only one based on whether the user is viewing the GA4 dashboard.
 	 *
 	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
 	 */
@@ -236,10 +235,6 @@ const baseSelectors = {
 		// shareable and the user has the "read shared module data"
 		// capability for.
 		return Object.values( modules ).reduce( ( slugs, module ) => {
-			if ( module.slug === 'analytics' ) {
-				return slugs;
-			}
-
 			const hasCapability = select( CORE_USER ).hasCapability(
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				module.slug
@@ -304,14 +299,9 @@ const baseSelectors = {
 				return false;
 			}
 
-			let capabilityModuleSlug = module.slug;
-			if ( capabilityModuleSlug === 'analytics' ) {
-				capabilityModuleSlug = 'analytics-4';
-			}
-
 			return select( CORE_USER ).hasCapability(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				capabilityModuleSlug
+				module.slug
 			);
 		}
 	),

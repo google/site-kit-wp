@@ -244,7 +244,7 @@ HeaderViewOnly.args = {
 				},
 			},
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				owner: {
 					id: '3',
 					login: 'Admin 3',
@@ -265,7 +265,7 @@ HeaderViewOnly.args = {
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics'
+				'analytics-4'
 			) ]: true,
 		} );
 

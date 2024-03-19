@@ -36,12 +36,9 @@ import {
 	createTestRegistry,
 	provideModules,
 	fireEvent,
-	waitFor,
 	provideUserInfo,
 	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'Header', () => {
@@ -69,11 +66,6 @@ describe( 'Header', () => {
 
 		provideUserInfo( registry );
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'pagespeed-insights',
 				active: true,
@@ -112,59 +104,6 @@ describe( 'Header', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Complete setup for Tag Manager' );
-	} );
-
-	it( 'should render a button to connect GA4 if Analytics is connected but GA4 is not', () => {
-		registry.dispatch( MODULES_ANALYTICS ).setOwnerID( 1 );
-		const { queryByRole } = render( <Header slug="analytics" />, {
-			registry,
-		} );
-
-		const button = queryByRole( 'button' );
-		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveTextContent( 'Connect Google Analytics 4' );
-	} );
-
-	it( 'should not render the button to connect GA4 if Analytics is connected without access to it but GA4 is not', async () => {
-		registry.dispatch( MODULES_ANALYTICS ).setOwnerID( 99 );
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckModuleAccess(
-				{ access: false },
-				{ slug: 'analytics' }
-			);
-		const { container } = render( <Header slug="analytics" />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-module__status'
-				)
-			).toHaveTextContent( 'Google Analytics 4 is not connected' );
-		} );
-	} );
-
-	it( 'should render a GA4 not connected status if Analytics is connected without access to it but GA4 is not', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetSettings( { ownerID: 100 } );
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckModuleAccess(
-				{ access: false },
-				{ slug: 'analytics' }
-			);
-		const { queryByRole } = render( <Header slug="analytics" />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect(
-				queryByRole( 'button', { name: /connect google analytics 4/i } )
-			).not.toBeInTheDocument();
-		} );
 	} );
 
 	it( 'should open the tab when ENTER key is pressed', () => {

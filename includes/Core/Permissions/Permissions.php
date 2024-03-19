@@ -471,7 +471,7 @@ final class Permissions {
 			return $view_dashboard_capability;
 		}
 
-		if ( ! $this->user_has_shared_role_for_module( $user_id, 'analytics' ) &&
+		if ( ! $this->user_has_shared_role_for_module( $user_id, 'analytics-4' ) &&
 			! $this->user_has_shared_role_for_module( $user_id, 'search-console' ) ) {
 			return array( 'do_not_allow' );
 		}

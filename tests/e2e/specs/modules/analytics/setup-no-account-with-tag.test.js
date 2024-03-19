@@ -66,7 +66,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 			text: /connect more services/i,
 		} );
 		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics'
+			'.googlesitekit-settings-connect-module--analytics-4'
 		);
 	} );
 

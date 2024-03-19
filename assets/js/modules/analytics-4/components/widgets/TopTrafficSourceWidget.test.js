@@ -42,7 +42,6 @@ import {
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 import WidgetNull from '../../../../googlesitekit/widgets/components/WidgetNull';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 describe( 'TopTrafficSourceWidget', () => {
 	const { Widget } = getWidgetComponentProps(
@@ -150,9 +149,6 @@ describe( 'TopTrafficSourceWidget', () => {
 						},
 					] );
 					provideModuleRegistrations( registry );
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.receiveGetSettings( {} );
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetSettings( {} );
