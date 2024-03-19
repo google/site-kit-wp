@@ -42,7 +42,7 @@
 		&.googlesitekit-button-icon--spinner__before {
 			/**
 		 	 * TODO: Remove the fallback margin-{left|right} and html[dir="rtl"] specific
-			 * overrides from `.mdc-button__label` when the SASS version is updated.
+			 * overrides from `.mdc-button__label` when the SASS version is upgraded to 3.1 or up.
 			 * @see https://github.com/google/site-kit-wp/pull/8372#discussion_r1527263640
 			 */
 			.mdc-button__label {
@@ -58,7 +58,7 @@
 		&.googlesitekit-button-icon--spinner__after {
 			/**
 		 	 * TODO: Remove the fallback margin-{left|right} and html[dir="rtl"] specific
-			 * overrides from `.mdc-button__label` when the SASS version is updated.
+			 * overrides from `.mdc-button__label` when the SASS version is upgraded to 3.1 or up.
 			 * @see https://github.com/google/site-kit-wp/pull/8372#discussion_r1527263640
 			 */
 			/* stylelint-disable-next-line no-descending-specificity */
