@@ -160,7 +160,7 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, 'body content' ) );
 
-		$this->assertEquals( '<li><strong>Analytics 4</strong>: No tag detected.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics</strong>: No tag detected.</li>', $result );
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_by_sitekit() {
@@ -187,7 +187,7 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
-		$this->assertEquals( '<li><strong>Analytics 4</strong>: Tag detected and placed by Site Kit.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected and placed by Site Kit.</li>', $result );
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_no_sitekit_headers() {
@@ -213,6 +213,6 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
-		$this->assertEquals( '<li><strong>Analytics 4</strong>: Tag detected but could not verify that Site Kit placed the tag.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected but could not verify that Site Kit placed the tag.</li>', $result );
 	}
 }

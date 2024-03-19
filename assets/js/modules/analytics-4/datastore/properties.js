@@ -35,7 +35,6 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -45,11 +44,11 @@ import {
 import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
+	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
 } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
-import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 const { commonActions, createRegistryControl } = Data;
@@ -885,7 +884,8 @@ const baseSelectors = {
 				'getAccountSummaries'
 			) ||
 			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+			select( MODULES_ANALYTICS_4 ).hasFinishedSelectingAccount() ===
+				false
 		);
 	} ),
 };

@@ -46,6 +46,7 @@ const { useSelect } = Data;
 const scopeIDToSlug = {
 	siteverification: 'site-verification',
 	webmasters: 'search-console',
+	analytics: 'analytics-4',
 };
 const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';

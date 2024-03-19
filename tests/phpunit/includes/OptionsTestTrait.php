@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Util\Activation_Flag;
 use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Modules\AdSense;
-use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Tag_Manager;
 
@@ -29,7 +29,7 @@ trait OptionsTestTrait {
 			Activation_Flag::OPTION_NEW_SITE_POSTS,
 			Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE,
 			AdSense\Settings::OPTION,
-			Analytics\Settings::OPTION,
+			Analytics_4\Settings::OPTION,
 			Credentials::OPTION,
 			Search_Console\Settings::OPTION,
 			Tag_Manager\Settings::OPTION,

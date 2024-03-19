@@ -39,7 +39,7 @@ describe( 'Module activation', () => {
 	it( 'should prevent non active modules to be set up', async () => {
 		await visitAdminPage(
 			'admin.php',
-			'page=googlesitekit-dashboard&slug=analytics&reAuth=true'
+			'page=googlesitekit-dashboard&slug=analytics-4&reAuth=true'
 		);
 		await page.waitForSelector( '.googlesitekit-plugin' );
 		await expect( page ).toMatchElement( '.googlesitekit-notice', {

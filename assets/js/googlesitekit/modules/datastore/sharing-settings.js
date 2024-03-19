@@ -60,24 +60,6 @@ const baseInitialState = {
 	defaultSharedOwnershipModuleSettings: undefined,
 };
 
-const replicateSharingSettings = (
-	state,
-	destinationModuleSlug,
-	settingSlug,
-	setting
-) => {
-	return {
-		...state,
-		sharingSettings: {
-			...state.sharingSettings,
-			[ destinationModuleSlug ]: {
-				...state.sharingSettings[ destinationModuleSlug ],
-				[ settingSlug ]: setting,
-			},
-		},
-	};
-};
-
 const fetchSaveSharingSettingsStore = createFetchStore( {
 	baseName: 'saveSharingSettings',
 	controlCallback: ( { savedSharingSettings } ) => {
@@ -336,18 +318,6 @@ const baseReducer = ( state, { type, payload } ) => {
 		case SET_SHARING_MANAGEMENT: {
 			const { moduleSlug, management } = payload;
 
-			if ( moduleSlug === 'analytics' || moduleSlug === 'analytics-4' ) {
-				const destinationSlug =
-					moduleSlug === 'analytics' ? 'analytics-4' : 'analytics';
-
-				state = replicateSharingSettings(
-					state,
-					destinationSlug,
-					'management',
-					management
-				);
-			}
-
 			return {
 				...state,
 				sharingSettings: {
@@ -362,18 +332,6 @@ const baseReducer = ( state, { type, payload } ) => {
 
 		case SET_SHARED_ROLES: {
 			const { moduleSlug, roles } = payload;
-
-			if ( moduleSlug === 'analytics' || moduleSlug === 'analytics-4' ) {
-				const destinationSlug =
-					moduleSlug === 'analytics' ? 'analytics-4' : 'analytics';
-
-				state = replicateSharingSettings(
-					state,
-					destinationSlug,
-					'sharedRoles',
-					roles
-				);
-			}
 
 			return {
 				...state,
