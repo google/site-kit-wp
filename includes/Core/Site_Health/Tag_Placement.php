@@ -193,12 +193,6 @@ class Tag_Placement {
 		$active_modules = array_filter(
 			$active_modules,
 			function( $module ) {
-				// @TODO remove the check when Analytics module is removed.
-				// Temorary added to exclude analytics module in favor of analytics 4.
-				if ( 'analytics' === $module->slug ) {
-					return false;
-				}
-
 				return $module instanceof Module_With_Tag;
 			}
 		);

@@ -21,11 +21,11 @@
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
-	setupSearchConsoleAnalyticsZeroData,
+	setupSearchConsoleAnalytics4ZeroData,
 	setupSearchConsoleGatheringData,
 	setupSearchConsoleMockReports,
 	widgetDecorators,
-} from './common.stories';
+} from './common-GA4.stories';
 import AdminBarImpressions from './AdminBarImpressions';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
@@ -55,7 +55,7 @@ GatheringData.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+	setupRegistry: setupSearchConsoleAnalytics4ZeroData,
 };
 
 export default {

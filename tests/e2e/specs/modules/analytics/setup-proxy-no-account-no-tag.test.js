@@ -90,7 +90,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			text: /connect more services/i,
 		} );
 		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics'
+			'.googlesitekit-settings-connect-module--analytics-4'
 		);
 		await expect( page ).toClick( '.googlesitekit-cta-link', {
 			text: /set up analytics/i,

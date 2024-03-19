@@ -35,7 +35,6 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -1567,7 +1566,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideUserAuthentication( registry );
 				provideModules( registry );
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID,
 				} );
 
@@ -1634,10 +1633,10 @@ describe( 'modules/analytics-4 properties', () => {
 
 			it( 'should return true while selecting an account', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties( [], { accountID } );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getProperties', [ accountID ] );
 
 				registry
@@ -1657,7 +1656,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( false );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.selectAccount( accountID );
 
 				expect(

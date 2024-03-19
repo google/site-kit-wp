@@ -128,7 +128,7 @@ class AssetsTest extends TestCase {
 
 		$dismissed_items->add( 'shared_dashboard_splash', 0 );
 		$test_sharing_settings = array(
-			'analytics'      => array(
+			'analytics-4'    => array(
 				'sharedRoles' => array( 'contributor' ),
 				'management'  => 'all_admins',
 			),

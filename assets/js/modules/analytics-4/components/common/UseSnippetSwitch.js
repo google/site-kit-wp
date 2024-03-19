@@ -61,10 +61,7 @@ export default function UseSnippetSwitch( { description } ) {
 	return (
 		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
-				label={ __(
-					'Place Google Analytics 4 code',
-					'google-site-kit'
-				) }
+				label={ __( 'Place Google Analytics code', 'google-site-kit' ) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }

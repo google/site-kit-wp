@@ -6,7 +6,7 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
     class="mdc-layout-grid__inner"
   >
     <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-2-tablet"
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet"
     >
       <div
         class="googlesitekit-data-block overview-total-impressions googlesitekit-data-block--default"
@@ -46,7 +46,7 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
       </div>
     </div>
     <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-2-tablet"
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet"
     >
       <div
         class="googlesitekit-data-block overview-total-clicks googlesitekit-data-block--default"
@@ -225,7 +225,7 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
             See how many people visit your site from Search and track how you’re achieving your goals
           </p>
           <button
-            class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+            class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
             target="_self"
           >
             <span

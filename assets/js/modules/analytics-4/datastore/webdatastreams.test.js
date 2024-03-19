@@ -36,7 +36,6 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
@@ -777,7 +776,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID: 'UA-abcd',
 				} );
 				registry
@@ -922,10 +921,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				provideUserAuthentication( registry );
 				provideModules( registry );
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-					accountID,
-				} );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID,
 					propertyID,
 				} );
 				registry
@@ -1027,10 +1024,10 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 			it( 'should return true while selecting an account', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties( [], { accountID } );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getProperties', [ accountID ] );
 
 				registry
@@ -1050,7 +1047,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				).toBe( false );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.selectAccount( accountID );
 
 				expect(

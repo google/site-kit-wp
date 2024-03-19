@@ -27,11 +27,9 @@ import {
 } from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleMockReports,
-	setupSearchConsoleAnalyticsGatheringData,
-	setupSearchConsoleAnalyticsZeroData,
+	setupSearchConsoleAnalytics4GatheringData,
+	setupSearchConsoleAnalytics4ZeroData,
 	widgetDecorators,
-} from './common.stories';
-import {
 	setupAnalytics4Loading,
 	setupAnalytics4MockReports,
 } from './common-GA4.stories';
@@ -89,7 +87,7 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: false,
 			},
@@ -100,41 +98,12 @@ AnalyticsInactiveNewCompleteActivation.args = {
 	},
 };
 
-export const AnalyticsActiveWithGA4Enabled = Template.bind( {} );
-AnalyticsActiveWithGA4Enabled.storyName = 'Active: With GA4 Enabled';
-AnalyticsActiveWithGA4Enabled.args = {
-	setupRegistry: ( registry ) => {
-		// Set up the analytics module store but provide no data.
-		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
-		provideUserAuthentication( registry );
-		setupSearchConsoleMockReports( registry );
-		setupAnalytics4MockReports( registry );
-	},
-};
-
 export const Analytics4WidgetsLoading = Template.bind( {} );
 Analytics4WidgetsLoading.storyName = 'GA4 Widgets Loading';
 Analytics4WidgetsLoading.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'analytics-4',
 				active: true,
@@ -154,11 +123,6 @@ ViewOnlyAnalyticsAndSearchConsole.storyName =
 ViewOnlyAnalyticsAndSearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'analytics-4',
 				active: true,
@@ -183,11 +147,6 @@ ViewOnlyAnalytics.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
@@ -210,11 +169,6 @@ ViewOnlySearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
@@ -234,13 +188,13 @@ ViewOnlySearchConsole.args = {
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
+	setupRegistry: setupSearchConsoleAnalytics4GatheringData,
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+	setupRegistry: setupSearchConsoleAnalytics4ZeroData,
 };
 
 export default {

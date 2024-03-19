@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 
@@ -58,8 +57,6 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setIsWebDataStreamAvailable( false );
