@@ -266,6 +266,20 @@ final class Analytics_4 extends Module
 		);
 
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
+
+		// This hook adds the "Set up Google Analytics" step to the Site Kit
+		// setup flow.
+		//
+		// This filter is documented in
+		// Core\Authentication\Google_Proxy::get_metadata_fields.
+		add_filter(
+			'googlesitekit_proxy_setup_mode',
+			function( $original_mode ) {
+				return ! $this->is_connected()
+					? 'analytics-step'
+					: $original_mode;
+			}
+		);
 	}
 
 	/**
