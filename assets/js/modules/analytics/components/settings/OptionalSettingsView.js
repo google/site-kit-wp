@@ -26,15 +26,19 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import AdsConversionIDSettingsNotice from '../../../analytics-4/components/settings/AdsConversionIDSettingsNotice';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { isValidPropertyID } from '../../util';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
+	const adsModuleEnabled = useFeature( 'adsModule' );
+
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
@@ -61,7 +65,8 @@ export default function OptionalSettingsView() {
 		useSnippet && ampMode !== 'primary' && isUAConnected;
 
 	const showAdsConversionIDSettings =
-		( isUAConnected && useSnippet ) || useGA4Snippet;
+		! adsModuleEnabled &&
+		( ( isUAConnected && useSnippet ) || useGA4Snippet );
 
 	return (
 		<Fragment>
@@ -140,6 +145,8 @@ export default function OptionalSettingsView() {
 					</div>
 				</div>
 			) }
+
+			{ adsModuleEnabled && <AdsConversionIDSettingsNotice /> }
 		</Fragment>
 	);
 }

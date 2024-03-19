@@ -30,14 +30,18 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import SettingsUACutoffWarning from './SettingsUACutoffWarning';
 import GA4SettingsControls from './GA4SettingsControls';
+import AdsConversionIDSettingsNotice from '../../../analytics-4/components/settings/AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID, isValidPropertyID } from '../../util';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
 	hasAnalyticsAccess,
 	hasAnalytics4Access,
 } ) {
+	const adsModuleEnabled = useFeature( 'adsModule' );
+
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -63,7 +67,8 @@ export default function SettingsForm( {
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
-					<AdsConversionIDTextField />
+					{ ! adsModuleEnabled && <AdsConversionIDTextField /> }
+					{ adsModuleEnabled && <AdsConversionIDSettingsNotice /> }
 				</Fragment>
 			) }
 

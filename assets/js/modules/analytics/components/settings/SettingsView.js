@@ -19,13 +19,21 @@
 /**
  * Internal dependencies
  */
+import { ProgressBar } from 'googlesitekit-components';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsView from './GA4SettingsView';
 import OptionalSettingsView from './OptionalSettingsView';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import useMigrateAdsConversionID from '../../../analytics-4/hooks/useMigrateAdsConversionID';
 
 export default function SettingsView() {
+	const isMigratingAdsConversionID = useMigrateAdsConversionID();
+
+	if ( isMigratingAdsConversionID ) {
+		return <ProgressBar />;
+	}
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			<StoreErrorNotices
