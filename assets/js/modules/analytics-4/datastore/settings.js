@@ -30,6 +30,7 @@ import {
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
+	isValidWebDataStreamName,
 	isValidWebDataStreamSelection,
 } from '../utils/validation';
 import {
@@ -43,6 +44,7 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -53,6 +55,8 @@ export const INVARIANT_INVALID_PROPERTY_SELECTION =
 	'a valid propertyID is required to submit changes';
 export const INVARIANT_INVALID_WEBDATASTREAM_ID =
 	'a valid webDataStreamID is required to submit changes';
+export const INVARIANT_INVALID_WEBDATASTREAM_NAME =
+	'a valid web data stream name is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -82,9 +86,13 @@ export async function submitChanges( { select, dispatch } ) {
 		( webDataStreamID === WEBDATASTREAM_CREATE ||
 			! isValidWebDataStreamID( webDataStreamID ) )
 	) {
+		const webDataStreamName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'webDataStreamName'
+		);
 		const { response: webdatastream, error } = await dispatch(
 			MODULES_ANALYTICS_4
-		).createWebDataStream( propertyID );
+		).createWebDataStream( propertyID, webDataStreamName );
 		if ( error ) {
 			return { error };
 		}
@@ -184,14 +192,27 @@ export function validateCanSubmitChanges( select ) {
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
 	const propertyID = getPropertyID();
+
 	invariant(
 		isValidPropertySelection( propertyID ),
 		INVARIANT_INVALID_PROPERTY_SELECTION
 	);
-	if ( propertyID !== PROPERTY_CREATE ) {
+
+	const webDataStreamID = getWebDataStreamID();
+
+	invariant(
+		isValidWebDataStreamSelection( webDataStreamID ),
+		INVARIANT_INVALID_WEBDATASTREAM_ID
+	);
+
+	if ( webDataStreamID === WEBDATASTREAM_CREATE ) {
+		const webDataStreamName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'webDataStreamName'
+		);
 		invariant(
-			isValidWebDataStreamSelection( getWebDataStreamID() ),
-			INVARIANT_INVALID_WEBDATASTREAM_ID
+			isValidWebDataStreamName( webDataStreamName ),
+			INVARIANT_INVALID_WEBDATASTREAM_NAME
 		);
 	}
 }
