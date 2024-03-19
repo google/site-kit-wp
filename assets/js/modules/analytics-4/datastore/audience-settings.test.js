@@ -1,4 +1,6 @@
 /**
+ * `modules/analytics-4` data store: audience settings tests.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +30,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 
-describe( 'core/user key metrics', () => {
+describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
 	let store;
 
@@ -69,7 +71,7 @@ describe( 'core/user key metrics', () => {
 				} ).toThrow( 'Configured audiences should be an array.' );
 			} );
 
-			it( 'should set the provided audiences in the store ', () => {
+			it( 'should set the provided audiences in the store', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setConfiguredAudiences(
@@ -95,7 +97,7 @@ describe( 'core/user key metrics', () => {
 				);
 			} );
 
-			it( 'should set the audience segmentation widget visibility in the store ', () => {
+			it( 'should set the audience segmentation widget visibility in the store', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAudienceSegmentationWidgetHidden( true );
@@ -122,7 +124,7 @@ describe( 'core/user key metrics', () => {
 					);
 			} );
 
-			it( 'should save settings and add it to the store ', async () => {
+			it( 'should save settings and add it to the store', async () => {
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: audienceSettingsResponse,
 					status: 200,
@@ -149,7 +151,7 @@ describe( 'core/user key metrics', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'dispatches an error if the request fails ', async () => {
+			it( 'dispatches an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
