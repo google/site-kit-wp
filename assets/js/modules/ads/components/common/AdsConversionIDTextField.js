@@ -85,6 +85,11 @@ export default function AdsConversionIDTextField( { helperText } ) {
 						'google-site-kit'
 					)
 				}
+				leadingIcon={
+					<span className="googlesitekit-text-field-conversion-tracking-id-prefix">
+						{ __( 'AW-', 'google-site-kit' ) }
+					</span>
+				}
 				trailingIcon={
 					! isValidValue && (
 						<span className="googlesitekit-text-field-icon--error">
@@ -96,7 +101,9 @@ export default function AdsConversionIDTextField( { helperText } ) {
 					)
 				}
 				outlined
-				value={ adsConversionID }
+				value={ adsConversionID
+					?.replace( 'AW-', '' )
+					?.replace( 'AW', '' ) }
 				onChange={ onChange }
 			/>
 		</div>
