@@ -31,7 +31,10 @@ import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '../utils/validation';
+import {
+	isValidPropertyID,
+	isValidWebDataStreamName,
+} from '../utils/validation';
 const { createRegistryControl, createRegistrySelector } = Data;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
@@ -110,9 +113,10 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
-	controlCallback( { propertyID } ) {
+	controlCallback( { propertyID, displayName } ) {
 		return API.set( 'modules', 'analytics-4', 'create-webdatastream', {
 			propertyID,
+			displayName,
 		} );
 	},
 	reducerCallback( state, webDataStream, { propertyID } ) {
@@ -127,13 +131,17 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams( propertyID ) {
-		return { propertyID };
+	argsToParams( propertyID, displayName ) {
+		return { propertyID, displayName };
 	},
-	validateParams( { propertyID } = {} ) {
+	validateParams( { propertyID, displayName } = {} ) {
 		invariant(
 			isValidPropertyID( propertyID ),
 			'A valid GA4 propertyID is required.'
+		);
+		invariant(
+			isValidWebDataStreamName( displayName ),
+			'A valid web data stream name is required.'
 		);
 	},
 } );
@@ -150,18 +158,22 @@ const baseActions = {
 	 * Creates a new GA4 web data stream.
 	 *
 	 * @since 1.31.0
+	 * @since n.e.x.t Added displayName parameter.
 	 *
-	 * @param {string} propertyID GA4 property ID.
+	 * @param {string} propertyID  GA4 property ID.
+	 * @param {string} displayName A web data stream name.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	createWebDataStream: createValidatedAction(
-		( propertyID ) => {
+		( propertyID, displayName ) => {
 			invariant( propertyID, 'GA4 propertyID is required.' );
+			invariant( displayName, 'Web data stream name is required.' );
 		},
-		function* ( propertyID ) {
+		function* ( propertyID, displayName ) {
 			const { response, error } =
 				yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
-					propertyID
+					propertyID,
+					displayName
 				);
 			return { response, error };
 		}
