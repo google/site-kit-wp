@@ -39,7 +39,7 @@ import Menu from './Menu';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
 import Select from './Select';
-import SpinnerButton from './SpinnerButton';
+import SpinnerButton, { SPINNER_POSITION } from './SpinnerButton';
 import Switch from './Switch';
 import TextField, { HelperText } from './TextField';
 import Tooltip from './Tooltip';
@@ -60,6 +60,7 @@ const Components = {
 	Radio,
 	Select,
 	SpinnerButton,
+	SPINNER_POSITION,
 	Switch,
 	Tab,
 	TabBar,
