@@ -33,14 +33,17 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../../hooks/useDashboardType';
 import { useFeature } from '../../hooks/useFeature';
+import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
 import { getContextScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -48,8 +51,11 @@ export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
 
 export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
-	const ga4AdSenseIntegration = useFeature( 'ga4AdSenseIntegration' );
+	const ga4AdSenseIntegrationEnabled = useFeature( 'ga4AdSenseIntegration' );
 	const breakpoint = useBreakpoint();
+
+	const dashboardType = useDashboardType();
+	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
 
 	const isShowingNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification(
@@ -73,34 +79,34 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( isDismissed ) {
+		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 		return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( isDismissed ) {
+		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 		return select( CORE_MODULES ).isModuleConnected( 'adsense' );
 	} );
 
 	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( isDismissed ) {
+		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 		return select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' );
 	} );
 	const canViewSharedAdSense = useSelect( ( select ) => {
-		if ( isDismissed ) {
+		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 		return select( CORE_USER ).hasAccessToShareableModule( 'adsense' );
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( isDismissed ) {
+		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 
@@ -139,6 +145,8 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const data = useSelect( ( select ) => {
 		if (
+			ga4AdSenseIntegrationEnabled &&
+			isMainDashboard &&
 			isDismissed === false &&
 			isAdSenseLinked &&
 			adSenseModuleConnected &&
@@ -155,8 +163,9 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 	const dataAvailable = !! data?.rows?.length;
 
 	const shouldShowNotification =
+		ga4AdSenseIntegrationEnabled &&
+		isMainDashboard &&
 		isDismissed === false &&
-		ga4AdSenseIntegration &&
 		analyticsModuleConnected &&
 		adSenseModuleConnected &&
 		canViewSharedAnalytics &&
