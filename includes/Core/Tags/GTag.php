@@ -87,7 +87,7 @@ class GTag {
 	 *
 	 * @param string $command    The gtag command to add.
 	 * @param array  $parameters Array of command parameters.
-	 * @param string $position   Position of command."before|after".
+	 * @param string $position   Position of command. "before|after".
 	 *
 	 * @return void
 	 */
