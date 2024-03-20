@@ -34,7 +34,10 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import {
 	getAnalytics4MockResponse,
@@ -139,6 +142,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -165,6 +169,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -180,6 +185,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -199,6 +205,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -224,6 +231,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -243,6 +251,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -261,6 +270,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -280,6 +290,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -302,6 +313,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -318,6 +330,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -392,6 +405,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -411,6 +425,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -443,6 +458,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
