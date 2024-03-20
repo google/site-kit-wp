@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -139,7 +139,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const data = useSelect( ( select ) => {
 		if (
-			! isDismissed &&
+			isDismissed === false &&
 			isAdSenseLinked &&
 			adSenseModuleConnected &&
 			analyticsModuleConnected &&
@@ -164,16 +164,18 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		isAdSenseLinked &&
 		dataAvailable;
 
-	const dismissNotification = useCallback( () => {
+	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
 		// the current users profile with the `dismissItem` action.
 		dismissOverlayNotification(
 			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
 		);
-	}, [ dismissOverlayNotification ] );
+	};
 
 	const scrollToWidget = ( event ) => {
 		event.preventDefault();
+
+		dismissNotification();
 
 		const widgetClass = '.googlesitekit-widget--adsenseTopEarningPagesGA4';
 
