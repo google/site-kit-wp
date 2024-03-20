@@ -406,7 +406,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
 		} );
 
-		const { container, getByRole, rerender, waitForRegistry } = render(
+		const { container, getByRole, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
@@ -421,10 +421,10 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 
 		act( () => {
-			fireEvent.click( getByRole( 'button', { name: /Show me/i } ) );
+			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
 		} );
 
-		rerender();
+		await waitForRegistry();
 
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
@@ -438,7 +438,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
 		} );
 
-		const { container, getByRole, rerender, waitForRegistry } = render(
+		const { container, getByRole, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
@@ -456,7 +456,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
 		} );
 
-		rerender();
+		await waitForRegistry();
 
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
