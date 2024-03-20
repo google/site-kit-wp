@@ -118,12 +118,12 @@ describe( 'SettingsModules', () => {
 	} );
 
 	it( 'should redirect from #settings/:moduleSlug/view to #/connected-services/:moduleSlug', () => {
-		history.push( '/settings/analytics/view' );
+		history.push( '/settings/analytics-4/view' );
 
 		render( <SettingsModules />, { history, registry } );
 
 		expect( global.location.hash ).toEqual(
-			'#/connected-services/analytics'
+			'#/connected-services/analytics-4'
 		);
 	} );
 

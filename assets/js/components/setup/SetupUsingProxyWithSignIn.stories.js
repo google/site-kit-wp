@@ -59,7 +59,7 @@ StartUserInput.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
@@ -77,7 +77,7 @@ StartUserInputError.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
@@ -107,7 +107,7 @@ DisconnectedURLMismatchUserInput.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
@@ -121,7 +121,7 @@ AnalyticsActive.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
@@ -144,7 +144,7 @@ SharedDashboardAdminCanView.args = {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
@@ -154,7 +154,7 @@ SharedDashboardAdminCanView.args = {
 			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics'
+				'analytics-4'
 			) ]: true,
 		} );
 	},
@@ -172,7 +172,7 @@ SharedDashboardSingleAdminCanView.args = {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
@@ -182,7 +182,7 @@ SharedDashboardSingleAdminCanView.args = {
 			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics'
+				'analytics-4'
 			) ]: true,
 		} );
 	},

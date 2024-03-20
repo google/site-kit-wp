@@ -74,7 +74,7 @@ const WPDashboardUniqueVisitorsChartGA4Widget =
 
 export default function WPDashboardWidgets() {
 	const analyticsModule = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'analytics' )
+		select( CORE_MODULES ).getModule( 'analytics-4' )
 	);
 
 	const canViewSharedAnalytics = useSelect( ( select ) =>

@@ -3,7 +3,7 @@
 		"sharedRoles": [ "administrator" ],
 		"management": "owner"
 	},
-	"analytics": {
+	"analytics-4": {
 		"sharedRoles": [ "editor" ],
 		"management": "owner"
 	},

@@ -52,11 +52,6 @@ describe( 'AccountCreate', () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
