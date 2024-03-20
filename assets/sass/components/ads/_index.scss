@@ -1,6 +1,4 @@
 /**
- * `modules/ads` base data store.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import { MODULES_ADS } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
-
-const baseModuleStore = Modules.createModuleStore( 'ads', {
-	ownedSettingsSlugs: [ 'adsConversionID' ],
-	storeName: MODULES_ADS,
-	settingSlugs: [ 'adsConversionID', 'ownerID' ],
-	requiresSetup: true,
-	submitChanges,
-	validateCanSubmitChanges,
-} );
-
-export default baseModuleStore;
+@import "googlesitekit-ads-setup-module";

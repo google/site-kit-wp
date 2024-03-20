@@ -1,5 +1,5 @@
 /**
- * `modules/ads` base data store.
+ * Ads Setup styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,20 +16,25 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import { MODULES_ADS } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+.googlesitekit-plugin {
 
-const baseModuleStore = Modules.createModuleStore( 'ads', {
-	ownedSettingsSlugs: [ 'adsConversionID' ],
-	storeName: MODULES_ADS,
-	settingSlugs: [ 'adsConversionID', 'ownerID' ],
-	requiresSetup: true,
-	submitChanges,
-	validateCanSubmitChanges,
-} );
+	.googlesitekit-setup-module--ads {
 
-export default baseModuleStore;
+		.googlesitekit-settings-module__fields-group-title {
+			font-size: $fs-body-md;
+			font-weight: $fw-medium;
+		}
+
+		.googlesitekit-setup-module__description {
+			margin-top: 30px;
+		}
+
+		.googlesitekit-setup-module__inputs > .googlesitekit-settings-module__fields-group {
+			margin: 0;
+		}
+
+		.googlesitekit-setup-module__action {
+			margin-bottom: 32px;
+		}
+	}
+}

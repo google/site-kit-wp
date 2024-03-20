@@ -1,5 +1,5 @@
 /**
- * Analytics 4 Ads Conversion ID component.
+ * Ads Module Ads Conversion ID component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -32,21 +32,18 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ADS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
+import { isValidAdsConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
-import { isValidAdsConversionID } from '../../../ads/utils/validation';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
 	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
+		select( MODULES_ADS ).getAdsConversionID()
 	);
-	const snippetEnabled = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getUseSnippet();
-	} );
 
-	const { setAdsConversionID } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setAdsConversionID } = useDispatch( MODULES_ADS );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
 			let newValue = currentTarget.value.trim().toUpperCase();
@@ -62,20 +59,12 @@ export default function AdsConversionIDTextField() {
 		[ adsConversionID, setAdsConversionID ]
 	);
 
-	const isValidValue = Boolean(
-		! adsConversionID || isValidAdsConversionID( adsConversionID )
-	);
-
-	// Only show the field if the snippet is enabled for output,
-	// but only hide it if the value is valid otherwise the user will be blocked.
-	if ( isValidValue && ! snippetEnabled ) {
-		return null;
-	}
+	const isValidValue = Boolean( isValidAdsConversionID( adsConversionID ) );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<h4 className="googlesitekit-settings-module__fields-group-title">
-				{ __( 'Google Ads', 'google-site-kit' ) }
+				{ __( 'Conversion ID', 'google-site-kit' ) }
 			</h4>
 			<TextField
 				label={ __( 'Ads Conversion ID', 'google-site-kit' ) }
@@ -85,7 +74,7 @@ export default function AdsConversionIDTextField() {
 				helperText={
 					! isValidValue &&
 					__(
-						'Conversion IDs must be in the format: AW-XXXXX',
+						'Tracking for your Ads campaigns won’t work until you insert a valid ID',
 						'google-site-kit'
 					)
 				}
@@ -103,13 +92,6 @@ export default function AdsConversionIDTextField() {
 				value={ adsConversionID }
 				onChange={ onChange }
 			/>
-
-			<p>
-				{ __(
-					'If you’re using Google Ads, insert your Ads conversion ID if you’d like Site Kit to place the snippet on your site',
-					'google-site-kit'
-				) }
-			</p>
 		</div>
 	);
 }

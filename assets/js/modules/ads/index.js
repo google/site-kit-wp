@@ -17,11 +17,17 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import AdsIcon from '../../../svg/graphics/ads.svg';
 import { isFeatureEnabled } from '../../features';
 import { SettingsEdit, SettingsView } from './components/settings';
+import SetupMain from './components/setup/SetupMain';
 import { MODULES_ADS } from './datastore/constants';
 
 export { registerStore } from './datastore';
@@ -32,7 +38,18 @@ export const registerModule = ( modules ) => {
 			storeName: MODULES_ADS,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
 			Icon: AdsIcon,
+			features: [
+				__(
+					'Tagging necessary for your ads campaigns to work',
+					'google-site-kit'
+				),
+				__(
+					'Conversion tracking for your ads campaigns',
+					'google-site-kit'
+				),
+			],
 		} );
 	}
 };

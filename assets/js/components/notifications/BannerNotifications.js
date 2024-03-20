@@ -89,6 +89,7 @@ export default function BannerNotifications() {
 	} );
 
 	const [ notification ] = useQueryArg( 'notification' );
+	const [ slug ] = useQueryArg( 'slug' );
 
 	if ( viewOnly ) {
 		return <ZeroDataStateNotifications />;
@@ -98,7 +99,8 @@ export default function BannerNotifications() {
 		<Fragment>
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			<ModuleRecoveryAlert />
-			{ 'authentication_success' === notification && (
+			{ /* The Ads module uses the new, subtle notification rather than the old SetupSuccessBannerNotification */ }
+			{ 'authentication_success' === notification && slug !== 'ads' && (
 				<SetupSuccessBannerNotification />
 			) }
 			{ 'ad_blocking_recovery_setup_success' === notification && (
