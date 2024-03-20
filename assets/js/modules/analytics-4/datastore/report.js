@@ -58,7 +58,7 @@ const { createRegistrySelector } = Data;
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
  */
-const getSampleReportArgs = ( select ) => {
+export const getSampleReportArgs = ( select ) => {
 	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} );
