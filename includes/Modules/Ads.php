@@ -52,8 +52,8 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 		$foo_event = new Event(
 			array(
 				'action'   => 'load',
-				'on'       => 'load',
-				'selector' => 'window',
+				'on'       => 'click',
+				'selector' => 'body',
 				'metadata' => array(
 					'event_label' => 'foo',
 				),
@@ -62,13 +62,26 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 
 		// @TODO Remove/move, this is POC code only.
 		$foo_event_list = new Foo_Event_List();
+
 		// @TODO Remove/move, this is POC code only.
 		$foo_event_list->add_event( $foo_event );
 
 		// @TODO Remove/move, this is POC code only.
-		$event_list_registry = new Event_List_Registry();
+		$foo_event_list_registry = new Event_List_Registry();
+
 		// @TODO Remove/move, this is POC code only.
-		$event_list_registry->register_list( $foo_event_list );
+		$foo_event_list_registry->register_list( $foo_event_list );
+
+		// @TODO Remove/move, this is POC code that adds an event list via action hook.
+		add_action(
+			'googlesitekit_ads_register_event_lists',
+			function ( Event_List_Registry $registry ) use ( $foo_event_list ) {
+				$registry->register_list( $foo_event_list );
+			}
+		);
+
+		// @TODO Remove this, it is forcing actions for testing Conversion_Tracking.
+		do_action( 'googlesitekit_ads_init_tag' );
 	}
 
 	/**
