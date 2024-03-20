@@ -53,7 +53,7 @@ export default {
 				provideUserCapabilities( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics',
+						slug: 'analytics-4',
 						active: false,
 						connected: false,
 					},

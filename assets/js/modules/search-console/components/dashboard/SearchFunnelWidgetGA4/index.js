@@ -37,15 +37,14 @@ import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
-import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import Header from '../SearchFunnelWidget/Header';
-import Footer from '../SearchFunnelWidget/Footer';
+import Header from './Header';
+import Footer from './Footer';
 import Overview from './Overview';
-import SearchConsoleStats from '../SearchFunnelWidget/SearchConsoleStats';
+import SearchConsoleStats from './SearchConsoleStats';
 import { ActivateAnalyticsCTA, AnalyticsStats } from '../../common';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
@@ -54,7 +53,10 @@ import {
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
+} from '../../../../analytics-4/datastore/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {

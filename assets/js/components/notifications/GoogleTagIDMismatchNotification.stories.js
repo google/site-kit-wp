@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import * as fixtures from '../../modules/analytics-4/datastore/__fixtures__';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
@@ -108,7 +107,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

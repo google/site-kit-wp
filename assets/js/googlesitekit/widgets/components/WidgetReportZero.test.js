@@ -38,7 +38,7 @@ describe( 'WidgetReportZero', () => {
 
 	it( 'sets widget state when rendered and unsets when unmounted', () => {
 		const widgetSlug = 'testWidget';
-		const moduleSlug = 'analytics';
+		const moduleSlug = 'analytics-4';
 
 		// Initial state should be null.
 		expect(
@@ -69,7 +69,7 @@ describe( 'WidgetReportZero', () => {
 
 	it( 'only considers moduleSlug prop for widget state', () => {
 		const widgetSlug = 'testWidget';
-		const moduleSlug = 'analytics';
+		const moduleSlug = 'analytics-4';
 
 		// Pass extraProp (which should not be included in metadata).
 		render(
@@ -91,7 +91,7 @@ describe( 'WidgetReportZero', () => {
 
 	it( 'renders the same output as ReportZero with the same props (except widgetSlug)', () => {
 		const props = {
-			moduleSlug: 'analytics',
+			moduleSlug: 'analytics-4',
 			description: 'There is no data!',
 		};
 

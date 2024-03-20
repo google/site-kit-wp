@@ -33,7 +33,6 @@ import {
 	pageWait,
 	step,
 	setSearchConsoleProperty,
-	setupAnalytics,
 	setupAnalytics4,
 } from '../utils';
 import {
@@ -197,7 +196,6 @@ describe( 'User Input Settings', () => {
 	it( 'should offer to enter input settings for existing users', async () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
-		await setupAnalytics();
 		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
@@ -257,7 +255,6 @@ describe( 'User Input Settings', () => {
 	it( 'should let existing users enter input settings from the settings page', async () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
-		await setupAnalytics();
 		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();

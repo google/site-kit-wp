@@ -38,7 +38,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			[
 				'when the module only have a `slug` property',
 				{
-					slug: 'analytics',
+					slug: 'analytics-4',
 				},
 			],
 			[
@@ -118,7 +118,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 	describe( 'google analytics error', () => {
 		const analytics = {
-			slug: 'analytics',
+			slug: 'analytics-4',
 			name: 'Analytics',
 		};
 

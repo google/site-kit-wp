@@ -53,11 +53,11 @@ import {
 	MAX_SELECTED_METRICS_COUNT,
 } from '../constants';
 import {
+	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import ErrorNotice from '../../ErrorNotice';
 import { safelySort } from './utils';
@@ -111,7 +111,7 @@ export default function Footer( {
 	} );
 
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
@@ -136,7 +136,7 @@ export default function Footer( {
 
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		const OAuthURL = select( CORE_USER ).getConnectURL( {
-			additionalScopes: [ ANALYTICS_EDIT_SCOPE ],
+			additionalScopes: [ EDIT_SCOPE ],
 			redirectURL,
 		} );
 
@@ -194,7 +194,7 @@ export default function Footer( {
 						),
 						data: {
 							status: 403,
-							scopes: [ ANALYTICS_EDIT_SCOPE ],
+							scopes: [ EDIT_SCOPE ],
 							skipModal: true,
 							redirectURL,
 						},
