@@ -23,11 +23,6 @@ import invariant from 'invariant';
 import { isEqual, isPlainObject } from 'lodash';
 
 /**
- * WordPress dependencies
- */
-import { createRegistrySelector } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -38,6 +33,7 @@ import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
+const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
 const validateAudienceSettings = ( settings ) => {
@@ -218,7 +214,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return state;
+			break;
 		}
 	}
 } );

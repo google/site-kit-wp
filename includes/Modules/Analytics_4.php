@@ -41,6 +41,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
@@ -881,6 +882,7 @@ final class Analytics_4 extends Module
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 *
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
+	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
 	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
@@ -970,39 +972,19 @@ final class Analytics_4 extends Module
 			case 'POST:audience-settings':
 				$settings = $data['settings'];
 				if ( ! isset( $settings['configuredAudiences'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'configuredAudiences' ),
-						array( 'status' => 400 )
-					);
+					throw new Missing_Required_Param_Exception( 'configuredAudiences' );
 				}
 
 				if ( ! is_array( $settings['configuredAudiences'] ) ) {
-					return new WP_Error(
-						'rest_invalid_param',
-						/* translators: %s: Invalid parameter */
-						sprintf( __( 'Invalid parameter: %s.', 'google-site-kit' ), 'configuredAudiences' ),
-						array( 'status' => 400 )
-					);
+					throw new Invalid_Param_Exception( 'configuredAudiences' );
 				}
 
 				if ( ! isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'isAudienceSegmentationWidgetHidden' ),
-						array( 'status' => 400 )
-					);
+					throw new Missing_Required_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
 				}
 
 				if ( ! is_bool( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
-					return new WP_Error(
-						'rest_invalid_param',
-						/* translators: %s: Invalid parameter */
-						sprintf( __( 'Invalid parameter: %s.', 'google-site-kit' ), 'isAudienceSegmentationWidgetHidden' ),
-						array( 'status' => 400 )
-					);
+					throw new Invalid_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
 				}
 
 				$this->audience_settings->merge( $data['settings'] );
