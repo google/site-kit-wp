@@ -49,13 +49,27 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 		( new Conversion_Tracking( $this->context ) )->register();
 
 		// @TODO Remove/move, this is POC code only.
+
+		// As a whole, the current advanced-tracking.js implementation needs to be refactored to accommodate
+		// events that are fired as a response to browser/vanilla js or jquery events.
+		// The current implementation (borrowed from Advanced_Tracking) focuses on tracking events in response
+		// to DOM events. This is not how we'll respond to events for conversion event tracking, due to the
+		// maintenance risks. Instead, we'll want to add event listeners (raw js and jquery based) and
+		// respond accordingly. The architecture should be changed accordingly to accommodate this.
 		$foo_event = new Event(
 			array(
-				'action'   => 'load',
-				'on'       => 'click',
-				'selector' => 'body',
+				'action'   => 'fooAction',
+				'event'    => 'addToCart', // @TODO browser/jquery event to fire gtag event against.
+				// Two types of events have been identified, browser (vanilla) and jquery.
+				// Our middleware needs to be able to listen for both types of events.
+				'type'     => 'browser|jquery',
+				// Given that the conversion events won't be in response to DOM events, this would be removed in practice.
+				'selector' => 'form.someForm', // @TODO remove selectors for conversion tracking.
+				// We'll need to discuss whether we need to be able to access object properties that
+				// may be part of the javascript event callback object. If so, we'd probably want to assume
+				// top level access in phase 1, i.e prop names of a single event callback object.
 				'metadata' => array(
-					'event_label' => 'foo',
+					'event_label' => 'product_title', // @TODO do we want to support callback object property access?
 				),
 			)
 		);
