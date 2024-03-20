@@ -18,6 +18,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Modules\Ads\Settings;
+use Google\Site_Kit\Modules\Ads\Conversion_Tracking;
+use Google\Site_Kit\Modules\Ads\Conversion_Tracking\Event;
+use Google\Site_Kit\Modules\Ads\Conversion_Tracking\Foo_Event_List;
+use Google\Site_Kit\Modules\Ads\Conversion_Tracking\Event_List_Registry;
 
 /**
  * Class representing the Ads module.
@@ -40,7 +44,32 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	 *
 	 * @since 1.121.0
 	 */
-	public function register() {}
+	public function register() {
+		// @TODO Remove/move, this is POC code only.
+		( new Conversion_Tracking( $this->context ) )->register();
+
+		// @TODO Remove/move, this is POC code only.
+		$foo_event = new Event(
+			array(
+				'action'   => 'load',
+				'on'       => 'load',
+				'selector' => 'window',
+				'metadata' => array(
+					'event_label' => 'foo',
+				),
+			)
+		);
+
+		// @TODO Remove/move, this is POC code only.
+		$foo_event_list = new Foo_Event_List();
+		// @TODO Remove/move, this is POC code only.
+		$foo_event_list->add_event( $foo_event );
+
+		// @TODO Remove/move, this is POC code only.
+		$event_list_registry = new Event_List_Registry();
+		// @TODO Remove/move, this is POC code only.
+		$event_list_registry->register_list( $foo_event_list );
+	}
 
 	/**
 	 * Sets up the module's assets to register.
