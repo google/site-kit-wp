@@ -19,31 +19,33 @@
 /**
  * Internal dependencies
  */
-import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
-	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
-} from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
 import {
-	render,
-	createTestRegistry,
-	provideModules,
-	fireEvent,
 	act,
-	provideUserAuthentication,
+	createTestRegistry,
+	fireEvent,
 	freezeFetch,
+	provideModules,
+	provideUserAuthentication,
+	render,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
+import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
+	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
+} from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
 	let registry;
@@ -339,6 +341,23 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
+	it( 'does not render in entity dashboard', () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
 	it( 'does not render in "view only" dashboard without Analytics access', () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		registry
@@ -393,6 +412,26 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			}
 		);
 		expect( container ).toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'does not render in "view only" entity dashboard', () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetCapabilities( capabilities.permissions );
+		provideAnalytics4MockReport( registry, reportOptions );
+
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
+			{
+				registry,
+				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			}
+		);
+		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
