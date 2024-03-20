@@ -30,14 +30,15 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
-import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import {
 	setupAnalytics4ZeroData,
+	setupSearchConsoleZeroData,
 	provideAnalytics4ReportTitles,
 	setupSearchConsoleMockReports,
 	setupAnalytics4MockReports,
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
+	widgetDecorators,
 } from './common-GA4.stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 
@@ -70,7 +71,7 @@ ReadyWithActivateModuleCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideSiteInfo( registry );
@@ -91,7 +92,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideSiteInfo( registry );
@@ -118,7 +119,7 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 		provideSiteInfo( registry );
@@ -136,11 +137,6 @@ ViewOnlyAnalyticsAndSearchConsole.storyName =
 ViewOnlyAnalyticsAndSearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'analytics-4',
 				active: true,
@@ -165,11 +161,6 @@ ViewOnlyAnalytics.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
@@ -191,11 +182,6 @@ ViewOnlySearchConsole.storyName = 'View Only Search Console';
 ViewOnlySearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
 			{
 				slug: 'analytics-4',
 				active: true,

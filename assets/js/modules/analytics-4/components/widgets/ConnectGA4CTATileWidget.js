@@ -34,8 +34,7 @@ import {
 import Null from '../../../../components/Null';
 const { useSelect } = Data;
 
-// Note: `analytics` is used as the slug here since GA4 "depends" on it.
-const metadata = { moduleSlug: 'analytics' };
+const metadata = { moduleSlug: 'analytics-4' };
 
 export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {

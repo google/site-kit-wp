@@ -72,7 +72,7 @@ export function fetchMockCatchAll() {
 				'/google-site-kit/v1/modules/search-console/data/searchanalytics'
 			) ||
 			url.startsWith(
-				'/google-site-kit/v1/modules/analytics/data/report'
+				'/google-site-kit/v1/modules/analytics-4/data/report'
 			)
 		) {
 			return {

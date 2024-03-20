@@ -200,7 +200,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /connect more services/i,
 			} );
 			await page.waitForSelector(
-				'.googlesitekit-settings-connect-module--analytics'
+				'.googlesitekit-settings-connect-module--analytics-4'
 			);
 		} );
 
@@ -388,7 +388,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /connect more services/i,
 			} );
 			await page.waitForSelector(
-				'.googlesitekit-settings-connect-module--analytics'
+				'.googlesitekit-settings-connect-module--analytics-4'
 			);
 		} );
 

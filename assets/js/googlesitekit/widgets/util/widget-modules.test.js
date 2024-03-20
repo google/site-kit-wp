@@ -36,20 +36,20 @@ describe( 'normalizeWidgetModules', () => {
 	} );
 
 	it( 'should return an array of strings when a single string is provided', () => {
-		const modules = normalizeWidgetModules( 'analytics' );
+		const modules = normalizeWidgetModules( 'analytics-4' );
 		expect( modules ).toHaveLength( 1 );
-		expect( modules[ 0 ] ).toBe( 'analytics' );
+		expect( modules[ 0 ] ).toBe( 'analytics-4' );
 	} );
 
 	it( 'should return an array with non empty modules', () => {
 		const modules = normalizeWidgetModules( [
-			'analytics',
+			'analytics-4',
 			'',
 			false,
 			'tag-manager',
 		] );
 		expect( modules ).toHaveLength( 2 );
-		expect( modules[ 0 ] ).toBe( 'analytics' );
+		expect( modules[ 0 ] ).toBe( 'analytics-4' );
 		expect( modules[ 1 ] ).toBe( 'tag-manager' );
 	} );
 } );

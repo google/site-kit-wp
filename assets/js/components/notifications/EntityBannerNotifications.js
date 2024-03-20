@@ -24,16 +24,11 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
 import ZeroDataNotifications from './ZeroDataStateNotifications';
-import useViewOnly from '../../hooks/useViewOnly';
 
 export default function EntityBannerNotifications() {
-	const viewOnly = useViewOnly();
-
 	return (
 		<Fragment>
-			{ ! viewOnly && <ActivationBanner /> }
 			<ZeroDataNotifications />
 		</Fragment>
 	);

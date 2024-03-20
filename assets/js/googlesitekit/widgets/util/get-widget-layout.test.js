@@ -75,7 +75,7 @@ describe( 'getWidgetLayout', () => {
 		const widgetStates = {
 			test1: getRegularState(),
 			test2: getReportZeroState( 'search-console' ),
-			test3: getReportZeroState( 'analytics' ),
+			test3: getReportZeroState( 'analytics-4' ),
 			test4: getRecoverableModulesState( [ 'adsense' ] ),
 			test5: getRecoverableModulesState( [ 'adsense' ] ),
 			test6: getRecoverableModulesState( [ 'adsense' ] ),
