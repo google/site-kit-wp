@@ -116,7 +116,7 @@ class GTag {
 			return;
 		}
 
-		// Load the GTag scripts using the first tag ID - it doesn't matter which is used, all registered tags will be setup with a
+		// Load the GTag scripts using the first tag ID - it doesn't matter which is used, all registered tags will be set up with a
 		// config command regardless of which is used to load the source.
 		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tags[0]['tag_id'] );
 
