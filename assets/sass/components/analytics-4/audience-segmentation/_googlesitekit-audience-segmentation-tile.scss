@@ -49,7 +49,7 @@
 
 			.googlesitekit-audience-segmentation-tile-metric__icon {
 				height: 20px;
-				margin: 14px 19px 14px 15px;
+				margin: 14px 19px 14px 0;
 				min-width: 20px;
 				width: 20px;
 
@@ -57,6 +57,7 @@
 					margin-left: 15px;
 				}
 			}
+
 			.googlesitekit-audience-segmentation-tile-metric__container {
 				flex-grow: 1;
 
@@ -92,15 +93,17 @@
 				}
 
 				.googlesitekit-audience-segmentation-tile-metric__content {
-					display: flex;
+					display: grid;
+					gap: $grid-gap-phone;
+					grid-auto-columns: minmax(0, 1fr);
+					grid-auto-flow: column;
 					margin-top: 14px;
 
+					@media (min-width: $width-desktop + 1 + px) {
+						gap: $grid-gap-desktop;
+					}
+
 					.googlesitekit-audience-segmentation-tile-metric__cities-metric {
-						flex: 1;
-
-						margin-right: 16px;
-						min-width: 0;
-
 						.googlesitekit-audience-segmentation-tile-metric__cities-metric-name {
 							color: $c-surfaces-on-surface;
 							font-size: $fs-title-sm;
