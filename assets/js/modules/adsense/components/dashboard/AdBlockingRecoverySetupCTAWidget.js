@@ -184,10 +184,10 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			'dismiss_notification'
 		);
 
+		showTooltip();
+
 		// For the first two dismissals, we show the notification again in two weeks.
 		if ( dismissCount < 2 ) {
-			showTooltip();
-
 			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
 			await dismissPrompt( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY, {
 				expiresInSeconds: twoWeeksInSeconds,

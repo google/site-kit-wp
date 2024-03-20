@@ -29,7 +29,6 @@ import {
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -89,7 +88,7 @@ describe( 'modules/analytics-4 settings', () => {
 			beforeEach( () => {
 				provideUserAuthentication( registry );
 
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					accountID: fixtures.createProperty._accountID,
 				} );
 			} );
@@ -257,8 +256,9 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			describe( 'when enhanced measurement is enabled', () => {
-				const propertyID = '1000';
-				const webDataStreamID = '2000';
+				const propertyID = fixtures.createProperty._id;
+				const webDataStreamID = fixtures.createWebDataStream._id;
+				const accountID = fixtures.createProperty._accountID;
 
 				const enhancedMeasurementSettingsEndpoint = new RegExp(
 					'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
@@ -285,7 +285,11 @@ describe( 'modules/analytics-4 settings', () => {
 				beforeEach( () => {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetSettings( { propertyID, webDataStreamID } );
+						.receiveGetSettings( {
+							accountID,
+							propertyID,
+							webDataStreamID,
+						} );
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -443,6 +447,7 @@ describe( 'modules/analytics-4 settings', () => {
 
 			it( 'should dispatch saveSettings', async () => {
 				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
 					propertyID: fixtures.createProperty._id,
 					webDataStreamID: fixtures.createWebDataStream._id,
 				};

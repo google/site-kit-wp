@@ -133,7 +133,7 @@ class PermissionsTest extends TestCase {
 
 		$settings              = new Module_Sharing_Settings( new Options( $this->context ) );
 		$test_sharing_settings = array(
-			'analytics'      => array(
+			'analytics-4'    => array(
 				'sharedRoles' => array( 'contributor' ),
 				'management'  => 'all_admins',
 			),
@@ -203,26 +203,26 @@ class PermissionsTest extends TestCase {
 	private function verify_read_shared_module_data_capability( $author, $contributor ) {
 		// Test user should have the sharedRole that is set for the module being checked
 		// to READ_SHARED_MODULE_DATA.
-		$this->assertFalse( user_can( $author, Permissions::READ_SHARED_MODULE_DATA, 'analytics' ) );
+		$this->assertFalse( user_can( $author, Permissions::READ_SHARED_MODULE_DATA, 'analytics-4' ) );
 		$this->assertFalse( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'search-console' ) );
 		$this->assertFalse( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'adsense' ) );
-		$this->assertTrue( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'analytics' ) );
+		$this->assertTrue( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'analytics-4' ) );
 	}
 
 	private function verify_module_sharing_admin_capabilities_before_admin_auth( $contributor, $administrator ) {
 		// Test user should be an authenticated admin to MANAGE_MODULE_SHARING_OPTIONS and
 		// DELEGATE_MODULE_SHARING_MANAGEMENT.
-		$this->assertFalse( user_can( $contributor, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics' ) );
-		$this->assertFalse( user_can( $contributor, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics' ) );
-		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics' ) );
-		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics' ) );
+		$this->assertFalse( user_can( $contributor, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics-4' ) );
+		$this->assertFalse( user_can( $contributor, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics-4' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics-4' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics-4' ) );
 	}
 
 	private function verify_module_sharing_admin_capabilities_after_admin_auth( $administrator ) {
 		// Test authenticated admin can MANAGE_MODULE_SHARING_OPTIONS (not DELEGATE_MODULE_SHARING_MANAGEMENT)
 		// if management setting for the module is set to 'all_admins' and not 'owner'.
-		$this->assertTrue( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics' ) );
-		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics' ) );
+		$this->assertTrue( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics-4' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics-4' ) );
 		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'search-console' ) );
 		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'search-console' ) );
 

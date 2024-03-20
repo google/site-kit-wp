@@ -24,34 +24,29 @@ import {
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
 import { zeroing } from './utils/adsense-data-zeroing';
-import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
+import DashboardTopEarningPagesWidgetGA4 from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidgetGA4';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
-import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import {
 	getAdSenseMockResponse,
 	provideAdSenseMockReport,
 } from '../assets/js/modules/adsense/util/data-mock';
-import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
+import { getAnalytics4MockResponse } from '../assets/js/modules/analytics-4/utils/data-mock';
+import { provideUserAuthentication } from '../tests/js/utils';
 
 const generateAnalyticsData = makeReportDataGenerator(
-	getAnalyticsMockResponse
+	getAnalytics4MockResponse
 );
 const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
 
+// @TODO: Update it to GA4.
 const topEarningPagesArgs = {
 	startDate: '2020-08-15',
 	endDate: '2020-09-11',
-	dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-	metrics: [
-		{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-		{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-		{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-	],
-	orderby: {
-		fieldName: 'ga:adsenseRevenue',
-		sortOrder: 'DESCENDING',
-	},
+	dimensions: [ 'pageTitle', 'pagePath' ],
+	metrics: [ { name: 'totalAdRevenue' } ],
+	orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
 	limit: 5,
 };
 
@@ -64,16 +59,20 @@ const getCurrencyFromReportOptions = {
 };
 
 generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'adsense', 'analytics' ],
-	datastore: MODULES_ANALYTICS,
+	moduleSlugs: [ 'adsense', 'analytics-4' ],
+	datastore: MODULES_ANALYTICS_4,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
-	...generateAnalyticsData( { ...topEarningPagesArgs } ),
+	...generateAnalyticsData( topEarningPagesArgs ),
 	options: topEarningPagesArgs,
 	setup: ( registry, variantName ) => {
+		provideUserAuthentication( registry );
 		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAdSenseLinked( variantName !== 'AdSense Not Linked' );
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
@@ -82,7 +81,7 @@ generateReportBasedWidgetStories( {
 			.dispatch( MODULES_ADSENSE )
 			.finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
-	Component: DashboardTopEarningPagesWidget,
+	Component: DashboardTopEarningPagesWidgetGA4,
 	wrapWidget: false,
 	additionalVariants: {
 		'AdSense Not Linked': {

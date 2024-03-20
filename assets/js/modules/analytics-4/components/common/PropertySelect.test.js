@@ -20,11 +20,7 @@
  * Internal dependencies
  */
 import PropertySelect from './PropertySelect';
-import {
-	MODULES_ANALYTICS,
-	ACCOUNT_CREATE,
-} from '../../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import {
@@ -45,11 +41,10 @@ const setupRegistry = ( registry ) => {
 		referenceSiteURL: 'http://example.com',
 	} );
 	provideUserAuthentication( registry );
-	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 		propertyID: properties[ 0 ]._id,
 	} );
-	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+	dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 		fixtures.accountSummaries
@@ -88,9 +83,8 @@ const setupEmptyRegistry = ( registry ) => {
 	const { dispatch } = registry;
 
 	provideUserAuthentication( registry );
-	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+	dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 		fixtures.accountSummaries.map( ( account ) => ( {
@@ -163,7 +157,7 @@ describe( 'PropertySelect', () => {
 
 		act( () => {
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.setAccountID( ACCOUNT_CREATE );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -174,7 +168,7 @@ describe( 'PropertySelect', () => {
 		expect( container ).toBeEmptyDOMElement();
 
 		act( () => {
-			registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 		} );
 
 		// After we set a valid account ID, the property select should be visible.
