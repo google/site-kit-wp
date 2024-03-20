@@ -26,7 +26,7 @@ import { deactivatePlugin } from '@wordpress/e2e-test-utils';
  */
 import {
 	activateAMPWithMode,
-	setupAnalytics,
+	setupAnalytics4,
 	setupSiteKit,
 	resetSiteKit,
 } from '../../../utils';
@@ -35,7 +35,7 @@ describe( 'AMP homepage validates with Analytics enabled', () => {
 	beforeEach( async () => {
 		await setupSiteKit();
 		await activateAMPWithMode( 'primary' );
-		await setupAnalytics();
+		await setupAnalytics4();
 	} );
 	afterEach( async () => {
 		await deactivatePlugin( 'amp' );

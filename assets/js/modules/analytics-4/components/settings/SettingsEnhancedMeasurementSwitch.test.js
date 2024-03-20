@@ -26,7 +26,6 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import * as fixtures from '../../datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -63,11 +62,8 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		registry = createTestRegistry();
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-			accountID,
-		} );
-
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID,
 			propertyID,
 			webDataStreamID,
 		} );

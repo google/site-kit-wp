@@ -33,7 +33,6 @@ import {
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	compareStartDate: '2020-07-14',
@@ -181,7 +180,7 @@ export default {
 				];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

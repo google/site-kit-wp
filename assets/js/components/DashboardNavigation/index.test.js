@@ -96,7 +96,7 @@ describe( 'Dashboard Navigation', () => {
 			googlesitekit_manage_options: true,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
-			'googlesitekit_read_shared_module_data::["analytics"]': false,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': false,
 		} );
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
@@ -134,7 +134,7 @@ describe( 'Dashboard Navigation', () => {
 			googlesitekit_manage_options: true,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
-			'googlesitekit_read_shared_module_data::["analytics"]': false,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': false,
 		} );
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
@@ -173,7 +173,7 @@ describe( 'Dashboard Navigation', () => {
 			googlesitekit_manage_options: true,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': false,
 			'googlesitekit_read_shared_module_data::["search-console"]': false,
-			'googlesitekit_read_shared_module_data::["analytics"]': false,
+			'googlesitekit_read_shared_module_data::["analytics-4"]': false,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
 		} );
 

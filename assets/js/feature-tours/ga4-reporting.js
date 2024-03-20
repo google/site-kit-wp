@@ -50,7 +50,7 @@ const ga4Reporting = {
 			target: '.googlesitekit-data-block--conversions .googlesitekit-data-block__title, .googlesitekit-analytics-cta--setup-conversions',
 			styles: { spotlight: noBorderStyles },
 			title: __(
-				'See the new metrics from Google Analytics 4',
+				'See the new metrics from Google Analytics',
 				'google-site-kit'
 			),
 			content: createInterpolateElement(

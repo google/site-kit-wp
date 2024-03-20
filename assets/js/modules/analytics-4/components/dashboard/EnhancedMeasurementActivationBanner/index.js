@@ -30,8 +30,10 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
+	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import {
@@ -41,10 +43,6 @@ import {
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 } from '../../../constants';
-import {
-	EDIT_SCOPE,
-	FORM_SETUP,
-} from '../../../../analytics/datastore/constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';

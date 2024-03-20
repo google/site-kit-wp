@@ -66,7 +66,7 @@ describe( 'SettingsEdit', () => {
 			body: [ account ],
 			status: 200,
 		} );
-		fetchMock.getOnce( new RegExp( 'analytics/data/settings' ), {
+		fetchMock.getOnce( new RegExp( 'analytics-4/data/settings' ), {
 			body: {},
 			status: 200,
 		} );
