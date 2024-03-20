@@ -114,7 +114,7 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ createInterpolateElement(
 							__(
-								'<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID',
+								'<VisuallyHidden>Google Analytics</VisuallyHidden> Measurement ID',
 								'google-site-kit'
 							),
 							{

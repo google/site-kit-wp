@@ -10,8 +10,8 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
+use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking\Event_List;
+use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking\Event;
 
 class Fixed_Blog_Post_Link_Event_List extends Event_List {
 

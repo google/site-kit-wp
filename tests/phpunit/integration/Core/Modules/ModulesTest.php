@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
-use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -44,7 +43,6 @@ class ModulesTest extends TestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
-				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
@@ -56,40 +54,9 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_available_modules__missing_dependency() {
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		add_filter(
-			'googlesitekit_available_modules',
-			function( $modules ) {
-				return array_filter(
-					$modules,
-					function( $module ) {
-						// Remove Analytics from the list of available modules.
-						return 'analytics' !== $module;
-					}
-				);
-			}
-		);
-
-		$available = array_map(
-			function ( $instance ) {
-				return get_class( $instance );
-			},
-			$modules->get_available_modules()
-		);
-
-		// Analytics is no longer present due to the filter above.
-		// Analytics-4 is no longer present due to their dependency on Analytics.
-		$this->assertEqualSetsWithIndex(
-			array(
-				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
-				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
-				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
-				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
-				'tagmanager'         => 'Google\\Site_Kit\\Modules\\Tag_Manager',
-			),
-			$available
-		);
+		// TODO: As Site Kit doesn't have any dependent modules at this moment,
+		// update this test case so that a dependency relationship can be
+		// mocked without referencing an actual module, e.g. using FakeModule.
 	}
 
 	public function test_get_active_modules() {
@@ -112,11 +79,10 @@ class ModulesTest extends TestCase {
 		// Active modules other than always-on modules are stored in an option.
 
 		// Active modules will fallback to legacy option if set.
-		update_option( 'googlesitekit-active-modules', array( 'analytics' ) );
+		update_option( 'googlesitekit-active-modules', array( 'analytics-4' ) );
 
 		$this->assertEqualSetsWithIndex(
 			$always_on_modules + array(
-				'analytics'   => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
 			),
 			array_map( 'get_class', $modules->get_active_modules() )
@@ -184,12 +150,9 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_module_dependencies() {
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
-		$dependencies = $modules->get_module_dependencies( 'analytics-4' );
-
-		$this->assertContains( 'analytics', $dependencies );
+		// TODO: As Site Kit doesn't have any dependent modules at this moment,
+		// update this test case so that a dependency relationship can be
+		// mocked without referencing an actual module, e.g. using FakeModule.
 	}
 
 	public function test_get_module_dependencies_exception() {
@@ -222,12 +185,9 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_module_dependants() {
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
-		$dependants = $modules->get_module_dependants( 'analytics' );
-
-		$this->assertContains( 'analytics-4', $dependants );
+		// TODO: As Site Kit doesn't have any dependent modules at this moment,
+		// update this test case so that a dependency relationship can be
+		// mocked without referencing an actual module, e.g. using FakeModule.
 	}
 
 	public function test_get_module_dependants_exception() {
@@ -307,45 +267,6 @@ class ModulesTest extends TestCase {
 		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, $inactive_module_slug ) );
 	}
 
-	public function test_is_module_connected_with_ga4_reporting() {
-		remove_all_filters( 'googlesitekit_is_module_connected' );
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$modules->register();
-
-		// A module being active is a pre-requisite for it to be connected.
-		update_option(
-			Modules::OPTION_ACTIVE_MODULES,
-			array( 'analytics', 'analytics-4' )
-		);
-
-		// Ensure the method returns false when the slug is not `analytics`
-		// and the test module (analytics-4) is not connected.
-		$this->assertArrayHasKey( 'analytics-4', $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( 'analytics-4' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, 'analytics-4' ) );
-
-		// Ensure the method returns false when Analytics-4 is not connected.
-		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( 'analytics' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, 'analytics' ) );
-
-		// Update the Analytics 4 settings to be connected.
-		update_option(
-			'googlesitekit_analytics-4_settings',
-			array(
-				'propertyID'      => '123',
-				'webDataStreamID' => '456',
-				'measurementID'   => 'G-789',
-				'ownerID'         => '1',
-			)
-		);
-
-		// Ensure the method returns true if all the conditions are met.
-		$this->assertArrayHasKey( 'analytics', $modules->get_available_modules() );
-		$this->assertTrue( $modules->is_module_connected( 'analytics' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, 'analytics' ) );
-	}
-
 	public function test_activate_module() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -410,47 +331,6 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 1, $deactivation_invocations );
 	}
 
-	public function test_analytics_connects_using_analytics_configuration() {
-		remove_all_actions( 'googlesitekit_authorize_user' );
-
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$modules = new Modules( $context );
-		$modules->register();
-
-		$this->assertNotContains( 'analytics', $modules->get_active_modules() );
-
-		do_action(
-			'googlesitekit_authorize_user',
-			array(
-				'analytics_configuration' => array(),
-			)
-		);
-
-		// Check that we don't activate the Analytics module if the analytics_configuration is not passed.
-		$this->assertNotContains(
-			'analytics',
-			array_keys( $modules->get_active_modules() )
-		);
-
-		do_action(
-			'googlesitekit_authorize_user',
-			array(
-				'analytics_configuration' => array(
-					'ga_account_id'               => '12345678',
-					'ua_property_id'              => 'UA-12345678-1',
-					'ua_internal_web_property_id' => '13579',
-					'ua_profile_id'               => '987654',
-				),
-			)
-		);
-
-		// The Analytics module should be activated now.
-		$this->assertContains(
-			'analytics',
-			array_keys( $modules->get_active_modules() )
-		);
-	}
-
 	/**
 	 * @dataProvider provider_googlesitekit_available_modules_filter
 	 *
@@ -474,7 +354,6 @@ class ModulesTest extends TestCase {
 			Site_Verification::MODULE_SLUG,
 			Search_Console::MODULE_SLUG,
 			AdSense::MODULE_SLUG,
-			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
@@ -524,9 +403,9 @@ class ModulesTest extends TestCase {
 
 		yield 'should enable only analytics, search console and forced active modules' => array(
 			function ( $modules ) {
-				return array( Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG );
+				return array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG );
 			},
-			array( Site_Verification::MODULE_SLUG, Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+			array( Site_Verification::MODULE_SLUG, Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield 'should ignore non existing modules, and include modules flagged as forced active' => array(
@@ -583,7 +462,6 @@ class ModulesTest extends TestCase {
 			Site_Verification::MODULE_SLUG,
 			Search_Console::MODULE_SLUG,
 			AdSense::MODULE_SLUG,
-			Analytics::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
@@ -680,7 +558,7 @@ class ModulesTest extends TestCase {
 
 		// Tests with shared_roles
 		$test_sharing_settings = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),
 				'management'  => 'owner',
 			),
@@ -695,15 +573,15 @@ class ModulesTest extends TestCase {
 		$this->assertFalse( $modules->is_module_recoverable( 'search-console' ) );
 		$this->assertFalse( $modules->is_module_recoverable( 'pagespeed-insights' ) );
 		// Checks modules that has an owner.
-		$this->assertTrue( $modules->is_module_recoverable( 'analytics' ) );
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics-4' ) );
 
-		$this->assertTrue( $modules->is_module_recoverable( new Analytics( $context ) ) );
+		$this->assertTrue( $modules->is_module_recoverable( new Analytics_4( $context ) ) );
 
 		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$options       = new Options( $context );
-		$options->set( 'googlesitekit_analytics_settings', array( 'ownerID' => $administrator->ID ) );
+		$options->set( 'googlesitekit_analytics-4_settings', array( 'ownerID' => $administrator->ID ) );
 
-		$this->assertTrue( $modules->is_module_recoverable( 'analytics' ) );
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics-4' ) );
 		$administrator_auth = new Authentication( $context, null, new User_Options( $context, $administrator->ID ) );
 		$administrator_auth->get_oauth_client()->set_token(
 			array(
@@ -712,7 +590,7 @@ class ModulesTest extends TestCase {
 		);
 
 		// Checks the default return false.
-		$this->assertFalse( $modules->is_module_recoverable( 'analytics' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'analytics-4' ) );
 	}
 
 	private function setup_all_admin_module_ownership_change() {
@@ -897,23 +775,23 @@ class ModulesTest extends TestCase {
 		update_option(
 			'googlesitekit-active-modules',
 			array(
-				'analytics',
+				'analytics-4',
 			)
 		);
 
 		$modules->register();
 
 		$test_sharing_settings = array(
-			'analytics' => array(),
+			'analytics-4' => array(),
 		);
-		$module                = $modules->get_module( 'analytics' );
+		$module                = $modules->get_module( 'analytics-4' );
 		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$this->assertEquals( $settings['ownerID'], 0 );
 
 		$test_updated_sharing_settings = array(
-			'analytics' => array(
+			'analytics-4' => array(
 				'sharedRoles' => array( 'editor' ),
 				'management'  => 'all_admins',
 			),
@@ -936,26 +814,26 @@ class ModulesTest extends TestCase {
 		update_option(
 			'googlesitekit-active-modules',
 			array(
-				'analytics',
+				'analytics-4',
 			)
 		);
 
 		$modules->register();
 
 		$test_sharing_settings = array(
-			'analytics' => array(
+			'analytics-4' => array(
 				'sharedRoles' => array( 'editor' ),
 				'management'  => 'owner',
 			),
 		);
-		$module                = $modules->get_module( 'analytics' );
+		$module                = $modules->get_module( 'analytics-4' );
 		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$this->assertEquals( $settings['ownerID'], 0 );
 
 		$test_updated_sharing_settings = array(
-			'analytics' => array(
+			'analytics-4' => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),
 				'management'  => 'owner',
 			),
@@ -978,14 +856,14 @@ class ModulesTest extends TestCase {
 		update_option(
 			'googlesitekit-active-modules',
 			array(
-				'analytics',
+				'analytics-4',
 			)
 		);
 
 		$modules->register();
 
 		$test_sharing_settings = array(
-			'analytics' => array(
+			'analytics-4' => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),
 				'management'  => 'owner',
 			),
@@ -997,7 +875,7 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( $settings['ownerID'], 0 );
 
 		$test_updated_sharing_settings = array(
-			'analytics' => array(
+			'analytics-4' => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),
 				'management'  => 'all_admins',
 			),
@@ -1017,7 +895,7 @@ class ModulesTest extends TestCase {
 			array(
 				'pagespeed-insights',
 				'search-console',
-				'analytics',
+				'analytics-4',
 			)
 		);
 
@@ -1031,23 +909,23 @@ class ModulesTest extends TestCase {
 		);
 
 		// Connect the analytics module and give it an owner.
-		$analytics = $modules->get_module( 'analytics' );
+		$analytics = $modules->get_module( 'analytics-4' );
 
 		FakeHttp::fake_google_http_handler( $analytics->get_client() );
 
 		$analytics->get_settings()->merge(
 			array(
-				'accountID'             => '12345678',
-				'profileID'             => '12345678',
-				'propertyID'            => '987654321',
-				'internalWebPropertyID' => '1234567890',
-				'ownerID'               => 2,
+				'accountID'       => '12345678',
+				'propertyID'      => '12345678',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-123',
+				'ownerID'         => 2,
 			)
 		);
 
 		$expected_module_owners = array(
 			'search-console'     => 1,
-			'analytics'          => 2,
+			'analytics-4'        => 2,
 			'pagespeed-insights' => 0,
 		);
 		$this->assertEqualSetsWithIndex( $expected_module_owners, $modules->get_shareable_modules_owners() );

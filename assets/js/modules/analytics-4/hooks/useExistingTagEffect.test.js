@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
@@ -36,7 +35,6 @@ describe( 'useExistingTagEffect', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		// Set no existing tag.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
