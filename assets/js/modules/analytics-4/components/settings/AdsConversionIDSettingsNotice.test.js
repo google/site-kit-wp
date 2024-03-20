@@ -29,6 +29,8 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'should not render if the migration has not been performed', () => {
@@ -73,8 +75,6 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 	} );
 
 	it( 'should render the notice', () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			adsConversionIDMigratedAtMs: Date.now() - 7 * DAY_IN_SECONDS * 1000, // 7 days ago.
 		} );

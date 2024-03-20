@@ -75,14 +75,21 @@ describe( 'useMigrateAdsConversionID', () => {
 		// The provideModules utility sets the Ads module as connected by default.
 		provideModules( registry );
 
+		// Set the ads conversion ID in the Ads module to something (AW-5678)
+		// that is different than what is set in the Analytics module (AW-1234).
+		registry
+			.dispatch( MODULES_ADS )
+			.receiveGetSettings( { adsConversionID: 'AW-5678' } );
+
 		renderHook( () => useMigrateAdsConversionID(), {
 			registry,
 			features: [ 'adsModule' ],
 		} );
 
-		expect(
-			registry.select( MODULES_ADS ).getAdsConversionID()
-		).toBeUndefined();
+		// Verify that the value has not changed.
+		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+			'AW-5678'
+		);
 
 		expect( fetchMock ).not.toHaveFetched();
 	} );
