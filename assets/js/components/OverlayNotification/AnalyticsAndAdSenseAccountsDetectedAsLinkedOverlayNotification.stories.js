@@ -29,6 +29,8 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '../../modules/analytics-4/utils/data-mock';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 
@@ -63,9 +65,13 @@ Default.scenario = {
 export default {
 	title: 'Components/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification',
 	component: AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
-	parameters: { features: [ 'ga4AdSenseIntegration' ] },
+	parameters: {
+		features: [ 'ga4AdSenseIntegration' ],
+		viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+	},
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
+			const { viewContext } = parameters;
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
 
@@ -99,7 +105,9 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<ViewContextProvider value={ viewContext }>
+						<Story />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},
