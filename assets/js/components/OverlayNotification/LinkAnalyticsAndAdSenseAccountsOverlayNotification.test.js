@@ -33,7 +33,10 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	let registry;
@@ -218,6 +221,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -231,6 +235,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -248,6 +253,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
@@ -271,6 +277,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -302,6 +309,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			{
 				registry,
 				features: [ 'ga4AdSenseIntegration' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
