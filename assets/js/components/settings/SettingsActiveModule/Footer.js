@@ -34,10 +34,7 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
@@ -77,20 +74,6 @@ export default function Footer( props ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
-	const enableGA4PropertyTooltip = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4PropertyTooltip' )
-	);
-
-	const { setValues } = useDispatch( CORE_FORMS );
-
-	const dismissGA4PropertyTooltip = useCallback( () => {
-		if ( slug !== 'analytics' || ! enableGA4PropertyTooltip ) {
-			return null;
-		}
-		setValues( FORM_SETUP, {
-			enableGA4PropertyTooltip: false,
-		} );
-	}, [ slug, enableGA4PropertyTooltip, setValues ] );
 
 	const moduleHomepage = useSelect( ( select ) => {
 		if ( ! module || isEmpty( module.homepage ) ) {
@@ -113,11 +96,7 @@ export default function Footer( props ) {
 		);
 		await clearErrors?.();
 		history.push( `/connected-services/${ slug }` );
-
-		if ( slug === 'analytics' ) {
-			dismissGA4PropertyTooltip();
-		}
-	}, [ clearErrors, history, viewContext, slug, dismissGA4PropertyTooltip ] );
+	}, [ clearErrors, history, viewContext, slug ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -138,9 +117,6 @@ export default function Footer( props ) {
 				await clearErrors?.();
 				history.push( `/connected-services/${ slug }` );
 
-				if ( slug === 'analytics' ) {
-					dismissGA4PropertyTooltip();
-				}
 				await clearCache();
 			}
 		},
@@ -153,7 +129,6 @@ export default function Footer( props ) {
 			clearErrors,
 			history,
 			viewContext,
-			dismissGA4PropertyTooltip,
 		]
 	);
 
@@ -186,11 +161,7 @@ export default function Footer( props ) {
 			return false;
 		}
 
-		// Since the GA4 accounts are loaded from `account-summaries` of the `analytics-4` store
-		// for the `getAccountSummaries` selector, we need to use the `analytics-4` store name
-		// instead of the module store name.
-		const storeName =
-			slug === 'analytics' ? MODULES_ANALYTICS_4 : module.storeName;
+		const storeName = module.storeName;
 
 		return ! select( storeName ).hasFinishedResolution(
 			resolutionSelector

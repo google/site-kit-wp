@@ -24,7 +24,6 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import {
@@ -340,7 +339,7 @@ export default {
 				const [ accountID, webDataStreamID ] = [ '12345', '56789' ];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

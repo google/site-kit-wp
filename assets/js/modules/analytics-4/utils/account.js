@@ -29,7 +29,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { countryCodesByTimezone } from '../../analytics/util/countries-timezones';
+import { countryCodesByTimezone } from './countries-timezones';
 import { ENHANCED_MEASUREMENT_ENABLED } from '../datastore/constants';
 
 /**

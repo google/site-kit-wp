@@ -21,19 +21,19 @@
  */
 import { extractExistingTag } from '../tag';
 import { default as adsenseTagMatchers } from '../../modules/adsense/util/tag-matchers';
-import { default as analyticsTagMatchers } from '../../modules/analytics/util/tag-matchers';
+import { default as analyticsTagMatchers } from '../../modules/analytics-4/utils/tag-matchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../../modules/tagmanager/util';
 
 const valuesToTest = [
 	[
-		"<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga('create', 'UA-XXXXX-Y', 'auto'); ga('send', 'pageview'); </script><script async src='https://www.google-analytics.com/analytics.js'></script>",
+		"<script>__gaTracker('create','G-2B7M8YQ1K6','auto');</script>",
 		analyticsTagMatchers,
-		'UA-XXXXX-Y',
+		'G-2B7M8YQ1K6',
 	],
 	[
-		"<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-XXXXX-Y', 'auto'); ga('send', 'pageview'); </script>",
+		"<script>var _gaq = _gaq || [];_gaq.push(['_setAccount', 'G-2B7M8YQ1K6']);_gaq.push(['_trackPageview']);</script>",
 		analyticsTagMatchers,
-		'UA-XXXXX-Y',
+		'G-2B7M8YQ1K6',
 	],
 	[
 		'<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
@@ -66,9 +66,9 @@ const valuesToTest = [
 		'ca-pub-123456789',
 	],
 	[
-		"<script>(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-12345-1', 'auto');ga('send', 'pageview');</script>",
+		"<script async src='https://googletagmanager.com/gtag/js?id=G-2B7M8YQ1K6'></script>",
 		analyticsTagMatchers,
-		'UA-12345-1',
+		'G-2B7M8YQ1K6',
 	],
 	[
 		'<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXXXXX"></script>',

@@ -20,7 +20,7 @@ use Google\Site_Kit\Modules\AdSense\Settings as Adsense_Settings;
 /**
  * The base class for Synchronizing the adSenseLinked status.
  *
- * @since n.e.x.t
+ * @since 1.123.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * Analytics_4 instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @var Analytics_4
 	 */
 	protected $analytics_4;
@@ -38,7 +38,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -46,7 +46,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @var Options
 	 */
 	protected $options;
@@ -54,7 +54,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 *
 	 * @param Analytics_4  $analytics_4  Analytics 4 instance.
 	 * @param User_Options $user_options User_Options instance.
@@ -69,7 +69,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	public function register() {
 		add_action(
@@ -83,7 +83,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * Cron callback for synchronizing the adsense linked data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	protected function synchronize_adsense_linked_data() {
 		$owner_id     = $this->analytics_4->get_owner_id();
@@ -99,7 +99,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * Schedules single cron which will synchronize the adSenseLinked status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	public function maybe_schedule_synchronize_adsense_linked() {
 		$analytics_4_connected  = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
@@ -118,7 +118,7 @@ class Synchronize_AdSenseLinked {
 	/**
 	 * Synchronize the AdSenseLinked status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 *
 	 * @return null
 	 */

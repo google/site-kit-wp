@@ -36,13 +36,11 @@ import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
-import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import SwitchedToGA4Banner from './SwitchedToGA4Banner';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -58,10 +56,6 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
-	);
-
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
 	const ga4ModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
@@ -105,7 +99,6 @@ export default function BannerNotifications() {
 		<Fragment>
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			<ModuleRecoveryAlert />
-			<ActivationBanner />
 			{ /* The Ads module uses the new, subtle notification rather than the old SetupSuccessBannerNotification */ }
 			{ 'authentication_success' === notification && slug !== 'ads' && (
 				<SetupSuccessBannerNotification />
@@ -115,9 +108,6 @@ export default function BannerNotifications() {
 			) }
 			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			{ analyticsModuleConnected && ga4ModuleConnected && (
-				<SwitchedToGA4Banner />
-			) }
 			{ ! keyMetricsSetupCTARendered && (
 				<EnhancedMeasurementActivationBanner />
 			) }
