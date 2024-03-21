@@ -57,13 +57,16 @@ export default function WebDataStreamNameInput() {
 	const webDataStreamID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
-	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID )
-			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
-			: []
-	);
 	const webDataStreamName = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'webDataStreamName' )
+	);
+	const webDataStreamAlreadyExists = useSelect( ( select ) =>
+		isValidPropertyID( propertyID )
+			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(
+					propertyID,
+					webDataStreamName
+			  )
+			: false
 	);
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
@@ -94,14 +97,8 @@ export default function WebDataStreamNameInput() {
 		return null;
 	}
 
-	const existingWebDataStream =
-		Array.isArray( webDataStreams ) &&
-		webDataStreams.some(
-			( { displayName } ) => displayName === webDataStreamName
-		);
-
 	const error =
-		existingWebDataStream ||
+		webDataStreamAlreadyExists ||
 		! webDataStreamName ||
 		! isValidWebDataStreamName( webDataStreamName );
 
@@ -114,7 +111,7 @@ export default function WebDataStreamNameInput() {
 				label={ __( 'Web Data Stream Name', 'google-site-kit' ) }
 				outlined
 				helperText={ ( () => {
-					if ( existingWebDataStream ) {
+					if ( webDataStreamAlreadyExists ) {
 						return __(
 							'A web data stream with this name already exists.',
 							'google-site-kit'
