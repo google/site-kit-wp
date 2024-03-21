@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.4
+Tested up to:      6.5
 Requires PHP:      5.6
-Stable tag:        1.122.0
+Stable tag:        1.123.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,34 +109,29 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.122.0 =
+= 1.123.0 =
 
 **Added**
 
-* Add the initial datastore implementation for the Ads module. See [#8226](https://github.com/google/site-kit-wp/issues/8226).
-* Scaffold foundational client-side infrastructure for the Ads module. See [#8225](https://github.com/google/site-kit-wp/issues/8225).
-* Add tracking events for "Top Earning Pages" widget. See [#8212](https://github.com/google/site-kit-wp/issues/8212).
+* Add Analytics events to AdSense + Analytics success notification. See [#8214](https://github.com/google/site-kit-wp/issues/8214).
+* Add a cron task to synchronize the AdSense linked state for GA4 in the background. See [#8049](https://github.com/google/site-kit-wp/issues/8049).
 
 **Enhanced**
 
-* Add happiness survey triggers for the Consent Mode feature. See [#8353](https://github.com/google/site-kit-wp/issues/8353).
-* Update Top Earning Content/Pages widgets to only show ad revenue from AdSense. See [#8281](https://github.com/google/site-kit-wp/issues/8281).
-* Create conditional dashboard CTA for Consent Mode. See [#8279](https://github.com/google/site-kit-wp/issues/8279).
-* Add settings in the Site Kit admin for Consent Mode. See [#8278](https://github.com/google/site-kit-wp/issues/8278).
-* Add front-end integration with WP Consent API for handling consent state updates. See [#8277](https://github.com/google/site-kit-wp/issues/8277).
-* Add functionality for detecting & installing the WP Consent API. See [#8276](https://github.com/google/site-kit-wp/issues/8276).
-* Deprecate legacy web tag block_on_consent for Analytics when Consent Mode is enabled. See [#8275](https://github.com/google/site-kit-wp/issues/8275).
-* Print gtag configuration for consent mode when enabled. See [#8274](https://github.com/google/site-kit-wp/issues/8274).
-* Add REST endpoints for consent mode. See [#8271](https://github.com/google/site-kit-wp/issues/8271).
-* Add settings model for Consent Mode. See [#8270](https://github.com/google/site-kit-wp/issues/8270).
-* Add notification for users who have linked their Analytics and AdSense accounts. See [#8238](https://github.com/google/site-kit-wp/issues/8238).
-* Allow multiple snippets when using Google Analytics 4 and Google Tag Manager. See [#8196](https://github.com/google/site-kit-wp/issues/8196).
-* Improve alignment of Key Metric Widget tiles, including when errors are encountered. See [#7761](https://github.com/google/site-kit-wp/issues/7761).
-* Replace First Input Delay core web vital with Interaction to Next Paint in PageSpeed Insights module. See [#7530](https://github.com/google/site-kit-wp/issues/7530).
-* Update setup buttons to use consistent language. See [#5401](https://github.com/google/site-kit-wp/issues/5401).
+* Display overlay notification to prompt AdSense + Analytics 4 users to link their accounts. See [#8236](https://github.com/google/site-kit-wp/issues/8236).
+* Add a left-hand spinner variant of the `SpinnerButton` component. See [#8163](https://github.com/google/site-kit-wp/issues/8163).
+* Add the Audience Segmentation Info Notice as a component in Storybook. See [#8137](https://github.com/google/site-kit-wp/issues/8137).
+* Migrate settings from the legacy to the new Analytics module. See [#8082](https://github.com/google/site-kit-wp/issues/8082).
+* Replace the legacy `analytics` module with `analytics-4`. See [#7932](https://github.com/google/site-kit-wp/issues/7932).
+
+**Changed**
+
+* Refactor Site Kit to use a singular Analytics module. See [#8306](https://github.com/google/site-kit-wp/issues/8306).
+* Remove the legacy `analytics` module (UA) from Site Kit. See [#7843](https://github.com/google/site-kit-wp/issues/7843).
 
 **Fixed**
 
-* Fix a bug that could cause the AdSense chart to display earnings values below "0" when no earnings have been made. See [#6479](https://github.com/google/site-kit-wp/issues/6479).
+* Fix a bug that prevented "Set up Google Analytics" step from appearing in Site Kit setup flow. See [#8397](https://github.com/google/site-kit-wp/issues/8397).
+* Fix bug that could cause the "Enable automatic updates" banner to appear then disappear briefly when the user has a slow internet connection. See [#8235](https://github.com/google/site-kit-wp/issues/8235).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

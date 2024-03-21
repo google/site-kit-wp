@@ -20,7 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 /**
  * Class Migration_1_123_0
  *
- * @since n.e.x.t
+ * @since 1.123.0
  * @access private
  * @ignore
  */
@@ -48,7 +48,7 @@ class Migration_1_123_0 {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @var Context
 	 */
 	protected $context;
@@ -56,7 +56,7 @@ class Migration_1_123_0 {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @var Options
 	 */
 	protected $options;
@@ -64,7 +64,7 @@ class Migration_1_123_0 {
 	/**
 	 * Analytics_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @var Analytics_Settings
 	 */
 	protected $analytics_settings;
@@ -72,7 +72,7 @@ class Migration_1_123_0 {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -89,7 +89,7 @@ class Migration_1_123_0 {
 	/**
 	 * Registers hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -98,7 +98,7 @@ class Migration_1_123_0 {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
@@ -115,7 +115,7 @@ class Migration_1_123_0 {
 	/**
 	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	protected function migrate_legacy_analytics_settings() {
 		if ( ! $this->analytics_settings->has() ) {
@@ -152,7 +152,7 @@ class Migration_1_123_0 {
 	/**
 	 * Activates the analytics-4 module if the legacy analytics module was active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	protected function activate_analytics() {
 		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
@@ -189,7 +189,7 @@ class Migration_1_123_0 {
 	/**
 	 * Replicates sharing settings from the legacy analytics module to analytics-4.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 */
 	protected function migrate_legacy_analytics_sharing_settings() {
 		$option = $this->options->get( Module_Sharing_Settings::OPTION );

@@ -36,6 +36,9 @@ import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adse
 import OverlayNotification from './OverlayNotification';
 import useViewOnly from '../../hooks/useViewOnly';
 import { useFeature } from '../../hooks/useFeature';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../../hooks/useDashboardType';
 
 const { useSelect, useDispatch } = Data;
 
@@ -48,6 +51,8 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	);
 
 	const isViewOnly = useViewOnly();
+	const dashboardType = useDashboardType();
+	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
 
 	const isShowingNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification(
@@ -77,7 +82,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly || isDismissed ) {
+		if ( isViewOnly || ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 
@@ -85,7 +90,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly || isDismissed ) {
+		if ( isViewOnly || ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 
@@ -93,7 +98,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( isViewOnly || isDismissed ) {
+		if ( isViewOnly || ! isMainDashboard || isDismissed ) {
 			return null;
 		}
 
@@ -106,6 +111,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const shouldShowNotification =
 		isGA4AdSenseIntegrationEnabled &&
 		! isViewOnly &&
+		isMainDashboard &&
 		analyticsAndAdSenseAreConnected &&
 		isAdSenseLinked === false &&
 		isDismissed === false;
