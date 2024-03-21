@@ -44,6 +44,7 @@ import {
 } from '../../modules/analytics-4/datastore/constants';
 import { getContextScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
+import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
 
 const { useSelect, useDispatch } = Data;
 
@@ -160,7 +161,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		return null;
 	} );
 
-	const dataAvailable = !! data?.rows?.length;
+	const dataAvailable = isZeroReport( data ) === false;
 
 	const shouldShowNotification =
 		ga4AdSenseIntegrationEnabled &&
