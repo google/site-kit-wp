@@ -280,7 +280,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
-	it( 'does not render if adSenseLinked is `true` but data is not available', () => {
+	it( 'does not render if adSenseLinked is `true` but data is in a "gathering data" state', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( {}, { options: reportOptions } );
@@ -301,7 +301,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
-	it( 'does not render if adSenseLinked is `true` when in zero data state', () => {
+	it( 'does not render if adSenseLinked is `true` but there is zero data', () => {
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );

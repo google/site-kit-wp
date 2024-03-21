@@ -176,13 +176,13 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
-		// the current users profile with the `dismissItem` action.
+		// the current user's profile with the `dismissItem` action.
 		dismissOverlayNotification(
 			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
 		);
 	};
 
-	const scrollToWidget = ( event ) => {
+	const scrollToWidgetAndDismissNotification = ( event ) => {
 		event.preventDefault();
 
 		dismissNotification();
@@ -239,7 +239,10 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
 
-				<Button disabled={ isDismissing } onClick={ scrollToWidget }>
+				<Button
+					disabled={ isDismissing }
+					onClick={ scrollToWidgetAndDismissNotification }
+				>
 					{ __( 'Show me', 'google-site-kit' ) }
 				</Button>
 			</div>
