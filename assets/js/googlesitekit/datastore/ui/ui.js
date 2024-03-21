@@ -77,7 +77,7 @@ export const actions = {
 	/**
 	 * Sets `activeOverlayNotification` state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @private
 	 *
 	 * @param {string} overlayNotification Overlay notification component name.
@@ -107,7 +107,7 @@ export const actions = {
 	 * Resets the `activeOverlayNotification` state and dismiss the overlay from
 	 * the user's profile.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @private
 	 *
 	 * @param {string} overlayNotification Overlay notification component name.
@@ -249,7 +249,7 @@ export const selectors = {
 	 * Returns `true` if the overlay notification name passed is currently
 	 * active, `false` otherwise.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.123.0
 	 * @private
 	 *
 	 * @param {Object} state               Data store's state.

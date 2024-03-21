@@ -30,7 +30,7 @@ import Link from '../../../../../components/Link';
  * Creates a GA4 report row for the given date, with a zero for the metric value.
  *
  * @since 1.96.0
- * @since n.e.x.t Migrated from analytics to analytics-4.
+ * @since 1.123.0 Migrated from analytics to analytics-4.
  *
  * @param {string} date Date in YYYY-MM-DD format.
  * @return {Object} Row object with the date in the GA4 report format as the dimension value, and a zero for the metric value.
@@ -55,7 +55,7 @@ export function createZeroDataRow( date ) {
  * Gets HTML string for a tooltip help link.
  *
  * @since 1.116.0
- * @since n.e.x.t Migrated from analytics to analytics-4.
+ * @since 1.123.0 Migrated from analytics to analytics-4.
  *
  * @param {string} url      The URL to link to.
  * @param {string} label    The label for the link.

@@ -24,7 +24,9 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 function Template() {
@@ -40,9 +42,14 @@ Default.scenario = {
 export default {
 	title: 'Components/LinkAnalyticsAndAdSenseAccountsOverlayNotification',
 	component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
-	parameters: { features: [ 'ga4AdSenseIntegration' ] },
+	parameters: {
+		features: [ 'ga4AdSenseIntegration' ],
+		viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+	},
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
+			const { viewContext } = parameters;
+
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
 
@@ -66,7 +73,9 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<ViewContextProvider value={ viewContext }>
+						<Story />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},

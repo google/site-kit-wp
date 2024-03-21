@@ -1,5 +1,5 @@
 /**
- * `modules/ads` base data store.
+ * Validation utilities.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,19 +17,15 @@
  */
 
 /**
- * Internal dependencies
+ * Checks if the given ads conversion ID is valid.
+ *
+ * @since 1.32.0
+ * @since 1.121.0 Migrated from analytics to analytics-4.
+ * @since n.e.x.t Migrated from analytics-4 to ads.
+ *
+ * @param {*} value Conversion ID to test.
+ * @return {boolean} Whether or not the given ID is valid.
  */
-import Modules from 'googlesitekit-modules';
-import { MODULES_ADS } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
-
-const baseModuleStore = Modules.createModuleStore( 'ads', {
-	ownedSettingsSlugs: [ 'adsConversionID' ],
-	storeName: MODULES_ADS,
-	settingSlugs: [ 'adsConversionID', 'ownerID' ],
-	requiresSetup: true,
-	submitChanges,
-	validateCanSubmitChanges,
-} );
-
-export default baseModuleStore;
+export function isValidAdsConversionID( value ) {
+	return typeof value === 'string' && /^AW-[0-9]+$/.test( value );
+}
