@@ -43,7 +43,10 @@ import {
 import { TextField } from 'googlesitekit-components';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
-import { isValidWebDataStreamName } from '../../utils/validation';
+import {
+	isValidPropertyID,
+	isValidWebDataStreamName,
+} from '../../utils/validation';
 
 const { useSelect, useDispatch } = Data;
 
@@ -55,7 +58,9 @@ export default function WebDataStreamNameInput() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 	const webDataStreams = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
+		isValidPropertyID( propertyID )
+			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
+			: []
 	);
 	const webDataStreamName = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'webDataStreamName' )
