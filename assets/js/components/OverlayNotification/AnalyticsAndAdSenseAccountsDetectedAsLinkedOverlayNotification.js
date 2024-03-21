@@ -128,7 +128,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		} )
 	);
 
-	const args = {
+	const reportArgs = {
 		startDate,
 		endDate,
 		dimensions: [ 'pagePath', 'adSourceName' ],
@@ -144,7 +144,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		limit: 1,
 	};
 
-	const data = useSelect( ( select ) => {
+	const reportData = useSelect( ( select ) => {
 		if (
 			ga4AdSenseIntegrationEnabled &&
 			isMainDashboard &&
@@ -155,13 +155,13 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 			canViewSharedAdSense &&
 			canViewSharedAnalytics
 		) {
-			return select( MODULES_ANALYTICS_4 ).getReport( args );
+			return select( MODULES_ANALYTICS_4 ).getReport( reportArgs );
 		}
 
 		return null;
 	} );
 
-	const dataAvailable = isZeroReport( data ) === false;
+	const reportDataAvailable = isZeroReport( reportData ) === false;
 
 	const shouldShowNotification =
 		ga4AdSenseIntegrationEnabled &&
@@ -172,7 +172,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		canViewSharedAnalytics &&
 		canViewSharedAdSense &&
 		isAdSenseLinked &&
-		dataAvailable;
+		reportDataAvailable;
 
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
