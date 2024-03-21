@@ -38,7 +38,7 @@ exports[`ErrorNotifications does not render the GTE message if the GTE feature i
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
               role="button"
               target="_self"
@@ -104,7 +104,7 @@ exports[`ErrorNotifications does not render the GTE message if there are multipl
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
               role="button"
               target="_self"
@@ -170,7 +170,7 @@ exports[`ErrorNotifications renders UnsatisfiedScopesAlert when user is authenti
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
               role="button"
               target="_self"
@@ -255,7 +255,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F&additional_scopes%5B0%5D=gttps%3A%2F%2Fwww.googleapis.com%2Fauth%2Ftagmanager.readonly"
               role="button"
               target="_self"

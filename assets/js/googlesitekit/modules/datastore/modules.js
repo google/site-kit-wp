@@ -46,7 +46,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -755,22 +754,10 @@ const baseResolvers = {
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
-		if ( modules?.analytics?.recoverable ) {
-			yield Data.commonActions.await(
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS )
-					.getSettings()
-			);
-		}
-
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable && ! module.internal ) {
-					if ( moduleSlug === 'analytics' ) {
-						moduleList.push( 'analytics-4' );
-					} else {
-						moduleList.push( moduleSlug );
-					}
+					moduleList.push( moduleSlug );
 				}
 
 				return moduleList;
@@ -829,9 +816,7 @@ const baseSelectors = {
 	 *   "internal": false,
 	 *   "active": false,
 	 *   "connected": false,
-	 *   "dependencies": [
-	 *     "analytics"
-	 *   ],
+	 *   "dependencies": [],
 	 *   "dependents": []
 	 * }
 	 * ```
@@ -1389,10 +1374,6 @@ const baseSelectors = {
 		}
 
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
-			if ( slug === 'analytics' ) {
-				return acc;
-			}
-
 			if ( modules[ slug ].shareable ) {
 				return { [ slug ]: modules[ slug ], ...acc };
 			}

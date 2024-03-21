@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import SpinnerButton from './SpinnerButton';
+import SpinnerButton, { SPINNER_POSITION } from './SpinnerButton';
 
 function Template( args ) {
 	return <SpinnerButton { ...args } />;
@@ -35,6 +35,15 @@ ButtonWithSpinner.storyName = 'Button with the Spinner';
 ButtonWithSpinner.args = {
 	children: 'Spinner Button',
 	isSaving: true,
+};
+
+export const ButtonWithSpinnerSpinnerPositionBefore = Template.bind( {} );
+ButtonWithSpinnerSpinnerPositionBefore.storyName =
+	'Button with the Spinner on the left';
+ButtonWithSpinnerSpinnerPositionBefore.args = {
+	children: 'Spinner Button',
+	isSaving: true,
+	spinnerPosition: SPINNER_POSITION.BEFORE,
 };
 
 export default {

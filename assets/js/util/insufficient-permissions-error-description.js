@@ -48,7 +48,7 @@ export function getInsufficientPermissionsErrorDescription(
 	let message = '';
 	let userInfo = '';
 
-	if ( 'analytics' === slug ) {
+	if ( 'analytics-4' === slug ) {
 		if ( error.match( /account/i ) ) {
 			message = __(
 				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard.',

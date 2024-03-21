@@ -74,7 +74,7 @@ const commonModuleCapabilities = {
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'analytics'
+		'analytics-4'
 	) ]: true,
 };
 

@@ -15,8 +15,6 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
-use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\Analytics_4;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -703,27 +701,6 @@ class REST_Modules_Controller {
 										)
 									);
 									continue;
-								}
-
-								// Since currently the Analytics_4 module doesn't have an ownerID setting,
-								// it uses the ownerID from Analytics as the source of truth. Hence,
-								// instead of updating ownerID for Analytics_4, we should be updating that
-								// of Analytics.
-								if ( Analytics_4::MODULE_SLUG === $slug ) {
-									try {
-										$module = $this->modules->get_module( Analytics::MODULE_SLUG );
-									} catch ( Exception $e ) {
-										$response = $this->handle_module_recovery_error(
-											$slug,
-											$response,
-											new WP_Error(
-												'invalid_module_slug',
-												$e->getMessage(),
-												array( 'status' => 404 )
-											)
-										);
-										continue;
-									}
 								}
 
 								// Update the module's ownerID to the ID of the user making the request.

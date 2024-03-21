@@ -25,7 +25,6 @@ import {
 	render,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -62,11 +61,8 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-			accountID,
-		} );
-
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID,
 			propertyID,
 			webDataStreamID,
 		} );
@@ -112,7 +108,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 				{ propertyID, webDataStreamID }
 			);
 
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( null );
 
 		const { container, queryByLabelText } = render(
 			<SetupEnhancedMeasurementSwitch />,
@@ -248,7 +244,7 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 		[
 			'accountID is changed',
 			() => {
-				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					accountID: '1001',
 				} );
 				registry

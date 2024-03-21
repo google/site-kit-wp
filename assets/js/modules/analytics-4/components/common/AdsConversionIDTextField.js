@@ -34,8 +34,8 @@ import Data from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { isValidAdsConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
+import { isValidAdsConversionID } from '../../../ads/utils/validation';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {

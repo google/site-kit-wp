@@ -34,7 +34,6 @@ import {
 	REPORT_ARGS_SELECTED_METRIC_KEY,
 } from '../constants';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 
 describe( 'module/analytics-4 service store', () => {
 	const baseURI = 'https://analytics.google.com/analytics/web/';
@@ -53,7 +52,6 @@ describe( 'module/analytics-4 service store', () => {
 		provideUserInfo( registry, userData );
 		provideSiteInfo( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
 	afterEach( () => {
@@ -246,7 +244,7 @@ describe( 'module/analytics-4 service store', () => {
 		describe( 'getServiceEntityAccessURL', () => {
 			it( 'returns `undefined` when no accountID is set', () => {
 				expect(
-					registry.select( MODULES_ANALYTICS ).getAccountID()
+					registry.select( MODULES_ANALYTICS_4 ).getAccountID()
 				).toBeFalsy();
 
 				expect(
@@ -257,7 +255,9 @@ describe( 'module/analytics-4 service store', () => {
 			} );
 
 			it( 'returns `undefined` when no propertyID is set', () => {
-				registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAccountID( '12345' );
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
 				).toBeFalsy();
@@ -270,7 +270,9 @@ describe( 'module/analytics-4 service store', () => {
 			} );
 
 			it( 'returns `undefined` when no webDataStreamID is set', () => {
-				registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAccountID( '12345' );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setPropertyID( '34567' );
@@ -293,7 +295,7 @@ describe( 'module/analytics-4 service store', () => {
 				];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

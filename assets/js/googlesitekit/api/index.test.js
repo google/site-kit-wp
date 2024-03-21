@@ -702,7 +702,7 @@ describe( 'googlesitekit.api', () => {
 				'data'
 			);
 			await setItem(
-				createCacheKey( 'modules', 'analytics', 'something' ),
+				createCacheKey( 'modules', 'analytics-4', 'something' ),
 				'other-data'
 			);
 

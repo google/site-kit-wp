@@ -23,13 +23,13 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
-import { widgetDecorators } from './common.stories';
 import {
 	provideAnalytics4ReportTitles,
 	setupAnalytics4MockReports,
 	setupAnalytics4ZeroData,
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
+	widgetDecorators,
 } from './common-GA4.stories';
 
 const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(

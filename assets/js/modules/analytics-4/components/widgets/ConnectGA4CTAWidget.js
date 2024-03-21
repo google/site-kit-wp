@@ -33,7 +33,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
-import { MODULES_ANALYTICS } from '../../../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
@@ -59,10 +59,11 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		);
 	} );
 	const isAnalyticsActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
-		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
+		const adminReauthURL =
+			select( MODULES_ANALYTICS_4 ).getAdminReauthURL();
 
 		if ( ! adminReauthURL ) {
 			return false;
@@ -72,7 +73,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	} );
 	const isActivatingAnalytics = useSelect( ( select ) =>
 		select( CORE_MODULES ).isFetchingSetModuleActivation(
-			'analytics',
+			'analytics-4',
 			true
 		)
 	);
@@ -81,7 +82,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 			'googlesitekit-settings'
 		);
 
-		return `${ settingsURL }#connected-services/analytics/edit`;
+		return `${ settingsURL }#connected-services/analytics-4/edit`;
 	} );
 	const isNavigatingToGA4URL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( connectGA4URL )
@@ -89,9 +90,9 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const activateAnalytics = useActivateModuleCallback( 'analytics' );
+	const activateAnalytics = useActivateModuleCallback( 'analytics-4' );
 	const completeAnalyticsActivation =
-		useCompleteModuleActivationCallback( 'analytics' );
+		useCompleteModuleActivationCallback( 'analytics-4' );
 
 	const handleCTAClick = useCallback( () => {
 		if ( isAnalyticsActive ) {
