@@ -33,8 +33,10 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
 } from './constants';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import {
@@ -186,49 +188,14 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should dispatch createWebDataStream actions if webDataStreamID is invalid', async () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: fixtures.createProperty._id,
-					webDataStreamID: '',
-				} );
-
-				fetchMock.postOnce( createWebDataStreamsEndpoint, {
-					body: fixtures.createWebDataStream,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => {
-					const { data } = JSON.parse( opts.body );
-					// Return the same settings passed to the API.
-					return { body: data, status: 200 };
-				} );
-
-				const result = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.submitChanges();
-				expect( result.error ).toBeFalsy();
-
-				expect( fetchMock ).toHaveFetched(
-					createWebDataStreamsEndpoint,
-					{
-						body: {
-							data: { propertyID: fixtures.createProperty._id },
-						},
-					}
-				);
-
-				const webDataStreamID = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getWebDataStreamID();
-				expect( webDataStreamID ).toBe(
-					fixtures.createWebDataStream._id
-				);
-			} );
-
 			it( 'should handle an error if set while creating a web data stream', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: fixtures.createProperty._id,
-					webDataStreamID: '',
+					webDataStreamID: WEBDATASTREAM_CREATE,
+				} );
+
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					webDataStreamName: fixtures.createWebDataStream.displayName,
 				} );
 
 				fetchMock.postOnce( createWebDataStreamsEndpoint, {
@@ -242,14 +209,18 @@ describe( 'modules/analytics-4 settings', () => {
 					createWebDataStreamsEndpoint,
 					{
 						body: {
-							data: { propertyID: fixtures.createProperty._id },
+							data: {
+								propertyID: fixtures.createProperty._id,
+								displayName:
+									fixtures.createWebDataStream.displayName,
+							},
 						},
 					}
 				);
 
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( '' );
+				).toBe( WEBDATASTREAM_CREATE );
 				// @TODO: uncomment the following line once GA4 API is stabilized
 				// expect( registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();

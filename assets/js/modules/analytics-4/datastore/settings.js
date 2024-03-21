@@ -81,11 +81,7 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	let webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
-	if (
-		propertyID &&
-		( webDataStreamID === WEBDATASTREAM_CREATE ||
-			! isValidWebDataStreamID( webDataStreamID ) )
-	) {
+	if ( propertyID && webDataStreamID === WEBDATASTREAM_CREATE ) {
 		const webDataStreamName = select( CORE_FORMS ).getValue(
 			FORM_SETUP,
 			'webDataStreamName'
