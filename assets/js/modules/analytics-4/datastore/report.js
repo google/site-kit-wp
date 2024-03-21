@@ -34,8 +34,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { DAY_IN_SECONDS, stringifyObject } from '../../../util';
 import { isValidDateRange } from '../../../util/report-validation';
 import {
@@ -48,35 +47,8 @@ import {
 	isZeroReport,
 } from '../utils';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
+import { getSampleReportArgs } from '../utils/report-args';
 const { createRegistrySelector } = Data;
-
-/**
- * Returns report args for a sample report.
- *
- * @since 1.107.0
- *
- * @param {Function} select The select function of the registry.
- * @return {Object} Report args.
- */
-export const getSampleReportArgs = ( select ) => {
-	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
-
-	const args = {
-		dimensions: [ 'date' ],
-		metrics: [ { name: 'totalUsers' } ],
-		startDate,
-		endDate,
-	};
-
-	const url = select( CORE_SITE ).getCurrentEntityURL();
-	if ( url ) {
-		args.url = url;
-	}
-
-	return args;
-};
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

@@ -48,7 +48,7 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
-import { getSampleReportArgs } from '../../../../analytics-4/datastore/report';
+import { getSampleReportArgs } from '../../../../analytics-4/utils/report-args';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidgetGA4( props ) {
