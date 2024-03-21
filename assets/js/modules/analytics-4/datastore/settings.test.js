@@ -100,6 +100,10 @@ describe( 'modules/analytics-4 settings', () => {
 					propertyID: PROPERTY_CREATE,
 				} );
 
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					webDataStreamName: fixtures.createWebDataStream.displayName,
+				} );
+
 				fetchMock.postOnce( createPropertyEndpoint, {
 					body: fixtures.createProperty,
 					status: 200,
@@ -141,7 +145,11 @@ describe( 'modules/analytics-4 settings', () => {
 					createWebDataStreamsEndpoint,
 					{
 						body: {
-							data: { propertyID: fixtures.createProperty._id },
+							data: {
+								propertyID: fixtures.createProperty._id,
+								displayName:
+									fixtures.createWebDataStream.displayName,
+							},
 						},
 					}
 				);
