@@ -57,6 +57,8 @@ export const INVARIANT_INVALID_WEBDATASTREAM_ID =
 	'a valid webDataStreamID is required to submit changes';
 export const INVARIANT_INVALID_WEBDATASTREAM_NAME =
 	'a valid web data stream name is required to submit changes';
+export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
+	'a web data stream with the same name already exists';
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -86,19 +88,36 @@ export async function submitChanges( { select, dispatch } ) {
 			FORM_SETUP,
 			'webDataStreamName'
 		);
-		const { response: webdatastream, error } = await dispatch(
-			MODULES_ANALYTICS_4
-		).createWebDataStream( propertyID, webDataStreamName );
-		if ( error ) {
-			return { error };
-		}
 
-		webDataStreamID = webdatastream._id;
-		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webDataStreamID );
-		await dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
-			// eslint-disable-next-line sitekit/acronym-case
-			webdatastream.webStreamData.measurementId
-		);
+		const webDataStreamAlreadyExists = isValidPropertyID( propertyID )
+			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(
+					propertyID,
+					webDataStreamName
+			  )
+			: false;
+
+		if (
+			isValidWebDataStreamName( webDataStreamName ) &&
+			false === webDataStreamAlreadyExists
+		) {
+			const { response: webdatastream, error } = await dispatch(
+				MODULES_ANALYTICS_4
+			).createWebDataStream( propertyID, webDataStreamName );
+			if ( error ) {
+				return { error };
+			}
+
+			webDataStreamID = webdatastream._id;
+			dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID(
+				webDataStreamID
+			);
+			await dispatch(
+				MODULES_ANALYTICS_4
+			).updateSettingsForMeasurementID(
+				// eslint-disable-next-line sitekit/acronym-case
+				webdatastream.webStreamData.measurementId
+			);
+		}
 	}
 
 	if (
@@ -181,6 +200,7 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getPropertyID,
 		getWebDataStreamID,
+		doesWebDataStreamExist,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
 	invariant( haveAnyGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
@@ -206,9 +226,18 @@ export function validateCanSubmitChanges( select ) {
 			FORM_SETUP,
 			'webDataStreamName'
 		);
+
 		invariant(
 			isValidWebDataStreamName( webDataStreamName ),
 			INVARIANT_INVALID_WEBDATASTREAM_NAME
 		);
+
+		if ( isValidPropertyID( propertyID ) ) {
+			invariant(
+				false ===
+					doesWebDataStreamExist( propertyID, webDataStreamName ),
+				INVARIANT_WEBDATASTREAM_ALREADY_EXISTS
+			);
+		}
 	}
 }
