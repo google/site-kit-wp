@@ -609,6 +609,36 @@ const baseSelectors = {
 				);
 			}
 	),
+
+	/**
+	 * Checks if a web data stream with the same name already exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {string} propertyID        GA4 property ID.
+	 * @param {string} webDataStreamName Web data stream name.
+	 * @return {(boolean|undefined)} TRUE if web data stream already exists; `undefined` if web data streams are not loaded.
+	 */
+	doesWebDataStreamExist: createRegistrySelector(
+		( select ) => ( _state, propertyID, webDataStreamName ) => {
+			invariant(
+				isValidPropertyID( propertyID ),
+				'A valid GA4 propertyID is required.'
+			);
+
+			const webDataStreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+
+			if ( webDataStreams === undefined ) {
+				return undefined;
+			}
+
+			return webDataStreams.some(
+				( { displayName } ) => displayName === webDataStreamName
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(

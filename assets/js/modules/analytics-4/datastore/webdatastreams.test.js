@@ -915,6 +915,59 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 		} );
 
+		describe( 'doesWebDataStreamExist', () => {
+			const propertyID = '12345';
+
+			it( 'should return undefined if web data streams are not loaded yet', () => {
+				jest.useFakeTimers();
+
+				freezeFetch( webDataStreamsEndpoint );
+
+				const webDataStreamAlreadyExist = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Test GA4 WebDataStream'
+					);
+
+				expect( webDataStreamAlreadyExist ).toBeUndefined();
+			} );
+
+			it( 'should return false if the web data stream does not exist', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				const webDataStreamAlreadyExist = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Non Existent WebDataStream'
+					);
+
+				expect( webDataStreamAlreadyExist ).toBe( false );
+			} );
+
+			it( 'should return true if the web data stream already exists', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				const webDataStreamAlreadyExist = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Test GA4 WebDataStream'
+					);
+
+				expect( webDataStreamAlreadyExist ).toBe( true );
+			} );
+		} );
+
 		describe( 'isLoadingWebDataStreams', () => {
 			const accounts = fixtures.accountSummaries;
 			const properties = accounts[ 1 ].propertySummaries;
