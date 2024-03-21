@@ -131,6 +131,7 @@ export function generateReportFilterArgs( filters ) {
  * Returns report args for a sample report.
  *
  * @since 1.107.0
+ * @since n.e.x.t Moved from the main analytics-4 datastore file to utils.
  *
  * @param {Function} select The select function of the registry.
  * @return {Object} Report args.
