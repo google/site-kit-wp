@@ -243,9 +243,10 @@ describe( 'SetupForm', () => {
 		// after granting extra scopes necessary to submit.
 		// In this situation, the autoSubmit is set before the user goes to oAuth,
 		// store state is snapshotted, and then restored upon returning.
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( FORM_SETUP, { autoSubmit: true } );
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+			autoSubmit: true,
+			webDataStreamName: fixtures.createWebDataStream.displayName,
+		} );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
@@ -349,9 +350,10 @@ describe( 'SetupForm', () => {
 		// after granting extra scopes necessary to submit.
 		// In this situation, the autoSubmit is set before the user goes to oAuth,
 		// store state is snapshotted, and then restored upon returning.
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( FORM_SETUP, { autoSubmit: true } );
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+			autoSubmit: true,
+			webDataStreamName: fixtures.createWebDataStream.displayName,
+		} );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],

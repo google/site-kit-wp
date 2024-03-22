@@ -30,7 +30,7 @@ import { isValidDateString } from '../../../util/date-range/is-valid-date-string
  * Generates an object with the appropriate structure to pass to report selectors.
  *
  * @since 1.27.0
- * @since n.e.x.t Migrated from analytics to analytics-4.
+ * @since 1.123.0 Migrated from analytics to analytics-4.
  *
  * @param {Object} dates                    Object containing the dates.
  * @param {string} dates.startDate          Start date in YYYY-MM-DD format.

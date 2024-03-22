@@ -25,6 +25,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
+import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
 
 export default function SubtleNotifications() {
 	// Each notification component rendered here has its own logic to determine
@@ -37,6 +38,7 @@ export default function SubtleNotifications() {
 	return (
 		<Fragment>
 			<GA4AdSenseLinkedNotification />
+			<SetupSuccessSubtleNotification />
 		</Fragment>
 	);
 }

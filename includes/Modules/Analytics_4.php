@@ -41,6 +41,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
@@ -56,6 +57,7 @@ use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
@@ -136,6 +138,14 @@ final class Analytics_4 extends Module
 	protected $custom_dimensions_data_available;
 
 	/**
+	 * Audience_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -155,6 +165,7 @@ final class Analytics_4 extends Module
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
+		$this->audience_settings                = new Audience_Settings( $this->user_options );
 	}
 
 	/**
@@ -508,11 +519,17 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['GET:audiences']        = array( 'service' => 'analyticsaudiences' );
-			$datapoints['POST:create-audience'] = array(
+			$datapoints['GET:audiences']          = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:create-audience']   = array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
+			);
+			$datapoints['GET:audience-settings']  = array(
+				'service' => '',
+			);
+			$datapoints['POST:audience-settings'] = array(
+				'service' => '',
 			);
 		}
 
@@ -865,6 +882,7 @@ final class Analytics_4 extends Module
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 *
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
+	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
 	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
@@ -947,6 +965,33 @@ final class Analytics_4 extends Module
 						$property_id,
 						$post_body
 					);
+			case 'GET:audience-settings':
+				return function() {
+					return $this->audience_settings->get();
+				};
+			case 'POST:audience-settings':
+				$settings = $data['settings'];
+				if ( ! isset( $settings['configuredAudiences'] ) ) {
+					throw new Missing_Required_Param_Exception( 'configuredAudiences' );
+				}
+
+				if ( ! is_array( $settings['configuredAudiences'] ) ) {
+					throw new Invalid_Param_Exception( 'configuredAudiences' );
+				}
+
+				if ( ! isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
+				}
+
+				if ( ! is_bool( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					throw new Invalid_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
+				}
+
+				$this->audience_settings->merge( $data['settings'] );
+
+				return function() {
+					return $this->audience_settings->get();
+				};
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -1524,7 +1569,7 @@ final class Analytics_4 extends Module
 	 * Sets up information about the module.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Updated to include in the module setup.
+	 * @since 1.123.0 Updated to include in the module setup.
 	 *
 	 * @return array Associative array of module info.
 	 */

@@ -33,13 +33,17 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
 } from './constants';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_WEBDATASTREAM_ID,
+	INVARIANT_INVALID_WEBDATASTREAM_NAME,
+	INVARIANT_WEBDATASTREAM_ALREADY_EXISTS,
 } from './settings';
 import * as fixtures from './__fixtures__';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
@@ -91,11 +95,21 @@ describe( 'modules/analytics-4 settings', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					accountID: fixtures.createProperty._accountID,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID: fixtures.createProperty._id,
+					} );
 			} );
 
 			it( 'should dispatch createProperty and createWebDataStream actions if the "set up a new property" option is chosen', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: PROPERTY_CREATE,
+				} );
+
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					webDataStreamName: fixtures.createWebDataStream.displayName,
 				} );
 
 				fetchMock.postOnce( createPropertyEndpoint, {
@@ -139,7 +153,11 @@ describe( 'modules/analytics-4 settings', () => {
 					createWebDataStreamsEndpoint,
 					{
 						body: {
-							data: { propertyID: fixtures.createProperty._id },
+							data: {
+								propertyID: fixtures.createProperty._id,
+								displayName:
+									fixtures.createWebDataStream.displayName,
+							},
 						},
 					}
 				);
@@ -186,49 +204,14 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should dispatch createWebDataStream actions if webDataStreamID is invalid', async () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: fixtures.createProperty._id,
-					webDataStreamID: '',
-				} );
-
-				fetchMock.postOnce( createWebDataStreamsEndpoint, {
-					body: fixtures.createWebDataStream,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => {
-					const { data } = JSON.parse( opts.body );
-					// Return the same settings passed to the API.
-					return { body: data, status: 200 };
-				} );
-
-				const result = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.submitChanges();
-				expect( result.error ).toBeFalsy();
-
-				expect( fetchMock ).toHaveFetched(
-					createWebDataStreamsEndpoint,
-					{
-						body: {
-							data: { propertyID: fixtures.createProperty._id },
-						},
-					}
-				);
-
-				const webDataStreamID = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getWebDataStreamID();
-				expect( webDataStreamID ).toBe(
-					fixtures.createWebDataStream._id
-				);
-			} );
-
 			it( 'should handle an error if set while creating a web data stream', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: fixtures.createProperty._id,
-					webDataStreamID: '',
+					webDataStreamID: WEBDATASTREAM_CREATE,
+				} );
+
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					webDataStreamName: fixtures.createWebDataStream.displayName,
 				} );
 
 				fetchMock.postOnce( createWebDataStreamsEndpoint, {
@@ -242,18 +225,60 @@ describe( 'modules/analytics-4 settings', () => {
 					createWebDataStreamsEndpoint,
 					{
 						body: {
-							data: { propertyID: fixtures.createProperty._id },
+							data: {
+								propertyID: fixtures.createProperty._id,
+								displayName:
+									fixtures.createWebDataStream.displayName,
+							},
 						},
 					}
 				);
 
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-				).toBe( '' );
+				).toBe( WEBDATASTREAM_CREATE );
 				// @TODO: uncomment the following line once GA4 API is stabilized
 				// expect( registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();
 			} );
+
+			it.each( [
+				[ 'is not set', '' ],
+				[ 'is invalid', 12345 ],
+				[ 'already exists', 'Test GA4 WebDataStream' ],
+			] )(
+				'should not create web data stream if web data stream name %s',
+				async ( _, webDataStreamName ) => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID: fixtures.createProperty._id,
+						webDataStreamID: WEBDATASTREAM_CREATE,
+					} );
+
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						webDataStreamName,
+					} );
+
+					fetchMock.postOnce( settingsEndpoint, ( url, opts ) => {
+						const { data } = JSON.parse( opts.body );
+						// Return the same settings passed to the API.
+						return { body: data, status: 200 };
+					} );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.submitChanges();
+
+					expect( fetchMock ).not.toHaveFetched(
+						createWebDataStreamsEndpoint
+					);
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getWebDataStreamID()
+					).toBe( WEBDATASTREAM_CREATE );
+				}
+			);
 
 			describe( 'when enhanced measurement is enabled', () => {
 				const propertyID = fixtures.createProperty._id;
@@ -574,6 +599,43 @@ describe( 'modules/analytics-4 settings', () => {
 						.__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );
 			} );
+
+			it.each( [
+				[ 'non-empty', '', INVARIANT_INVALID_WEBDATASTREAM_NAME ],
+				[ 'valid', 12345, INVARIANT_INVALID_WEBDATASTREAM_NAME ],
+				[
+					'not already existening',
+					'Test GA4 WebDataStream',
+					INVARIANT_WEBDATASTREAM_ALREADY_EXISTS,
+				],
+			] )(
+				'should require a %s web data stream name in order to create a web data stream',
+				( _, webDataStreamName, invariantError ) => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetWebDataStreams( fixtures.webDataStreams, {
+							propertyID,
+						} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyID( propertyID );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setWebDataStreamID( WEBDATASTREAM_CREATE );
+
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						webDataStreamName,
+					} );
+
+					expect( () =>
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.__dangerousCanSubmitChanges()
+					).toThrow( invariantError );
+				}
+			);
 		} );
 	} );
 } );
