@@ -40,9 +40,8 @@ import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
+import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
@@ -92,7 +91,7 @@ export default function WebDataStreamNameInput() {
 		}
 	} );
 
-	// Bounce if an existing web data stream is selected.
+	// Return early if an existing web data stream is selected.
 	if ( webDataStreamID !== WEBDATASTREAM_CREATE ) {
 		return null;
 	}
@@ -102,6 +101,25 @@ export default function WebDataStreamNameInput() {
 		! webDataStreamName ||
 		! isValidWebDataStreamName( webDataStreamName );
 
+	let helperText = false;
+
+	if ( webDataStreamAlreadyExists ) {
+		helperText = __(
+			'A web data stream with this name already exists.',
+			'google-site-kit'
+		);
+	} else if ( ! webDataStreamName ) {
+		helperText = __(
+			'A web data stream name is required.',
+			'google-site-kit'
+		);
+	} else if ( ! isValidWebDataStreamName( webDataStreamName ) ) {
+		helperText = __(
+			'This is not a valid web data stream name.',
+			'google-site-kit'
+		);
+	}
+
 	return (
 		<div className="googlesitekit-analytics-webdatastreamname">
 			<TextField
@@ -110,35 +128,11 @@ export default function WebDataStreamNameInput() {
 				} ) }
 				label={ __( 'Web Data Stream Name', 'google-site-kit' ) }
 				outlined
-				helperText={ ( () => {
-					if ( webDataStreamAlreadyExists ) {
-						return __(
-							'A web data stream with this name already exists.',
-							'google-site-kit'
-						);
-					} else if ( ! webDataStreamName ) {
-						return __(
-							'A web data stream name is required.',
-							'google-site-kit'
-						);
-					} else if (
-						! isValidWebDataStreamName( webDataStreamName )
-					) {
-						return __(
-							'This is not a valid web data stream name.',
-							'google-site-kit'
-						);
-					}
-
-					return false;
-				} )() }
+				helperText={ helperText }
 				trailingIcon={
 					error && (
-						<span className="googlesitekit-text-field-icon--warning">
-							<VisuallyHidden>
-								{ __( 'Warning', 'google-site-kit' ) }
-							</VisuallyHidden>
-							<WarningIcon width={ 14 } height={ 12 } />
+						<span className="googlesitekit-text-field-icon--error">
+							<AccessibleWarningIcon />
 						</span>
 					)
 				}

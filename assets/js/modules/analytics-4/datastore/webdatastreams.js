@@ -618,7 +618,7 @@ const baseSelectors = {
 	 * @param {Object} state             Data store's state.
 	 * @param {string} propertyID        GA4 property ID.
 	 * @param {string} webDataStreamName Web data stream name.
-	 * @return {(boolean|undefined)} TRUE if web data stream already exists; `undefined` if web data streams are not loaded.
+	 * @return {(boolean|undefined)} TRUE if web data stream already exists, FALSE otherwise. Undefined if web data streams are not loaded yet.
 	 */
 	doesWebDataStreamExist: createRegistrySelector(
 		( select ) => ( _state, propertyID, webDataStreamName ) => {
