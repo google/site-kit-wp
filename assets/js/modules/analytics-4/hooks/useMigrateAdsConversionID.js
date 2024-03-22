@@ -47,10 +47,6 @@ export default function useMigrateAdsConversionID() {
 	const legacyAdsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
-	const adsConversionID = useSelect(
-		( select ) =>
-			adsModuleEnabled && select( MODULES_ADS ).getAdsConversionID()
-	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isDoingSubmitChanges()
 	);
@@ -63,6 +59,13 @@ export default function useMigrateAdsConversionID() {
 	const adsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'ads' )
 	);
+	const adsConversionID = useSelect( ( select ) => {
+		if ( ! adsModuleEnabled || ! adsModuleAvailable ) {
+			return null;
+		}
+
+		return select( MODULES_ADS ).getAdsConversionID();
+	} );
 
 	const { activateModule, fetchGetModules } = useDispatch( CORE_MODULES );
 	const {
