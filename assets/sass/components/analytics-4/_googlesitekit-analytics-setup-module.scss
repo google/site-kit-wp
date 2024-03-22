@@ -27,5 +27,16 @@
 				margin-top: $grid-gap-phone / 2;
 			}
 		}
+
+		.googlesitekit-setup-module__inputs--multiline {
+
+			.googlesitekit-analytics-webdatastreamname {
+				margin-bottom: $grid-gap-phone;
+
+				@media (min-width: $bp-desktop) {
+					margin-bottom: $grid-gap-desktop;
+				}
+			}
+		}
 	}
 }

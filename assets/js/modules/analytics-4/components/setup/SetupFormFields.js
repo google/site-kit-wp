@@ -26,8 +26,16 @@ import { Fragment, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { AccountSelect, PropertySelect, WebDataStreamSelect } from '../common';
+import {
+	MODULES_ANALYTICS_4,
+	WEBDATASTREAM_CREATE,
+} from '../../datastore/constants';
+import {
+	AccountSelect,
+	PropertySelect,
+	WebDataStreamSelect,
+	WebDataStreamNameInput,
+} from '../common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
@@ -45,6 +53,9 @@ export default function SetupFormFields() {
 	);
 	const measurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+	);
+	const webDataStreamID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
@@ -71,6 +82,12 @@ export default function SetupFormFields() {
 				<PropertySelect />
 				<WebDataStreamSelect />
 			</div>
+
+			{ webDataStreamID === WEBDATASTREAM_CREATE && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<WebDataStreamNameInput />
+				</div>
+			) }
 
 			{ hasExistingTag && <SetupUseSnippetSwitch /> }
 			<SetupEnhancedMeasurementSwitch />

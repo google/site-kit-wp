@@ -1,0 +1,160 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WebDataStreamNameInput should render when option to create a new web data stream is chosen 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-webdatastreamname"
+  >
+    <div
+      class="mdc-text-field mdc-text-field--outlined"
+    >
+      <input
+        class="mdc-text-field__input"
+        id="googlesitekit-textfield-0"
+        value="example.com"
+      />
+      <div
+        class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+      >
+        <div
+          class="mdc-notched-outline__leading"
+        />
+        <div
+          class="mdc-notched-outline__notch"
+        >
+          <label
+            class="mdc-floating-label mdc-floating-label--float-above"
+            for="googlesitekit-textfield-0"
+            style="transition-duration: 0s;"
+          >
+            Web Data Stream Name
+          </label>
+        </div>
+        <div
+          class="mdc-notched-outline__trailing"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`WebDataStreamNameInput should show error state if web data stream name already exists 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-webdatastreamname"
+  >
+    <div
+      class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
+    >
+      <input
+        class="mdc-text-field__input"
+        id="googlesitekit-textfield-2"
+        value="Test GA4 WebDataStream"
+      />
+      <div
+        class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+      >
+        <div
+          class="mdc-notched-outline__leading"
+        />
+        <div
+          class="mdc-notched-outline__notch"
+        >
+          <label
+            class="mdc-floating-label mdc-floating-label--float-above"
+            for="googlesitekit-textfield-2"
+            style="transition-duration: 0s;"
+          >
+            Web Data Stream Name
+          </label>
+        </div>
+        <div
+          class="mdc-notched-outline__trailing"
+        />
+      </div>
+      <span
+        class="mdc-text-field__icon googlesitekit-text-field-icon--error"
+        tabindex="-1"
+      >
+        <span
+          class="screen-reader-text"
+        >
+          Error
+        </span>
+        <svg />
+      </span>
+    </div>
+    <div
+      class="mdc-text-field-helper-line"
+    >
+      <p
+        aria-hidden="false"
+        class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
+      >
+        A web data stream with this name already exists.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`WebDataStreamNameInput should show error state if web data stream name is not set 1`] = `
+<div>
+  <div
+    class="googlesitekit-analytics-webdatastreamname"
+  >
+    <div
+      class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
+    >
+      <input
+        class="mdc-text-field__input"
+        id="googlesitekit-textfield-3"
+        value=""
+      />
+      <div
+        class="mdc-notched-outline mdc-notched-outline--upgraded"
+      >
+        <div
+          class="mdc-notched-outline__leading"
+        />
+        <div
+          class="mdc-notched-outline__notch"
+        >
+          <label
+            class="mdc-floating-label"
+            for="googlesitekit-textfield-3"
+            style="transition-duration: 0s;"
+          >
+            Web Data Stream Name
+          </label>
+        </div>
+        <div
+          class="mdc-notched-outline__trailing"
+        />
+      </div>
+      <span
+        class="mdc-text-field__icon googlesitekit-text-field-icon--error"
+        tabindex="-1"
+      >
+        <span
+          class="screen-reader-text"
+        >
+          Error
+        </span>
+        <svg />
+      </span>
+    </div>
+    <div
+      class="mdc-text-field-helper-line"
+    >
+      <p
+        aria-hidden="false"
+        class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
+      >
+        A web data stream name is required.
+      </p>
+    </div>
+  </div>
+</div>
+`;
