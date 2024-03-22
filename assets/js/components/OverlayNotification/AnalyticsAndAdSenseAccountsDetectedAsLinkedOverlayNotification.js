@@ -45,6 +45,8 @@ import {
 import { getContextScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
 import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useSelect, useDispatch } = Data;
 
@@ -57,6 +59,8 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const dashboardType = useDashboardType();
 	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
+
+	const viewContext = useViewContext();
 
 	const isShowingNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification(
@@ -203,11 +207,17 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 			setOverlayNotificationToShow(
 				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
 			);
+
+			trackEvent(
+				`${ viewContext }_top-earning-pages-widget`,
+				'view_overlay_CTA'
+			);
 		}
 	}, [
 		shouldShowNotification,
 		isShowingNotification,
 		setOverlayNotificationToShow,
+		viewContext,
 	] );
 
 	if ( ! shouldShowNotification || ! isShowingNotification ) {
@@ -234,14 +244,28 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 				<Button
 					tertiary
 					disabled={ isDismissing }
-					onClick={ dismissNotification }
+					onClick={ () => {
+						dismissNotification();
+
+						trackEvent(
+							`${ viewContext }_top-earning-pages-widget`,
+							'dismiss_overlay_CTA'
+						);
+					} }
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
 
 				<Button
 					disabled={ isDismissing }
-					onClick={ scrollToWidgetAndDismissNotification }
+					onClick={ ( event ) => {
+						scrollToWidgetAndDismissNotification( event );
+
+						trackEvent(
+							`${ viewContext }_top-earning-pages-widget`,
+							'confirm_overlay_CTA'
+						);
+					} }
 				>
 					{ __( 'Show me', 'google-site-kit' ) }
 				</Button>
