@@ -25,6 +25,7 @@ import { ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
+import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
 import SettingsForm from './SettingsForm';
 import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
@@ -83,6 +84,8 @@ export default function SettingsEdit() {
 
 	useExistingTagEffect();
 
+	const isMigratingAdsConversionID = useMigrateAdsConversionID();
+
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	let viewComponent;
@@ -91,7 +94,8 @@ export default function SettingsEdit() {
 	if (
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
-		hasModuleAccess === undefined
+		hasModuleAccess === undefined ||
+		isMigratingAdsConversionID
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( ! accounts.length || isCreateAccount ) {
