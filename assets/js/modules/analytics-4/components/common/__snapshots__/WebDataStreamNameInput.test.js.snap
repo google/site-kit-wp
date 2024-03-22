@@ -74,13 +74,13 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         />
       </div>
       <span
-        class="mdc-text-field__icon googlesitekit-text-field-icon--warning"
+        class="mdc-text-field__icon googlesitekit-text-field-icon--error"
         tabindex="-1"
       >
         <span
           class="screen-reader-text"
         >
-          Warning
+          Error
         </span>
         <svg />
       </span>
@@ -134,13 +134,13 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         />
       </div>
       <span
-        class="mdc-text-field__icon googlesitekit-text-field-icon--warning"
+        class="mdc-text-field__icon googlesitekit-text-field-icon--error"
         tabindex="-1"
       >
         <span
           class="screen-reader-text"
         >
-          Warning
+          Error
         </span>
         <svg />
       </span>
