@@ -101,11 +101,13 @@ export const baseActions = {
 				return;
 			}
 
-			dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-			dispatch( MODULES_TAGMANAGER ).setContainerID( '' );
-			dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
-			dispatch( MODULES_TAGMANAGER ).setAMPContainerID( '' );
-			dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
+			dispatch( MODULES_TAGMANAGER ).setSettings( {
+				accountID,
+				containerID: '',
+				internalContainerID: '',
+				ampContainerID: '',
+				internalAMPContainerID: '',
+			} );
 
 			if (
 				ACCOUNT_CREATE === accountID ||
