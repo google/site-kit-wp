@@ -142,9 +142,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 		if ( ! empty( $gtag_opt['linker'] ) ) {
 			$gtag->add_command( 'set', array( 'linker', $gtag_opt['linker'] ) );
-		}
 
-		unset( $gtag_opt['linker'] );
+			unset( $gtag_opt['linker'] );
+		}
 
 		$gtag->add_tag( $this->tag_id, $gtag_opt );
 
@@ -153,13 +153,21 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			$gtag->add_tag( $this->ads_conversion_id );
 		}
 
-		$filter_google_gtagjs = function ( $tag, $handle ) {
+		$filter_google_gtagjs = function ( $tag, $handle ) use ( $gtag ) {
 			if ( GTag::HANDLE !== $handle ) {
 				return $tag;
 			}
 
 			// Retain this comment for detection of Site Kit placed tag.
 			$snippet_comment = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+
+			$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
+
+			if ( $block_on_consent_attrs ) {
+				$gtag_src = $gtag->get_gtag_src();
+
+				$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
+			}
 
 			return $snippet_comment . $tag;
 		};
@@ -186,5 +194,35 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		}
 
 		return $config;
+	}
+
+	/**
+	 * Adds HTML attributes to the gtag script tag to block it until user consent is granted.
+	 *
+	 * This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
+	 *
+	 * @since 1.122.0
+	 *
+	 * @param string $tag     The script tag.
+	 * @param string $gtag_src The gtag script source URL.
+	 * @param string $block_on_consent_attrs The attributes to add to the script tag to block it until user consent is granted.
+	 * @return string The script tag with the added attributes.
+	 */
+	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs ) {
+		return str_replace(
+			array(
+				"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script type='text/javascript' src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script type=\"text/javascript\" src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			),
+			array( // `type` attribute intentionally excluded in replacements.
+				"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			),
+			$tag
+		);
 	}
 }
