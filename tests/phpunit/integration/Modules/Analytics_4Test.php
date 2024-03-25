@@ -3501,10 +3501,10 @@ class Analytics_4Test extends TestCase {
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 
-		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
 
 		$analytics->get_settings()->merge(
 			array(
@@ -3516,19 +3516,19 @@ class Analytics_4Test extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 
 		// Tag not hooked when blocked.
-		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
 
 		// Tag hooked when only AMP blocked.
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 	}
 
 	/**
@@ -3555,7 +3555,7 @@ class Analytics_4Test extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
-		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 		$analytics->register();
 
 		// Hook `wp_print_head_scripts` on placeholder action for capturing.
@@ -3567,7 +3567,6 @@ class Analytics_4Test extends TestCase {
 		}
 
 		do_action( 'template_redirect' );
-		do_action( 'wp_enqueue_scripts' );
 
 		$output = $this->capture_action( '__test_print_scripts' );
 
