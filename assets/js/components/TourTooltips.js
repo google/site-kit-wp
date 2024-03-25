@@ -100,9 +100,6 @@ export default function TourTooltips( {
 
 	const viewContext = useViewContext();
 
-	const stepIndex = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( stepKey )
-	);
 	const run = useSelect( ( select ) => {
 		return (
 			select( CORE_UI ).getValue( runKey ) &&
@@ -121,6 +118,7 @@ export default function TourTooltips( {
 		setValue( runKey, true );
 	};
 
+	// eslint-disable-next-line no-unused-vars
 	const endTour = () => {
 		global.document.body.classList.remove(
 			'googlesitekit-showing-feature-tour',
@@ -200,12 +198,14 @@ export default function TourTooltips( {
 
 		const hasCloseAction = action === ACTIONS.CLOSE;
 		const shouldChangeStep =
-			! hasCloseAction &&
-			[ EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND ].includes( type );
+			! hasCloseAction && [ EVENTS.STEP_AFTER ].includes( type );
+		const shouldCloseTour =
+			! hasCloseAction && [ EVENTS.TARGET_NOT_FOUND ].includes( type );
 		const isFinishedOrSkipped = [
 			STATUS.FINISHED,
 			STATUS.SKIPPED,
 		].includes( status );
+		const hasMissingStep = type === EVENTS.TARGET_NOT_FOUND;
 		const shouldCloseFromButtonClick =
 			hasCloseAction && type === EVENTS.STEP_AFTER;
 		const shouldEndTour = isFinishedOrSkipped || shouldCloseFromButtonClick;
@@ -219,10 +219,16 @@ export default function TourTooltips( {
 			el?.scrollIntoView?.( { block: 'center' } );
 		}
 
-		if ( shouldChangeStep ) {
+		if ( shouldChangeStep || hasMissingStep ) {
 			changeStep( index, action );
-		} else if ( shouldEndTour ) {
-			endTour();
+		} else if ( shouldCloseTour && steps.length - 1 === index ) {
+			setValue( runKey, false );
+			// eslint-disable-next-line no-console
+			console.log( 'closed', index );
+		} else if ( shouldEndTour && run ) {
+			// endTour();
+			// eslint-disable-next-line no-console
+			console.log( 'dismissed' );
 		}
 
 		if ( callback ) {
@@ -250,7 +256,6 @@ export default function TourTooltips( {
 			locale={ joyrideLocale }
 			run={ run }
 			showProgress
-			stepIndex={ stepIndex }
 			steps={ parsedSteps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
