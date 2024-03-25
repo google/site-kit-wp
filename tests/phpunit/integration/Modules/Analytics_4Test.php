@@ -2803,6 +2803,7 @@ class Analytics_4Test extends TestCase {
 		$analytics->get_settings()->set( $settings );
 
 		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 		$analytics->register();
 		do_action( 'template_redirect' );
 
