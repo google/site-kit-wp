@@ -116,9 +116,7 @@ class GTag {
 			return;
 		}
 
-		// Load the GTag scripts using the first tag ID - it doesn't matter which is used, all registered tags will be set up with a
-		// config command regardless of which is used to load the source.
-		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tags[0]['tag_id'] );
+		$gtag_src = $this->get_gtag_src();
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		wp_enqueue_script( self::HANDLE, $gtag_src, false, null, false );
@@ -187,5 +185,19 @@ class GTag {
 		);
 
 		return sprintf( 'gtag(%s);', implode( ',', $gtag_args ) );
+	}
+
+	/**
+	 * Returns the gtag source URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The gtag source URL.
+	 */
+	public function get_gtag_src() {
+		// Load the GTag scripts using the first tag ID - it doesn't matter which is used,
+		// all registered tags will be set up with a config command regardless
+		// of which is used to load the source.
+		return 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tags[0]['tag_id'] );
 	}
 }
