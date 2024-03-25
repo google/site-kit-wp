@@ -3556,7 +3556,6 @@ class Analytics_4Test extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
-		remove_all_actions( 'googlesitekit_setup_gtag' );
 		$analytics->register();
 
 		// Hook `wp_print_head_scripts` on placeholder action for capturing.
