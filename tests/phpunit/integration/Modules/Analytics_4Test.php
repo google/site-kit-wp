@@ -3568,6 +3568,7 @@ class Analytics_4Test extends TestCase {
 		}
 
 		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
 
 		$output = $this->capture_action( '__test_print_scripts' );
 
