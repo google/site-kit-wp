@@ -1,0 +1,57 @@
+/**
+ * Audience Segmentation Setup CTA styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-audience-segmentation-tile-error {
+		background-color: $c-site-kit-sk-0;
+		border: 2px solid $c-red-r-500;
+		border-radius: 16px;
+		min-width: 320px;
+		padding: 155px 0;
+
+		.googlesitekit-audience-segmentation-tile-error__container {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			gap: $grid-gap-desktop;
+			margin: 34px auto;
+			text-align: center;
+			width: 328px;
+
+			.googlesitekit-audience-segmentation-tile-error__image {
+				width: 190px;
+			}
+
+			.googlesitekit-audience-segmentation-tile-error__body {
+				.googlesitekit-audience-segmentation-tile-error__title {
+					color: $c-surfaces-on-surface;
+					font-size: $fs-title-sm;
+					font-weight: $fw-medium;
+					line-height: $lh-title-sm;
+				}
+
+				.googlesitekit-audience-segmentation-tile-error__explanation {
+					color: $c-surfaces-on-surface;
+					font-size: $fs-body-md;
+					font-weight: $fw-normal;
+					line-height: $lh-body-md;
+				}
+			}
+		}
+	}
+}
