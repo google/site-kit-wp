@@ -61,9 +61,9 @@ function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
 	);
 }
 
-export const DefaultAudienceTileError = Template.bind( {} );
-DefaultAudienceTileError.storyName = 'Default';
-DefaultAudienceTileError.args = {
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.args = {
 	setupRegistry: async ( registry ) => {
 		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
@@ -75,11 +75,13 @@ DefaultAudienceTileError.args = {
 		);
 	},
 };
+Default.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTileError/Default',
+};
 
-export const AudienceTileErrorWithInsufficientPermissions = Template.bind( {} );
-AudienceTileErrorWithInsufficientPermissions.storyName =
-	'InsufficientPermissions';
-AudienceTileErrorWithInsufficientPermissions.args = {
+export const InsufficientPermissions = Template.bind( {} );
+InsufficientPermissions.storyName = 'InsufficientPermissions';
+InsufficientPermissions.args = {
 	setupRegistry: async ( registry ) => {
 		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
@@ -92,6 +94,9 @@ AudienceTileErrorWithInsufficientPermissions.args = {
 			'getAccountID'
 		);
 	},
+};
+InsufficientPermissions.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTileError/InsufficientPermissions',
 };
 
 export default {
