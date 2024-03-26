@@ -124,15 +124,16 @@ class GTag {
 
 		// Note that `gtag()` may already be defined via the `Consent_Mode` output, but this is safe to call multiple times.
 		wp_add_inline_script( self::HANDLE, 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
+
+		foreach ( $this->commands as $command ) {
+			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_command( $command ), $command['position'] );
+		}
+
 		wp_add_inline_script( self::HANDLE, 'gtag("js", new Date());' );
 		wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
 
 		foreach ( $this->tags as $tag ) {
 			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_tag( $tag ) );
-		}
-
-		foreach ( $this->commands as $command ) {
-			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_command( $command ), $command['position'] );
 		}
 
 		$filter_google_gtagjs = function ( $tag, $handle ) {
@@ -192,9 +193,13 @@ class GTag {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string The gtag source URL.
+	 * @return string|false The gtag source URL. False if no tags are added.
 	 */
 	public function get_gtag_src() {
+		if ( empty( $this->tags ) ) {
+			return false;
+		}
+
 		// Load the GTag scripts using the first tag ID - it doesn't matter which is used,
 		// all registered tags will be set up with a config command regardless
 		// of which is used to load the source.

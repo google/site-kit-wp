@@ -124,7 +124,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */
-	protected function setup_gtag( $gtag ) {
+	protected function setup_gtag( GTag $gtag ) {
 		$gtag_opt = $this->get_tag_config();
 
 		/**

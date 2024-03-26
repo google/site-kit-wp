@@ -71,8 +71,8 @@ class GTagTest extends TestCase {
 		$script  = $scripts->registered[ GTag::HANDLE ];
 
 		// Assert the array of inline script data contains the necessary gtag config line.
-		// Should be in index 4, the first registered gtag.
-		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_1 . '");', $script->extra['after'][4] );
+		// Should be in index 5, the first registered gtag.
+		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_1 . '");', $script->extra['after'][5] );
 	}
 
 	public function test_gtag_script_commands() {
@@ -83,7 +83,7 @@ class GTagTest extends TestCase {
 		$this->assertEquals( sprintf( 'gtag(%s");', '"' . static::TEST_COMMAND_1 . '","' . implode( '","', static::TEST_COMMAND_1_PARAMS ) ), $script->extra['before'][1] );
 
 		// Test commands in the after position.
-		$this->assertEquals( sprintf( 'gtag(%s);', '"' . static::TEST_COMMAND_2 . '",' . json_encode( static::TEST_COMMAND_2_PARAMS[0] ) ), $script->extra['after'][5] );
+		$this->assertEquals( sprintf( 'gtag(%s);', '"' . static::TEST_COMMAND_2 . '",' . json_encode( static::TEST_COMMAND_2_PARAMS[0] ) ), $script->extra['after'][2] );
 	}
 
 	public function test_gtag_with_tag_config() {
@@ -99,8 +99,8 @@ class GTagTest extends TestCase {
 		$script  = $scripts->registered[ GTag::HANDLE ];
 
 		// Assert the array of inline script data contains the necessary gtag entry for the second script.
-		// Should be in index 5, immediately after the first registered gtag.
-		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_2 . '", ' . json_encode( self::TEST_TAG_ID_2_CONFIG ) . ');', $script->extra['after'][5] );
+		// Should be in index 6, immediately after the first registered gtag.
+		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_2 . '", ' . json_encode( self::TEST_TAG_ID_2_CONFIG ) . ');', $script->extra['after'][6] );
 	}
 
 }
