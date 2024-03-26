@@ -2809,7 +2809,6 @@ class Analytics_4Test extends TestCase {
 		remove_all_actions( 'googlesitekit_setup_gtag' );
 		$analytics->register();
 		do_action( 'template_redirect' );
-		do_action( 'wp_enqueue_scripts' );
 
 		$head_html = $this->capture_action( 'wp_head' );
 		// Confidence check.
