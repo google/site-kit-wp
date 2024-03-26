@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -136,6 +137,8 @@ class Analytics_4Test extends TestCase {
 		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
 		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 		wp_set_current_user( $this->user->ID );
+		remove_all_actions( 'wp_enqueue_scripts' );
+		( new GTag() )->register();
 	}
 
 	public function test_register() {
