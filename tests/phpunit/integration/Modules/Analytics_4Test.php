@@ -2792,6 +2792,9 @@ class Analytics_4Test extends TestCase {
 		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
 
+		// Remove irrelevant script from throwing errors in CI from readfile().
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+
 		// Set the current user (can be 0 for no user)
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
@@ -2806,6 +2809,7 @@ class Analytics_4Test extends TestCase {
 		remove_all_actions( 'googlesitekit_setup_gtag' );
 		$analytics->register();
 		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
 
 		$head_html = $this->capture_action( 'wp_head' );
 		// Confidence check.
