@@ -21,28 +21,9 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Web_Tag extends Module_Web_Tag implements Tag_Interface {
+class Web_Tag extends Module_Web_Tag {
 
 	use Method_Proxy_Trait;
-
-	/**
-	 * Ads conversion ID.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $ads_conversion_id;
-
-	/**
-	 * Sets the ads conversion ID.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $ads_conversion_id Ads ID.
-	 */
-	public function set_ads_conversion_id( $ads_conversion_id ) {
-		$this->ads_conversion_id = $ads_conversion_id;
-	}
 
 	/**
 	 * Registers tag hooks.
@@ -50,7 +31,12 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( 'googlesitekit_setup_gtag', $this->get_method_proxy( 'setup_gtag' ) );
+		// Set a lower priority here to let Analytics sets up its tag first.
+		add_action(
+			'googlesitekit_setup_gtag',
+			$this->get_method_proxy( 'setup_gtag' ),
+			20
+		);
 
 		$this->do_init_tag_action();
 	}
@@ -72,13 +58,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @param GTag $gtag GTag instance.
 	 */
 	protected function setup_gtag( $gtag ) {
-		if ( empty( $this->ads_conversion_id ) ) {
-			return;
-		}
+		$gtag->add_tag( $this->tag_id );
 
-		$gtag->add_tag( $this->ads_conversion_id );
-
-		$filter_google_gtagjs = function ( $tag, $handle ) use ( $gtag ) {
+		$filter_google_gtagjs = function ( $tag, $handle ) {
 			if ( GTag::HANDLE !== $handle ) {
 				return $tag;
 			}
