@@ -103,4 +103,21 @@ class GTagTest extends TestCase {
 		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_2 . '", ' . json_encode( self::TEST_TAG_ID_2_CONFIG ) . ');', $script->extra['after'][6] );
 	}
 
+	public function test_get_gtag_src() {
+		$this->assertEquals( 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_1, $this->gtag->get_gtag_src() );
+
+		// Reset the GTag instance.
+		$this->gtag = new GTag();
+		$this->gtag->register();
+
+		// Verify that this returns `false` when no tags are added.
+		$this->assertFalse( $this->gtag->get_gtag_src() );
+
+		// Add a different tag ID.
+		$this->gtag->add_tag( static::TEST_TAG_ID_2 );
+
+		// Verify that this returns the correct URL for the different tag ID.
+		$this->assertEquals( 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_2, $this->gtag->get_gtag_src() );
+	}
+
 }
