@@ -2796,10 +2796,7 @@ class Analytics_4Test extends TestCase {
 		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 
 		// Prevent test from failing in CI with deprecation notice.
-		$has_emoji_styles = has_action( 'wp_print_styles', 'print_emoji_styles' );
-		if ( $has_emoji_styles ) {
-			remove_action( 'wp_print_styles', 'print_emoji_styles' );
-		}
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
 		// Set the current user (can be 0 for no user)
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
