@@ -37,6 +37,7 @@ function TextField( {
 	noLabel,
 	outlined,
 	textarea,
+	leadingIcon,
 	trailingIcon,
 	helperText,
 	id,
@@ -62,6 +63,7 @@ function TextField( {
 			noLabel={ noLabel }
 			outlined={ outlined }
 			textarea={ textarea }
+			leadingIcon={ leadingIcon }
 			trailingIcon={ trailingIcon }
 			helperText={
 				helperText && <HelperText persistent>{ helperText }</HelperText>
@@ -89,6 +91,7 @@ TextField.propTypes = {
 	noLabel: PropTypes.bool,
 	outlined: PropTypes.bool,
 	textarea: PropTypes.bool,
+	leadingIcon: PropTypes.element,
 	trailingIcon: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.element ] ),
 	helperText: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.string ] ),
 	id: PropTypes.string,

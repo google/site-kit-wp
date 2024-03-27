@@ -85,6 +85,13 @@ export default function AdsConversionIDTextField( { helperText } ) {
 						'google-site-kit'
 					)
 				}
+				// The "AW-" prefix is constant throughout all Conversion Tracking IDs,
+				// so we don't localize it.
+				leadingIcon={
+					<span className="googlesitekit-text-field-conversion-tracking-id-prefix">
+						AW-
+					</span>
+				}
 				trailingIcon={
 					! isValidValue && (
 						<span className="googlesitekit-text-field-icon--error">
@@ -96,7 +103,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 					)
 				}
 				outlined
-				value={ adsConversionID }
+				value={ adsConversionID?.replace( /^AW-?/, '' ) }
 				onChange={ onChange }
 			/>
 		</div>
