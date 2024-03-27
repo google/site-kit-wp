@@ -446,14 +446,14 @@ final class Analytics_4 extends Module
 		);
 
 		if ( $this->is_adsense_connected() ) {
-			$debug_fields['adsense_linked'] = array(
-				'label' => __( 'AdSense Linked', 'google-site-kit' ),
+			$debug_fields['analytics_4_adsense_linked'] = array(
+				'label' => __( 'Analytics AdSense Linked', 'google-site-kit' ),
 				'value' => $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
 			);
 
-			$debug_fields['adsense_linked_last_synced_at'] = array(
-				'label' => __( 'AdSense Linked Last Synced At', 'google-site-kit' ),
+			$debug_fields['analytics_4_adsense_linked_last_synced_at'] = array(
+				'label' => __( 'Analytics AdSense Linked Last Synced At', 'google-site-kit' ),
 				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
 			);
