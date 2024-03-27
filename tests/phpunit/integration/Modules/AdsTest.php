@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -56,6 +57,13 @@ class AdsTest extends TestCase {
 	 */
 	public function test_template_redirect( $settings ) {
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'wp_enqueue_scripts' );
+		( new GTag() )->register();
+
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
 
 		remove_all_actions( 'template_redirect' );
 		$ads->register();
