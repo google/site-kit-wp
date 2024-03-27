@@ -106,6 +106,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		describe( 'createWebDataStream', () => {
 			it( 'should create a web datastream and add it to the store', async () => {
 				const propertyID = '12345';
+				const displayName = 'New GA4 WebDataStream';
 
 				fetchMock.post( createWebDataStreamsEndpoint, {
 					body: fixtures.createWebDataStream,
@@ -114,13 +115,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.createWebDataStream( propertyID );
+					.createWebDataStream( propertyID, displayName );
 				expect( fetchMock ).toHaveFetched(
 					createWebDataStreamsEndpoint,
 					{
 						body: {
 							data: {
 								propertyID,
+								displayName,
 							},
 						},
 					}
@@ -138,6 +140,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				jest.useFakeTimers();
 
 				const propertyID = '12345';
+				const displayName = 'New GA4 WebDataStream';
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -151,11 +154,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.createWebDataStream( propertyID );
+					.createWebDataStream( propertyID, displayName );
 
 				const error = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getErrorForAction( 'createWebDataStream', [ propertyID ] );
+					.getErrorForAction( 'createWebDataStream', [
+						propertyID,
+						displayName,
+					] );
 				expect( error ).toMatchObject( response );
 
 				// The response isn't important for the test here and we intentionally don't wait for it,
@@ -906,6 +912,59 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					propertyID: '1122334465',
 					webDataStreamID: '112',
 				} );
+			} );
+		} );
+
+		describe( 'doesWebDataStreamExist', () => {
+			const propertyID = '12345';
+
+			it( 'should return undefined if web data streams are not loaded yet', () => {
+				jest.useFakeTimers();
+
+				freezeFetch( webDataStreamsEndpoint );
+
+				const webDataStreamAlreadyExist = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Test GA4 WebDataStream'
+					);
+
+				expect( webDataStreamAlreadyExist ).toBeUndefined();
+			} );
+
+			it( 'should return false if the web data stream does not exist', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				const webDataStreamAlreadyExist = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Non Existent WebDataStream'
+					);
+
+				expect( webDataStreamAlreadyExist ).toBe( false );
+			} );
+
+			it( 'should return true if the web data stream already exists', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( fixtures.webDataStreams, {
+						propertyID,
+					} );
+
+				const webDataStreamAlreadyExist = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Test GA4 WebDataStream'
+					);
+
+				expect( webDataStreamAlreadyExist ).toBe( true );
 			} );
 		} );
 

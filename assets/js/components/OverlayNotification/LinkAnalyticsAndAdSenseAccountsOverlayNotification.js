@@ -118,7 +118,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
-		// the current users profile with the `dismissItem` action.
+		// the current user's profile with the `dismissItem` action.
 		dismissOverlayNotification(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		);

@@ -60,7 +60,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'Make sure you remove it if you decide to place the same GA4 tag via Site Kit, otherwise they will be duplicated',
+							'Consider removing the existing tag to avoid loading both tags on your site',
 							'google-site-kit'
 						) }
 					</p>
@@ -79,7 +79,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'If you prefer to collect data using that existing GA4 tag, please select the corresponding account and property above',
+							'If you prefer to collect data using that existing tag, please select the corresponding account and property above',
 							'google-site-kit'
 						) }
 					</p>
@@ -89,14 +89,14 @@ export default function SettingsUseSnippetSwitch() {
 		description = useSnippet ? (
 			<p>
 				{ __(
-					'Site Kit will add the GA4 code automatically',
+					'Site Kit will add the code automatically',
 					'google-site-kit'
 				) }
 			</p>
 		) : (
 			<p>
 				{ __(
-					'Site Kit will not add the GA4 code to your site',
+					'Site Kit will not add the code to your site',
 					'google-site-kit'
 				) }
 			</p>

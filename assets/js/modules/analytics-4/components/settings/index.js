@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as AdsConversionIDSettingsNotice } from './AdsConversionIDSettingsNotice';
 export { default as AnalyticsSettingsNotice } from './AnalyticsSettingsNotice';
 export { default as OptionalSettingsView } from './OptionalSettingsView';
 export { default as PropertyOrWebDataStreamNotAvailableError } from './PropertyOrWebDataStreamNotAvailableError';

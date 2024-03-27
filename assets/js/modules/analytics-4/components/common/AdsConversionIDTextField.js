@@ -31,10 +31,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 import { isValidAdsConversionID } from '../../../ads/utils/validation';
 const { useSelect, useDispatch } = Data;
 
@@ -92,10 +91,7 @@ export default function AdsConversionIDTextField() {
 				trailingIcon={
 					! isValidValue && (
 						<span className="googlesitekit-text-field-icon--error">
-							<VisuallyHidden>
-								{ __( 'Error', 'google-site-kit' ) }
-							</VisuallyHidden>
-							<WarningIcon width={ 14 } height={ 12 } />
+							<AccessibleWarningIcon />
 						</span>
 					)
 				}
