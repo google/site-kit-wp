@@ -212,12 +212,14 @@ final class Analytics_4 extends Module
 					$this->custom_dimensions_data_available->reset_data_available();
 				}
 
-				// Reset AdSense link settings when propertyID changes.
+				// Reset AdSense & Ads link settings when propertyID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->get_settings()->merge(
 						array(
 							'adSenseLinked'             => false,
 							'adSenseLinkedLastSyncedAt' => 0,
+							'adsLinked'                 => false,
+							'adsLinkedLastSyncedAt'     => 0,
 						)
 					);
 				}
