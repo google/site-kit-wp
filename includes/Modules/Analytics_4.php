@@ -433,6 +433,16 @@ final class Analytics_4 extends Module
 					? 'none'
 					: join( ', ', $settings['availableCustomDimensions'] ),
 			),
+			'analytics_4_ads_linked'                  => array(
+				'label' => __( 'Analytics Ads Linked', 'google-site-kit' ),
+				'value' => $settings['adsLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
+				'debug' => $settings['adsLinked'],
+			),
+			'analytics_4_ads_linked_last_synced_at'   => array(
+				'label' => __( 'Analytics Ads Linked Last Synced At', 'google-site-kit' ),
+				'value' => $settings['adsLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adsLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
+				'debug' => $settings['adsLinkedLastSyncedAt'],
+			),
 		);
 
 		if ( $this->is_adsense_connected() ) {
