@@ -455,6 +455,7 @@ final class Analytics_4 extends Module
 		$datapoints = array(
 			'GET:account-summaries'                => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                         => array( 'service' => 'analyticsadmin' ),
+			'GET:ads-links'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:adsense-links'                    => array( 'service' => 'analyticsadsenselinks' ),
 			'GET:container-lookup'                 => array(
 				'service' => 'tagmanager',
@@ -894,6 +895,14 @@ final class Analytics_4 extends Module
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
+			case 'GET:ads-links':
+				if ( empty( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				$parent = self::normalize_property_id( $data['propertyID'] );
+
+				return $this->get_service( 'analyticsadmin' )->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
 			case 'GET:adsense-links':
 				if ( empty( $data['propertyID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'propertyID' );
@@ -1468,6 +1477,8 @@ final class Analytics_4 extends Module
 					$account_summaries,
 					'displayName'
 				);
+			case 'GET:ads-links':
+				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':
 				return (array) $response->getAdsenseLinks();
 			case 'POST:create-account-ticket':
