@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation Setup CTA styles.
+ * Audience Segmentation Tile Error styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -31,7 +31,7 @@
 			gap: $grid-gap-desktop;
 			margin: 34px auto;
 			text-align: center;
-			width: 328px;
+			width: 352px;
 
 			.googlesitekit-audience-segmentation-tile-error__image {
 				width: 190px;
@@ -43,13 +43,21 @@
 					font-size: $fs-title-sm;
 					font-weight: $fw-medium;
 					line-height: $lh-title-sm;
+					margin-top: 0;
 				}
 
-				.googlesitekit-audience-segmentation-tile-error__explanation {
-					color: $c-surfaces-on-surface;
-					font-size: $fs-body-md;
+				.googlesitekit-audience-segmentation-tile-error__actions .googlesitekit-report-error-actions {
+					color: $c-surfaces-on-surface-variant;
+					flex-direction: column-reverse;
+					font-size: $fs-body-sm;
 					font-weight: $fw-normal;
-					line-height: $lh-body-md;
+					line-height: $lh-body-sm;
+
+					.mdc-button {
+						font-weight: $fw-medium;
+						min-height: 32px;
+						padding: 6px 16px;
+					}
 				}
 			}
 		}

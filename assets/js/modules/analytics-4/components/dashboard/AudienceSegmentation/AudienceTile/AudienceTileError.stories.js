@@ -29,8 +29,6 @@ import {
 	provideModules,
 } from '../../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 
 const { useSelect } = Data;
@@ -43,20 +41,15 @@ function AudienceTileErrorWrapper( { ...args } ) {
 	return <AudienceTileError errors={ errors } { ...args } />;
 }
 
-function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
+function Template( { setupRegistry = async () => {}, ...args } ) {
 	const setupRegistryCallback = async ( registry ) => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		await setupRegistry( registry );
 	};
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
-			<ViewContextProvider
-				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-			>
-				<AudienceTileErrorWrapper { ...args } />
-			</ViewContextProvider>
+			<AudienceTileErrorWrapper { ...args } />
 		</WithRegistrySetup>
 	);
 }
@@ -69,9 +62,19 @@ Default.args = {
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
-				data: {},
+				data: {
+					reason: 'Data Error',
+				},
 			},
-			'getAccountID'
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
 		);
 	},
 };
@@ -83,6 +86,33 @@ export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'InsufficientPermissions';
 InsufficientPermissions.args = {
 	setupRegistry: async ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics-4',
+			},
+		] );
+
+		const [ accountID, propertyID, measurementID, webDataStreamID ] = [
+			'12345',
+			'34567',
+			'56789',
+			'78901',
+		];
+
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAccountID( accountID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyID( propertyID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setMeasurementID( measurementID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setWebDataStreamID( webDataStreamID );
 		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',

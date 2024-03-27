@@ -48,7 +48,15 @@ import Link from './Link';
 const { useSelect, useDispatch } = Data;
 
 export default function ReportErrorActions( props ) {
-	const { moduleSlug, error, GetHelpLink, onRetry, getHelpClassName } = props;
+	const {
+		moduleSlug,
+		error,
+		GetHelpLink,
+		showGetHelpLink,
+		buttonVariant,
+		onRetry,
+		getHelpClassName,
+	} = props;
 
 	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
@@ -118,36 +126,51 @@ export default function ReportErrorActions( props ) {
 	return (
 		<div className="googlesitekit-report-error-actions">
 			{ showRequestAccessURL && (
-				<Button href={ requestAccessURL } target="_blank">
+				<Button
+					href={ requestAccessURL }
+					target="_blank"
+					danger={ buttonVariant === 'danger' }
+					tertiary={ buttonVariant === 'tertiary' }
+				>
 					{ __( 'Request access', 'google-site-kit' ) }
 				</Button>
 			) }
-			{ showRetry ? (
+			{ showRetry && (
 				<Fragment>
-					<Button onClick={ handleRetry }>
+					<Button
+						onClick={ handleRetry }
+						danger={ buttonVariant === 'danger' }
+						tertiary={ buttonVariant === 'tertiary' }
+					>
 						{ __( 'Retry', 'google-site-kit' ) }
 					</Button>
-					<span className="googlesitekit-error-retry-text">
-						{ createInterpolateElement(
-							__(
-								'Retry didn’t work? <HelpLink />',
-								'google-site-kit'
-							),
-							{
-								HelpLink: (
-									<Link
-										href={ errorTroubleshootingLinkURL }
-										external
-										hideExternalIndicator
-									>
-										{ __( 'Get help', 'google-site-kit' ) }
-									</Link>
+					{ showGetHelpLink && (
+						<span className="googlesitekit-error-retry-text">
+							{ createInterpolateElement(
+								__(
+									'Retry didn’t work? <HelpLink />',
+									'google-site-kit'
 								),
-							}
-						) }
-					</span>
+								{
+									HelpLink: (
+										<Link
+											href={ errorTroubleshootingLinkURL }
+											external
+											hideExternalIndicator
+										>
+											{ __(
+												'Get help',
+												'google-site-kit'
+											) }
+										</Link>
+									),
+								}
+							) }
+						</span>
+					) }
 				</Fragment>
-			) : (
+			) }
+			{ ! showRetry && showGetHelpLink && (
 				<div className={ getHelpClassName }>
 					{ typeof GetHelpLink === 'function' ? (
 						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
@@ -173,6 +196,12 @@ ReportErrorActions.propTypes = {
 		PropTypes.object,
 	] ).isRequired,
 	GetHelpLink: PropTypes.elementType,
+	showGetHelpLink: PropTypes.bool,
+	buttonVariant: PropTypes.string,
 	onRetry: PropTypes.func,
 	getHelpClassName: PropTypes.string,
+};
+
+ReportErrorActions.defaultProps = {
+	showGetHelpLink: true,
 };

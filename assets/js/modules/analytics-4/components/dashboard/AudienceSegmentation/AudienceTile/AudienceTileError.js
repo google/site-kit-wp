@@ -19,68 +19,46 @@
 /**
  * External dependencies
  */
-import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelect } from '@wordpress/data';
-import {
-	Fragment,
-	createInterpolateElement,
-	useCallback,
-} from '@wordpress/element';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import {
-	isErrorRetryable,
-	isInsufficientPermissionsError,
-} from '../../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import AudienceTileErrorImage from '../../../../../../../svg/graphics/analytics-audience-segmentation-tile-error.svg';
-import Button from '../../../../../../googlesitekit/components-gm2/Button';
 import Link from '../../../../../../components/Link';
+import ReportErrorActions from '../../../../../../components/ReportErrorActions';
 
 export default function AudienceTileError( { errors } ) {
 	const hasInsufficientPermissionsError = errors.some( ( err ) =>
 		isInsufficientPermissionsError( err )
 	);
 
-	const requestAccessURL = useSelect( ( select ) =>
-		typeof select( MODULES_ANALYTICS_4 )?.getServiceEntityAccessURL ===
-		'function'
-			? select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
-			: null
-	);
-
-	const errorsWithSelectorData = useSelect( ( select ) =>
-		errors.map( ( err ) => {
-			const selectorData =
-				select( MODULES_ANALYTICS_4 )?.getSelectorDataForError( err );
-
-			return {
-				...err,
-				selectorData,
-			};
-		} )
-	);
-
-	const retryableErrors = errorsWithSelectorData?.filter(
-		( err ) =>
-			isErrorRetryable( err, err.selectorData ) &&
-			err.selectorData.name === 'getReport'
-	);
-
-	const dispatch = useDispatch();
-
-	const handleRetry = useCallback( () => {
-		retryableErrors.forEach( ( err ) => {
-			const { selectorData } = err;
-			dispatch( selectorData.storeName ).invalidateResolution(
-				selectorData.name,
-				selectorData.args
-			);
-		} );
-	}, [ dispatch, retryableErrors ] );
+	function GetHelpLink() {
+		return createInterpolateElement(
+			__(
+				'Contact your administrator. Trouble getting access? <HelpLink />',
+				'google-site-kit'
+			),
+			{
+				HelpLink: (
+					<Link
+						href="https://sitekit.withgoogle.com/documentation/troubleshooting/analytics/#insufficient-permissions"
+						external
+						hideExternalIndicator
+					>
+						{ __( 'Get help', 'google-site-kit' ) }
+					</Link>
+				),
+			}
+		);
+	}
 
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-error">
@@ -99,55 +77,17 @@ export default function AudienceTileError( { errors } ) {
 										'google-site-kit'
 								  ) }
 						</h3>
-						{ hasInsufficientPermissionsError && (
-							<p className="googlesitekit-audience-segmentation-tile-error__explanation">
-								{ __(
-									"You'll need to contact your administrator.",
-									'google-site-kit'
-								) }
-								<br />
-								{ createInterpolateElement(
-									__(
-										'Trouble getting access? <HelpLink />',
-										'google-site-kit'
-									),
-									{
-										HelpLink: (
-											<Link
-												href="https://sitekit.withgoogle.com/documentation/troubleshooting/analytics/#insufficient-permissions"
-												external
-												hideExternalIndicator
-											>
-												{ __(
-													'Get help',
-													'google-site-kit'
-												) }
-											</Link>
-										),
-									}
-								) }
-							</p>
-						) }
 					</div>
-					<div className="googlesitekit-audience-segmentation-tile-error__cta">
-						{ hasInsufficientPermissionsError ? (
-							<Fragment>
-								<Button
-									href={ requestAccessURL }
-									target="_blank"
-									danger
-								>
-									{ __(
-										'Request access',
-										'google-site-kit'
-									) }
-								</Button>
-							</Fragment>
-						) : (
-							<Button onClick={ handleRetry } danger>
-								{ __( 'Retry', 'google-site-kit' ) }
-							</Button>
-						) }
+					<div className="googlesitekit-audience-segmentation-tile-error__actions">
+						<ReportErrorActions
+							moduleSlug="analytics-4"
+							error={ errors }
+							GetHelpLink={
+								hasInsufficientPermissionsError && GetHelpLink
+							}
+							showGetHelpLink={ hasInsufficientPermissionsError }
+							buttonVariant="danger"
+						/>
 					</div>
 				</div>
 			</div>
