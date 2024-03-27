@@ -32,15 +32,12 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../hooks/useFeature';
 import SettingsNotice from '../SettingsNotice/SettingsNotice';
 import { TYPE_WARNING } from '../SettingsNotice/utils';
 import { listFormat } from '../../util';
 const { useSelect } = Data;
 
 export default function EntityOwnershipChangeNotice( { slug } ) {
-	const isDashboardSharingEnabled = useFeature( 'dashboardSharing' );
-
 	const slugs = Array.isArray( slug ) ? slug : [ slug ];
 
 	const storeNames = useSelect( ( select ) => {
@@ -96,7 +93,7 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 		);
 	} );
 
-	if ( ! isDashboardSharingEnabled || ! haveModulesChanged ) {
+	if ( ! haveModulesChanged ) {
 		return null;
 	}
 
