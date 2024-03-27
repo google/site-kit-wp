@@ -37,9 +37,10 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import { isValidAccountID } from '../../../analytics/util';
-import { isValidPropertySelection } from '../../utils/validation';
+import {
+	isValidAccountID,
+	isValidPropertySelection,
+} from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -51,11 +52,8 @@ export default function PropertySelect( props ) {
 		className,
 		onChange = () => {},
 	} = props;
-
-	// TODO: Update this select hook to pull accountID from the modules/analytics-4
-	// datastore when GA4 module becomes separated from the Analytics one.
 	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 
 	const properties = useSelect( ( select ) =>

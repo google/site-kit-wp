@@ -278,12 +278,12 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						width: QUARTER,
 					},
 					{
-						Component: getReportZeroWidget( 'analytics' ),
+						Component: getReportZeroWidget( 'analytics-4' ),
 						width: QUARTER,
 					},
 					{
 						Component: getRecoverableModulesWidget( [
-							'analytics',
+							'analytics-4',
 						] ),
 						width: QUARTER,
 					},
@@ -298,11 +298,7 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						width: QUARTER,
 					},
 					{
-						Component: getReportZeroWidget( 'analytics' ),
-						width: QUARTER,
-					},
-					{
-						Component: getReportZeroWidget( 'analytics' ),
+						Component: getReportZeroWidget( 'analytics-4' ),
 						width: QUARTER,
 					},
 				],
@@ -312,12 +308,12 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						width: HALF,
 					},
 					{
-						Component: getReportZeroWidget( 'analytics' ),
+						Component: getReportZeroWidget( 'analytics-4' ),
 						width: HALF,
 					},
 					{
 						Component: getRecoverableModulesWidget( [
-							'analytics',
+							'analytics-4',
 							'search-console',
 						] ),
 						width: FULL,

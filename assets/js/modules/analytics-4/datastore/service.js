@@ -31,11 +31,10 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { REPORT_ARGS_NAV_KEY } from '../constants';
-import { generateDateRangeArgs } from '../../analytics/util/report-date-range-args';
 import { escapeURI } from '../../../util/escape-uri';
+import { generateDateRangeArgs } from '../utils/report-date-range-args';
 import {
 	generateReportDetailArgs,
 	generateReportFilterArgs,
@@ -133,7 +132,7 @@ export const selectors = {
 					}
 				);
 
-				return select( MODULES_ANALYTICS ).getServiceURL( {
+				return select( MODULES_ANALYTICS_4 ).getServiceURL( {
 					query: {
 						pli: 1,
 					},
@@ -151,7 +150,7 @@ export const selectors = {
 	 * @return {string|undefined} The entity access URL to the service.
 	 */
 	getServiceEntityAccessURL: createRegistrySelector( ( select ) => () => {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const accountID = select( MODULES_ANALYTICS_4 ).getAccountID();
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 		const webDataStreamID =
 			select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
@@ -160,7 +159,7 @@ export const selectors = {
 			return undefined;
 		}
 
-		return select( MODULES_ANALYTICS ).getServiceURL( {
+		return select( MODULES_ANALYTICS_4 ).getServiceURL( {
 			path: escapeURI`/a${ accountID }p${ propertyID }/admin/streams/table/${ webDataStreamID }`,
 		} );
 	} ),

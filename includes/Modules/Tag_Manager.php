@@ -520,12 +520,12 @@ final class Tag_Manager extends Module
 			'googlesitekit-components',
 		);
 
-		$analytics_exists = apply_filters( 'googlesitekit_module_exists', false, 'analytics' );
+		$analytics_exists = apply_filters( 'googlesitekit_module_exists', false, 'analytics-4' );
 
 		// Note that the Tag Manager bundle will make use of the Analytics bundle if it's available,
 		// but can also function without it, hence the conditional include of the Analytics bundle here.
 		if ( $analytics_exists ) {
-			$dependencies[] = 'googlesitekit-modules-analytics';
+			$dependencies[] = 'googlesitekit-modules-analytics-4';
 		}
 
 		return array(
