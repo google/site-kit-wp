@@ -36,7 +36,6 @@ import { useBreakpoint } from '../../hooks/useBreakpoint';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
-import { useFeature } from '../../hooks/useFeature';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -54,7 +53,6 @@ export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
 
 export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
-	const ga4AdSenseIntegrationEnabled = useFeature( 'ga4AdSenseIntegration' );
 	const breakpoint = useBreakpoint();
 
 	const dashboardType = useDashboardType();
@@ -150,7 +148,6 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const reportData = useSelect( ( select ) => {
 		if (
-			ga4AdSenseIntegrationEnabled &&
 			isMainDashboard &&
 			isDismissed === false &&
 			isAdSenseLinked &&
@@ -168,7 +165,6 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 	const reportDataAvailable = isZeroReport( reportData ) === false;
 
 	const shouldShowNotification =
-		ga4AdSenseIntegrationEnabled &&
 		isMainDashboard &&
 		isDismissed === false &&
 		analyticsModuleConnected &&
