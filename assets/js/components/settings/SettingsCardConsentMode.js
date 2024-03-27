@@ -47,10 +47,15 @@ const { useDispatch, useSelect } = Data;
 export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
 
-	const isAdsConnected = useSelect( ( select ) =>
-		// TODO: Replace this with the `ads` version of the `getAdsConversionID()` selector once it's implemented.
-		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
-	);
+	const isAdsConnected = useSelect( ( select ) => {
+		// TODO: Replace the `getAdsConversionID()` selector with its `ads`
+		// version once it's implemented.
+
+		const { getAdsConversionID, getAdsLinked } =
+			select( MODULES_ANALYTICS_4 );
+
+		return getAdsConversionID() || getAdsLinked();
+	} );
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConsentModeEnabled()
