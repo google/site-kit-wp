@@ -49,4 +49,43 @@ class AdsTest extends TestCase {
 		$this->assertFalse( $ads_settings );
 	}
 
+	/**
+	 * @dataProvider template_redirect_data_provider
+	 *
+	 * @param array $settings
+	 */
+	public function test_template_redirect( $settings ) {
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'template_redirect' );
+		$ads->register();
+		$ads->get_settings()->set( $settings );
+
+		do_action( 'template_redirect' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+		$this->assertNotEmpty( $head_html );
+
+		if ( empty( $settings['adsConversionID'] ) ) {
+			$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
+			$this->assertStringNotContainsString(
+				'gtag("config", "AW-123456789")',
+				$head_html
+			);
+		} else {
+			$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+			$this->assertStringContainsString(
+				'gtag("config", "AW-123456789")',
+				$head_html
+			);
+		}
+	}
+
+	public function template_redirect_data_provider() {
+		return array(
+			'empty ads conversion ID' => array( array( 'adsConversionID' => '' ) ),
+			'valid ads conversion ID' => array( array( 'adsConversionID' => 'AW-123456789' ) ),
+		);
+	}
+
 }
