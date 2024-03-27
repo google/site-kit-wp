@@ -69,10 +69,15 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).isConsentModeEnabled()
 	);
 
-	const isAdsConnected = useSelect( ( select ) =>
-		// TODO: Replace this with the `ads` version of the `getAdsConversionID()` selector once it's implemented.
-		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
-	);
+	const isAdsConnected = useSelect( ( select ) => {
+		// TODO: Replace the `getAdsConversionID()` selector with its `ads`
+		// version once it's implemented.
+
+		const { getAdsConversionID, getAdsLinked } =
+			select( MODULES_ANALYTICS_4 );
+
+		return getAdsConversionID() || getAdsLinked();
+	} );
 
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )

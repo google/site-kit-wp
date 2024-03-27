@@ -57,6 +57,8 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'propertyCreateTime',
 		'trackingDisabled',
 		'adsConversionIDMigratedAtMs',
+		'adsLinked',
+		'adsLinkedLastSyncedAt',
 	],
 	submitChanges,
 	rollbackChanges,
