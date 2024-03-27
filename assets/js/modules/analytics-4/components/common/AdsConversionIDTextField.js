@@ -1,5 +1,5 @@
 /**
- * Analytics 4 Ads Conversion ID component.
+ * Analytics 4 Conversion Tracking ID component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -77,7 +77,7 @@ export default function AdsConversionIDTextField() {
 				{ __( 'Google Ads', 'google-site-kit' ) }
 			</h4>
 			<TextField
-				label={ __( 'Ads Conversion ID', 'google-site-kit' ) }
+				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
 				className={ classnames( {
 					'mdc-text-field--error': ! isValidValue,
 				} ) }
@@ -102,7 +102,7 @@ export default function AdsConversionIDTextField() {
 
 			<p>
 				{ __(
-					'If you’re using Google Ads, insert your Ads conversion ID if you’d like Site Kit to place the snippet on your site',
+					'If you’re using Google Ads, insert your Conversion Tracking ID if you’d like Site Kit to place the snippet on your site',
 					'google-site-kit'
 				) }
 			</p>

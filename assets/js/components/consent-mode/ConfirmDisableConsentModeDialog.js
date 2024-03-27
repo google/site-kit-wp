@@ -43,7 +43,8 @@ export default function ConfirmDisableConsentModeDialog( {
 	const viewContext = useViewContext();
 
 	const dependentModuleNames = useSelect( ( select ) =>
-		// TODO: Add the Ads module to this list when the Ads Conversion ID is migrated to it.
+		// TODO: Add the Ads module to this list when the Conversion Tracking ID is
+		// migrated to it.
 		[ 'analytics-4' ].reduce( ( names, slug ) => {
 			if ( select( CORE_MODULES ).isModuleConnected( slug ) ) {
 				return [
