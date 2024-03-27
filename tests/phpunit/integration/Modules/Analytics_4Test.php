@@ -182,6 +182,29 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $settings['adSenseLinkedLastSyncedAt'], 0 );
 	}
 
+	public function test_register__reset_ads_link_settings() {
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'            => '12345678',
+				'adsLinked'             => true,
+				'adsLinkedLastSyncedAt' => 1705938374500,
+			)
+		);
+
+		$this->analytics->register();
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '87654321',
+			)
+		);
+
+		$settings = $this->analytics->get_settings()->get();
+
+		$this->assertFalse( $settings['adsLinked'] );
+		$this->assertEquals( $settings['adsLinkedLastSyncedAt'], 0 );
+	}
+
 	public function test_handle_provisioning_callback() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$analytics = new Analytics_4( $context );
