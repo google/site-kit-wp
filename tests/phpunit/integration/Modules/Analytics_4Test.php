@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -136,6 +137,8 @@ class Analytics_4Test extends TestCase {
 		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
 		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 		wp_set_current_user( $this->user->ID );
+		remove_all_actions( 'wp_enqueue_scripts' );
+		( new GTag() )->register();
 	}
 
 	public function test_register() {
@@ -2792,6 +2795,9 @@ class Analytics_4Test extends TestCase {
 		// Remove irrelevant script from throwing errors in CI from readfile().
 		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
 		// Set the current user (can be 0 for no user)
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
@@ -2803,6 +2809,7 @@ class Analytics_4Test extends TestCase {
 		$analytics->get_settings()->set( $settings );
 
 		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 		$analytics->register();
 		do_action( 'template_redirect' );
 
@@ -3501,10 +3508,10 @@ class Analytics_4Test extends TestCase {
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 
-		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
 
 		$analytics->get_settings()->merge(
 			array(
@@ -3516,19 +3523,19 @@ class Analytics_4Test extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 
 		// Tag not hooked when blocked.
-		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
 
 		// Tag hooked when only AMP blocked.
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 	}
 
 	/**
@@ -3555,7 +3562,6 @@ class Analytics_4Test extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
-		remove_all_actions( 'wp_enqueue_scripts' );
 		$analytics->register();
 
 		// Hook `wp_print_head_scripts` on placeholder action for capturing.
