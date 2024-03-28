@@ -20,7 +20,7 @@
 	.googlesitekit-audience-segmentation-tile-error {
 		background-color: $c-site-kit-sk-0;
 		border: 2px solid $c-red-r-500;
-		border-radius: 16px;
+		border-radius: $br-sm;
 		min-width: 320px;
 		padding: 155px 0;
 
@@ -56,7 +56,7 @@
 					.mdc-button {
 						font-weight: $fw-medium;
 						min-height: 32px;
-						padding: 6px 16px;
+						padding: 6px $grid-gap-phone;
 					}
 				}
 			}

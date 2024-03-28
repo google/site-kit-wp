@@ -52,7 +52,7 @@ export default function ReportErrorActions( props ) {
 		moduleSlug,
 		error,
 		GetHelpLink,
-		showGetHelpLink,
+		hideGetHelpLink,
 		buttonVariant,
 		onRetry,
 		getHelpClassName,
@@ -144,7 +144,7 @@ export default function ReportErrorActions( props ) {
 					>
 						{ __( 'Retry', 'google-site-kit' ) }
 					</Button>
-					{ showGetHelpLink && (
+					{ ! hideGetHelpLink && (
 						<span className="googlesitekit-error-retry-text">
 							{ createInterpolateElement(
 								__(
@@ -170,7 +170,7 @@ export default function ReportErrorActions( props ) {
 					) }
 				</Fragment>
 			) }
-			{ ! showRetry && showGetHelpLink && (
+			{ ! showRetry && ! hideGetHelpLink && (
 				<div className={ getHelpClassName }>
 					{ typeof GetHelpLink === 'function' ? (
 						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
@@ -196,12 +196,8 @@ ReportErrorActions.propTypes = {
 		PropTypes.object,
 	] ).isRequired,
 	GetHelpLink: PropTypes.elementType,
-	showGetHelpLink: PropTypes.bool,
+	hideGetHelpLink: PropTypes.bool,
 	buttonVariant: PropTypes.string,
 	onRetry: PropTypes.func,
 	getHelpClassName: PropTypes.string,
-};
-
-ReportErrorActions.defaultProps = {
-	showGetHelpLink: true,
 };

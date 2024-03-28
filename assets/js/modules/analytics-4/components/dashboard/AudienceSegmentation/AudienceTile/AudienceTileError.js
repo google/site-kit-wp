@@ -25,40 +25,19 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import AudienceTileErrorImage from '../../../../../../../svg/graphics/analytics-audience-segmentation-tile-error.svg';
-import Link from '../../../../../../components/Link';
 import ReportErrorActions from '../../../../../../components/ReportErrorActions';
+import GetHelpLink from './GetHelpLink';
 
 export default function AudienceTileError( { errors } ) {
 	const hasInsufficientPermissionsError = errors.some( ( err ) =>
 		isInsufficientPermissionsError( err )
 	);
-
-	function GetHelpLink() {
-		return createInterpolateElement(
-			__(
-				'Contact your administrator. Trouble getting access? <HelpLink />',
-				'google-site-kit'
-			),
-			{
-				HelpLink: (
-					<Link
-						href="https://sitekit.withgoogle.com/documentation/troubleshooting/analytics/#insufficient-permissions"
-						external
-						hideExternalIndicator
-					>
-						{ __( 'Get help', 'google-site-kit' ) }
-					</Link>
-				),
-			}
-		);
-	}
 
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-error">
@@ -83,9 +62,13 @@ export default function AudienceTileError( { errors } ) {
 							moduleSlug="analytics-4"
 							error={ errors }
 							GetHelpLink={
-								hasInsufficientPermissionsError && GetHelpLink
+								hasInsufficientPermissionsError
+									? GetHelpLink
+									: undefined
 							}
-							showGetHelpLink={ hasInsufficientPermissionsError }
+							hideGetHelpLink={
+								! hasInsufficientPermissionsError
+							}
 							buttonVariant="danger"
 						/>
 					</div>
