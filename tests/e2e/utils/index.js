@@ -30,7 +30,6 @@ export { pasteText } from './paste-text';
 export { resetSiteKit } from './reset';
 export { safeLoginUser } from './safe-login-user';
 export { setAnalyticsExistingPropertyID } from './set-analytics-existing-property-id';
-export { setAnalyticsAdsConversionID } from './set-analytics-ads-conversion-id';
 export { setAuthToken } from './set-auth-token';
 export { setClientConfig } from './set-client-config';
 export { setEditPostFeature } from './set-edit-post-feature';
