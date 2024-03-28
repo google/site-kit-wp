@@ -35,7 +35,6 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adsense-connect.svg';
 import OverlayNotification from './OverlayNotification';
 import useViewOnly from '../../hooks/useViewOnly';
-import { useFeature } from '../../hooks/useFeature';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
@@ -46,10 +45,6 @@ export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
-	const isGA4AdSenseIntegrationEnabled = useFeature(
-		'ga4AdSenseIntegration'
-	);
-
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
 	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
@@ -109,7 +104,6 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		analyticsModuleConnected && adSenseModuleConnected;
 
 	const shouldShowNotification =
-		isGA4AdSenseIntegrationEnabled &&
 		! isViewOnly &&
 		isMainDashboard &&
 		analyticsAndAdSenseAreConnected &&

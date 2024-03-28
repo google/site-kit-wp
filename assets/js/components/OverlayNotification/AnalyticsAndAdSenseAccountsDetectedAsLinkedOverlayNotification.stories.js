@@ -66,7 +66,6 @@ export default {
 	title: 'Components/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification',
 	component: AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
 	parameters: {
-		features: [ 'ga4AdSenseIntegration' ],
 		viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 	},
 	decorators: [

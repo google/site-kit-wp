@@ -43,7 +43,6 @@ export default {
 	title: 'Components/LinkAnalyticsAndAdSenseAccountsOverlayNotification',
 	component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
 	parameters: {
-		features: [ 'ga4AdSenseIntegration' ],
 		viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 	},
 	decorators: [

@@ -86,7 +86,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -112,7 +111,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -127,7 +125,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -146,7 +143,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -171,7 +167,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -188,7 +183,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
 		expect( container ).not.toHaveTextContent(
@@ -201,7 +195,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
@@ -234,7 +227,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -254,7 +246,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'ga4AdSenseIntegration' ],
 			}
 		);
 
@@ -276,7 +267,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -308,7 +298,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
 			{
 				registry,
-				features: [ 'ga4AdSenseIntegration' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
