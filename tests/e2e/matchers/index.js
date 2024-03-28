@@ -18,6 +18,7 @@
 
 // Jest will be extended with all exports from this module automatically.
 export { toBeChecked } from './to-be-checked';
+export { toHaveAdsTag } from './to-have-ads-tag';
 export { toHaveAdSenseTag } from './to-have-adsense-tag';
 export { toHaveAMPAutoAdsTag } from './to-have-amp-auto-ads-tag';
 export { toHaveTracking } from './to-have-tracking';

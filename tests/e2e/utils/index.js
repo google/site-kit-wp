@@ -38,6 +38,7 @@ export { setSiteVerification } from './set-site-verification';
 export { setupAdSense } from './setup-adsense';
 export { setupAnalytics, setupAnalytics4 } from './setup-analytics';
 export { setupSiteKit } from './setup-site-kit';
+export { setupAds } from './setup-ads';
 export { switchDateRange } from './switch-date-range';
 export { testClientConfig } from './test-client-config';
 export { testSiteNotification } from './test-site-notification';
