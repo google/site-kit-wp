@@ -88,7 +88,7 @@ class Consent_Mode {
 			'ad_storage'         => 'denied',
 			'ad_user_data'       => 'denied',
 			'analytics_storage'  => 'denied',
-			'regions'            => $this->consent_mode_settings->get_regions(),
+			'region'             => $this->consent_mode_settings->get_regions(),
 			'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
 		);
 
