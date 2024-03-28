@@ -20,13 +20,13 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 class Regions {
 
 	/**
-	 * List of countries in the European Economic Area (EEA).
+	 * List of countries that Google's EU user consent policy applies to, which are the
+	 * countries in the European Economic Area (EEA) plus the UK.
 	 */
-	const EEA = array(
+	const EU_USER_CONSENT_POLICY = array(
 		'AT',
 		'BE',
 		'BG',
-		'CH',
 		'CY',
 		'CZ',
 		'DE',
@@ -35,6 +35,7 @@ class Regions {
 		'ES',
 		'FI',
 		'FR',
+		'GB',
 		'GR',
 		'HR',
 		'HU',
@@ -54,6 +55,5 @@ class Regions {
 		'SE',
 		'SI',
 		'SK',
-		'UK',
 	);
 }
