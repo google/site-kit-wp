@@ -92,6 +92,13 @@ class Consent_Mode {
 			'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
 		);
 
+		$consent_defaults_global = array(
+			'ad_personalization' => 'granted',
+			'ad_storage'         => 'granted',
+			'ad_user_data'       => 'granted',
+			'analytics_storage'  => 'granted',
+		);
+
 		$consent_category_map = apply_filters(
 			'googlesitekit_consent_category_map',
 			array(
@@ -105,6 +112,7 @@ class Consent_Mode {
 <script id='google_gtagjs-js-consent-mode'>
 window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
 gtag('consent', 'default', <?php echo wp_json_encode( $consent_defaults ); ?>);
+gtag('consent', 'default', <?php echo wp_json_encode( $consent_defaults_global ); ?>);
 window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
 ( function () {
 	document.addEventListener(
