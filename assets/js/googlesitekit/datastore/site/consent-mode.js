@@ -21,7 +21,9 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_SITE } from './constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
@@ -164,6 +166,30 @@ const baseSelectors = {
 	getConsentAPIInfo: ( state ) => {
 		return state.consentMode.apiInfo;
 	},
+
+	/**
+	 * Returns true if Google Ads is in use, either through a linked Analytics & Ads account
+	 * or an Ads conversion tracking ID.
+	 *
+	 * TODO: The Ads conversion tracking ID is being moved to the new "Ads" module. Source
+	 * this ID from the "Ads" module once it's implemented.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} True if Google Ads is in use, false otherwise.
+	 */
+	isAdsConnected: createRegistrySelector( ( select ) => () => {
+		const { isModuleConnected } = select( CORE_MODULES );
+
+		if ( ! isModuleConnected( 'analytics-4' ) ) {
+			return false;
+		}
+
+		const { getAdsConversionID, getAdsLinked } =
+			select( MODULES_ANALYTICS_4 );
+
+		return !! getAdsConversionID() || !! getAdsLinked();
+	} ),
 };
 
 const baseResolvers = {
