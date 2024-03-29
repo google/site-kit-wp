@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -101,13 +102,8 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.31.0
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ), 20 );
-		add_filter(
-			'wp_resource_hints',
-			$this->get_dns_prefetch_hints_callback( '//www.googletagmanager.com' ),
-			10,
-			2
-		);
+		add_action( 'googlesitekit_setup_gtag', $this->get_method_proxy( 'setup_gtag' ) );
+
 		$this->do_init_tag_action();
 	}
 
@@ -121,18 +117,15 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	}
 
 	/**
-	 * Enqueues gtag script.
+	 * Configures gtag script.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t Renamed and refactored to use new GTag infrastructure.
+	 *
+	 * @param GTag $gtag GTag instance.
 	 */
-	protected function enqueue_gtag_script() {
+	protected function setup_gtag( GTag $gtag ) {
 		$gtag_opt = $this->get_tag_config();
-		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tag_id );
-
-		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_enqueue_script( 'google_gtagjs', $gtag_src, false, null, false );
-		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
-		wp_add_inline_script( 'google_gtagjs', 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
 
 		/**
 		 * Filters the gtag configuration options for the Analytics snippet.
@@ -148,64 +141,38 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $gtag_opt );
 
 		if ( ! empty( $gtag_opt['linker'] ) ) {
-			$linker = wp_json_encode( $gtag_opt['linker'] );
-			$linker = sprintf( "gtag('set', 'linker', %s );", $linker );
-			wp_add_inline_script( 'google_gtagjs', $linker );
+			$gtag->add_command( 'set', array( 'linker', $gtag_opt['linker'] ) );
+
+			unset( $gtag_opt['linker'] );
 		}
 
-		unset( $gtag_opt['linker'] );
+		$gtag->add_tag( $this->tag_id, $gtag_opt );
 
-		wp_add_inline_script( 'google_gtagjs', 'gtag("js", new Date());' );
-		wp_add_inline_script( 'google_gtagjs', 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
+		// TODO: Lift this out to the Ads module when it's ready.
+		if ( $this->ads_conversion_id ) {
+			$gtag->add_tag( $this->ads_conversion_id );
+		}
 
-		$this->add_inline_config( $this->tag_id, $gtag_opt );
-		$this->add_inline_ads_conversion_id_config();
-
-		$filter_google_gtagjs = function ( $tag, $handle ) use ( $gtag_src ) {
-			if ( 'google_gtagjs' !== $handle ) {
+		$filter_google_gtagjs = function ( $tag, $handle ) use ( $gtag ) {
+			if ( GTag::HANDLE !== $handle ) {
 				return $tag;
 			}
 
-			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
-			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+			// Retain this comment for detection of Site Kit placed tag.
+			$snippet_comment = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
 			$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
 			if ( $block_on_consent_attrs ) {
+				$gtag_src = $gtag->get_gtag_src();
+
 				$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
 			}
 
-			return $snippet_comment_begin . $tag . $snippet_comment_end;
+			return $snippet_comment . $tag;
 		};
 
 		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
-	}
-
-	/**
-	 * Adds an inline script to configure ads conversion tracking.
-	 *
-	 * @since 1.32.0
-	 */
-	protected function add_inline_ads_conversion_id_config() {
-		if ( $this->ads_conversion_id ) {
-			$this->add_inline_config( $this->ads_conversion_id, array() );
-		}
-	}
-
-	/**
-	 * Adds an inline script to configure provided tag including configuration options.
-	 *
-	 * @since 1.113.0
-	 *
-	 * @param string $tag_id The tag ID to add config for.
-	 * @param array  $gtag_opt The gtag configuration.
-	 */
-	protected function add_inline_config( $tag_id, $gtag_opt ) {
-		$config = ! empty( $gtag_opt )
-			? sprintf( 'gtag("config", "%s", %s);', esc_js( $tag_id ), wp_json_encode( $gtag_opt ) )
-			: sprintf( 'gtag("config", "%s");', esc_js( $tag_id ) );
-
-		wp_add_inline_script( 'google_gtagjs', $config );
 	}
 
 	/**
