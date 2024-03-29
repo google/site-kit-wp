@@ -65,6 +65,9 @@ class AdsTest extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
 		remove_all_actions( 'template_redirect' );
 		$ads->register();
 		$ads->get_settings()->set( $settings );
