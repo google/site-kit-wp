@@ -24,6 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -48,6 +49,14 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( { adsConversionID: 'AW-123456789' } );
