@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.5
 Requires PHP:      5.6
-Stable tag:        1.123.0
+Stable tag:        1.123.1
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,29 +109,10 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.123.0 =
-
-**Added**
-
-* Add Analytics events to AdSense + Analytics success notification. See [#8214](https://github.com/google/site-kit-wp/issues/8214).
-* Add a cron task to synchronize the AdSense linked state for GA4 in the background. See [#8049](https://github.com/google/site-kit-wp/issues/8049).
-
-**Enhanced**
-
-* Display overlay notification to prompt AdSense + Analytics 4 users to link their accounts. See [#8236](https://github.com/google/site-kit-wp/issues/8236).
-* Add a left-hand spinner variant of the `SpinnerButton` component. See [#8163](https://github.com/google/site-kit-wp/issues/8163).
-* Add the Audience Segmentation Info Notice as a component in Storybook. See [#8137](https://github.com/google/site-kit-wp/issues/8137).
-* Migrate settings from the legacy to the new Analytics module. See [#8082](https://github.com/google/site-kit-wp/issues/8082).
-* Replace the legacy `analytics` module with `analytics-4`. See [#7932](https://github.com/google/site-kit-wp/issues/7932).
-
-**Changed**
-
-* Refactor Site Kit to use a singular Analytics module. See [#8306](https://github.com/google/site-kit-wp/issues/8306).
-* Remove the legacy `analytics` module (UA) from Site Kit. See [#7843](https://github.com/google/site-kit-wp/issues/7843).
+= 1.123.1 =
 
 **Fixed**
 
-* Fix a bug that prevented "Set up Google Analytics" step from appearing in Site Kit setup flow. See [#8397](https://github.com/google/site-kit-wp/issues/8397).
-* Fix bug that could cause the "Enable automatic updates" banner to appear then disappear briefly when the user has a slow internet connection. See [#8235](https://github.com/google/site-kit-wp/issues/8235).
+* Fix a bug in the regional configuration of Consent Mode which caused defaults to be applied globally. See [#8444](https://github.com/google/site-kit-wp/issues/8444).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
