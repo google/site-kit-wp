@@ -53,8 +53,6 @@ describe( 'ads setup with no ads conversion id present', () => {
 	}
 
 	beforeAll( async () => {
-		await enableFeature( 'adsModule' );
-
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
@@ -79,6 +77,7 @@ describe( 'ads setup with no ads conversion id present', () => {
 	} );
 
 	beforeEach( async () => {
+		await enableFeature( 'adsModule' );
 		await setupSiteKit();
 	} );
 
