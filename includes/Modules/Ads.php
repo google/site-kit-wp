@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
@@ -33,7 +34,7 @@ use Google\Site_Kit\Modules\Ads\Web_Tag;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Tag {
+final class Ads extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Tag, Module_With_Deactivation {
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
