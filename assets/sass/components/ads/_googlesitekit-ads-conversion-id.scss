@@ -1,4 +1,6 @@
 /**
+ * Ads Conversion Tracking ID styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +16,14 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-ads-conversion-id";
-@import "googlesitekit-ads-setup-module";
-@import "googlesitekit-ads-settings";
+.googlesitekit-plugin {
+
+	.googlesitekit-text-field-conversion-tracking-id-prefix {
+
+		&.mdc-text-field__icon {
+			color: $c-neutral-n-900;
+			left: 20px;
+			top: 18px;
+		}
+	}
+}

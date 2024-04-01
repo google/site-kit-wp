@@ -17,7 +17,14 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Modules\Ads\Settings;
+use Google\Site_Kit\Modules\Ads\Tag_Guard;
+use Google\Site_Kit\Modules\Ads\Tag_Matchers;
+use Google\Site_Kit\Modules\Ads\Web_Tag;
 
 /**
  * Class representing the Ads module.
@@ -26,9 +33,10 @@ use Google\Site_Kit\Modules\Ads\Settings;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Assets, Module_With_Settings {
+final class Ads extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Tag {
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -40,7 +48,10 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	 *
 	 * @since 1.121.0
 	 */
-	public function register() {}
+	public function register() {
+		// Ads tag placement logic.
+		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+	}
 
 	/**
 	 * Sets up the module's assets to register.
@@ -121,6 +132,42 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Settin
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+	}
+
+	/**
+	 * Registers the Ads tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register_tag() {
+		$ads_conversion_id = $this->get_settings()->get()['adsConversionID'];
+
+		$tag = new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( ! $tag->can_register() ) {
+			return;
+		}
+
+		$tag->register();
+	}
+
+	/**
+	 * Returns the Module_Tag_Matchers instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
+	 */
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
 	}
 
 }

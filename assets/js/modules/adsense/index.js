@@ -53,7 +53,6 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
-import { isFeatureEnabled } from '../../features';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -116,10 +115,6 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'adsense', 'analytics-4' ],
 			isActive: ( select ) => {
-				if ( ! isFeatureEnabled( 'ga4AdSenseIntegration' ) ) {
-					return false;
-				}
-
 				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
 				if (
@@ -188,9 +183,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ 'adsense', 'analytics-4' ],
-			isActive: () => {
-				return isFeatureEnabled( 'ga4AdSenseIntegration' );
-			},
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
