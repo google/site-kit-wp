@@ -5,7 +5,7 @@ import { createURL } from '@wordpress/e2e-test-utils';
 import { fetchPageContent } from '../utils';
 
 /**
- * Asserts the URL at the given path contains an Ads tag.
+ * Asserts the URL at the given path contains an Ads web tag.
  *
  * @since n.e.x.t
  *
@@ -18,7 +18,7 @@ export async function toHaveAdsTag( path ) {
 
 	const html = await fetchPageContent( urlToFetch, { credentials: 'omit' } );
 
-	const adsTagRegex = /gtag\('config', 'AW-\d+'\)/;
+	const adsTagRegex = /\("config",\s*"AW-+\d+"\)/;
 
 	// Search for the tag in the returned page HTML content.
 	const hasAdsTag = adsTagRegex.test( html );
