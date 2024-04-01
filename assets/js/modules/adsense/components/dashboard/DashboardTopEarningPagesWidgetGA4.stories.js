@@ -32,9 +32,14 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../googlesitekit/constants';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -100,6 +105,32 @@ Default.args = {
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/Default',
+};
+
+export const ViewOnlyDashboard = Template.bind( {} );
+ViewOnlyDashboard.args = {
+	setupRegistry: ( registry ) => {
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
+		provideAnalytics4MockReport( registry, reportOptions );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+ViewOnlyDashboard.storyName = 'ViewOnlyDashboard';
+ViewOnlyDashboard.scenario = {
+	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/ViewOnlyDashboard',
 };
 
 export const Loading = Template.bind( {} );
@@ -242,9 +273,13 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<ViewContextProvider
+					value={ args?.viewContext ?? VIEW_CONTEXT_MAIN_DASHBOARD }
+				>
+					<WithRegistrySetup func={ setupRegistry }>
+						<Story />
+					</WithRegistrySetup>
+				</ViewContextProvider>
 			);
 		},
 	],

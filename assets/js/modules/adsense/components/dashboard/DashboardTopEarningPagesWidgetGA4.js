@@ -125,6 +125,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 		if ( viewOnlyDashboard ) {
 			return null;
 		}
+
 		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 			'content-publisher-overview',
 			generateDateRangeArgs( { startDate, endDate } )
@@ -265,6 +266,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 						: null;
 				} );
 
+				if ( viewOnlyDashboard ) {
+					return <span>{ title }</span>;
+				}
+
 				return (
 					<Link
 						href={ serviceURL }
@@ -295,7 +300,11 @@ function DashboardTopEarningPagesWidgetGA4( {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer } ref={ updateTrackingRef }>
+		<Widget
+			noPadding
+			Footer={ ! viewOnlyDashboard ? Footer : undefined }
+			ref={ updateTrackingRef }
+		>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.rows || [] }
