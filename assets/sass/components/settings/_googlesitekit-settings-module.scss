@@ -99,6 +99,12 @@
 			display: flex;
 			flex-wrap: wrap;
 			row-gap: 12px;
+
+			.googlesitekit-badge--new {
+				background-color: $c-violet-v-500;
+				color: $c-violet-v-0;
+				font-weight: $fw-normal;
+			}
 		}
 
 		.googlesitekit-settings-module__footer-cancel {

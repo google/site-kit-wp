@@ -172,6 +172,12 @@ export default function Header( { slug } ) {
 									hasLeftSpacing
 								/>
 							) }
+							{ slug === 'ads' && (
+								<Badge
+									className="googlesitekit-badge--new"
+									label={ __( 'New', 'google-site-kit' ) }
+								/>
+							) }
 						</div>
 					</Cell>
 
