@@ -176,7 +176,7 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean} True if Google Ads is in use, false otherwise.
+	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
 	isAdsConnected: createRegistrySelector( ( select ) => () => {
 		const { isModuleConnected } = select( CORE_MODULES );
@@ -188,7 +188,14 @@ const baseSelectors = {
 		const { getAdsConversionID, getAdsLinked } =
 			select( MODULES_ANALYTICS_4 );
 
-		return !! getAdsConversionID() || !! getAdsLinked();
+		const adsConversionID = getAdsConversionID();
+		const adsLinked = getAdsLinked();
+
+		if ( [ adsConversionID, adsLinked ].includes( undefined ) ) {
+			return undefined;
+		}
+
+		return !! adsConversionID || !! adsLinked;
 	} ),
 };
 

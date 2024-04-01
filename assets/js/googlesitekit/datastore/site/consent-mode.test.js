@@ -316,6 +316,24 @@ describe( 'core/site Consent Mode', () => {
 				);
 			} );
 
+			it( 'returns undefined if either the Ads conversion ID in Analytics or the Analytics and Ads linked status is undefined', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					undefined
+				);
+			} );
+
 			it( 'returns true if an Ads conversion ID is set in the Analytics module', () => {
 				provideModules( registry, [
 					{
@@ -327,6 +345,7 @@ describe( 'core/site Consent Mode', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsConversionID: 'AW-12345',
+					adsLinked: false, // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
 				} );
 
 				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
@@ -345,6 +364,7 @@ describe( 'core/site Consent Mode', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsLinked: true,
+					adsConversionID: '', // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
 				} );
 
 				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
