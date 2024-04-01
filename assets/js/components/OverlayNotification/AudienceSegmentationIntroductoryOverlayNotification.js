@@ -52,7 +52,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	);
 
 	const isShowingNotification = useSelect( ( select ) =>
-		breakpoint >= BREAKPOINT_DESKTOP
+		breakpoint === BREAKPOINT_DESKTOP
 			? select( CORE_UI ).isShowingOverlayNotification(
 					AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 			  )
@@ -102,7 +102,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	return (
 		<OverlayNotification animateNotification={ isShowingNotification }>
-			{ breakpoint >= BREAKPOINT_DESKTOP && (
+			{ breakpoint === BREAKPOINT_DESKTOP && (
 				<AudienceIntroductoryGraphicDesktop />
 			) }
 
@@ -133,7 +133,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 				</Button>
 			</div>
 
-			{ breakpoint < BREAKPOINT_DESKTOP && (
+			{ breakpoint !== BREAKPOINT_DESKTOP && (
 				<AudienceIntroductoryGraphicMobile />
 			) }
 		</OverlayNotification>
