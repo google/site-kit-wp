@@ -53,7 +53,7 @@ export default function SetupUseSnippetSwitch() {
 				</p>
 				<p>
 					{ __(
-						'Make sure you remove it if you decide to place the same GA4 tag via Site Kit, otherwise they will be duplicated',
+						'Consider removing the existing tag to avoid loading both tags on your site',
 						'google-site-kit'
 					) }
 				</p>

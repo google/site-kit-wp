@@ -70,10 +70,10 @@ export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
 
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const connectAnalytics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -142,7 +142,9 @@ export default function SetupUsingProxyWithSignIn() {
 			let moduleReauthURL;
 
 			if ( connectAnalytics ) {
-				const { error, response } = await activateModule( 'analytics' );
+				const { error, response } = await activateModule(
+					'analytics-4'
+				);
 
 				if ( ! error ) {
 					await trackEvent(

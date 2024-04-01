@@ -30,6 +30,7 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
+import { ProgressBar } from 'googlesitekit-components';
 import OptionalSettingsView from './OptionalSettingsView';
 import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -37,6 +38,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
+import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -64,8 +66,14 @@ export default function SettingsView() {
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
 	);
 
+	const isMigratingAdsConversionID = useMigrateAdsConversionID();
+
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
+	}
+
+	if ( isMigratingAdsConversionID ) {
+		return <ProgressBar />;
 	}
 
 	return (
@@ -114,7 +122,7 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ createInterpolateElement(
 							__(
-								'<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID',
+								'<VisuallyHidden>Google Analytics</VisuallyHidden> Measurement ID',
 								'google-site-kit'
 							),
 							{

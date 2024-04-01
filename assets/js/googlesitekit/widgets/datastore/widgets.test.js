@@ -202,7 +202,7 @@ describe( 'core/widgets Widgets', () => {
 				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 					Component: WidgetComponent,
 					priority: 11,
-					modules: [ 'analytics', 'tag-manager' ],
+					modules: [ 'analytics-4', 'tag-manager' ],
 				} );
 
 				const { widgets } = store.getState();
@@ -210,7 +210,7 @@ describe( 'core/widgets Widgets', () => {
 				expect( widgets[ slug ].Component ).toEqual( WidgetComponent );
 				expect( widgets[ slug ].priority ).toBe( 11 );
 				expect( widgets[ slug ].modules ).toEqual( [
-					'analytics',
+					'analytics-4',
 					'tag-manager',
 				] );
 
@@ -403,7 +403,7 @@ describe( 'core/widgets Widgets', () => {
 				[
 					{
 						Component,
-						modules: [ 'analytics', 'tag-manager' ],
+						modules: [ 'analytics-4', 'tag-manager' ],
 					},
 					{
 						Component,
@@ -411,7 +411,7 @@ describe( 'core/widgets Widgets', () => {
 					},
 					{
 						Component,
-						modules: [ 'analytics', 'search-console' ],
+						modules: [ 'analytics-4', 'search-console' ],
 					},
 					{
 						Component,
@@ -434,7 +434,7 @@ describe( 'core/widgets Widgets', () => {
 				const widgets = registry
 					.select( CORE_WIDGETS )
 					.getWidgets( 'dashboard-header', {
-						modules: [ 'analytics', 'tag-manager' ],
+						modules: [ 'analytics-4', 'tag-manager' ],
 					} );
 
 				expect( widgets ).toHaveLength( 3 );

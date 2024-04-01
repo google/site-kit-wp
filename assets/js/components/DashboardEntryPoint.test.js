@@ -49,7 +49,7 @@ describe( 'DashboardEntryPoint', () => {
 
 	it( 'should render the module setup component when the setupModuleSlug prop is passed', () => {
 		const { container } = render(
-			<DashboardEntryPoint setupModuleSlug="analytics" />,
+			<DashboardEntryPoint setupModuleSlug="analytics-4" />,
 			{ setupRegistry }
 		);
 		expect( container ).toMatchSnapshot();

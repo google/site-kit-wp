@@ -107,14 +107,22 @@ describe( 'core/site urls', () => {
 				selectorData: {
 					args: [
 						{
-							dimensions: [ 'ga:date' ],
-							metrics: [ { expression: 'ga:users' } ],
-							startDate: '2020-08-11',
-							endDate: '2020-09-07',
+							dimensions: [
+								{
+									name: 'date',
+								},
+							],
+							metrics: [
+								{
+									name: 'totalUsers',
+								},
+							],
+							startDate: '2020-12-31',
+							endDate: '2021-01-27',
 						},
 					],
 					name: 'getReport',
-					storeName: 'MODULES_ANALYTICS',
+					storeName: 'MODULES_ANALYTICS_4',
 				},
 			};
 

@@ -27,16 +27,19 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import CheckFill from '../../../svg/icons/check-fill.svg';
 import { Button } from 'googlesitekit-components';
 import { Grid, Cell, Row } from '../../material-components';
 import useViewOnly from '../../hooks/useViewOnly';
 import { isZeroReport } from '../../modules/analytics-4/utils';
-import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useDashboardType from '../../hooks/useDashboardType';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 
 const { useSelect, useDispatch } = Data;
 
@@ -44,15 +47,11 @@ export const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'ga4_adsense_linked_notification';
 
 export default function GA4AdSenseLinkedNotification() {
-	const isGA4AdSenseIntegrationEnabled = useFeature(
-		'ga4AdSenseIntegration'
-	);
-
 	const dashboardType = useDashboardType();
 	const viewOnly = useViewOnly();
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -60,7 +59,7 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -68,7 +67,7 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -79,7 +78,7 @@ export default function GA4AdSenseLinkedNotification() {
 		adSenseModuleConnected && analyticsModuleConnected && isAdSenseLinked;
 
 	const isDismissed = useSelect( ( select ) => {
-		if ( ! isGA4AdSenseIntegrationEnabled || ! dashboardType || viewOnly ) {
+		if ( ! dashboardType || viewOnly ) {
 			return null;
 		}
 
@@ -95,6 +94,8 @@ export default function GA4AdSenseLinkedNotification() {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	const viewContext = useViewContext();
 
 	const reportOptions = {
 		startDate,
@@ -114,8 +115,7 @@ export default function GA4AdSenseLinkedNotification() {
 		if (
 			viewOnly ||
 			isDismissed ||
-			! analyticsAndAdsenseConnectedAndLinked ||
-			! isGA4AdSenseIntegrationEnabled
+			! analyticsAndAdsenseConnectedAndLinked
 		) {
 			return null;
 		}
@@ -131,8 +131,12 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const dismissNotificationForUser = useCallback( async () => {
+		trackEvent(
+			`${ viewContext }_top-earning-pages-success-notification`,
+			'confirm_notification'
+		);
 		await dismissItem( GA4_ADSENSE_LINKED_NOTIFICATION );
-	}, [ dismissItem ] );
+	}, [ dismissItem, viewContext ] );
 
 	// This notification should only appear when the user has connected their
 	// AdSense and Google Analytics accounts, but has not yet received any data
@@ -145,7 +149,6 @@ export default function GA4AdSenseLinkedNotification() {
 			!! dashboardType &&
 			! viewOnly &&
 			isDismissed === false &&
-			isGA4AdSenseIntegrationEnabled &&
 			hasFinishedResolution &&
 			isZeroReport( report ) === false &&
 			analyticsAndAdsenseConnectedAndLinked
@@ -158,7 +161,6 @@ export default function GA4AdSenseLinkedNotification() {
 		viewOnly,
 		hasFinishedResolution,
 		analyticsAndAdsenseConnectedAndLinked,
-		isGA4AdSenseIntegrationEnabled,
 		dismissNotificationForUser,
 		dashboardType,
 	] );
@@ -166,21 +168,29 @@ export default function GA4AdSenseLinkedNotification() {
 	// Ensure resolution of the report has completed before showing this
 	// notification, since it should only appear when the user has no data in
 	// the report.
-	if (
+	const shouldShowNotification =
 		// Only show this notification on the main/entity dashboard, not on the
 		// settings page, etc.
-		! dashboardType ||
+		dashboardType &&
 		// Don't show this notification on the view-only dashboard.
-		viewOnly ||
-		// Don't show this notification if `isDismissed` call is still loading.
-		isDismissed === undefined ||
-		// Don't show this notification if the user has dismissed it.
-		isDismissed ||
-		! isGA4AdSenseIntegrationEnabled ||
-		! hasFinishedResolution ||
-		! isZeroReport( report ) ||
-		! analyticsAndAdsenseConnectedAndLinked
-	) {
+		! viewOnly &&
+		// Don't show this notification if `isDismissed` call is still loading
+		// or the user has dismissed it.
+		! isDismissed &&
+		hasFinishedResolution &&
+		isZeroReport( report ) &&
+		analyticsAndAdsenseConnectedAndLinked;
+
+	useEffect( () => {
+		if ( shouldShowNotification ) {
+			trackEvent(
+				`${ viewContext }_top-earning-pages-success-notification`,
+				'view_notification'
+			);
+		}
+	}, [ shouldShowNotification, viewContext ] );
+
+	if ( ! shouldShowNotification ) {
 		return null;
 	}
 

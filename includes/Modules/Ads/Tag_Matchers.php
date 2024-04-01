@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Modules\Ads\Tag_Matchers
+ * Class Google\Site_Kit\Modules\Ads\Tag_Matchers
  *
  * @package   Google\Site_Kit\Core\Modules\Ads
  * @copyright 2024 Google LLC
@@ -31,8 +31,7 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 	 */
 	public function regex_matchers() {
 		return array(
-			// Detect Ads gtag config with valid AdWords Conversion ID.
-			"/gtag\(['|\"]config['|\"],\s*['|\"]AW-[0-9]+['|\"]\)/",
+			"/gtag\\s*\\(\\s*['|\"]config['|\"]\\s*,\\s*['|\"](AW-[0-9]+)['|\"]\\s*\\)/i",
 		);
 	}
 

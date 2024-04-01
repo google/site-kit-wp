@@ -39,7 +39,6 @@ import {
 } from '../../../../googlesitekit/constants';
 import PopularContentWidget from './PopularContentWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -244,7 +243,7 @@ export default {
 				];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

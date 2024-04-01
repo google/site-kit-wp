@@ -32,14 +32,14 @@ export const ConfirmDisconnectWithFeatures = Template.bind( {} );
 ConfirmDisconnectWithFeatures.storyName =
 	'ConfirmDisconnect dialog with features';
 ConfirmDisconnectWithFeatures.args = {
-	slug: 'analytics',
+	slug: 'analytics-4',
 };
 ConfirmDisconnectWithFeatures.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			provideModules( registry, [
 				{
-					slug: 'analytics',
+					slug: 'analytics-4',
 					active: true,
 					connected: true,
 					features: [

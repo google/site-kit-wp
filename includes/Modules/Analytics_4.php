@@ -21,7 +21,6 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -42,6 +41,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
@@ -54,12 +54,13 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
-use Google\Site_Kit\Modules\Analytics\Account_Ticket;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
@@ -108,8 +109,9 @@ final class Analytics_4 extends Module
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
-	const READONLY_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
-	const EDIT_SCOPE     = 'https://www.googleapis.com/auth/analytics.edit';
+	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.
@@ -136,6 +138,14 @@ final class Analytics_4 extends Module
 	protected $custom_dimensions_data_available;
 
 	/**
+	 * Audience_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -155,6 +165,7 @@ final class Analytics_4 extends Module
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
+		$this->audience_settings                = new Audience_Settings( $this->user_options );
 	}
 
 	/**
@@ -172,15 +183,17 @@ final class Analytics_4 extends Module
 		);
 		$synchronize_property->register();
 
+		$synchronize_adsense_linked = new Synchronize_AdSenseLinked(
+			$this,
+			$this->user_options,
+			$this->options
+		);
+		$synchronize_adsense_linked->register();
+
 		( new Advanced_Tracking( $this->context ) )->register();
 
-		add_action(
-			'admin_init',
-			function() use ( $synchronize_property ) {
-				$synchronize_property->maybe_schedule_synchronize_property();
-			}
-		);
-
+		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
+		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.
@@ -227,12 +240,6 @@ final class Analytics_4 extends Module
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 
-		// Replicate Analytics settings for Analytics-4 if not set.
-		add_filter(
-			'option_' . Module_Sharing_Settings::OPTION,
-			$this->get_method_proxy( 'replicate_analytics_sharing_settings' )
-		);
-
 		add_filter(
 			'googlesitekit_auth_scopes',
 			function( array $scopes ) {
@@ -270,6 +277,20 @@ final class Analytics_4 extends Module
 		);
 
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
+
+		// This hook adds the "Set up Google Analytics" step to the Site Kit
+		// setup flow.
+		//
+		// This filter is documented in
+		// Core\Authentication\Google_Proxy::get_metadata_fields.
+		add_filter(
+			'googlesitekit_proxy_setup_mode',
+			function( $original_mode ) {
+				return ! $this->is_connected()
+					? 'analytics-step'
+					: $original_mode;
+			}
+		);
 	}
 
 	/**
@@ -294,9 +315,7 @@ final class Analytics_4 extends Module
 	 */
 	public function is_connected() {
 		$required_keys = array(
-			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-			/* 'accountID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			/* 'adsConversionID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			'accountID',
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -362,37 +381,37 @@ final class Analytics_4 extends Module
 
 		$debug_fields = array(
 			'analytics_4_account_id'                  => array(
-				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
+				'label' => __( 'Analytics account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics 4 ads conversion ID', 'google-site-kit' ),
+				'label' => __( 'Analytics ads conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			'analytics_4_property_id'                 => array(
-				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
+				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id'          => array(
-				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
+				'label' => __( 'Analytics web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
 			'analytics_4_measurement_id'              => array(
-				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
+				'label' => __( 'Analytics measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
 			),
 			'analytics_4_use_snippet'                 => array(
-				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
+				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 			'analytics_4_available_custom_dimensions' => array(
-				'label' => __( 'Analytics 4 available custom dimensions', 'google-site-kit' ),
+				'label' => __( 'Analytics available custom dimensions', 'google-site-kit' ),
 				'value' => empty( $settings['availableCustomDimensions'] )
 					? __( 'None', 'google-site-kit' )
 					: join(
@@ -465,12 +484,12 @@ final class Analytics_4 extends Module
 			'POST:create-property'                 => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-webdatastream'            => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream for this site on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
 			'GET:properties'                       => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                         => array( 'service' => 'analyticsadmin' ),
@@ -484,12 +503,12 @@ final class Analytics_4 extends Module
 			'POST:enhanced-measurement-settings'   => array(
 				'service'                => 'analyticsenhancedmeasurement',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-custom-dimension'         => array(
 				'service'                => 'analyticsdata',
 				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 custom dimension on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', 'google-site-kit' ),
 			),
 			'POST:sync-custom-dimensions'          => array(
 				'service' => 'analyticsadmin',
@@ -500,11 +519,17 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['GET:audiences']        = array( 'service' => 'analyticsaudiences' );
-			$datapoints['POST:create-audience'] = array(
+			$datapoints['GET:audiences']          = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:create-audience']   = array(
 				'service'                => 'analyticsaudiences',
-				'scopes'                 => array( Analytics::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics 4 property on your behalf.', 'google-site-kit' ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
+			);
+			$datapoints['GET:audience-settings']  = array(
+				'service' => '',
+			);
+			$datapoints['POST:audience-settings'] = array(
+				'service' => '',
 			);
 		}
 
@@ -636,8 +661,7 @@ final class Analytics_4 extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		// @TODO Revert this when we use the new GA4 SettingsEdit form once #7932 is merged and we save all settings to the Analytics-4 module.
-		$settings = ( new Analytics( $this->context ) )->get_settings()->get();
+		$settings = $this->get_settings()->get();
 
 		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
 		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
@@ -729,8 +753,6 @@ final class Analytics_4 extends Module
 		$new_settings['accountID'] = $account_id;
 
 		$this->get_settings()->merge( $new_settings );
-		// TODO: Remove this when the original Analytics (UA) accountID is not referred to anymore.
-		( new Analytics_Settings( $this->options ) )->merge( $new_settings );
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
@@ -739,7 +761,7 @@ final class Analytics_4 extends Module
 				'dashboard',
 				array(
 					'notification' => 'authentication_success',
-					'slug'         => 'analytics',
+					'slug'         => 'analytics-4',
 				)
 			)
 		);
@@ -860,6 +882,7 @@ final class Analytics_4 extends Module
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 *
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
+	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
 	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
@@ -882,7 +905,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -898,7 +921,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -942,6 +965,33 @@ final class Analytics_4 extends Module
 						$property_id,
 						$post_body
 					);
+			case 'GET:audience-settings':
+				return function() {
+					return $this->audience_settings->get();
+				};
+			case 'POST:audience-settings':
+				$settings = $data['settings'];
+				if ( ! isset( $settings['configuredAudiences'] ) ) {
+					throw new Missing_Required_Param_Exception( 'configuredAudiences' );
+				}
+
+				if ( ! is_array( $settings['configuredAudiences'] ) ) {
+					throw new Invalid_Param_Exception( 'configuredAudiences' );
+				}
+
+				if ( ! isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
+				}
+
+				if ( ! is_bool( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					throw new Invalid_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
+				}
+
+				$this->audience_settings->merge( $data['settings'] );
+
+				return function() {
+					return $this->audience_settings->get();
+				};
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -1044,7 +1094,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -1235,7 +1285,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -1367,7 +1417,7 @@ final class Analytics_4 extends Module
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_setting',
-						__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
 						array( 'status' => 500 )
 					);
 				}
@@ -1519,18 +1569,17 @@ final class Analytics_4 extends Module
 	 * Sets up information about the module.
 	 *
 	 * @since 1.30.0
+	 * @since 1.123.0 Updated to include in the module setup.
 	 *
 	 * @return array Associative array of module info.
 	 */
 	protected function setup_info() {
 		return array(
 			'slug'        => self::MODULE_SLUG,
-			'name'        => _x( 'Analytics 4', 'Service name', 'google-site-kit' ),
+			'name'        => _x( 'Analytics', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
-			'internal'    => true,
-			'depends_on'  => array( 'analytics' ),
 		);
 	}
 
@@ -1690,9 +1739,8 @@ final class Analytics_4 extends Module
 			$tag->set_custom_dimensions( $custom_dimensions_data );
 		}
 
-		// TODO: This should be replaced with the Analytics 4 adsConversionID module setting once the settings are migrated.
 		$tag->set_ads_conversion_id(
-			( new Analytics_Settings( $this->options ) )->get()['adsConversionID']
+			$this->get_settings()->get()['adsConversionID']
 		);
 
 		$tag->register();
@@ -2036,27 +2084,6 @@ final class Analytics_4 extends Module
 		}
 
 		return $modules_data;
-	}
-
-	/**
-	 * Returns sharing settings with settings for Analytics-4 replicated from Analytics.
-	 *
-	 * Module sharing settings for Analytics and Analytics-4 are always kept "in-sync" when
-	 * setting these settings in the datastore. However, this function ensures backwards
-	 * compatibility before this replication was introduced, i.e. when sharing settings were
-	 * saved for Analytics but not copied to Analytics-4.
-	 *
-	 * @since 1.98.0
-	 *
-	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
-	 * @return array Dashboard sharing settings option with Analytics-4 settings.
-	 */
-	protected function replicate_analytics_sharing_settings( $sharing_settings ) {
-		if ( ! isset( $sharing_settings[ self::MODULE_SLUG ] ) && isset( $sharing_settings[ Analytics::MODULE_SLUG ] ) ) {
-			$sharing_settings[ self::MODULE_SLUG ] = $sharing_settings[ Analytics::MODULE_SLUG ];
-		}
-
-		return $sharing_settings;
 	}
 
 	/**

@@ -30,11 +30,10 @@ import {
 	wpApiFetch,
 } from '../../utils';
 
-const eeaRegions = [
+const euUserConsentPolicyRegions = [
 	'AT',
 	'BE',
 	'BG',
-	'CH',
 	'CY',
 	'CZ',
 	'DE',
@@ -43,6 +42,7 @@ const eeaRegions = [
 	'ES',
 	'FI',
 	'FR',
+	'GB',
 	'GR',
 	'HR',
 	'HU',
@@ -62,7 +62,6 @@ const eeaRegions = [
 	'SE',
 	'SI',
 	'SK',
-	'UK',
 ];
 
 describe( 'Consent Mode snippet', () => {
@@ -101,7 +100,7 @@ describe( 'Consent Mode snippet', () => {
 					ad_storage: 'denied',
 					ad_user_data: 'denied',
 					analytics_storage: 'denied',
-					regions: eeaRegions,
+					region: euUserConsentPolicyRegions,
 					wait_for_update: 500,
 				},
 			},
@@ -124,7 +123,7 @@ describe( 'Consent Mode snippet', () => {
 					ad_storage: 'denied',
 					ad_user_data: 'denied',
 					analytics_storage: 'denied',
-					regions: eeaRegions,
+					region: euUserConsentPolicyRegions,
 					wait_for_update: 500,
 				},
 			},
@@ -160,7 +159,7 @@ describe( 'Consent Mode snippet', () => {
 					ad_storage: 'denied',
 					ad_user_data: 'denied',
 					analytics_storage: 'denied',
-					regions: eeaRegions,
+					region: euUserConsentPolicyRegions,
 					wait_for_update: 500,
 				},
 			},
@@ -184,7 +183,7 @@ describe( 'Consent Mode snippet', () => {
 					ad_storage: 'denied',
 					ad_user_data: 'denied',
 					analytics_storage: 'denied',
-					regions: eeaRegions,
+					region: euUserConsentPolicyRegions,
 					wait_for_update: 500,
 				},
 			},

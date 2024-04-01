@@ -196,6 +196,7 @@
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
 // Modules
+@import "components/ads";
 @import "components/adsense";
 @import "components/analytics-4";
 
@@ -206,6 +207,9 @@
 
 // User Feedback
 @import "components/surveys";
+
+// Overlay Notification
+@import "components/overlay-notification/googlesitekit-overlay-notification";
 
 // Widget Styles
 @import "widgets/widget-area";

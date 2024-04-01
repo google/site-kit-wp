@@ -30,6 +30,7 @@ import {
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
+	isValidWebDataStreamName,
 	isValidWebDataStreamSelection,
 } from '../utils/validation';
 import {
@@ -38,31 +39,31 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import {
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../analytics/datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
 	'a valid propertyID is required to submit changes';
 export const INVARIANT_INVALID_WEBDATASTREAM_ID =
 	'a valid webDataStreamID is required to submit changes';
+export const INVARIANT_INVALID_WEBDATASTREAM_NAME =
+	'a valid web data stream name is required to submit changes';
+export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
+	'a web data stream with the same name already exists';
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const accountID = select( MODULES_ANALYTICS_4 ).getAccountID();
 		const { response: property, error } = await dispatch(
 			MODULES_ANALYTICS_4
 		).createProperty( accountID );
@@ -82,24 +83,41 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	let webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
-	if (
-		propertyID &&
-		( webDataStreamID === WEBDATASTREAM_CREATE ||
-			! isValidWebDataStreamID( webDataStreamID ) )
-	) {
-		const { response: webdatastream, error } = await dispatch(
-			MODULES_ANALYTICS_4
-		).createWebDataStream( propertyID );
-		if ( error ) {
-			return { error };
-		}
-
-		webDataStreamID = webdatastream._id;
-		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webDataStreamID );
-		await dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
-			// eslint-disable-next-line sitekit/acronym-case
-			webdatastream.webStreamData.measurementId
+	if ( propertyID && webDataStreamID === WEBDATASTREAM_CREATE ) {
+		const webDataStreamName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'webDataStreamName'
 		);
+
+		const webDataStreamAlreadyExists = isValidPropertyID( propertyID )
+			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(
+					propertyID,
+					webDataStreamName
+			  )
+			: false;
+
+		if (
+			isValidWebDataStreamName( webDataStreamName ) &&
+			false === webDataStreamAlreadyExists
+		) {
+			const { response: webdatastream, error } = await dispatch(
+				MODULES_ANALYTICS_4
+			).createWebDataStream( propertyID, webDataStreamName );
+			if ( error ) {
+				return { error };
+			}
+
+			webDataStreamID = webdatastream._id;
+			dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID(
+				webDataStreamID
+			);
+			await dispatch(
+				MODULES_ANALYTICS_4
+			).updateSettingsForMeasurementID(
+				// eslint-disable-next-line sitekit/acronym-case
+				webdatastream.webStreamData.measurementId
+			);
+		}
 	}
 
 	if (
@@ -161,14 +179,6 @@ export async function submitChanges( { select, dispatch } ) {
 		if ( error ) {
 			return { error };
 		}
-
-		if (
-			select( CORE_MODULES ).isModuleConnected( 'analytics' ) &&
-			! select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-		) {
-			// Refresh modules from server if GA4 was connected after initial setup.
-			await dispatch( CORE_MODULES ).fetchGetModules();
-		}
 	}
 
 	await API.invalidateCache( 'modules', 'analytics-4' );
@@ -177,8 +187,6 @@ export async function submitChanges( { select, dispatch } ) {
 }
 
 export function rollbackChanges( { select, dispatch } ) {
-	dispatch( CORE_FORMS ).setValues( FORM_SETUP, { enableGA4: undefined } );
-
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 	}
@@ -192,30 +200,44 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getPropertyID,
 		getWebDataStreamID,
+		doesWebDataStreamExist,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
-	const { haveSettingsChanged: haveUASettingsChanged } =
-		createStrictSelect( select )( MODULES_ANALYTICS );
-
-	// Check if GA4 / enhanced measurement settings are changed only if we are sure that there are no UA changes.
-	if ( ! haveUASettingsChanged() ) {
-		invariant(
-			haveAnyGA4SettingsChanged(),
-			INVARIANT_SETTINGS_NOT_CHANGED
-		);
-	}
+	invariant( haveAnyGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
 	const propertyID = getPropertyID();
+
 	invariant(
 		isValidPropertySelection( propertyID ),
 		INVARIANT_INVALID_PROPERTY_SELECTION
 	);
-	if ( propertyID !== PROPERTY_CREATE ) {
-		invariant(
-			isValidWebDataStreamSelection( getWebDataStreamID() ),
-			INVARIANT_INVALID_WEBDATASTREAM_ID
+
+	const webDataStreamID = getWebDataStreamID();
+
+	invariant(
+		isValidWebDataStreamSelection( webDataStreamID ),
+		INVARIANT_INVALID_WEBDATASTREAM_ID
+	);
+
+	if ( webDataStreamID === WEBDATASTREAM_CREATE ) {
+		const webDataStreamName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'webDataStreamName'
 		);
+
+		invariant(
+			isValidWebDataStreamName( webDataStreamName ),
+			INVARIANT_INVALID_WEBDATASTREAM_NAME
+		);
+
+		if ( isValidPropertyID( propertyID ) ) {
+			invariant(
+				false ===
+					doesWebDataStreamExist( propertyID, webDataStreamName ),
+				INVARIANT_WEBDATASTREAM_ALREADY_EXISTS
+			);
+		}
 	}
 }

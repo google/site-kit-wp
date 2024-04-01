@@ -26,8 +26,9 @@ import {
 	setupAnalytics4ZeroData,
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
+	setupSearchConsoleZeroData,
+	widgetDecorators,
 } from './common-GA4.stories';
-import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
 
