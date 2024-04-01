@@ -37,8 +37,6 @@ import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastor
 
 describe( 'ads setup with ads conversion id present', () => {
 	beforeAll( async () => {
-		await enableFeature( 'adsModule' );
-
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
@@ -148,7 +146,6 @@ describe( 'ads setup with ads conversion id present', () => {
 			}
 		);
 
-		// await jestPuppeteer.debug();
 		await step( 'save empty ads conversion id', async () => {
 			await page.waitForSelector(
 				'#googlesitekit-settings-module__header--ads'
