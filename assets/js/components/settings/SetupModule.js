@@ -118,6 +118,12 @@ export default function SetupModule( { slug, name, description } ) {
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
 					) }
+					{ slug === 'ads' && (
+						<Badge
+							className="googlesitekit-badge--new"
+							label={ __( 'New', 'google-site-kit' ) }
+						/>
+					) }
 				</div>
 			</div>
 			<p className="googlesitekit-settings-connect-module__text">
