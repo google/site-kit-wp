@@ -51,9 +51,14 @@
 	.googlesitekit-overlay-notification__actions {
 		align-items: center;
 		display: flex;
+		flex-direction: row-reverse;
 		gap: 8px;
 		justify-content: flex-end;
 		padding: $grid-gap-desktop;
 		padding-top: 0;
+
+		@media (min-width: $bp-desktop) {
+			flex-direction: row;
+		}
 	}
 }

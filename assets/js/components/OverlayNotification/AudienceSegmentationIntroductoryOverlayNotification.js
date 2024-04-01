@@ -32,7 +32,11 @@ import AudienceIntroductoryGraphicMobile from '../../../svg/graphics/audience-se
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import OverlayNotification from './OverlayNotification';
-import { BREAKPOINT_DESKTOP, useBreakpoint } from '../../hooks/useBreakpoint';
+import {
+	BREAKPOINTS_DESKTOP,
+	BREAKPOINTS_MOBILE,
+	useBreakpoint,
+} from '../../hooks/useBreakpoint';
 import { useFeature } from '../../hooks/useFeature';
 
 const { useSelect, useDispatch } = Data;
@@ -52,7 +56,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	);
 
 	const isShowingNotification = useSelect( ( select ) =>
-		breakpoint === BREAKPOINT_DESKTOP
+		BREAKPOINTS_DESKTOP.includes( breakpoint )
 			? select( CORE_UI ).isShowingOverlayNotification(
 					AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 			  )
@@ -102,7 +106,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	return (
 		<OverlayNotification animateNotification={ isShowingNotification }>
-			{ breakpoint === BREAKPOINT_DESKTOP && (
+			{ BREAKPOINTS_DESKTOP.includes( breakpoint ) && (
 				<AudienceIntroductoryGraphicDesktop />
 			) }
 
@@ -133,7 +137,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 				</Button>
 			</div>
 
-			{ breakpoint !== BREAKPOINT_DESKTOP && (
+			{ BREAKPOINTS_MOBILE.includes( breakpoint ) && (
 				<AudienceIntroductoryGraphicMobile />
 			) }
 		</OverlayNotification>

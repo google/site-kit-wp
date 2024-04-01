@@ -26,6 +26,9 @@ export const BREAKPOINT_DESKTOP = 'desktop';
 export const BREAKPOINT_TABLET = 'tablet';
 export const BREAKPOINT_SMALL = 'small';
 
+export const BREAKPOINTS_DESKTOP = [ BREAKPOINT_DESKTOP, BREAKPOINT_XLARGE ];
+export const BREAKPOINTS_MOBILE = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ];
+
 /**
  * Retrieves the current breakpoint.
  *
