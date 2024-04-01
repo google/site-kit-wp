@@ -40,7 +40,6 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../material-components';
 import BannerGraphicsSVG from '../../../svg/graphics/consent-mode-setup.svg';
@@ -70,8 +69,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const isAdsConnected = useSelect( ( select ) =>
-		// TODO: Replace this with the `ads` version of the `getAdsConversionID()` selector once it's implemented.
-		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
+		select( CORE_SITE ).isAdsConnected()
 	);
 
 	const settingsURL = useSelect( ( select ) =>
