@@ -300,11 +300,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	];
 
 	return (
-		<Widget
-			noPadding
-			Footer={ ! viewOnlyDashboard ? Footer : undefined }
-			ref={ updateTrackingRef }
-		>
+		<Widget noPadding Footer={ Footer } ref={ updateTrackingRef }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.rows || [] }
