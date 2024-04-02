@@ -43,6 +43,7 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	);
 }
 
+// TODO: update these to use ga4 mock function.
 const readyProps = {
 	title: 'New visitors',
 	toolTip: 'This is a tooltip',

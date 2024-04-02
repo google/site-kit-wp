@@ -80,7 +80,7 @@ export default function AudienceTile( {
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconVisitors }
 						title={ __( 'Visitors', 'google-site-kit' ) }
-						metricValue={ visitors.metricValue }
+						metricValue={ visitors.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ visitors.previousValue }
@@ -92,7 +92,7 @@ export default function AudienceTile( {
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconVisitsPerVisitor }
 						title={ __( 'Visits per visitor', 'google-site-kit' ) }
-						metricValue={ visitsPerVisitor.metricValue }
+						metricValue={ visitsPerVisitor.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ visitsPerVisitor.previousValue }
@@ -104,7 +104,7 @@ export default function AudienceTile( {
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconPagesPerVisit }
 						title={ __( 'Pages per visit', 'google-site-kit' ) }
-						metricValue={ pagesPerVisit.metricValue }
+						metricValue={ pagesPerVisit.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ pagesPerVisit.previousValue }
@@ -123,7 +123,7 @@ export default function AudienceTile( {
 								maximumFractionDigits: 1,
 							} )
 						) }
-						metricValue={ pageviews.metricValue }
+						metricValue={ pageviews.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ pageviews.previousValue }
