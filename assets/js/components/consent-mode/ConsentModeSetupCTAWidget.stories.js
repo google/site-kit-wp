@@ -59,7 +59,7 @@ export default {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsConversionID: 'AW-123456789',
-					adsLinked: false,
+					adsLinked: false, // Set to default, as otherwise if it is set to undefined, the `core/site` `isAdsConnected` selector will return undefined.
 				} );
 
 				registry

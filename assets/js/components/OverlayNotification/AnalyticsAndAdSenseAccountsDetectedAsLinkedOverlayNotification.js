@@ -187,13 +187,20 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 		dismissNotification();
 
-		const widgetClass = '.googlesitekit-widget--adsenseTopEarningPagesGA4';
+		setTimeout( () => {
+			const widgetClass =
+				'.googlesitekit-widget--adsenseTopEarningPagesGA4';
 
-		global.history.replaceState( {}, '', `#${ ANCHOR_ID_MONETIZATION }` );
-		global.scrollTo( {
-			top: getContextScrollTop( widgetClass, breakpoint ),
-			behavior: 'smooth',
-		} );
+			global.history.replaceState(
+				{},
+				'',
+				`#${ ANCHOR_ID_MONETIZATION }`
+			);
+			global.scrollTo( {
+				top: getContextScrollTop( widgetClass, breakpoint ),
+				behavior: 'smooth',
+			} );
+		}, 50 );
 	};
 
 	useEffect( () => {
