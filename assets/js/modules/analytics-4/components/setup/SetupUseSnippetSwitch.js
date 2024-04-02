@@ -72,7 +72,7 @@ export default function SetupUseSnippetSwitch() {
 				</p>
 				<p>
 					{ __(
-						'If you prefer to collect data using that existing GA4 tag, please select the corresponding account and property above',
+						'If you prefer to collect data using that existing Analytics tag, please select the corresponding account and property above',
 						'google-site-kit'
 					) }
 				</p>
