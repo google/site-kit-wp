@@ -62,6 +62,16 @@ class AdsTest extends TestCase {
 			),
 			array_keys( $ads->get_debug_fields() )
 		);
+
+		$this->assertEquals(
+			array(
+				'ads_conversion_id' => array(
+					'label' => 'Ads Conversion ID',
+					'value' => 'AW-123456789',
+				),
+			),
+			$ads->get_debug_fields()
+		);
 	}
 
 	/**

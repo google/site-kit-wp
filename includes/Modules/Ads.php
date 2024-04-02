@@ -37,7 +37,6 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
  */
 final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Settings, Module_With_Tag {
 	use Module_With_Assets_Trait;
-	use Module_With_Tag_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 
@@ -167,7 +166,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array An array of all debug fields.
 	 */
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
