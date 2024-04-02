@@ -103,8 +103,9 @@ export default function AdsConversionIDTextField( { helperText } ) {
 					)
 				}
 				outlined
-				value={ adsConversionID?.replace( /^AW-?/, '' ) }
+				value={ adsConversionID?.replace( /^(AW)?-?/, '' ) }
 				onChange={ onChange }
+				maxLength={ 20 }
 			/>
 		</div>
 	);
