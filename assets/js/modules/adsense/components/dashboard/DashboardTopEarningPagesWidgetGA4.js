@@ -125,6 +125,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 		if ( viewOnlyDashboard ) {
 			return null;
 		}
+
 		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 			'content-publisher-overview',
 			generateDateRangeArgs( { startDate, endDate } )
@@ -264,6 +265,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 						  )
 						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <span>{ title }</span>;
+				}
 
 				return (
 					<Link

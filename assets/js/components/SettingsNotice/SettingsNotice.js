@@ -50,6 +50,7 @@ export default function SettingsNotice( props ) {
 		children,
 		type,
 		dismiss = '',
+		dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 		Icon = getIconFromType( type ),
 		OuterCTA,
 	} = props;
@@ -88,11 +89,12 @@ export default function SettingsNotice( props ) {
 			{ dismiss && (
 				<div className="googlesitekit-settings-notice__button">
 					<Button
+						tertiary
 						onClick={ () => {
 							dismissItem( dismiss );
 						} }
 					>
-						{ __( 'OK, Got it!', 'google-site-kit' ) }
+						{ dismissLabel }
 					</Button>
 				</div>
 			) }
@@ -115,6 +117,7 @@ SettingsNotice.propTypes = {
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
 	OuterCTA: PropTypes.elementType,
+	dismissLabel: PropTypes.string,
 };
 
 SettingsNotice.defaultProps = {

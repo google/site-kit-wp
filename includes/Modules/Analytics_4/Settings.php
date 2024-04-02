@@ -80,22 +80,25 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'                   => 0,
-			'accountID'                 => '',
-			'adsConversionID'           => '',
-			'propertyID'                => '',
-			'webDataStreamID'           => '',
-			'measurementID'             => '',
-			'trackingDisabled'          => array( 'loggedinUsers' ),
-			'useSnippet'                => true,
-			'googleTagID'               => '',
-			'googleTagAccountID'        => '',
-			'googleTagContainerID'      => '',
-			'googleTagLastSyncedAtMs'   => 0,
-			'availableCustomDimensions' => null,
-			'propertyCreateTime'        => 0,
-			'adSenseLinked'             => false,
-			'adSenseLinkedLastSyncedAt' => 0,
+			'ownerID'                     => 0,
+			'accountID'                   => '',
+			'adsConversionID'             => '',
+			'propertyID'                  => '',
+			'webDataStreamID'             => '',
+			'measurementID'               => '',
+			'trackingDisabled'            => array( 'loggedinUsers' ),
+			'useSnippet'                  => true,
+			'googleTagID'                 => '',
+			'googleTagAccountID'          => '',
+			'googleTagContainerID'        => '',
+			'googleTagLastSyncedAtMs'     => 0,
+			'availableCustomDimensions'   => null,
+			'propertyCreateTime'          => 0,
+			'adSenseLinked'               => false,
+			'adSenseLinkedLastSyncedAt'   => 0,
+			'adsConversionIDMigratedAtMs' => 0,
+			'adsLinked'                   => false,
+			'adsLinkedLastSyncedAt'       => 0,
 		);
 	}
 
@@ -157,6 +160,22 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['adSenseLinkedLastSyncedAt'] ) ) {
 					if ( ! is_int( $option['adSenseLinkedLastSyncedAt'] ) ) {
 						$option['adSenseLinkedLastSyncedAt'] = 0;
+					}
+				}
+
+				if ( isset( $option['adsConversionIDMigratedAtMs'] ) ) {
+					if ( ! is_int( $option['adsConversionIDMigratedAtMs'] ) ) {
+						$option['adsConversionIDMigratedAtMs'] = 0;
+					}
+				}
+
+				if ( isset( $option['adsLinked'] ) ) {
+					$option['adsLinked'] = (bool) $option['adsLinked'];
+				}
+
+				if ( isset( $option['adsLinkedLastSyncedAt'] ) ) {
+					if ( ! is_int( $option['adsLinkedLastSyncedAt'] ) ) {
+						$option['adsLinkedLastSyncedAt'] = 0;
 					}
 				}
 			}

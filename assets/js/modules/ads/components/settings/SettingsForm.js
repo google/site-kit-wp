@@ -33,6 +33,7 @@ import EntityOwnershipChangeNotice from '../../../../components/settings/EntityO
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import AdsConversionIDTextField from '../common/AdsConversionIDTextField';
 const { useSelect } = Data;
 
 export default function SettingsForm( { hasModuleAccess } ) {
@@ -47,6 +48,15 @@ export default function SettingsForm( { hasModuleAccess } ) {
 	return (
 		<div className="googlesitekit-ads-settings-fields">
 			<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
+
+			<div className="googlesitekit-setup-module__inputs">
+				<AdsConversionIDTextField
+					helperText={ __(
+						'The Conversion Tracking ID will help track the performance of ad campaigns for the corresponding account',
+						'google-site-kit'
+					) }
+				/>
+			</div>
 
 			{ hasModuleAccess === false && (
 				<SettingsNotice
