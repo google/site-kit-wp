@@ -185,6 +185,29 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $settings['adSenseLinkedLastSyncedAt'], 0 );
 	}
 
+	public function test_register__reset_ads_link_settings() {
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'            => '12345678',
+				'adsLinked'             => true,
+				'adsLinkedLastSyncedAt' => 1705938374500,
+			)
+		);
+
+		$this->analytics->register();
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '87654321',
+			)
+		);
+
+		$settings = $this->analytics->get_settings()->get();
+
+		$this->assertFalse( $settings['adsLinked'] );
+		$this->assertEquals( $settings['adsLinkedLastSyncedAt'], 0 );
+	}
+
 	public function test_handle_provisioning_callback() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$analytics = new Analytics_4( $context );
@@ -372,6 +395,8 @@ class Analytics_4Test extends TestCase {
 				'adSenseLinked'               => false,
 				'adSenseLinkedLastSyncedAt'   => 0,
 				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -399,6 +424,8 @@ class Analytics_4Test extends TestCase {
 				'adSenseLinked'               => false,
 				'adSenseLinkedLastSyncedAt'   => 0,
 				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -519,6 +546,8 @@ class Analytics_4Test extends TestCase {
 				'adSenseLinked'               => false,
 				'adSenseLinkedLastSyncedAt'   => 0,
 				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -640,6 +669,8 @@ class Analytics_4Test extends TestCase {
 				'adSenseLinked'               => false,
 				'adSenseLinkedLastSyncedAt'   => 0,
 				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -670,6 +701,8 @@ class Analytics_4Test extends TestCase {
 				'adSenseLinked'               => false,
 				'adSenseLinkedLastSyncedAt'   => 0,
 				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -1013,6 +1046,7 @@ class Analytics_4Test extends TestCase {
 			array(
 				'account-summaries',
 				'accounts',
+				'ads-links',
 				'adsense-links',
 				'container-lookup',
 				'container-destinations',
@@ -1045,6 +1079,8 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_ads_conversion_id',
+				'analytics_4_ads_linked',
+				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -1060,6 +1096,8 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_property_id',
 				'analytics_4_use_snippet',
 				'analytics_4_web_data_stream_id',
+				'analytics_4_ads_linked',
+				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -1084,8 +1122,10 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_property_id',
 				'analytics_4_use_snippet',
 				'analytics_4_web_data_stream_id',
-				'adsense_linked',
-				'adsense_linked_last_synced_at',
+				'analytics_4_ads_linked',
+				'analytics_4_ads_linked_last_synced_at',
+				'analytics_4_adsense_linked',
+				'analytics_4_adsense_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
