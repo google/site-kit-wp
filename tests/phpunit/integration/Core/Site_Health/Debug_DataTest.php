@@ -61,6 +61,9 @@ class Debug_DataTest extends TestCase {
 		$this->assertNonConditionalFields( $info );
 		$this->assertArrayHasKey( 'recoverable_modules', $info['google-site-kit']['fields'] );
 		$this->assertHasDashboardSharingModuleFields( 'fake-module', $info );
+
+		$this->assertArrayHasKey( 'consent_mode', $info['google-site-kit']['fields'] );
+		$this->assertArrayHasKey( 'consent_api', $info['google-site-kit']['fields'] );
 	}
 
 	/**
@@ -113,6 +116,8 @@ class Debug_DataTest extends TestCase {
 			'required_scopes',
 			'capabilities',
 			'enabled_features',
+			'consent_mode',
+			'consent_api',
 		);
 		$actual_keys          = array_keys( $debug_information['google-site-kit']['fields'] );
 
