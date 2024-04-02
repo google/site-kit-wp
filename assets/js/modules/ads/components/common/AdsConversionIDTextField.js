@@ -24,8 +24,9 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useDebounce } from '../../../../hooks/useDebounce';
 
 /**
  * Internal dependencies
@@ -43,23 +44,26 @@ export default function AdsConversionIDTextField( { helperText } ) {
 		select( MODULES_ADS ).getAdsConversionID()
 	);
 
+	const [ isValid, setIsValid ] = useState( false );
+	const debounceSetIsValid = useDebounce( setIsValid, 500 );
+
 	const { setAdsConversionID } = useDispatch( MODULES_ADS );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
 			let newValue = currentTarget.value.trim().toUpperCase();
-			// Automatically add the AW- prefix if not provided.
-			if ( 'AW-'.length < newValue.length && ! /^AW-/.test( newValue ) ) {
+			// Automatically add the AW- prefix if not provided, unless the field is empty.
+			if ( newValue !== '' && ! /^AW-/.test( newValue ) ) {
 				newValue = `AW-${ newValue }`;
 			}
 
 			if ( newValue !== adsConversionID ) {
 				setAdsConversionID( newValue );
 			}
-		},
-		[ adsConversionID, setAdsConversionID ]
-	);
 
-	const isValidValue = Boolean( isValidAdsConversionID( adsConversionID ) );
+			debounceSetIsValid( Boolean( isValidAdsConversionID( newValue ) ) );
+		},
+		[ debounceSetIsValid, adsConversionID, setAdsConversionID ]
+	);
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
@@ -76,10 +80,10 @@ export default function AdsConversionIDTextField( { helperText } ) {
 			<TextField
 				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
 				className={ classnames( {
-					'mdc-text-field--error': ! isValidValue,
+					'mdc-text-field--error': ! isValid,
 				} ) }
 				helperText={
-					! isValidValue &&
+					! isValid &&
 					__(
 						'Tracking for your Ads campaigns won’t work until you insert a valid ID',
 						'google-site-kit'
@@ -93,7 +97,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 					</span>
 				}
 				trailingIcon={
-					! isValidValue && (
+					! isValid && (
 						<span className="googlesitekit-text-field-icon--error">
 							<VisuallyHidden>
 								{ __( 'Error', 'google-site-kit' ) }
