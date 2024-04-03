@@ -21,7 +21,6 @@
  */
 import { WEBDATASTREAM_CREATE } from '../datastore/constants';
 import {
-	isValidAdsConversionID,
 	isValidGoogleTagAccountID,
 	isValidGoogleTagContainerID,
 	isValidGoogleTagID,
@@ -115,29 +114,5 @@ describe( 'modules/analytics-4 validations', () => {
 			expect( isValidGoogleTagContainerID( '' ) ).toBe( false );
 			expect( isValidGoogleTagContainerID( 'X' ) ).toBe( false );
 		} );
-	} );
-
-	describe( 'isValidAdsConversionID', () => {
-		it( 'should return TRUE when a valid AdsConversionID is passed', () => {
-			expect( isValidAdsConversionID( 'AW-123456789' ) ).toBe( true );
-		} );
-
-		it.each( [
-			[ 'false', false ],
-			[ 'an integer', 12345 ],
-			[ 'an empty string', '' ],
-			[ 'a string not starting with AW', 'AB-123456789' ],
-			[
-				'a string starts with AW but ends without numbers',
-				'AW-ABCDEFGHI',
-			],
-		] )(
-			'should return FALSE when %s is passed',
-			( _, adsConversionID ) => {
-				expect( isValidAdsConversionID( adsConversionID ) ).toBe(
-					false
-				);
-			}
-		);
 	} );
 } );

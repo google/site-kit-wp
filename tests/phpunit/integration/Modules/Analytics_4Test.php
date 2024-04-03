@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -136,6 +137,8 @@ class Analytics_4Test extends TestCase {
 		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
 		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 		wp_set_current_user( $this->user->ID );
+		remove_all_actions( 'wp_enqueue_scripts' );
+		( new GTag() )->register();
 	}
 
 	public function test_register() {
@@ -180,6 +183,29 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertFalse( $settings['adSenseLinked'] );
 		$this->assertEquals( $settings['adSenseLinkedLastSyncedAt'], 0 );
+	}
+
+	public function test_register__reset_ads_link_settings() {
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'            => '12345678',
+				'adsLinked'             => true,
+				'adsLinkedLastSyncedAt' => 1705938374500,
+			)
+		);
+
+		$this->analytics->register();
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '87654321',
+			)
+		);
+
+		$settings = $this->analytics->get_settings()->get();
+
+		$this->assertFalse( $settings['adsLinked'] );
+		$this->assertEquals( $settings['adsLinkedLastSyncedAt'], 0 );
 	}
 
 	public function test_handle_provisioning_callback() {
@@ -352,22 +378,25 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                 => $account_id,
-				'propertyID'                => '',
-				'webDataStreamID'           => '',
-				'measurementID'             => '',
-				'ownerID'                   => 0,
-				'adsConversionID'           => '',
-				'trackingDisabled'          => array( 'loggedinUsers' ),
-				'useSnippet'                => true,
-				'googleTagID'               => '',
-				'googleTagAccountID'        => '',
-				'googleTagContainerID'      => '',
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => 0,
-				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => 0,
+				'accountID'                   => $account_id,
+				'propertyID'                  => '',
+				'webDataStreamID'             => '',
+				'measurementID'               => '',
+				'ownerID'                     => 0,
+				'adsConversionID'             => '',
+				'trackingDisabled'            => array( 'loggedinUsers' ),
+				'useSnippet'                  => true,
+				'googleTagID'                 => '',
+				'googleTagAccountID'          => '',
+				'googleTagContainerID'        => '',
+				'googleTagLastSyncedAtMs'     => 0,
+				'availableCustomDimensions'   => null,
+				'propertyCreateTime'          => 0,
+				'adSenseLinked'               => false,
+				'adSenseLinkedLastSyncedAt'   => 0,
+				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -378,22 +407,25 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                 => $account_id,
-				'propertyID'                => $property_id,
-				'webDataStreamID'           => $webdatastream_id,
-				'measurementID'             => $measurement_id,
-				'ownerID'                   => 0,
-				'adsConversionID'           => '',
-				'trackingDisabled'          => array( 'loggedinUsers' ),
-				'useSnippet'                => true,
-				'googleTagID'               => 'GT-123',
-				'googleTagAccountID'        => $google_tag_account_id,
-				'googleTagContainerID'      => $google_tag_container_id,
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => 0,
-				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => 0,
+				'accountID'                   => $account_id,
+				'propertyID'                  => $property_id,
+				'webDataStreamID'             => $webdatastream_id,
+				'measurementID'               => $measurement_id,
+				'ownerID'                     => 0,
+				'adsConversionID'             => '',
+				'trackingDisabled'            => array( 'loggedinUsers' ),
+				'useSnippet'                  => true,
+				'googleTagID'                 => 'GT-123',
+				'googleTagAccountID'          => $google_tag_account_id,
+				'googleTagContainerID'        => $google_tag_container_id,
+				'googleTagLastSyncedAtMs'     => 0,
+				'availableCustomDimensions'   => null,
+				'propertyCreateTime'          => 0,
+				'adSenseLinked'               => false,
+				'adSenseLinkedLastSyncedAt'   => 0,
+				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -497,22 +529,25 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                 => $account_id,
-				'propertyID'                => '',
-				'webDataStreamID'           => '',
-				'measurementID'             => '',
-				'ownerID'                   => 0,
-				'adsConversionID'           => '',
-				'trackingDisabled'          => array( 'loggedinUsers' ),
-				'useSnippet'                => true,
-				'googleTagID'               => '',
-				'googleTagAccountID'        => '',
-				'googleTagContainerID'      => '',
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => 0,
-				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => 0,
+				'accountID'                   => $account_id,
+				'propertyID'                  => '',
+				'webDataStreamID'             => '',
+				'measurementID'               => '',
+				'ownerID'                     => 0,
+				'adsConversionID'             => '',
+				'trackingDisabled'            => array( 'loggedinUsers' ),
+				'useSnippet'                  => true,
+				'googleTagID'                 => '',
+				'googleTagAccountID'          => '',
+				'googleTagContainerID'        => '',
+				'googleTagLastSyncedAtMs'     => 0,
+				'availableCustomDimensions'   => null,
+				'propertyCreateTime'          => 0,
+				'adSenseLinked'               => false,
+				'adSenseLinkedLastSyncedAt'   => 0,
+				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -617,22 +652,25 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                 => $account_id,
-				'propertyID'                => '',
-				'webDataStreamID'           => '',
-				'measurementID'             => '',
-				'ownerID'                   => 0,
-				'adsConversionID'           => '',
-				'trackingDisabled'          => array( 'loggedinUsers' ),
-				'useSnippet'                => true,
-				'googleTagID'               => '',
-				'googleTagAccountID'        => '',
-				'googleTagContainerID'      => '',
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => 0,
-				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => 0,
+				'accountID'                   => $account_id,
+				'propertyID'                  => '',
+				'webDataStreamID'             => '',
+				'measurementID'               => '',
+				'ownerID'                     => 0,
+				'adsConversionID'             => '',
+				'trackingDisabled'            => array( 'loggedinUsers' ),
+				'useSnippet'                  => true,
+				'googleTagID'                 => '',
+				'googleTagAccountID'          => '',
+				'googleTagContainerID'        => '',
+				'googleTagLastSyncedAtMs'     => 0,
+				'availableCustomDimensions'   => null,
+				'propertyCreateTime'          => 0,
+				'adSenseLinked'               => false,
+				'adSenseLinkedLastSyncedAt'   => 0,
+				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -646,22 +684,25 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                 => $account_id,
-				'propertyID'                => $property_id,
-				'webDataStreamID'           => $webdatastream_id,
-				'measurementID'             => $measurement_id,
-				'ownerID'                   => 0,
-				'adsConversionID'           => '',
-				'trackingDisabled'          => array( 'loggedinUsers' ),
-				'useSnippet'                => true,
-				'googleTagID'               => '',
-				'googleTagAccountID'        => '',
-				'googleTagContainerID'      => '',
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
-				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => 0,
+				'accountID'                   => $account_id,
+				'propertyID'                  => $property_id,
+				'webDataStreamID'             => $webdatastream_id,
+				'measurementID'               => $measurement_id,
+				'ownerID'                     => 0,
+				'adsConversionID'             => '',
+				'trackingDisabled'            => array( 'loggedinUsers' ),
+				'useSnippet'                  => true,
+				'googleTagID'                 => '',
+				'googleTagAccountID'          => '',
+				'googleTagContainerID'        => '',
+				'googleTagLastSyncedAtMs'     => 0,
+				'availableCustomDimensions'   => null,
+				'propertyCreateTime'          => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
+				'adSenseLinked'               => false,
+				'adSenseLinkedLastSyncedAt'   => 0,
+				'adsConversionIDMigratedAtMs' => 0,
+				'adsLinked'                   => false,
+				'adsLinkedLastSyncedAt'       => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -1005,6 +1046,7 @@ class Analytics_4Test extends TestCase {
 			array(
 				'account-summaries',
 				'accounts',
+				'ads-links',
 				'adsense-links',
 				'container-lookup',
 				'container-destinations',
@@ -1037,6 +1079,8 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_ads_conversion_id',
+				'analytics_4_ads_linked',
+				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -1052,6 +1096,8 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_property_id',
 				'analytics_4_use_snippet',
 				'analytics_4_web_data_stream_id',
+				'analytics_4_ads_linked',
+				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -1076,8 +1122,10 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_property_id',
 				'analytics_4_use_snippet',
 				'analytics_4_web_data_stream_id',
-				'adsense_linked',
-				'adsense_linked_last_synced_at',
+				'analytics_4_ads_linked',
+				'analytics_4_ads_linked_last_synced_at',
+				'analytics_4_adsense_linked',
+				'analytics_4_adsense_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -2787,6 +2835,9 @@ class Analytics_4Test extends TestCase {
 		// Remove irrelevant script from throwing errors in CI from readfile().
 		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
 		// Set the current user (can be 0 for no user)
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
@@ -2798,6 +2849,7 @@ class Analytics_4Test extends TestCase {
 		$analytics->get_settings()->set( $settings );
 
 		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 		$analytics->register();
 		do_action( 'template_redirect' );
 
@@ -3496,10 +3548,10 @@ class Analytics_4Test extends TestCase {
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 
-		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
 
 		$analytics->get_settings()->merge(
 			array(
@@ -3511,19 +3563,19 @@ class Analytics_4Test extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 
 		// Tag not hooked when blocked.
-		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_actions( 'googlesitekit_setup_gtag' );
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
 
 		// Tag hooked when only AMP blocked.
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 	}
 
 	/**
@@ -3550,7 +3602,6 @@ class Analytics_4Test extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
-		remove_all_actions( 'wp_enqueue_scripts' );
 		$analytics->register();
 
 		// Hook `wp_print_head_scripts` on placeholder action for capturing.

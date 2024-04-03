@@ -20,11 +20,13 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	provideModules,
 	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'core/site Consent Mode', () => {
 	let registry;
@@ -296,6 +298,97 @@ describe( 'core/site Consent Mode', () => {
 				);
 
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'isAdsConnected', () => {
+			it( 'returns false if the Analytics module is not connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					false
+				);
+			} );
+
+			it( 'returns undefined if either the Ads conversion ID in Analytics or the Analytics and Ads linked status is undefined', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					undefined
+				);
+			} );
+
+			it( 'returns true if an Ads conversion ID is set in the Analytics module', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					adsConversionID: 'AW-12345',
+					adsLinked: false, // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
+				} );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					true
+				);
+			} );
+
+			it( 'returns true if Analytics and Ads are linked', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					adsLinked: true,
+					adsConversionID: '', // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
+				} );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					true
+				);
+			} );
+
+			it( 'returns false if neither an Ads conversion ID is set in Analytics, nor Analytics and Ads are linked', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					adsConversionID: '',
+					adsLinked: false,
+				} );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					false
+				);
 			} );
 		} );
 	} );

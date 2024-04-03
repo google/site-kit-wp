@@ -48,6 +48,7 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
+import { getSampleReportArgs } from '../../../../analytics-4/utils/report-args';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidgetGA4( props ) {
@@ -298,12 +299,29 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		setValue,
 	] );
 
-	if ( pieChartError ) {
+	// The User Dimensions Pie Chart uses the sample report to check
+	// for zero data, so we need to retry the sample report to make
+	// sure the pie chart reloads correctly.
+	const sampleReportError = useSelect( ( select ) => {
+		const args = getSampleReportArgs( select );
+		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			args,
+		] );
+	} );
+
+	const retryableErrors = [
+		pieChartError,
+		sampleReportError,
+		totalUsersError,
+		userCountGraphError,
+	].filter( Boolean );
+
+	if ( pieChartError || totalUsersError || userCountGraphError ) {
 		return (
 			<Widget>
 				<WidgetReportError
 					moduleSlug="analytics-4"
-					error={ pieChartError }
+					error={ retryableErrors }
 				/>
 			</Widget>
 		);

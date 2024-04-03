@@ -41,6 +41,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
@@ -56,6 +57,7 @@ use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
@@ -68,6 +70,7 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyti
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
@@ -136,6 +139,14 @@ final class Analytics_4 extends Module
 	protected $custom_dimensions_data_available;
 
 	/**
+	 * Audience_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -155,6 +166,7 @@ final class Analytics_4 extends Module
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
+		$this->audience_settings                = new Audience_Settings( $this->user_options );
 	}
 
 	/**
@@ -179,10 +191,17 @@ final class Analytics_4 extends Module
 		);
 		$synchronize_adsense_linked->register();
 
+		$synchronize_ads_linked = new Synchronize_AdsLinked(
+			$this,
+			$this->user_options
+		);
+		$synchronize_ads_linked->register();
+
 		( new Advanced_Tracking( $this->context ) )->register();
 
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
 		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
+		add_action( 'admin_init', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.
@@ -201,12 +220,14 @@ final class Analytics_4 extends Module
 					$this->custom_dimensions_data_available->reset_data_available();
 				}
 
-				// Reset AdSense link settings when propertyID changes.
+				// Reset AdSense & Ads link settings when propertyID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->get_settings()->merge(
 						array(
 							'adSenseLinked'             => false,
 							'adSenseLinkedLastSyncedAt' => 0,
+							'adsLinked'                 => false,
+							'adsLinkedLastSyncedAt'     => 0,
 						)
 					);
 				}
@@ -412,17 +433,27 @@ final class Analytics_4 extends Module
 					? 'none'
 					: join( ', ', $settings['availableCustomDimensions'] ),
 			),
+			'analytics_4_ads_linked'                  => array(
+				'label' => __( 'Analytics Ads Linked', 'google-site-kit' ),
+				'value' => $settings['adsLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
+				'debug' => $settings['adsLinked'],
+			),
+			'analytics_4_ads_linked_last_synced_at'   => array(
+				'label' => __( 'Analytics Ads Linked Last Synced At', 'google-site-kit' ),
+				'value' => $settings['adsLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adsLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
+				'debug' => $settings['adsLinkedLastSyncedAt'],
+			),
 		);
 
 		if ( $this->is_adsense_connected() ) {
-			$debug_fields['adsense_linked'] = array(
-				'label' => __( 'AdSense Linked', 'google-site-kit' ),
+			$debug_fields['analytics_4_adsense_linked'] = array(
+				'label' => __( 'Analytics AdSense Linked', 'google-site-kit' ),
 				'value' => $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
 			);
 
-			$debug_fields['adsense_linked_last_synced_at'] = array(
-				'label' => __( 'AdSense Linked Last Synced At', 'google-site-kit' ),
+			$debug_fields['analytics_4_adsense_linked_last_synced_at'] = array(
+				'label' => __( 'Analytics AdSense Linked Last Synced At', 'google-site-kit' ),
 				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
 			);
@@ -442,6 +473,7 @@ final class Analytics_4 extends Module
 		$datapoints = array(
 			'GET:account-summaries'                => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                         => array( 'service' => 'analyticsadmin' ),
+			'GET:ads-links'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:adsense-links'                    => array( 'service' => 'analyticsadsenselinks' ),
 			'GET:container-lookup'                 => array(
 				'service' => 'tagmanager',
@@ -508,11 +540,17 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['GET:audiences']        = array( 'service' => 'analyticsaudiences' );
-			$datapoints['POST:create-audience'] = array(
+			$datapoints['GET:audiences']          = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:create-audience']   = array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
+			);
+			$datapoints['GET:audience-settings']  = array(
+				'service' => '',
+			);
+			$datapoints['POST:audience-settings'] = array(
+				'service' => '',
 			);
 		}
 
@@ -865,6 +903,7 @@ final class Analytics_4 extends Module
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 *
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
+	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
 	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
@@ -874,6 +913,14 @@ final class Analytics_4 extends Module
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
+			case 'GET:ads-links':
+				if ( empty( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				$parent = self::normalize_property_id( $data['propertyID'] );
+
+				return $this->get_service( 'analyticsadmin' )->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
 			case 'GET:adsense-links':
 				if ( empty( $data['propertyID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'propertyID' );
@@ -947,6 +994,33 @@ final class Analytics_4 extends Module
 						$property_id,
 						$post_body
 					);
+			case 'GET:audience-settings':
+				return function() {
+					return $this->audience_settings->get();
+				};
+			case 'POST:audience-settings':
+				$settings = $data['settings'];
+				if ( ! isset( $settings['configuredAudiences'] ) ) {
+					throw new Missing_Required_Param_Exception( 'configuredAudiences' );
+				}
+
+				if ( ! is_array( $settings['configuredAudiences'] ) ) {
+					throw new Invalid_Param_Exception( 'configuredAudiences' );
+				}
+
+				if ( ! isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
+				}
+
+				if ( ! is_bool( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
+					throw new Invalid_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
+				}
+
+				$this->audience_settings->merge( $data['settings'] );
+
+				return function() {
+					return $this->audience_settings->get();
+				};
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -1421,6 +1495,8 @@ final class Analytics_4 extends Module
 					$account_summaries,
 					'displayName'
 				);
+			case 'GET:ads-links':
+				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':
 				return (array) $response->getAdsenseLinks();
 			case 'POST:create-account-ticket':
@@ -1524,7 +1600,7 @@ final class Analytics_4 extends Module
 	 * Sets up information about the module.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Updated to include in the module setup.
+	 * @since 1.123.0 Updated to include in the module setup.
 	 *
 	 * @return array Associative array of module info.
 	 */

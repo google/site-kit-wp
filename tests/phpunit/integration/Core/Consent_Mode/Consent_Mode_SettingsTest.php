@@ -50,7 +50,7 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'enabled' => false,
-				'regions' => Regions::EEA,
+				'regions' => Regions::EU_USER_CONSENT_POLICY,
 			),
 			$default_settings
 		);
@@ -64,14 +64,14 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'enabled' => false,
-					'regions' => Regions::EEA,
+					'regions' => Regions::EU_USER_CONSENT_POLICY,
 				),
 			),
 			'enabled empty'       => array(
 				array(),
 				array(
 					'enabled' => false,
-					'regions' => Regions::EEA,
+					'regions' => Regions::EU_USER_CONSENT_POLICY,
 				),
 			),
 			'enabled true'        => array(
@@ -80,7 +80,7 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'enabled' => true,
-					'regions' => Regions::EEA,
+					'regions' => Regions::EU_USER_CONSENT_POLICY,
 				),
 			),
 			'enabled non-empty'   => array(
@@ -89,7 +89,7 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'enabled' => true,
-					'regions' => Regions::EEA,
+					'regions' => Regions::EU_USER_CONSENT_POLICY,
 				),
 			),
 			'valid regions'       => array(
@@ -116,7 +116,7 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'enabled' => false,
-					'regions' => Regions::EEA,
+					'regions' => Regions::EU_USER_CONSENT_POLICY,
 				),
 			),
 			'empty regions'       => array(
@@ -125,7 +125,7 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'enabled' => false,
-					'regions' => Regions::EEA,
+					'regions' => Regions::EU_USER_CONSENT_POLICY,
 				),
 			),
 			'non-array regions'   => array(
@@ -134,7 +134,7 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'enabled' => false,
-					'regions' => Regions::EEA,
+					'regions' => Regions::EU_USER_CONSENT_POLICY,
 				),
 			),
 		);
@@ -162,7 +162,7 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_get_regions() {
-		$this->assertEquals( Regions::EEA, $this->settings->get_regions() );
+		$this->assertEquals( Regions::EU_USER_CONSENT_POLICY, $this->settings->get_regions() );
 
 		$regions = array( 'SG', 'UA-AS' );
 		$this->settings->set( array( 'regions' => $regions ) );

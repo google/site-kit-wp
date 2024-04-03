@@ -118,6 +118,18 @@ export function isValidWebDataStreamSelection( webDataStreamID ) {
 }
 
 /**
+ * Checks if the given web data stream name appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} value Web data stream name to test.
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidWebDataStreamName( value ) {
+	return typeof value === 'string' && value.trim().length > 0;
+}
+
+/**
  * Checks whether the given measurementID appears to be valid.
  *
  * @since 1.35.0
@@ -169,18 +181,6 @@ export function isValidGoogleTagAccountID( googleTagAccountID ) {
  */
 export function isValidGoogleTagContainerID( googleTagContainerID ) {
 	return isValidNumericID( googleTagContainerID );
-}
-
-/** Checks if the given ads conversion ID is valid.
- *
- * @since 1.32.0
- * @since 1.121.0 Migrated from analytics to analytics-4.
- *
- * @param {*} value Conversion ID to test.
- * @return {boolean} Whether or not the given ID is valid.
- */
-export function isValidAdsConversionID( value ) {
-	return typeof value === 'string' && /^AW-[0-9]+$/.test( value );
 }
 
 /**

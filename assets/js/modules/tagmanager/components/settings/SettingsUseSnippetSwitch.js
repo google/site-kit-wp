@@ -61,7 +61,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated',
+							'Consider removing the existing tag to avoid loading both tags on your site',
 							'google-site-kit'
 						) }
 					</p>

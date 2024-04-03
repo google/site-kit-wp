@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import accounts from './accounts';
 import audiences from './audiences';
+import audienceSettings from './audience-settings';
 import baseModuleStore from './base';
 import containers from './containers';
 import conversionEvents from './conversion-events';
@@ -39,6 +40,7 @@ import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot
 const store = Data.combineStores(
 	accounts,
 	audiences,
+	audienceSettings,
 	baseModuleStore,
 	containers,
 	conversionEvents,

@@ -23,7 +23,7 @@ function tagHeadHTML( analyticsID ) {
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-	
+
 	  gtag('config', '${ analyticsID }');
 	</script>`;
 }
@@ -32,7 +32,7 @@ function tagHeadHTML( analyticsID ) {
  * Generates valid HTML with an Analytics tag.
  *
  * @since 1.13.0
- * @since n.e.x.t Migrated from analytics to analytics-4.
+ * @since 1.123.0 Migrated from analytics to analytics-4.
  *
  * @param {string} analyticsID Analytics ID to generate tag with.
  * @return {string} HTML.
