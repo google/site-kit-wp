@@ -47,6 +47,7 @@ import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
+import NewBadge from '../../NewBadge';
 const { useSelect } = Data;
 
 export default function Header( { slug } ) {
@@ -172,12 +173,7 @@ export default function Header( { slug } ) {
 									hasLeftSpacing
 								/>
 							) }
-							{ slug === 'ads' && (
-								<Badge
-									className="googlesitekit-badge--new"
-									label={ __( 'New', 'google-site-kit' ) }
-								/>
-							) }
+							{ slug === 'ads' && <NewBadge hasLeftSpacing /> }
 						</div>
 					</Cell>
 

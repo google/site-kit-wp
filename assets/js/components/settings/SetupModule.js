@@ -43,6 +43,7 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { EXPERIMENTAL_MODULES } from '../dashboard-sharing/DashboardSharingSettings/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import NewBadge from '../NewBadge.js';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupModule( { slug, name, description } ) {
@@ -118,12 +119,7 @@ export default function SetupModule( { slug, name, description } ) {
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
 					) }
-					{ slug === 'ads' && (
-						<Badge
-							className="googlesitekit-badge--new"
-							label={ __( 'New', 'google-site-kit' ) }
-						/>
-					) }
+					{ slug === 'ads' && <NewBadge /> }
 				</div>
 			</div>
 			<p className="googlesitekit-settings-connect-module__text">
