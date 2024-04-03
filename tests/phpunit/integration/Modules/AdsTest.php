@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Modules
+ * @group Ads
  */
 class AdsTest extends TestCase {
 
@@ -47,6 +49,78 @@ class AdsTest extends TestCase {
 		$ads_settings = $ads->get_settings()->get();
 
 		$this->assertFalse( $ads_settings );
+	}
+
+	public function test_get_debug_fields() {
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$ads->get_settings()->set( array( 'adsConversionID' => 'AW-123456789' ) );
+
+		$this->assertEqualSets(
+			array(
+				'ads_conversion_id',
+			),
+			array_keys( $ads->get_debug_fields() )
+		);
+
+		$this->assertEquals(
+			array(
+				'ads_conversion_id' => array(
+					'label' => 'Conversion Tracking ID',
+					'value' => 'AW-123456789',
+				),
+			),
+			$ads->get_debug_fields()
+		);
+	}
+
+	/**
+	 * @dataProvider template_redirect_data_provider
+	 *
+	 * @param array $settings
+	 */
+	public function test_template_redirect( $settings ) {
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'wp_enqueue_scripts' );
+		( new GTag() )->register();
+
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		remove_all_actions( 'template_redirect' );
+		$ads->register();
+		$ads->get_settings()->set( $settings );
+
+		do_action( 'template_redirect' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+		$this->assertNotEmpty( $head_html );
+
+		if ( empty( $settings['adsConversionID'] ) ) {
+			$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
+			$this->assertStringNotContainsString(
+				'gtag("config", "AW-123456789")',
+				$head_html
+			);
+		} else {
+			$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+			$this->assertStringContainsString(
+				'gtag("config", "AW-123456789")',
+				$head_html
+			);
+		}
+	}
+
+	public function template_redirect_data_provider() {
+		return array(
+			'empty ads conversion ID' => array( array( 'adsConversionID' => '' ) ),
+			'valid ads conversion ID' => array( array( 'adsConversionID' => 'AW-123456789' ) ),
+		);
 	}
 
 }

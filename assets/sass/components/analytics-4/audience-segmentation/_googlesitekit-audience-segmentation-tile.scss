@@ -18,6 +18,8 @@
 
 .googlesitekit-plugin {
 	.googlesitekit-audience-segmentation-tile {
+		margin-bottom: 16px;
+
 		.googlesitekit-audience-segmentation-tile__header {
 			border-bottom: 1px solid $c-utility-divider;
 			color: $c-surfaces-on-surface;
@@ -49,12 +51,12 @@
 
 			.googlesitekit-audience-segmentation-tile-metric__icon {
 				height: 20px;
-				margin: 14px 19px 14px 0;
+				margin: 16px 20px 16px 0;
 				min-width: 20px;
 				width: 20px;
 
 				@media (min-width: $width-desktop + 1 + px) {
-					margin-left: 15px;
+					margin-left: 16px;
 				}
 			}
 
@@ -65,14 +67,14 @@
 					color: $c-surfaces-on-surface;
 					font-size: $fs-headline-md;
 					font-weight: $fw-normal;
-					line-height: $lh-headline-md;
+					line-height: 32px; // Fixed line hight required for this components height to match designs.
 				}
 
 				.googlesitekit-audience-segmentation-tile-metric__title {
 					color: $c-surfaces-on-surface-variant;
 					font-size: $fs-body-md;
 					font-weight: $fw-normal;
-					line-height: $lh-body-md;
+					line-height: 20px; // Fixed line hight required for this components height to match designs.
 				}
 			}
 
@@ -97,10 +99,10 @@
 					gap: $grid-gap-phone;
 					grid-auto-columns: minmax(0, 1fr);
 					grid-auto-flow: column;
-					margin-top: 14px;
+					margin-top: 12px;
 
 					@media (min-width: $width-desktop + 1 + px) {
-						gap: $grid-gap-desktop;
+						gap: 10px; // Designs specify a non-standard grid gap.
 					}
 
 					.googlesitekit-audience-segmentation-tile-metric__cities-metric {
@@ -109,6 +111,7 @@
 							font-size: $fs-title-sm;
 							font-weight: $fw-medium;
 							line-height: $lh-title-sm;
+							margin-bottom: 2px;
 
 							overflow: hidden;
 							text-overflow: ellipsis;
@@ -129,9 +132,9 @@
 			&.googlesitekit-audience-segmentation-tile-metric--top-content {
 
 				.googlesitekit-audience-segmentation-tile-metric__title {
-					height: 36px;
-					line-height: 28px;
-					padding: 4px 0;
+					height: 20px;
+					line-height: 20px;
+					margin-bottom: 10px;
 				}
 
 				.googlesitekit-audience-segmentation-tile-metric__page-metric-container {
@@ -139,7 +142,7 @@
 					font-size: $fs-body-sm;
 					justify-content: space-between;
 					line-height: $lh-body-sm;
-					margin: 5px 0;
+					margin: 6px 0;
 				}
 			}
 		}

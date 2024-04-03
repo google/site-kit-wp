@@ -62,4 +62,13 @@ class Consent_ModeTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'Google tag (gtag.js) Consent Mode snippet added by Site Kit', $output );
 	}
+
+	public function test_register__googlesitekit_consent_mode_status() {
+		remove_all_filters( 'googlesitekit_consent_mode_status' );
+
+		$consent_mode = new Consent_Mode( $this->context, $this->options );
+		$consent_mode->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_consent_mode_status' ) );
+	}
 }

@@ -27,5 +27,7 @@
  * @return {boolean} Whether or not the given ID is valid.
  */
 export function isValidAdsConversionID( value ) {
-	return typeof value === 'string' && /^AW-[0-9]+$/.test( value );
+	return (
+		typeof value === 'string' && value !== '' && /^AW-[0-9]+$/.test( value )
+	);
 }

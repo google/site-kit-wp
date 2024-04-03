@@ -67,7 +67,9 @@ class Consent_Mode {
 		$plugin = GOOGLESITEKIT_PLUGIN_BASENAME;
 		add_filter( "wp_consent_api_registered_{$plugin}", '__return_true' );
 
-		if ( $this->consent_mode_settings->is_consent_mode_enabled() ) {
+		$consent_mode_enabled = $this->consent_mode_settings->is_consent_mode_enabled();
+
+		if ( $consent_mode_enabled ) {
 			// The `wp_head` action is used to ensure the snippets are printed in the head on the front-end only, not admin pages.
 			add_action(
 				'wp_head',
@@ -75,6 +77,13 @@ class Consent_Mode {
 				1 // Set priority to 1 to ensure the snippet is printed with top priority in the head.
 			);
 		}
+
+		add_filter(
+			'googlesitekit_consent_mode_status',
+			function () use ( $consent_mode_enabled ) {
+				return $consent_mode_enabled ? 'enabled' : 'disabled';
+			}
+		);
 	}
 
 	/**
@@ -88,7 +97,10 @@ class Consent_Mode {
 			'ad_storage'         => 'denied',
 			'ad_user_data'       => 'denied',
 			'analytics_storage'  => 'denied',
-			'regions'            => $this->consent_mode_settings->get_regions(),
+			// TODO: The value for `region` should be retrieved from $this->consent_mode_settings->get_regions(),
+			// but we'll need to migrate/clean up the incorrect values that were set from the initial release.
+			// See https://github.com/google/site-kit-wp/issues/8444.
+			'region'             => Regions::EU_USER_CONSENT_POLICY,
 			'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
 		);
 

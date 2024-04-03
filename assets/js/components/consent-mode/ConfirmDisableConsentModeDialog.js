@@ -77,7 +77,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			dialogActive
 			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
 			subtitle={ __(
-				'Disabling consent mode will remove the additional tag from your website. In the European Economic Area, you will no longer be able to track:',
+				'Disabling consent mode will remove the additional tag from your website. In the European Economic Area and the United Kingdom, you will no longer be able to track:',
 				'google-site-kit'
 			) }
 			handleConfirm={ onConfirm }

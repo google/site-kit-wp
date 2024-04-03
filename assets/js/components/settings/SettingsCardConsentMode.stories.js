@@ -56,9 +56,10 @@ WithAdsConnected.args = {
 			.dispatch( CORE_SITE )
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setSettings( { adsConversionID: 'AW-123456789' } );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			adsConversionID: 'AW-123456789',
+			adsLinked: false, // Set to default, as otherwise if it is set to undefined, the `core/site` `isAdsConnected` selector will return undefined.
+		} );
 	},
 };
 WithAdsConnected.scenario = {
