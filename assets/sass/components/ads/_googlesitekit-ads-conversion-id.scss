@@ -18,7 +18,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-ads-settings-fields {
+	.googlesitekit-text-field-conversion-tracking-id {
 
 		.googlesitekit-text-field-conversion-tracking-id-prefix {
 
@@ -27,10 +27,10 @@
 				left: 20px;
 				top: 17.5px;
 			}
+		}
 
-			&.mdc-text-field--error:not(.mdc-text-field--disabled, .mdc-text-field--focused) .mdc-floating-label {
-				padding: 0.5px 0;
-			}
+		&.mdc-text-field--error:not(.mdc-text-field--disabled, .mdc-text-field--focused) .mdc-floating-label {
+			padding: 0.5px 0;
 		}
 	}
 }

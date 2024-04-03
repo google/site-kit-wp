@@ -80,6 +80,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 			<TextField
 				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
 				className={ classnames( {
+					'googlesitekit-text-field-conversion-tracking-id': true,
 					'mdc-text-field--error': ! isValid,
 				} ) }
 				helperText={
