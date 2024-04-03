@@ -43,10 +43,10 @@ function NewBadge( {
 	hasNoSpacing,
 	onLearnMoreClick = () => {},
 } ) {
-	const BadgeComponent = (
+	const badgeComponent = (
 		<Badge
 			className={ classnames( 'googlesitekit-new-badge', {
-				'googlesitekit-badge--has-no-spacing': hasNoSpacing,
+				'googlesitekit-new-badge--has-no-spacing': hasNoSpacing,
 			} ) }
 			label={ __( 'New', 'google-site-kit' ) }
 			hasLeftSpacing={ hasLeftSpacing }
@@ -54,7 +54,7 @@ function NewBadge( {
 	);
 
 	if ( ! tooltipTitle ) {
-		return BadgeComponent;
+		return badgeComponent;
 	}
 
 	return (
@@ -80,7 +80,7 @@ function NewBadge( {
 			interactive
 			open={ forceOpen }
 		>
-			{ BadgeComponent }
+			{ badgeComponent }
 		</Tooltip>
 	);
 }
