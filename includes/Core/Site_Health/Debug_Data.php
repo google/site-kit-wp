@@ -191,6 +191,8 @@ class Debug_Data {
 			'enabled_features'     => $this->get_feature_fields(),
 		);
 
+		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
+
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 
 		$fields = array_filter(
@@ -576,6 +578,39 @@ class Debug_Data {
 		return array(
 			'label' => __( 'Features', 'google-site-kit' ),
 			'value' => $value,
+		);
+	}
+
+	/**
+	 * Gets the consent mode fields.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_consent_mode_fields() {
+		/**
+		 * Filters the status of consent mode in Site Kit.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $status The consent mode status. Default: 'disabled'.
+		 */
+		$consent_mode_status = apply_filters( 'googlesitekit_consent_mode_status', 'disabled' );
+
+		$consent_api_active = function_exists( 'wp_set_consent' );
+
+		return array(
+			'consent_mode' => array(
+				'label' => __( 'Consent Mode', 'google-site-kit' ),
+				'value' => 'enabled' === $consent_mode_status ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
+				'debug' => $consent_mode_status,
+			),
+			'consent_api'  => array(
+				'label' => __( 'WP Consent API', 'google-site-kit' ),
+				'value' => $consent_api_active ? __( 'Detected', 'google-site-kit' ) : __( 'Not detected', 'google-site-kit' ),
+				'debug' => $consent_api_active ? 'detected' : 'not-detected',
+			),
 		);
 	}
 }
