@@ -26,6 +26,10 @@
 	text-transform: none;
 }
 
+.googlesitekit-new-badge.googlesitekit-badge--has-left-spacing {
+	margin-left: 12px;
+}
+
 .googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-new-badge__tooltip {
 	border-radius: $br-xs;
 	font-family: $f-primary;
