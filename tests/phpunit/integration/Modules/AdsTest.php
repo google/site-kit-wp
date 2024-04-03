@@ -66,7 +66,7 @@ class AdsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'ads_conversion_id' => array(
-					'label' => 'Ads Conversion ID',
+					'label' => 'Conversion Tracking ID',
 					'value' => 'AW-123456789',
 				),
 			),
