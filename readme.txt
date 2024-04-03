@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.5
 Requires PHP:      5.6
-Stable tag:        1.123.1
+Stable tag:        1.124.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,10 +109,8 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.123.1 =
+= 1.124.0 =
 
-**Fixed**
 
-* Fix a bug in the regional configuration of Consent Mode which caused defaults to be applied globally. See [#8444](https://github.com/google/site-kit-wp/issues/8444).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

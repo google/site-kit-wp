@@ -141,7 +141,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Audience_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @var Audience_Settings
 	 */
 	protected $audience_settings;

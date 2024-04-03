@@ -140,7 +140,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Registers the Ads tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 */
 	public function register_tag() {
 		$ads_conversion_id = $this->get_settings()->get()['adsConversionID'];
@@ -165,7 +165,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @return array An array of all debug fields.
 	 */
@@ -183,7 +183,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
