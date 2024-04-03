@@ -174,7 +174,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 
 		return array(
 			'ads_conversion_id' => array(
-				'label' => __( 'Ads Conversion ID', 'google-site-kit' ),
+				'label' => __( 'Conversion Tracking ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
 			),
 		);
