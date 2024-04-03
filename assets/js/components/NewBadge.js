@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -38,8 +39,24 @@ function NewBadge( {
 	tooltipTitle,
 	learnMoreLink,
 	forceOpen,
+	hasLeftSpacing,
+	hasNoSpacing,
 	onLearnMoreClick = () => {},
 } ) {
+	const badgeComponent = (
+		<Badge
+			className={ classnames( 'googlesitekit-new-badge', {
+				'googlesitekit-new-badge--has-no-spacing': hasNoSpacing,
+			} ) }
+			label={ __( 'New', 'google-site-kit' ) }
+			hasLeftSpacing={ hasLeftSpacing }
+		/>
+	);
+
+	if ( ! tooltipTitle ) {
+		return badgeComponent;
+	}
+
 	return (
 		<Tooltip
 			tooltipClassName="googlesitekit-new-badge__tooltip"
@@ -63,19 +80,18 @@ function NewBadge( {
 			interactive
 			open={ forceOpen }
 		>
-			<Badge
-				className="googlesitekit-new-badge"
-				label={ __( 'New', 'google-site-kit' ) }
-			/>
+			{ badgeComponent }
 		</Tooltip>
 	);
 }
 
 NewBadge.propTypes = {
-	tooltipTitle: PropTypes.string.isRequired,
-	learnMoreLink: PropTypes.string.isRequired,
+	tooltipTitle: PropTypes.string,
+	learnMoreLink: PropTypes.string,
 	forceOpen: PropTypes.bool,
 	onLearnMoreClick: PropTypes.func,
+	hasLeftSpacing: PropTypes.bool,
+	hasNoSpacing: PropTypes.bool,
 };
 
 export default NewBadge;
