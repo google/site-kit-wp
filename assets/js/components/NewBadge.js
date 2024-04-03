@@ -40,14 +40,16 @@ function NewBadge( {
 	learnMoreLink,
 	forceOpen,
 	hasLeftSpacing,
+	hasNoSpacing,
 	onLearnMoreClick = () => {},
 } ) {
 	const BadgeComponent = (
 		<Badge
 			className={ classnames( 'googlesitekit-new-badge', {
-				'googlesitekit-badge--has-left-spacing': hasLeftSpacing,
+				'googlesitekit-badge--has-no-spacing': hasNoSpacing,
 			} ) }
 			label={ __( 'New', 'google-site-kit' ) }
+			hasLeftSpacing={ hasLeftSpacing }
 		/>
 	);
 
