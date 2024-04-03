@@ -44,7 +44,9 @@ export default function AdsConversionIDTextField( { helperText } ) {
 		select( MODULES_ADS ).getAdsConversionID()
 	);
 
-	const [ isValid, setIsValid ] = useState( false );
+	const [ isValid, setIsValid ] = useState(
+		Boolean( isValidAdsConversionID( adsConversionID ) )
+	);
 	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
 	const { setAdsConversionID } = useDispatch( MODULES_ADS );
