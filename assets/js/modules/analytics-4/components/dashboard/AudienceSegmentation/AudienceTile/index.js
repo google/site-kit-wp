@@ -143,7 +143,10 @@ export default function AudienceTile( {
 
 					<AudienceTilePagesMetric
 						TileIcon={ AudienceMetricIconTopContent }
-						title={ __( 'Top content', 'google-site-kit' ) }
+						title={ __(
+							'Top content by pageviews',
+							'google-site-kit'
+						) }
 						topContentTitles={ topContentTitles }
 						topContent={ topContent }
 					/>
