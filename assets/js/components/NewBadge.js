@@ -91,6 +91,7 @@ NewBadge.propTypes = {
 	forceOpen: PropTypes.bool,
 	onLearnMoreClick: PropTypes.func,
 	hasLeftSpacing: PropTypes.bool,
+	hasNoSpacing: PropTypes.bool,
 };
 
 export default NewBadge;
