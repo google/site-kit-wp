@@ -41,13 +41,13 @@ import { Grid, Row, Cell } from '../../../material-components';
 import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
+import NewBadge from '../../NewBadge';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
-import NewBadge from '../../NewBadge';
 const { useSelect } = Data;
 
 export default function Header( { slug } ) {
