@@ -249,6 +249,9 @@ export default function DashboardMainApp() {
 				<HelpMenu />
 			</Header>
 			<ConsentModeSetupCTAWidget />
+
+			<OverlayNotificationsRenderer />
+
 			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
@@ -300,8 +303,6 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			<MetricsSelectionPanel />
-
-			<OverlayNotificationsRenderer />
 
 			<OfflineNotification />
 		</Fragment>

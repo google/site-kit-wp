@@ -222,6 +222,9 @@ function DashboardEntityApp() {
 				<HelpMenu />
 			</Header>
 			<ConsentModeSetupCTAWidget />
+
+			<OverlayNotificationsRenderer />
+
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
@@ -254,8 +257,6 @@ function DashboardEntityApp() {
 						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
 				} ) }
 			/>
-
-			<OverlayNotificationsRenderer />
 
 			<OfflineNotification />
 		</Fragment>
