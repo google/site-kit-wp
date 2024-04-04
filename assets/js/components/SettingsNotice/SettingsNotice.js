@@ -50,6 +50,7 @@ export default function SettingsNotice( props ) {
 		children,
 		type,
 		dismiss = '',
+		dismissCallback,
 		dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 		Icon = getIconFromType( type ),
 		OuterCTA,
@@ -92,6 +93,7 @@ export default function SettingsNotice( props ) {
 						tertiary
 						onClick={ () => {
 							dismissItem( dismiss );
+							dismissCallback();
 						} }
 					>
 						{ dismissLabel }
@@ -118,6 +120,7 @@ SettingsNotice.propTypes = {
 	CTA: PropTypes.elementType,
 	OuterCTA: PropTypes.elementType,
 	dismissLabel: PropTypes.string,
+	dismissCallback: PropTypes.func,
 };
 
 SettingsNotice.defaultProps = {
