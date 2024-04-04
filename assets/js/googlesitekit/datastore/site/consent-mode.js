@@ -174,7 +174,7 @@ const baseSelectors = {
 	 * TODO: The Ads conversion tracking ID is being moved to the new "Ads" module. Source
 	 * this ID from the "Ads" module once it's implemented.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */

@@ -120,7 +120,7 @@ export function isValidWebDataStreamSelection( webDataStreamID ) {
 /**
  * Checks if the given web data stream name appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.124.0
  *
  * @param {string} value Web data stream name to test.
  * @return {boolean} True if valid, otherwise false.
