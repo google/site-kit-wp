@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.124.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 */
 	public function register() {
 		// Set a lower priority here to let Analytics sets up its tag first.
@@ -44,7 +44,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Outputs gtag snippet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 */
 	protected function render() {
 		// Do nothing, gtag script is enqueued.
@@ -53,7 +53,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Configures gtag script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */

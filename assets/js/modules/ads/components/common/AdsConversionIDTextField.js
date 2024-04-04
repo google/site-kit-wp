@@ -44,7 +44,12 @@ export default function AdsConversionIDTextField( { helperText } ) {
 		select( MODULES_ADS ).getAdsConversionID()
 	);
 
-	const [ isValid, setIsValid ] = useState( false );
+	// Don't show a validation error before user interacts with the field
+	// in setup. When editing show validation error immediately if the value
+	// is invalid.
+	const [ isValid, setIsValid ] = useState(
+		! adsConversionID || isValidAdsConversionID( adsConversionID )
+	);
 	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
 	const { setAdsConversionID } = useDispatch( MODULES_ADS );
@@ -60,7 +65,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 				setAdsConversionID( newValue );
 			}
 
-			debounceSetIsValid( Boolean( isValidAdsConversionID( newValue ) ) );
+			debounceSetIsValid( isValidAdsConversionID( newValue ) );
 		},
 		[ debounceSetIsValid, adsConversionID, setAdsConversionID ]
 	);

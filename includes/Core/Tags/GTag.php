@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class to handle gtag rendering across modules.
  *
- * @since n.e.x.t
+ * @since 1.124.0
  * @access public
  * @ignore
  */
@@ -39,7 +39,7 @@ class GTag {
 	/**
 	 * Register method called after class instantiation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @access public
 	 *
 	 * @return void
@@ -64,7 +64,7 @@ class GTag {
 	/**
 	 * Method to add a gtag ID and config for output rendering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @access public
 	 *
 	 * @param string $tag_id The gtag ID.
@@ -82,7 +82,7 @@ class GTag {
 	/**
 	 * Method to add a gtag command, associated parameters and output position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @access public
 	 *
 	 * @param string $command    The gtag command to add.
@@ -103,7 +103,7 @@ class GTag {
 	 * Method used to enqueue the gtag script along with additional tags,
 	 * configs and commands.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @access protected
 	 *
 	 * @return void
@@ -153,7 +153,7 @@ class GTag {
 	/**
 	 * Method used to return gtag() config call for selected tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @access protected
 	 *
 	 * @param array $tag The Gtag tag, along with its config parameters.
@@ -169,7 +169,7 @@ class GTag {
 	/**
 	 * Method used to return gtag call for specific command.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @access protected
 	 *
 	 * @param array $command The command array with applicable command and params.
@@ -191,7 +191,7 @@ class GTag {
 	/**
 	 * Returns the gtag source URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @return string|false The gtag source URL. False if no tags are added.
 	 */
