@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
@@ -173,9 +174,10 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'ads_conversion_id' => array(
-				'label' => __( 'Conversion Tracking ID', 'google-site-kit' ),
+			'ads_conversion_tracking_id' => array(
+				'label' => __( 'Ads Conversion Tracking ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 		);
 	}
