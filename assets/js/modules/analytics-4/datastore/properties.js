@@ -236,15 +236,17 @@ const baseActions = {
 				.setPropertyID( propertyID );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setWebDataStreamID( WEBDATASTREAM_CREATE );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
 				.updateSettingsForMeasurementID( '' );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime( 0 );
 
 			if ( PROPERTY_CREATE === propertyID ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( WEBDATASTREAM_CREATE );
 				return;
 			}
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '' );
 
 			if ( propertyID ) {
 				const property = yield Data.commonActions.await(
@@ -271,7 +273,7 @@ const baseActions = {
 					.select( MODULES_ANALYTICS_4 )
 					.getWebDataStreams( propertyID );
 
-				if ( webdatastreams && webdatastreams.length > 0 ) {
+				if ( webdatastreams?.length ) {
 					webdatastream = webdatastreams[ 0 ];
 				}
 			}
@@ -286,7 +288,12 @@ const baseActions = {
 						// eslint-disable-next-line sitekit/acronym-case
 						webdatastream.webStreamData.measurementId
 					);
+				return;
 			}
+			// At this point there is no web data stream to set.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setWebDataStreamID( WEBDATASTREAM_CREATE );
 		}
 	),
 
@@ -512,6 +519,16 @@ const baseActions = {
 		const { select, dispatch, __experimentalResolveSelect } =
 			yield commonActions.getRegistry();
 
+		if ( ! measurementID ) {
+			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				measurementID,
+				googleTagAccountID: '',
+				googleTagContainerID: '',
+				googleTagID: '',
+			} );
+			return;
+		}
+
 		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
 
 		// Wait for authentication to be resolved to check scopes.
@@ -519,15 +536,6 @@ const baseActions = {
 			__experimentalResolveSelect( CORE_USER ).getAuthentication()
 		);
 		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
-			return;
-		}
-
-		if ( ! measurementID ) {
-			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				googleTagAccountID: '',
-				googleTagContainerID: '',
-				googleTagID: '',
-			} );
 			return;
 		}
 
