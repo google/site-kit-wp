@@ -230,21 +230,26 @@ const baseActions = {
 		},
 		function* ( propertyID ) {
 			const registry = yield Data.commonActions.getRegistry();
+			const {
+				setPropertyCreateTime,
+				setSettings,
+				setWebDataStreamID,
+				updateSettingsForMeasurementID,
+			} = registry.dispatch( MODULES_ANALYTICS_4 );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( propertyID );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setWebDataStreamID( WEBDATASTREAM_CREATE );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.updateSettingsForMeasurementID( '' );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime( 0 );
+			setSettings( {
+				propertyID,
+				propertyCreateTime: 0,
+			} );
+
+			updateSettingsForMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
+				setWebDataStreamID( WEBDATASTREAM_CREATE );
 				return;
 			}
+
+			setWebDataStreamID( '' );
 
 			if ( propertyID ) {
 				const property = yield Data.commonActions.await(
@@ -254,9 +259,7 @@ const baseActions = {
 				);
 
 				if ( property?.createTime ) {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyCreateTime( property.createTime );
+					setPropertyCreateTime( property.createTime );
 				}
 			}
 
@@ -271,22 +274,21 @@ const baseActions = {
 					.select( MODULES_ANALYTICS_4 )
 					.getWebDataStreams( propertyID );
 
-				if ( webdatastreams && webdatastreams.length > 0 ) {
+				if ( webdatastreams?.length ) {
 					webdatastream = webdatastreams[ 0 ];
 				}
 			}
 
 			if ( webdatastream ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setWebDataStreamID( webdatastream._id );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.updateSettingsForMeasurementID(
-						// eslint-disable-next-line sitekit/acronym-case
-						webdatastream.webStreamData.measurementId
-					);
+				setWebDataStreamID( webdatastream._id );
+				updateSettingsForMeasurementID(
+					// eslint-disable-next-line sitekit/acronym-case
+					webdatastream.webStreamData.measurementId
+				);
+				return;
 			}
+			// At this point there is no web data stream to set.
+			setWebDataStreamID( WEBDATASTREAM_CREATE );
 		}
 	),
 
@@ -512,6 +514,16 @@ const baseActions = {
 		const { select, dispatch, __experimentalResolveSelect } =
 			yield commonActions.getRegistry();
 
+		if ( ! measurementID ) {
+			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				measurementID,
+				googleTagAccountID: '',
+				googleTagContainerID: '',
+				googleTagID: '',
+			} );
+			return;
+		}
+
 		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
 
 		// Wait for authentication to be resolved to check scopes.
@@ -519,15 +531,6 @@ const baseActions = {
 			__experimentalResolveSelect( CORE_USER ).getAuthentication()
 		);
 		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
-			return;
-		}
-
-		if ( ! measurementID ) {
-			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				googleTagAccountID: '',
-				googleTagContainerID: '',
-				googleTagID: '',
-			} );
 			return;
 		}
 
