@@ -17,7 +17,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 /**
  * The base class for Synchronizing the adsLinked status.
  *
- * @since n.e.x.t
+ * @since 1.124.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Synchronize_AdsLinked {
 	/**
 	 * Analytics_4 instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @var Analytics_4
 	 */
 	protected $analytics_4;
@@ -35,7 +35,7 @@ class Synchronize_AdsLinked {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -43,7 +43,7 @@ class Synchronize_AdsLinked {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param Analytics_4  $analytics_4  Analytics 4 instance.
 	 * @param User_Options $user_options User_Options instance.
@@ -56,7 +56,7 @@ class Synchronize_AdsLinked {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 */
 	public function register() {
 		add_action(
@@ -70,7 +70,7 @@ class Synchronize_AdsLinked {
 	/**
 	 * Cron callback for synchronizing the ads linked data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 */
 	protected function synchronize_ads_linked_data() {
 		$owner_id     = $this->analytics_4->get_owner_id();
@@ -86,7 +86,7 @@ class Synchronize_AdsLinked {
 	/**
 	 * Synchronize the adsLinked status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @return null
 	 */
@@ -114,7 +114,7 @@ class Synchronize_AdsLinked {
 	/**
 	 * Schedules single cron which will synchronize the adsLinked status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 */
 	public function maybe_schedule_synchronize_ads_linked() {
 		$analytics_4_connected  = $this->analytics_4->is_connected();

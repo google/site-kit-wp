@@ -37,6 +37,7 @@ import Spinner from '../Spinner';
 import Link from '../Link';
 import Badge from '../Badge';
 import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
+import NewBadge from '../NewBadge.js';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -118,6 +119,7 @@ export default function SetupModule( { slug, name, description } ) {
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
 					) }
+					{ slug === 'ads' && <NewBadge hasNoSpacing /> }
 				</div>
 			</div>
 			<p className="googlesitekit-settings-connect-module__text">

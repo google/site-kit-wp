@@ -41,6 +41,7 @@ import { Grid, Row, Cell } from '../../../material-components';
 import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
+import NewBadge from '../../NewBadge';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 import ConnectedIcon from '../../../../svg/icons/connected.svg';
@@ -172,6 +173,7 @@ export default function Header( { slug } ) {
 									hasLeftSpacing
 								/>
 							) }
+							{ slug === 'ads' && <NewBadge hasLeftSpacing /> }
 						</div>
 					</Cell>
 

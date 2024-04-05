@@ -120,7 +120,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Configures gtag script.
 	 *
 	 * @since 1.24.0
-	 * @since n.e.x.t Renamed and refactored to use new GTag infrastructure.
+	 * @since 1.124.0 Renamed and refactored to use new GTag infrastructure.
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */

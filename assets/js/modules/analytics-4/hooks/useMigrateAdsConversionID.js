@@ -35,7 +35,7 @@ const { useSelect, useDispatch } = Data;
 /**
  * Migrates the Ads Conversion ID from Analytics to the Ads module.
  *
- * @since n.e.x.t
+ * @since 1.124.0
  *
  * @return {boolean} True if the migration is in progress, otherwise false.
  */

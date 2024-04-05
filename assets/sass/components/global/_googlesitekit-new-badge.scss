@@ -24,6 +24,14 @@
 	margin-left: 6px;
 	padding: 4px 8px;
 	text-transform: none;
+
+	&.googlesitekit-new-badge--has-no-spacing {
+		margin-left: 0;
+	}
+}
+
+.googlesitekit-new-badge.googlesitekit-badge--has-left-spacing {
+	margin-left: 12px;
 }
 
 .googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-new-badge__tooltip {

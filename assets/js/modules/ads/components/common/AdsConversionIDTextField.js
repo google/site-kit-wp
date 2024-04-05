@@ -44,7 +44,12 @@ export default function AdsConversionIDTextField( { helperText } ) {
 		select( MODULES_ADS ).getAdsConversionID()
 	);
 
-	const [ isValid, setIsValid ] = useState( false );
+	// Don't show a validation error before user interacts with the field
+	// in setup. When editing show validation error immediately if the value
+	// is invalid.
+	const [ isValid, setIsValid ] = useState(
+		! adsConversionID || isValidAdsConversionID( adsConversionID )
+	);
 	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
 	const { setAdsConversionID } = useDispatch( MODULES_ADS );
@@ -60,7 +65,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 				setAdsConversionID( newValue );
 			}
 
-			debounceSetIsValid( Boolean( isValidAdsConversionID( newValue ) ) );
+			debounceSetIsValid( isValidAdsConversionID( newValue ) );
 		},
 		[ debounceSetIsValid, adsConversionID, setAdsConversionID ]
 	);
@@ -79,9 +84,12 @@ export default function AdsConversionIDTextField( { helperText } ) {
 
 			<TextField
 				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
-				className={ classnames( {
-					'mdc-text-field--error': ! isValid,
-				} ) }
+				className={ classnames(
+					'googlesitekit-text-field-conversion-tracking-id',
+					{
+						'mdc-text-field--error': ! isValid,
+					}
+				) }
 				helperText={
 					! isValid &&
 					__(

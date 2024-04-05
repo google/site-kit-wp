@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.5
 Requires PHP:      5.6
-Stable tag:        1.123.1
+Stable tag:        1.124.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,10 +109,40 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.123.1 =
+= 1.124.0 =
+
+**Added**
+
+* Add setup flow to Ads Module. See [#8346](https://github.com/google/site-kit-wp/issues/8346).
+* Add the web tag for the Ads module. See [#8313](https://github.com/google/site-kit-wp/issues/8313).
+* Add the Conversion Tracking ID field to the Ads module's Setup and Settings screens. See [#8251](https://github.com/google/site-kit-wp/issues/8251).
+* Add Site Health information for the Ads module. See [#8245](https://github.com/google/site-kit-wp/issues/8245).
+* Add a notification for users who have linked AdSense and Analytics accounts when data becomes available to view in their dashboard. See [#8237](https://github.com/google/site-kit-wp/issues/8237).
+* Add Analytics events to AdSense + Analytics notification. See [#8213](https://github.com/google/site-kit-wp/issues/8213).
+
+**Enhanced**
+
+* Update the Ads module class to implement the `Module_With_Deactivation` interface. See [#8449](https://github.com/google/site-kit-wp/issues/8449).
+* Update Consent Mode messaging to mention the UK as well as the EEA. See [#8443](https://github.com/google/site-kit-wp/issues/8443).
+* Update wording for sites with existing Analytics tags. See [#8405](https://github.com/google/site-kit-wp/issues/8405).
+* Add placeholder/prefix to the Conversion Tracking ID field in the Ads module. See [#8398](https://github.com/google/site-kit-wp/issues/8398).
+* Add a linked Ads account as an option to surface Consent Mode features. See [#8382](https://github.com/google/site-kit-wp/issues/8382).
+* Update Analytics to use new gtag infrastructure. See [#8273](https://github.com/google/site-kit-wp/issues/8273).
+* Add decoupled infrastructure for GTag. See [#8269](https://github.com/google/site-kit-wp/issues/8269).
+* Add a settings toggle for Audience Segmentation. See [#8177](https://github.com/google/site-kit-wp/issues/8177).
+* Introduce infrastructure for managing Audience settings. See [#8176](https://github.com/google/site-kit-wp/issues/8176).
+* Add the Audience Tile in its "happy path" state as a component which is viewable in Storybook. See [#8135](https://github.com/google/site-kit-wp/issues/8135).
+* Enhance Web Data Stream creation in Analytics setup and settings screens to allow using custom web data stream name. See [#6727](https://github.com/google/site-kit-wp/issues/6727).
+* Improve "Retry" behavior on All Traffic Widget. See [#6406](https://github.com/google/site-kit-wp/issues/6406).
+
+**Changed**
+
+* Migrate the Ads Conversion ID field from the Analytics module to the Ads module. See [#8248](https://github.com/google/site-kit-wp/issues/8248).
 
 **Fixed**
 
-* Fix a bug in the regional configuration of Consent Mode which caused defaults to be applied globally. See [#8444](https://github.com/google/site-kit-wp/issues/8444).
+* Fix bug that caused Top Earning Pages widget to show links in shared dashboard. See [#8451](https://github.com/google/site-kit-wp/issues/8451).
+* Update Consent Mode settings element sizing for consistency across viewports. See [#8375](https://github.com/google/site-kit-wp/issues/8375).
+* Fix bug that caused browser console error to appear when changing Tag Manager account in Tag Manager setup/settings. See [#8316](https://github.com/google/site-kit-wp/issues/8316).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
