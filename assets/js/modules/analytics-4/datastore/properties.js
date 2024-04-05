@@ -230,23 +230,26 @@ const baseActions = {
 		},
 		function* ( propertyID ) {
 			const registry = yield Data.commonActions.getRegistry();
+			const {
+				setPropertyCreateTime,
+				setSettings,
+				setWebDataStreamID,
+				updateSettingsForMeasurementID,
+			} = registry.dispatch( MODULES_ANALYTICS_4 );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( propertyID );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.updateSettingsForMeasurementID( '' );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyCreateTime( 0 );
+			setSettings( {
+				propertyID,
+				propertyCreateTime: 0,
+			} );
+
+			updateSettingsForMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setWebDataStreamID( WEBDATASTREAM_CREATE );
+				setWebDataStreamID( WEBDATASTREAM_CREATE );
 				return;
 			}
 
-			registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '' );
+			setWebDataStreamID( '' );
 
 			if ( propertyID ) {
 				const property = yield Data.commonActions.await(
@@ -256,9 +259,7 @@ const baseActions = {
 				);
 
 				if ( property?.createTime ) {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setPropertyCreateTime( property.createTime );
+					setPropertyCreateTime( property.createTime );
 				}
 			}
 
@@ -279,21 +280,15 @@ const baseActions = {
 			}
 
 			if ( webdatastream ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setWebDataStreamID( webdatastream._id );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.updateSettingsForMeasurementID(
-						// eslint-disable-next-line sitekit/acronym-case
-						webdatastream.webStreamData.measurementId
-					);
+				setWebDataStreamID( webdatastream._id );
+				updateSettingsForMeasurementID(
+					// eslint-disable-next-line sitekit/acronym-case
+					webdatastream.webStreamData.measurementId
+				);
 				return;
 			}
 			// At this point there is no web data stream to set.
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setWebDataStreamID( WEBDATASTREAM_CREATE );
+			setWebDataStreamID( WEBDATASTREAM_CREATE );
 		}
 	),
 
