@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,13 +30,8 @@ import AudienceIntroductoryGraphicDesktop from '../../../svg/graphics/audience-s
 import AudienceIntroductoryGraphicMobile from '../../../svg/graphics/audience-segmentation-introductory-graphic-mobile.svg';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import OverlayNotification from './OverlayNotification';
-import {
-	BREAKPOINTS_DESKTOP,
-	BREAKPOINTS_MOBILE,
-	useBreakpoint,
-} from '../../hooks/useBreakpoint';
 import { useFeature } from '../../hooks/useFeature';
+import OverlayNotification from './OverlayNotification';
 
 const { useSelect, useDispatch } = Data;
 
@@ -47,24 +41,13 @@ export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 
-	const breakpoint = useBreakpoint();
-
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		)
 	);
 
-	const isShowingNotification = useSelect( ( select ) =>
-		BREAKPOINTS_DESKTOP.includes( breakpoint )
-			? select( CORE_UI ).isShowingOverlayNotification(
-					AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-			  )
-			: isDismissed === false
-	);
-
-	const { setOverlayNotificationToShow, dismissOverlayNotification } =
-		useDispatch( CORE_UI );
+	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
@@ -72,7 +55,8 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		)
 	);
 
-	const shouldShowNotification = isDismissed === false;
+	const shouldShowNotification =
+		audienceSegmentationEnabled && isDismissed === false;
 
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
@@ -82,34 +66,15 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		);
 	};
 
-	useEffect( () => {
-		if ( shouldShowNotification && ! isShowingNotification ) {
-			// If the conditions to show this notification are met AND no other
-			// notifications are showing, show this notification.
-			setOverlayNotificationToShow(
-				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-			);
-		}
-	}, [
-		isShowingNotification,
-		setOverlayNotificationToShow,
-		shouldShowNotification,
-	] );
-
-	if (
-		! audienceSegmentationEnabled ||
-		! shouldShowNotification ||
-		! isShowingNotification
-	) {
-		return null;
-	}
-
 	return (
-		<OverlayNotification animateNotification={ isShowingNotification }>
-			{ BREAKPOINTS_DESKTOP.includes( breakpoint ) && (
-				<AudienceIntroductoryGraphicDesktop />
-			) }
-
+		<OverlayNotification
+			shouldShowNotification={ shouldShowNotification }
+			GraphicDesktop={ AudienceIntroductoryGraphicDesktop }
+			GraphicMobile={ AudienceIntroductoryGraphicMobile }
+			notificationID={
+				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+			}
+		>
 			<div className="googlesitekit-overlay-notification__body">
 				<h3>{ __( 'New! Visitor groups', 'google-site-kit' ) }</h3>
 				<p>
@@ -136,10 +101,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 					{ __( 'Show me', 'google-site-kit' ) }
 				</Button>
 			</div>
-
-			{ BREAKPOINTS_MOBILE.includes( breakpoint ) && (
-				<AudienceIntroductoryGraphicMobile />
-			) }
 		</OverlayNotification>
 	);
 }
