@@ -141,7 +141,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Audience_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 * @var Audience_Settings
 	 */
 	protected $audience_settings;
@@ -396,7 +396,7 @@ final class Analytics_4 extends Module
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics ads conversion ID', 'google-site-kit' ),
+				'label' => __( 'Analytics Ads conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),

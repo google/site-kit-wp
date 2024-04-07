@@ -158,7 +158,7 @@ const baseActions = {
 	 * Creates a new GA4 web data stream.
 	 *
 	 * @since 1.31.0
-	 * @since n.e.x.t Added displayName parameter.
+	 * @since 1.124.0 Added displayName parameter.
 	 *
 	 * @param {string} propertyID  GA4 property ID.
 	 * @param {string} displayName A web data stream name.
@@ -613,7 +613,7 @@ const baseSelectors = {
 	/**
 	 * Checks if a web data stream with the same name already exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {Object} state             Data store's state.
 	 * @param {string} propertyID        GA4 property ID.

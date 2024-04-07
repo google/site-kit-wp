@@ -100,7 +100,7 @@ const baseActions = {
 	/**
 	 * Saves the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -141,7 +141,7 @@ const baseActions = {
 	/**
 	 * Sets the configured audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {Array} audienceResourceNames Configured audience resource names.
 	 * @return {Object} Redux-style action.
@@ -161,7 +161,7 @@ const baseActions = {
 	/**
 	 * Sets the audience segmentation widget visibility.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {boolean} isWidgetHidden Whether or not the audience segmentation widget is hidden.
 	 * @return {Object} Redux-style action.
@@ -237,7 +237,7 @@ const baseSelectors = {
 	/**
 	 * Gets the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Audience settings; `undefined` if not loaded.
@@ -249,7 +249,7 @@ const baseSelectors = {
 	/**
 	 * Gets the configured audiences from the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} An array with configured audiences; `undefined` if not loaded.
@@ -264,7 +264,7 @@ const baseSelectors = {
 	/**
 	 * Gets the audience segmentation widget visibility from the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} Whether or not the audience segmentation widget is hidden; `undefined` if not loaded.
@@ -281,7 +281,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the configured audiences have changed from the saved settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if configured audiences have changed, otherwise false.

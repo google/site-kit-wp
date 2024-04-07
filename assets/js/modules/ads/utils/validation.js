@@ -21,7 +21,7 @@
  *
  * @since 1.32.0
  * @since 1.121.0 Migrated from analytics to analytics-4.
- * @since n.e.x.t Migrated from analytics-4 to ads.
+ * @since 1.124.0 Migrated from analytics-4 to ads.
  *
  * @param {*} value Ads Conversion Tracking ID to test.
  * @return {boolean} Whether or not the given ID is valid.

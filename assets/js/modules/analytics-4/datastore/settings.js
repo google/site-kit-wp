@@ -89,12 +89,17 @@ export async function submitChanges( { select, dispatch } ) {
 			'webDataStreamName'
 		);
 
-		const webDataStreamAlreadyExists = isValidPropertyID( propertyID )
-			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(
-					propertyID,
-					webDataStreamName
-			  )
-			: false;
+		let webDataStreamAlreadyExists = false;
+
+		if ( isValidPropertyID( propertyID ) ) {
+			await dispatch( MODULES_ANALYTICS_4 ).waitForWebDataStreams(
+				propertyID
+			);
+
+			webDataStreamAlreadyExists = select(
+				MODULES_ANALYTICS_4
+			).doesWebDataStreamExist( propertyID, webDataStreamName );
+		}
 
 		if (
 			isValidWebDataStreamName( webDataStreamName ) &&

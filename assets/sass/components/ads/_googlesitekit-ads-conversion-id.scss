@@ -18,12 +18,15 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-text-field-conversion-tracking-id-prefix {
+	.googlesitekit-text-field-conversion-tracking-id {
 
-		&.mdc-text-field__icon {
-			color: $c-neutral-n-900;
-			left: 20px;
-			top: 18px;
+		.googlesitekit-text-field-conversion-tracking-id-prefix {
+
+			&.mdc-text-field__icon {
+				color: $c-neutral-n-900;
+				left: 20px;
+				top: 17.5px;
+			}
 		}
 	}
 }
