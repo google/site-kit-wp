@@ -47,16 +47,13 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		)
 	);
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		)
 	);
 
-	const shouldShowNotification =
-		audienceSegmentationEnabled && isDismissed === false;
+	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
@@ -65,6 +62,9 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		);
 	};
+
+	const shouldShowNotification =
+		audienceSegmentationEnabled && isDismissed === false;
 
 	return (
 		<OverlayNotification

@@ -38,6 +38,7 @@ import {
 	BREAKPOINTS_MOBILE,
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
+import { trackEvent } from '../../util';
 
 const { useDispatch, useSelect } = Data;
 
@@ -47,6 +48,8 @@ export default function OverlayNotification( {
 	GraphicMobile,
 	notificationID,
 	shouldShowNotification,
+	gaEventCategory,
+	gaEventName,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -67,8 +70,15 @@ export default function OverlayNotification( {
 			// If the conditions to show this notification are met AND no other
 			// notifications are showing, show this notification.
 			setOverlayNotificationToShow( notificationID );
+
+			// Track GA event if provided.
+			if ( gaEventCategory && gaEventName ) {
+				trackEvent( gaEventCategory, gaEventName );
+			}
 		}
 	}, [
+		gaEventCategory,
+		gaEventName,
 		isShowingNotification,
 		notificationID,
 		setOverlayNotificationToShow,
@@ -106,4 +116,6 @@ OverlayNotification.propTypes = {
 	GraphicMobile: propTypes.elementType,
 	notificationID: propTypes.string.isRequired,
 	shouldShowNotification: propTypes.bool,
+	gaEventCategory: propTypes.string,
+	gaEventName: propTypes.string,
 };
