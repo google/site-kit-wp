@@ -63,7 +63,18 @@ export default function AdsConversionIDSettingsNotice() {
 
 	// Track a view_notification event.
 	useMount( () => {
-		trackEvent( `${ viewContext }_GA_Ads_redirect`, 'view_notification' );
+		// Only track the view event if the notice display condition is satisfied.
+		// The valid condition is a data migration within the 28 day window.
+		if (
+			adsConversionIDMigratedAtMs &&
+			Date.now() - adsConversionIDMigratedAtMs <
+				28 * DAY_IN_SECONDS * 1000
+		) {
+			trackEvent(
+				`${ viewContext }_GA_Ads_redirect`,
+				'view_notification'
+			);
+		}
 	} );
 
 	// Do not show the notice if the migration has not been performed yet.
