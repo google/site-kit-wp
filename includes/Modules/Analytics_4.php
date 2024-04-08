@@ -599,16 +599,15 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 * @since 1.98.0 Added `$options` parameter.
 	 *
-	 * @param string  $property_id Property ID.
-	 * @param array   $options {
+	 * @param string $property_id Property ID.
+	 * @param array  $options {
 	 *     Web data stream options.
 	 *
 	 *     @type string $displayName Display name.
 	 * }
-	 * @param boolean $is_enhanced_measurement_stream_enabled Is enhanced measurement stream enabled value.
 	 * @return GoogleAnalyticsAdminV1betaDataStream A new web data stream.
 	 */
-	private function create_webdatastream( $property_id, $options = array(), $is_enhanced_measurement_stream_enabled = true ) {
+	private function create_webdatastream( $property_id, $options = array() ) {
 		$site_url = $this->context->get_reference_site_url();
 
 		if ( ! empty( $options['displayName'] ) ) {
@@ -628,25 +627,12 @@ final class Analytics_4 extends Module
 		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 		$analyticsadmin = $this->get_service( 'analyticsadmin' );
 
-		$web_datastream = $analyticsadmin
+		return $analyticsadmin
 			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			->create(
 				self::normalize_property_id( $property_id ),
 				$datastream
 			);
-
-		$this->set_data(
-			'enhanced-measurement-settings',
-			array(
-				'propertyID'                  => $property_id,
-				'webDataStreamID'             => $web_datastream->_id,
-				'enhancedMeasurementSettings' => array(
-					'streamEnabled' => $is_enhanced_measurement_stream_enabled,
-				),
-			)
-		);
-
-		return $web_datastream;
 	}
 
 	/**
@@ -1100,7 +1086,20 @@ final class Analytics_4 extends Module
 					$is_enhanced_measurement_stream_enabled = $data['isEnhancedMeasurementEnabled'];
 				}
 
-				return $this->create_webdatastream( $data['propertyID'], $options, $is_enhanced_measurement_stream_enabled );
+				$web_datastream = $this->create_webdatastream( $data['propertyID'], $options );
+
+				$this->set_data(
+					'enhanced-measurement-settings',
+					array(
+						'propertyID'                  => $data['propertyID'],
+						'webDataStreamID'             => $web_datastream->_id,
+						'enhancedMeasurementSettings' => array(
+							'streamEnabled' => $is_enhanced_measurement_stream_enabled,
+						),
+					)
+				);
+
+				return $web_datastream;
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
