@@ -28,7 +28,13 @@ import { pick, difference } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import {
+	MODULES_ANALYTICS_4,
+	MAX_WEBDATASTREAMS_PER_BATCH,
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+} from './constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
@@ -113,10 +119,15 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
-	controlCallback( { propertyID, displayName } ) {
+	controlCallback( {
+		propertyID,
+		displayName,
+		isEnhancedMeasurementEnabled,
+	} ) {
 		return API.set( 'modules', 'analytics-4', 'create-webdatastream', {
 			propertyID,
 			displayName,
+			isEnhancedMeasurementEnabled,
 		} );
 	},
 	reducerCallback( state, webDataStream, { propertyID } ) {
@@ -131,8 +142,8 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams( propertyID, displayName ) {
-		return { propertyID, displayName };
+	argsToParams( propertyID, displayName, isEnhancedMeasurementEnabled ) {
+		return { propertyID, displayName, isEnhancedMeasurementEnabled };
 	},
 	validateParams( { propertyID, displayName } = {} ) {
 		invariant(
@@ -170,10 +181,18 @@ const baseActions = {
 			invariant( displayName, 'Web data stream name is required.' );
 		},
 		function* ( propertyID, displayName ) {
+			const { select } = yield Data.commonActions.getRegistry();
+
+			const isEnhancedMeasurementEnabled = select( CORE_FORMS ).getValue(
+				ENHANCED_MEASUREMENT_FORM,
+				ENHANCED_MEASUREMENT_ENABLED
+			);
+
 			const { response, error } =
 				yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
 					propertyID,
-					displayName
+					displayName,
+					isEnhancedMeasurementEnabled
 				);
 			return { response, error };
 		}
