@@ -71,8 +71,8 @@ describe( 'SettingsNotice', () => {
 	} );
 
 	it( 'fires a dismiss callback upon dismissal', () => {
-		muteFetch( fetchGetDismissedItemsRegExp, [] );
-		muteFetch( fetchDismissItemRegExp, [] );
+		muteFetch( fetchGetDismissedItemsRegExp );
+		muteFetch( fetchDismissItemRegExp );
 
 		const { getByRole } = renderSettingsNoticeWithMockUI( registry );
 
