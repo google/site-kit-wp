@@ -137,8 +137,8 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams( propertyID, displayName, isEnhancedMeasurementEnabled ) {
-		return { propertyID, displayName, isEnhancedMeasurementEnabled };
+	argsToParams( propertyID, displayName ) {
+		return { propertyID, displayName };
 	},
 	validateParams( { propertyID, displayName } = {} ) {
 		invariant(
@@ -189,7 +189,7 @@ const baseActions = {
 					displayName
 				);
 
-			const webDataStreamID = response._id;
+			const webDataStreamID = response?._id;
 			if ( webDataStreamID ) {
 				yield dispatch(
 					MODULES_ANALYTICS_4
