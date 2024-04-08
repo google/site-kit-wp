@@ -25,12 +25,10 @@ import {
 	createTestRegistry,
 	muteFetch,
 } from '../../../../tests/js/test-utils';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import SettingsNotice from './SettingsNotice';
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../modules/analytics-4/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const TEST_VIEW_CONTEXT = 'testViewContext';
 const fetchGetDismissedItemsRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismissed-items'
 );
@@ -38,27 +36,17 @@ const fetchDismissItemRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
 );
 
-function MockUIWrapper( { children } ) {
-	return (
-		<ViewContextProvider value={ TEST_VIEW_CONTEXT }>
-			{ children }
-		</ViewContextProvider>
-	);
-}
-
 const mockDismissCallback = jest.fn();
 
 const renderSettingsNoticeWithMockUI = ( registry, overrideProps = {} ) =>
 	render(
-		<MockUIWrapper>
-			<SettingsNotice
-				dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
-				dismissCallback={ mockDismissCallback }
-				dismissLabel="Test label"
-				notice="Test notice content..."
-				{ ...overrideProps }
-			/>
-		</MockUIWrapper>,
+		<SettingsNotice
+			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
+			dismissCallback={ mockDismissCallback }
+			dismissLabel="Test label"
+			notice="Test notice content..."
+			{ ...overrideProps }
+		/>,
 		{ registry }
 	);
 
