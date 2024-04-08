@@ -119,15 +119,10 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
-	controlCallback( {
-		propertyID,
-		displayName,
-		isEnhancedMeasurementEnabled,
-	} ) {
+	controlCallback( { propertyID, displayName } ) {
 		return API.set( 'modules', 'analytics-4', 'create-webdatastream', {
 			propertyID,
 			displayName,
-			isEnhancedMeasurementEnabled,
 		} );
 	},
 	reducerCallback( state, webDataStream, { propertyID } ) {
@@ -181,7 +176,7 @@ const baseActions = {
 			invariant( displayName, 'Web data stream name is required.' );
 		},
 		function* ( propertyID, displayName ) {
-			const { select } = yield Data.commonActions.getRegistry();
+			const { select, dispatch } = yield Data.commonActions.getRegistry();
 
 			const isEnhancedMeasurementEnabled = select( CORE_FORMS ).getValue(
 				ENHANCED_MEASUREMENT_FORM,
@@ -191,9 +186,20 @@ const baseActions = {
 			const { response, error } =
 				yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
 					propertyID,
-					displayName,
+					displayName
+				);
+
+			const webDataStreamID = response._id;
+			if ( webDataStreamID ) {
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).setEnhancedMeasurementStreamEnabled(
+					propertyID,
+					webDataStreamID,
 					isEnhancedMeasurementEnabled
 				);
+			}
+
 			return { response, error };
 		}
 	),
