@@ -42,7 +42,8 @@
 							line-height: $lh-label-sm;
 							padding-top: 2px;
 
-							// Add back the pointer events within the button so that the tooltip can be hovered upon and the tabs can still be clicked.
+							// Add back the pointer events within the button so that the tooltip can be hovered
+							// upon and the tabs can still be clicked.
 							pointer-events: all;
 							.googlesitekit-info-tooltip {
 								margin-left: 5px;
