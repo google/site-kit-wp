@@ -838,7 +838,8 @@ final class Analytics_4 extends Module
 			$property->_id,
 			array(
 				'displayName' => $account_ticket->get_data_stream_name(),
-			)
+			),
+			null
 		);
 		$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
 
@@ -1081,25 +1082,7 @@ final class Analytics_4 extends Module
 					'displayName' => $data['displayName'],
 				);
 
-				$is_enhanced_measurement_stream_enabled = true;
-				if ( isset( $data['isEnhancedMeasurementEnabled'] ) ) {
-					$is_enhanced_measurement_stream_enabled = $data['isEnhancedMeasurementEnabled'];
-				}
-
-				$web_datastream = $this->create_webdatastream( $data['propertyID'], $options );
-
-				$this->set_data(
-					'enhanced-measurement-settings',
-					array(
-						'propertyID'                  => $data['propertyID'],
-						'webDataStreamID'             => $web_datastream->_id,
-						'enhancedMeasurementSettings' => array(
-							'streamEnabled' => $is_enhanced_measurement_stream_enabled,
-						),
-					)
-				);
-
-				return $web_datastream;
+				return $this->create_webdatastream( $data['propertyID'], $options );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
