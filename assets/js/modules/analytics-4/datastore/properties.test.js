@@ -373,7 +373,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				expect( store.getState().settings ).toMatchObject( {
 					propertyID,
-					webDataStreamID: WEBDATASTREAM_CREATE,
+					webDataStreamID: '',
 					measurementID: '',
 					propertyCreateTime: 0,
 				} );
@@ -602,6 +602,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( matchedProperty ).toBeNull();
 			} );
 		} );
+
 		describe( 'updateSettingsForMeasurementID', () => {
 			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';

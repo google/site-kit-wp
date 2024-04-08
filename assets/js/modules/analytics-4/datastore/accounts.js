@@ -183,6 +183,8 @@ const baseActions = {
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				accountID,
+				propertyID: '',
+				webDataStreamID: '',
 			} );
 
 			if ( ACCOUNT_CREATE === accountID ) {
