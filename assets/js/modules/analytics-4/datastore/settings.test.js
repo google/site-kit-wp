@@ -104,9 +104,38 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should dispatch createProperty and createWebDataStream actions if the "set up a new property" option is chosen', async () => {
+				const enhancedMeasurementSettings = {
+					fileDownloadsEnabled: null,
+					name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
+					outboundClicksEnabled: null,
+					pageChangesEnabled: null,
+					scrollsEnabled: null,
+					searchQueryParameter: 'q,s,search,query,keyword',
+					siteSearchEnabled: null,
+					streamEnabled: true,
+					uriQueryParameter: null,
+					videoEngagementEnabled: null,
+				};
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: PROPERTY_CREATE,
 				} );
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( ENHANCED_MEASUREMENT_FORM, {
+						[ ENHANCED_MEASUREMENT_ENABLED ]: false,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetEnhancedMeasurementSettings(
+						enhancedMeasurementSettings,
+						{
+							propertyID: fixtures.createProperty._id,
+							webDataStreamID: fixtures.createWebDataStream._id,
+						}
+					);
 
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 					webDataStreamName: fixtures.createWebDataStream.displayName,
@@ -135,6 +164,16 @@ describe( 'modules/analytics-4 settings', () => {
 					{
 						body: [],
 						status: 200,
+					}
+				);
+
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+					),
+					{
+						status: 200,
+						body: enhancedMeasurementSettings,
 					}
 				);
 
