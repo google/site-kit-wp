@@ -175,7 +175,6 @@ const baseActions = {
 					propertyID,
 					displayName
 				);
-
 			return { response, error };
 		}
 	),
