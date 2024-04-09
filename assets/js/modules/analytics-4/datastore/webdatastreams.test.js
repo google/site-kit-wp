@@ -116,7 +116,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.createWebDataStream( propertyID, displayName );
-
 				expect( fetchMock ).toHaveFetched(
 					createWebDataStreamsEndpoint,
 					{
