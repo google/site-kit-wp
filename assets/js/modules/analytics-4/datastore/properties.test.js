@@ -65,6 +65,17 @@ describe( 'modules/analytics-4 properties', () => {
 	const containerLookupEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
 	);
+	const containerDestinationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/container-destinations'
+	);
+
+	const containerDestinationsMock =
+		fixtures.containerDestinations[ 6065484567 ][ 98369876 ];
+
+	const googleTagContainerDestinationIDs = containerDestinationsMock.map(
+		// eslint-disable-next-line sitekit/acronym-case
+		( { destinationId } ) => destinationId
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -896,6 +907,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const {
 					googleTagAccountID,
 					googleTagContainerID,
@@ -925,7 +941,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
 					query: {
 						measurementID,
@@ -936,6 +952,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -990,6 +1007,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1013,7 +1035,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1024,6 +1046,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -1076,6 +1099,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1099,7 +1127,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1110,6 +1138,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
