@@ -117,8 +117,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.createWebDataStream( propertyID, displayName );
 
-				await waitForDefaultTimeouts();
-
 				expect( fetchMock ).toHaveFetched(
 					createWebDataStreamsEndpoint,
 					{
