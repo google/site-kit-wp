@@ -204,6 +204,19 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'auto-submits the form', async () => {
+		const enhancedMeasurementSettings = {
+			fileDownloadsEnabled: null,
+			name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
+			outboundClicksEnabled: null,
+			pageChangesEnabled: null,
+			scrollsEnabled: null,
+			searchQueryParameter: 'q,s,search,query,keyword',
+			siteSearchEnabled: null,
+			streamEnabled: true,
+			uriQueryParameter: null,
+			videoEngagementEnabled: null,
+		};
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
@@ -232,6 +245,16 @@ describe( 'SetupForm', () => {
 					webDataStreamID,
 				}
 			);
+
+		fetchMock.post(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+			),
+			{
+				status: 200,
+				body: enhancedMeasurementSettings,
+			}
+		);
 
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
