@@ -104,19 +104,6 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should dispatch createProperty and createWebDataStream actions if the "set up a new property" option is chosen', async () => {
-				const enhancedMeasurementSettings = {
-					fileDownloadsEnabled: null,
-					name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
-					outboundClicksEnabled: null,
-					pageChangesEnabled: null,
-					scrollsEnabled: null,
-					searchQueryParameter: 'q,s,search,query,keyword',
-					siteSearchEnabled: null,
-					streamEnabled: true,
-					uriQueryParameter: null,
-					videoEngagementEnabled: null,
-				};
-
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: PROPERTY_CREATE,
 				} );
@@ -130,7 +117,7 @@ describe( 'modules/analytics-4 settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetEnhancedMeasurementSettings(
-						enhancedMeasurementSettings,
+						fixtures.defaultEnhancedMeasurementSettings,
 						{
 							propertyID: fixtures.createProperty._id,
 							webDataStreamID: fixtures.createWebDataStream._id,
@@ -173,7 +160,7 @@ describe( 'modules/analytics-4 settings', () => {
 					),
 					{
 						status: 200,
-						body: enhancedMeasurementSettings,
+						body: fixtures.defaultEnhancedMeasurementSettings,
 					}
 				);
 

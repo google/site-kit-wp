@@ -226,12 +226,22 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetEnhancedMeasurementSettings(
-				defaultEnhancedMeasurementSettings,
+				fixtures.defaultEnhancedMeasurementSettings,
 				{
 					propertyID,
 					webDataStreamID,
 				}
 			);
+
+		fetchMock.post(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+			),
+			{
+				status: 200,
+				body: fixtures.defaultEnhancedMeasurementSettings,
+			}
+		);
 
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
