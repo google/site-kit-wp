@@ -35,12 +35,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import {
-	ENHANCED_MEASUREMENT_ENABLED,
-	ENHANCED_MEASUREMENT_FORM,
-	MODULES_ANALYTICS_4,
-} from './constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
@@ -109,36 +104,9 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 	describe( 'actions', () => {
 		describe( 'createWebDataStream', () => {
-			it( 'should create a web datastream, add it to the store and set enhanced measurement settings', async () => {
+			it( 'should create a web datastream and add it to the store', async () => {
 				const propertyID = '12345';
 				const displayName = 'New GA4 WebDataStream';
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetEnhancedMeasurementSettings(
-						{
-							fileDownloadsEnabled: null,
-							name: 'properties/12345/dataStreams/67890/enhancedMeasurementSettings',
-							outboundClicksEnabled: null,
-							pageChangesEnabled: null,
-							scrollsEnabled: null,
-							searchQueryParameter: 'q,s,search,query,keyword',
-							siteSearchEnabled: null,
-							streamEnabled: true,
-							uriQueryParameter: null,
-							videoEngagementEnabled: null,
-						},
-						{
-							propertyID,
-							webDataStreamID: fixtures.createWebDataStream._id,
-						}
-					);
-
-				registry
-					.dispatch( CORE_FORMS )
-					.setValues( ENHANCED_MEASUREMENT_FORM, {
-						[ ENHANCED_MEASUREMENT_ENABLED ]: false,
-					} );
 
 				fetchMock.post( createWebDataStreamsEndpoint, {
 					body: fixtures.createWebDataStream,
@@ -169,15 +137,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect( webdatastreams ).toMatchObject( [
 					fixtures.createWebDataStream,
 				] );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getEnhancedMeasurementSettings(
-							propertyID,
-							fixtures.createWebDataStream._id
-						).streamEnabled
-				).toEqual( null );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
