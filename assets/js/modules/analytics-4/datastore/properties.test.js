@@ -1159,6 +1159,87 @@ describe( 'modules/analytics-4 properties', () => {
 						.hasMismatchedGoogleTagID()
 				).toBe( true );
 			} );
+
+			it( 'should set Google Tag container destination IDs in module setting', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const containerMock = fixtures.container[ measurementID ];
+
+				const {
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+				} = fixtures.googleTagSettings;
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagContainerDestinationIDs,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerDestinationIDs()
+				).toEqual( googleTagContainerDestinationIDs );
+			} );
 		} );
 	} );
 

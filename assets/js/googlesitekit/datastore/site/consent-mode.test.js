@@ -372,6 +372,26 @@ describe( 'core/site Consent Mode', () => {
 				);
 			} );
 
+			it( 'returns true if Ads is connected via Google Tag', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					adsLinked: false,
+					adsConversionID: '', // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
+					googleTagContainerDestinationIDs: [ 'AW-12345' ],
+				} );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					true
+				);
+			} );
+
 			it( 'returns false if neither an Ads conversion ID is set in Analytics, nor Analytics and Ads are linked', () => {
 				provideModules( registry, [
 					{
