@@ -28,13 +28,7 @@ import { pick, difference } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import {
-	MODULES_ANALYTICS_4,
-	MAX_WEBDATASTREAMS_PER_BATCH,
-	ENHANCED_MEASUREMENT_ENABLED,
-	ENHANCED_MEASUREMENT_FORM,
-} from './constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
@@ -176,29 +170,11 @@ const baseActions = {
 			invariant( displayName, 'Web data stream name is required.' );
 		},
 		function* ( propertyID, displayName ) {
-			const { select, dispatch } = yield Data.commonActions.getRegistry();
-
-			const isEnhancedMeasurementEnabled = select( CORE_FORMS ).getValue(
-				ENHANCED_MEASUREMENT_FORM,
-				ENHANCED_MEASUREMENT_ENABLED
-			);
-
 			const { response, error } =
 				yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
 					propertyID,
 					displayName
 				);
-
-			const webDataStreamID = response?._id;
-			if ( webDataStreamID ) {
-				yield dispatch(
-					MODULES_ANALYTICS_4
-				).setEnhancedMeasurementStreamEnabled(
-					propertyID,
-					webDataStreamID,
-					isEnhancedMeasurementEnabled
-				);
-			}
 
 			return { response, error };
 		}
