@@ -838,8 +838,7 @@ final class Analytics_4 extends Module
 			$property->_id,
 			array(
 				'displayName' => $account_ticket->get_data_stream_name(),
-			),
-			null
+			)
 		);
 		$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
 
