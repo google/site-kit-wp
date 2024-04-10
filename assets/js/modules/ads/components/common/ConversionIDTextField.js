@@ -39,7 +39,7 @@ import { isValidConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 const { useSelect, useDispatch } = Data;
 
-export default function AdsConversionIDTextField( { helperText } ) {
+export default function ConversionIDTextField( { helperText } ) {
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
 	);
