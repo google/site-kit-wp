@@ -35,7 +35,7 @@ import {
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
-describe( 'ads setup with ads conversion id present', () => {
+describe( 'Ads setup with Conversion Tracking ID present', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -84,7 +84,7 @@ describe( 'ads setup with ads conversion id present', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'migrates the ads conversion id field from ga4 and activates and connects the ads module', async () => {
+	it( 'migrates the Conversion Tracking ID field from GA4 to the Ads module', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 
 		await page.waitForSelector(
@@ -105,7 +105,7 @@ describe( 'ads setup with ads conversion id present', () => {
 		);
 
 		await step(
-			'confirm ads conversion id field is migrated to the ads module',
+			'confirm Ads Conversion Tracking ID is migrated to the Ads module',
 			async () => {
 				await expect( page ).toClick(
 					'#googlesitekit-settings-module__header--ads'
@@ -123,10 +123,11 @@ describe( 'ads setup with ads conversion id present', () => {
 			}
 		);
 
+		// Verify the Ads tag is present on the output of the WordPress website.
 		await expect( '/' ).toHaveAdsTag();
 	} );
 
-	it( 'removing the ads conversion id field from ads settings disconnects the ads module', async () => {
+	it( 'should disconnect the Ads module when removing the Ads Conversion Tracking ID from Ads settings', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 
 		await page.waitForSelector(
@@ -146,7 +147,7 @@ describe( 'ads setup with ads conversion id present', () => {
 			}
 		);
 
-		await step( 'save empty ads conversion id', async () => {
+		await step( 'save empty Ads Conversion Tracking ID', async () => {
 			await page.waitForSelector(
 				'#googlesitekit-settings-module__header--ads'
 			);
@@ -190,7 +191,7 @@ describe( 'ads setup with ads conversion id present', () => {
 		);
 
 		await step(
-			'visit site kit settings',
+			'visit Site Kit settings',
 			visitAdminPage( 'admin.php', 'page=googlesitekit-settings' )
 		);
 

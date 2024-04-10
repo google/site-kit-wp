@@ -33,7 +33,7 @@ import {
 	useRequestInterception,
 } from '../../../utils';
 
-describe( 'ads setup with no ads conversion id present', () => {
+describe( 'Ads setup (with no Conversion Tracking ID present)', () => {
 	async function setUpAdsModule() {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 
@@ -86,7 +86,7 @@ describe( 'ads setup with no ads conversion id present', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'shows error message if invalid Ads conversion ID is entered', async () => {
+	it( 'shows error message if an invalid Conversion Tracking ID is entered', async () => {
 		await setUpAdsModule();
 
 		const adsConversionIDField = await page.$( '.mdc-text-field' );
@@ -101,7 +101,7 @@ describe( 'ads setup with no ads conversion id present', () => {
 		} );
 	} );
 
-	it( 'connects the module when valid Ads conversion ID is saved', async () => {
+	it( 'connects the module when a valid Conversion Tracking ID is saved', async () => {
 		await setUpAdsModule();
 
 		const adsConversionIDField = await page.$( '.mdc-text-field' );
@@ -143,6 +143,7 @@ describe( 'ads setup with no ads conversion id present', () => {
 			}
 		);
 
+		// Verify the Ads tag is present on the output of the WordPress website.
 		await expect( '/' ).toHaveAdsTag();
 	} );
 } );
