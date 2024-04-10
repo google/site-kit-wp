@@ -70,8 +70,7 @@ const totalPageviewsReportOptions = {
 const topCitiesReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
-	dimensions: [ 'city', 'audienceResourceName' ],
-	dimensionFilter: audiencesDimensionFilter,
+	dimensions: [ 'city' ],
 	metrics: [ { name: 'totalUsers' } ],
 	orderby: [
 		{
@@ -81,14 +80,13 @@ const topCitiesReportOptions = {
 			desc: true,
 		},
 	],
-	limit: 6,
+	limit: 3,
 };
 
 const topContentReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
 	dimensions: [ 'pagePath' ],
-	dimensionFilter: audiencesDimensionFilter,
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 3,
@@ -98,7 +96,6 @@ const topContentPageTitlesReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
 	dimensions: [ 'pagePath', 'pageTitle' ],
-	dimensionFilter: audiencesDimensionFilter,
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
@@ -143,24 +140,58 @@ export default {
 					totalPageviewsReportOptions
 				);
 
-				provideAnalytics4MockReport( registry, topCitiesReportOptions );
-
-				const pageTitlesReport = getAnalytics4MockResponse(
-					topContentPageTitlesReportOptions,
-					// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
-					// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
-					// page paths to page titles.
-					{ dimensionCombinationStrategy: STRATEGY_ZIP }
-				);
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetReport( pageTitlesReport, {
-						options: topContentPageTitlesReportOptions,
+				audiencesFixture.forEach( ( audience ) => {
+					provideAnalytics4MockReport( registry, {
+						...topCitiesReportOptions,
+						dimensionFilter: {
+							filter: {
+								fieldName: 'audienceResourceName',
+								stringFilter: {
+									value: audience.name,
+								},
+							},
+						},
 					} );
-				provideAnalytics4MockReport(
-					registry,
-					topContentReportOptions
-				);
+				} );
+
+				audiencesFixture.forEach( ( audience ) => {
+					provideAnalytics4MockReport( registry, {
+						...topContentReportOptions,
+						dimensionFilter: {
+							filter: {
+								fieldName: 'audienceResourceName',
+								stringFilter: {
+									value: audience.name,
+								},
+							},
+						},
+					} );
+				} );
+
+				audiencesFixture.forEach( ( audience ) => {
+					const pageTitlesReport = getAnalytics4MockResponse(
+						topContentPageTitlesReportOptions,
+						// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+						// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+						// page paths to page titles.
+						{ dimensionCombinationStrategy: STRATEGY_ZIP }
+					);
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport( pageTitlesReport, {
+							options: {
+								...topContentPageTitlesReportOptions,
+								dimensionFilter: {
+									filter: {
+										fieldName: 'audienceResourceName',
+										stringFilter: {
+											value: audience.name,
+										},
+									},
+								},
+							},
+						} );
+				} );
 			};
 
 			return (

@@ -370,6 +370,34 @@ const baseSelectors = {
 
 		return isZeroReport( report );
 	} ),
+
+	/**
+	 * Gets a given report for each of the provided audiences.
+	 *
+	 * NOTE: This will be refactored to use pivot reports in #8484.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array.<Object>} An array of report response objects for each provided audience.
+	 */
+	getReportForAllAudiences: createRegistrySelector(
+		( select ) =>
+			( state, { options, audiences } ) => {
+				return audiences.map( ( audience ) =>
+					select( MODULES_ANALYTICS_4 ).getReport( {
+						...options,
+						dimensionFilter: {
+							filter: {
+								fieldName: 'audienceResourceName',
+								stringFilter: {
+									value: audience.name,
+								},
+							},
+						},
+					} )
+				);
+			}
+	),
 };
 
 const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {

@@ -16,7 +16,17 @@
  * limitations under the License.
  */
 
+.googlesitekit-info-tooltip__content.googlesitekit-audience-tiles-info-tooltip__content {
+	color: $c-surfaces-inverse-on-surface;
+
+	a {
+		color: $c-surfaces-inverse-on-surface;
+		text-decoration: underline;
+	}
+}
+
 .googlesitekit-plugin {
+
 	.googlesitekit-widget.googlesitekit-widget__audience-tiles {
 		border-radius: $br-sm;
 

@@ -56,7 +56,6 @@ export default function AudienceTiles( { Widget } ) {
 
 	const audienceToolTip = ( audienceName ) => {
 		switch ( audienceName ) {
-			// TODO: The link must be updated here to the correct support URL once written.
 			case 'New visitors':
 				return createInterpolateElement(
 					sprintf(
@@ -71,8 +70,10 @@ export default function AudienceTiles( { Widget } ) {
 						strong: <strong />,
 						link: (
 							<Link
+								// NOTE: The link must be updated here to the correct support URL once written.
 								href="https://sitekit.withgoogle.com/documentation/"
 								external
+								hideExternalIndicator
 							/>
 						),
 					}
@@ -91,8 +92,10 @@ export default function AudienceTiles( { Widget } ) {
 						strong: <strong />,
 						link: (
 							<Link
+								// NOTE: The link must be updated here to the correct support URL once written.
 								href="https://sitekit.withgoogle.com/documentation/"
 								external
+								hideExternalIndicator
 							/>
 						),
 					}
@@ -105,14 +108,16 @@ export default function AudienceTiles( { Widget } ) {
 							"%s is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. <link>Learn more</link>",
 							'google-site-kit'
 						),
-						<strong>${ audienceName }</strong>
+						`<strong>${ audienceName }</strong>`
 					),
 					{
 						strong: <strong />,
 						link: (
 							<Link
+								// NOTE: The link must be updated here to the correct support URL once written.
 								href="https://sitekit.withgoogle.com/documentation/"
 								external
+								hideExternalIndicator
 							/>
 						),
 					}
@@ -176,6 +181,61 @@ export default function AudienceTiles( { Widget } ) {
 	const totalPageviews =
 		totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value || 0;
 
+	const topCitiesReportOptions = {
+		startDate: dates?.startDate,
+		endDate: dates?.endDate,
+		dimensions: [ 'city' ],
+		metrics: [ { name: 'totalUsers' } ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	const topCitiesReport = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
+			options: topCitiesReportOptions,
+			audiences,
+		} );
+	} );
+
+	const topContentReportOptions = {
+		startDate: dates?.startDate,
+		endDate: dates?.endDate,
+		dimensions: [ 'pagePath' ],
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 3,
+	};
+
+	const topContentReport = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
+			options: topContentReportOptions,
+			audiences,
+		} );
+	} );
+
+	const topContentPageTitlesReportOptions = {
+		startDate: dates?.startDate,
+		endDate: dates?.endDate,
+		dimensions: [ 'pagePath', 'pageTitle' ],
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 15,
+	};
+
+	const topContentPageTitlesReport = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
+			options: topContentPageTitlesReportOptions,
+			audiences,
+		} );
+	} );
+
 	return (
 		<Widget className="googlesitekit-widget__audience-tiles">
 			{ isTabbedBreakpoint && (
@@ -195,7 +255,10 @@ export default function AudienceTiles( { Widget } ) {
 								aria-label={ displayName }
 							>
 								{ displayName }
-								<InfoTooltip title={ toolTipMessage } />
+								<InfoTooltip
+									title={ toolTipMessage }
+									tooltipClassName="googlesitekit-audience-tiles-info-tooltip__content"
+								/>
 							</Tab>
 						);
 					} ) }
@@ -262,6 +325,19 @@ export default function AudienceTiles( { Widget } ) {
 								?.value
 						) || 0;
 
+					const topCities = topCitiesReport?.[ index ];
+
+					const topContent = topContentReport?.[ index ];
+
+					const topContentTitles = {};
+
+					topContentPageTitlesReport?.[ index ]?.rows?.forEach(
+						( row ) => {
+							topContentTitles[ row.dimensionValues[ 0 ].value ] =
+								row.dimensionValues[ 1 ].value;
+						}
+					);
+
 					return (
 						<AudienceTile
 							key={ audienceResourceName }
@@ -286,62 +362,41 @@ export default function AudienceTiles( { Widget } ) {
 							percentageOfTotalPageViews={
 								pageviews / totalPageviews
 							}
-							// TODO: update the top cities and top content queries to use pivot report to get all the required report rows for each audience.
 							topCities={ {
 								dimensionValues: [
-									{
-										value: 'Dublin',
-									},
-									{
-										value: 'London',
-									},
-									{
-										value: 'New York',
-									},
+									topCities?.rows?.[ 0 ]
+										?.dimensionValues?.[ 0 ],
+									topCities?.rows?.[ 1 ]
+										?.dimensionValues?.[ 0 ],
+									topCities?.rows?.[ 2 ]
+										?.dimensionValues?.[ 0 ],
 								],
 								metricValues: [
-									{
-										value: 0.388,
-									},
-									{
-										value: 0.126,
-									},
-									{
-										value: 0.094,
-									},
+									topCities?.rows?.[ 0 ]?.metricValues?.[ 0 ],
+									topCities?.rows?.[ 1 ]?.metricValues?.[ 0 ],
+									topCities?.rows?.[ 2 ]?.metricValues?.[ 0 ],
 								],
-								total: 0.608,
+								total: visitors,
 							} }
 							topContent={ {
 								dimensionValues: [
-									{
-										value: '/en/test-post-1/',
-									},
-									{
-										value: '/en/test-post-2/',
-									},
-									{
-										value: '/en/test-post-3/',
-									},
+									topContent?.rows?.[ 0 ]
+										?.dimensionValues?.[ 0 ],
+									topContent?.rows?.[ 1 ]
+										?.dimensionValues?.[ 0 ],
+									topContent?.rows?.[ 2 ]
+										?.dimensionValues?.[ 0 ],
 								],
 								metricValues: [
-									{
-										value: 847,
-									},
-									{
-										value: 596,
-									},
-									{
-										value: 325,
-									},
+									topContent?.rows?.[ 0 ]
+										?.metricValues?.[ 0 ],
+									topContent?.rows?.[ 1 ]
+										?.metricValues?.[ 0 ],
+									topContent?.rows?.[ 2 ]
+										?.metricValues?.[ 0 ],
 								],
-								total: 1768,
 							} }
-							topContentTitles={ {
-								'/en/test-post-1/': 'Test Post 1',
-								'/en/test-post-2/': 'Test Post 2',
-								'/en/test-post-3/': 'Test Post 3',
-							} }
+							topContentTitles={ topContentTitles }
 							Widget={ Widget }
 						/>
 					);

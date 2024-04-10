@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import { Tooltip } from 'googlesitekit-components';
 import InfoIcon from '../../svg/icons/info-green.svg';
 
-export default function InfoTooltip( { title } ) {
+export default function InfoTooltip( { title, tooltipClassName = '' } ) {
 	if ( ! title ) {
 		return null;
 	}
@@ -35,7 +35,7 @@ export default function InfoTooltip( { title } ) {
 	return (
 		<Tooltip
 			className="googlesitekit-info-tooltip"
-			tooltipClassName="googlesitekit-info-tooltip__content"
+			tooltipClassName={ `googlesitekit-info-tooltip__content ${ tooltipClassName }` }
 			title={ title }
 			placement="top"
 			enterTouchDelay={ 0 }
@@ -50,5 +50,6 @@ export default function InfoTooltip( { title } ) {
 }
 
 InfoTooltip.propTypes = {
-	title: PropTypes.string,
+	title: PropTypes.oneOf( [ PropTypes.string, PropTypes.object ] ),
+	tooltipClassName: PropTypes.string,
 };
