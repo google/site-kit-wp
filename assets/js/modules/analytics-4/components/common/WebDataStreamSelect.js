@@ -94,6 +94,10 @@ export default function WebDataStreamSelect( props ) {
 					: 'change_webdatastream',
 				'ga4'
 			);
+
+			if ( props?.onChange ) {
+				props.onChange();
+			}
 		},
 		[
 			webDataStreams,
