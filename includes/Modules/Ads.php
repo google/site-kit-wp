@@ -126,7 +126,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function is_connected() {
 		$options = $this->get_settings()->get();
 
-		return parent::is_connected() && ! empty( $options['adsConversionID'] );
+		return parent::is_connected() && ! empty( $options['conversionID'] );
 	}
 
 	/**
@@ -144,7 +144,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @since 1.124.0
 	 */
 	public function register_tag() {
-		$ads_conversion_id = $this->get_settings()->get()['adsConversionID'];
+		$ads_conversion_id = $this->get_settings()->get()['conversionID'];
 
 		$tag = new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
 
@@ -175,9 +175,9 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 
 		return array(
 			'ads_conversion_tracking_id' => array(
-				'label' => __( 'Ads Conversion Tracking ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
+				'label' => __( 'Conversion Tracking ID', 'google-site-kit' ),
+				'value' => $settings['conversionID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
 		);
 	}
