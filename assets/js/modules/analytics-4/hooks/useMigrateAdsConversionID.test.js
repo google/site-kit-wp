@@ -65,7 +65,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		} );
 
 		expect(
-			registry.select( MODULES_ADS ).getAdsConversionID()
+			registry.select( MODULES_ADS ).getConversionID()
 		).toBeUndefined();
 
 		expect( fetchMock ).not.toHaveFetched();
@@ -87,7 +87,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		} );
 
 		// Verify that the value has not changed.
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			'AW-5678'
 		);
 
@@ -159,7 +159,7 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		await waitForNextUpdate();
 
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			adsConversionID
 		);
 	} );
@@ -214,7 +214,7 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		await waitForNextUpdate();
 
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			adsConversionID
 		);
 
@@ -258,7 +258,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		// Verify that the hook returns false if the migration not in progress.
 		expect( result.current ).toBe( false );
 
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			adsConversionID
 		);
 	} );

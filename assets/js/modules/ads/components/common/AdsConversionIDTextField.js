@@ -35,20 +35,20 @@ import Data from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { isValidAdsConversionID } from '../../utils/validation';
+import { isValidConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField( { helperText } ) {
 	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ADS ).getAdsConversionID()
+		select( MODULES_ADS ).getConversionID()
 	);
 
 	// Don't show a validation error before user interacts with the field
 	// in setup. When editing show validation error immediately if the value
 	// is invalid.
 	const [ isValid, setIsValid ] = useState(
-		! adsConversionID || isValidAdsConversionID( adsConversionID )
+		! adsConversionID || isValidConversionID( adsConversionID )
 	);
 	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
@@ -65,7 +65,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 				setAdsConversionID( newValue );
 			}
 
-			debounceSetIsValid( isValidAdsConversionID( newValue ) );
+			debounceSetIsValid( isValidConversionID( newValue ) );
 		},
 		[ debounceSetIsValid, adsConversionID, setAdsConversionID ]
 	);

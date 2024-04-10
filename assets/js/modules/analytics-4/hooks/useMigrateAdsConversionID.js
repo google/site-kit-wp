@@ -64,7 +64,7 @@ export default function useMigrateAdsConversionID() {
 			return null;
 		}
 
-		return select( MODULES_ADS ).getAdsConversionID();
+		return select( MODULES_ADS ).getConversionID();
 	} );
 
 	const { activateModule, fetchGetModules } = useDispatch( CORE_MODULES );

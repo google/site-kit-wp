@@ -31,7 +31,7 @@ const { useSelect } = Data;
 
 export default function SettingsView() {
 	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ADS ).getAdsConversionID()
+		select( MODULES_ADS ).getConversionID()
 	);
 
 	return (

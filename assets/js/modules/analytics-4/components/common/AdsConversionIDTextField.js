@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { isValidAdsConversionID } from '../../../ads/utils/validation';
+import { isValidConversionID } from '../../../ads/utils/validation';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
@@ -62,7 +62,7 @@ export default function AdsConversionIDTextField() {
 	);
 
 	const isValidValue = Boolean(
-		! adsConversionID || isValidAdsConversionID( adsConversionID )
+		! adsConversionID || isValidConversionID( adsConversionID )
 	);
 
 	// Only show the field if the snippet is enabled for output,
