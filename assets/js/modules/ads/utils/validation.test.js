@@ -23,7 +23,7 @@ import { isValidConversionID } from './validation';
 
 describe( 'modules/ads validations', () => {
 	describe( 'isValidConversionID', () => {
-		it( 'should return TRUE when a valid AdsConversionID is passed', () => {
+		it( 'should return TRUE when a valid conversionID is passed', () => {
 			expect( isValidConversionID( 'AW-123456789' ) ).toBe( true );
 		} );
 
@@ -36,11 +36,8 @@ describe( 'modules/ads validations', () => {
 				'a string starts with AW but ends without numbers',
 				'AW-ABCDEFGHI',
 			],
-		] )(
-			'should return FALSE when %s is passed',
-			( _, adsConversionID ) => {
-				expect( isValidConversionID( adsConversionID ) ).toBe( false );
-			}
-		);
+		] )( 'should return FALSE when %s is passed', ( _, conversionID ) => {
+			expect( isValidConversionID( conversionID ) ).toBe( false );
+		} );
 	} );
 } );

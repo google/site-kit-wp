@@ -30,7 +30,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const adsConversionID = useSelect( ( select ) =>
+	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
 	);
 
@@ -40,8 +40,8 @@ export default function SettingsView() {
 				{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
 			</h5>
 			<p className="googlesitekit-settings-module__meta-item-data">
-				{ adsConversionID ? (
-					<DisplaySetting value={ adsConversionID } />
+				{ conversionID ? (
+					<DisplaySetting value={ conversionID } />
 				) : (
 					__( 'None', 'google-site-kit' )
 				) }
