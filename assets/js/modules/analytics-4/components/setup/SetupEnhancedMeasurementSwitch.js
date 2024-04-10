@@ -113,17 +113,10 @@ export default function SetupEnhancedMeasurementSwitch() {
 		);
 	} );
 
-	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
-	);
-
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	useMount( () => {
-		if ( isEnhancedMeasurementEnabled === undefined || ! autoSubmit ) {
+		if ( ! autoSubmit ) {
 			setValues( ENHANCED_MEASUREMENT_FORM, {
 				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 			} );
