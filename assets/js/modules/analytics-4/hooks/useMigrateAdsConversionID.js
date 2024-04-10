@@ -93,7 +93,7 @@ export default function useMigrateAdsConversionID() {
 		const migrate = async () => {
 			setLoading( true );
 
-			await dispatch.setAdsConversionID( legacyAdsConversionID );
+			await dispatch.setConversionID( legacyAdsConversionID );
 			await dispatch.submitChanges();
 
 			await setLegacyAdsConversionID( '' );

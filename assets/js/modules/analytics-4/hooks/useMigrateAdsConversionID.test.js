@@ -79,7 +79,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		// that is different than what is set in the Analytics module (AW-1234).
 		registry
 			.dispatch( MODULES_ADS )
-			.receiveGetSettings( { adsConversionID: 'AW-5678' } );
+			.receiveGetSettings( { conversionID: 'AW-5678' } );
 
 		renderHook( () => useMigrateAdsConversionID(), {
 			registry,
@@ -98,7 +98,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		// Set the ads conversion ID in the Ads module.
 		registry
 			.dispatch( MODULES_ADS )
-			.receiveGetSettings( { adsConversionID } );
+			.receiveGetSettings( { conversionID: adsConversionID } );
 
 		provideModules( registry );
 
@@ -149,7 +149,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		);
 
 		fetchMock.postOnce( new RegExp( endpoints.adsSettings ), {
-			body: { adsConversionID },
+			body: { conversionID: adsConversionID },
 			status: 200,
 		} );
 		fetchMock.postOnce( new RegExp( endpoints.analyticsSettings ), {
@@ -183,7 +183,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		);
 
 		fetchMock.postOnce( new RegExp( endpoints.adsSettings ), {
-			body: { adsConversionID },
+			body: { conversionID: adsConversionID },
 			status: 200,
 		} );
 		fetchMock.postOnce( new RegExp( endpoints.analyticsSettings ), {
@@ -245,7 +245,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		expect( result.current ).toBe( true );
 
 		fetchMock.postOnce( new RegExp( endpoints.adsSettings ), {
-			body: { adsConversionID },
+			body: { conversionID: adsConversionID },
 			status: 200,
 		} );
 		fetchMock.postOnce( new RegExp( endpoints.analyticsSettings ), {
