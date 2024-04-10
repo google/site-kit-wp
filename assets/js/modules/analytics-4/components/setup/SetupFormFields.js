@@ -27,9 +27,12 @@ import { Fragment, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
 	PropertySelect,
@@ -58,6 +61,8 @@ export default function SetupFormFields() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
+	const { setValues } = useDispatch( CORE_FORMS );
+
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
@@ -79,8 +84,20 @@ export default function SetupFormFields() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
-				<PropertySelect />
-				<WebDataStreamSelect />
+				<PropertySelect
+					onChange={ () =>
+						setValues( ENHANCED_MEASUREMENT_FORM, {
+							[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+						} )
+					}
+				/>
+				<WebDataStreamSelect
+					onChange={ () =>
+						setValues( ENHANCED_MEASUREMENT_FORM, {
+							[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+						} )
+					}
+				/>
 			</div>
 
 			{ webDataStreamID === WEBDATASTREAM_CREATE && (
