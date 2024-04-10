@@ -46,7 +46,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function WebDataStreamSelect( props ) {
-	const { hasModuleAccess, isDisabled, className } = props;
+	const { hasModuleAccess, isDisabled, className, onChange } = props;
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -95,8 +95,8 @@ export default function WebDataStreamSelect( props ) {
 				'ga4'
 			);
 
-			if ( props?.onChange ) {
-				props.onChange();
+			if ( onChange ) {
+				onChange();
 			}
 		},
 		[
@@ -105,6 +105,7 @@ export default function WebDataStreamSelect( props ) {
 			setWebDataStreamID,
 			updateSettingsForMeasurementID,
 			viewContext,
+			onChange,
 		]
 	);
 
