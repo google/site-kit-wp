@@ -175,6 +175,7 @@ const baseSelectors = {
 	 * this ID from the "Ads" module once it's implemented.
 	 *
 	 * @since 1.124.0
+	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config.
 	 *
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
@@ -193,13 +194,18 @@ const baseSelectors = {
 
 		const adsConversionID = getAdsConversionID();
 		const adsLinked = getAdsLinked();
-
-		if ( [ adsConversionID, adsLinked ].includes( undefined ) ) {
-			return undefined;
-		}
-
 		const googleTagContainerDestinationIDs =
 			getGoogleTagContainerDestinationIDs();
+
+		if (
+			[
+				adsConversionID,
+				adsLinked,
+				googleTagContainerDestinationIDs,
+			].includes( undefined )
+		) {
+			return undefined;
+		}
 
 		if (
 			Array.isArray( googleTagContainerDestinationIDs ) &&

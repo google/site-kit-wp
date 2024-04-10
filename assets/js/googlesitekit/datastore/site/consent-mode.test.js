@@ -345,7 +345,11 @@ describe( 'core/site Consent Mode', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsConversionID: 'AW-12345',
-					adsLinked: false, // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
+					// Set the following to default, as otherwise if it is set to
+					// undefined, the `core/site` `isAdsConnected` selector will
+					// return undefined.
+					adsLinked: false,
+					googleTagContainerDestinationIDs: null,
 				} );
 
 				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
@@ -364,7 +368,11 @@ describe( 'core/site Consent Mode', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsLinked: true,
-					adsConversionID: '', // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
+					// Set the following to default, as otherwise if it is set to
+					// undefined, the `core/site` `isAdsConnected` selector will
+					// return undefined.
+					adsConversionID: '',
+					googleTagContainerDestinationIDs: null,
 				} );
 
 				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
@@ -382,9 +390,12 @@ describe( 'core/site Consent Mode', () => {
 				] );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					adsLinked: false,
-					adsConversionID: '', // Set to default, as otherwise if it is set to undefined, the selector will return undefined.
 					googleTagContainerDestinationIDs: [ 'AW-12345' ],
+					// Set the following to default, as otherwise if it is set to
+					// undefined, the `core/site` `isAdsConnected` selector will
+					// return undefined.
+					adsConversionID: '',
+					adsLinked: false,
 				} );
 
 				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
@@ -404,6 +415,7 @@ describe( 'core/site Consent Mode', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsConversionID: '',
 					adsLinked: false,
+					googleTagContainerDestinationIDs: null,
 				} );
 
 				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(

@@ -1210,7 +1210,7 @@ describe( 'modules/analytics-4 properties', () => {
 				fetchMock.postOnce( ga4SettingsEndpoint, {
 					body: {
 						...ga4Settings,
-						googleTagLastSyncedAtMs: Date.now(),
+						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
 					},
 					status: 200,
 				} );
