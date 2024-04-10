@@ -71,6 +71,12 @@ export default function SetupFormFields() {
 		}
 	}, [ setUseSnippet, hasExistingTag, existingTag, measurementID ] );
 
+	const resetEnhancedMeasurementSetting = () => {
+		setValues( ENHANCED_MEASUREMENT_FORM, {
+			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+		} );
+	};
+
 	return (
 		<Fragment>
 			{ !! accounts.length && (
@@ -83,20 +89,10 @@ export default function SetupFormFields() {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect />
-				<PropertySelect
-					onChange={ () =>
-						setValues( ENHANCED_MEASUREMENT_FORM, {
-							[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-						} )
-					}
-				/>
+				<AccountSelect onChange={ resetEnhancedMeasurementSetting } />
+				<PropertySelect onChange={ resetEnhancedMeasurementSetting } />
 				<WebDataStreamSelect
-					onChange={ () =>
-						setValues( ENHANCED_MEASUREMENT_FORM, {
-							[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-						} )
-					}
+					onChange={ resetEnhancedMeasurementSetting }
 				/>
 			</div>
 
