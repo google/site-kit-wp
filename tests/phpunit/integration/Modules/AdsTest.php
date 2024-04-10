@@ -58,15 +58,15 @@ class AdsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'ads_conversion_tracking_id',
+				'conversion_tracking_id',
 			),
 			array_keys( $ads->get_debug_fields() )
 		);
 
 		$this->assertEquals(
 			array(
-				'ads_conversion_tracking_id' => array(
-					'label' => 'Ads Conversion Tracking ID',
+				'conversion_tracking_id' => array(
+					'label' => 'Conversion Tracking ID',
 					'value' => 'AW-123456789',
 					'debug' => 'AW-1••••••••',
 				),
