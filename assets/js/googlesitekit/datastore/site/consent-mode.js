@@ -190,8 +190,9 @@ const baseSelectors = {
 
 		const { getAdsLinked, getGoogleTagContainerDestinationIDs } =
 			select( MODULES_ANALYTICS_4 );
+		const { getAdsConversionID } = select( MODULES_ADS );
 
-		const adsConversionID = select( MODULES_ADS ).getAdsConversionID();
+		const adsConversionID = getAdsConversionID();
 		const adsLinked = getAdsLinked();
 		const googleTagContainerDestinationIDs =
 			getGoogleTagContainerDestinationIDs();
