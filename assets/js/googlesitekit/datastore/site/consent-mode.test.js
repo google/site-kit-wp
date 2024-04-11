@@ -316,6 +316,19 @@ describe( 'core/site Consent Mode', () => {
 					false
 				);
 			} );
+			it( 'returns false if the Ads module is not connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'ads',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					false
+				);
+			} );
 
 			it( 'returns undefined if either the Ads conversion ID in Ads or the Analytics and Ads linked status is undefined', () => {
 				provideModules( registry, [
@@ -324,7 +337,14 @@ describe( 'core/site Consent Mode', () => {
 						active: true,
 						connected: true,
 					},
+					{
+						slug: 'ads',
+						active: true,
+						connected: true,
+					},
 				] );
+
+				registry.dispatch( MODULES_ADS ).receiveGetSettings( {} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
