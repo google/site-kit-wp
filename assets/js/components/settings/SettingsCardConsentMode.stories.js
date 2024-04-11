@@ -58,6 +58,9 @@ WithAdsConnected.args = {
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adsConversionID: 'AW-123456789',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			// Set the following to default, as otherwise if it is set to
 			// undefined, the `core/site` `isAdsConnected` selector will
 			// return undefined.
