@@ -181,7 +181,10 @@ const baseSelectors = {
 	isAdsConnected: createRegistrySelector( ( select ) => () => {
 		const { isModuleConnected } = select( CORE_MODULES );
 
-		if ( ! isModuleConnected( 'analytics-4' ) ) {
+		if (
+			! isModuleConnected( 'analytics-4' ) ||
+			! isModuleConnected( 'ads' )
+		) {
 			return false;
 		}
 
