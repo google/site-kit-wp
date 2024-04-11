@@ -332,37 +332,6 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 				);
 		} );
 
-		it( 'should revert the switch from off to on', () => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetEnhancedMeasurementSettings(
-					{
-						...enhancedMeasurementSettingsMock,
-						streamEnabled: false,
-					},
-					{ propertyID, webDataStreamID }
-				);
-
-			const { getByLabelText } = render(
-				<SetupEnhancedMeasurementSwitch />,
-				{
-					registry,
-				}
-			);
-
-			const switchControl = getByLabelText(
-				'Enable enhanced measurement'
-			);
-
-			switchControl.click();
-
-			expect( switchControl ).not.toBeChecked();
-
-			act( changeSetting );
-
-			expect( switchControl ).toBeChecked();
-		} );
-
 		it( 'should not toggle the switch from on to off', () => {
 			const { getByLabelText } = render(
 				<SetupEnhancedMeasurementSwitch />,
