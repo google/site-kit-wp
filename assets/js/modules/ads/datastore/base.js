@@ -24,9 +24,9 @@ import { MODULES_ADS } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'ads', {
-	ownedSettingsSlugs: [ 'adsConversionID' ],
+	ownedSettingsSlugs: [ 'conversionID' ],
 	storeName: MODULES_ADS,
-	settingSlugs: [ 'adsConversionID', 'ownerID' ],
+	settingSlugs: [ 'conversionID', 'ownerID' ],
 	requiresSetup: true,
 	submitChanges,
 	validateCanSubmitChanges,
