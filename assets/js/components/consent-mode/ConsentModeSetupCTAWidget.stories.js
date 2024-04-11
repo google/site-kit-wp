@@ -29,6 +29,7 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ADS } from '../../modules/ads/datastore/constants';
 import { WEEK_IN_SECONDS } from '../../util';
 import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
@@ -57,8 +58,11 @@ export default {
 					},
 				] );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 					adsConversionID: 'AW-123456789',
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					// Set the following to default, as otherwise if it is set to
 					// undefined, the `core/site` `isAdsConnected` selector will
 					// return undefined.
