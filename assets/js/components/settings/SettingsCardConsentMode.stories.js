@@ -23,6 +23,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '../../modules/ads/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
@@ -56,7 +57,7 @@ WithAdsConnected.args = {
 			.dispatch( CORE_SITE )
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		registry.dispatch( MODULES_ADS ).setSettings( {
 			adsConversionID: 'AW-123456789',
 		} );
 
@@ -147,6 +148,11 @@ export default {
 						connected: true,
 						slug: 'analytics-4',
 					},
+					{
+						active: true,
+						connected: true,
+						slug: 'ads',
+					},
 				] );
 
 				registry
@@ -156,6 +162,10 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
+
+				registry.dispatch( MODULES_ADS ).setSettings( {
+					adsConversionID: '',
+				} );
 
 				// Mock the consent mode endpoint to allow toggling the switch.
 				fetchMock.post(
