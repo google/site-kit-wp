@@ -168,13 +168,14 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Returns true if Google Ads is in use, either through a linked Analytics & Ads account
-	 * or an Ads conversion tracking ID.
+	 * Returns true if Google Ads is in use, either through a linked Analytics & Ads
+	 * account, an Ads conversion tracking ID, or via Analytics tag config.
 	 *
 	 * TODO: The Ads conversion tracking ID is being moved to the new "Ads" module. Source
 	 * this ID from the "Ads" module once it's implemented.
 	 *
 	 * @since 1.124.0
+	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config.
 	 *
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
@@ -185,14 +186,34 @@ const baseSelectors = {
 			return false;
 		}
 
-		const { getAdsConversionID, getAdsLinked } =
-			select( MODULES_ANALYTICS_4 );
+		const {
+			getAdsConversionID,
+			getAdsLinked,
+			getGoogleTagContainerDestinationIDs,
+		} = select( MODULES_ANALYTICS_4 );
 
 		const adsConversionID = getAdsConversionID();
 		const adsLinked = getAdsLinked();
+		const googleTagContainerDestinationIDs =
+			getGoogleTagContainerDestinationIDs();
 
-		if ( [ adsConversionID, adsLinked ].includes( undefined ) ) {
+		if (
+			[
+				adsConversionID,
+				adsLinked,
+				googleTagContainerDestinationIDs,
+			].includes( undefined )
+		) {
 			return undefined;
+		}
+
+		if (
+			Array.isArray( googleTagContainerDestinationIDs ) &&
+			googleTagContainerDestinationIDs.some( ( id ) =>
+				id.startsWith( 'AW-' )
+			)
+		) {
+			return true;
 		}
 
 		return !! adsConversionID || !! adsLinked;
