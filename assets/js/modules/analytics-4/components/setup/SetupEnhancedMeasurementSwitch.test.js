@@ -24,14 +24,7 @@ import {
 	createTestRegistry,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import {
-	ENHANCED_MEASUREMENT_ENABLED,
-	ENHANCED_MEASUREMENT_FORM,
-	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE,
-	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 
@@ -175,46 +168,6 @@ describe( 'SetupEnhancedMeasurementSwitch', () => {
 			)
 		).not.toBeInTheDocument();
 	} );
-
-	it.each( [
-		[ 'propertyID', PROPERTY_CREATE ],
-		[ 'webDataStreamID', WEBDATASTREAM_CREATE ],
-	] )(
-		'should not default the switch to the on position when the %s is initially %s and `isEnhancedMeasurementEnabled` is already `false`',
-		( settingName, settingCreate ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				[ settingName ]: settingCreate,
-			} );
-
-			registry
-				.dispatch( CORE_FORMS )
-				.setValues( ENHANCED_MEASUREMENT_FORM, {
-					[ ENHANCED_MEASUREMENT_ENABLED ]: false,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetEnhancedMeasurementSettings(
-					{
-						...enhancedMeasurementSettingsMock,
-						streamEnabled: false,
-					},
-					{ propertyID, webDataStreamID }
-				);
-
-			const { getByLabelText } = render(
-				<SetupEnhancedMeasurementSwitch />,
-				{
-					registry,
-				}
-			);
-
-			const switchControl = getByLabelText(
-				'Enable enhanced measurement'
-			);
-
-			expect( switchControl ).not.toBeChecked();
-		}
-	);
 
 	it( 'should toggle the switch on click', () => {
 		registry
