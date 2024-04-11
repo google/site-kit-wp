@@ -329,7 +329,7 @@ class OAuth_ClientTest extends TestCase {
 		$base_scopes        = $client->get_required_scopes();
 		$post_auth_redirect = 'http://example.com/test/redirect/url';
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
-		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 
 		// Verify that the user locale is included in the URL.
