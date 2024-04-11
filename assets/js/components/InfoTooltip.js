@@ -50,6 +50,6 @@ export default function InfoTooltip( { title, tooltipClassName = '' } ) {
 }
 
 InfoTooltip.propTypes = {
-	title: PropTypes.oneOf( [ PropTypes.string, PropTypes.object ] ),
+	title: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	tooltipClassName: PropTypes.string,
 };
