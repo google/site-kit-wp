@@ -356,7 +356,6 @@ describe( 'core/site Consent Mode', () => {
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					adsConversionID: 'AW-12345',
 					// Set the following to default, as otherwise if it is set to
 					// undefined, the `core/site` `isAdsConnected` selector will
 					// return undefined.
