@@ -173,8 +173,7 @@ const baseSelectors = {
 	 * account, an Ads conversion tracking ID, or via Analytics tag config.
 	 *
 	 * @since 1.124.0
-	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config.
-	 * @since n.e.x.t Updated to source Ads conversion ID field from Ads module.
+	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config, and to source Conversion ID field from Ads module.
 	 *
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
@@ -190,16 +189,16 @@ const baseSelectors = {
 
 		const { getAdsLinked, getGoogleTagContainerDestinationIDs } =
 			select( MODULES_ANALYTICS_4 );
-		const { getAdsConversionID } = select( MODULES_ADS );
+		const { getConversionID } = select( MODULES_ADS );
 
-		const adsConversionID = getAdsConversionID();
+		const conversionID = getConversionID();
 		const adsLinked = getAdsLinked();
 		const googleTagContainerDestinationIDs =
 			getGoogleTagContainerDestinationIDs();
 
 		if (
 			[
-				adsConversionID,
+				conversionID,
 				adsLinked,
 				googleTagContainerDestinationIDs,
 			].includes( undefined )
@@ -216,7 +215,7 @@ const baseSelectors = {
 			return true;
 		}
 
-		return !! adsConversionID || !! adsLinked;
+		return !! conversionID || !! adsLinked;
 	} ),
 };
 
