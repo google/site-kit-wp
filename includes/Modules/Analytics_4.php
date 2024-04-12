@@ -905,6 +905,7 @@ final class Analytics_4 extends Module
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
+	 *
 	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
 	protected function create_data_request( Data_Request $data ) {

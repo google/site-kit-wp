@@ -23,7 +23,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 			if (
-				url.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
+				url.startsWith( 'https://accounts.google.com/o/oauth2/v2/auth' )
 			) {
 				request.respond( {
 					status: 302,

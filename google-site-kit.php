@@ -13,7 +13,7 @@
  * Description:       Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
  * Version:           1.124.0
  * Requires at least: 5.2
- * Requires PHP:      5.6
+ * Requires PHP:      7.4
  * Author:            Google
  * Author URI:        https://opensource.google.com
  * License:           Apache License 2.0
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Define most essential constants.
 define( 'GOOGLESITEKIT_VERSION', '1.124.0' );
 define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
-define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
+define( 'GOOGLESITEKIT_PHP_MINIMUM', '7.4.0' );
 define( 'GOOGLESITEKIT_WP_MINIMUM', '5.2.0' );
 
 /**
