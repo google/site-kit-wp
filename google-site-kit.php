@@ -38,6 +38,7 @@ define( 'GOOGLESITEKIT_WP_MINIMUM', '5.2.0' );
  *
  * @since 1.0.0
  * @since 1.3.0 Minimum required version of PHP raised to 5.6
+ * @since n.e.x.t Minimum required version of PHP raised to 7.4
  * @access private
  *
  * @param bool $network_wide Whether to activate network-wide.
