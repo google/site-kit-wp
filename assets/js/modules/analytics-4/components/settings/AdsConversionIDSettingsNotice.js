@@ -17,11 +17,19 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection } from 'react-use';
+/**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -37,6 +45,7 @@ import SettingsNotice, {
 import InfoCircleIcon from '../../../../../../assets/svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
 
@@ -47,6 +56,15 @@ export default function AdsConversionIDSettingsNotice() {
 	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
 	);
+	const isNoticeDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY
+		)
+	);
+	const shouldShowNotice =
+		false === isNoticeDismissed && // User has not dismissed the notice.
+		adsConversionIDMigratedAtMs && // Data migration has happened.
+		Date.now() - adsConversionIDMigratedAtMs <= 28 * DAY_IN_SECONDS * 1000; // If it has been <= 28 days since the migration
 	const viewContext = useViewContext();
 	const trackDismissNotificationEvent = () => {
 		trackEvent(
@@ -60,39 +78,53 @@ export default function AdsConversionIDSettingsNotice() {
 			'confirm_notification'
 		);
 	};
+	const trackingRef = useRef();
+	const intersectionEntry = useIntersection( trackingRef, {
+		root: null,
+		threshold: 0.45,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView =
+		!! intersectionEntry?.isIntersecting &&
+		!! intersectionEntry?.intersectionRatio;
 
-	// Track a view_notification event.
-	useMount( () => {
-		// Only track the view event if the notice display condition is satisfied.
-		// The valid condition is a data migration within the 28 day window.
-		if (
-			adsConversionIDMigratedAtMs &&
-			Date.now() - adsConversionIDMigratedAtMs <
-				28 * DAY_IN_SECONDS * 1000
-		) {
+	global.intersectionEntries = global.intersectionEntries || [];
+	global.intersectionEntries.push( intersectionEntry );
+
+	useEffect( () => {
+		if ( ! intersectionEntry || ! shouldShowNotice ) {
+			return;
+		}
+		// eslint-disable-next-line no-console
+		console.info( {
+			inView,
+			hasBeenInView,
+			isIntersecting: intersectionEntry?.isIntersecting,
+		} );
+
+		if ( inView && ! hasBeenInView ) {
 			trackEvent(
 				`${ viewContext }_GA_Ads_redirect`,
 				'view_notification'
 			);
+			setHasBeenInView( true );
 		}
-	} );
+	}, [
+		hasBeenInView,
+		inView,
+		intersectionEntry,
+		shouldShowNotice,
+		viewContext,
+	] );
 
-	// Do not show the notice if the migration has not been performed yet.
-	if ( ! adsConversionIDMigratedAtMs ) {
-		return null;
-	}
-
-	// If it has been more than 28 days since the migration, do not show
-	// the notice.
-	if (
-		Date.now() - adsConversionIDMigratedAtMs >
-		28 * DAY_IN_SECONDS * 1000
-	) {
+	// Do not show the notice if the view conditions have not been met.
+	if ( ! shouldShowNotice ) {
 		return null;
 	}
 
 	return (
 		<SettingsNotice
+			ref={ trackingRef }
 			className="googlesitekit-settings-analytics-ads-conversion-id-notice"
 			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
 			dismissCallback={ trackDismissNotificationEvent }
