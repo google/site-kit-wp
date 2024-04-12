@@ -372,7 +372,7 @@ describe( 'core/site Consent Mode', () => {
 				] );
 
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					adsConversionID: 'AW-12345',
+					conversionID: 'AW-12345',
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -403,7 +403,7 @@ describe( 'core/site Consent Mode', () => {
 				] );
 
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					adsConversionID: 'AW-12345',
+					conversionID: 'AW-12345',
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -431,7 +431,7 @@ describe( 'core/site Consent Mode', () => {
 				] );
 
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					adsConversionID: 'AW-12345',
+					conversionID: 'AW-12345',
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -439,7 +439,7 @@ describe( 'core/site Consent Mode', () => {
 					// Set the following to default, as otherwise if it is set to
 					// undefined, the `core/site` `isAdsConnected` selector will
 					// return undefined.
-					adsConversionID: '',
+					conversionID: '',
 					adsLinked: false,
 				} );
 
@@ -463,11 +463,11 @@ describe( 'core/site Consent Mode', () => {
 				] );
 
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					adsConversionID: '',
+					conversionID: '',
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					adsConversionID: '',
+					conversionID: '',
 					adsLinked: false,
 					googleTagContainerDestinationIDs: null,
 				} );
