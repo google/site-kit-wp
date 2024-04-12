@@ -102,6 +102,9 @@ return array(
 	),
 	'patchers'                   => array(
 		function( $file_path, $prefix, $contents ) {
+			// Avoid prefixing the `static` keyword in some places.
+			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
+
 			if ( preg_match( '#google/apiclient/src/Google/Http/REST\.php$#', $file_path ) ) {
 				$contents = str_replace( "\\$prefix\\intVal", '\\intval', $contents );
 			}
