@@ -65,10 +65,10 @@ export default function AccountSelect( { hasModuleAccess, onChange } ) {
 						? 'change_account_new'
 						: 'change_account';
 				trackEvent( `${ viewContext }_analytics`, action );
-			}
 
-			if ( onChange ) {
-				onChange();
+				if ( onChange ) {
+					onChange();
+				}
 			}
 		},
 		[ accountID, selectAccount, viewContext, onChange ]

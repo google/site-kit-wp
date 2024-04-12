@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -71,11 +71,11 @@ export default function SetupFormFields() {
 		}
 	}, [ setUseSnippet, hasExistingTag, existingTag, measurementID ] );
 
-	const resetEnhancedMeasurementSetting = () => {
+	const resetEnhancedMeasurementSetting = useCallback( () => {
 		setValues( ENHANCED_MEASUREMENT_FORM, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 		} );
-	};
+	}, [] );
 
 	return (
 		<Fragment>

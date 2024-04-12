@@ -66,10 +66,6 @@ export default function SetupEnhancedMeasurementSwitch() {
 		} )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
-	);
-
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
 		if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
 			return undefined;
@@ -114,8 +110,10 @@ export default function SetupEnhancedMeasurementSwitch() {
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { getValue } = useSelect( ( select ) => select( CORE_FORMS ) );
 
 	useMount( () => {
+		const autoSubmit = getValue( FORM_SETUP, 'autoSubmit' );
 		if ( ! autoSubmit ) {
 			setValues( ENHANCED_MEASUREMENT_FORM, {
 				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
