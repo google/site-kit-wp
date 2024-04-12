@@ -19,7 +19,7 @@ add_filter(
 		}
 
 		// Fake a successful site registration.
-		if ( 'https://sitekit.withgoogle.com/o/oauth2/v2/site/' === $url ) {
+		if ( 'https://sitekit.withgoogle.com/o/oauth2/site/' === $url ) {
 			$redirect_uri = add_query_arg(
 				array(
 					'oauth2callback'        => '1',
