@@ -59,7 +59,7 @@ export default {
 				] );
 
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					adsConversionID: 'AW-123456789',
+					conversionID: 'AW-123456789',
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {

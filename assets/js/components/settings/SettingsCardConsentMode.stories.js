@@ -58,7 +58,7 @@ WithAdsConnected.args = {
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
 
 		registry.dispatch( MODULES_ADS ).setSettings( {
-			adsConversionID: 'AW-123456789',
+			conversionID: 'AW-123456789',
 		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
@@ -164,7 +164,7 @@ export default {
 					.receiveGetSettings( {} );
 
 				registry.dispatch( MODULES_ADS ).setSettings( {
-					adsConversionID: '',
+					conversionID: '',
 				} );
 
 				// Mock the consent mode endpoint to allow toggling the switch.
