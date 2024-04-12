@@ -220,7 +220,7 @@ final class Analytics_4 extends Module
 					$this->custom_dimensions_data_available->reset_data_available();
 				}
 
-				// Reset AdSense & Ads link settings when propertyID changes.
+				// Reset property specific settings when propertyID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->get_settings()->merge(
 						array(
@@ -228,18 +228,23 @@ final class Analytics_4 extends Module
 							'adSenseLinkedLastSyncedAt' => 0,
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
+							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
 				}
 			}
 		);
 
-		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
+		// Check if the property ID has changed and reset applicable setting to null.
+		//
+		// This is not done using the `get_settings()->merge` method because
+		// `Module_Settings::merge` doesn't support setting a value to `null`.
 		add_filter(
 			'pre_update_option_googlesitekit_analytics-4_settings',
 			function ( $new_value, $old_value ) {
 				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
 					$new_value['availableCustomDimensions'] = null;
+					$new_value['availableAudiences']        = null;
 				}
 
 				return $new_value;
