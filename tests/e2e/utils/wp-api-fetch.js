@@ -11,15 +11,14 @@ export async function wpApiFetch( options ) {
 	try {
 		// Wait until apiFetch is available on the client.
 		await page.waitForFunction( () => window._e2eApiFetch !== undefined );
-	} catch ( error ) {
+	} catch ( e ) {
 		// eslint-disable-next-line no-console
 		console.warn(
 			'wpApiFetch failure',
 			page.url(),
-			JSON.stringify( options ),
-			error
+			JSON.stringify( options )
 		);
-		throw error;
+		throw e;
 	}
 
 	return await page.evaluate( ( pageFetchOptions ) => {
