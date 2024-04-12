@@ -35,7 +35,7 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import AdsConversionIDTextField from '../common/AdsConversionIDTextField';
+import { ConversionIDTextField } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -68,7 +68,7 @@ export default function SetupForm( { finishSetup } ) {
 			<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AdsConversionIDTextField />
+				<ConversionIDTextField />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">
