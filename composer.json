@@ -21,7 +21,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.14.0",
-    "google/apiclient-services": "0.277.*",
+    "google/apiclient-services": "^0.343.0",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "guzzlehttp/guzzle": "^6.5.8",
     "symfony/polyfill-intl-idn": "^1.29.0"

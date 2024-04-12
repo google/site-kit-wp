@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a30db8cc468a6867147dc537f5df3c0",
+    "content-hash": "773530e7a39f0275e3e4e9a360ed82f4",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -141,20 +141,20 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.277.0",
+            "version": "v0.343.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "72e0eacbd51131c954da05edf110d9774f0f5af0"
+                "reference": "8cb869e5c413b0e9d4aeada3d83df5e2ce388154"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/72e0eacbd51131c954da05edf110d9774f0f5af0",
-                "reference": "72e0eacbd51131c954da05edf110d9774f0f5af0",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/8cb869e5c413b0e9d4aeada3d83df5e2ce388154",
+                "reference": "8cb869e5c413b0e9d4aeada3d83df5e2ce388154",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6"
+                "php": "^7.4||^8.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^5.7||^8.5.13"
@@ -179,9 +179,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.277.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.343.0"
             },
-            "time": "2022-12-05T01:04:16+00:00"
+            "time": "2024-04-06T00:58:16+00:00"
         },
         {
             "name": "google/apiclient-services-adsenselinks",
@@ -4386,5 +4386,5 @@
     "platform-overrides": {
         "php": "7.4.33"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.2.0"
 }
