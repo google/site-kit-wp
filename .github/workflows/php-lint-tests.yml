@@ -140,12 +140,6 @@ jobs:
           php-version: ${{ matrix.php_version }}
         if: ${{ matrix.composer_php_version }}
 
-      - name: Update PHPUnit
-        run: |
-          composer config --unset platform.php
-          composer update phpunit/phpunit --with-dependencies --no-scripts
-        if: startsWith( matrix.php_version,  '8.' )
-
       - name: Set up PHP test data
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
 
