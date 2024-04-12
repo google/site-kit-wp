@@ -1,6 +1,6 @@
 {
     "require": {
-        "humbug/php-scoper": "^0.13.0"
+        "humbug/php-scoper": "^0.15.0"
     },
     "config": {
       "platform": {
