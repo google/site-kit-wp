@@ -39,6 +39,9 @@ describe( 'modules/analytics-4 audiences', () => {
 	const createAudienceEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
+	const syncAvailableAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
 
 	const audience = {
 		displayName: 'Recently active users',
@@ -160,6 +163,31 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( store.getState().audiences.length ).toBe( 1 );
 				expect( store.getState().audiences[ 0 ] ).toEqual(
 					audiencesFixture[ 2 ]
+				);
+			} );
+		} );
+
+		describe( 'syncAvailableAudiences', () => {
+			it( 'should make a network request to sync available audiences', () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						{
+							name: 'properties/123456789/audiences/0987654321',
+							displayName: 'All Users',
+							description: 'All users',
+							audienceType: 'DEFAULT_AUDIENCE',
+							audienceSlug: 'all-users',
+						},
+					],
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetched(
+					syncAvailableAudiencesEndpoint
 				);
 			} );
 		} );
