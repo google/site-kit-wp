@@ -2225,7 +2225,7 @@ final class Analytics_4 extends Module
 		$filter_clauses = $audience->getFilterClauses();
 
 		if ( ! $filter_clauses ) {
-			return;
+			return '';
 		}
 
 		if ( $this->has_deep_value(
