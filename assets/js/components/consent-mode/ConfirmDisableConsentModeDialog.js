@@ -24,12 +24,14 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_ADS } from '../../modules/ads/datastore/constants';
 import { listFormat, trackEvent } from '../../util';
 import ModalDialog from '../ModalDialog';
 import useViewContext from '../../hooks/useViewContext';
@@ -41,6 +43,10 @@ export default function ConfirmDisableConsentModeDialog( {
 	onCancel,
 } ) {
 	const viewContext = useViewContext();
+
+	const conversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getConversionID()
+	);
 
 	const dependentModuleNames = useSelect( ( select ) =>
 		// TODO: Add the Ads module to this list when the Ads Conversion ID is migrated to it.
@@ -71,6 +77,24 @@ export default function ConfirmDisableConsentModeDialog( {
 		trackEvent( `${ viewContext }_CoMo`, 'view_modal' );
 	} );
 
+	const provides = useMemo( () => {
+		let providesArray = [
+			__(
+				'How visitors interact with your site via Analytics',
+				'google-site-kit'
+			),
+		];
+
+		if ( conversionID ) {
+			providesArray = [
+				...providesArray,
+				__( 'Performance of your Ad campaigns', 'google-site-kit' ),
+			];
+		}
+
+		return providesArray;
+	}, [ conversionID ] );
+
 	return (
 		<ModalDialog
 			dialogActive
@@ -81,13 +105,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			) }
 			handleConfirm={ onConfirm }
 			handleDialog={ onCancel }
-			provides={ [
-				__( 'Performance of your Ad campaigns', 'google-site-kit' ),
-				__(
-					'How visitors interact with your site via Analytics',
-					'google-site-kit'
-				),
-			] }
+			provides={ provides }
 			dependentModules={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
