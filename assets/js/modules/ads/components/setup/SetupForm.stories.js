@@ -57,7 +57,7 @@ Empty.args = {
 		provideSiteInfo( registry );
 		provideModuleRegistrations( registry );
 
-		registry.dispatch( MODULES_ADS ).setSettings( { adsConversionID: '' } );
+		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
 	},
 };
 Empty.scenario = {
@@ -81,10 +81,10 @@ Invalid.args = {
 
 		registry
 			.dispatch( MODULES_ADS )
-			.setSettings( { adsConversionID: 'AW-123456789' } );
+			.setSettings( { conversionID: 'AW-123456789' } );
 		registry
 			.dispatch( MODULES_ADS )
-			.setSettings( { adsConversionID: 'AW-ABCDEFGHIJ' } );
+			.setSettings( { conversionID: 'AW-ABCDEFGHIJ' } );
 	},
 };
 Invalid.scenario = {
@@ -106,7 +106,7 @@ Initial.args = {
 		provideSiteInfo( registry );
 		provideModuleRegistrations( registry );
 
-		registry.dispatch( MODULES_ADS ).setSettings( { adsConversionID: '' } );
+		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
 	},
 };
 
@@ -128,7 +128,7 @@ export default {
 
 				registry
 					.dispatch( MODULES_ADS )
-					.setSettings( { adsConversionID: 'AW-123456789' } );
+					.setSettings( { conversionID: 'AW-123456789' } );
 			};
 
 			return (

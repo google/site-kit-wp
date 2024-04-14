@@ -59,7 +59,11 @@ export default {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsConversionID: 'AW-123456789',
-					adsLinked: false, // Set to default, as otherwise if it is set to undefined, the `core/site` `isAdsConnected` selector will return undefined.
+					// Set the following to default, as otherwise if it is set to
+					// undefined, the `core/site` `isAdsConnected` selector will
+					// return undefined.
+					adsLinked: false,
+					googleTagContainerDestinationIDs: null,
 				} );
 
 				registry

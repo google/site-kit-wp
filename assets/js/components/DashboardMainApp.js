@@ -248,7 +248,8 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			<ConsentModeSetupCTAWidget />
+
+			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
 
 			<OverlayNotificationsRenderer />
 

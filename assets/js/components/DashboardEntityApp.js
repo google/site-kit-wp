@@ -221,7 +221,8 @@ function DashboardEntityApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			<ConsentModeSetupCTAWidget />
+
+			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
 
 			<OverlayNotificationsRenderer />
 

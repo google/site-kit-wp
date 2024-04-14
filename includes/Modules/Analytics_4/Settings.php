@@ -80,25 +80,26 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'                     => 0,
-			'accountID'                   => '',
-			'adsConversionID'             => '',
-			'propertyID'                  => '',
-			'webDataStreamID'             => '',
-			'measurementID'               => '',
-			'trackingDisabled'            => array( 'loggedinUsers' ),
-			'useSnippet'                  => true,
-			'googleTagID'                 => '',
-			'googleTagAccountID'          => '',
-			'googleTagContainerID'        => '',
-			'googleTagLastSyncedAtMs'     => 0,
-			'availableCustomDimensions'   => null,
-			'propertyCreateTime'          => 0,
-			'adSenseLinked'               => false,
-			'adSenseLinkedLastSyncedAt'   => 0,
-			'adsConversionIDMigratedAtMs' => 0,
-			'adsLinked'                   => false,
-			'adsLinkedLastSyncedAt'       => 0,
+			'ownerID'                          => 0,
+			'accountID'                        => '',
+			'adsConversionID'                  => '',
+			'propertyID'                       => '',
+			'webDataStreamID'                  => '',
+			'measurementID'                    => '',
+			'trackingDisabled'                 => array( 'loggedinUsers' ),
+			'useSnippet'                       => true,
+			'googleTagID'                      => '',
+			'googleTagAccountID'               => '',
+			'googleTagContainerID'             => '',
+			'googleTagContainerDestinationIDs' => null,
+			'googleTagLastSyncedAtMs'          => 0,
+			'availableCustomDimensions'        => null,
+			'propertyCreateTime'               => 0,
+			'adSenseLinked'                    => false,
+			'adSenseLinkedLastSyncedAt'        => 0,
+			'adsConversionIDMigratedAtMs'      => 0,
+			'adsLinked'                        => false,
+			'adsLinkedLastSyncedAt'            => 0,
 		);
 	}
 
@@ -135,6 +136,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 						if ( ! is_numeric( $option[ $numeric_property ] ) || ! $option[ $numeric_property ] > 0 ) {
 							$option[ $numeric_property ] = '';
 						}
+					}
+				}
+
+				if ( isset( $option['googleTagContainerDestinationIDs'] ) ) {
+					if ( ! is_array( $option['googleTagContainerDestinationIDs'] ) ) {
+						$option['googleTagContainerDestinationIDs'] = null;
 					}
 				}
 
