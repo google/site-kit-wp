@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { Slide } from '@material-ui/core';
-import propTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -38,7 +38,6 @@ import {
 	BREAKPOINTS_MOBILE,
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
-import { trackEvent } from '../../util';
 
 const { useDispatch, useSelect } = Data;
 
@@ -47,9 +46,8 @@ export default function OverlayNotification( {
 	GraphicDesktop,
 	GraphicMobile,
 	notificationID,
+	onShow,
 	shouldShowNotification,
-	gaEventCategory,
-	gaEventName,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -71,16 +69,12 @@ export default function OverlayNotification( {
 			// notifications are showing, show this notification.
 			setOverlayNotificationToShow( notificationID );
 
-			// Track GA event if provided.
-			if ( gaEventCategory && gaEventName ) {
-				trackEvent( gaEventCategory, gaEventName );
-			}
+			onShow?.();
 		}
 	}, [
-		gaEventCategory,
-		gaEventName,
 		isShowingNotification,
 		notificationID,
+		onShow,
 		setOverlayNotificationToShow,
 		shouldShowNotification,
 	] );
@@ -111,11 +105,10 @@ export default function OverlayNotification( {
 }
 
 OverlayNotification.propTypes = {
-	children: propTypes.node,
-	GraphicDesktop: propTypes.elementType,
-	GraphicMobile: propTypes.elementType,
-	notificationID: propTypes.string.isRequired,
-	shouldShowNotification: propTypes.bool,
-	gaEventCategory: propTypes.string,
-	gaEventName: propTypes.string,
+	children: PropTypes.node,
+	GraphicDesktop: PropTypes.elementType,
+	GraphicMobile: PropTypes.elementType,
+	onShow: PropTypes.func,
+	notificationID: PropTypes.string.isRequired,
+	shouldShowNotification: PropTypes.bool,
 };

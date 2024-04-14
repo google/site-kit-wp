@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -167,6 +168,13 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
+	const trackEventOnView = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_top-earning-pages-widget`,
+			'view_overlay_CTA'
+		);
+	}, [ viewContext ] );
+
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
 		// the current user's profile with the `dismissItem` action.
@@ -202,8 +210,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 			GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
 			GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
 			notificationID={ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION }
-			gaEventCategory={ `${ viewContext }_top-earning-pages-widget` }
-			gaEventAction="view_overlay_CTA"
+			onShow={ trackEventOnView }
 		>
 			<div className="googlesitekit-overlay-notification__body">
 				<h3>
