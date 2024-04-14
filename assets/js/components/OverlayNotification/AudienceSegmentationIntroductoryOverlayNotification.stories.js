@@ -29,9 +29,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.parameters = {
-	features: [ 'audienceSegmentation' ],
-};
 Default.scenario = {
 	label: 'Components/AudienceSegmentationIntroductoryOverlayNotification',
 };
@@ -40,9 +37,9 @@ export default {
 	title: 'Components/AudienceSegmentationIntroductoryOverlayNotification',
 	component: AudienceSegmentationIntroductoryOverlayNotification,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story ) => {
 			return (
-				<WithTestRegistry features={ parameters.features }>
+				<WithTestRegistry>
 					<Story />
 				</WithTestRegistry>
 			);

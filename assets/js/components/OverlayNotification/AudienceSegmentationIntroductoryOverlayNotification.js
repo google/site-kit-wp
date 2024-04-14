@@ -30,7 +30,6 @@ import AudienceIntroductoryGraphicDesktop from '../../../svg/graphics/audience-s
 import AudienceIntroductoryGraphicMobile from '../../../svg/graphics/audience-segmentation-introductory-graphic-mobile.svg';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../hooks/useFeature';
 import OverlayNotification from './OverlayNotification';
 
 const { useSelect, useDispatch } = Data;
@@ -39,8 +38,6 @@ export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
@@ -63,8 +60,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		);
 	};
 
-	const shouldShowNotification =
-		audienceSegmentationEnabled && isDismissed === false;
+	const shouldShowNotification = isDismissed === false;
 
 	return (
 		<OverlayNotification

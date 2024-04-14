@@ -27,13 +27,17 @@ import { Fragment } from '@wordpress/element';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function OverlayNotificationsRenderer() {
+	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	return (
 		<Fragment>
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
-			<AudienceSegmentationIntroductoryOverlayNotification />
+			{ audienceSegmentationEnabled && (
+				<AudienceSegmentationIntroductoryOverlayNotification />
+			) }
 		</Fragment>
 	);
 }
