@@ -26,9 +26,9 @@ import {
 	muteFetch,
 } from '../../../../tests/js/test-utils';
 import SettingsNotice from './SettingsNotice';
-import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../modules/analytics-4/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
+const TEST_ITEM_DISMISSED_KEY = 'test-item-dismissed-key';
 const fetchGetDismissedItemsRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismissed-items'
 );
@@ -41,7 +41,7 @@ const mockDismissCallback = jest.fn();
 const renderSettingsNoticeWithMockUI = ( registry, overrideProps = {} ) =>
 	render(
 		<SettingsNotice
-			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
+			dismiss={ TEST_ITEM_DISMISSED_KEY }
 			dismissCallback={ mockDismissCallback }
 			dismissLabel="Test label"
 			notice="Test notice content..."
