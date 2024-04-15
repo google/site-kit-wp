@@ -190,7 +190,7 @@ export default function Footer( props ) {
 			<Fragment>
 				{ hasSettings && moduleConnected ? (
 					<SpinnerButton
-						disabled={ isSaving || isLoading }
+						disabled={ isSaving || isLoading || ! canSubmitChanges }
 						onClick={ handleConfirm }
 						isSaving={ isSaving }
 					>

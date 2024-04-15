@@ -26,8 +26,13 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { MODULES_ADS } from './constants';
+import { isValidConversionID } from '../utils/validation';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+
+// Invariant error messages.
+export const INVARIANT_INVALID_CONVERSION_ID =
+	'a valid Conversion ID is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
@@ -46,10 +51,12 @@ export async function submitChanges( { select, dispatch } ) {
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const { haveSettingsChanged } = strictSelect( MODULES_ADS );
+	const { haveSettingsChanged, getConversionID } =
+		strictSelect( MODULES_ADS );
 
-	// Since conversionID can be saved as empty value, no specific
-	// validation is defined here other than confirming the settings
-	// have changed.
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	invariant(
+		isValidConversionID( getConversionID() ),
+		INVARIANT_INVALID_CONVERSION_ID
+	);
 }
