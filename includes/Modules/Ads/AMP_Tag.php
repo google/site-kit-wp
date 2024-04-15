@@ -2,7 +2,7 @@
 /**
  * Class Google\Site_Kit\Modules\Ads\AMP_Tag
  *
- * @package   Google\Site_Kit\Modules\Analytics_4
+ * @package   Google\Site_Kit\Modules\Ads
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -71,12 +71,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 	protected function render() {
 		$config = $this->get_tag_config();
 
-		if ( ! empty( $this->ads_conversion_id ) ) {
-			$config[ $this->ads_conversion_id ] = array(
-				'groups' => 'default',
-			);
-		}
-
 		$gtag_amp_opt = array(
 			'optoutElementId' => '__gaOptOutExtension',
 			'vars'            => array(
@@ -106,7 +100,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 			$gtag_amp_opt_filtered['vars'] = $gtag_amp_opt['vars'];
 		}
 
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google Ads AMP snippet added by Site Kit', 'google-site-kit' ) );
 
 		printf(
 			'<amp-analytics type="gtag" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
@@ -114,7 +108,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 			wp_json_encode( $gtag_amp_opt_filtered )
 		);
 
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Ads AMP snippet added by Site Kit', 'google-site-kit' ) );
 
 	}
 
