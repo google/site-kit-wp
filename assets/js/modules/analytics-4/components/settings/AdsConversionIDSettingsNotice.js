@@ -17,18 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection } from 'react-use';
-/**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useEffect,
-	useRef,
-	useState,
-} from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,13 +30,15 @@ import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import SettingsNotice, {
+import {
+	SettingsNoticeWithIntersectionObserver,
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
 import InfoCircleIcon from '../../../../../../assets/svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { useCallback } from 'react';
 
 const { useSelect } = Data;
 
@@ -78,44 +71,12 @@ export default function AdsConversionIDSettingsNotice() {
 			'confirm_notification'
 		);
 	};
-	const trackingRef = useRef();
-	const intersectionEntry = useIntersection( trackingRef, {
-		root: null,
-		threshold: 0.45,
-	} );
-	const [ hasBeenInView, setHasBeenInView ] = useState( false );
-	const inView =
-		!! intersectionEntry?.isIntersecting &&
-		!! intersectionEntry?.intersectionRatio;
 
-	global.intersectionEntries = global.intersectionEntries || [];
-	global.intersectionEntries.push( intersectionEntry );
-
-	useEffect( () => {
-		if ( ! intersectionEntry || ! shouldShowNotice ) {
-			return;
-		}
+	const onInView = useCallback( () => {
 		// eslint-disable-next-line no-console
-		console.info( {
-			inView,
-			hasBeenInView,
-			isIntersecting: intersectionEntry?.isIntersecting,
-		} );
-
-		if ( inView && ! hasBeenInView ) {
-			trackEvent(
-				`${ viewContext }_GA_Ads_redirect`,
-				'view_notification'
-			);
-			setHasBeenInView( true );
-		}
-	}, [
-		hasBeenInView,
-		inView,
-		intersectionEntry,
-		shouldShowNotice,
-		viewContext,
-	] );
+		console.info( `Tracking ${ viewContext }_GA_Ads_redirect event` );
+		trackEvent( `${ viewContext }_GA_Ads_redirect`, 'view_notification' );
+	}, [ viewContext ] );
 
 	// Do not show the notice if the view conditions have not been met.
 	if ( ! shouldShowNotice ) {
@@ -123,8 +84,8 @@ export default function AdsConversionIDSettingsNotice() {
 	}
 
 	return (
-		<SettingsNotice
-			ref={ trackingRef }
+		<SettingsNoticeWithIntersectionObserver
+			onInView={ onInView }
 			className="googlesitekit-settings-analytics-ads-conversion-id-notice"
 			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
 			dismissCallback={ trackDismissNotificationEvent }
