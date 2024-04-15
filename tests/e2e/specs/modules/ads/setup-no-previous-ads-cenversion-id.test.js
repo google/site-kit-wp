@@ -121,7 +121,7 @@ describe( 'Ads setup (with no Conversion Tracking ID present)', () => {
 		await expect( page ).toMatchElement(
 			'.googlesitekit-subtle-notification',
 			{
-				text: /Success! Your Ads conversion ID was added to your site/i,
+				text: /Success! Your Conversion tracking ID was added to your site/i,
 			}
 		);
 
