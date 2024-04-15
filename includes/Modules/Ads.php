@@ -29,6 +29,8 @@ use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Ads\AMP_Tag;
 
 /**
  * Class representing the Ads module.
@@ -146,7 +148,9 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function register_tag() {
 		$ads_conversion_id = $this->get_settings()->get()['conversionID'];
 
-		$tag = new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
+		$tag = $this->context->is_amp()
+			? new AMP_Tag( $ads_conversion_id, self::MODULE_SLUG )
+			: new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -159,6 +163,9 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		if ( ! $tag->can_register() ) {
 			return;
 		}
+
+		$home_domain = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST );
+		$tag->set_home_domain( $home_domain );
 
 		$tag->register();
 	}
