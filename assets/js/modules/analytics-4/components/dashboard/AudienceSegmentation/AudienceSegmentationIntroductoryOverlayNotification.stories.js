@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { WithTestRegistry } from '../../../../tests/js/utils';
 
+import { WithTestRegistry } from '../../../../../../../tests/js/utils';
 import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
 
 function Template() {
@@ -30,11 +30,11 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Components/AudienceSegmentationIntroductoryOverlayNotification',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceSegmentationIntroductoryOverlayNotification',
 };
 
 export default {
-	title: 'Components/AudienceSegmentationIntroductoryOverlayNotification',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceSegmentationIntroductoryOverlayNotification',
 	component: AudienceSegmentationIntroductoryOverlayNotification,
 	decorators: [
 		( Story ) => {
