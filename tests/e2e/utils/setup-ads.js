@@ -3,24 +3,20 @@
  */
 import { wpApiFetch } from './wp-api-fetch';
 
-const defaultAnalytics4Settings = {
-	accountID: '100',
-	propertyID: '500',
-	webDataStreamID: '600',
-	measurementID: 'G-700',
-	useSnippet: true,
+const defaultAdsSettings = {
+	adsConversionID: 'AW-12345',
 };
 
 /**
- * Activates the Analytics module and completes the GA4 setup process.
+ * Activates the Ads module and completes the setup process.
  *
- * @since 1.104.0
+ * @since n.e.x.t
  *
  * @param {Object} settingsOverrides Optional settings to override the defaults.
  */
-export async function setupAnalytics4( settingsOverrides = {} ) {
+export async function setupAds( settingsOverrides = {} ) {
 	const settings = {
-		...defaultAnalytics4Settings,
+		...defaultAdsSettings,
 		...settingsOverrides,
 	};
 	// Activate the module.
@@ -28,13 +24,13 @@ export async function setupAnalytics4( settingsOverrides = {} ) {
 		method: 'post',
 		path: 'google-site-kit/v1/core/modules/data/activation',
 		data: {
-			data: { slug: 'analytics-4', active: true },
+			data: { slug: 'ads', active: true },
 		},
 	} );
 	// Set placeholder connection data.
 	await wpApiFetch( {
 		method: 'post',
-		path: 'google-site-kit/v1/modules/analytics-4/data/settings',
+		path: 'google-site-kit/v1/modules/ads/data/settings',
 		data: {
 			data: settings,
 		},

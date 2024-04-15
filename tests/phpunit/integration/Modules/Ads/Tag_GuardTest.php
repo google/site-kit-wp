@@ -40,7 +40,7 @@ class Tag_GuardTest extends TestCase {
 		update_option(
 			Settings::OPTION,
 			array(
-				'adsConversionID' => '123456',
+				'conversionID' => '123456',
 			)
 		);
 
@@ -51,13 +51,13 @@ class Tag_GuardTest extends TestCase {
 		update_option(
 			Settings::OPTION,
 			array(
-				'adsConversionID' => '',
+				'conversionID' => '',
 			)
 		);
 
 		$this->assertFalse(
 			$this->guard->can_activate(),
-			'Should return FALSE when adsConversionID is empty.'
+			'Should return FALSE when conversionID is empty.'
 		);
 	}
 
