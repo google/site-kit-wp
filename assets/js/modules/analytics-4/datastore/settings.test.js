@@ -108,22 +108,6 @@ describe( 'modules/analytics-4 settings', () => {
 					propertyID: PROPERTY_CREATE,
 				} );
 
-				registry
-					.dispatch( CORE_FORMS )
-					.setValues( ENHANCED_MEASUREMENT_FORM, {
-						[ ENHANCED_MEASUREMENT_ENABLED ]: false,
-					} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetEnhancedMeasurementSettings(
-						fixtures.defaultEnhancedMeasurementSettings,
-						{
-							propertyID: fixtures.createProperty._id,
-							webDataStreamID: fixtures.createWebDataStream._id,
-						}
-					);
-
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 					webDataStreamName: fixtures.createWebDataStream.displayName,
 				} );
@@ -151,16 +135,6 @@ describe( 'modules/analytics-4 settings', () => {
 					{
 						body: [],
 						status: 200,
-					}
-				);
-
-				fetchMock.post(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
-					),
-					{
-						status: 200,
-						body: fixtures.defaultEnhancedMeasurementSettings,
 					}
 				);
 

@@ -122,29 +122,6 @@ export async function submitChanges( { select, dispatch } ) {
 				// eslint-disable-next-line sitekit/acronym-case
 				webdatastream.webStreamData.measurementId
 			);
-
-			if ( webDataStreamID ) {
-				const isEnhancedMeasurementEnabled = select(
-					CORE_FORMS
-				).getValue(
-					ENHANCED_MEASUREMENT_FORM,
-					ENHANCED_MEASUREMENT_ENABLED
-				);
-
-				await dispatch(
-					MODULES_ANALYTICS_4
-				).setEnhancedMeasurementStreamEnabled(
-					propertyID,
-					webDataStreamID,
-					isEnhancedMeasurementEnabled
-				);
-				await dispatch(
-					MODULES_ANALYTICS_4
-				).updateEnhancedMeasurementSettings(
-					propertyID,
-					webDataStreamID
-				);
-			}
 		}
 	}
 
