@@ -115,7 +115,7 @@ describe( 'modules/ads settings', () => {
 			registry.dispatch( MODULES_ADS ).setConversionID( 'invalid' );
 
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
-				'a valid Conversion ID is required to submit changes'
+				'a valid conversionID is required to submit changes'
 			);
 		} );
 	} );
