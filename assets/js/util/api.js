@@ -44,7 +44,7 @@ export const excludedEndpoints = [ 'core/site/data/connection-check' ];
 export async function trackAPIError( args ) {
 	const { method, type, identifier, datapoint, error } = args;
 
-	// Return early if the datapoint should be excluded from tracking.
+	// Return early if the endpoint should be excluded from tracking.
 	const endpoint = `${ type }/${ identifier }/data/${ datapoint }`;
 	if ( excludedEndpoints.includes( endpoint ) ) {
 		return;
