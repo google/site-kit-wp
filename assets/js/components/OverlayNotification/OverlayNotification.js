@@ -33,7 +33,7 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { BREAKPOINTS_MOBILE, useBreakpoint } from '../../hooks/useBreakpoint';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
 const { useDispatch, useSelect } = Data;
 
@@ -77,7 +77,7 @@ export default function OverlayNotification( {
 		return null;
 	}
 
-	if ( BREAKPOINTS_MOBILE.includes( breakpoint ) ) {
+	if ( breakpoint === BREAKPOINT_SMALL ) {
 		return (
 			<div className="googlesitekit-overlay-notification">
 				{ children }

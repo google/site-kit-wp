@@ -22,10 +22,6 @@
 	margin: $grid-gap-phone;
 
 	@media (min-width: $bp-tablet) {
-		margin: $grid-gap-desktop;
-	}
-
-	@media (min-width: $bp-desktop) {
 		bottom: 36px;
 		box-shadow: 0 8px $grid-gap-desktop 0 rgba(0, 0, 0, 0.25);
 		margin: 0;
@@ -63,7 +59,7 @@
 				font-weight: $fw-normal;
 				letter-spacing: unset;
 				line-height: $lh-headline-sm;
-				margin: 0 0 8px;
+				margin: 0 0 5px;
 			}
 
 			p {
@@ -71,14 +67,6 @@
 				font-weight: $fw-normal;
 				letter-spacing: $ls-s;
 				line-height: $lh-body-md;
-			}
-		}
-
-		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop;
-
-			h3 {
-				margin: 0 0 5px;
 			}
 		}
 	}
@@ -93,12 +81,9 @@
 		padding-top: 0;
 
 		@media (min-width: $bp-tablet) {
+			flex-direction: row;
 			padding: $grid-gap-desktop;
 			padding-top: 0;
-		}
-
-		@media (min-width: $bp-desktop) {
-			flex-direction: row;
 		}
 	}
 }
