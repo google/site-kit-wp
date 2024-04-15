@@ -46,7 +46,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 
 			const url = request.url();
 			if (
-				url.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
+				url.startsWith( 'https://accounts.google.com/o/oauth2/v2/auth' )
 			) {
 				request.respond( {
 					status: 302,

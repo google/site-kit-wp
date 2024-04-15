@@ -52,6 +52,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'googleTagID',
 		'googleTagAccountID',
 		'googleTagContainerID',
+		'googleTagContainerDestinationIDs',
 		'googleTagLastSyncedAtMs',
 		'availableCustomDimensions',
 		'propertyCreateTime',

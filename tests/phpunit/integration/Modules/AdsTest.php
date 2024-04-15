@@ -34,7 +34,7 @@ class AdsTest extends TestCase {
 
 		$this->assertFalse( $ads->is_connected() );
 
-		$ads->get_settings()->set( array( 'adsConversionID' => 'AW-123456789' ) );
+		$ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
 
 		$this->assertTrue( $ads->is_connected() );
 	}
@@ -42,7 +42,7 @@ class AdsTest extends TestCase {
 	public function test_settings_reset_on_deactivation() {
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$ads->get_settings()->set( array( 'adsConversionID' => 'AW-123456789' ) );
+		$ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
 
 		$ads->on_deactivation();
 
@@ -54,20 +54,21 @@ class AdsTest extends TestCase {
 	public function test_get_debug_fields() {
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$ads->get_settings()->set( array( 'adsConversionID' => 'AW-123456789' ) );
+		$ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
 
 		$this->assertEqualSets(
 			array(
-				'ads_conversion_id',
+				'conversion_tracking_id',
 			),
 			array_keys( $ads->get_debug_fields() )
 		);
 
 		$this->assertEquals(
 			array(
-				'ads_conversion_id' => array(
+				'conversion_tracking_id' => array(
 					'label' => 'Conversion Tracking ID',
 					'value' => 'AW-123456789',
+					'debug' => 'AW-1••••••••',
 				),
 			),
 			$ads->get_debug_fields()
@@ -101,7 +102,7 @@ class AdsTest extends TestCase {
 		$head_html = $this->capture_action( 'wp_head' );
 		$this->assertNotEmpty( $head_html );
 
-		if ( empty( $settings['adsConversionID'] ) ) {
+		if ( empty( $settings['conversionID'] ) ) {
 			$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
 			$this->assertStringNotContainsString(
 				'gtag("config", "AW-123456789")',
@@ -118,8 +119,8 @@ class AdsTest extends TestCase {
 
 	public function template_redirect_data_provider() {
 		return array(
-			'empty ads conversion ID' => array( array( 'adsConversionID' => '' ) ),
-			'valid ads conversion ID' => array( array( 'adsConversionID' => 'AW-123456789' ) ),
+			'empty ads conversion ID' => array( array( 'conversionID' => '' ) ),
+			'valid ads conversion ID' => array( array( 'conversionID' => 'AW-123456789' ) ),
 		);
 	}
 

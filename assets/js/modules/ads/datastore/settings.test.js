@@ -54,7 +54,7 @@ describe( 'modules/ads settings', () => {
 
 		beforeEach( () => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-				adsConversionID: '12345',
+				conversionID: '12345',
 			} );
 		} );
 
@@ -69,13 +69,13 @@ describe( 'modules/ads settings', () => {
 				status: 200,
 			} ) );
 
-			registry.dispatch( MODULES_ADS ).setAdsConversionID( '56789' );
+			registry.dispatch( MODULES_ADS ).setConversionID( '56789' );
 			await registry.dispatch( MODULES_ADS ).submitChanges();
 
 			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
 				body: {
 					data: {
-						adsConversionID: '56789',
+						conversionID: '56789',
 					},
 				},
 			} );
@@ -85,7 +85,7 @@ describe( 'modules/ads settings', () => {
 	describe( 'validateCanSubmitChanges', () => {
 		it( 'should throw if there are no changes to the form', () => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-				adsConversionID: '12345',
+				conversionID: '12345',
 			} );
 
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
@@ -95,11 +95,11 @@ describe( 'modules/ads settings', () => {
 
 		it( 'should not throw if there are changes to the form', () => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-				adsConversionID: '12345',
+				conversionID: '12345',
 			} );
 
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-				adsConversionID: '56789',
+				conversionID: '56789',
 			} );
 
 			expect( () =>

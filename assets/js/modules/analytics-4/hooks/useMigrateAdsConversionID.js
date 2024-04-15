@@ -64,7 +64,7 @@ export default function useMigrateAdsConversionID() {
 			return null;
 		}
 
-		return select( MODULES_ADS ).getAdsConversionID();
+		return select( MODULES_ADS ).getConversionID();
 	} );
 
 	const { activateModule, fetchGetModules } = useDispatch( CORE_MODULES );
@@ -93,7 +93,7 @@ export default function useMigrateAdsConversionID() {
 		const migrate = async () => {
 			setLoading( true );
 
-			await dispatch.setAdsConversionID( legacyAdsConversionID );
+			await dispatch.setConversionID( legacyAdsConversionID );
 			await dispatch.submitChanges();
 
 			await setLegacyAdsConversionID( '' );

@@ -76,19 +76,14 @@ class REST_Prompts_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-prompts' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSets(
-			array(
-				'foo' => array(
-					'expires' => 0,
-					'count'   => 1,
-				),
-				'bar' => array(
-					'expires' => time() + 100,
-					'count'   => 1,
-				),
-			),
-			$response->get_data()
-		);
+		$response_data = $response->get_data();
+		// The asserts are split to use assertEqualsWithDelta for the time based assertion.
+		$this->assertArrayHasKey( 'foo', $response_data );
+		$this->assertArrayHasKey( 'bar', $response_data );
+		$this->assertEquals( 0, $response_data['foo']['expires'] );
+		$this->assertEquals( 1, $response_data['foo']['count'] );
+		$this->assertEqualsWithDelta( time() + 100, $response_data['bar']['expires'], 2 );
+		$this->assertEquals( 1, $response_data['bar']['count'] );
 	}
 
 	public function test_dismiss_new_prompt() {
@@ -131,15 +126,11 @@ class REST_Prompts_ControllerTest extends TestCase {
 			)
 		);
 
-		$this->assertEqualSets(
-			array(
-				'foo' => array(
-					'expires' => time() + 100,
-					'count'   => 2,
-				),
-			),
-			rest_get_server()->dispatch( $request )->get_data()
-		);
+		$response_data = rest_get_server()->dispatch( $request )->get_data();
+		// The asserts are split to use assertEqualsWithDelta for the time based assertion.
+		$this->assertArrayHasKey( 'foo', $response_data );
+		$this->assertEqualsWithDelta( time() + 100, $response_data['foo']['expires'], 2 );
+		$this->assertEquals( 2, $response_data['foo']['count'] );
 	}
 
 }

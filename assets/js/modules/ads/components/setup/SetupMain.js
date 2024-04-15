@@ -45,7 +45,7 @@ export default function SetupMain( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__description">
 				{ __(
-					'Ad your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.',
+					'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.',
 					'google-site-kit'
 				) }
 				<br />
