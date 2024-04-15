@@ -52,12 +52,6 @@ function SettingsNoticeWithIntersectionObserver( {
 		if ( ! intersectionEntry ) {
 			return;
 		}
-		// eslint-disable-next-line no-console
-		console.info( {
-			inView,
-			hasBeenInView,
-			isIntersecting: intersectionEntry?.isIntersecting,
-		} );
 
 		if ( inView && ! hasBeenInView ) {
 			onInView();

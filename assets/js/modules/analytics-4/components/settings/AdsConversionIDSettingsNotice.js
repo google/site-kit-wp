@@ -73,8 +73,6 @@ export default function AdsConversionIDSettingsNotice() {
 	};
 
 	const onInView = useCallback( () => {
-		// eslint-disable-next-line no-console
-		console.info( `Tracking ${ viewContext }_GA_Ads_redirect event` );
 		trackEvent( `${ viewContext }_GA_Ads_redirect`, 'view_notification' );
 	}, [ viewContext ] );
 
