@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { trackAPIError, excludedErrorCodes, excludedDataPoints } from './api';
+import { trackAPIError, excludedErrorCodes } from './api';
 import { enableTracking } from './tracking';
 import { DATA_LAYER } from './tracking/constants';
 
@@ -131,10 +131,15 @@ describe( 'trackAPIError', () => {
 		}
 	);
 
-	it.each( excludedDataPoints.map( ( dp ) => [ dp ] ) )(
-		"shouldn't track errors for the %s datapoint",
-		( datapoint ) => {
-			trackAPIError( { datapoint, error: { message: 'test-message' } } );
+	it.each( [ [ 'connection-check', 'core', 'site', 'connection-check' ] ] )(
+		"shouldn't track errors for the %s endpoint",
+		( _, type, identifier, datapoint ) => {
+			trackAPIError( {
+				type,
+				identifier,
+				datapoint,
+				error: { message: 'test-message' },
+			} );
 			expect( dataLayerPushSpy ).not.toHaveBeenCalled();
 		}
 	);
