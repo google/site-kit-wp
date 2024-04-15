@@ -75,7 +75,7 @@ export default function SetupFormFields() {
 		setValues( ENHANCED_MEASUREMENT_FORM, {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 		} );
-	}, [] );
+	}, [ setValues ] );
 
 	return (
 		<Fragment>
