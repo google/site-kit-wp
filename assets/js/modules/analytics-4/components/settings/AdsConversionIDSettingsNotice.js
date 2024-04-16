@@ -30,10 +30,10 @@ import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import {
-	SettingsNoticeWithIntersectionObserver,
+import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
+import ComponentWithIntersectionObserver from '../../../../components/ComponentWithIntersectionObserver';
 import InfoCircleIcon from '../../../../../../assets/svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -82,28 +82,34 @@ export default function AdsConversionIDSettingsNotice() {
 	}
 
 	return (
-		<SettingsNoticeWithIntersectionObserver
+		<ComponentWithIntersectionObserver
 			onInView={ onInView }
-			className="googlesitekit-settings-analytics-ads-conversion-id-notice"
-			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
-			dismissCallback={ trackDismissNotificationEvent }
-			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-			type={ TYPE_INFO }
-			Icon={ InfoCircleIcon }
-			notice={ createInterpolateElement(
-				__(
-					'Ads Conversion Tracking ID has been moved to <a>Ads settings</a>',
-					'google-site-kit'
-				),
-				{
-					a: (
-						<Link
-							href={ `${ settingsAdminURL }#/connected-services/ads` }
-							onClick={ () => trackConfirmNotificationEvent() }
-						/>
-					),
-				}
-			) }
+			children={
+				<SettingsNotice
+					className="googlesitekit-settings-analytics-ads-conversion-id-notice"
+					dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
+					dismissCallback={ trackDismissNotificationEvent }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					type={ TYPE_INFO }
+					Icon={ InfoCircleIcon }
+					notice={ createInterpolateElement(
+						__(
+							'Ads Conversion Tracking ID has been moved to <a>Ads settings</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ `${ settingsAdminURL }#/connected-services/ads` }
+									onClick={ () =>
+										trackConfirmNotificationEvent()
+									}
+								/>
+							),
+						}
+					) }
+				/>
+			}
 		/>
 	);
 }
