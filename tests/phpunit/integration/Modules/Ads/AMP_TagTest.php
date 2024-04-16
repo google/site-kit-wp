@@ -57,6 +57,19 @@ class AMP_TagTest extends TestCase {
 		return $this->ads;
 	}
 
+	/**
+	 * Return the parsed AMP JSON config from the AMP tag HTML.
+	 */
+	protected function parse_amp_config_from_html( $html ) {
+		$dom = new \DOMDocument();
+		$dom->loadHTML( $html, LIBXML_NOERROR );
+		$amp_tag  = $dom->getElementsByTagName( 'amp-analytics' )->item( 0 );
+		$script   = $amp_tag->firstChild;
+		$raw_json = $script->nodeValue;
+
+		return json_decode( $raw_json, true );
+	}
+
 	public function set_up() {
 		parent::set_up();
 
@@ -94,7 +107,9 @@ class AMP_TagTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertMatchesRegularExpression( '/\s\<amp-analytics type=\"gtag\"(.*)\"gtag_id\":\"' . static::CONVERSION_ID . '\"(.*)\b/', $output );
+		$parsed_config = $this->parse_amp_config_from_html( $output );
+
+		$this->assertEquals( $parsed_config['vars']['gtag_id'], static::CONVERSION_ID );
 	}
 
 	public function test_amp_ads_tag_contains_linker_domain() {
@@ -107,6 +122,11 @@ class AMP_TagTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertMatchesRegularExpression( '/\s\<amp-analytics type=\"gtag\"(.*)\"linker\":\{\"domains\":\[\"example\.org\"\]\}(.*)\b/', $output );
+		$parsed_config = $this->parse_amp_config_from_html( $output );
+
+		$this->assertEquals(
+			$parsed_config['vars']['config']['linker']['domains'],
+			array( 'example.org' )
+		);
 	}
 }

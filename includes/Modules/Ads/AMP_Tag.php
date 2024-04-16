@@ -29,7 +29,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since 1.118.0
+	 * @since n.e.x.t
 	 *
 	 * @param string $domain Domain name.
 	 */
@@ -79,37 +79,15 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 			),
 		);
 
-		/**
-		 * Filters the gtag configuration options for the amp-analytics tag.
-		 *
-		 * You can use the {@see 'googlesitekit_gtag_opt'} filter to do the same for gtag in non-AMP.
-		 *
-		 * @since 1.24.0
-		 * @see https://developers.google.com/gtagjs/devguide/amp
-		 *
-		 * @param array $gtag_amp_opt gtag config options for AMP.
-		 */
-		$gtag_amp_opt_filtered = apply_filters( 'googlesitekit_amp_gtag_opt', $gtag_amp_opt );
-
-		// Ensure gtag_id is set to the correct value.
-		if ( ! is_array( $gtag_amp_opt_filtered ) ) {
-			$gtag_amp_opt_filtered = $gtag_amp_opt;
-		}
-
-		if ( ! isset( $gtag_amp_opt_filtered['vars'] ) || ! is_array( $gtag_amp_opt_filtered['vars'] ) ) {
-			$gtag_amp_opt_filtered['vars'] = $gtag_amp_opt['vars'];
-		}
-
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google Ads AMP snippet added by Site Kit', 'google-site-kit' ) );
 
 		printf(
 			'<amp-analytics type="gtag" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
 			$this->get_tag_blocked_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			wp_json_encode( $gtag_amp_opt_filtered )
+			wp_json_encode( $gtag_amp_opt )
 		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Ads AMP snippet added by Site Kit', 'google-site-kit' ) );
-
 	}
 
 	/**
