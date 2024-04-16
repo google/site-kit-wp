@@ -30,6 +30,7 @@ import {
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const defaultSettings = {
 	accountID: '',
@@ -105,7 +106,7 @@ export const AdBlocker = Template.bind( {} );
 AdBlocker.storyName = 'AdBlocker Active';
 AdBlocker.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
 	},
 };
