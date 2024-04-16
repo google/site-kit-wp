@@ -27,7 +27,10 @@ import PropTypes from 'prop-types';
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
 
-function ComponentWithIntersectionObserver( { onInView, children } ) {
+export default function ComponentWithIntersectionObserver( {
+	onInView,
+	children,
+} ) {
 	const inViewRef = useRef();
 	const intersectionEntry = useIntersection( inViewRef, {
 		root: null,
@@ -55,5 +58,3 @@ function ComponentWithIntersectionObserver( { onInView, children } ) {
 ComponentWithIntersectionObserver.propTypes = {
 	onInView: PropTypes.func.isRequired,
 };
-
-export default ComponentWithIntersectionObserver;

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsNotice, {
@@ -37,8 +38,6 @@ import ComponentWithIntersectionObserver from '../../../../components/ComponentW
 import InfoCircleIcon from '../../../../../../assets/svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { useCallback } from 'react';
 
 const { useSelect } = Data;
 
