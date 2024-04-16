@@ -171,52 +171,50 @@ const baseSelectors = {
 	 * Returns true if Google Ads is in use, either through a linked Analytics & Ads
 	 * account, an Ads conversion tracking ID, or via Analytics tag config.
 	 *
-	 * TODO: The Ads conversion tracking ID is being moved to the new "Ads" module. Source
-	 * this ID from the "Ads" module once it's implemented.
-	 *
 	 * @since 1.124.0
-	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config.
+	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config, and to source Conversion ID field from Ads module.
 	 *
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
 	isAdsConnected: createRegistrySelector( ( select ) => () => {
 		const { isModuleConnected } = select( CORE_MODULES );
 
-		if ( ! isModuleConnected( 'analytics-4' ) ) {
-			return false;
-		}
-
-		const {
-			getAdsConversionID,
-			getAdsLinked,
-			getGoogleTagContainerDestinationIDs,
-		} = select( MODULES_ANALYTICS_4 );
-
-		const adsConversionID = getAdsConversionID();
-		const adsLinked = getAdsLinked();
-		const googleTagContainerDestinationIDs =
-			getGoogleTagContainerDestinationIDs();
-
-		if (
-			[
-				adsConversionID,
-				adsLinked,
-				googleTagContainerDestinationIDs,
-			].includes( undefined )
-		) {
-			return undefined;
-		}
-
-		if (
-			Array.isArray( googleTagContainerDestinationIDs ) &&
-			googleTagContainerDestinationIDs.some( ( id ) =>
-				id.startsWith( 'AW-' )
-			)
-		) {
+		// The Ads module being connected implies that an Ads conversion tracking
+		// ID is set. If so, return true.
+		if ( isModuleConnected( 'ads' ) ) {
 			return true;
 		}
 
-		return !! adsConversionID || !! adsLinked;
+		if ( isModuleConnected( 'analytics-4' ) ) {
+			const { getAdsLinked, getGoogleTagContainerDestinationIDs } =
+				select( MODULES_ANALYTICS_4 );
+
+			const adsLinked = getAdsLinked();
+			const googleTagContainerDestinationIDs =
+				getGoogleTagContainerDestinationIDs();
+
+			// If necessary settings have not loaded, return undefined.
+			if (
+				[ adsLinked, googleTagContainerDestinationIDs ].includes(
+					undefined
+				)
+			) {
+				return undefined;
+			}
+
+			if (
+				Array.isArray( googleTagContainerDestinationIDs ) &&
+				googleTagContainerDestinationIDs.some( ( id ) =>
+					id.startsWith( 'AW-' )
+				)
+			) {
+				return true;
+			}
+
+			return !! adsLinked;
+		}
+
+		return false;
 	} ),
 };
 
