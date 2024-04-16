@@ -208,6 +208,8 @@ export default function AudienceTiles( { Widget } ) {
 						return null;
 					}
 
+					// TODO: as part of #8484, this data manipulation should be removed and the relevant
+					// pivot report rows should be pass directly to the AudienceTile component.
 					const metricIndexBase = index * 2;
 
 					const audienceName =

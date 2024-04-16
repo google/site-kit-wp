@@ -47,6 +47,9 @@ import { numFmt } from '../../../../../../util';
  */
 import { __, sprintf } from '@wordpress/i18n';
 
+// TODO: as part of #8484 the report props should be updated to expect
+// the full report rows for the current tile to reduce data manipulation
+// in AudienceTiles.
 export default function AudienceTile( {
 	title,
 	infoTooltip,
