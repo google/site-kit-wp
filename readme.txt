@@ -3,7 +3,7 @@
 Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.5
-Requires PHP:      5.6
+Requires PHP:      7.4
 Stable tag:        1.124.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
@@ -74,7 +74,7 @@ The Site Kit plugin is free and open source, and will remain so. Individual Goog
 In order to successfully install and use Site Kit, your site must meet the following requirements:
 
 * WordPress version 5.2+
-* PHP version 5.6+
+* PHP version 7.4+
 * Modern browser – Internet Explorer is not supported
 * Is publicly accessible – it isn’t in maintenance mode, accessible only via password, or otherwise blocked
 * REST API is available – Site Kit must be able to communicate via REST API with Google services. To ensure that the REST API is available for your site, go to Tools > Site Health.

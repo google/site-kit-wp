@@ -150,6 +150,22 @@ export const selectors = {
 		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
 		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
+
+	/**
+	 * Checks whether there are changes to save for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Slug for module store.
+	 * @return {boolean} Whether changes have been made in the settings form.
+	 */
+	haveSettingsChanged: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'slug is required.' );
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			return !! select( storeName )?.haveSettingsChanged?.();
+		}
+	),
 };
 
 export default {

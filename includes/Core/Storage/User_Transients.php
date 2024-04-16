@@ -170,10 +170,11 @@ class User_Transients implements User_Aware_Interface {
 	 * @return bool True on success, false on failure.
 	 */
 	private function set_in_cache( $transient, $value, $expiration ) {
-		return wp_cache_set( // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.LowCacheTime
+		return wp_cache_set(
 			$this->get_transient_name_for_cache( $transient ),
 			$value,
 			$this->ext_cache_group,
+			// phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.CacheTimeUndetermined
 			(int) $expiration
 		);
 	}

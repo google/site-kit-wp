@@ -67,7 +67,9 @@ class Consent_Mode {
 		$plugin = GOOGLESITEKIT_PLUGIN_BASENAME;
 		add_filter( "wp_consent_api_registered_{$plugin}", '__return_true' );
 
-		if ( $this->consent_mode_settings->is_consent_mode_enabled() ) {
+		$consent_mode_enabled = $this->consent_mode_settings->is_consent_mode_enabled();
+
+		if ( $consent_mode_enabled ) {
 			// The `wp_head` action is used to ensure the snippets are printed in the head on the front-end only, not admin pages.
 			add_action(
 				'wp_head',
@@ -75,6 +77,13 @@ class Consent_Mode {
 				1 // Set priority to 1 to ensure the snippet is printed with top priority in the head.
 			);
 		}
+
+		add_filter(
+			'googlesitekit_consent_mode_status',
+			function () use ( $consent_mode_enabled ) {
+				return $consent_mode_enabled ? 'enabled' : 'disabled';
+			}
+		);
 	}
 
 	/**
