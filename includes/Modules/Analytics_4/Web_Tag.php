@@ -13,7 +13,9 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
+use Google\Site_Kit\Core\Tags\Tag_With_Linker_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Tags\Tag_With_Linker_Interface;
 
 /**
  * Class for Web tag.
@@ -22,9 +24,9 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Web_Tag extends Module_Web_Tag implements Tag_Interface {
+class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_Interface {
 
-	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
+	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait, Tag_With_Linker_Trait;
 
 	/**
 	 * Custom dimensions data.
@@ -33,14 +35,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @var array
 	 */
 	private $custom_dimensions;
-
-	/**
-	 * Home domain name.
-	 *
-	 * @since 1.24.0
-	 * @var string
-	 */
-	private $home_domain;
 
 	/**
 	 * Ads conversion ID.
@@ -185,15 +179,11 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	protected function get_tag_config() {
 		$config = array();
 
-		if ( ! empty( $this->home_domain ) ) {
-			$config['linker'] = array( 'domains' => array( $this->home_domain ) );
-		}
-
 		if ( ! empty( $this->custom_dimensions ) ) {
 			$config = array_merge( $config, $this->custom_dimensions );
 		}
 
-		return $config;
+		return $this->add_linker_to_tag_config( $config );
 	}
 
 	/**
