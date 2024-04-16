@@ -2653,13 +2653,13 @@ class Analytics_4Test extends TestCase {
 					);
 
 				case "/v1alpha/properties/$property_id/audiences":
-					$audience = new GoogleAnalyticsAdminV1alphaAudience();
-					$audience->setName( "properties/$property_id/audiences/1" );
-					$audience->setDisplayName( 'Test' );
-					$audience->setDescription( 'Description' );
+					$fixture = json_decode(
+						file_get_contents( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'assets/js/modules/analytics-4/datastore/__fixtures__/audiences.json' ),
+						true
+					);
 
 					$audiences = new GoogleAnalyticsAdminV1alphaListAudiencesResponse();
-					$audiences->setAudiences( array( $audience ) );
+					$audiences->setAudiences( $fixture );
 
 					return new Response(
 						200,
@@ -3380,7 +3380,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->setup_user_authentication( $access_token );
 
-		$property_id = '123456789';
+		$property_id = '12345';
 
 		$this->analytics->get_settings()->merge(
 			array(
@@ -3536,7 +3536,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->setup_user_authentication( $access_token );
 
-		$property_id = '123456789';
+		$property_id = '12345';
 
 		$this->analytics->get_settings()->merge(
 			array(
@@ -3579,13 +3579,42 @@ class Analytics_4Test extends TestCase {
 			array_keys( $data[0] )
 		);
 
-		// Verify that the module setting is updated.
+		// Verify that the module setting is updated with correct values
+		// including various audience types and slugs.
 		$this->assertEquals(
 			$this->analytics->get_settings()->get()['availableAudiences'],
 			array(
 				array(
-					'name'         => 'properties/123456789/audiences/1',
-					'displayName'  => 'Test',
+					'name'         => 'properties/12345/audiences/1',
+					'displayName'  => 'All Users',
+					'description'  => 'All users',
+					'audienceType' => 'DEFAULT_AUDIENCE',
+					'audienceSlug' => 'all-users',
+				),
+				array(
+					'name'         => 'properties/12345/audiences/2',
+					'displayName'  => 'Purchasers',
+					'description'  => 'Users who have made a purchase',
+					'audienceType' => 'DEFAULT_AUDIENCE',
+					'audienceSlug' => 'purchasers',
+				),
+				array(
+					'name'         => 'properties/12345/audiences/3',
+					'displayName'  => 'Test Audience',
+					'description'  => 'Description',
+					'audienceType' => 'SITE_KIT_AUDIENCE',
+					'audienceSlug' => 'new-visitors',
+				),
+				array(
+					'name'         => 'properties/12345/audiences/4',
+					'displayName'  => 'Test Audience',
+					'description'  => 'Description',
+					'audienceType' => 'SITE_KIT_AUDIENCE',
+					'audienceSlug' => 'returning-visitors',
+				),
+				array(
+					'name'         => 'properties/12345/audiences/5',
+					'displayName'  => 'Test Audience',
 					'description'  => 'Description',
 					'audienceType' => 'USER_AUDIENCE',
 					'audienceSlug' => '',
