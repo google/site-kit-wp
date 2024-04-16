@@ -69,6 +69,7 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedM
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
+use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
@@ -147,6 +148,14 @@ final class Analytics_4 extends Module
 	protected $audience_settings;
 
 	/**
+	 * Resource_Data_Availability_Date instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Resource_Data_Availability_Date
+	 */
+	protected $resource_data_availability_date;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -167,6 +176,7 @@ final class Analytics_4 extends Module
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->audience_settings                = new Audience_Settings( $this->user_options );
+		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients );
 	}
 
 	/**
@@ -218,6 +228,7 @@ final class Analytics_4 extends Module
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
+					$this->resource_data_availability_date->reset_all_resource_dates();
 				}
 
 				// Reset AdSense & Ads link settings when propertyID changes.
@@ -249,6 +260,8 @@ final class Analytics_4 extends Module
 		);
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
+
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
 
 		add_filter(
 			'googlesitekit_auth_scopes',
@@ -360,6 +373,7 @@ final class Analytics_4 extends Module
 		$this->get_settings()->delete();
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
+		$this->resource_data_availability_date->reset_all_resource_dates();
 	}
 
 	/**
@@ -2112,6 +2126,29 @@ final class Analytics_4 extends Module
 			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
 			$modules_data['analytics-4'] = array(
 				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
+			);
+		}
+
+		return $modules_data;
+	}
+
+	/**
+	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	private function inline_resource_availability_dates_data( $modules_data ) {
+		if ( $this->is_connected() ) {
+			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
+			// If `analytics-4` key already exists, merge the data.
+			$modules_data['analytics-4'] = array_merge(
+				$modules_data['analytics-4'] ?? array(),
+				array(
+					'resourceAvailabilityDates' => $this->resource_data_availability_date->get_resource_dates(),
+				)
 			);
 		}
 

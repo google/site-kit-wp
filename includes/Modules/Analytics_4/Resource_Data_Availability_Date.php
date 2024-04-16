@@ -97,13 +97,26 @@ class Resource_Data_Availability_Date {
 	 * @return array Associative array of resource names and their data availability state.
 	 */
 	public function get_resource_dates() {
-		return array_reduce(
-			self::CUSTOM_DIMENSION_SLUGS,
-			function ( $data_availability, $custom_dimension ) {
-				$data_availability[ $custom_dimension ] = $this->is_data_available( $custom_dimension );
-				return $data_availability;
-			},
-			array()
+		return array(
+			'audiences'        => array_reduce(
+				self::AUDIENCE_SLUGS,
+				function ( $data_availability, $audience_slug ) {
+					$data_availability[ $audience_slug ] = $this->get_resource_date( $audience_slug, self::RESOURCE_TYPE_AUDIENCE );
+					return $data_availability;
+				},
+				array()
+			),
+			'customDimensions' => array_reduce(
+				self::CUSTOM_DIMENSION_SLUGS,
+				function ( $data_availability, $custom_dimension ) {
+					$data_availability[ $custom_dimension ] = $this->get_resource_date( $custom_dimension, self::RESOURCE_TYPE_CUSTOM_DIMENSION );
+					return $data_availability;
+				},
+				array()
+			),
+			'properties'       => array(
+				// TODO: Add property data availability date logic.
+			),
 		);
 	}
 
