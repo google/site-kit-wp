@@ -263,9 +263,7 @@ export default {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 
 			return (
 				<WithTestRegistry registry={ registry }>
