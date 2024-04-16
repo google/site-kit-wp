@@ -26,7 +26,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { forwardRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,7 +44,7 @@ import { Button } from 'googlesitekit-components';
 
 const { useSelect, useDispatch } = Data;
 
-const SettingsNotice = forwardRef( ( props, ref ) => {
+export default function SettingsNotice( props ) {
 	const {
 		className,
 		children,
@@ -71,7 +70,6 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 
 	return (
 		<div
-			ref={ ref }
 			className={ classnames(
 				className,
 				'googlesitekit-settings-notice',
@@ -109,7 +107,7 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 			) }
 		</div>
 	);
-} );
+}
 
 // Extra props are used in child components.
 SettingsNotice.propTypes = {
@@ -128,5 +126,3 @@ SettingsNotice.propTypes = {
 SettingsNotice.defaultProps = {
 	type: TYPE_INFO,
 };
-
-export default SettingsNotice;
