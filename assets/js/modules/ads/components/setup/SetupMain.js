@@ -25,37 +25,54 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
+import AdBlockerWarning from '../common/AdBlockerWarning';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
+	const isAdBlockerActive = useSelect( ( select ) =>
+		select( CORE_USER ).isAdBlockerActive()
+	);
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
-			<div className="googlesitekit-setup-module__logo">
-				<AdsIcon width="33" height="33" />
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<AdsIcon width="33" height="33" />
+				</div>
+
+				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
+				</h2>
 			</div>
 
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
-			</h2>
+			<AdBlockerWarning />
 
-			<div className="googlesitekit-setup-module__description">
-				{ __(
-					'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.',
-					'google-site-kit'
-				) }
-				<br />
-				{ __(
-					'You can always change this later in Site Kit Settings.',
-					'google-site-kit'
-				) }
-			</div>
+			{ ! isAdBlockerActive && (
+				<Fragment>
+					<div className="googlesitekit-setup-module__description">
+						{ __(
+							'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.',
+							'google-site-kit'
+						) }
+						<br />
+						{ __(
+							'You can always change this later in Site Kit Settings.',
+							'google-site-kit'
+						) }
+					</div>
 
-			<SetupForm finishSetup={ finishSetup } />
+					<SetupForm finishSetup={ finishSetup } />
+				</Fragment>
+			) }
 		</div>
 	);
 }
