@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
@@ -125,7 +126,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function is_connected() {
 		$options = $this->get_settings()->get();
 
-		return parent::is_connected() && ! empty( $options['adsConversionID'] );
+		return parent::is_connected() && ! empty( $options['conversionID'] );
 	}
 
 	/**
@@ -140,10 +141,10 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Registers the Ads tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 */
 	public function register_tag() {
-		$ads_conversion_id = $this->get_settings()->get()['adsConversionID'];
+		$ads_conversion_id = $this->get_settings()->get()['conversionID'];
 
 		$tag = new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
 
@@ -165,7 +166,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @return array An array of all debug fields.
 	 */
@@ -173,9 +174,10 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'ads_conversion_id' => array(
-				'label' => __( 'Ads Conversion ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
+			'conversion_tracking_id' => array(
+				'label' => __( 'Conversion Tracking ID', 'google-site-kit' ),
+				'value' => $settings['conversionID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
 		);
 	}
@@ -183,7 +185,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.124.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */

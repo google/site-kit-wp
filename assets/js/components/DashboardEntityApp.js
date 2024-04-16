@@ -221,7 +221,7 @@ function DashboardEntityApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-			<ConsentModeSetupCTAWidget />
+			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }

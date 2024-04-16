@@ -199,6 +199,7 @@ exports[`SetupForm renders the form correctly 1`] = `
     >
       <button
         class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+        disabled=""
         target="_self"
       >
         <span

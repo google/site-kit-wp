@@ -49,6 +49,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { isValidConversionID } from '../../ads/utils/validation';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -59,6 +60,8 @@ export const INVARIANT_INVALID_WEBDATASTREAM_NAME =
 	'a valid web data stream name is required to submit changes';
 export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 	'a web data stream with the same name already exists';
+export const INVARIANT_INVALID_ADS_CONVERSION_ID =
+	'a valid ads adsConversionID is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -89,12 +92,17 @@ export async function submitChanges( { select, dispatch } ) {
 			'webDataStreamName'
 		);
 
-		const webDataStreamAlreadyExists = isValidPropertyID( propertyID )
-			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(
-					propertyID,
-					webDataStreamName
-			  )
-			: false;
+		let webDataStreamAlreadyExists = false;
+
+		if ( isValidPropertyID( propertyID ) ) {
+			await dispatch( MODULES_ANALYTICS_4 ).waitForWebDataStreams(
+				propertyID
+			);
+
+			webDataStreamAlreadyExists = select(
+				MODULES_ANALYTICS_4
+			).doesWebDataStreamExist( propertyID, webDataStreamName );
+		}
 
 		if (
 			isValidWebDataStreamName( webDataStreamName ) &&
@@ -201,6 +209,7 @@ export function validateCanSubmitChanges( select ) {
 		getPropertyID,
 		getWebDataStreamID,
 		doesWebDataStreamExist,
+		getAdsConversionID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
 	invariant( haveAnyGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
@@ -239,5 +248,14 @@ export function validateCanSubmitChanges( select ) {
 				INVARIANT_WEBDATASTREAM_ALREADY_EXISTS
 			);
 		}
+	}
+
+	const adsConversionID = getAdsConversionID();
+
+	if ( adsConversionID !== '' ) {
+		invariant(
+			isValidConversionID( adsConversionID ),
+			INVARIANT_INVALID_ADS_CONVERSION_ID
+		);
 	}
 }

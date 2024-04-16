@@ -24,6 +24,7 @@ import { CORE_MODULES } from './constants';
 import {
 	createTestRegistry,
 	provideModules,
+	subscribeUntil,
 } from '../../../../../tests/js/utils';
 
 describe( 'core/modules settings', () => {
@@ -50,6 +51,7 @@ describe( 'core/modules settings', () => {
 						throw new Error( validateCanSubmitChangesError );
 					}
 				},
+				settingSlugs: [ 'testSetting' ],
 			} )
 		);
 
@@ -134,6 +136,76 @@ describe( 'core/modules settings', () => {
 				expect(
 					registry.select( CORE_MODULES ).canSubmitChanges( slug )
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'haveSettingsChanged', () => {
+			it( 'should return FALSE for non existent module', () => {
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSettingsChanged( nonExistentModuleSlug )
+				).toBe( false );
+			} );
+
+			it( 'should return true when module settings have changed', async () => {
+				expect(
+					registry.select( CORE_MODULES ).haveSettingsChanged( slug )
+				).toBe( false );
+				const serverValues = { testSetting: 'serverside' };
+				const clientValues = { testSetting: 'clientside' };
+
+				const select = registry.select( moduleStoreName );
+				const dispatch = registry.dispatch( moduleStoreName );
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/test-module/data/settings'
+					),
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+
+				// Still false after fetching settings from server.
+				expect( select.haveSettingsChanged() ).toEqual( false );
+
+				// True after updating settings on client.
+				dispatch.setSettings( clientValues );
+				expect( select.haveSettingsChanged() ).toEqual( true );
+
+				// False after updating settings back to original server value on client.
+				dispatch.setSettings( serverValues );
+				expect( select.haveSettingsChanged() ).toEqual( false );
+			} );
+
+			it( 'should return false when module settings have not changed', async () => {
+				expect(
+					registry.select( CORE_MODULES ).haveSettingsChanged( slug )
+				).toBe( false );
+				const serverValues = { testSetting: 'serverside' };
+
+				const select = registry.select( moduleStoreName );
+				const dispatch = registry.dispatch( moduleStoreName );
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/test-module/data/settings'
+					),
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+				dispatch.setSettings( serverValues );
+				expect( select.haveSettingsChanged() ).toEqual( false );
 			} );
 		} );
 	} );

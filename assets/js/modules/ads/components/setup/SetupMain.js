@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -31,6 +32,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
+import SupportLink from '../../../../components/SupportLink';
 
 export default function SetupMain( { finishSetup } ) {
 	return (
@@ -44,9 +46,19 @@ export default function SetupMain( { finishSetup } ) {
 			</h2>
 
 			<div className="googlesitekit-setup-module__description">
-				{ __(
-					'Ad your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.',
-					'google-site-kit'
+				{ createInterpolateElement(
+					__(
+						'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<SupportLink
+								path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+								external
+							/>
+						),
+					}
 				) }
 				<br />
 				{ __(

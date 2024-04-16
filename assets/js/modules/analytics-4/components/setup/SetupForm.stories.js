@@ -62,9 +62,9 @@ export default {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					adsConversionID: '',
+				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );

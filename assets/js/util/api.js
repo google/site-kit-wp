@@ -26,6 +26,9 @@ export const excludedErrorCodes = [
 	'fetch_error', // Client failed to fetch from WordPress.
 ];
 
+// Datapoints that we want to exclude from tracking API errors.
+export const excludedEndpoints = [ 'core/site/data/connection-check' ];
+
 /**
  * Tracks API errors.
  *
@@ -38,15 +41,16 @@ export const excludedErrorCodes = [
  * @param {Object} args.datapoint  The request datapoint.
  * @param {Object} args.error      The request error.
  */
-export async function trackAPIError( {
-	method,
-	type,
-	identifier,
-	datapoint,
-	error,
-} ) {
-	// Exclude certain errors from tracking based on error code.
+export async function trackAPIError( args ) {
+	const { method, type, identifier, datapoint, error } = args;
 
+	// Return early if the endpoint should be excluded from tracking.
+	const endpoint = `${ type }/${ identifier }/data/${ datapoint }`;
+	if ( excludedEndpoints.includes( endpoint ) ) {
+		return;
+	}
+
+	// Exclude certain errors from tracking based on error code.
 	if ( ! error || excludedErrorCodes.includes( error?.code ) ) {
 		return;
 	}

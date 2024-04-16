@@ -35,7 +35,7 @@ const { useSelect, useDispatch } = Data;
 /**
  * Migrates the Ads Conversion ID from Analytics to the Ads module.
  *
- * @since n.e.x.t
+ * @since 1.124.0
  *
  * @return {boolean} True if the migration is in progress, otherwise false.
  */
@@ -64,7 +64,7 @@ export default function useMigrateAdsConversionID() {
 			return null;
 		}
 
-		return select( MODULES_ADS ).getAdsConversionID();
+		return select( MODULES_ADS ).getConversionID();
 	} );
 
 	const { activateModule, fetchGetModules } = useDispatch( CORE_MODULES );
@@ -93,7 +93,7 @@ export default function useMigrateAdsConversionID() {
 		const migrate = async () => {
 			setLoading( true );
 
-			await dispatch.setAdsConversionID( legacyAdsConversionID );
+			await dispatch.setConversionID( legacyAdsConversionID );
 			await dispatch.submitChanges();
 
 			await setLegacyAdsConversionID( '' );

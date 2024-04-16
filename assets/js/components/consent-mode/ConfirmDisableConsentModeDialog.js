@@ -43,8 +43,7 @@ export default function ConfirmDisableConsentModeDialog( {
 	const viewContext = useViewContext();
 
 	const dependentModuleNames = useSelect( ( select ) =>
-		// TODO: Add the Ads module to this list when the Ads Conversion ID is migrated to it.
-		[ 'analytics-4' ].reduce( ( names, slug ) => {
+		[ 'analytics-4', 'ads' ].reduce( ( names, slug ) => {
 			if ( select( CORE_MODULES ).isModuleConnected( slug ) ) {
 				return [
 					...names,
@@ -76,7 +75,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			dialogActive
 			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
 			subtitle={ __(
-				'Disabling consent mode will remove the additional tag from your website. In the European Economic Area and the United Kingdom, you will no longer be able to track:',
+				'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
 				'google-site-kit'
 			) }
 			handleConfirm={ onConfirm }

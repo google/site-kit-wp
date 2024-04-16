@@ -35,19 +35,24 @@ import Data from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { isValidAdsConversionID } from '../../utils/validation';
+import { isValidConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 const { useSelect, useDispatch } = Data;
 
-export default function AdsConversionIDTextField( { helperText } ) {
-	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ADS ).getAdsConversionID()
+export default function ConversionIDTextField( { helperText } ) {
+	const conversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getConversionID()
 	);
 
-	const [ isValid, setIsValid ] = useState( false );
+	// Don't show a validation error before user interacts with the field
+	// in setup. When editing show validation error immediately if the value
+	// is invalid.
+	const [ isValid, setIsValid ] = useState(
+		! conversionID || isValidConversionID( conversionID )
+	);
 	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
-	const { setAdsConversionID } = useDispatch( MODULES_ADS );
+	const { setConversionID } = useDispatch( MODULES_ADS );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
 			let newValue = currentTarget.value.trim().toUpperCase();
@@ -56,13 +61,13 @@ export default function AdsConversionIDTextField( { helperText } ) {
 				newValue = `AW-${ newValue }`;
 			}
 
-			if ( newValue !== adsConversionID ) {
-				setAdsConversionID( newValue );
+			if ( newValue !== conversionID ) {
+				setConversionID( newValue );
 			}
 
-			debounceSetIsValid( Boolean( isValidAdsConversionID( newValue ) ) );
+			debounceSetIsValid( isValidConversionID( newValue ) );
 		},
-		[ debounceSetIsValid, adsConversionID, setAdsConversionID ]
+		[ debounceSetIsValid, conversionID, setConversionID ]
 	);
 
 	return (
@@ -79,9 +84,12 @@ export default function AdsConversionIDTextField( { helperText } ) {
 
 			<TextField
 				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
-				className={ classnames( {
-					'mdc-text-field--error': ! isValid,
-				} ) }
+				className={ classnames(
+					'googlesitekit-text-field-conversion-tracking-id',
+					{
+						'mdc-text-field--error': ! isValid,
+					}
+				) }
 				helperText={
 					! isValid &&
 					__(
@@ -107,7 +115,7 @@ export default function AdsConversionIDTextField( { helperText } ) {
 					)
 				}
 				outlined
-				value={ adsConversionID?.replace( /^(AW)?-?/, '' ) }
+				value={ conversionID?.replace( /^(AW)?-?/, '' ) }
 				onChange={ onChange }
 				maxLength={ 20 }
 			/>

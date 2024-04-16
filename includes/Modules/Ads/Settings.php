@@ -46,7 +46,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'adsConversionID' => '',
+			'conversionID' => '',
 		);
 	}
 
@@ -58,6 +58,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for owned settings.
 	 */
 	public function get_owned_keys() {
-		return array( 'adsConversionID' );
+		return array( 'conversionID' );
 	}
 }

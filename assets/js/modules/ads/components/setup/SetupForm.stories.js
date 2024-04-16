@@ -28,15 +28,86 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template() {
-	return <ModuleSetup moduleSlug="ads" />;
+function Template( { setupRegistry = () => {} } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<ModuleSetup moduleSlug="ads" />
+		</WithRegistrySetup>
+	);
 }
 
-export const Default = Template.bind( null );
+export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Modules/Ads/Setup/SetupForm/Default',
-	delay: 250,
+};
+
+export const Empty = Template.bind( {} );
+Empty.storyName = 'Empty';
+Empty.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'ads',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideSiteInfo( registry );
+		provideModuleRegistrations( registry );
+
+		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
+	},
+};
+Empty.scenario = {
+	label: 'Modules/Ads/Setup/SetupForm/Empty',
+};
+
+export const Invalid = Template.bind( {} );
+Invalid.storyName = 'Invalid';
+Invalid.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'ads',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideSiteInfo( registry );
+		provideModuleRegistrations( registry );
+
+		registry
+			.dispatch( MODULES_ADS )
+			.setSettings( { conversionID: 'AW-123456789' } );
+		registry
+			.dispatch( MODULES_ADS )
+			.setSettings( { conversionID: 'AW-ABCDEFGHIJ' } );
+	},
+};
+Invalid.scenario = {
+	label: 'Modules/Ads/Setup/SetupForm/Invalid',
+};
+
+export const Initial = Template.bind( {} );
+Initial.storyName = 'Initial';
+Initial.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'ads',
+				active: false,
+				connected: false,
+			},
+		] );
+
+		provideSiteInfo( registry );
+		provideModuleRegistrations( registry );
+
+		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
+	},
 };
 
 export default {
@@ -57,7 +128,7 @@ export default {
 
 				registry
 					.dispatch( MODULES_ADS )
-					.setSettings( { adsConversionID: 'AW-123456789' } );
+					.setSettings( { conversionID: 'AW-123456789' } );
 			};
 
 			return (
