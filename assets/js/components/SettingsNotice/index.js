@@ -20,5 +20,4 @@
  * Internal dependencies
  */
 export { default } from './SettingsNotice';
-export { default as SettingsNoticeWithIntersectionObserver } from './SettingsNoticeWithIntersectionObserver';
 export { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from './utils';
