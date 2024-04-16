@@ -168,17 +168,19 @@ describe( 'modules/analytics-4 audiences', () => {
 		} );
 
 		describe( 'syncAvailableAudiences', () => {
+			const availableAudiences = [
+				{
+					name: 'properties/123456789/audiences/0987654321',
+					displayName: 'All Users',
+					description: 'All users',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'all-users',
+				},
+			];
+
 			it( 'should make a network request to sync available audiences', () => {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: [
-						{
-							name: 'properties/123456789/audiences/0987654321',
-							displayName: 'All Users',
-							description: 'All users',
-							audienceType: 'DEFAULT_AUDIENCE',
-							audienceSlug: 'all-users',
-						},
-					],
+					body: availableAudiences,
 					status: 200,
 				} );
 
@@ -189,6 +191,48 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				const error = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForAction( 'syncAvailableAudiences' );
+
+				expect( error ).toMatchObject( response );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should update the `availableAudiences` datastore module setting value', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( availableAudiences );
 			} );
 		} );
 	} );
