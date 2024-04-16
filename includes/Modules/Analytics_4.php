@@ -2225,22 +2225,20 @@ final class Analytics_4 extends Module
 
 		$filter_clauses = $audience->getFilterClauses();
 
-		if ( ! $filter_clauses ) {
-			return '';
-		}
+		if ( $filter_clauses ) {
+			if ( $this->has_deep_value(
+				$filter_clauses,
+				'created_by_googlesitekit:new_visitors'
+			) ) {
+				return 'new-visitors';
+			}
 
-		if ( $this->has_deep_value(
-			$filter_clauses,
-			'created_by_googlesitekit:new_visitors'
-		) ) {
-			return 'new-visitors';
-		}
-
-		if ( $this->has_deep_value(
-			$filter_clauses,
-			'created_by_googlesitekit:returning_visitors'
-		) ) {
-			return 'returning-visitors';
+			if ( $this->has_deep_value(
+				$filter_clauses,
+				'created_by_googlesitekit:returning_visitors'
+			) ) {
+				return 'returning-visitors';
+			}
 		}
 
 		// Return an empty string for user defined audiences.
