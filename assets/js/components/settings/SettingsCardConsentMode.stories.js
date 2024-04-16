@@ -50,6 +50,19 @@ export const WithAdsConnected = Template.bind( {} );
 WithAdsConnected.storyName = 'WithAdsConnected';
 WithAdsConnected.args = {
 	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics-4',
+			},
+			{
+				active: true,
+				connected: true,
+				slug: 'ads',
+			},
+		] );
+
 		// Set consent mode to disabled in order to show the additional Ads related notice.
 		registry.dispatch( CORE_SITE ).setConsentModeEnabled( false );
 
@@ -149,8 +162,8 @@ export default {
 						slug: 'analytics-4',
 					},
 					{
-						active: true,
-						connected: true,
+						active: false,
+						connected: false,
 						slug: 'ads',
 					},
 				] );
@@ -162,10 +175,6 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
-
-				registry.dispatch( MODULES_ADS ).setSettings( {
-					conversionID: '',
-				} );
 
 				// Mock the consent mode endpoint to allow toggling the switch.
 				fetchMock.post(

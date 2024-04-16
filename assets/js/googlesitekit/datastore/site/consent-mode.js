@@ -23,7 +23,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_SITE } from './constants';
-import { MODULES_ADS } from '../../../modules/ads/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
@@ -180,42 +179,42 @@ const baseSelectors = {
 	isAdsConnected: createRegistrySelector( ( select ) => () => {
 		const { isModuleConnected } = select( CORE_MODULES );
 
-		if (
-			! isModuleConnected( 'analytics-4' ) ||
-			! isModuleConnected( 'ads' )
-		) {
-			return false;
-		}
-
-		const { getAdsLinked, getGoogleTagContainerDestinationIDs } =
-			select( MODULES_ANALYTICS_4 );
-		const { getConversionID } = select( MODULES_ADS );
-
-		const conversionID = getConversionID();
-		const adsLinked = getAdsLinked();
-		const googleTagContainerDestinationIDs =
-			getGoogleTagContainerDestinationIDs();
-
-		if (
-			[
-				conversionID,
-				adsLinked,
-				googleTagContainerDestinationIDs,
-			].includes( undefined )
-		) {
-			return undefined;
-		}
-
-		if (
-			Array.isArray( googleTagContainerDestinationIDs ) &&
-			googleTagContainerDestinationIDs.some( ( id ) =>
-				id.startsWith( 'AW-' )
-			)
-		) {
+		// The Ads module being connected implies that an Ads conversion tracking
+		// ID is set. If so, return true.
+		if ( isModuleConnected( 'ads' ) ) {
 			return true;
 		}
 
-		return !! conversionID || !! adsLinked;
+		if ( isModuleConnected( 'analytics-4' ) ) {
+			const { getAdsLinked, getGoogleTagContainerDestinationIDs } =
+				select( MODULES_ANALYTICS_4 );
+
+			const adsLinked = getAdsLinked();
+			const googleTagContainerDestinationIDs =
+				getGoogleTagContainerDestinationIDs();
+
+			// If necessary settings have not loaded, return undefined.
+			if (
+				[ adsLinked, googleTagContainerDestinationIDs ].includes(
+					undefined
+				)
+			) {
+				return undefined;
+			}
+
+			if (
+				Array.isArray( googleTagContainerDestinationIDs ) &&
+				googleTagContainerDestinationIDs.some( ( id ) =>
+					id.startsWith( 'AW-' )
+				)
+			) {
+				return true;
+			}
+
+			return !! adsLinked;
+		}
+
+		return false;
 	} ),
 };
 
