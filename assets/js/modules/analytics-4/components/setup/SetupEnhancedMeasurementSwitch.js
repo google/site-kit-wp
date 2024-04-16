@@ -15,11 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -29,6 +28,7 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
@@ -109,30 +109,17 @@ export default function SetupEnhancedMeasurementSwitch() {
 		);
 	} );
 
-	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
-	);
-
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { getValue } = useSelect( ( select ) => select( CORE_FORMS ) );
 
-	// If `isEnhancedMeasurementEnabled` is already defined in the first render, it means we're rendering this component
-	// after the user has actively selected the setting, in which case we don't want to override the setting to `true` in
-	// the `useEffect()` unless the account, property, or web data stream selection is subsequently changed.
-	const skipEffect = useRef( isEnhancedMeasurementEnabled !== undefined );
-
-	useEffect( () => {
-		if ( skipEffect.current ) {
-			skipEffect.current = false;
-			return;
+	useMount( () => {
+		const autoSubmit = getValue( FORM_SETUP, 'autoSubmit' );
+		if ( ! autoSubmit ) {
+			setValues( ENHANCED_MEASUREMENT_FORM, {
+				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+			} );
 		}
-
-		setValues( ENHANCED_MEASUREMENT_FORM, {
-			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-		} );
-	}, [ accountID, propertyID, webDataStreamID, setValues ] );
+	} );
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;

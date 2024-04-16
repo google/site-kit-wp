@@ -58,7 +58,7 @@ export default function SetupSuccessSubtleNotification() {
 					<div className="googlesitekit-subtle-notification__content">
 						<p>
 							{ __(
-								'Success! Your Conversion tracking ID was added to your site',
+								'Success! Your Conversion Tracking ID was added to your site',
 								'google-site-kit'
 							) }
 						</p>
