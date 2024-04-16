@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as AdsConversionIDTextField } from './AdsConversionIDTextField';
+export { default as ConversionIDTextField } from './ConversionIDTextField';

@@ -622,8 +622,13 @@ const baseActions = {
 			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
-		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
-			select( MODULES_ANALYTICS_4 );
+		const {
+			getGoogleTagID,
+			getMeasurementID,
+			getGoogleTagLastSyncedAtMs,
+			getGoogleTagAccountID,
+			getGoogleTagContainerID,
+		} = select( MODULES_ANALYTICS_4 );
 
 		const measurementID = getMeasurementID();
 
@@ -658,9 +663,28 @@ const baseActions = {
 			yield baseActions.updateSettingsForMeasurementID( measurementID );
 		}
 
-		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
-			Date.now()
+		const googleTagAccountID = getGoogleTagAccountID();
+		const googleTagContainerID = getGoogleTagContainerID();
+
+		const googleTagContainerDestinations = yield Data.commonActions.await(
+			__experimentalResolveSelect(
+				MODULES_ANALYTICS_4
+			).getGoogleTagContainerDestinations(
+				googleTagAccountID,
+				googleTagContainerID
+			)
 		);
+
+		const googleTagContainerDestinationIDs =
+			googleTagContainerDestinations.map(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { destinationId } ) => destinationId
+			);
+
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			googleTagContainerDestinationIDs,
+			googleTagLastSyncedAtMs: Date.now(),
+		} );
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},

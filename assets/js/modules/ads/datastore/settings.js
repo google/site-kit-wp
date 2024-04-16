@@ -48,7 +48,7 @@ export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
 	const { haveSettingsChanged } = strictSelect( MODULES_ADS );
 
-	// Since adsConversionID can be saved as empty value, no specific
+	// Since conversionID can be saved as empty value, no specific
 	// validation is defined here other than confirming the settings
 	// have changed.
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );

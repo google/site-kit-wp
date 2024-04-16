@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import { isValidAdsConversionID } from './validation';
+import { isValidConversionID } from './validation';
 
 describe( 'modules/ads validations', () => {
-	describe( 'isValidAdsConversionID', () => {
-		it( 'should return TRUE when a valid AdsConversionID is passed', () => {
-			expect( isValidAdsConversionID( 'AW-123456789' ) ).toBe( true );
+	describe( 'isValidConversionID', () => {
+		it( 'should return TRUE when a valid conversionID is passed', () => {
+			expect( isValidConversionID( 'AW-123456789' ) ).toBe( true );
 		} );
 
 		it.each( [
@@ -36,13 +36,8 @@ describe( 'modules/ads validations', () => {
 				'a string starts with AW but ends without numbers',
 				'AW-ABCDEFGHI',
 			],
-		] )(
-			'should return FALSE when %s is passed',
-			( _, adsConversionID ) => {
-				expect( isValidAdsConversionID( adsConversionID ) ).toBe(
-					false
-				);
-			}
-		);
+		] )( 'should return FALSE when %s is passed', ( _, conversionID ) => {
+			expect( isValidConversionID( conversionID ) ).toBe( false );
+		} );
 	} );
 } );

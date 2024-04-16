@@ -65,7 +65,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		} );
 
 		expect(
-			registry.select( MODULES_ADS ).getAdsConversionID()
+			registry.select( MODULES_ADS ).getConversionID()
 		).toBeUndefined();
 
 		expect( fetchMock ).not.toHaveFetched();
@@ -79,7 +79,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		// that is different than what is set in the Analytics module (AW-1234).
 		registry
 			.dispatch( MODULES_ADS )
-			.receiveGetSettings( { adsConversionID: 'AW-5678' } );
+			.receiveGetSettings( { conversionID: 'AW-5678' } );
 
 		renderHook( () => useMigrateAdsConversionID(), {
 			registry,
@@ -87,7 +87,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		} );
 
 		// Verify that the value has not changed.
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			'AW-5678'
 		);
 
@@ -98,7 +98,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		// Set the ads conversion ID in the Ads module.
 		registry
 			.dispatch( MODULES_ADS )
-			.receiveGetSettings( { adsConversionID } );
+			.receiveGetSettings( { conversionID: adsConversionID } );
 
 		provideModules( registry );
 
@@ -149,7 +149,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		);
 
 		fetchMock.postOnce( new RegExp( endpoints.adsSettings ), {
-			body: { adsConversionID },
+			body: { conversionID: adsConversionID },
 			status: 200,
 		} );
 		fetchMock.postOnce( new RegExp( endpoints.analyticsSettings ), {
@@ -159,7 +159,7 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		await waitForNextUpdate();
 
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			adsConversionID
 		);
 	} );
@@ -183,7 +183,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		);
 
 		fetchMock.postOnce( new RegExp( endpoints.adsSettings ), {
-			body: { adsConversionID },
+			body: { conversionID: adsConversionID },
 			status: 200,
 		} );
 		fetchMock.postOnce( new RegExp( endpoints.analyticsSettings ), {
@@ -214,7 +214,7 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		await waitForNextUpdate();
 
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			adsConversionID
 		);
 
@@ -245,7 +245,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		expect( result.current ).toBe( true );
 
 		fetchMock.postOnce( new RegExp( endpoints.adsSettings ), {
-			body: { adsConversionID },
+			body: { conversionID: adsConversionID },
 			status: 200,
 		} );
 		fetchMock.postOnce( new RegExp( endpoints.analyticsSettings ), {
@@ -258,7 +258,7 @@ describe( 'useMigrateAdsConversionID', () => {
 		// Verify that the hook returns false if the migration not in progress.
 		expect( result.current ).toBe( false );
 
-		expect( registry.select( MODULES_ADS ).getAdsConversionID() ).toBe(
+		expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
 			adsConversionID
 		);
 	} );
