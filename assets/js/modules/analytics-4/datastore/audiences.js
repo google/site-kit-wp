@@ -68,6 +68,15 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	baseName: 'syncAvailableAudiences',
 	controlCallback: () =>
 		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
+	reducerCallback: ( state, audiences ) => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				availableAudiences: [ ...audiences ],
+			},
+		};
+	},
 } );
 
 const baseInitialState = {
