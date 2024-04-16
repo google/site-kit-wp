@@ -1,7 +1,7 @@
 /**
- * Settings notice component.
+ * Settings notice with IntersectionObserver component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ function SettingsNoticeWithIntersectionObserver( {
 	onInView,
 	...settingsNoticeProps
 } ) {
-	const trackingRef = useRef();
-	const intersectionEntry = useIntersection( trackingRef, {
+	const inViewRef = useRef();
+	const intersectionEntry = useIntersection( inViewRef, {
 		root: null,
 		threshold: 0.45,
 	} );
@@ -59,7 +59,7 @@ function SettingsNoticeWithIntersectionObserver( {
 		}
 	}, [ hasBeenInView, inView, intersectionEntry, onInView ] );
 
-	return <SettingsNotice ref={ trackingRef } { ...settingsNoticeProps } />;
+	return <SettingsNotice ref={ inViewRef } { ...settingsNoticeProps } />;
 }
 
 SettingsNoticeWithIntersectionObserver.propTypes = {
