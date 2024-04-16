@@ -1,5 +1,5 @@
 /**
- * Settings notice with IntersectionObserver component.
+ * Component with IntersectionObserver.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -27,17 +27,7 @@ import PropTypes from 'prop-types';
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
 
-/**
- * Internal dependencies
- */
-import SettingsNotice from './SettingsNotice';
-
-// TODO: This could renamed/moved to be more generic e.g. `ComponentWithIntersectionObserver`,
-// or refactored to a HOC.
-function SettingsNoticeWithIntersectionObserver( {
-	onInView,
-	...settingsNoticeProps
-} ) {
+function ComponentWithIntersectionObserver( { onInView, children } ) {
 	const inViewRef = useRef();
 	const intersectionEntry = useIntersection( inViewRef, {
 		root: null,
@@ -59,12 +49,11 @@ function SettingsNoticeWithIntersectionObserver( {
 		}
 	}, [ hasBeenInView, inView, intersectionEntry, onInView ] );
 
-	return <SettingsNotice ref={ inViewRef } { ...settingsNoticeProps } />;
+	return <div ref={ inViewRef }>{ children }</div>;
 }
 
-SettingsNoticeWithIntersectionObserver.propTypes = {
+ComponentWithIntersectionObserver.propTypes = {
 	onInView: PropTypes.func.isRequired,
-	...SettingsNotice.propTypes,
 };
 
-export default SettingsNoticeWithIntersectionObserver;
+export default ComponentWithIntersectionObserver;
