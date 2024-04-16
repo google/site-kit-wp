@@ -70,7 +70,7 @@ export const registerModule = ( modules ) => {
 		],
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
-				.__experimentalResolveSelect( MODULES_ADSENSE )
+				.__experimentalResolveSelect( CORE_USER )
 				.isAdBlockerActive();
 
 			if ( ! adBlockerActive ) {
