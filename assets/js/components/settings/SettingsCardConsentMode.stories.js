@@ -23,6 +23,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '../../modules/ads/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
@@ -49,6 +50,19 @@ export const WithAdsConnected = Template.bind( {} );
 WithAdsConnected.storyName = 'WithAdsConnected';
 WithAdsConnected.args = {
 	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics-4',
+			},
+			{
+				active: true,
+				connected: true,
+				slug: 'ads',
+			},
+		] );
+
 		// Set consent mode to disabled in order to show the additional Ads related notice.
 		registry.dispatch( CORE_SITE ).setConsentModeEnabled( false );
 
@@ -56,8 +70,11 @@ WithAdsConnected.args = {
 			.dispatch( CORE_SITE )
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
 
+		registry.dispatch( MODULES_ADS ).setSettings( {
+			conversionID: 'AW-123456789',
+		} );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			adsConversionID: 'AW-123456789',
 			// Set the following to default, as otherwise if it is set to
 			// undefined, the `core/site` `isAdsConnected` selector will
 			// return undefined.
@@ -143,6 +160,11 @@ export default {
 						active: true,
 						connected: true,
 						slug: 'analytics-4',
+					},
+					{
+						active: false,
+						connected: false,
+						slug: 'ads',
 					},
 				] );
 

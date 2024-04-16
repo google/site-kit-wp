@@ -106,5 +106,17 @@ describe( 'modules/ads settings', () => {
 				validateCanSubmitChanges( registry.select )
 			).not.toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
 		} );
+
+		it( 'should throw if the given conversion ID is invalid', () => {
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: '12345',
+			} );
+
+			registry.dispatch( MODULES_ADS ).setConversionID( 'invalid' );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				'a valid conversionID is required to submit changes'
+			);
+		} );
 	} );
 } );
