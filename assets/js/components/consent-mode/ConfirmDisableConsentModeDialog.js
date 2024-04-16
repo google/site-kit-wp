@@ -31,7 +31,7 @@ import { useMemo } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADS } from '../../modules/ads/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { listFormat, trackEvent } from '../../util';
 import ModalDialog from '../ModalDialog';
 import useViewContext from '../../hooks/useViewContext';
@@ -44,8 +44,8 @@ export default function ConfirmDisableConsentModeDialog( {
 } ) {
 	const viewContext = useViewContext();
 
-	const conversionID = useSelect( ( select ) =>
-		select( MODULES_ADS ).getConversionID()
+	const isAdsConnected = useSelect( ( select ) =>
+		select( CORE_SITE ).isAdsConnected()
 	);
 
 	const dependentModuleNames = useSelect( ( select ) =>
@@ -76,32 +76,43 @@ export default function ConfirmDisableConsentModeDialog( {
 		trackEvent( `${ viewContext }_CoMo`, 'view_modal' );
 	} );
 
-	const provides = useMemo( () => {
+	const { provides, subtitle } = useMemo( () => {
 		let providesArray = [
 			__(
-				'How visitors interact with your site via Analytics',
+				'Track how visitors interact with your site',
 				'google-site-kit'
 			),
 		];
+		let subtitleText = __(
+			'Disabling consent mode may affect your ability in the European Economic Area and the United Kingdom to:',
+			'google-site-kit'
+		);
 
-		if ( conversionID ) {
+		if ( isAdsConnected ) {
 			providesArray = [
-				...providesArray,
+				__(
+					'How visitors interact with your site via Analytics',
+					'google-site-kit'
+				),
 				__( 'Performance of your Ad campaigns', 'google-site-kit' ),
 			];
+			subtitleText = __(
+				'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
+				'google-site-kit'
+			);
 		}
 
-		return providesArray;
-	}, [ conversionID ] );
+		return {
+			provides: providesArray,
+			subtitle: subtitleText,
+		};
+	}, [ isAdsConnected ] );
 
 	return (
 		<ModalDialog
 			dialogActive
 			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
-			subtitle={ __(
-				'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
-				'google-site-kit'
-			) }
+			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
 			handleDialog={ onCancel }
 			provides={ provides }
