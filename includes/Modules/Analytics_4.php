@@ -235,7 +235,7 @@ final class Analytics_4 extends Module
 			}
 		);
 
-		// Check if the property ID has changed and reset applicable setting to null.
+		// Check if the property ID has changed and reset applicable settings to null.
 		//
 		// This is not done using the `get_settings()->merge` method because
 		// `Module_Settings::merge` doesn't support setting a value to `null`.
