@@ -21,7 +21,7 @@ trait Tag_With_Linker_Trait {
 	/**
 	 * Holds the value of the domain for the linker config option in the gtag.
 	 *
-	 * @var string $home_domain The sites domain for linker property.
+	 * @var string $home_domain The site's domain for linker property.
 	 */
 	private $home_domain;
 
