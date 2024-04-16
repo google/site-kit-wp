@@ -148,7 +148,7 @@ describe( 'core/modules settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return true when module setting have changed', async () => {
+			it( 'should return true when module settings have changed', async () => {
 				expect(
 					registry.select( CORE_MODULES ).haveSettingsChanged( slug )
 				).toBe( false );
@@ -179,6 +179,31 @@ describe( 'core/modules settings', () => {
 				expect( select.haveSettingsChanged() ).toEqual( true );
 
 				// False after updating settings back to original server value on client.
+				dispatch.setSettings( serverValues );
+				expect( select.haveSettingsChanged() ).toEqual( false );
+			} );
+
+			it( 'should return false when module settings have not changed', async () => {
+				expect(
+					registry.select( CORE_MODULES ).haveSettingsChanged( slug )
+				).toBe( false );
+				const serverValues = { testSetting: 'serverside' };
+
+				const select = registry.select( moduleStoreName );
+				const dispatch = registry.dispatch( moduleStoreName );
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/test-module/data/settings'
+					),
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
 				dispatch.setSettings( serverValues );
 				expect( select.haveSettingsChanged() ).toEqual( false );
 			} );
