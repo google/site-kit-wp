@@ -374,7 +374,7 @@ const baseSelectors = {
 	/**
 	 * Gets a given report for each of the provided audiences.
 	 *
-	 * NOTE: This will be refactored to use pivot reports in #8484.
+	 * TODO: This will be refactored to use pivot reports in #8484.
 	 *
 	 * @since n.e.x.t
 	 *

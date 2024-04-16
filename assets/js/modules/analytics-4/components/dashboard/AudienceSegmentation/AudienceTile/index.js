@@ -71,7 +71,10 @@ export default function AudienceTile( {
 							<div className="googlesitekit-audience-segmentation-tile__header-title">
 								{ title }
 								{ infoTooltip && (
-									<InfoTooltip title={ infoTooltip } />
+									<InfoTooltip
+										title={ infoTooltip }
+										tooltipClassName="googlesitekit-audience-tiles-info-tooltip__content"
+									/>
 								) }
 							</div>
 						</div>

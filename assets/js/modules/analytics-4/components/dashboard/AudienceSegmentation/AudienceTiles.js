@@ -24,8 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useState } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,7 +43,7 @@ import {
 } from '../../../../../hooks/useBreakpoint';
 import { Tab, TabBar } from 'googlesitekit-components';
 import InfoTooltip from '../../../../../components/InfoTooltip';
-import Link from '../../../../../components/Link';
+import AudienceTooltipMessage from './AudienceTooltipMessage';
 
 const { useSelect } = Data;
 
@@ -53,77 +52,6 @@ export default function AudienceTiles( { Widget } ) {
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-
-	const audienceToolTip = ( audienceName ) => {
-		switch ( audienceName ) {
-			case 'New visitors':
-				return createInterpolateElement(
-					sprintf(
-						/* translators: %s: is the audience name */
-						__(
-							'%s are people who visited your site for the first time. Note that under some circumstances it\'s possible for a visitor to be counted in both the "new" and "returning" groups. <link>Learn more</link>',
-							'google-site-kit'
-						),
-						'<strong>New visitors</strong>'
-					),
-					{
-						strong: <strong />,
-						link: (
-							<Link
-								// NOTE: The link must be updated here to the correct support URL once written.
-								href="https://sitekit.withgoogle.com/documentation/"
-								external
-								hideExternalIndicator
-							/>
-						),
-					}
-				);
-			case 'Returning visitors':
-				return createInterpolateElement(
-					sprintf(
-						/* translators: %s: is the audience name */
-						__(
-							'%s are people who have visited your site at least once before. Note that under some circumstances it\'s possible for a visitor to be counted in both the "new" and "returning" groups. <link>Learn more</link>',
-							'google-site-kit'
-						),
-						'<strong>Returning visitors</strong>'
-					),
-					{
-						strong: <strong />,
-						link: (
-							<Link
-								// NOTE: The link must be updated here to the correct support URL once written.
-								href="https://sitekit.withgoogle.com/documentation/"
-								external
-								hideExternalIndicator
-							/>
-						),
-					}
-				);
-			default:
-				return createInterpolateElement(
-					sprintf(
-						/* translators: %s: is the audience name */
-						__(
-							"%s is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. <link>Learn more</link>",
-							'google-site-kit'
-						),
-						`<strong>${ audienceName }</strong>`
-					),
-					{
-						strong: <strong />,
-						link: (
-							<Link
-								// NOTE: The link must be updated here to the correct support URL once written.
-								href="https://sitekit.withgoogle.com/documentation/"
-								external
-								hideExternalIndicator
-							/>
-						),
-					}
-				);
-		}
-	};
 
 	// An array of audience entity names.
 	const configuredAudiences = useSelect( ( select ) =>
@@ -247,7 +175,11 @@ export default function AudienceTiles( { Widget } ) {
 					}
 				>
 					{ audiences.map( ( { displayName }, index ) => {
-						const toolTipMessage = audienceToolTip( displayName );
+						const tooltipMessage = (
+							<AudienceTooltipMessage
+								audienceName={ displayName }
+							/>
+						);
 
 						return (
 							<Tab
@@ -256,7 +188,7 @@ export default function AudienceTiles( { Widget } ) {
 							>
 								{ displayName }
 								<InfoTooltip
-									title={ toolTipMessage }
+									title={ tooltipMessage }
 									tooltipClassName="googlesitekit-audience-tiles-info-tooltip__content"
 								/>
 							</Tab>
@@ -282,8 +214,6 @@ export default function AudienceTiles( { Widget } ) {
 						audiences?.filter(
 							( { name } ) => name === audienceResourceName
 						)?.[ 0 ]?.displayName || '';
-
-					const toolTipMessage = audienceToolTip( audienceName );
 
 					const visitors =
 						Number(
@@ -342,7 +272,11 @@ export default function AudienceTiles( { Widget } ) {
 						<AudienceTile
 							key={ audienceResourceName }
 							title={ audienceName }
-							infoTooltip={ toolTipMessage }
+							infoTooltip={
+								<AudienceTooltipMessage
+									audienceName={ audienceName }
+								/>
+							}
 							visitors={ {
 								currentValue: visitors,
 								previousValue: prevVisitors,
