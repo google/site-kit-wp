@@ -36,7 +36,9 @@ export default function AdBlockerWarning( { context } ) {
 		select( MODULES_ADSENSE ).getAdBlockerWarningMessage()
 	);
 	const getHelpLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ad-blocker-detected' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'adsense-ad-blocker-detected'
+		)
 	);
 
 	return (
