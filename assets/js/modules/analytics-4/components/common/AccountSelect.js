@@ -37,7 +37,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function AccountSelect( { hasModuleAccess } ) {
+export default function AccountSelect( { hasModuleAccess, onChange } ) {
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -54,7 +54,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const onChange = useCallback(
+	const onAccountChange = useCallback(
 		( index, item ) => {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
@@ -65,9 +65,13 @@ export default function AccountSelect( { hasModuleAccess } ) {
 						? 'change_account_new'
 						: 'change_account';
 				trackEvent( `${ viewContext }_analytics`, action );
+
+				if ( onChange ) {
+					onChange();
+				}
 			}
 		},
-		[ accountID, selectAccount, viewContext ]
+		[ accountID, selectAccount, viewContext, onChange ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
@@ -94,7 +98,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 			className="googlesitekit-analytics__select-account"
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
-			onEnhancedChange={ onChange }
+			onEnhancedChange={ onAccountChange }
 			enhanced
 			outlined
 		>
