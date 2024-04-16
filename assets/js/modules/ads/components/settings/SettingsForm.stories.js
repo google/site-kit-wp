@@ -55,7 +55,7 @@ Default.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-				adsConversionID: 'AW-123456789',
+				conversionID: 'AW-123456789',
 			} );
 		};
 
