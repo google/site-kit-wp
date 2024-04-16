@@ -2226,16 +2226,16 @@ final class Analytics_4 extends Module
 		$filter_clauses = $audience->getFilterClauses();
 
 		if ( $filter_clauses ) {
-			if ( $this->has_deep_value(
+			if ( $this->has_audience_site_kit_identifier(
 				$filter_clauses,
-				'created_by_googlesitekit:new_visitors'
+				'new_visitors'
 			) ) {
 				return 'new-visitors';
 			}
 
-			if ( $this->has_deep_value(
+			if ( $this->has_audience_site_kit_identifier(
 				$filter_clauses,
-				'created_by_googlesitekit:returning_visitors'
+				'returning_visitors'
 			) ) {
 				return 'returning-visitors';
 			}
@@ -2269,25 +2269,30 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Checks if a deep value exists in a nested array or object.
+	 * Checks if an audience Site Kit identifier
+	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array|object $data The array or object to search.
-	 * @param mixed        $desired_value The value to search for.
+	 * @param mixed        $identifier The identifier to search for.
 	 * @return bool True if the value exists, false otherwise.
 	 */
-	private function has_deep_value( $data, $desired_value ) {
+	private function has_audience_site_kit_identifier( $data, $identifier ) {
 		if ( is_array( $data ) || is_object( $data ) ) {
-			foreach ( $data as $value ) {
+			foreach ( $data as $key => $value ) {
 				if ( is_array( $value ) || is_object( $value ) ) {
 					// Recursively search the nested structure.
-					$result = $this->has_deep_value( $value, $desired_value );
+					$result = $this->has_audience_site_kit_identifier( $value, $identifier );
 
 					if ( false !== $result ) {
 						return $result;
 					}
-				} elseif ( $value === $desired_value ) {
+				} elseif (
+					'fieldName' === $key &&
+					'groupId' === $value &&
+					"created_by_googlesitekit:{$identifier}" === $data['stringFilter']['value']
+				) {
 					return true;
 				}
 			}
