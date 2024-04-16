@@ -31,7 +31,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockerWarningMessage from '../../../../components/AdBlockerWarningMessage';
 const { useSelect } = Data;
 
-export default function AdBlockerWarning( { context } ) {
+export default function AdBlockerWarning( { context = '' } ) {
 	const adBlockerWarningMessage = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockerWarningMessage()
 	);
@@ -52,8 +52,4 @@ export default function AdBlockerWarning( { context } ) {
 
 AdBlockerWarning.propTypes = {
 	context: PropTypes.string,
-};
-
-AdBlockerWarning.defaultProps = {
-	context: '',
 };
