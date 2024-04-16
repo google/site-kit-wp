@@ -23,6 +23,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_SITE } from './constants';
+import { MODULES_ADS } from '../../../modules/ads/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
@@ -171,35 +172,33 @@ const baseSelectors = {
 	 * Returns true if Google Ads is in use, either through a linked Analytics & Ads
 	 * account, an Ads conversion tracking ID, or via Analytics tag config.
 	 *
-	 * TODO: The Ads conversion tracking ID is being moved to the new "Ads" module. Source
-	 * this ID from the "Ads" module once it's implemented.
-	 *
 	 * @since 1.124.0
-	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config.
+	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config, and to source Conversion ID field from Ads module.
 	 *
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
 	isAdsConnected: createRegistrySelector( ( select ) => () => {
 		const { isModuleConnected } = select( CORE_MODULES );
 
-		if ( ! isModuleConnected( 'analytics-4' ) ) {
+		if (
+			! isModuleConnected( 'analytics-4' ) ||
+			! isModuleConnected( 'ads' )
+		) {
 			return false;
 		}
 
-		const {
-			getAdsConversionID,
-			getAdsLinked,
-			getGoogleTagContainerDestinationIDs,
-		} = select( MODULES_ANALYTICS_4 );
+		const { getAdsLinked, getGoogleTagContainerDestinationIDs } =
+			select( MODULES_ANALYTICS_4 );
+		const { getConversionID } = select( MODULES_ADS );
 
-		const adsConversionID = getAdsConversionID();
+		const conversionID = getConversionID();
 		const adsLinked = getAdsLinked();
 		const googleTagContainerDestinationIDs =
 			getGoogleTagContainerDestinationIDs();
 
 		if (
 			[
-				adsConversionID,
+				conversionID,
 				adsLinked,
 				googleTagContainerDestinationIDs,
 			].includes( undefined )
@@ -216,7 +215,7 @@ const baseSelectors = {
 			return true;
 		}
 
-		return !! adsConversionID || !! adsLinked;
+		return !! conversionID || !! adsLinked;
 	} ),
 };
 
