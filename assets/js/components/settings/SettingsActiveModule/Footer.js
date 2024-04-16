@@ -62,6 +62,9 @@ export default function Footer( props ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitChanges( slug )
 	);
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSettingsChanged( slug )
+	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
@@ -170,7 +173,7 @@ export default function Footer( props ) {
 
 	let buttonText = __( 'Save', 'google-site-kit' );
 
-	if ( canSubmitChanges ) {
+	if ( haveSettingsChanged ) {
 		buttonText = __( 'Confirm changes', 'google-site-kit' );
 	}
 	if ( isSaving ) {
@@ -190,7 +193,12 @@ export default function Footer( props ) {
 			<Fragment>
 				{ hasSettings && moduleConnected ? (
 					<SpinnerButton
-						disabled={ isSaving || isLoading }
+						disabled={
+							isSaving ||
+							isLoading ||
+							( ! canSubmitChanges && // Do not allow the form to be saved if the form is invalid.
+								haveSettingsChanged ) // Allow the form to be saved if the user hasn't made any changes.
+						}
 						onClick={ handleConfirm }
 						isSaving={ isSaving }
 					>

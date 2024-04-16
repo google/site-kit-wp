@@ -537,6 +537,7 @@ describe( 'modules/analytics-4 settings', () => {
 				it( 'accepts a change to analytics-4 settings as a valid change', () => {
 					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 						propertyID: '1001',
+						adsConversionID: '',
 					} );
 
 					expect(
@@ -553,6 +554,9 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				it( 'accepts a change to enhanced measurement settings as a valid change', () => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						adsConversionID: '',
+					} );
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.setEnhancedMeasurementSettings(

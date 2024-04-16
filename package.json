@@ -229,7 +229,7 @@
 		"jsdom-testing-mocks": "^1.6.0",
 		"lint-staged": "^10.2.11",
 		"mini-css-extract-plugin": "^1.2.1",
-		"node-fetch": "^2.6.7",
+		"node-fetch": "^2.6.8",
 		"postcss": "^8.4.31",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^4.0.0",

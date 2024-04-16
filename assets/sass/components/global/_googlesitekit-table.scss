@@ -181,12 +181,15 @@
 		}
 	}
 
-	.googlesitekit-table__body-item-content .googlesitekit-cta-link {
+	.googlesitekit-table__body-item-content {
+		.googlesitekit-cta-link,
+		> span {
 
-		@media (max-width: $bp-tablet) {
-			display: block;
-			overflow: hidden;
-			text-overflow: ellipsis;
+			@media (max-width: $bp-tablet) {
+				display: block;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 		}
 	}
 
