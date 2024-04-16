@@ -20,16 +20,19 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
 	PropertySelect,
@@ -58,6 +61,8 @@ export default function SetupFormFields() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
+	const { setValues } = useDispatch( CORE_FORMS );
+
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
@@ -65,6 +70,12 @@ export default function SetupFormFields() {
 			setUseSnippet( existingTag !== measurementID );
 		}
 	}, [ setUseSnippet, hasExistingTag, existingTag, measurementID ] );
+
+	const resetEnhancedMeasurementSetting = useCallback( () => {
+		setValues( ENHANCED_MEASUREMENT_FORM, {
+			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+		} );
+	}, [ setValues ] );
 
 	return (
 		<Fragment>
@@ -78,9 +89,11 @@ export default function SetupFormFields() {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect />
-				<PropertySelect />
-				<WebDataStreamSelect />
+				<AccountSelect onChange={ resetEnhancedMeasurementSetting } />
+				<PropertySelect onChange={ resetEnhancedMeasurementSetting } />
+				<WebDataStreamSelect
+					onChange={ resetEnhancedMeasurementSetting }
+				/>
 			</div>
 
 			{ webDataStreamID === WEBDATASTREAM_CREATE && (

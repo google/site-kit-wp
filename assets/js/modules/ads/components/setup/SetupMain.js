@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,6 +33,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
+import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
@@ -59,9 +60,19 @@ export default function SetupMain( { finishSetup } ) {
 			{ ! isAdBlockerActive && (
 				<Fragment>
 					<div className="googlesitekit-setup-module__description">
-						{ __(
-							'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.',
-							'google-site-kit'
+						{ createInterpolateElement(
+							__(
+								'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<SupportLink
+										path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+										external
+									/>
+								),
+							}
 						) }
 						<br />
 						{ __(
