@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4;
 
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Transients;
 
 /**
@@ -66,14 +67,24 @@ class Resource_Data_Availability_Date {
 	protected $transients;
 
 	/**
+	 * Module settings.
+	 *
+	 * @since n.e.x.t
+	 * @var Module_Settings
+	 */
+	protected $settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Transients $transients Transients instance.
+	 * @param Transients      $transients Transients instance.
+	 * @param Module_Settings $settings Module settings instance.
 	 */
-	public function __construct( Transients $transients ) {
+	public function __construct( Transients $transients, Module_Settings $settings ) {
 		$this->transients = $transients;
+		$this->settings   = $settings;
 	}
 
 	/**
@@ -97,6 +108,8 @@ class Resource_Data_Availability_Date {
 	 * @return array Associative array of resource names and their data availability state.
 	 */
 	public function get_resource_dates() {
+		$property_id = $this->settings->get()['propertyID'];
+
 		return array(
 			'audiences'        => array_reduce(
 				self::AUDIENCE_SLUGS,
@@ -115,7 +128,10 @@ class Resource_Data_Availability_Date {
 				array()
 			),
 			'properties'       => array(
-				// TODO: Add property data availability date logic.
+				$property_id => $this->get_resource_date(
+					$property_id,
+					self::RESOURCE_TYPE_PROPERTY
+				),
 			),
 		);
 	}
@@ -174,6 +190,7 @@ class Resource_Data_Availability_Date {
 			$this->reset_resource_date( $audience_slug, self::RESOURCE_TYPE_AUDIENCE );
 		}
 
-		// TODO: Add property data availability reset logic.
+		$property_id = $this->settings->get()['propertyID'];
+		$this->reset_resource_date( $property_id, self::RESOURCE_TYPE_PROPERTY );
 	}
 }
