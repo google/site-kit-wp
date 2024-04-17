@@ -567,7 +567,7 @@ final class Analytics_4 extends Module
 				'service' => '',
 			);
 			$datapoints['POST:save-resource-data-availability-date'] = array(
-				'service' => 'analyticsadmin',
+				'service' => '',
 			);
 		}
 
@@ -1366,27 +1366,27 @@ final class Analytics_4 extends Module
 				};
 			case 'POST:save-resource-data-availability-date':
 				if ( ! isset( $data['resourceType'] ) ) {
-					return new Missing_Required_Param_Exception( 'resourceType' );
+					throw new Missing_Required_Param_Exception( 'resourceType' );
 				}
 
 				if ( ! isset( $data['resourceSlug'] ) ) {
-					return new Missing_Required_Param_Exception( 'resourceSlug' );
+					throw new Missing_Required_Param_Exception( 'resourceSlug' );
 				}
 
 				if ( ! isset( $data['date'] ) ) {
-					return new Missing_Required_Param_Exception( 'date' );
+					throw new Missing_Required_Param_Exception( 'date' );
 				}
 
 				if ( ! $this->resource_data_availability_date->is_valid_resource_type( $data['resourceType'] ) ) {
-					return new Invalid_Param_Exception( 'resourceType' );
+					throw new Invalid_Param_Exception( 'resourceType' );
 				}
 
 				if ( ! is_int( $data['date'] ) ) {
-					return new Invalid_Param_Exception( 'date' );
+					throw new Invalid_Param_Exception( 'date' );
 				}
 
 				return function() use ( $data ) {
-					return $this->resource_data_availability_date->set_resource_date( $data['resourceType'], $data['resourceSlug'], $data['date'] );
+					return $this->resource_data_availability_date->set_resource_date( $data['resourceSlug'], $data['resourceType'], $data['date'] );
 				};
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
