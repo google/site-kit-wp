@@ -60,6 +60,7 @@ export const controls = {
 		if ( await detectAnyAdblocker() ) {
 			return true;
 		}
+
 		// The above is good about detecting most adblockers.
 		// For the rest, we'll make a placeholder request to the favicon with some
 		// additional stuff in the query string to (hopefully) trigger a filter.
@@ -81,6 +82,7 @@ export const controls = {
 		} catch {
 			return true;
 		}
+
 		return false;
 	},
 };
