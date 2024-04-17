@@ -84,6 +84,8 @@ class SettingsTest extends SettingsTestCase {
 				'adsConversionIDMigratedAtMs'      => 0,
 				'adsLinked'                        => false,
 				'adsLinkedLastSyncedAt'            => 0,
+				'availableAudiences'               => null,
+				'availableAudiencesLastSyncedAt'   => 0,
 			),
 			get_option( Settings::OPTION )
 		);

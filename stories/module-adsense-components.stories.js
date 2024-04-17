@@ -26,6 +26,7 @@ import {
 import { zeroing } from './utils/adsense-data-zeroing';
 import DashboardTopEarningPagesWidgetGA4 from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidgetGA4';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import {
@@ -74,7 +75,7 @@ generateReportBasedWidgetStories( {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAdSenseLinked( variantName !== 'AdSense Not Linked' );
 		registry
-			.dispatch( MODULES_ADSENSE )
+			.dispatch( CORE_USER )
 			.receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
 		registry

@@ -64,6 +64,21 @@ const fetchCreateAudienceStore = createFetchStore( {
 	},
 } );
 
+const fetchSyncAvailableAudiencesStore = createFetchStore( {
+	baseName: 'syncAvailableAudiences',
+	controlCallback: () =>
+		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
+	reducerCallback: ( state, audiences ) => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				availableAudiences: [ ...audiences ],
+			},
+		};
+	},
+} );
+
 const baseInitialState = {
 	audiences: undefined,
 };
@@ -102,6 +117,20 @@ const baseActions = {
 			return { response, error };
 		}
 	),
+
+	/**
+	 * Syncs available audiences from the Analytics service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*syncAvailableAudiences() {
+		const { response, error } =
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+
+		return { response, error };
+	},
 };
 
 const baseControls = {};
@@ -143,6 +172,7 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetAudiencesStore,
 	fetchCreateAudienceStore,
+	fetchSyncAvailableAudiencesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

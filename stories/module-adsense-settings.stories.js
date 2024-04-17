@@ -26,6 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import {
 	ACCOUNT_STATUS_PENDING,
 	ACCOUNT_STATUS_APPROVED,
@@ -82,7 +83,7 @@ const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
 	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 	registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
-	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
+	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 	provideSiteInfo( registry, { webStoriesActive: true } );
 	provideUserAuthentication( registry );
 	provideModules( registry, [
