@@ -2,48 +2,46 @@
 
 exports[`AdsConversionIDSettingsNotice should render the notice 1`] = `
 <div>
-  <div>
+  <div
+    class="googlesitekit-settings-analytics-ads-conversion-id-notice googlesitekit-settings-notice googlesitekit-settings-notice--info googlesitekit-settings-notice--single-row"
+  >
     <div
-      class="googlesitekit-settings-analytics-ads-conversion-id-notice googlesitekit-settings-notice googlesitekit-settings-notice--info googlesitekit-settings-notice--single-row"
+      class="googlesitekit-settings-notice__icon"
+    >
+      <svg />
+    </div>
+    <div
+      class="googlesitekit-settings-notice__body"
     >
       <div
-        class="googlesitekit-settings-notice__icon"
+        class="googlesitekit-settings-notice__text"
       >
-        <svg />
-      </div>
-      <div
-        class="googlesitekit-settings-notice__body"
-      >
-        <div
-          class="googlesitekit-settings-notice__text"
-        >
-          Ads Conversion Tracking ID has been moved to 
-          <a
-            class="googlesitekit-cta-link"
-            href="undefined#/connected-services/ads"
-          >
-            <span
-              class="googlesitekit-cta-link__contents"
-            >
-              Ads settings
-            </span>
-          </a>
-        </div>
-      </div>
-      <div
-        class="googlesitekit-settings-notice__button"
-      >
-        <button
-          class="mdc-button mdc-button--tertiary"
-          target="_self"
+        Ads Conversion Tracking ID has been moved to 
+        <a
+          class="googlesitekit-cta-link"
+          href="undefined#/connected-services/ads"
         >
           <span
-            class="mdc-button__label"
+            class="googlesitekit-cta-link__contents"
           >
-            Got it
+            Ads settings
           </span>
-        </button>
+        </a>
       </div>
+    </div>
+    <div
+      class="googlesitekit-settings-notice__button"
+    >
+      <button
+        class="mdc-button mdc-button--tertiary"
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Got it
+        </span>
+      </button>
     </div>
   </div>
 </div>
