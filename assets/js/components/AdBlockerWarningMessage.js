@@ -37,9 +37,8 @@ import Link from './Link';
 export default function AdBlockerWarningMessage( {
 	context = '',
 	getHelpLink = '',
-	warningMessage = false,
+	warningMessage = null,
 } ) {
-	// Return nothing if loading or if everything is fine.
 	if ( ! warningMessage ) {
 		return null;
 	}
@@ -73,5 +72,5 @@ export default function AdBlockerWarningMessage( {
 AdBlockerWarningMessage.propTypes = {
 	context: PropTypes.string,
 	getHelpLink: PropTypes.string,
-	warningMessage: PropTypes.string,
+	warningMessage: PropTypes.oneOfType( [ PropTypes.null, PropTypes.string ] ),
 };
