@@ -2283,14 +2283,13 @@ final class Analytics_4 extends Module
 			foreach ( $data as $key => $value ) {
 				if ( is_array( $value ) || is_object( $value ) ) {
 					// Recursively search the nested structure.
-					$result = $this->has_audience_site_kit_identifier( $value, $identifier );
-
-					if ( false !== $result ) {
-						return $result;
+					if ( $this->has_audience_site_kit_identifier( $value, $identifier ) ) {
+						return true;
 					}
 				} elseif (
 					'fieldName' === $key &&
 					'groupId' === $value &&
+					isset( $data['stringFilter'] ) &&
 					"created_by_googlesitekit:{$identifier}" === $data['stringFilter']['value']
 				) {
 					return true;
