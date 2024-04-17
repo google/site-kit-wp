@@ -63,7 +63,6 @@ export default function AdBlockerWarningMessage( {
 }
 
 AdBlockerWarningMessage.propTypes = {
-	context: PropTypes.string,
 	getHelpLink: PropTypes.string,
-	warningMessage: PropTypes.oneOfType( [ PropTypes.null, PropTypes.string ] )
+	warningMessage: PropTypes.string,
 };
