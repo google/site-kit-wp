@@ -109,8 +109,8 @@ export const resolvers = {
 			.select( CORE_USER )
 			.isAdBlockerActive();
 
-		// If ad blocker status was already detected, consider it fulfilled
-		// and don't check the global.
+		// If the ad blocker status is already set, don't make any requests
+		// to check the ad blocker status.
 		if ( undefined !== isAdBlockerActive ) {
 			return;
 		}
