@@ -554,17 +554,20 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['GET:audiences']          = array( 'service' => 'analyticsaudiences' );
-			$datapoints['POST:create-audience']   = array(
+			$datapoints['GET:audiences']                             = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:create-audience']                      = array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['GET:audience-settings']  = array(
+			$datapoints['GET:audience-settings']                     = array(
 				'service' => '',
 			);
-			$datapoints['POST:audience-settings'] = array(
+			$datapoints['POST:audience-settings']                    = array(
 				'service' => '',
+			);
+			$datapoints['POST:save-resource-data-availability-date'] = array(
+				'service' => 'analyticsadmin',
 			);
 		}
 
@@ -1360,6 +1363,30 @@ final class Analytics_4 extends Module
 
 				return function() use ( $data ) {
 					return $this->custom_dimensions_data_available->set_data_available( $data['customDimension'] );
+				};
+			case 'POST:save-resource-data-availability-date':
+				if ( ! isset( $data['resourceType'] ) ) {
+					return new Missing_Required_Param_Exception( 'resourceType' );
+				}
+
+				if ( ! isset( $data['resourceSlug'] ) ) {
+					return new Missing_Required_Param_Exception( 'resourceSlug' );
+				}
+
+				if ( ! isset( $data['date'] ) ) {
+					return new Missing_Required_Param_Exception( 'date' );
+				}
+
+				if ( ! $this->resource_data_availability_date->is_valid_resource_type( $data['resourceType'] ) ) {
+					return new Invalid_Param_Exception( 'resourceType' );
+				}
+
+				if ( ! is_int( $data['date'] ) ) {
+					return new Invalid_Param_Exception( 'date' );
+				}
+
+				return function() use ( $data ) {
+					return $this->resource_data_availability_date->set_resource_date( $data['resourceType'], $data['resourceSlug'], $data['date'] );
 				};
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {

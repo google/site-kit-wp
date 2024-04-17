@@ -55,7 +55,7 @@ class Resource_Data_Availability_Date {
 	);
 
 	const RESOURCE_TYPE_AUDIENCE         = 'audience';
-	const RESOURCE_TYPE_CUSTOM_DIMENSION = 'custom_dimension';
+	const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';
 	const RESOURCE_TYPE_PROPERTY         = 'property';
 
 	/**
@@ -156,7 +156,7 @@ class Resource_Data_Availability_Date {
 	 *
 	 * @param string $resource_slug Resource slug.
 	 * @param string $resource_type Resource type.
-	 * @param string $date Data availability date.
+	 * @param int    $date Data availability date.
 	 * @return bool True on success, false otherwise.
 	 */
 	public function set_resource_date( $resource_slug, $resource_type, $date ) {
@@ -192,5 +192,17 @@ class Resource_Data_Availability_Date {
 
 		$property_id = $this->settings->get()['propertyID'];
 		$this->reset_resource_date( $property_id, self::RESOURCE_TYPE_PROPERTY );
+	}
+
+	/**
+	 * Checks whether the given resource type is valid.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $resource_type Resource type.
+	 * @return bool True if valid, false otherwise.
+	 */
+	public function is_valid_resource_type( $resource_type ) {
+		return in_array( $resource_type, array( self::RESOURCE_TYPE_AUDIENCE, self::RESOURCE_TYPE_CUSTOM_DIMENSION, self::RESOURCE_TYPE_PROPERTY ), true );
 	}
 }
