@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Assets\Assets;
 
 final class Authorize_Application {
 
-    /**
+	/**
 	 * Plugin context.
 	 *
 	 * @since n.e.x.t
@@ -39,7 +39,7 @@ final class Authorize_Application {
 	 */
 	private $assets;
 
-    /**
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -55,62 +55,62 @@ final class Authorize_Application {
 		$this->assets  = $assets ?: new Assets( $this->context );
 	}
 
-    /**
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
 	 */
-    public function register() {
-        add_action(
+	public function register() {
+		add_action(
 			'admin_enqueue_scripts',
 			array( $this, 'enqueue_assets' )
 		);
-    }
+	}
 
-    /**
-     * Checks if the current screen is the Authorize Application screen.
-     * 
-     * @since n.e.x.t
-     * 
-     * @return bool True if the current screen is the Authorize Application screen, false otherwise.
-     */
-    protected function is_Authorize_Application_screen() {
-        if ( function_exists( 'get_current_screen' ) && get_current_screen()->id === 'authorize-application' ) {
-            return true;
-        }
+	/**
+	 * Checks if the current screen is the Authorize Application screen.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the current screen is the Authorize Application screen, false otherwise.
+	 */
+	protected function is_Authorize_Application_screen() {
+		if ( function_exists( 'get_current_screen' ) && get_current_screen()->id === 'authorize-application' ) {
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * Checks if the current service is Google.
-     * 
-     * @since n.e.x.t
-     * 
-     * @return bool True if the current service is Google, false otherwise.
-     */
-    protected function is_google_service() {
-        $success_url = isset( $_GET['success_url'] ) ? $_GET['success_url'] : '';
+	/**
+	 * Checks if the current service is Google.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the current service is Google, false otherwise.
+	 */
+	protected function is_google_service() {
+		$success_url = isset( $_GET['success_url'] ) ? $_GET['success_url'] : '';
 
-        $parsed_url = parse_url( $success_url );
+		$parsed_url = parse_url( $success_url );
 
-        if (empty($parsed_url['host'])) {
-            return false;
-        }
+		if ( empty( $parsed_url['host'] ) ) {
+			return false;
+		}
 
-        // Check if the domain is a '*.google.com' domain
-        return preg_match('/\.google\.com$/', $parsed_url['host']) === 1;
-    }
+		// Check if the domain is a '*.google.com' domain
+		return preg_match( '/\.google\.com$/', $parsed_url['host'] ) === 1;
+	}
 
-    /**
-     * Enqueues assets for the Authorize Application screen.
-     *
-     * @since n.e.x.t
-     */
-    public function enqueue_assets() {
-        if ( $this->is_Authorize_Application_screen() && $this->is_google_service() ) {
-            $this->assets->enqueue_asset( 'googlesitekit-authorize-application' );
-        }
-    }
+	/**
+	 * Enqueues assets for the Authorize Application screen.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function enqueue_assets() {
+		if ( $this->is_Authorize_Application_screen() && $this->is_google_service() ) {
+			$this->assets->enqueue_asset( 'googlesitekit-authorize-application' );
+		}
+	}
 
 }
