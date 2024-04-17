@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Tags\Tag_With_Linker_Trait;
 /**
  * Class for AMP tag.
  *
- * @since  n.e.x.t
+ * @since  1.125.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @param string $domain Domain name.
 	 */
@@ -40,7 +40,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 */
 	public function register() {
 		$render = $this->get_method_proxy_once( 'render' );
@@ -66,7 +66,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 	/**
 	 * Outputs gtag <amp-analytics> tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 */
 	protected function render() {
 		$config = $this->get_tag_config();
@@ -93,7 +93,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 	/**
 	 * Gets the tag config as used in the gtag data vars.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @return array Tag configuration.
 	 */

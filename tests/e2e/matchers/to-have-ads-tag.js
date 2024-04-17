@@ -25,7 +25,7 @@ import { fetchPageContent } from '../utils';
 /**
  * Asserts the URL at the given path contains an Ads web tag.
  *
- * @since n.e.x.t
+ * @since 1.125.0
  *
  * @param {(string|Object)} path The string URI or page object.
  * @return {Object} Matcher results.

@@ -34,7 +34,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  * and can be removed once we've replaced the `useIntersection` hook with a version that doesn't have this limitation.
  * See https://github.com/streamich/react-use/issues/2359.
  *
- * @since n.e.x.t
+ * @since 1.125.0
  *
  * @param {WPComponent} WrappedComponent Component to wrap.
  * @return {Function} Enhancing function.

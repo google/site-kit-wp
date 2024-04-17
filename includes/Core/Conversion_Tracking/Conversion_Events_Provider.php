@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 /**
  * Interface for a conversion events provider.
  *
- * @since n.e.x.t
+ * @since 1.125.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Conversion_Events_Provider {
 	/**
 	 * Checks if the provider is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @return bool True if the provider is active, false otherwise.
 	 */
@@ -31,7 +31,7 @@ interface Conversion_Events_Provider {
 	/**
 	 * Gets the event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -40,7 +40,7 @@ interface Conversion_Events_Provider {
 	/**
 	 * Registers the script for the provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 */
 	public function register_script();
 }
