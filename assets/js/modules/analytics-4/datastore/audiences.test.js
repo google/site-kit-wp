@@ -193,40 +193,46 @@ describe( 'modules/analytics-4 audiences', () => {
 				);
 			} );
 
-			it( 'should dispatch an error if the request fails', async () => {
-				const response = {
+			it( 'should return and dispatch an error if the request fails', async () => {
+				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
 				fetchMock.post( syncAvailableAudiencesEndpoint, {
-					body: response,
+					body: errorResponse,
 					status: 500,
 				} );
 
-				await registry
+				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
 
-				const error = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getErrorForAction( 'syncAvailableAudiences' );
+				expect( response ).toBeUndefined();
+				expect( error ).toEqual( errorResponse );
 
-				expect( error ).toMatchObject( response );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForAction( 'syncAvailableAudiences' )
+				).toEqual( errorResponse );
 
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should update the `availableAudiences` datastore module setting value', async () => {
+			it( 'should return the available audiences and update the `availableAudiences` datastore module setting value on success', async () => {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
 				} );
 
-				await registry
+				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
+
+				expect( response ).toEqual( availableAudiences );
+				expect( error ).toBeUndefined();
 
 				expect(
 					registry
