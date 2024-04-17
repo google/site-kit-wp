@@ -89,7 +89,7 @@ final class Authorize_Application {
 	 * @return bool True if the current service is Google, false otherwise.
 	 */
 	protected function is_google_service() {
-		$success_url = isset( $_GET['success_url'] ) ? esc_url_raw( wp_unslash( $_GET['success_url'] ) ) : '';
+		$success_url = isset( $_GET['success_url'] ) ? esc_url_raw( wp_unslash( $_GET['success_url'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 		$success_url = sanitize_text_field( $success_url );
 
 		$parsed_url = wp_parse_url( $success_url );
