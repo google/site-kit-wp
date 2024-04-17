@@ -24,7 +24,6 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -76,37 +75,27 @@ export default function ConfirmDisableConsentModeDialog( {
 		trackEvent( `${ viewContext }_CoMo`, 'view_modal' );
 	} );
 
-	const { provides, subtitle } = useMemo( () => {
-		let providesArray = [
+	let provides = [
+		__( 'Track how visitors interact with your site', 'google-site-kit' ),
+	];
+	let subtitle = __(
+		'Disabling consent mode may affect your ability in the European Economic Area and the United Kingdom to:',
+		'google-site-kit'
+	);
+
+	if ( isAdsConnected ) {
+		provides = [
 			__(
-				'Track how visitors interact with your site',
+				'How visitors interact with your site via Analytics',
 				'google-site-kit'
 			),
+			__( 'Performance of your Ad campaigns', 'google-site-kit' ),
 		];
-		let subtitleText = __(
-			'Disabling consent mode may affect your ability in the European Economic Area and the United Kingdom to:',
+		subtitle = __(
+			'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
 			'google-site-kit'
 		);
-
-		if ( isAdsConnected ) {
-			providesArray = [
-				__(
-					'How visitors interact with your site via Analytics',
-					'google-site-kit'
-				),
-				__( 'Performance of your Ad campaigns', 'google-site-kit' ),
-			];
-			subtitleText = __(
-				'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
-				'google-site-kit'
-			);
-		}
-
-		return {
-			provides: providesArray,
-			subtitle: subtitleText,
-		};
-	}, [ isAdsConnected ] );
+	}
 
 	return (
 		<ModalDialog
