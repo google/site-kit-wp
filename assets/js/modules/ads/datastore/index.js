@@ -19,10 +19,12 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { MODULES_ADS } from './constants';
 import baseModuleStore from './base';
+import adblocker from './adblocker';
 
-const store = baseModuleStore;
+const store = Data.combineStores( baseModuleStore, adblocker );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

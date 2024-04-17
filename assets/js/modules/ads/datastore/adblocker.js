@@ -1,7 +1,7 @@
 /**
- * `modules/adsense` data store: adblocker.
+ * `modules/ads` data store: adblocker.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ export const selectors = {
 	/**
 	 * Returns appropriate ad blocker warning message based on modules connection status.
 	 *
-	 * @since 1.43.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The error message string if an ad blocker is active,
@@ -52,17 +52,17 @@ export const selectors = {
 			}
 
 			const isModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'adsense' );
+				select( CORE_MODULES ).isModuleConnected( 'ads' );
 
 			if ( isModuleConnected ) {
 				return __(
-					'Ad blocker detected; please disable it to get the latest AdSense data',
+					'Ad blocker detected; please disable it to get the latest Ads data',
 					'google-site-kit'
 				);
 			}
 
 			return __(
-				'Ad blocker detected; please disable it to set up AdSense',
+				'Ad blocker detected; please disable it to set up Ads',
 				'google-site-kit'
 			);
 		}

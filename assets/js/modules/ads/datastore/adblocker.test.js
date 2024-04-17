@@ -1,7 +1,7 @@
 /**
- * `modules/adsense` data store: adblocker tests.
+ * `modules/ads` data store: adblocker tests.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from './constants';
+import { MODULES_ADS } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -32,7 +32,7 @@ import {
 import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
 jest.mock( 'just-detect-adblock' );
 
-describe( 'modules/adsense adblocker', () => {
+describe( 'modules/ads adblocker', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -49,9 +49,7 @@ describe( 'modules/adsense adblocker', () => {
 			it( 'returns undefined if ad blocker state is unresolved.', async () => {
 				muteFetch( 'path:/favicon.ico' );
 				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getAdBlockerWarningMessage()
+					registry.select( MODULES_ADS ).getAdBlockerWarningMessage()
 				).toBe( undefined );
 
 				await untilResolved( registry, CORE_USER ).isAdBlockerActive();
@@ -63,16 +61,14 @@ describe( 'modules/adsense adblocker', () => {
 					.receiveIsAdBlockerActive( false );
 
 				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getAdBlockerWarningMessage()
+					registry.select( MODULES_ADS ).getAdBlockerWarningMessage()
 				).toBe( null );
 			} );
 
 			it( 'returns correct message if ad blocker is active and module is not connected', () => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: 'ads',
 						active: true,
 						connected: false,
 					},
@@ -81,16 +77,14 @@ describe( 'modules/adsense adblocker', () => {
 				registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 
 				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getAdBlockerWarningMessage()
-				).toContain( 'to set up AdSense' );
+					registry.select( MODULES_ADS ).getAdBlockerWarningMessage()
+				).toContain( 'to set up Ads' );
 			} );
 
 			it( 'returns correct message if ad blocker is active and module is connected', () => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: 'ads',
 						active: true,
 						connected: true,
 					},
@@ -99,10 +93,8 @@ describe( 'modules/adsense adblocker', () => {
 				registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 
 				expect(
-					registry
-						.select( MODULES_ADSENSE )
-						.getAdBlockerWarningMessage()
-				).toContain( 'latest AdSense data' );
+					registry.select( MODULES_ADS ).getAdBlockerWarningMessage()
+				).toContain( 'latest Ads data' );
 			} );
 		} );
 	} );

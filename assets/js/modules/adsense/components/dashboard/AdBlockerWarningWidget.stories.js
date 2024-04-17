@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -49,9 +49,7 @@ export default {
 					},
 				] );
 
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveIsAdBlockerActive( true );
+				registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 			};
 
 			return (

@@ -78,7 +78,7 @@ export default function SetupMain( { finishSetup } ) {
 			!! select( CORE_UI ).getValue( BACKGROUND_SUBMIT_SUSPENDED )
 	);
 	const isAdBlockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
+		select( CORE_USER ).isAdBlockerActive()
 	);
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccounts()

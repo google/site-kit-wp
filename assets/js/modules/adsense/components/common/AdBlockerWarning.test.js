@@ -22,6 +22,7 @@
 import AdBlockerWarning from './AdBlockerWarning';
 import { render } from '../../../../../../tests/js/test-utils';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 
 const setupAdBlockerNotConnectedRegistry = ( registry ) => {
@@ -33,7 +34,7 @@ const setupAdBlockerNotConnectedRegistry = ( registry ) => {
 		},
 	] );
 	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
-	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
+	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 };
 
 const setupAdBlockerConnectedRegistry = ( registry ) => {
@@ -45,12 +46,12 @@ const setupAdBlockerConnectedRegistry = ( registry ) => {
 		},
 	] );
 	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
-	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
+	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 };
 
 const setupNoAdBlockerRegistry = ( registry ) => {
 	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
-	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
+	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 };
 
 describe( 'AdBlockerWarning', () => {
