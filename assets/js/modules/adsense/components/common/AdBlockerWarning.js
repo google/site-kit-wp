@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -31,7 +26,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockerWarningMessage from '../../../../components/AdBlockerWarningMessage';
 const { useSelect } = Data;
 
-export default function AdBlockerWarning( { context = '' } ) {
+export default function AdBlockerWarning() {
 	const adBlockerWarningMessage = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockerWarningMessage()
 	);
@@ -43,13 +38,8 @@ export default function AdBlockerWarning( { context = '' } ) {
 
 	return (
 		<AdBlockerWarningMessage
-			context={ context }
 			getHelpLink={ getHelpLink }
 			warningMessage={ adBlockerWarningMessage }
 		/>
 	);
 }
-
-AdBlockerWarning.propTypes = {
-	context: PropTypes.string,
-};

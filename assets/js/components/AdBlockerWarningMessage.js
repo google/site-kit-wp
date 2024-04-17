@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -35,7 +34,6 @@ import ErrorIcon from '../../svg/icons/error.svg';
 import Link from './Link';
 
 export default function AdBlockerWarningMessage( {
-	context = '',
 	getHelpLink = '',
 	warningMessage = null,
 } ) {
@@ -44,12 +42,7 @@ export default function AdBlockerWarningMessage( {
 	}
 
 	return (
-		<div
-			className={ classnames( 'googlesitekit-settings-module-warning', {
-				[ `googlesitekit-settings-module-warning--${ context }` ]:
-					context,
-			} ) }
-		>
+		<div className="googlesitekit-settings-module-warning">
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */
