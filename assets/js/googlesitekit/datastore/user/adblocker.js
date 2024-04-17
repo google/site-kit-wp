@@ -111,8 +111,8 @@ export const resolvers = {
 			.select( CORE_USER )
 			.isAdBlockerActive();
 
-		// If ad blocker status was already detected, consider it fulfilled
-		// and don't check the global.
+		// If the ad blocker status is already set, don't make any requests
+		// to check the ad blocker status.
 		if ( undefined !== isAdBlockerActive ) {
 			return;
 		}
@@ -128,6 +128,7 @@ export const selectors = {
 	 * Returns whether an ad blocker is active on the client.
 	 *
 	 * @since 1.9.0
+	 * @since n.e.x.t Selector moved from the `MODULES_ADSENSE` store to the `CORE_USER` store.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True or false depending on whether an ad blocker is active; `undefined` if not loaded.
