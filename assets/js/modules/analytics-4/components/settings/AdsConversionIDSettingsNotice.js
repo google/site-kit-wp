@@ -34,12 +34,15 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
-import ComponentWithIntersectionObserver from '../../../../components/ComponentWithIntersectionObserver';
 import InfoCircleIcon from '../../../../../../assets/svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
+import withIntersectionObserver from '../../../../util/withIntersectionObserver';
 
 const { useSelect } = Data;
+
+const SettingsNoticeWithIntersectionObserver =
+	withIntersectionObserver( SettingsNotice );
 
 export default function AdsConversionIDSettingsNotice() {
 	const settingsAdminURL = useSelect( ( select ) =>
@@ -81,34 +84,28 @@ export default function AdsConversionIDSettingsNotice() {
 	}
 
 	return (
-		<ComponentWithIntersectionObserver
+		<SettingsNoticeWithIntersectionObserver
 			onInView={ onInView }
-			children={
-				<SettingsNotice
-					className="googlesitekit-settings-analytics-ads-conversion-id-notice"
-					dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
-					dismissCallback={ trackDismissNotificationEvent }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					type={ TYPE_INFO }
-					Icon={ InfoCircleIcon }
-					notice={ createInterpolateElement(
-						__(
-							'Ads Conversion Tracking ID has been moved to <a>Ads settings</a>',
-							'google-site-kit'
-						),
-						{
-							a: (
-								<Link
-									href={ `${ settingsAdminURL }#/connected-services/ads` }
-									onClick={ () =>
-										trackConfirmNotificationEvent()
-									}
-								/>
-							),
-						}
-					) }
-				/>
-			}
+			className="googlesitekit-settings-analytics-ads-conversion-id-notice"
+			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
+			dismissCallback={ trackDismissNotificationEvent }
+			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+			type={ TYPE_INFO }
+			Icon={ InfoCircleIcon }
+			notice={ createInterpolateElement(
+				__(
+					'Ads Conversion Tracking ID has been moved to <a>Ads settings</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href={ `${ settingsAdminURL }#/connected-services/ads` }
+							onClick={ () => trackConfirmNotificationEvent() }
+						/>
+					),
+				}
+			) }
 		/>
 	);
 }
