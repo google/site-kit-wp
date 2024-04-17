@@ -85,11 +85,11 @@ export default function ConfirmDisableConsentModeDialog( {
 
 	if ( isAdsConnected ) {
 		provides = [
+			__( 'Performance of your Ad campaigns', 'google-site-kit' ),
 			__(
 				'How visitors interact with your site via Analytics',
 				'google-site-kit'
 			),
-			__( 'Performance of your Ad campaigns', 'google-site-kit' ),
 		];
 		subtitle = __(
 			'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
