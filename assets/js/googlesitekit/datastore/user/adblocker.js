@@ -128,7 +128,7 @@ export const selectors = {
 	 * Returns whether an ad blocker is active on the client.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Selector moved from the `MODULES_ADSENSE` store to the `CORE_USER` store.
+	 * @since 1.125.0 Selector moved from the `MODULES_ADSENSE` store to the `CORE_USER` store.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True or false depending on whether an ad blocker is active; `undefined` if not loaded.

@@ -10,7 +10,7 @@ const defaultAdsSettings = {
 /**
  * Activates the Ads module and completes the setup process.
  *
- * @since n.e.x.t
+ * @since 1.125.0
  *
  * @param {Object} settingsOverrides Optional settings to override the defaults.
  */

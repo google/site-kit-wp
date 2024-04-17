@@ -29,7 +29,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_With_Linker_Interface {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @param string $domain Domain name.
 	 */
