@@ -17,8 +17,8 @@
     },
     {
         "adsPersonalizationEnabled": true,
-        "description": "Description",
-        "displayName": "Test Audience",
+        "description": "People who visited the site for the first time",
+        "displayName": "New visitors",
         "exclusionDurationMode": null,
         "membershipDurationDays": 30,
         "name": "properties/12345/audiences/3",
@@ -74,8 +74,8 @@
     },
     {
         "adsPersonalizationEnabled": true,
-        "description": "Description",
-        "displayName": "Test Audience",
+        "description": "People who have visited your site at least once before",
+        "displayName": "Returning visitors",
         "exclusionDurationMode": null,
         "membershipDurationDays": 30,
         "name": "properties/12345/audiences/4",
