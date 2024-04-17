@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Assets\Assets;
  * @access private
  * @ignore
  */
-
 final class Authorize_Application {
 
 	/**
@@ -74,7 +73,7 @@ final class Authorize_Application {
 	 *
 	 * @return bool True if the current screen is the Authorize Application screen, false otherwise.
 	 */
-	protected function is_Authorize_Application_screen() {
+	protected function is_authorize_application_screen() {
 		if ( function_exists( 'get_current_screen' ) && get_current_screen()->id === 'authorize-application' ) {
 			return true;
 		}
@@ -90,15 +89,16 @@ final class Authorize_Application {
 	 * @return bool True if the current service is Google, false otherwise.
 	 */
 	protected function is_google_service() {
-		$success_url = isset( $_GET['success_url'] ) ? $_GET['success_url'] : '';
+		$success_url = isset( $_GET['success_url'] ) ? esc_url_raw( wp_unslash( $_GET['success_url'] ) ) : '';
+		$success_url = sanitize_text_field( $success_url );
 
-		$parsed_url = parse_url( $success_url );
+		$parsed_url = wp_parse_url( $success_url );
 
 		if ( empty( $parsed_url['host'] ) ) {
 			return false;
 		}
 
-		// Check if the domain is a '*.google.com' domain
+		// Check if the domain is a '*.google.com' domain.
 		return preg_match( '/\.google\.com$/', $parsed_url['host'] ) === 1;
 	}
 
@@ -108,7 +108,7 @@ final class Authorize_Application {
 	 * @since n.e.x.t
 	 */
 	public function enqueue_assets() {
-		if ( $this->is_Authorize_Application_screen() && $this->is_google_service() ) {
+		if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
 			$this->assets->enqueue_asset( 'googlesitekit-authorize-application' );
 		}
 	}
