@@ -101,7 +101,7 @@ export default function AdsConversionIDSettingsNotice() {
 					a: (
 						<Link
 							href={ `${ settingsAdminURL }#/connected-services/ads` }
-							onClick={ () => trackConfirmNotificationEvent() }
+							onClick={ trackConfirmNotificationEvent }
 						/>
 					),
 				}
