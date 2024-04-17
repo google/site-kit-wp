@@ -616,7 +616,9 @@ describe( 'modules/analytics-4 report', () => {
 							filter: {
 								fieldName: 'audienceResourceName',
 								stringFilter: {
-									value: fixtures.audiences[ 2 ].name,
+									value: fixtures.audiences[
+										fixtures.audiences.length - 1
+									].name,
 								},
 							},
 						},
@@ -630,13 +632,11 @@ describe( 'modules/analytics-4 report', () => {
 						audiences: fixtures.audiences,
 					} );
 
-				expect( reports ).toEqual( [
-					fixtures.report,
-					fixtures.report,
-					fixtures.report,
-				] );
+				expect( reports ).toEqual(
+					Array( fixtures.audiences.length ).fill( fixtures.report )
+				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 			} );
 		} );
 	} );
