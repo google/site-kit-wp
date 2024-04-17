@@ -44,8 +44,7 @@ export default function SettingsEdit() {
 	let viewComponent;
 	if ( isAdBlockerActive ) {
 		viewComponent = <AdBlockerWarning />;
-	}
-	if ( isDoingSubmitChanges || hasAdsAccess === undefined ) {
+	} else if ( isDoingSubmitChanges || hasAdsAccess === undefined ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm hasModuleAccess={ hasAdsAccess } />;
