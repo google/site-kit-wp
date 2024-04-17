@@ -27,7 +27,6 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
-import { MODULES_ADS } from '../../../modules/ads/datastore/constants';
 
 describe( 'core/site Consent Mode', () => {
 	let registry;
@@ -303,8 +302,13 @@ describe( 'core/site Consent Mode', () => {
 		} );
 
 		describe( 'isAdsConnected', () => {
-			it( 'returns false if the Analytics module is not connected', () => {
+			it( 'returns false if both the Ads and Analytics modules are disconnected', () => {
 				provideModules( registry, [
+					{
+						slug: 'ads',
+						active: false,
+						connected: false,
+					},
 					{
 						slug: 'analytics-4',
 						active: false,
@@ -316,75 +320,41 @@ describe( 'core/site Consent Mode', () => {
 					false
 				);
 			} );
-			it( 'returns false if the Ads module is not connected', () => {
+
+			it( 'returns true if the Ads module is connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'ads',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
+					true
+				);
+			} );
+
+			it( 'returns undefined if the Ads module is disconnected and the Analytics module settings have not loaded', () => {
 				provideModules( registry, [
 					{
 						slug: 'ads',
 						active: false,
 						connected: false,
 					},
-				] );
-
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					false
-				);
-			} );
-
-			it( 'returns undefined if either the Ads conversion ID in Ads or the Analytics and Ads linked status is undefined', () => {
-				provideModules( registry, [
 					{
 						slug: 'analytics-4',
 						active: true,
 						connected: true,
 					},
-					{
-						slug: 'ads',
-						active: true,
-						connected: true,
-					},
 				] );
-
-				registry.dispatch( MODULES_ADS ).receiveGetSettings( {} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
 
-				registry.dispatch( MODULES_ADS ).receiveGetSettings( {} );
-
 				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
 					undefined
-				);
-			} );
-
-			it( 'returns true if an Ads conversion ID is set in the Ads module', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-					{
-						slug: 'ads',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					conversionID: 'AW-12345',
-				} );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					// Set the following to default, as otherwise if it is set to
-					// undefined, the `core/site` `isAdsConnected` selector will
-					// return undefined.
-					adsLinked: false,
-					googleTagContainerDestinationIDs: null,
-				} );
-
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					true
 				);
 			} );
 
@@ -395,19 +365,13 @@ describe( 'core/site Consent Mode', () => {
 						active: true,
 						connected: true,
 					},
-					{
-						slug: 'ads',
-						active: true,
-						connected: true,
-					},
 				] );
-
-				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					conversionID: 'AW-12345',
-				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					adsLinked: true,
+					// Set the following to default, as otherwise if it is set to
+					// undefined, the `core/site` `isAdsConnected` selector will
+					// return undefined.
 					googleTagContainerDestinationIDs: null,
 				} );
 
@@ -423,23 +387,13 @@ describe( 'core/site Consent Mode', () => {
 						active: true,
 						connected: true,
 					},
-					{
-						slug: 'ads',
-						active: true,
-						connected: true,
-					},
 				] );
-
-				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					conversionID: 'AW-12345',
-				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					googleTagContainerDestinationIDs: [ 'AW-12345' ],
 					// Set the following to default, as otherwise if it is set to
 					// undefined, the `core/site` `isAdsConnected` selector will
 					// return undefined.
-					conversionID: '',
 					adsLinked: false,
 				} );
 
@@ -448,26 +402,21 @@ describe( 'core/site Consent Mode', () => {
 				);
 			} );
 
-			it( 'returns false if neither an Ads conversion ID is set in Ads, nor Analytics and Ads are linked', () => {
+			it( 'returns false if the Ads module is disconnected, Analytics and Ads are not linked, and the Google Tag does not have an Ads conversion tracking ID as a destination', () => {
 				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
 					{
 						slug: 'ads',
 						active: false,
 						connected: false,
 					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
 				] );
 
-				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					conversionID: '',
-				} );
-
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					conversionID: '',
 					adsLinked: false,
 					googleTagContainerDestinationIDs: null,
 				} );
