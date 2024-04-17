@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
@@ -40,6 +41,24 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Modules/Ads/Setup/SetupForm/Default',
+};
+
+export const AdBlocker = Template.bind( {} );
+AdBlocker.storyName = 'AdBlocker Active';
+AdBlocker.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'ads',
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
+	},
+};
+AdBlocker.scenario = {
+	label: 'Modules/Ads/Setup/SetupForm/AdBlocker',
 };
 
 export const Empty = Template.bind( {} );

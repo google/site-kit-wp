@@ -26,6 +26,8 @@ export const GLOBAL_SURVEYS_TIMEOUT_SLUG = '__global';
 export const FORM_TEMPORARY_PERSIST_PERMISSION_ERROR =
 	'temporary_persist_permission_error';
 
+export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
+
 // Permissions list.
 export const PERMISSION_AUTHENTICATE = 'googlesitekit_authenticate';
 export const PERMISSION_SETUP = 'googlesitekit_setup';

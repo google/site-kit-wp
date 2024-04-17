@@ -29,6 +29,10 @@ import { isFeatureEnabled } from '../../features';
 import { SettingsEdit, SettingsView } from './components/settings';
 import SetupMain from './components/setup/SetupMain';
 import { MODULES_ADS } from './datastore/constants';
+import {
+	CORE_USER,
+	ERROR_CODE_ADBLOCKER_ACTIVE,
+} from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 
@@ -50,6 +54,25 @@ export const registerModule = ( modules ) => {
 					'google-site-kit'
 				),
 			],
+			checkRequirements: async ( registry ) => {
+				const adBlockerActive = await registry
+					.__experimentalResolveSelect( CORE_USER )
+					.isAdBlockerActive();
+
+				if ( ! adBlockerActive ) {
+					return;
+				}
+
+				const message = registry
+					.select( MODULES_ADS )
+					.getAdBlockerWarningMessage();
+
+				throw {
+					code: ERROR_CODE_ADBLOCKER_ACTIVE,
+					message,
+					data: null,
+				};
+			},
 		} );
 	}
 };

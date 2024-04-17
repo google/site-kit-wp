@@ -206,7 +206,7 @@ AdSenseNotLinked.scenario = {
 export const AdBlockerActive = Template.bind( {} );
 AdBlockerActive.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 	},
 };
 AdBlockerActive.storyName = 'Ad Blocker Active';
