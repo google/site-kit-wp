@@ -49,6 +49,7 @@
 							color: $c-surfaces-on-surface;
 							font-size: $fs-label-sm;
 							font-weight: $fw-medium;
+							letter-spacing: -0.1px;
 							line-height: $lh-label-sm;
 							padding-top: 2px;
 
@@ -56,6 +57,7 @@
 							// upon and the tabs can still be clicked.
 							pointer-events: all;
 							.googlesitekit-info-tooltip {
+								height: 18px;
 								margin-left: 5px;
 							}
 						}
