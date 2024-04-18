@@ -28,10 +28,10 @@ class Authorize_ApplicationTest extends TestCase {
 
 		// Set the success URL with the `google.com` domain.
 		$this->set_global_get_params( 'https://example.google.com/settings/authorization/wordpress' );
-        
+
 		// Verify that the expected assets aren't enqueued yet.
 		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
-        
+
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
 
@@ -53,7 +53,7 @@ class Authorize_ApplicationTest extends TestCase {
 
 		// Verify that the expected assets aren't enqueued yet.
 		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
-        
+
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
 
@@ -70,10 +70,10 @@ class Authorize_ApplicationTest extends TestCase {
 		// Set the current screen to dashboard.
 		$current_screen = convert_to_screen( 'dashboard' );
 
-        // Set the success URL with the `google.com` domain.
+		// Set the success URL with the `google.com` domain.
 		$this->set_global_get_params( 'https://example.google.com/settings/authorization/wordpress' );
 
-        // Verify that the expected assets aren't enqueued yet.
+		// Verify that the expected assets aren't enqueued yet.
 		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
 
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -101,7 +101,7 @@ class Authorize_ApplicationTest extends TestCase {
 		unset( $_GET['sitekit'] );
 	}
 
-    public function tear_down() {
+	public function tear_down() {
 		parent::tear_down();
 		$this->unset_global_get_params();
 		wp_dequeue_style( 'googlesitekit-authorize-application' );

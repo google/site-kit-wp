@@ -78,7 +78,7 @@ final class Authorize_Application {
 	protected function is_authorize_application_screen() {
 		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-		if ( $current_screen instanceof \WP_Screen && $current_screen->id === 'authorize-application' ) {
+		if ( $current_screen instanceof \WP_Screen && 'authorize-application' === $current_screen->id ) {
 			return true;
 		}
 
