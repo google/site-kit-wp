@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,7 +31,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import AnalyticsAdsenseConnectGraphic from '../../../svg/graphics/analytics-adsense-connect.svg';
+import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
+import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from './OverlayNotification';
 import useViewOnly from '../../hooks/useViewOnly';
 import useDashboardType, {
@@ -48,15 +48,6 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
 	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
-
-	const isShowingNotification = useSelect( ( select ) =>
-		select( CORE_UI ).isShowingOverlayNotification(
-			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-		)
-	);
-
-	const { setOverlayNotificationToShow, dismissOverlayNotification } =
-		useDispatch( CORE_UI );
 
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -110,6 +101,8 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		isAdSenseLinked === false &&
 		isDismissed === false;
 
+	const { dismissOverlayNotification } = useDispatch( CORE_UI );
+
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
 		// the current user's profile with the `dismissItem` action.
@@ -118,29 +111,13 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		);
 	};
 
-	useEffect( () => {
-		// If the conditions to show this notification are met AND no other
-		// notifications are showing, show this notification.
-		if ( shouldShowNotification && ! isShowingNotification ) {
-			setOverlayNotificationToShow(
-				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-			);
-		}
-	}, [
-		shouldShowNotification,
-		isShowingNotification,
-		isViewOnly,
-		setOverlayNotificationToShow,
-	] );
-
-	if ( ! shouldShowNotification || ! isShowingNotification ) {
-		return null;
-	}
-
 	return (
-		<OverlayNotification animateNotification={ isShowingNotification }>
-			<AnalyticsAdsenseConnectGraphic />
-
+		<OverlayNotification
+			shouldShowNotification={ shouldShowNotification }
+			GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
+			GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
+			notificationID={ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION }
+		>
 			<div className="googlesitekit-overlay-notification__body">
 				<h3>
 					{ __(
