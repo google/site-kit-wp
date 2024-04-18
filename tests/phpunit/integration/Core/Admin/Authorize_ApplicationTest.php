@@ -93,17 +93,17 @@ class Authorize_ApplicationTest extends TestCase {
 		$_GET['sitekit']     = 'true';
 	}
 
-	public function tear_down() {
-		parent::tear_down();
-		$this->unset_get_params();
-		wp_dequeue_style( 'googlesitekit-authorize-application' );
-	}
-
-	public function unset_get_params() {
+	public function unset_global_get_params() {
 		// Unset $_GET parameters
 		unset( $_GET['app_name'] );
 		unset( $_GET['app_id'] );
 		unset( $_GET['success_url'] );
 		unset( $_GET['sitekit'] );
+	}
+
+    public function tear_down() {
+		parent::tear_down();
+		$this->unset_global_get_params();
+		wp_dequeue_style( 'googlesitekit-authorize-application' );
 	}
 }
