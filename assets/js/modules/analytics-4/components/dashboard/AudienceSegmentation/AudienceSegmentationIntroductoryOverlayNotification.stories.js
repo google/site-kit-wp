@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 
-import { WithTestRegistry } from '../../../../../../../tests/js/utils';
 import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
 
 function Template() {
@@ -36,13 +35,4 @@ Default.scenario = {
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceSegmentationIntroductoryOverlayNotification',
 	component: AudienceSegmentationIntroductoryOverlayNotification,
-	decorators: [
-		( Story ) => {
-			return (
-				<WithTestRegistry>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
 };
