@@ -32,7 +32,6 @@ import { useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
 const { useDispatch, useSelect } = Data;
@@ -46,10 +45,6 @@ export default function OverlayNotification( {
 	shouldShowNotification,
 } ) {
 	const breakpoint = useBreakpoint();
-
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( notificationID )
-	);
 
 	const isShowingNotification = useSelect( ( select ) =>
 		select( CORE_UI ).isShowingOverlayNotification( notificationID )
@@ -73,7 +68,7 @@ export default function OverlayNotification( {
 		shouldShowNotification,
 	] );
 
-	if ( isDismissed || ! shouldShowNotification || ! isShowingNotification ) {
+	if ( ! shouldShowNotification || ! isShowingNotification ) {
 		return null;
 	}
 
