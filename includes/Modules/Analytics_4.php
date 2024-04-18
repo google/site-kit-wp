@@ -395,11 +395,6 @@ final class Analytics_4 extends Module
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
-			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics Ads conversion ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
-			),
 			'analytics_4_property_id'                 => array(
 				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
@@ -419,6 +414,11 @@ final class Analytics_4 extends Module
 				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+			'analytics_4_ads_conversion_id'           => array(
+				'label' => __( 'Analytics Ads conversion ID', 'google-site-kit' ),
+				'value' => $settings['adsConversionID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			'analytics_4_available_custom_dimensions' => array(
 				'label' => __( 'Analytics available custom dimensions', 'google-site-kit' ),
