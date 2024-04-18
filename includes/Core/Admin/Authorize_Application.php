@@ -62,7 +62,9 @@ final class Authorize_Application {
 	public function register() {
 		add_action(
 			'admin_enqueue_scripts',
-			array( $this, 'enqueue_assets' )
+			function() {
+				$this->enqueue_assets();
+			}
 		);
 	}
 
@@ -74,7 +76,9 @@ final class Authorize_Application {
 	 * @return bool True if the current screen is the Authorize Application screen, false otherwise.
 	 */
 	protected function is_authorize_application_screen() {
-		if ( function_exists( 'get_current_screen' ) && get_current_screen()->id === 'authorize-application' ) {
+		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+		if ( $current_screen instanceof \WP_Screen && $current_screen->id === 'authorize-application' ) {
 			return true;
 		}
 
@@ -107,10 +111,9 @@ final class Authorize_Application {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function enqueue_assets() {
+	private function enqueue_assets() {
 		if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
 			$this->assets->enqueue_asset( 'googlesitekit-authorize-application' );
 		}
 	}
-
 }
