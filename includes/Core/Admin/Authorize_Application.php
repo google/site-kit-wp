@@ -113,7 +113,7 @@ final class Authorize_Application {
 	 */
 	private function enqueue_assets() {
 		if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
-			$this->assets->enqueue_asset( 'googlesitekit-authorize-application' );
+			$this->assets->enqueue_asset( 'googlesitekit-authorize-application-css' );
 		}
 	}
 }

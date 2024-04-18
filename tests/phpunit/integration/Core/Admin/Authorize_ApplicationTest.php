@@ -30,7 +30,7 @@ class Authorize_ApplicationTest extends TestCase {
 		$this->set_global_get_params( 'https://example.google.com/settings/authorization/wordpress' );
 
 		// Verify that the expected assets aren't enqueued yet.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
 
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
@@ -38,7 +38,7 @@ class Authorize_ApplicationTest extends TestCase {
 		do_action( 'admin_enqueue_scripts' );
 
 		// Check that the expected assets are enqueued.
-		$this->assertTrue( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
 	}
 
 	public function test_register_with_incorrect_success_url() {
@@ -52,7 +52,7 @@ class Authorize_ApplicationTest extends TestCase {
 		$this->set_global_get_params( 'https://example.com/settings/authorization/wordpress' );
 
 		// Verify that the expected assets aren't enqueued yet.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
 
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
@@ -60,7 +60,7 @@ class Authorize_ApplicationTest extends TestCase {
 		do_action( 'admin_enqueue_scripts' );
 
 		// Check that the assets aren't enqueued due to incorrect success URL.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
 	}
 
 	public function test_register_with_incorrect_screen() {
@@ -74,7 +74,7 @@ class Authorize_ApplicationTest extends TestCase {
 		$this->set_global_get_params( 'https://example.google.com/settings/authorization/wordpress' );
 
 		// Verify that the expected assets aren't enqueued yet.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
 
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
@@ -82,7 +82,7 @@ class Authorize_ApplicationTest extends TestCase {
 		do_action( 'admin_enqueue_scripts' );
 
 		// Check that expected assets aren't enqueued due to incorrect screen.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
 	}
 
 	public function set_global_get_params( $success_url ) {
@@ -104,6 +104,6 @@ class Authorize_ApplicationTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 		$this->unset_global_get_params();
-		wp_dequeue_style( 'googlesitekit-authorize-application' );
+		wp_dequeue_style( 'googlesitekit-authorize-application-css' );
 	}
 }

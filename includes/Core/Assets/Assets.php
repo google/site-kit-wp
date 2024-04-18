@@ -650,7 +650,7 @@ final class Assets {
 				)
 			),
 			new Stylesheet(
-				'googlesitekit-authorize-application',
+				'googlesitekit-authorize-application-css',
 				array(
 					'src'          => $base_url . 'css/googlesitekit-authorize-application-css.css',
 					'dependencies' => array(
