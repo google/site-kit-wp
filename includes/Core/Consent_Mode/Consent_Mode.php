@@ -116,6 +116,13 @@ class Consent_Mode {
 			)
 		);
 
+		/**
+		 * Filters the consent category mapping.
+		 *
+		 * @since 1.124.0
+		 *
+		 * @param array $consent_category_map Default consent category mapping.
+		 */
 		$consent_category_map = apply_filters(
 			'googlesitekit_consent_category_map',
 			array(
