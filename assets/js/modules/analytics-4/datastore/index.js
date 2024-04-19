@@ -30,6 +30,7 @@ import conversionEvents from './conversion-events';
 import customDimensions from './custom-dimensions';
 import customDimensionsGatheringData from './custom-dimensions-gathering-data';
 import enhancedMeasurement from './enhanced-measurement';
+import partialData from './partial-data';
 import properties from './properties';
 import report from './report';
 import service from './service';
@@ -48,6 +49,7 @@ const store = Data.combineStores(
 	customDimensions,
 	customDimensionsGatheringData,
 	enhancedMeasurement,
+	partialData,
 	properties,
 	report,
 	service,

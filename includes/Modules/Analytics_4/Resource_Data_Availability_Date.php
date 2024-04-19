@@ -111,7 +111,7 @@ class Resource_Data_Availability_Date {
 		$property_id = $this->settings->get()['propertyID'];
 
 		return array(
-			'audiences'        => array_reduce(
+			self::RESOURCE_TYPE_AUDIENCE         => array_reduce(
 				self::AUDIENCE_SLUGS,
 				function ( $data_availability, $audience_slug ) {
 					$data_availability[ $audience_slug ] = $this->get_resource_date( $audience_slug, self::RESOURCE_TYPE_AUDIENCE );
@@ -119,7 +119,7 @@ class Resource_Data_Availability_Date {
 				},
 				array()
 			),
-			'customDimensions' => array_reduce(
+			self::RESOURCE_TYPE_CUSTOM_DIMENSION => array_reduce(
 				self::CUSTOM_DIMENSION_SLUGS,
 				function ( $data_availability, $custom_dimension ) {
 					$data_availability[ $custom_dimension ] = $this->get_resource_date( $custom_dimension, self::RESOURCE_TYPE_CUSTOM_DIMENSION );
@@ -127,7 +127,7 @@ class Resource_Data_Availability_Date {
 				},
 				array()
 			),
-			'properties'       => array(
+			self::RESOURCE_TYPE_PROPERTY         => array(
 				$property_id => $this->get_resource_date(
 					$property_id,
 					self::RESOURCE_TYPE_PROPERTY
@@ -146,7 +146,7 @@ class Resource_Data_Availability_Date {
 	 * @return string|false Data availability date on success, false otherwise.
 	 */
 	public function get_resource_date( $resource_slug, $resource_type ) {
-		return $this->transients->get( $this->get_resource_transient_name( $resource_slug, $resource_type ) );
+		return (int) $this->transients->get( $this->get_resource_transient_name( $resource_slug, $resource_type ) );
 	}
 
 	/**
