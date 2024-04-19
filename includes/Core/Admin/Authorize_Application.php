@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class to handle all wp-admin Authorize Application related functionality.
@@ -22,6 +23,8 @@ use Google\Site_Kit\Core\Assets\Assets;
  */
 final class Authorize_Application {
 
+	use Method_Proxy_Trait;
+
 	/**
 	 * Plugin context.
 	 *
@@ -31,7 +34,7 @@ final class Authorize_Application {
 	private $context;
 
 	/**
-	 * Assets Instance.
+	 * Assets instance.
 	 *
 	 * @since n.e.x.t
 	 * @var Assets
@@ -60,12 +63,7 @@ final class Authorize_Application {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action(
-			'admin_enqueue_scripts',
-			function() {
-				$this->enqueue_assets();
-			}
-		);
+		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets' ) );
 	}
 
 	/**
@@ -86,11 +84,11 @@ final class Authorize_Application {
 	}
 
 	/**
-	 * Checks if the current service is Google.
+	 * Checks if the current service is a Google service.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool True if the current service is Google, false otherwise.
+	 * @return bool True if the current service is a Google service, false otherwise.
 	 */
 	protected function is_google_service() {
 		$success_url = isset( $_GET['success_url'] ) ? esc_url_raw( wp_unslash( $_GET['success_url'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
