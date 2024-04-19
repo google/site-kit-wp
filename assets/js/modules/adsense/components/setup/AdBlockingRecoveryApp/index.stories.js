@@ -28,6 +28,7 @@ import {
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 
 function Template() {
 	return <AdBlockingRecoveryApp />;
@@ -89,7 +90,7 @@ export default {
 				provideSiteInfo( registry );
 
 				registry
-					.dispatch( MODULES_ADSENSE )
+					.dispatch( CORE_USER )
 					.receiveIsAdBlockerActive( false );
 
 				args.setupRegistry?.( registry );

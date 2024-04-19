@@ -137,7 +137,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	);
 
 	const isAdblockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
+		select( CORE_USER ).isAdBlockerActive()
 	);
 
 	const trackingRef = useRef();

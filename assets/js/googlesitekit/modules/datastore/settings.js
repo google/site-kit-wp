@@ -154,7 +154,7 @@ export const selectors = {
 	/**
 	 * Checks whether there are changes to save for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @param {string} slug Slug for module store.
 	 * @return {boolean} Whether changes have been made in the settings form.

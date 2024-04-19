@@ -100,6 +100,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'adsConversionIDMigratedAtMs'      => 0,
 			'adsLinked'                        => false,
 			'adsLinkedLastSyncedAt'            => 0,
+			'availableAudiences'               => null,
+			'availableAudiencesLastSyncedAt'   => 0,
 		);
 	}
 
@@ -183,6 +185,18 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['adsLinkedLastSyncedAt'] ) ) {
 					if ( ! is_int( $option['adsLinkedLastSyncedAt'] ) ) {
 						$option['adsLinkedLastSyncedAt'] = 0;
+					}
+				}
+
+				if ( isset( $option['availableAudiences'] ) ) {
+					if ( ! is_array( $option['availableAudiences'] ) ) {
+						$option['availableAudiences'] = null;
+					}
+				}
+
+				if ( isset( $option['availableAudiencesLastSyncedAt'] ) ) {
+					if ( ! is_int( $option['availableAudiencesLastSyncedAt'] ) ) {
+						$option['availableAudiencesLastSyncedAt'] = 0;
 					}
 				}
 			}

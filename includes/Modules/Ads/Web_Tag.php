@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Ads;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Tags\GTag;
+use Google\Site_Kit\Core\Tags\Tag_With_Linker_Interface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -21,9 +22,20 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Web_Tag extends Module_Web_Tag {
+class Web_Tag extends Module_Web_Tag implements Tag_With_Linker_Interface {
 
 	use Method_Proxy_Trait;
+
+	/**
+	 * Sets the current home domain.
+	 *
+	 * @since 1.125.0
+	 *
+	 * @param string $domain Domain name.
+	 */
+	public function set_home_domain( $domain ) {
+		$this->home_domain = $domain;
+	}
 
 	/**
 	 * Registers tag hooks.

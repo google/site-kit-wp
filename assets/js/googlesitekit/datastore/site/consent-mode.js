@@ -172,7 +172,7 @@ const baseSelectors = {
 	 * account, an Ads conversion tracking ID, or via Analytics tag config.
 	 *
 	 * @since 1.124.0
-	 * @since n.e.x.t Updated to consider Ads connection status via the Analytics tag config, and to source Conversion ID field from Ads module.
+	 * @since 1.125.0 Updated to consider Ads connection status via the Analytics tag config, and to source Conversion ID field from Ads module.
 	 *
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
