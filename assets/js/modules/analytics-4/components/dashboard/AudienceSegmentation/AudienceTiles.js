@@ -167,10 +167,10 @@ export default function AudienceTiles( { Widget } ) {
 	} );
 
 	return (
-		<Widget className="googlesitekit-widget__audience-tiles">
+		<Widget className="googlesitekit-widget-audience-tiles">
 			{ isTabbedBreakpoint && (
 				<TabBar
-					className="googlesitekit-widget__audience-tiles-tabs"
+					className="googlesitekit-widget-audience-tiles__tabs"
 					activeIndex={ activeTile }
 					handleActiveIndexUpdate={ ( index ) =>
 						setActiveTile( index )
@@ -191,14 +191,14 @@ export default function AudienceTiles( { Widget } ) {
 								{ displayName }
 								<InfoTooltip
 									title={ tooltipMessage }
-									tooltipClassName="googlesitekit-audience-tiles-info-tooltip__content"
+									tooltipClassName="googlesitekit-info-tooltip__content--audience"
 								/>
 							</Tab>
 						);
 					} ) }
 				</TabBar>
 			) }
-			<div className="googlesitekit-widget__audience-tiles__body">
+			<div className="googlesitekit-widget-audience-tiles__body">
 				{ configuredAudiences.map( ( audienceResourceName, index ) => {
 					// Conditionally render only the selected audience tile on mobile.
 					if ( isTabbedBreakpoint && index !== activeTile ) {

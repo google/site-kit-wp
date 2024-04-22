@@ -76,7 +76,7 @@ export default function AudienceTile( {
 								{ infoTooltip && (
 									<InfoTooltip
 										title={ infoTooltip }
-										tooltipClassName="googlesitekit-audience-tiles-info-tooltip__content"
+										tooltipClassName="googlesitekit-info-tooltip__content--audience"
 									/>
 								) }
 							</div>

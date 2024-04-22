@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-.googlesitekit-info-tooltip__content.googlesitekit-audience-tiles-info-tooltip__content {
+.googlesitekit-info-tooltip__content.googlesitekit-info-tooltip__content--audience {
 	color: $c-surfaces-inverse-on-surface;
 
 	a {
@@ -27,10 +27,10 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget.googlesitekit-widget__audience-tiles {
+	.googlesitekit-widget.googlesitekit-widget-audience-tiles {
 		border-radius: $br-sm;
 
-		.googlesitekit-widget__audience-tiles-tabs {
+		.googlesitekit-widget-audience-tiles__tabs {
 			border-bottom: 1px solid $c-utility-divider;
 
 			.mdc-tab-scroller {
@@ -82,7 +82,7 @@
 		& > .googlesitekit-widget__body {
 			padding: 0;
 
-			.googlesitekit-widget__audience-tiles__body {
+			.googlesitekit-widget-audience-tiles__body {
 				// Mobile tab layout.
 				display: grid;
 				gap: $grid-gap-phone;
