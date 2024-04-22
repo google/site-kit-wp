@@ -79,5 +79,12 @@ describe( 'modules/ads/pax services', () => {
 			);
 			/* eslint-enable sitekit/acronym-case */
 		} );
+
+		it( 'getSupportedConversionLabels should hold correct value', async () => {
+			const supportedConversionLabels =
+				await services.conversionTrackingService.getSupportedConversionLabels();
+
+			expect( supportedConversionLabels.conversionLabels ).toEqual( [] );
+		} );
 	} );
 } );
