@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -22,6 +23,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Tag_Guard;
@@ -29,6 +31,7 @@ use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 
@@ -43,6 +46,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Module slug name.
@@ -57,19 +61,23 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function register() {
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_data' ) );
+
 	}
 
 	/**
 	 * Sets up the module's assets to register.
 	 *
 	 * @since 1.122.0
+	 * @since n.e.x.t Added PAX assets.
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
 		$base_url = $this->context->url( 'dist/assets/' );
 
-		return array(
+		$assets = array(
 			new Script(
 				'googlesitekit-modules-ads',
 				array(
@@ -85,7 +93,64 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					),
 				)
 			),
+			new Script_Data(
+				'googlesitekit-ads-pax-config',
+				array(
+					'global'        => '_googlesitekitPAXConfig',
+					'data_callback' => function() {
+						if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+							return array();
+						}
+
+						return array(
+							'authAccess'      => array(
+								'oauthTokenAccess' => array(
+									'token' => (string) $this->authentication->get_oauth_client()->get_access_token(),
+								),
+							),
+							'locale'          => mb_substr( $this->context->get_locale( 'user' ), 0, 2 ),
+							'debuggingConfig' => array(
+								'env' => 'PROD',
+							),
+						);
+					},
+				)
+			),
 		);
+
+		if ( current_user_can( Permissions::VIEW_DASHBOARD ) && $this->is_connected() ) {
+			$assets[] = new Script(
+				'googlesitekit-ads-pax-integrator',
+				array(
+					'src'          => 'https://www.gstatic.com/pax/dev/pax_integrator.js',
+					'dependencies' => array(
+						'googlesitekit-ads-pax-config',
+						'googlesitekit-modules-data',
+					),
+				)
+			);
+		}
+
+		return $assets;
+	}
+
+	/**
+	 * Populates module data to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	private function inline_data( $modules_data ) {
+		if ( $this->is_connected() ) {
+			// Add the data under the `ads` key to make it clear it's scoped to this module.
+			$modules_data['ads'] = array(
+				'supportedConversionEvents' => array(),
+			);
+		}
+
+		return $modules_data;
 	}
 
 	/**
