@@ -30,9 +30,18 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../../../../../components/Link';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+
+const { useSelect } = Data;
 
 export default function AudienceTooltipMessage( { audienceName } ) {
+	const documentationURL = useSelect( ( select ) =>
+		// TODO: The link must be updated here to the correct support URL once written.
+		select( CORE_SITE ).getDocumentationLinkURL( 'audience-segmentation' )
+	);
+
 	// TODO: audienceName is used temporarily here, however, the user will be able to rename
 	// the audience which will break this function. After #8486 and #8487 are resolved, this
 	// function should be updated to use the audienceSlug instead.
@@ -52,8 +61,7 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 						strong: <strong />,
 						link: (
 							<Link
-								// TODO: The link must be updated here to the correct support URL once written.
-								href="https://sitekit.withgoogle.com/documentation/"
+								href={ documentationURL }
 								external
 								hideExternalIndicator
 							/>
@@ -74,8 +82,7 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 						strong: <strong />,
 						link: (
 							<Link
-								// TODO: The link must be updated here to the correct support URL once written.
-								href="https://sitekit.withgoogle.com/documentation/"
+								href={ documentationURL }
 								external
 								hideExternalIndicator
 							/>
@@ -96,8 +103,7 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 						strong: <strong />,
 						link: (
 							<Link
-								// TODO: The link must be updated here to the correct support URL once written.
-								href="https://sitekit.withgoogle.com/documentation/"
+								href={ documentationURL }
 								external
 								hideExternalIndicator
 							/>
@@ -105,7 +111,7 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 					}
 				);
 		}
-	}, [ audienceName ] );
+	}, [ audienceName, documentationURL ] );
 
 	return tooltipMessage;
 }
