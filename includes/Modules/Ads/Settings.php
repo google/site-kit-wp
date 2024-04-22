@@ -41,6 +41,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.122.0
+	 * @since n.e.x.t Added new settings fields for PAX.
 	 *
 	 * @return array An array of default settings values.
 	 */
@@ -56,6 +57,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Returns keys for owned settings.
 	 *
 	 * @since 1.122.0
+	 * @since n.e.x.t Added new settings fields for PAX.
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
