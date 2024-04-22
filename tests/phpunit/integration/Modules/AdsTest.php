@@ -11,8 +11,10 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -21,46 +23,97 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class AdsTest extends TestCase {
 
-	public function test_magic_methods() {
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	/**
+	 * Ads object.
+	 *
+	 * @var Ads
+	 */
+	private $ads;
 
-		$this->assertEquals( 'ads', $ads->slug );
-		$this->assertEquals( 'Ads', $ads->name );
-		$this->assertEquals( 'https://google.com/ads', $ads->homepage );
+	/**
+	 * Plugin context.
+	 *
+	 * @var Context
+	 */
+	private $context;
+
+	public function set_up() {
+		parent::set_up();
+
+		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->ads     = new Ads( $this->context );
+	}
+
+	public function test_magic_methods() {
+		$this->assertEquals( 'ads', $this->ads->slug );
+		$this->assertEquals( 'Ads', $this->ads->name );
+		$this->assertEquals( 'https://google.com/ads', $this->ads->homepage );
+	}
+
+	public function test_register() {
+		remove_all_actions( 'template_redirect' );
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
+
+		$this->ads->register();
+
+		$this->assertTrue( has_action( 'template_redirect' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ) );
 	}
 
 	public function test_is_connected_when_ads_conversion_id_is_set() {
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->assertFalse( $this->ads->is_connected() );
 
-		$this->assertFalse( $ads->is_connected() );
+		$this->ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
 
-		$ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
+		$this->assertTrue( $this->ads->is_connected() );
+	}
 
-		$this->assertTrue( $ads->is_connected() );
+	public function test_inline_data_initial_state__module_not_connected() {
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'ads', $inline_modules_data );
+	}
+
+	public function test_inline_custom_dimension_data_initial_state__module_connected() {
+		$this->ads->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'conversionID' => 'AW-12345',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'supportedConversionEvents' => array(),
+			),
+			$inline_modules_data['ads']
+		);
 	}
 
 	public function test_settings_reset_on_deactivation() {
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
 
-		$ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
+		$this->ads->on_deactivation();
 
-		$ads->on_deactivation();
-
-		$ads_settings = $ads->get_settings()->get();
+		$ads_settings = $this->ads->get_settings()->get();
 
 		$this->assertFalse( $ads_settings );
 	}
 
 	public function test_get_debug_fields() {
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
+		$this->ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
 
 		$this->assertEqualSets(
 			array(
 				'conversion_tracking_id',
 			),
-			array_keys( $ads->get_debug_fields() )
+			array_keys( $this->ads->get_debug_fields() )
 		);
 
 		$this->assertEquals(
@@ -71,7 +124,7 @@ class AdsTest extends TestCase {
 					'debug' => 'AW-1••••••••',
 				),
 			),
-			$ads->get_debug_fields()
+			$this->ads->get_debug_fields()
 		);
 	}
 
@@ -81,8 +134,6 @@ class AdsTest extends TestCase {
 	 * @param array $settings
 	 */
 	public function test_template_redirect( $settings ) {
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag() )->register();
 
@@ -94,8 +145,8 @@ class AdsTest extends TestCase {
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
 		remove_all_actions( 'template_redirect' );
-		$ads->register();
-		$ads->get_settings()->set( $settings );
+		$this->ads->register();
+		$this->ads->get_settings()->set( $settings );
 
 		do_action( 'template_redirect' );
 
