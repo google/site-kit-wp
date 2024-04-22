@@ -164,7 +164,7 @@ export default function AudienceTile( {
 
 AudienceTile.propTypes = {
 	title: PropTypes.string.isRequired,
-	infoTooltip: PropTypes.oneOf( [ PropTypes.string, PropTypes.element ] ),
+	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
 	visitsPerVisitor: PropTypes.object,
 	pagesPerVisit: PropTypes.object,
