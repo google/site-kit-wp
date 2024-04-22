@@ -53,7 +53,7 @@ export default function AudienceTiles( { Widget } ) {
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-	// An array of audience entity names.
+	// An array of audience resource names.
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
@@ -210,13 +210,8 @@ export default function AudienceTiles( { Widget } ) {
 						return null;
 					}
 
-					// On desktop prevent > 3 tiles from rendering.
-					if ( ! isTabbedBreakpoint && index > 2 ) {
-						return null;
-					}
-
 					// TODO: as part of #8484, this data manipulation should be removed and the relevant
-					// pivot report rows should be pass directly to the AudienceTile component.
+					// pivot report rows should be passed directly to the AudienceTile component.
 					const metricIndexBase = index * 2;
 
 					const audienceName =
