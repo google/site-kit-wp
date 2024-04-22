@@ -130,7 +130,7 @@ export default function AudienceTiles( { Widget } ) {
 	const topCitiesReport = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
 			options: topCitiesReportOptions,
-			audiences,
+			configuredAudiences,
 		} );
 	} );
 
@@ -146,7 +146,7 @@ export default function AudienceTiles( { Widget } ) {
 	const topContentReport = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
 			options: topContentReportOptions,
-			audiences,
+			configuredAudiences,
 		} );
 	} );
 
@@ -162,7 +162,7 @@ export default function AudienceTiles( { Widget } ) {
 	const topContentPageTitlesReport = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
 			options: topContentPageTitlesReportOptions,
-			audiences,
+			configuredAudiences,
 		} );
 	} );
 

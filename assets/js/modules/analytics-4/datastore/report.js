@@ -390,7 +390,7 @@ const baseSelectors = {
 							filter: {
 								fieldName: 'audienceResourceName',
 								stringFilter: {
-									value: audience.name,
+									value: audience,
 								},
 							},
 						},
