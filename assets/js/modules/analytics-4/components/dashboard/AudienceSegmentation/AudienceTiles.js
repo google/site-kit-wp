@@ -76,6 +76,8 @@ export default function AudienceTiles( { Widget } ) {
 		} )
 	);
 
+	const { startDate, endDate } = dates;
+
 	const reportOptions = {
 		...dates,
 		dimensions: [ { name: 'audienceResourceName' } ],
@@ -95,8 +97,8 @@ export default function AudienceTiles( { Widget } ) {
 	const { rows = [] } = report || {};
 
 	const totalPageviewsReportOptions = {
-		startDate: dates?.startDate,
-		endDate: dates?.endDate,
+		startDate,
+		endDate,
 		metrics: [ { name: 'screenPageViews' } ],
 	};
 
@@ -110,8 +112,8 @@ export default function AudienceTiles( { Widget } ) {
 		totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value || 0;
 
 	const topCitiesReportOptions = {
-		startDate: dates?.startDate,
-		endDate: dates?.endDate,
+		startDate,
+		endDate,
 		dimensions: [ 'city' ],
 		metrics: [ { name: 'totalUsers' } ],
 		orderby: [
@@ -133,8 +135,8 @@ export default function AudienceTiles( { Widget } ) {
 	} );
 
 	const topContentReportOptions = {
-		startDate: dates?.startDate,
-		endDate: dates?.endDate,
+		startDate,
+		endDate,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
@@ -149,8 +151,8 @@ export default function AudienceTiles( { Widget } ) {
 	} );
 
 	const topContentPageTitlesReportOptions = {
-		startDate: dates?.startDate,
-		endDate: dates?.endDate,
+		startDate,
+		endDate,
 		dimensions: [ 'pagePath', 'pageTitle' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
