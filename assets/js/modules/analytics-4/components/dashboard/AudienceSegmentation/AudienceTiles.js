@@ -176,26 +176,28 @@ export default function AudienceTiles( { Widget } ) {
 						setActiveTile( index )
 					}
 				>
-					{ audiences.map( ( { displayName }, index ) => {
-						const tooltipMessage = (
-							<AudienceTooltipMessage
-								audienceName={ displayName }
-							/>
-						);
-
-						return (
-							<Tab
-								key={ `google-sitekit-audience-segment-tab-${ index }` }
-								aria-label={ displayName }
-							>
-								{ displayName }
-								<InfoTooltip
-									title={ tooltipMessage }
-									tooltipClassName="googlesitekit-info-tooltip__content--audience"
+					{ audiences.map(
+						( { audienceResourceName, displayName } ) => {
+							const tooltipMessage = (
+								<AudienceTooltipMessage
+									audienceName={ displayName }
 								/>
-							</Tab>
-						);
-					} ) }
+							);
+
+							return (
+								<Tab
+									key={ audienceResourceName }
+									aria-label={ displayName }
+								>
+									{ displayName }
+									<InfoTooltip
+										title={ tooltipMessage }
+										tooltipClassName="googlesitekit-info-tooltip__content--audience"
+									/>
+								</Tab>
+							);
+						}
+					) }
 				</TabBar>
 			) }
 			<div className="googlesitekit-widget-audience-tiles__body">
