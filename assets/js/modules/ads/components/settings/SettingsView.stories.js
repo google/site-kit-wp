@@ -79,6 +79,10 @@ export default {
 
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
+PaxConnected.scenario = {
+	label: 'Modules/Ads/Settings/SettingsView/PAX',
+	delay: 250,
+};
 PaxConnected.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
