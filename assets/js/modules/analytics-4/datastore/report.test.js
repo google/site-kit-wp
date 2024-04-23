@@ -612,14 +612,10 @@ describe( 'modules/analytics-4 report', () => {
 					{
 						...options,
 						dimensionFilter: {
-							filter: {
-								fieldName: 'audienceResourceName',
-								stringFilter: {
-									value: fixtures.audiences[
-										fixtures.audiences.length - 1
-									].name,
-								},
-							},
+							audienceResourceName:
+								fixtures.audiences[
+									fixtures.audiences.length - 1
+								].name,
 						},
 					}
 				);
