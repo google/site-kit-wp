@@ -121,7 +121,7 @@ const baseReducer = ( state, { type } ) => {
 };
 
 const baseResolvers = {
-	*getAudiences() {
+	*getAvailableAudiences() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const audiences = registry
