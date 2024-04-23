@@ -26,36 +26,12 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { validateAudience } from '../utils/validation';
 
-const fetchGetAudiencesStore = createFetchStore( {
-	baseName: 'getAudiences',
-	controlCallback() {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'audiences',
-			{},
-			{
-				useCache: false,
-			}
-		);
-	},
-	reducerCallback( state, audiencesResponse ) {
-		return { ...state, audiences: audiencesResponse.audiences };
-	},
-} );
-
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
 		API.set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
-	reducerCallback( state, audience ) {
-		return {
-			...state,
-			audiences: [ ...( state.audiences || [] ), audience ],
-		};
-	},
 	argsToParams: ( audience ) => ( {
 		audience,
 	} ),
@@ -78,10 +54,6 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 		};
 	},
 } );
-
-const baseInitialState = {
-	audiences: undefined,
-};
 
 const baseActions = {
 	/**
@@ -113,6 +85,11 @@ const baseActions = {
 				yield fetchCreateAudienceStore.actions.fetchCreateAudience(
 					audience
 				);
+
+			// Sync available audiences in the state.
+			if ( error === undefined ) {
+				yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			}
 
 			return { response, error };
 		}
@@ -147,34 +124,24 @@ const baseResolvers = {
 	*getAudiences() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const audiences = registry.select( MODULES_ANALYTICS_4 ).getAudiences();
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
 
+		// If available audiences not present, sync the audience in state.
 		if ( audiences === undefined ) {
-			yield fetchGetAudiencesStore.actions.fetchGetAudiences();
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
 	},
 };
 
-const baseSelectors = {
-	/**
-	 * Gets the property audiences.
-	 *
-	 * @since 1.120.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} An array with audiences objects; `undefined` if not loaded.
-	 */
-	getAudiences( state ) {
-		return state.audiences;
-	},
-};
+const baseSelectors = {};
 
 const store = Data.combineStores(
-	fetchGetAudiencesStore,
 	fetchCreateAudienceStore,
 	fetchSyncAvailableAudiencesStore,
 	{
-		initialState: baseInitialState,
+		initialState: {},
 		actions: baseActions,
 		controls: baseControls,
 		reducer: baseReducer,

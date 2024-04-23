@@ -545,7 +545,6 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['GET:audiences']          = array( 'service' => 'analyticsaudiences' );
 			$datapoints['POST:create-audience']   = array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
@@ -936,22 +935,6 @@ final class Analytics_4 extends Module
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
 				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
-			case 'GET:audiences':
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
-
-				return $analyticsadmin
-					->properties_audiences
-					->listPropertiesAudiences( $property_id );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -2177,9 +2160,10 @@ final class Analytics_4 extends Module
 	private function set_available_audiences( $audiences ) {
 		$available_audiences = array_map(
 			function( GoogleAnalyticsAdminV1alphaAudience $audience ) {
+				$display_name  = $audience->getDisplayName();
 				$audience_item = array(
 					'name'        => $audience->getName(),
-					'displayName' => $audience->getDisplayName(),
+					'displayName' => ( 'All Users' === $display_name ) ? __( 'All Visitors', 'google-site-kit' ) : $display_name,
 					'description' => $audience->getDescription(),
 				);
 
