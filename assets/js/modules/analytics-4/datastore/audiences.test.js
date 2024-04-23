@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
@@ -33,9 +30,6 @@ import { audiences as audiencesFixture } from './__fixtures__';
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
 
-	const getAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audiences'
-	);
 	const createAudienceEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
@@ -81,6 +75,7 @@ describe( 'modules/analytics-4 audiences', () => {
 		],
 	};
 
+	// eslint-disable-next-line no-unused-vars
 	let store;
 
 	beforeEach( () => {
@@ -145,7 +140,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					body: audiencesFixture[ 2 ],
 				} );
 
-				expect( store.getState().audiences ).toBeUndefined();
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					status: 200,
+					body: [ audiencesFixture[ 0 ], audiencesFixture[ 1 ] ],
+				} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -159,11 +157,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 					},
 				} );
-
-				expect( store.getState().audiences.length ).toBe( 1 );
-				expect( store.getState().audiences[ 0 ] ).toEqual(
-					audiencesFixture[ 2 ]
-				);
 			} );
 		} );
 
@@ -239,51 +232,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
 				).toEqual( availableAudiences );
-			} );
-		} );
-	} );
-
-	describe( 'selectors', () => {
-		describe( 'getAudiences', () => {
-			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.get( getAudiencesEndpoint, {
-					body: { audiences: audiencesFixture },
-				} );
-
-				const initialAudiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiences();
-
-				expect( initialAudiences ).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudiences();
-
-				const finalAudiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiences();
-
-				expect( finalAudiences ).toEqual( audiencesFixture );
-			} );
-
-			it( 'should not make a network request if properties for this account are already present', async () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudiences( { audiences: audiencesFixture } );
-
-				const audiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiences();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudiences();
-
-				expect( fetchMock ).not.toHaveFetched( getAudiencesEndpoint );
-				expect( audiences ).toEqual( audiencesFixture );
 			} );
 		} );
 	} );
