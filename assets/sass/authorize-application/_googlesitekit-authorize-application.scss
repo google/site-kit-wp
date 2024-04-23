@@ -16,10 +16,24 @@
  * limitations under the License.
  */
 
-.auth-app-card #approve {
-	background-color: $c-deep-blue;
+.authorize-application-php {
+	background-color: $c-surfaces-surface;
+}
+
+.auth-app-card {
+	border: none;
+	padding: 0;
+
+	#approve {
+		background-color: $c-deep-blue;
+	}
 }
 
 #footer-thankyou a {
 	color: $c-vivid-blue;
+}
+
+#wpbody,
+#wpfooter {
+	font-family: $f-primary;
 }
