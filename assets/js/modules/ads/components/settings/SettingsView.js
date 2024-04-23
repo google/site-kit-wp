@@ -52,7 +52,7 @@ export default function SettingsView() {
 	return (
 		<Fragment>
 			<AdBlockerWarning />
-			{ ! isAdBlockerActive && ! paxConversionID && ! extCustomerID && (
+			{ ! isAdBlockerActive && ! extCustomerID && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
@@ -67,7 +67,7 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ ! isAdBlockerActive && ! conversionID && (
+			{ ! isAdBlockerActive && extCustomerID && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
@@ -82,7 +82,7 @@ export default function SettingsView() {
 				</div>
 			) }
 
-			{ ! isAdBlockerActive && ! conversionID && (
+			{ ! isAdBlockerActive && extCustomerID && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Customer ID', 'google-site-kit' ) }
