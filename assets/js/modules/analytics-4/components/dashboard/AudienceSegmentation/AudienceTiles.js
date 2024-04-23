@@ -167,7 +167,7 @@ export default function AudienceTiles( { Widget } ) {
 	} );
 
 	return (
-		<Widget className="googlesitekit-widget-audience-tiles">
+		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
 			{ isTabbedBreakpoint && (
 				<TabBar
 					className="googlesitekit-widget-audience-tiles__tabs"
