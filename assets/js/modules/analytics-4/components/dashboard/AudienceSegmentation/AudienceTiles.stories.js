@@ -33,9 +33,9 @@ import { audiences as audiencesFixture } from './../../../datastore/__fixtures__
 import AudienceTiles from './AudienceTiles';
 
 const configuredAudiences = [
-	'properties/12345/audiences/1',
-	'properties/12345/audiences/2',
-	'properties/12345/audiences/3',
+	'properties/12345/audiences/1', // All Users
+	'properties/12345/audiences/3', // New visitors
+	'properties/12345/audiences/4', // Returning visitors
 ];
 const audiencesDimensionFilter = {
 	filter: {
