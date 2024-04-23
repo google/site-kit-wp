@@ -80,8 +80,6 @@ $c-mine-shaft: #333;
 $c-boulder: #757575;
 $c-mariner: #3367d6;
 $c-woodsmoke: #131418;
-$c-deep-blue: #0b57d0;
-$c-vivid-blue: #1a73e8;
 
 // WordPress core pallete
 // see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/
@@ -329,3 +327,24 @@ $z-index-sk-side-sheet: 10000;
 $z-index-sk-side-sheet-overlay: 9990;
 $z-index-sk-header: 9980;
 $z-index-sk-overlay-notification: 9970;
+
+// Authorize Application screen specific styles
+$c-authorize-application-background: $c-base;
+$c-authorize-application-sys-light-on-primary: $c-base;
+$c-authorize-application-sys-light-on-surface: #1f1f1f;
+$c-authorize-application-deep-blue: #0b57d0; // Deep Blue color name from http://chir.ag/projects/name-that-color/.
+$c-authorize-application-vivid-blue: #1a73e8; // Vivid Blue color name from http://chir.ag/projects/name-that-color/.
+$c-authorize-application-xanadu: #747775; // Xanadu color name from http://chir.ag/projects/name-that-color/.
+// $f-authorize-application-primary: $f-primary;
+$fs-authorize-application-headline-sm: 24px;
+$lh-authorize-application-headline-sm: 32px;
+$fs-authorize-application-title-lg: 18px;
+$lh-authorize-application-title-lg: 24px;
+$fs-authorize-application-label-lg: 14px;
+$lh-authorize-application-label-lg: 20px;
+$fs-authorize-application-label-md: 12px;
+$lh-authorize-application-label-md: 16px;
+$fs-authorize-application-body-md: 14px;
+$lh-authorize-application-body-md: 20px;
+
+// $f-authorize-application-title: "Google Sans";

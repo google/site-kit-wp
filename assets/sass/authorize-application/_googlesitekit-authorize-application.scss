@@ -17,23 +17,85 @@
  */
 
 .authorize-application-php {
-	background-color: $c-surfaces-surface;
-}
+	background-color: $c-authorize-application-background;
 
-.auth-app-card {
-	border: none;
-	padding: 0;
+	.wrap {
+		margin: 30px 0 0;
 
-	#approve {
-		background-color: $c-deep-blue;
+		h1 {
+			// This is the Authorize Application screen title.
+			// font-family: $f-authorize-application-title;
+			font-size: $fs-authorize-application-headline-sm;
+			line-height: $lh-authorize-application-headline-sm;
+			padding: 0;
+		}
+	}
+
+	.auth-app-card {
+		border: none;
+		margin: 37px 0 0;
+		padding: 0;
+	}
+
+	.title {
+		font-size: $fs-authorize-application-title-lg;
+		font-weight: $fw-medium;
+		line-height: $lh-authorize-application-title-lg;
+		margin: 0 0 19px;
+	}
+
+	p {
+		font-size: $fs-authorize-application-label-lg;
+		font-weight: $fw-medium;
+		line-height: $lh-authorize-application-label-lg;
+		margin: 0 0 20px;
+	}
+
+	strong {
+		font-weight: $fw-medium;
+	}
+
+	.form-field {
+		margin: 0 0 40px;
+
+		label {
+			font-size: $fs-authorize-application-label-md;
+			font-weight: $fw-medium;
+			line-height: $lh-authorize-application-label-md;
+		}
+
+		input {
+			border: 1px solid $c-authorize-application-xanadu;
+			border-radius: $br-xs;
+			font-size: $fs-authorize-application-body-md;
+			line-height: $lh-authorize-application-body-md;
+			margin: 8px 0 0;
+			padding: 12px 16px;
+		}
 	}
 }
 
-#footer-thankyou a {
-	color: $c-vivid-blue;
+#wpcontent,
+#wpfooter {
+	color: $c-authorize-application-sys-light-on-surface;
+	font-family: $f-primary; // $f-authorize-application-primary;
+	padding-left: 47px;
+	padding-right: 47px;
 }
 
-#wpbody,
-#wpfooter {
-	font-family: $f-primary;
+#approve {
+	// This is the primary CTA submit button.
+	background-color: $c-authorize-application-deep-blue;
+	border: none;
+	border-radius: $br-lg;
+	color: $c-authorize-application-sys-light-on-primary;
+	font-size: $fs-authorize-application-label-lg;
+	font-weight: $fw-medium;
+	line-height: $lh-authorize-application-label-lg;
+	margin: 0 0 15px;
+	padding: 10px 24px;
+}
+
+#footer-thankyou a {
+	color: $c-authorize-application-vivid-blue;
 }
