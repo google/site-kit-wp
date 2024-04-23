@@ -32,7 +32,7 @@ export const selectors = {
 	/**
 	 * Returns appropriate ad blocker warning message based on modules connection status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The error message string if an ad blocker is active,

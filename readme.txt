@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.5
 Requires PHP:      7.4
-Stable tag:        1.124.0
+Stable tag:        1.125.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,38 +109,33 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.124.0 =
-
-**Added**
-
-* Add setup flow to Ads Module. See [#8346](https://github.com/google/site-kit-wp/issues/8346).
-* Add the web tag for the Ads module. See [#8313](https://github.com/google/site-kit-wp/issues/8313).
-* Add the Conversion Tracking ID field to the Ads module's Setup and Settings screens. See [#8251](https://github.com/google/site-kit-wp/issues/8251).
-* Add Site Health information for the Ads module. See [#8245](https://github.com/google/site-kit-wp/issues/8245).
-* Add a notification for users who have linked AdSense and Analytics accounts when data becomes available to view in their dashboard. See [#8237](https://github.com/google/site-kit-wp/issues/8237).
-* Add Analytics events to AdSense + Analytics notification. See [#8213](https://github.com/google/site-kit-wp/issues/8213).
+= 1.125.0 =
 
 **Enhanced**
 
-* Update Consent Mode messaging to mention the UK as well as the EEA. See [#8443](https://github.com/google/site-kit-wp/issues/8443).
-* Update wording for sites with existing Analytics tags. See [#8405](https://github.com/google/site-kit-wp/issues/8405).
-* Add placeholder/prefix to the Conversion Tracking ID field in the Ads module. See [#8398](https://github.com/google/site-kit-wp/issues/8398).
-* Add a linked Ads account as an option to surface Consent Mode features. See [#8382](https://github.com/google/site-kit-wp/issues/8382).
-* Update Analytics to use new gtag infrastructure. See [#8273](https://github.com/google/site-kit-wp/issues/8273).
-* Add decoupled infrastructure for GTag. See [#8269](https://github.com/google/site-kit-wp/issues/8269).
-* Add a settings toggle for Audience Segmentation. See [#8177](https://github.com/google/site-kit-wp/issues/8177).
-* Introduce infrastructure for managing Audience settings. See [#8176](https://github.com/google/site-kit-wp/issues/8176).
-* Add the Audience Tile in its "happy path" state as a component which is viewable in Storybook. See [#8135](https://github.com/google/site-kit-wp/issues/8135).
-* Enhance Web Data Stream creation in Analytics setup and settings screens to allow using custom web data stream name. See [#6727](https://github.com/google/site-kit-wp/issues/6727).
-* Improve "Retry" behavior on All Traffic Widget. See [#6406](https://github.com/google/site-kit-wp/issues/6406).
+* Add "Learn more" link in the Ads Module setup screen. See [#8532](https://github.com/google/site-kit-wp/issues/8532).
+* Add the `Conversion_Events_Provider` Interface. See [#8529](https://github.com/google/site-kit-wp/issues/8529).
+* Block Ads module setup when ad blocker is detected. See [#8515](https://github.com/google/site-kit-wp/issues/8515).
+* Add a "New" badge to the Ads module in Site Kit settings. See [#8448](https://github.com/google/site-kit-wp/issues/8448).
+* Extend the Consent Mode conditions for determining whether Ads is connected to include a check for the presence of an Ads tag as the destination of the connected Analytics property's Google tag. See [#8432](https://github.com/google/site-kit-wp/issues/8432).
+* Update the description copy in the Consent Mode modal, simplifying the text and making it clear that measurement from visitors from the UK may also be affected by disabling Consent Mode. See [#8389](https://github.com/google/site-kit-wp/issues/8389).
+* Ensure that the check for a conversion tracking ID is maintained for the Consent Mode feature with the conversion ID having been migrated to the Ads module. See [#8365](https://github.com/google/site-kit-wp/issues/8365).
+* Add Site Health entries for the current Consent Mode status, and the presence of the WP Consent API. See [#8356](https://github.com/google/site-kit-wp/issues/8356).
+* Add an error state for the Audience tile component. See [#8228](https://github.com/google/site-kit-wp/issues/8228).
 
 **Changed**
 
-* Migrate the Ads Conversion ID field from the Analytics module to the Ads module. See [#8248](https://github.com/google/site-kit-wp/issues/8248).
+* Track GA events for the lifecycle of the Ads Conversion ID migration notification. See [#8458](https://github.com/google/site-kit-wp/issues/8458).
+* Update minimum required version of PHP to 7.4. See [#8030](https://github.com/google/site-kit-wp/issues/8030).
 
 **Fixed**
 
-* Fix bug that caused Top Earning Pages widget to show links in shared dashboard. See [#8451](https://github.com/google/site-kit-wp/issues/8451).
-* Fix bug that caused browser console error to appear when changing Tag Manager account in Tag Manager setup/settings. See [#8316](https://github.com/google/site-kit-wp/issues/8316).
+* Add AMP tag with Conversion Tracking ID when Ads module is enabled. See [#8518](https://github.com/google/site-kit-wp/issues/8518).
+* Ensure Ads module cannot be saved when settings are invalid. See [#8508](https://github.com/google/site-kit-wp/issues/8508).
+* Fix unstable time based PHPUnit tests. See [#8488](https://github.com/google/site-kit-wp/issues/8488).
+* Fix bug that caused "Top search queries" widget to overflow on small screens. See [#8417](https://github.com/google/site-kit-wp/issues/8417).
+* Fix a bug where the Enhanced Measurement toggle may not have the intended effect when creating a new property during Analytics module setup. See [#8409](https://github.com/google/site-kit-wp/issues/8409).
+* Prevent a Consent Mode related console error on the view-only dashboard. See [#8408](https://github.com/google/site-kit-wp/issues/8408).
+* Exclude connection check requests from internal error reporting. See [#8268](https://github.com/google/site-kit-wp/issues/8268).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

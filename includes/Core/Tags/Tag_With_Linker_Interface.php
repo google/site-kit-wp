@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags;
 /**
  * Interface for a tag implementing linker domain.
  *
- * @since n.e.x.t
+ * @since 1.125.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ interface Tag_With_Linker_Interface {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @param string $domain Domain name.
 	 */
