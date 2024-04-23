@@ -389,12 +389,7 @@ const baseSelectors = {
 				select( MODULES_ANALYTICS_4 ).getReport( {
 					...options,
 					dimensionFilter: {
-						filter: {
-							fieldName: 'audienceResourceName',
-							stringFilter: {
-								value: audienceResourceName,
-							},
-						},
+						audienceResourceName,
 					},
 				} )
 			);

@@ -38,12 +38,7 @@ const configuredAudiences = [
 	'properties/12345/audiences/4', // Returning visitors
 ];
 const audiencesDimensionFilter = {
-	filter: {
-		fieldName: 'audienceResourceName',
-		inListFilter: {
-			values: configuredAudiences,
-		},
-	},
+	audienceResourceName: configuredAudiences,
 };
 
 const reportOptions = {
@@ -144,12 +139,7 @@ export default {
 					provideAnalytics4MockReport( registry, {
 						...topCitiesReportOptions,
 						dimensionFilter: {
-							filter: {
-								fieldName: 'audienceResourceName',
-								stringFilter: {
-									value: audience.name,
-								},
-							},
+							audienceResourceName: audience.name,
 						},
 					} );
 				} );
@@ -158,12 +148,7 @@ export default {
 					provideAnalytics4MockReport( registry, {
 						...topContentReportOptions,
 						dimensionFilter: {
-							filter: {
-								fieldName: 'audienceResourceName',
-								stringFilter: {
-									value: audience.name,
-								},
-							},
+							audienceResourceName: audience.name,
 						},
 					} );
 				} );
@@ -182,12 +167,7 @@ export default {
 							options: {
 								...topContentPageTitlesReportOptions,
 								dimensionFilter: {
-									filter: {
-										fieldName: 'audienceResourceName',
-										stringFilter: {
-											value: audience.name,
-										},
-									},
+									audienceResourceName: audience.name,
 								},
 							},
 						} );

@@ -58,12 +58,7 @@ export default function AudienceTiles( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 	const audiencesDimensionFilter = {
-		filter: {
-			fieldName: 'audienceResourceName',
-			inListFilter: {
-				values: configuredAudiences,
-			},
-		},
+		audienceResourceName: configuredAudiences,
 	};
 	const audiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAudiences()
