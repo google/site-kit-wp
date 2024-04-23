@@ -127,12 +127,12 @@ export default function AudienceTiles( { Widget } ) {
 		limit: 3,
 	};
 
-	const topCitiesReport = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
-			options: topCitiesReportOptions,
-			configuredAudiences,
-		} );
-	} );
+	const topCitiesReport = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+			topCitiesReportOptions,
+			configuredAudiences
+		)
+	);
 
 	const topContentReportOptions = {
 		startDate,
@@ -143,12 +143,12 @@ export default function AudienceTiles( { Widget } ) {
 		limit: 3,
 	};
 
-	const topContentReport = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
-			options: topContentReportOptions,
-			configuredAudiences,
-		} );
-	} );
+	const topContentReport = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+			topContentReportOptions,
+			configuredAudiences
+		)
+	);
 
 	const topContentPageTitlesReportOptions = {
 		startDate,
@@ -159,12 +159,12 @@ export default function AudienceTiles( { Widget } ) {
 		limit: 15,
 	};
 
-	const topContentPageTitlesReport = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReportForAllAudiences( {
-			options: topContentPageTitlesReportOptions,
-			configuredAudiences,
-		} );
-	} );
+	const topContentPageTitlesReport = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+			topContentPageTitlesReportOptions,
+			configuredAudiences
+		)
+	);
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>

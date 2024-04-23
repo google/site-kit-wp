@@ -571,9 +571,7 @@ describe( 'modules/analytics-4 report', () => {
 				'^/google-site-kit/v1/modules/analytics-4/data/audiences'
 			);
 
-			const audienceResourceNames = fixtures.audiences.map(
-				( { name } ) => name
-			);
+			const audiences = fixtures.audiences.map( ( { name } ) => name );
 
 			it( 'should trigger a separate report for each provided audience', async () => {
 				const options = {
@@ -608,10 +606,7 @@ describe( 'modules/analytics-4 report', () => {
 
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getReportForAllAudiences( {
-						options,
-						audiences: audienceResourceNames,
-					} );
+					.getReportForAllAudiences( options, audiences );
 
 				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
 					{
@@ -631,10 +626,7 @@ describe( 'modules/analytics-4 report', () => {
 
 				const reports = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getReportForAllAudiences( {
-						options,
-						audiences: audienceResourceNames,
-					} );
+					.getReportForAllAudiences( options, audiences );
 
 				expect( reports ).toEqual(
 					Array( fixtures.audiences.length ).fill( fixtures.report )

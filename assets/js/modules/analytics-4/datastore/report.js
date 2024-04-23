@@ -378,25 +378,27 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Array.<Object>} An array of report response objects for each provided audience.
+	 * @param {Object}   state                 Data store's state.
+	 * @param {Object}   options               Options for generating the report.
+	 * @param {string[]} audienceResourceNames Audience resource names to get the report for.
+	 * @return {Array.<Object>} An array of report response objects for each provided audience resource name.
 	 */
 	getReportForAllAudiences: createRegistrySelector(
-		( select ) =>
-			( state, { options, audiences } ) => {
-				return audiences.map( ( audience ) =>
-					select( MODULES_ANALYTICS_4 ).getReport( {
-						...options,
-						dimensionFilter: {
-							filter: {
-								fieldName: 'audienceResourceName',
-								stringFilter: {
-									value: audience,
-								},
+		( select ) => ( state, options, audienceResourceNames ) => {
+			return audienceResourceNames?.map( ( audienceResourceName ) =>
+				select( MODULES_ANALYTICS_4 ).getReport( {
+					...options,
+					dimensionFilter: {
+						filter: {
+							fieldName: 'audienceResourceName',
+							stringFilter: {
+								value: audienceResourceName,
 							},
 						},
-					} )
-				);
-			}
+					},
+				} )
+			);
+		}
 	),
 };
 
