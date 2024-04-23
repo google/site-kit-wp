@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\GTag;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
@@ -64,22 +63,29 @@ class AdsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_id = $administrator->ID;
+		wp_set_current_user( $this->user_id );
 
-		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $context );
-		$this->user_options   = new User_Options( $context, $this->user_id );
-		$this->authentication = new Authentication( $context, $this->options, $this->user_options );
-		$this->ads            = new Ads( $context, $this->options, $this->user_options, $this->authentication );
-
-		// Fake a valid authentication token on the client.
-		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
-		$this->authentication->verification()->set( true );
-
-		$this->fake_site_connection();
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->ads     = new Ads( $this->context );
 
 		self::enable_feature( 'adsPax' );
+	}
+
+	private function force_permissions_for_current_user() {
+		// Override VIEW_AUTHENTICATED_DASHBOARD for the testing purposes.
+		add_filter(
+			'map_meta_cap',
+			function( $caps, $cap ) {
+				if ( Permissions::VIEW_AUTHENTICATED_DASHBOARD === $cap ) {
+					return array( 'manage_options', 'edit_posts' );
+				}
+				return $caps;
+			},
+			99,
+			2
+		);
 	}
 
 	public function test_magic_methods() {
@@ -109,6 +115,8 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_setup_assets() {
+		$this->force_permissions_for_current_user();
+
 		$reflection = new \ReflectionClass( get_class( $this->ads ) );
 
 		$setup_assets = $reflection->getMethod( 'setup_assets' );
@@ -122,7 +130,6 @@ class AdsTest extends TestCase {
 		$this->ads->get_settings()->set(
 			array(
 				'conversionID' => 'AW-123456789',
-				'ownerID'      => $this->user_id,
 			)
 		);
 
