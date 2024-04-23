@@ -61,7 +61,7 @@ export default function AudienceTiles( { Widget } ) {
 		audienceResourceName: configuredAudiences,
 	};
 	const audiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudiences()
+		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
 	);
 
 	const dates = useSelect( ( select ) =>

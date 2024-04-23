@@ -124,7 +124,7 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudiences( { audiences: audiencesFixture } );
+					.setAvailableAudiences( { audiences: audiencesFixture } );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setConfiguredAudiences( configuredAudiences );

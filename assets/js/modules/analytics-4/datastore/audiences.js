@@ -110,8 +110,6 @@ const baseActions = {
 	},
 };
 
-const baseControls = {};
-
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
 		default: {
@@ -135,18 +133,16 @@ const baseResolvers = {
 	},
 };
 
-const baseSelectors = {};
-
 const store = Data.combineStores(
 	fetchCreateAudienceStore,
 	fetchSyncAvailableAudiencesStore,
 	{
 		initialState: {},
 		actions: baseActions,
-		controls: baseControls,
+		controls: {},
 		reducer: baseReducer,
 		resolvers: baseResolvers,
-		selectors: baseSelectors,
+		selectors: {},
 	}
 );
 
