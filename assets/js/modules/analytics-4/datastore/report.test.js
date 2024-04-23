@@ -571,7 +571,7 @@ describe( 'modules/analytics-4 report', () => {
 				'^/google-site-kit/v1/modules/analytics-4/data/audiences'
 			);
 
-			it( 'should trigger separate report for each provided audiences', async () => {
+			it( 'should trigger a separate report for each provided audience', async () => {
 				const options = {
 					startDate: '2022-11-02',
 					endDate: '2022-11-04',
