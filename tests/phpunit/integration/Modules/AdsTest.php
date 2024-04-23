@@ -11,11 +11,17 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\GTag;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Settings;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
+use WP_User;
 
 /**
  * @group Modules
@@ -23,12 +29,30 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class AdsTest extends TestCase {
 
+	private $user_id;
+
 	/**
 	 * Ads object.
 	 *
 	 * @var Ads
 	 */
 	private $ads;
+
+	/**
+	 * @var User_Options
+	 */
+	protected $user_options;
+
+	/**
+	 * @var Options
+	 */
+	protected $options;
+
+	/**
+	 * @var Authentication
+	 */
+	protected $authentication;
+	use Fake_Site_Connection_Trait;
 
 	/**
 	 * Plugin context.
@@ -40,8 +64,22 @@ class AdsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->ads     = new Ads( $this->context );
+		$this->user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $context );
+		$this->user_options   = new User_Options( $context, $this->user_id );
+		$this->authentication = new Authentication( $context, $this->options, $this->user_options );
+		$this->ads            = new Ads( $context, $this->options, $this->user_options, $this->authentication );
+
+		// Fake a valid authentication token on the client.
+		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
+		$this->authentication->verification()->set( true );
+
+		$this->fake_site_connection();
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+
+		self::enable_feature( 'adsPax' );
 	}
 
 	public function test_magic_methods() {
@@ -60,21 +98,48 @@ class AdsTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ) );
 	}
 
-	public function test_is_connected_when_ads_conversion_id_is_set() {
+	public function test_is_connected__when_ads_conversion_id_is_set() {
 		$this->assertFalse( $this->ads->is_connected() );
 
-		$this->ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
+		$this->ads->get_settings()->set(
+			array( 'conversionID' => 'AW-123456789' )
+		);
 
 		$this->assertTrue( $this->ads->is_connected() );
 	}
 
-	public function test_inline_data_initial_state__module_not_connected() {
+	public function test_setup_assets() {
+		$reflection = new \ReflectionClass( get_class( $this->ads ) );
+
+		$setup_assets = $reflection->getMethod( 'setup_assets' );
+		$setup_assets->setAccessible( true );
+
+		$assets = $setup_assets->invokeArgs( $this->ads, array() );
+
+		// Main ads script and googlesitekit-ads-pax-config should be registered.
+		$this->assertEquals( count( $assets ), 2 );
+
+		$this->ads->get_settings()->set(
+			array(
+				'conversionID' => 'AW-123456789',
+				'ownerID'      => $this->user_id,
+			)
+		);
+
+		$assets = $setup_assets->invokeArgs( $this->ads, array() );
+
+		// Once Ads module is active and user has proper VIEW_AUTHENTICATED_DASHBOARD capability,
+		// all pax scripts should be registered together with main module's JS file.
+		$this->assertEquals( count( $assets ), 3 );
+	}
+
+	public function test_inline_modules_data__module_not_connected() {
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
 		$this->assertArrayNotHasKey( 'ads', $inline_modules_data );
 	}
 
-	public function test_inline_custom_dimension_data_initial_state__module_connected() {
+	public function test_inline_modules_data__module_connected() {
 		$this->ads->register();
 
 		// Ensure the module is connected.
@@ -96,7 +161,7 @@ class AdsTest extends TestCase {
 		);
 	}
 
-	public function test_settings_reset_on_deactivation() {
+	public function test_settings__reset_on_deactivation() {
 		$this->ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
 
 		$this->ads->on_deactivation();

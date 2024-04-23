@@ -39,7 +39,7 @@ describe( 'modules/ads/pax services', () => {
 			services = createPaxServices( registry );
 		} );
 
-		it( 'should return object with businessService and conversionTrackingService properties', () => {
+		it( 'should return object with correct services', () => {
 			expect( services ).toEqual(
 				expect.objectContaining( {
 					businessService: expect.objectContaining( {
@@ -48,43 +48,50 @@ describe( 'modules/ads/pax services', () => {
 					} ),
 					conversionTrackingService: expect.objectContaining( {
 						getSupportedConversionLabels: expect.any( Function ),
-						termsAndConditionsService: expect.any( Function ),
+					} ),
+					termsAndConditionsService: expect.objectContaining( {
+						notify: expect.any( Function ),
 					} ),
 				} )
 			);
 		} );
 
-		it( 'businessService property should contain businessName and businessUrl', async () => {
-			const businessInfo =
-				await services.businessService.getBusinessInfo();
+		describe( 'businessService', () => {
+			it( 'should contain businessName and businessUrl', async () => {
+				const businessInfo =
+					await services.businessService.getBusinessInfo();
 
-			/* eslint-disable sitekit/acronym-case */
-			expect( businessInfo ).toEqual(
-				expect.objectContaining( {
-					businessName: expect.any( String ),
-					businessUrl: expect.any( String ),
-				} )
-			);
-			/* eslint-enable sitekit/acronym-case */
+				/* eslint-disable sitekit/acronym-case */
+				expect( businessInfo ).toEqual(
+					expect.objectContaining( {
+						businessName: expect.any( String ),
+						businessUrl: expect.any( String ),
+					} )
+				);
+				/* eslint-enable sitekit/acronym-case */
+			} );
+
+			it( 'should contain correct site info values for businessName and businessUrl properties', async () => {
+				const businessInfo =
+					await services.businessService.getBusinessInfo();
+
+				/* eslint-disable sitekit/acronym-case */
+				expect( businessInfo.businessName ).toEqual( 'Something Test' );
+				expect( businessInfo.businessUrl ).toEqual(
+					'http://something.test/homepage'
+				);
+				/* eslint-enable sitekit/acronym-case */
+			} );
 		} );
+		describe( 'conversionTrackingService', () => {
+			it( 'getSupportedConversionLabels should hold correct value', async () => {
+				const supportedConversionLabels =
+					await services.conversionTrackingService.getSupportedConversionLabels();
 
-		it( 'businessName and businessUrl should hold correct site info values', async () => {
-			const businessInfo =
-				await services.businessService.getBusinessInfo();
-
-			/* eslint-disable sitekit/acronym-case */
-			expect( businessInfo.businessName ).toEqual( 'Something Test' );
-			expect( businessInfo.businessUrl ).toEqual(
-				'http://something.test/homepage'
-			);
-			/* eslint-enable sitekit/acronym-case */
-		} );
-
-		it( 'getSupportedConversionLabels should hold correct value', async () => {
-			const supportedConversionLabels =
-				await services.conversionTrackingService.getSupportedConversionLabels();
-
-			expect( supportedConversionLabels.conversionLabels ).toEqual( [] );
+				expect( supportedConversionLabels.conversionLabels ).toEqual(
+					[]
+				);
+			} );
 		} );
 	} );
 } );

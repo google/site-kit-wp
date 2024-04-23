@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 /**
@@ -52,7 +55,9 @@ export function createPaxServices( registry ) {
 			getSupportedConversionLabels: async () => {
 				return { conversionLabels: [] };
 			},
-			termsAndConditionsService: async () => {},
+		},
+		termsAndConditionsService: {
+			notify: async () => {},
 		},
 	};
 }

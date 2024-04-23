@@ -31,6 +31,7 @@ use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
@@ -62,7 +63,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_data' ) );
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
 
 	}
 
@@ -93,12 +94,15 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					),
 				)
 			),
-			new Script_Data(
+		);
+
+		if ( Feature_Flags::enabled( 'adsPax' ) ) {
+			$assets[] = new Script_Data(
 				'googlesitekit-ads-pax-config',
 				array(
 					'global'        => '_googlesitekitPAXConfig',
 					'data_callback' => function() {
-						if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+						if ( ! current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
 							return array();
 						}
 
@@ -108,27 +112,28 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 									'token' => (string) $this->authentication->get_oauth_client()->get_access_token(),
 								),
 							),
-							'locale'          => mb_substr( $this->context->get_locale( 'user' ), 0, 2 ),
+							'locale'          => substr( $this->context->get_locale( 'user' ), 0, 2 ),
 							'debuggingConfig' => array(
 								'env' => 'PROD',
 							),
 						);
 					},
 				)
-			),
-		);
-
-		if ( current_user_can( Permissions::VIEW_DASHBOARD ) && $this->is_connected() ) {
-			$assets[] = new Script(
-				'googlesitekit-ads-pax-integrator',
-				array(
-					'src'          => 'https://www.gstatic.com/pax/dev/pax_integrator.js',
-					'dependencies' => array(
-						'googlesitekit-ads-pax-config',
-						'googlesitekit-modules-data',
-					),
-				)
 			);
+
+			if ( current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) && $this->is_connected() ) {
+				$assets[] = new Script(
+					'googlesitekit-ads-pax-integrator',
+					array(
+						'src'          => 'https://www.gstatic.com/pax/dev/pax_integrator.js',
+						'execution'    => 'async',
+						'dependencies' => array(
+							'googlesitekit-ads-pax-config',
+							'googlesitekit-modules-data',
+						),
+					)
+				);
+			}
 		}
 
 		return $assets;
@@ -142,8 +147,8 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	private function inline_data( $modules_data ) {
-		if ( $this->is_connected() ) {
+	private function inline_modules_data( $modules_data ) {
+		if ( $this->is_connected() && Feature_Flags::enabled( 'adsPax' ) ) {
 			// Add the data under the `ads` key to make it clear it's scoped to this module.
 			$modules_data['ads'] = array(
 				'supportedConversionEvents' => array(),
