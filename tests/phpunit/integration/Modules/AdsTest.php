@@ -26,8 +26,6 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class AdsTest extends TestCase {
 
-	private $user_id;
-
 	/**
 	 * Ads object.
 	 *
@@ -131,7 +129,7 @@ class AdsTest extends TestCase {
 
 		$this->ads->on_deactivation();
 
-		$this->assertFalse( $this->ads->get_settings()->has( 'conversionID' ) );
+		$this->assertFalse( $this->ads->get_settings()->has() );
 	}
 
 	public function test_get_debug_fields() {
