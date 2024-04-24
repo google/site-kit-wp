@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client_Base;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -130,6 +131,48 @@ class AdsTest extends TestCase {
 		$this->ads->on_deactivation();
 
 		$this->assertFalse( $this->ads->get_settings()->has() );
+	}
+
+	public function test_get_scopes__no_scope_and_no_extCustomerID() {
+		self::enable_feature( 'adsPax' );
+
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$ads->register();
+
+		$module_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
+
+		$this->assertNotContains( 'https://www.googleapis.com/auth/adwords', $module_scopes );
+	}
+
+	public function test_get_scopes__already_has_adwords_scope() {
+		self::enable_feature( 'adsPax' );
+		$adwords_scope = 'https://www.googleapis.com/auth/adwords';
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$granted_scopes = array( $adwords_scope );
+		update_user_option( $user_id, OAuth_Client_Base::OPTION_AUTH_SCOPES, $granted_scopes );
+
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$ads->register();
+
+		$module_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
+
+		$this->assertContains( $adwords_scope, $module_scopes );
+	}
+
+	public function test_get_scopes__already_has_extCustomerID_setting() {
+		self::enable_feature( 'adsPax' );
+		$adwords_scope = 'https://www.googleapis.com/auth/adwords';
+
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$ads->get_settings()->set( array( 'extCustomerID' => '123456789' ) );
+		$ads->register();
+
+		$module_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
+
+		$this->assertContains( $adwords_scope, $module_scopes );
 	}
 
 	public function test_get_debug_fields() {
