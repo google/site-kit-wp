@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AudienceSegmentationErrorWidget should render correctly in the default error state 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error-widget-primary-cell mdc-layout-grid--collapsed"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <h3
+              class="googlesitekit-publisher-win__title"
+            >
+              Your visitor groups data loading failed
+            </h3>
+            <div
+              class="googlesitekit-widget-audience-segmentation-error__actions"
+            >
+              <div
+                class="googlesitekit-report-error-actions"
+              >
+                <button
+                  class="mdc-button mdc-button--raised mdc-button--danger"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Retry
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget-audience-segmentation-error-svg__wrapper mdc-layout-grid__cell"
+          >
+            <svg />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AudienceSegmentationErrorWidget should render correctly in the insufficient permissions error state 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error-widget-primary-cell mdc-layout-grid--collapsed"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <h3
+              class="googlesitekit-publisher-win__title"
+            >
+              Insufficient permissions
+            </h3>
+            <div
+              class="googlesitekit-widget-audience-segmentation-error__actions"
+            >
+              <div
+                class="googlesitekit-report-error-actions"
+              >
+                <a
+                  aria-label="Request access (opens in a new tab)"
+                  class="mdc-button mdc-button--raised mdc-button--danger"
+                  href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Fa12345p34567%2Fadmin%2Fstreams%2Ftable%2F78901&Email=wapuu.wordpress%40gmail.com"
+                  role="button"
+                  target="_blank"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Request access
+                  </span>
+                </a>
+                <div
+                  class="googlesitekit-error-retry-text"
+                >
+                  Contact your administrator. Trouble getting access? 
+                  <a
+                    aria-label="Get help (opens in a new tab)"
+                    class="googlesitekit-cta-link"
+                    href="undefined?error_id=analytics-4_insufficient_permissions"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get help
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget-audience-segmentation-error-svg__wrapper mdc-layout-grid__cell"
+          >
+            <svg />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
