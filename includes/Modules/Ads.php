@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\Modules\Module;
@@ -57,6 +58,8 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	const MODULE_SLUG = 'ads';
 
+	const SCOPE = 'https://www.googleapis.com/auth/adwords';
+
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -68,7 +71,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
-
 	}
 
 	/**
@@ -170,14 +172,12 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		$adwords_scope = 'https://www.googleapis.com/auth/adwords';
-
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
 			$granted_scopes = $this->authentication->get_oauth_client()->get_granted_scopes();
 			$options        = $this->get_settings()->get();
 
-			if ( in_array( $adwords_scope, $granted_scopes, true ) || ! empty( $options['extCustomerID'] ) ) {
-				return array( $adwords_scope );
+			if ( in_array( self::SCOPE, $granted_scopes, true ) || ! empty( $options['extCustomerID'] ) ) {
+				return array( self::SCOPE );
 			}
 		}
 
