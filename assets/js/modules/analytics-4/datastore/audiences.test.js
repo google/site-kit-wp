@@ -75,12 +75,8 @@ describe( 'modules/analytics-4 audiences', () => {
 		],
 	};
 
-	// eslint-disable-next-line no-unused-vars
-	let store;
-
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
 	} );
 
 	describe( 'actions', () => {
