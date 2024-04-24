@@ -110,6 +110,7 @@ class AdsTest extends TestCase {
 			);
 		} else {
 			$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+
 			$this->assertStringContainsString(
 				'gtag("config", "AW-123456789")',
 				$head_html
@@ -117,10 +118,93 @@ class AdsTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider template_redirect_with_pax_data_provider
+	 *
+	 * @param array $settings
+	 */
+	public function test_template_redirect__with_pax_flag_and_pax_conversion_id_setting( $feature_flag, $settings ) {
+		if ( ! empty( $feature_flag ) ) {
+			self::enable_feature( $feature_flag );
+		}
+
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'wp_enqueue_scripts' );
+		( new GTag() )->register();
+
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		remove_all_actions( 'template_redirect' );
+		$ads->register();
+		$ads->get_settings()->set( $settings );
+
+		do_action( 'template_redirect' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+		$this->assertNotEmpty( $head_html );
+
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+
+		if ( empty( $settings['paxConversionID'] ) || empty( $feature_flag ) ) {
+			$this->assertStringContainsString(
+				'gtag("config", "AW-123456789")',
+				$head_html
+			);
+		} else {
+
+			$this->assertStringContainsString(
+				'gtag("config", "AW-987654321")',
+				$head_html
+			);
+		}
+	}
+
 	public function template_redirect_data_provider() {
 		return array(
-			'empty ads conversion ID' => array( array( 'conversionID' => '' ) ),
-			'valid ads conversion ID' => array( array( 'conversionID' => 'AW-123456789' ) ),
+			'empty ads conversion ID' => array(
+				array(
+					'conversionID'    => '',
+					'paxConversionID' => '',
+				),
+			),
+			'valid ads conversion ID' => array(
+				array(
+					'conversionID'    => 'AW-123456789',
+					'paxConversionID' => '',
+				),
+			),
+		);
+	}
+
+	public function template_redirect_with_pax_data_provider() {
+		return array(
+			'empty pax conversion ID, valid ads conversion ID and adsPax feature flag enabled' => array(
+				'adsPax',
+				array(
+					'conversionID'    => 'AW-123456789',
+					'paxConversionID' => '',
+				),
+			),
+			'valid pax conversion ID, valid ads conversion ID and adsPax feature flag enabled' => array(
+				'adsPax',
+				array(
+					'conversionID'    => 'AW-123456789',
+					'paxConversionID' => 'AW-987654321',
+				),
+			),
+			'valid pax conversion ID, valid ads conversion ID and adsPax feature flag disabled' => array(
+				false,
+				array(
+					'conversionID'    => 'AW-123456789',
+					'paxConversionID' => 'AW-987654321',
+				),
+			),
 		);
 	}
 
