@@ -1,0 +1,23 @@
+[
+    {
+        "name": "properties/437749618/audiences/8004992724",
+        "displayName": "All visitors",
+        "description": "All users",
+        "audienceType": "DEFAULT_AUDIENCE",
+        "audienceSlug": "all-users"
+    },
+    {
+        "name": "properties/437749618/audiences/8004992725",
+        "displayName": "Purchasers",
+        "description": "Users who have made a purchase",
+        "audienceType": "DEFAULT_AUDIENCE",
+        "audienceSlug": "purchasers"
+    },
+    {
+        "name": "properties/437749618/audiences/8030142001",
+        "displayName": "Test Audience",
+        "description": "This is the test description for test audience.",
+        "audienceType": "SITE_KIT_AUDIENCE",
+        "audienceSlug": "returning-visitors"
+    }
+]

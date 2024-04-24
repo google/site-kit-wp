@@ -29,7 +29,10 @@ import {
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
 } from '../../../utils/data-mock';
-import { audiences as audiencesFixture } from './../../../datastore/__fixtures__';
+import {
+	audiences as audiencesFixture,
+	availableAudiences,
+} from './../../../datastore/__fixtures__';
 import AudienceTiles from './AudienceTiles';
 
 const configuredAudiences = [
@@ -124,7 +127,7 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( audiencesFixture );
+					.setAvailableAudiences( availableAudiences );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
