@@ -60,12 +60,12 @@ class AdsTest extends TestCase {
 
 		$module_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
 
-		$this->assertNotContains( 'https://www.googleapis.com/auth/adword', $module_scopes );
+		$this->assertNotContains( 'https://www.googleapis.com/auth/adwords', $module_scopes );
 	}
 
 	public function test_get_scopes__already_has_adwords_scope() {
 		self::enable_feature( 'adsPax' );
-		$adwords_scope = 'https://www.googleapis.com/auth/adword';
+		$adwords_scope = 'https://www.googleapis.com/auth/adwords';
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -83,7 +83,7 @@ class AdsTest extends TestCase {
 
 	public function test_get_scopes__already_has_extCustomerID_setting() {
 		self::enable_feature( 'adsPax' );
-		$adwords_scope = 'https://www.googleapis.com/auth/adword';
+		$adwords_scope = 'https://www.googleapis.com/auth/adwords';
 
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$ads->get_settings()->set( array( 'extCustomerID' => '123456789' ) );
