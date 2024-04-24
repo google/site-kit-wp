@@ -41,14 +41,14 @@
 		font-size: $fs-authorize-application-title-lg;
 		font-weight: $fw-medium;
 		line-height: $lh-authorize-application-title-lg;
-		margin: 0 0 19px;
+		margin: 19px 0;
 	}
 
 	p {
 		font-size: $fs-authorize-application-label-lg;
 		font-weight: $fw-medium;
 		line-height: $lh-authorize-application-label-lg;
-		margin: 0 0 20px;
+		margin: 19px 0 20px;
 	}
 
 	strong {
@@ -56,7 +56,7 @@
 	}
 
 	.form-field {
-		margin: 0 0 40px;
+		margin: 20px 0 40px;
 		max-width: 512px;
 
 		label {
