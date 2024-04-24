@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
+	provideUserInfo,
 } from '../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
@@ -56,6 +57,7 @@ function Template( { setupRegistry = async () => {}, ...args } ) {
 			},
 		] );
 		provideModuleRegistrations( registry );
+		provideUserInfo( registry );
 		await setupRegistry( registry );
 	};
 	return (
