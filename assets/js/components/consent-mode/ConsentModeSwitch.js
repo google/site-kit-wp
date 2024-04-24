@@ -111,6 +111,11 @@ export default function ConsentModeSwitch( { loading } ) {
 
 									setShowConfirmDialog( true );
 								} else {
+									trackEvent(
+										`${ viewContext }_CoMo`,
+										'como_enable'
+									);
+
 									// Consent Mode is not currently enabled, so this toggle
 									// enables it.
 									setConsentModeEnabled( true );

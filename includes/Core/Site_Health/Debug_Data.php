@@ -584,7 +584,7 @@ class Debug_Data {
 	/**
 	 * Gets the consent mode fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 *
 	 * @return array
 	 */
@@ -592,7 +592,7 @@ class Debug_Data {
 		/**
 		 * Filters the status of consent mode in Site Kit.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.125.0
 		 *
 		 * @param string $status The consent mode status. Default: 'disabled'.
 		 */

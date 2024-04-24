@@ -32,6 +32,7 @@ import {
 } from '../assets/js/modules/adsense/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 
 function SetupWrap( { children } ) {
@@ -113,7 +114,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'AdBlocker Warning', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
+			dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 		};
 
 		return (

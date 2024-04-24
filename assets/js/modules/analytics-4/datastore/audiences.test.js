@@ -39,6 +39,9 @@ describe( 'modules/analytics-4 audiences', () => {
 	const createAudienceEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
+	const syncAvailableAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
 
 	const audience = {
 		displayName: 'Recently active users',
@@ -161,6 +164,81 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( store.getState().audiences[ 0 ] ).toEqual(
 					audiencesFixture[ 2 ]
 				);
+			} );
+		} );
+
+		describe( 'syncAvailableAudiences', () => {
+			const availableAudiences = [
+				{
+					name: 'properties/123456789/audiences/0987654321',
+					displayName: 'All Users',
+					description: 'All users',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'all-users',
+				},
+			];
+
+			it( 'should make a network request to sync available audiences', () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetched(
+					syncAvailableAudiencesEndpoint
+				);
+			} );
+
+			it( 'should return and dispatch an error if the request fails', async () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				expect( response ).toBeUndefined();
+				expect( error ).toEqual( errorResponse );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForAction( 'syncAvailableAudiences' )
+				).toEqual( errorResponse );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should return the available audiences and update the `availableAudiences` datastore module setting value on success', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				expect( response ).toEqual( availableAudiences );
+				expect( error ).toBeUndefined();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( availableAudiences );
 			} );
 		} );
 	} );

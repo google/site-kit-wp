@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags;
 /**
  * Trait for adding the linker property with domain to tag output.
  *
- * @since n.e.x.t
+ * @since 1.125.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ trait Tag_With_Linker_Trait {
 	 *
 	 * @param string $home_domain The value to set for home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 * @return void
 	 */
 	public function set_home_domain( $home_domain ) {
@@ -42,7 +42,7 @@ trait Tag_With_Linker_Trait {
 	 *
 	 * @param array $tag_config Tag config to add linker entry to.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.125.0
 	 * @return array Tag config, with or without linker values.
 	 */
 	protected function add_linker_to_tag_config( $tag_config ) {

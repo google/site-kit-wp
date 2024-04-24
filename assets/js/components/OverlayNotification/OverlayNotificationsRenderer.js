@@ -24,14 +24,20 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import { useFeature } from '../../hooks/useFeature';
+import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/analytics-4/components/dashboard/AudienceSegmentation/AudienceSegmentationIntroductoryOverlayNotification';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export default function OverlayNotificationsRenderer() {
+	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	return (
 		<Fragment>
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
+			{ audienceSegmentationEnabled && (
+				<AudienceSegmentationIntroductoryOverlayNotification />
+			) }
 		</Fragment>
 	);
 }

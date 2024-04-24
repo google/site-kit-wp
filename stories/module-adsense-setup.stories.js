@@ -33,6 +33,7 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 } from '../tests/js/utils';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 
 function Setup( props ) {
 	return (
@@ -83,9 +84,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 
 			return <Setup registry={ registry } />;
 		},
@@ -100,9 +99,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( true );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -126,9 +123,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -158,9 +153,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( 'ca-pub-123456789' );
@@ -192,9 +185,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -227,9 +218,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -259,9 +248,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -285,9 +272,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -311,9 +296,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -340,9 +323,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				// '' or 'approved'.
 				accountStatus: 'pending',
 			} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -369,9 +350,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				// '' or 'approved'.
 				accountStatus: 'pending',
 			} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( fixtures.clients[ 0 ]._id );
@@ -400,9 +379,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				// '' or 'approved'.
 				accountStatus: 'pending',
 			} );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( 'ca-pub-123456789' );
@@ -428,9 +405,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -454,9 +429,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( fixtures.clients[ 0 ]._id );
@@ -482,9 +455,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingTag( 'ca-pub-123456789' );
@@ -510,9 +481,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( accountCompleteSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )
@@ -536,9 +505,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( accountCompleteSettings );
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveIsAdBlockerActive( false );
+			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 			registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 			registry
 				.dispatch( MODULES_ADSENSE )

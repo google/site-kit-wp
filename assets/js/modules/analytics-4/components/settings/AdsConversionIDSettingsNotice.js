@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,15 +28,21 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '../../../../util';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
 import InfoCircleIcon from '../../../../../../assets/svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
+import useViewContext from '../../../../hooks/useViewContext';
+import withIntersectionObserver from '../../../../util/withIntersectionObserver';
 
 const { useSelect } = Data;
+
+const SettingsNoticeWithIntersectionObserver =
+	withIntersectionObserver( SettingsNotice );
 
 export default function AdsConversionIDSettingsNotice() {
 	const settingsAdminURL = useSelect( ( select ) =>
@@ -45,25 +51,44 @@ export default function AdsConversionIDSettingsNotice() {
 	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
 	);
+	const isNoticeDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY
+		)
+	);
+	const shouldShowNotice =
+		false === isNoticeDismissed && // User has not dismissed the notice.
+		adsConversionIDMigratedAtMs && // Data migration has happened.
+		Date.now() - adsConversionIDMigratedAtMs <= 28 * DAY_IN_SECONDS * 1000; // If it has been <= 28 days since the migration.
+	const viewContext = useViewContext();
+	const trackDismissNotificationEvent = () => {
+		trackEvent(
+			`${ viewContext }_GA_Ads_redirect`,
+			'dismiss_notification'
+		);
+	};
+	const trackConfirmNotificationEvent = () => {
+		trackEvent(
+			`${ viewContext }_GA_Ads_redirect`,
+			'confirm_notification'
+		);
+	};
 
-	// Do not show the notice if the migration has not been performed yet.
-	if ( ! adsConversionIDMigratedAtMs ) {
-		return null;
-	}
+	const onInView = useCallback( () => {
+		trackEvent( `${ viewContext }_GA_Ads_redirect`, 'view_notification' );
+	}, [ viewContext ] );
 
-	// If it has been more than 28 days since the migration, do not show
-	// the notice.
-	if (
-		Date.now() - adsConversionIDMigratedAtMs >
-		28 * DAY_IN_SECONDS * 1000
-	) {
+	// Do not show the notice if the view conditions have not been met.
+	if ( ! shouldShowNotice ) {
 		return null;
 	}
 
 	return (
-		<SettingsNotice
+		<SettingsNoticeWithIntersectionObserver
+			onInView={ onInView }
 			className="googlesitekit-settings-analytics-ads-conversion-id-notice"
 			dismiss={ ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY }
+			dismissCallback={ trackDismissNotificationEvent }
 			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 			type={ TYPE_INFO }
 			Icon={ InfoCircleIcon }
@@ -76,6 +101,7 @@ export default function AdsConversionIDSettingsNotice() {
 					a: (
 						<Link
 							href={ `${ settingsAdminURL }#/connected-services/ads` }
+							onClick={ trackConfirmNotificationEvent }
 						/>
 					),
 				}
