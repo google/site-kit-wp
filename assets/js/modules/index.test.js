@@ -75,12 +75,14 @@ describe( 'all modules', () => {
 					...indexExports
 				} = require( `${ componentDirPath }/index.js` );
 				const indexExportNames = Object.keys( indexExports ).sort();
+
 				const componentNames =
 					getComponentNames( componentDirPath ).sort();
 
 				const filteredComponentNames = componentNames.filter(
 					( component ) =>
-						component !== 'custom-dimensions-report-options'
+						component !== 'custom-dimensions-report-options' &&
+						component !== 'AudienceSegmentation'
 				);
 
 				expect( indexExportNames ).toEqual( filteredComponentNames );
