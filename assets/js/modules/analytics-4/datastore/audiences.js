@@ -26,6 +26,8 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { validateAudience } from '../utils/validation';
 
+const { createRegistrySelector } = Data;
+
 const fetchGetAudiencesStore = createFetchStore( {
 	baseName: 'getAudiences',
 	controlCallback() {
@@ -153,6 +155,21 @@ const baseResolvers = {
 			yield fetchGetAudiencesStore.actions.fetchGetAudiences();
 		}
 	},
+
+	*getAvailableAudiences() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
+
+		// If available audiences not present, sync the audience in state.
+		if ( audiences === undefined ) {
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+		}
+
+		return registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+	},
 };
 
 const baseSelectors = {
@@ -167,6 +184,36 @@ const baseSelectors = {
 	getAudiences( state ) {
 		return state.audiences;
 	},
+
+	/**
+	 * Checks whether the provided audiences are available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state                 Data store's state.
+	 * @param {string|Array<string>} audienceResourceNames Custom dimensions to check.
+	 * @return {boolean} True if all provided audiences are available, otherwise false. Undefined if available audiences are not loaded yet.
+	 */
+	haveAudiences: createRegistrySelector(
+		( select ) => ( state, audienceResourceNames ) => {
+			const audiencesToCheck = Array.isArray( audienceResourceNames )
+				? audienceResourceNames
+				: [ audienceResourceNames ];
+
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			return audiencesToCheck.every( ( audienceResourceName ) =>
+				availableAudiences.some(
+					( { name } ) => name === audienceResourceName
+				)
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(

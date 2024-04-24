@@ -1,7 +1,7 @@
 /**
  * `modules/analytics-4` data store: partial data store.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getDateString } from '../../../util';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -154,9 +154,16 @@ const baseActions = {
 				yield Data.commonActions.await(
 					__experimentalResolveSelect(
 						MODULES_ANALYTICS_4
-					).getAudienceSettings()
+					).getAvailableAudiences()
 				);
 
+				if (
+					! select( MODULES_ANALYTICS_4 ).haveAudiences(
+						resourceSlug
+					)
+				) {
+					return;
+				}
 				break;
 
 			case RESOURCE_TYPE_CUSTOM_DIMENSION:
@@ -170,7 +177,12 @@ const baseActions = {
 				break;
 
 			case RESOURCE_TYPE_PROPERTY:
-				// Validate if property is valid.
+				if (
+					select( MODULES_ANALYTICS_4 ).getPropertyID() !==
+					resourceSlug
+				) {
+					return;
+				}
 				break;
 
 			default:
@@ -207,11 +219,6 @@ const baseActions = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ reportArgs ] );
 
-		global.console.log( {
-			report,
-			hasReportError,
-		} );
-
 		const isDataAvailable =
 			! hasReportError &&
 			report?.rows?.[ 0 ]?.dimensionValues?.[ 0 ]?.value?.length;
@@ -227,11 +234,11 @@ const baseActions = {
 				dataAvailabilityDate
 			);
 
-			// yield fetchSaveResourceDataAvailabilityDateStore.actions.fetchSaveResourceDataAvailabilityDate(
-			// 	resourceSlug,
-			// 	resourceType,
-			// 	dataAvailabilityDate
-			// );
+			yield fetchSaveResourceDataAvailabilityDateStore.actions.fetchSaveResourceDataAvailabilityDate(
+				resourceSlug,
+				resourceType,
+				dataAvailabilityDate
+			);
 		}
 	},
 };
@@ -316,15 +323,11 @@ const baseResolvers = {
 			resourceAvailabilityDates[ resourceType ][ resourceSlug ] ===
 			undefined
 		) {
-			global.console.log(
-				'setting temporary data availability date to 0'
-			);
 			yield baseActions.setResourceDataAvailabilityDate(
 				resourceSlug,
 				resourceType,
 				0
 			);
-			global.console.log( 'determining data availability date' );
 			yield baseActions.determineResourceDataAvailabilityDate(
 				resourceSlug,
 				resourceType
@@ -414,6 +417,15 @@ const baseSelectors = {
 	 */
 	isResourcePartialData: createRegistrySelector(
 		( select ) => ( state, resourceSlug, resourceType ) => {
+			invariant(
+				typeof resourceSlug === 'string',
+				'resourceSlug must be a string.'
+			);
+			invariant(
+				RESOURCE_TYPES.includes( resourceType ),
+				'resourceType must be a valid resource type.'
+			);
+
 			const analyticsGatheringData =
 				select( MODULES_ANALYTICS_4 ).isGatheringData();
 
@@ -517,15 +529,6 @@ const baseSelectors = {
 	 */
 	getPartialDataReportOptions: createRegistrySelector(
 		( select ) => ( state, resourceSlug, resourceType ) => {
-			invariant(
-				typeof resourceSlug === 'string',
-				'resourceSlug must be a string.'
-			);
-			invariant(
-				RESOURCE_TYPES.includes( resourceType ),
-				'resourceType must be a valid resource type.'
-			);
-
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 			if ( ! propertyID ) {
