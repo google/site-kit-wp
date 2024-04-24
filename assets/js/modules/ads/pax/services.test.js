@@ -23,7 +23,7 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createPaxServices } from './services';
 
-describe( 'modules/ads/pax services', () => {
+describe( 'PAX partner services', () => {
 	describe( 'createPaxServices', () => {
 		let registry;
 		let services;
