@@ -36,17 +36,14 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 
 const { useSelect } = Data;
 
-export default function AudienceTooltipMessage( { audienceName } ) {
+export default function AudienceTooltipMessage( { audienceSlug } ) {
 	const documentationURL = useSelect( ( select ) =>
 		// TODO: The link must be updated here to the correct support URL once written.
 		select( CORE_SITE ).getDocumentationLinkURL( 'audience-segmentation' )
 	);
 
-	// TODO: audienceName is used temporarily here, however, the user will be able to rename
-	// the audience which will break this function. After #8486 and #8487 are resolved, this
-	// function should be updated to use the audienceSlug instead.
 	const tooltipMessage = useMemo( () => {
-		switch ( audienceName ) {
+		switch ( audienceSlug ) {
 			case 'New visitors':
 				return createInterpolateElement(
 					sprintf(
@@ -97,7 +94,7 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 							"%s is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. <link>Learn more</link>",
 							'google-site-kit'
 						),
-						`<strong>${ audienceName }</strong>`
+						`<strong>${ audienceSlug }</strong>`
 					),
 					{
 						strong: <strong />,
@@ -111,11 +108,11 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 					}
 				);
 		}
-	}, [ audienceName, documentationURL ] );
+	}, [ audienceSlug, documentationURL ] );
 
 	return tooltipMessage;
 }
 
 AudienceTooltipMessage.propTypes = {
-	audienceName: PropTypes.string.isRequired,
+	audienceSlug: PropTypes.string.isRequired,
 };
