@@ -101,7 +101,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		$adwords_scope = 'https://www.googleapis.com/auth/adword';
+		$adwords_scope = 'https://www.googleapis.com/auth/adwords';
 
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
 			$granted_scopes = $this->authentication->get_oauth_client()->get_granted_scopes();
