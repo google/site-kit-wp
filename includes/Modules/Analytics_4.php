@@ -2163,7 +2163,7 @@ final class Analytics_4 extends Module
 				$display_name  = $audience->getDisplayName();
 				$audience_item = array(
 					'name'        => $audience->getName(),
-					'displayName' => ( 'All Users' === $display_name ) ? __( 'All Visitors', 'google-site-kit' ) : $display_name,
+					'displayName' => ( 'All Users' === $display_name ) ? 'All visitors' : $display_name,
 					'description' => $audience->getDescription(),
 				);
 
