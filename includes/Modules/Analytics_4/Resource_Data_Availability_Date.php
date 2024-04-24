@@ -29,29 +29,7 @@ class Resource_Data_Availability_Date {
 	 * @var array
 	 */
 	const CUSTOM_DIMENSION_SLUGS = array(
-		'googlesitekit_post_date',
-		'googlesitekit_post_author',
-		'googlesitekit_post_categories',
 		'googlesitekit_post_type',
-	);
-
-	/**
-	 * List of valid audience slugs.
-	 *
-	 * TODO: This should use the actual cached audiences from Database once they are available.
-	 * See: https://github.com/google/site-kit-wp/issues/8486
-	 *
-	 * @since n.e.x.t
-	 * @var array
-	 */
-	const AUDIENCE_SLUGS = array(
-		// Default audiences.
-		'all-users',
-		'purchasers',
-		// Site Kit audiences.
-		'new-visitors',
-		'returning-visitors',
-
 	);
 
 	const RESOURCE_TYPE_AUDIENCE         = 'audience';
@@ -108,13 +86,14 @@ class Resource_Data_Availability_Date {
 	 * @return array Associative array of resource names and their data availability state.
 	 */
 	public function get_resource_dates() {
-		$property_id = $this->settings->get()['propertyID'];
+		$property_id         = $this->get_property_id();
+		$available_audiences = $this->get_available_audience_resource_names();
 
 		return array(
 			self::RESOURCE_TYPE_AUDIENCE         => array_reduce(
-				self::AUDIENCE_SLUGS,
-				function ( $data_availability, $audience_slug ) {
-					$data_availability[ $audience_slug ] = $this->get_resource_date( $audience_slug, self::RESOURCE_TYPE_AUDIENCE );
+				$available_audiences,
+				function ( $data_availability, $audience ) {
+					$data_availability[ $audience ] = $this->get_resource_date( $audience, self::RESOURCE_TYPE_AUDIENCE );
 					return $data_availability;
 				},
 				array()
@@ -182,16 +161,18 @@ class Resource_Data_Availability_Date {
 	 * @since n.e.x.t
 	 */
 	public function reset_all_resource_dates() {
+
 		foreach ( self::CUSTOM_DIMENSION_SLUGS as $custom_dimension ) {
 			$this->reset_resource_date( $custom_dimension, self::RESOURCE_TYPE_CUSTOM_DIMENSION );
 		}
 
-		foreach ( self::AUDIENCE_SLUGS as $audience_slug ) {
+		$available_audiences = $this->get_available_audience_resource_names();
+
+		foreach ( $available_audiences as $audience_slug ) {
 			$this->reset_resource_date( $audience_slug, self::RESOURCE_TYPE_AUDIENCE );
 		}
 
-		$property_id = $this->settings->get()['propertyID'];
-		$this->reset_resource_date( $property_id, self::RESOURCE_TYPE_PROPERTY );
+		$this->reset_resource_date( $this->get_property_id(), self::RESOURCE_TYPE_PROPERTY );
 	}
 
 	/**
@@ -204,5 +185,57 @@ class Resource_Data_Availability_Date {
 	 */
 	public function is_valid_resource_type( $resource_type ) {
 		return in_array( $resource_type, array( self::RESOURCE_TYPE_AUDIENCE, self::RESOURCE_TYPE_CUSTOM_DIMENSION, self::RESOURCE_TYPE_PROPERTY ), true );
+	}
+
+	/**
+	 * Checks whether the given resource slug is valid.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $resource_slug Resource slug.
+	 * @param string $resource_type Resource type.
+	 * @return bool True if valid, false otherwise.
+	 */
+	public function is_valid_resource_slug( $resource_slug, $resource_type ) {
+		switch ( $resource_type ) {
+			case self::RESOURCE_TYPE_AUDIENCE:
+				return in_array( $resource_slug, $this->get_available_audience_resource_names(), true );
+			case self::RESOURCE_TYPE_CUSTOM_DIMENSION:
+				return in_array( $resource_slug, self::CUSTOM_DIMENSION_SLUGS, true );
+			case self::RESOURCE_TYPE_PROPERTY:
+				return $resource_slug === $this->get_property_id();
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Gets available audience resource names.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of available audience resource names.
+	 */
+	private function get_available_audience_resource_names() {
+		$settings            = $this->settings->get();
+		$available_audiences = $settings['availableAudiences'] ?? array();
+
+		return array_map(
+			function ( $audience ) {
+				return $audience['name'];
+			},
+			$available_audiences
+		);
+	}
+
+	/**
+	 * Gets the property ID from settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Property ID.
+	 */
+	private function get_property_id() {
+		return $this->settings->get()['propertyID'];
 	}
 }
