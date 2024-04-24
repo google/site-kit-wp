@@ -43,13 +43,11 @@ import {
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
-import {
-	AREA_MODULE_ADSENSE_MAIN,
-	ERROR_CODE_ADBLOCKER_ACTIVE,
-} from './constants';
+import { AREA_MODULE_ADSENSE_MAIN } from './constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,
+	ERROR_CODE_ADBLOCKER_ACTIVE,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
@@ -70,7 +68,7 @@ export const registerModule = ( modules ) => {
 		],
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
-				.__experimentalResolveSelect( MODULES_ADSENSE )
+				.__experimentalResolveSelect( CORE_USER )
 				.isAdBlockerActive();
 
 			if ( ! adBlockerActive ) {

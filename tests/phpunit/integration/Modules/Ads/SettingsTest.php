@@ -27,7 +27,9 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'adsConversionID' => '',
+				'conversionID'    => '',
+				'paxConversionID' => '',
+				'extCustomerID'   => '',
 			),
 			get_option( Settings::OPTION )
 		);

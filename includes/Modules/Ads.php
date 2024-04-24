@@ -22,12 +22,15 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Ads\AMP_Tag;
 
 /**
  * Class representing the Ads module.
@@ -125,7 +128,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function is_connected() {
 		$options = $this->get_settings()->get();
 
-		return parent::is_connected() && ! empty( $options['adsConversionID'] );
+		return parent::is_connected() && ! empty( $options['conversionID'] );
 	}
 
 	/**
@@ -143,9 +146,11 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @since 1.124.0
 	 */
 	public function register_tag() {
-		$ads_conversion_id = $this->get_settings()->get()['adsConversionID'];
+		$ads_conversion_id = $this->get_settings()->get()['conversionID'];
 
-		$tag = new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
+		$tag = $this->context->is_amp()
+			? new AMP_Tag( $ads_conversion_id, self::MODULE_SLUG )
+			: new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -158,6 +163,9 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		if ( ! $tag->can_register() ) {
 			return;
 		}
+
+		$home_domain = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST );
+		$tag->set_home_domain( $home_domain );
 
 		$tag->register();
 	}
@@ -173,9 +181,10 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'ads_conversion_id' => array(
-				'label' => __( 'Conversion Tracking ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
+			'ads_conversion_tracking_id' => array(
+				'label' => __( 'Ads Conversion Tracking ID', 'google-site-kit' ),
+				'value' => $settings['conversionID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
 		);
 	}

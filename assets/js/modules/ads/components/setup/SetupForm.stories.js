@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
@@ -42,6 +43,24 @@ Default.scenario = {
 	label: 'Modules/Ads/Setup/SetupForm/Default',
 };
 
+export const AdBlocker = Template.bind( {} );
+AdBlocker.storyName = 'AdBlocker Active';
+AdBlocker.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'ads',
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
+	},
+};
+AdBlocker.scenario = {
+	label: 'Modules/Ads/Setup/SetupForm/AdBlocker',
+};
+
 export const Empty = Template.bind( {} );
 Empty.storyName = 'Empty';
 Empty.args = {
@@ -57,7 +76,7 @@ Empty.args = {
 		provideSiteInfo( registry );
 		provideModuleRegistrations( registry );
 
-		registry.dispatch( MODULES_ADS ).setSettings( { adsConversionID: '' } );
+		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
 	},
 };
 Empty.scenario = {
@@ -81,10 +100,10 @@ Invalid.args = {
 
 		registry
 			.dispatch( MODULES_ADS )
-			.setSettings( { adsConversionID: 'AW-123456789' } );
+			.setSettings( { conversionID: 'AW-123456789' } );
 		registry
 			.dispatch( MODULES_ADS )
-			.setSettings( { adsConversionID: 'AW-ABCDEFGHIJ' } );
+			.setSettings( { conversionID: 'AW-ABCDEFGHIJ' } );
 	},
 };
 Invalid.scenario = {
@@ -106,7 +125,7 @@ Initial.args = {
 		provideSiteInfo( registry );
 		provideModuleRegistrations( registry );
 
-		registry.dispatch( MODULES_ADS ).setSettings( { adsConversionID: '' } );
+		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
 	},
 };
 
@@ -128,7 +147,7 @@ export default {
 
 				registry
 					.dispatch( MODULES_ADS )
-					.setSettings( { adsConversionID: 'AW-123456789' } );
+					.setSettings( { conversionID: 'AW-123456789' } );
 			};
 
 			return (

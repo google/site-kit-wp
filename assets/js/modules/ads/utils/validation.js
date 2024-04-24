@@ -17,7 +17,7 @@
  */
 
 /**
- * Checks if the given ads conversion ID is valid.
+ * Checks if the given conversion ID is valid.
  *
  * @since 1.32.0
  * @since 1.121.0 Migrated from analytics to analytics-4.
@@ -26,8 +26,34 @@
  * @param {*} value Ads Conversion Tracking ID to test.
  * @return {boolean} Whether or not the given ID is valid.
  */
-export function isValidAdsConversionID( value ) {
+export function isValidConversionID( value ) {
 	return (
 		typeof value === 'string' && value !== '' && /^AW-[0-9]+$/.test( value )
 	);
+}
+
+/**
+ * Checks if the given paxConversionID ID is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value Ads Conversion Tracking ID to test.
+ * @return {boolean} Whether or not the given ID is valid.
+ */
+export function isValidPaxConversionID( value ) {
+	return (
+		typeof value === 'string' && value !== '' && /^AW-[0-9]+$/.test( value )
+	);
+}
+
+/**
+ * Checks if the given extCustomerID ID is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value PAX external customer ID to test.
+ * @return {boolean} Whether or not the given ID is valid.
+ */
+export function isValidExtCustomerID( value ) {
+	return typeof value === 'string';
 }

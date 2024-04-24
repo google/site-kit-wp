@@ -75,7 +75,9 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			if (
 				request
 					.url()
-					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
+					.startsWith(
+						'https://accounts.google.com/o/oauth2/v2/auth'
+					)
 			) {
 				request.respond( {
 					status: 302,

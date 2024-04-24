@@ -40,7 +40,7 @@ describe( 'modules/ads properties', () => {
 		it( 'is registered correctly', () => {
 			const selectors = registry.select( MODULES_ADS );
 
-			expect( selectors.getAdsConversionID ).toBeInstanceOf( Function );
+			expect( selectors.getConversionID ).toBeInstanceOf( Function );
 		} );
 	} );
 } );

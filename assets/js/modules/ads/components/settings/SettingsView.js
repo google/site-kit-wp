@@ -20,32 +20,45 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import AdBlockerWarning from '../common/AdBlockerWarning';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ADS ).getAdsConversionID()
+	const conversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getConversionID()
+	);
+
+	const isAdBlockerActive = useSelect( ( select ) =>
+		select( CORE_USER ).isAdBlockerActive()
 	);
 
 	return (
-		<div className="googlesitekit-settings-module__meta-item">
-			<h5 className="googlesitekit-settings-module__meta-item-type">
-				{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
-			</h5>
-			<p className="googlesitekit-settings-module__meta-item-data">
-				{ adsConversionID ? (
-					<DisplaySetting value={ adsConversionID } />
-				) : (
-					__( 'None', 'google-site-kit' )
-				) }
-			</p>
-		</div>
+		<Fragment>
+			<AdBlockerWarning />
+
+			{ ! isAdBlockerActive && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ conversionID ? (
+							<DisplaySetting value={ conversionID } />
+						) : (
+							__( 'None', 'google-site-kit' )
+						) }
+					</p>
+				</div>
+			) }
+		</Fragment>
 	);
 }

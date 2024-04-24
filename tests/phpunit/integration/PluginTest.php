@@ -59,7 +59,7 @@ class PluginTest extends TestCase {
 		$plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		if ( array_key_exists( 'RequiresPHP', $plugin_data ) ) {
-			$this->assertEquals( $plugin_data['RequiresPHP'], '5.6' );
+			$this->assertEquals( $plugin_data['RequiresPHP'], '7.4' );
 		}
 		if ( array_key_exists( 'RequiresWP', $plugin_data ) ) {
 			$this->assertEquals( $plugin_data['RequiresWP'], '5.2' );

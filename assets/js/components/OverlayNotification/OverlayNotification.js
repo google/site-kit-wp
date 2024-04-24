@@ -20,21 +20,84 @@
  * External dependencies
  */
 import { Slide } from '@material-ui/core';
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+
+const { useDispatch, useSelect } = Data;
 
 export default function OverlayNotification( {
-	animateNotification,
-	handleAnimationOnExited,
 	children,
+	GraphicDesktop,
+	GraphicMobile,
+	notificationID,
+	onShow,
+	shouldShowNotification,
 } ) {
-	return (
-		<Slide
-			direction="up"
-			in={ animateNotification }
-			onExited={ handleAnimationOnExited }
-		>
+	const breakpoint = useBreakpoint();
+
+	const isShowingNotification = useSelect( ( select ) =>
+		select( CORE_UI ).isShowingOverlayNotification( notificationID )
+	);
+
+	const { setOverlayNotificationToShow } = useDispatch( CORE_UI );
+
+	useEffect( () => {
+		if ( shouldShowNotification && ! isShowingNotification ) {
+			// If the conditions to show this notification are met AND no other
+			// notifications are showing, show this notification.
+			setOverlayNotificationToShow( notificationID );
+
+			onShow?.();
+		}
+	}, [
+		isShowingNotification,
+		notificationID,
+		onShow,
+		setOverlayNotificationToShow,
+		shouldShowNotification,
+	] );
+
+	if ( ! shouldShowNotification || ! isShowingNotification ) {
+		return null;
+	}
+
+	if ( breakpoint === BREAKPOINT_SMALL ) {
+		return (
 			<div className="googlesitekit-overlay-notification">
+				{ children }
+
+				{ GraphicMobile && <GraphicMobile /> }
+			</div>
+		);
+	}
+
+	return (
+		<Slide direction="up" in={ isShowingNotification }>
+			<div className="googlesitekit-overlay-notification">
+				{ GraphicDesktop && <GraphicDesktop /> }
+
 				{ children }
 			</div>
 		</Slide>
 	);
 }
+
+OverlayNotification.propTypes = {
+	children: PropTypes.node,
+	GraphicDesktop: PropTypes.elementType,
+	GraphicMobile: PropTypes.elementType,
+	onShow: PropTypes.func,
+	notificationID: PropTypes.string.isRequired,
+	shouldShowNotification: PropTypes.bool,
+};

@@ -25,14 +25,14 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../datastore/constants';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import whenActive from '../../../../util/when-active';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 function AdBlockerWarningWidget( { Widget, WidgetNull } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
+		select( CORE_USER ).isAdBlockerActive()
 	);
 
 	if ( ! isAdBlockerActive ) {

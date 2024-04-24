@@ -220,7 +220,7 @@ final class Analytics_4 extends Module
 					$this->custom_dimensions_data_available->reset_data_available();
 				}
 
-				// Reset AdSense & Ads link settings when propertyID changes.
+				// Reset property specific settings when propertyID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->get_settings()->merge(
 						array(
@@ -228,18 +228,23 @@ final class Analytics_4 extends Module
 							'adSenseLinkedLastSyncedAt' => 0,
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
+							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
 				}
 			}
 		);
 
-		// Check if the property ID has changed and reset availableCustomDimensions setting to null.
+		// Check if the property ID has changed and reset applicable settings to null.
+		//
+		// This is not done using the `get_settings()->merge` method because
+		// `Module_Settings::merge` doesn't support setting a value to `null`.
 		add_filter(
 			'pre_update_option_googlesitekit_analytics-4_settings',
 			function ( $new_value, $old_value ) {
 				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
 					$new_value['availableCustomDimensions'] = null;
+					$new_value['availableAudiences']        = null;
 				}
 
 				return $new_value;
@@ -395,11 +400,6 @@ final class Analytics_4 extends Module
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
-			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics ads conversion ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
-			),
 			'analytics_4_property_id'                 => array(
 				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
@@ -419,6 +419,11 @@ final class Analytics_4 extends Module
 				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+			'analytics_4_ads_conversion_id'           => array(
+				'label' => __( 'Analytics Ads conversion ID', 'google-site-kit' ),
+				'value' => $settings['adsConversionID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			'analytics_4_available_custom_dimensions' => array(
 				'label' => __( 'Analytics available custom dimensions', 'google-site-kit' ),
@@ -552,6 +557,7 @@ final class Analytics_4 extends Module
 			$datapoints['POST:audience-settings'] = array(
 				'service' => '',
 			);
+			$datapoints['POST:sync-audiences']    = array( 'service' => 'analyticsaudiences' );
 		}
 
 		return $datapoints;
@@ -905,6 +911,7 @@ final class Analytics_4 extends Module
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
+	 *
 	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
 	protected function create_data_request( Data_Request $data ) {
@@ -1309,6 +1316,22 @@ final class Analytics_4 extends Module
 						self::normalize_property_id( $data['propertyID'] ),
 						$custom_dimension
 					);
+			case 'POST:sync-audiences':
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				$analyticsadmin = $this->get_analyticsaudiences_service();
+				$property_id    = self::normalize_property_id( $settings['propertyID'] );
+
+				return $analyticsadmin
+					->properties_audiences
+					->listPropertiesAudiences( $property_id );
 			case 'POST:sync-custom-dimensions':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
@@ -1541,6 +1564,9 @@ final class Analytics_4 extends Module
 			case 'GET:report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
+			case 'POST:sync-audiences':
+				$audiences = $this->set_available_audiences( $response->getAudiences() );
+				return $audiences;
 			case 'POST:sync-custom-dimensions':
 				if ( is_wp_error( $response ) ) {
 					return $response;
@@ -2138,5 +2164,139 @@ final class Analytics_4 extends Module
 		}
 
 		return $allowed;
+	}
+
+	/**
+	 * Sets and returns available audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param GoogleAnalyticsAdminV1alphaAudience[] $audiences The audiences to set.
+	 * @return array The available audiences.
+	 */
+	private function set_available_audiences( $audiences ) {
+		$available_audiences = array_map(
+			function( GoogleAnalyticsAdminV1alphaAudience $audience ) {
+				$audience_item = array(
+					'name'        => $audience->getName(),
+					'displayName' => $audience->getDisplayName(),
+					'description' => $audience->getDescription(),
+				);
+
+				$audience_slug = $this->get_audience_slug( $audience );
+				$audience_type = $this->get_audience_type( $audience_slug );
+
+				$audience_item['audienceType'] = $audience_type;
+				$audience_item['audienceSlug'] = $audience_slug;
+
+				return $audience_item;
+			},
+			$audiences
+		);
+
+		$this->get_settings()->merge(
+			array(
+				'availableAudiences'             => $available_audiences,
+				'availableAudiencesLastSyncedAt' => time(),
+			)
+		);
+
+		return $available_audiences;
+	}
+
+	/**
+	 * Gets the audience slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param GoogleAnalyticsAdminV1alphaAudience $audience The audience object.
+	 * @return string The audience slug.
+	 */
+	private function get_audience_slug( GoogleAnalyticsAdminV1alphaAudience $audience ) {
+		$display_name = $audience->getDisplayName();
+
+		if ( 'All Users' === $display_name ) {
+			return 'all-users';
+		}
+
+		if ( 'Purchasers' === $display_name ) {
+			return 'purchasers';
+		}
+
+		$filter_clauses = $audience->getFilterClauses();
+
+		if ( $filter_clauses ) {
+			if ( $this->has_audience_site_kit_identifier(
+				$filter_clauses,
+				'new_visitors'
+			) ) {
+				return 'new-visitors';
+			}
+
+			if ( $this->has_audience_site_kit_identifier(
+				$filter_clauses,
+				'returning_visitors'
+			) ) {
+				return 'returning-visitors';
+			}
+		}
+
+		// Return an empty string for user defined audiences.
+		return '';
+	}
+
+	/**
+	 * Gets the audience type based on the audience slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $audience_slug The audience slug.
+	 * @return string The audience type.
+	 */
+	private function get_audience_type( $audience_slug ) {
+		if ( ! $audience_slug ) {
+			return 'USER_AUDIENCE';
+		}
+
+		switch ( $audience_slug ) {
+			case 'all-users':
+			case 'purchasers':
+				return 'DEFAULT_AUDIENCE';
+			case 'new-visitors':
+			case 'returning-visitors':
+				return 'SITE_KIT_AUDIENCE';
+		}
+	}
+
+	/**
+	 * Checks if an audience Site Kit identifier
+	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|object $data The array or object to search.
+	 * @param mixed        $identifier The identifier to search for.
+	 * @return bool True if the value exists, false otherwise.
+	 */
+	private function has_audience_site_kit_identifier( $data, $identifier ) {
+		if ( is_array( $data ) || is_object( $data ) ) {
+			foreach ( $data as $key => $value ) {
+				if ( is_array( $value ) || is_object( $value ) ) {
+					// Recursively search the nested structure.
+					if ( $this->has_audience_site_kit_identifier( $value, $identifier ) ) {
+						return true;
+					}
+				} elseif (
+					'fieldName' === $key &&
+					'groupId' === $value &&
+					isset( $data['stringFilter'] ) &&
+					"created_by_googlesitekit:{$identifier}" === $data['stringFilter']['value']
+				) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }

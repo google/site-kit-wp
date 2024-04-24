@@ -65,6 +65,17 @@ describe( 'modules/analytics-4 properties', () => {
 	const containerLookupEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
 	);
+	const containerDestinationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/container-destinations'
+	);
+
+	const containerDestinationsMock =
+		fixtures.containerDestinations[ 6065484567 ][ 98369876 ];
+
+	const googleTagContainerDestinationIDs = containerDestinationsMock.map(
+		// eslint-disable-next-line sitekit/acronym-case
+		( { destinationId } ) => destinationId
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -373,7 +384,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				expect( store.getState().settings ).toMatchObject( {
 					propertyID,
-					webDataStreamID: WEBDATASTREAM_CREATE,
+					webDataStreamID: '',
 					measurementID: '',
 					propertyCreateTime: 0,
 				} );
@@ -602,6 +613,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( matchedProperty ).toBeNull();
 			} );
 		} );
+
 		describe( 'updateSettingsForMeasurementID', () => {
 			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';
@@ -895,6 +907,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const {
 					googleTagAccountID,
 					googleTagContainerID,
@@ -924,7 +941,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
 					query: {
 						measurementID,
@@ -935,6 +952,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -989,6 +1007,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1012,7 +1035,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1023,6 +1046,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -1075,6 +1099,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1098,7 +1127,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1109,6 +1138,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -1128,6 +1158,87 @@ describe( 'modules/analytics-4 properties', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.hasMismatchedGoogleTagID()
 				).toBe( true );
+			} );
+
+			it( 'should set Google Tag container destination IDs in module setting', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const containerMock = fixtures.container[ measurementID ];
+
+				const {
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+				} = fixtures.googleTagSettings;
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
+					},
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagContainerDestinationIDs,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerDestinationIDs()
+				).toEqual( googleTagContainerDestinationIDs );
 			} );
 		} );
 	} );
