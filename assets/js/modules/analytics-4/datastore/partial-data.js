@@ -44,8 +44,8 @@ const RESOURCE_TYPES = [
 	RESOURCE_TYPE_PROPERTY,
 ];
 
-const RECEOVE_RESOURCE_DATA_AVAILABILITY_DATES =
-	'RECEOVE_RESOURCE_DATA_AVAILABILITY_DATES';
+const RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES =
+	'RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES';
 const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 	'SET_RESOURCE_DATA_AVAILABILITY_DATE';
 
@@ -98,7 +98,7 @@ const baseActions = {
 	receiveResourceDataAvailabilityDates( resourceAvailabilityDates ) {
 		return {
 			payload: { resourceAvailabilityDates },
-			type: RECEOVE_RESOURCE_DATA_AVAILABILITY_DATES,
+			type: RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES,
 		};
 	},
 
@@ -148,16 +148,33 @@ const baseActions = {
 			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
-		// If resourceType is custom dimension, check if custom dimension is available in settings.
-		if ( resourceType === RESOURCE_TYPE_CUSTOM_DIMENSION ) {
-			// Return early if custom dimension is not available in settings.
-			if (
-				! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-					resourceSlug
-				)
-			) {
+		// Validate if the resourceSlug is a valid resource.
+		switch ( resourceType ) {
+			case RESOURCE_TYPE_AUDIENCE:
+				yield Data.commonActions.await(
+					__experimentalResolveSelect(
+						MODULES_ANALYTICS_4
+					).getAudienceSettings()
+				);
+
+				break;
+
+			case RESOURCE_TYPE_CUSTOM_DIMENSION:
+				if (
+					! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+						resourceSlug
+					)
+				) {
+					return;
+				}
+				break;
+
+			case RESOURCE_TYPE_PROPERTY:
+				// Validate if property is valid.
+				break;
+
+			default:
 				return;
-			}
 		}
 
 		yield Data.commonActions.await(
@@ -223,7 +240,7 @@ const baseControls = {};
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RECEOVE_RESOURCE_DATA_AVAILABILITY_DATES: {
+		case RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES: {
 			const { resourceAvailabilityDates } = payload;
 
 			state.resourceAvailabilityDates = resourceAvailabilityDates;
@@ -539,11 +556,28 @@ const baseSelectors = {
 						),
 						endDate,
 						dimensions: [
-							'date',
-							'audienceResourceName',
-							'audienceName',
+							{ name: 'date' },
+							{ name: 'audienceResourceName' },
 						],
+						dimensionFilter: {
+							filter: {
+								fieldName: 'audienceResourceName',
+								stringFilter: {
+									matchType: 'EXACT',
+									value: resourceSlug,
+								},
+							},
+						},
 						metrics: [ { name: 'totalUsers' } ],
+						orderBys: [
+							{
+								dimension: {
+									dimensionName: 'date',
+									orderType: 'ALPHANUMERIC',
+								},
+								desc: false,
+							},
+						],
 						limit: 1,
 					};
 
