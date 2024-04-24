@@ -43,6 +43,8 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	);
 }
 
+// TODO: As part of #8484, update these stories to use the data-mock
+// functions to provide report data rather than hardcoding props.
 const readyProps = {
 	title: 'New visitors',
 	toolTip: 'This is a tooltip',

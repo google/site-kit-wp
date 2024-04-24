@@ -99,6 +99,11 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Technology',
 		'Business',
 	],
+	audienceResourceName: [
+		'properties/12345/audiences/1',
+		'properties/12345/audiences/2',
+		'properties/12345/audiences/3',
+	],
 };
 
 /**

@@ -565,5 +565,71 @@ describe( 'modules/analytics-4 report', () => {
 				expect( hasZeroData() ).toBe( false );
 			} );
 		} );
+
+		describe( 'getReportForAllAudiences', () => {
+			const getAudiencesEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audiences'
+			);
+
+			const audiences = fixtures.audiences.map( ( { name } ) => name );
+
+			it( 'should trigger a separate report for each provided audience', async () => {
+				const options = {
+					startDate: '2022-11-02',
+					endDate: '2022-11-04',
+					compareStartDate: '2022-11-01',
+					compareEndDate: '2022-11-02',
+					dimensions: [
+						{
+							name: 'pageTitle',
+						},
+					],
+					metrics: [
+						{
+							name: 'PageViews',
+						},
+						{
+							name: 'total',
+							expression: 'totalUsers',
+						},
+					],
+				};
+
+				fetchMock.get( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( getAudiencesEndpoint, {
+					body: fixtures.audiences,
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportForAllAudiences( options, audiences );
+
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					{
+						...options,
+						dimensionFilter: {
+							audienceResourceName:
+								fixtures.audiences[
+									fixtures.audiences.length - 1
+								].name,
+						},
+					}
+				);
+
+				const reports = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportForAllAudiences( options, audiences );
+
+				expect( reports ).toEqual(
+					Array( fixtures.audiences.length ).fill( fixtures.report )
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
+			} );
+		} );
 	} );
 } );
