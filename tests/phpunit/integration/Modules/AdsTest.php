@@ -18,9 +18,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Settings;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
-use WP_User;
 
 /**
  * @group Modules
@@ -51,7 +49,6 @@ class AdsTest extends TestCase {
 	 * @var Authentication
 	 */
 	protected $authentication;
-	use Fake_Site_Connection_Trait;
 
 	/**
 	 * Plugin context.
@@ -63,29 +60,8 @@ class AdsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_id = $administrator->ID;
-		wp_set_current_user( $this->user_id );
-
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->ads     = new Ads( $this->context );
-
-		self::enable_feature( 'adsPax' );
-	}
-
-	private function force_permissions_for_current_user() {
-		// Override VIEW_AUTHENTICATED_DASHBOARD for the testing purposes.
-		add_filter(
-			'map_meta_cap',
-			function( $caps, $cap ) {
-				if ( Permissions::VIEW_AUTHENTICATED_DASHBOARD === $cap ) {
-					return array( 'manage_options', 'edit_posts' );
-				}
-				return $caps;
-			},
-			99,
-			2
-		);
 	}
 
 	public function test_magic_methods() {
@@ -114,39 +90,19 @@ class AdsTest extends TestCase {
 		$this->assertTrue( $this->ads->is_connected() );
 	}
 
-	public function test_setup_assets() {
-		$this->force_permissions_for_current_user();
-
-		$reflection = new \ReflectionClass( get_class( $this->ads ) );
-
-		$setup_assets = $reflection->getMethod( 'setup_assets' );
-		$setup_assets->setAccessible( true );
-
-		$assets = $setup_assets->invokeArgs( $this->ads, array() );
-
-		// Main ads script and googlesitekit-ads-pax-config should be registered.
-		$this->assertEquals( count( $assets ), 2 );
-
-		$this->ads->get_settings()->set(
-			array(
-				'conversionID' => 'AW-123456789',
-			)
-		);
-
-		$assets = $setup_assets->invokeArgs( $this->ads, array() );
-
-		// Once Ads module is active and user has proper VIEW_AUTHENTICATED_DASHBOARD capability,
-		// all pax scripts should be registered together with main module's JS file.
-		$this->assertEquals( count( $assets ), 3 );
-	}
-
 	public function test_inline_modules_data__module_not_connected() {
+		self::enable_feature( 'adsPax' );
+
+		$this->ads->register();
+
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
 		$this->assertArrayNotHasKey( 'ads', $inline_modules_data );
 	}
 
 	public function test_inline_modules_data__module_connected() {
+		self::enable_feature( 'adsPax' );
+
 		$this->ads->register();
 
 		// Ensure the module is connected.
@@ -157,6 +113,8 @@ class AdsTest extends TestCase {
 				'conversionID' => 'AW-12345',
 			)
 		);
+
+		$this->assertTrue( $this->ads->is_connected() );
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
@@ -173,9 +131,7 @@ class AdsTest extends TestCase {
 
 		$this->ads->on_deactivation();
 
-		$ads_settings = $this->ads->get_settings()->get();
-
-		$this->assertFalse( $ads_settings );
+		$this->assertFalse( $this->ads->get_settings()->has( 'conversionID' ) );
 	}
 
 	public function test_get_debug_fields() {

@@ -57,40 +57,46 @@ describe( 'modules/ads/pax services', () => {
 		} );
 
 		describe( 'businessService', () => {
-			it( 'should contain businessName and businessUrl', async () => {
-				const businessInfo =
-					await services.businessService.getBusinessInfo();
+			describe( 'getBusinessInfo', () => {
+				it( 'should contain businessName and businessUrl properties', async () => {
+					const businessInfo =
+						await services.businessService.getBusinessInfo();
 
-				/* eslint-disable sitekit/acronym-case */
-				expect( businessInfo ).toEqual(
-					expect.objectContaining( {
-						businessName: expect.any( String ),
-						businessUrl: expect.any( String ),
-					} )
-				);
-				/* eslint-enable sitekit/acronym-case */
-			} );
+					/* eslint-disable sitekit/acronym-case */
+					expect( businessInfo ).toEqual(
+						expect.objectContaining( {
+							businessName: expect.any( String ),
+							businessUrl: expect.any( String ),
+						} )
+					);
+					/* eslint-enable sitekit/acronym-case */
+				} );
 
-			it( 'should contain correct site info values for businessName and businessUrl properties', async () => {
-				const businessInfo =
-					await services.businessService.getBusinessInfo();
+				it( 'should contain correct site info values for businessName and businessUrl properties', async () => {
+					const businessInfo =
+						await services.businessService.getBusinessInfo();
 
-				/* eslint-disable sitekit/acronym-case */
-				expect( businessInfo.businessName ).toEqual( 'Something Test' );
-				expect( businessInfo.businessUrl ).toEqual(
-					'http://something.test/homepage'
-				);
-				/* eslint-enable sitekit/acronym-case */
+					/* eslint-disable sitekit/acronym-case */
+					expect( businessInfo.businessName ).toEqual(
+						'Something Test'
+					);
+					expect( businessInfo.businessUrl ).toEqual(
+						'http://something.test/homepage'
+					);
+					/* eslint-enable sitekit/acronym-case */
+				} );
 			} );
 		} );
 		describe( 'conversionTrackingService', () => {
-			it( 'getSupportedConversionLabels should hold correct value', async () => {
-				const supportedConversionLabels =
-					await services.conversionTrackingService.getSupportedConversionLabels();
+			describe( 'getSupportedConversionLabels', () => {
+				it( 'should hold correct value for conversionLabels property', async () => {
+					const supportedConversionLabels =
+						await services.conversionTrackingService.getSupportedConversionLabels();
 
-				expect( supportedConversionLabels.conversionLabels ).toEqual(
-					[]
-				);
+					expect(
+						supportedConversionLabels.conversionLabels
+					).toEqual( [] );
+				} );
 			} );
 		} );
 	} );
