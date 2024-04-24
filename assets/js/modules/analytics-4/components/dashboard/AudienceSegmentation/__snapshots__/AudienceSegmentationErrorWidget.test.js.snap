@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AudienceSegmentationErrorWidget should render correctly in the default error state 1`] = `
+exports[`AudienceSegmentationErrorWidget should render the default error state 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
@@ -53,7 +53,7 @@ exports[`AudienceSegmentationErrorWidget should render correctly in the default 
 </div>
 `;
 
-exports[`AudienceSegmentationErrorWidget should render correctly in the insufficient permissions error state 1`] = `
+exports[`AudienceSegmentationErrorWidget should render the insufficient permissions error state 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
