@@ -330,12 +330,12 @@ $z-index-sk-overlay-notification: 9970;
 
 // Start Authorize Application screen specific styles.
 $c-authorize-application-background: $c-base;
+$c-authorize-application-sys-light-primary: #0b57d0;
 $c-authorize-application-sys-light-on-primary: $c-base;
 $c-authorize-application-sys-light-on-surface: #1f1f1f;
-$c-authorize-application-deep-blue: #0b57d0; // Deep Blue color name from http://chir.ag/projects/name-that-color/.
-$c-authorize-application-pumice: #c4c7c5; // Pumice color name as above.
+$c-authorize-application-sys-light-outline: #747775;
+$c-authorize-application-pumice: #c4c7c5; // Pumice color name from http://chir.ag/projects/name-that-color/.
 $c-authorize-application-vivid-blue: #1a73e8; // Vivid Blue color name as above.
-$c-authorize-application-xanadu: #747775; // Xanadu color name as above.
 
 $fs-authorize-application-headline-sm: 24px;
 $fs-authorize-application-title-lg: 18px;

@@ -65,7 +65,7 @@
 		}
 
 		input {
-			border: 1px solid $c-authorize-application-xanadu;
+			border: 1px solid $c-authorize-application-sys-light-outline;
 			border-radius: $br-xs;
 			font-size: $fs-authorize-application-body-md;
 			line-height: $lh-authorize-application-body-md;
@@ -120,7 +120,7 @@
 
 #approve {
 	// This is the primary CTA submit button.
-	background-color: $c-authorize-application-deep-blue;
+	background-color: $c-authorize-application-sys-light-primary;
 	border: none;
 	color: $c-authorize-application-sys-light-on-primary;
 }
@@ -128,8 +128,8 @@
 #reject {
 	// This is the secondary CTA reject button.
 	background-color: $c-authorize-application-sys-light-on-primary;
-	border: 1px solid $c-authorize-application-xanadu;
-	color: $c-authorize-application-deep-blue;
+	border: 1px solid $c-authorize-application-sys-light-outline;
+	color: $c-authorize-application-sys-light-primary;
 }
 
 #description-approve {
