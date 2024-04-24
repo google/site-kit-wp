@@ -71,6 +71,30 @@
 			line-height: $lh-authorize-application-body-md;
 			margin: 8px 0 0;
 			padding: 12px 16px;
+			width: 512px;
+		}
+	}
+
+	.description {
+		font-size: $fs-authorize-application-label-md;
+		line-height: $lh-authorize-application-label-md;
+
+		strong {
+			display: block;
+			margin: 9px 0 0;
+			max-width: 512px;
+		}
+
+		code {
+			border-radius: 4px;
+
+			// background-color: $c-authorize-application-gallery;
+			color: $c-authorize-application-sys-light-on-surface;
+			display: inline-block;
+			font-family: $f-primary;
+			font-size: $fs-authorize-application-label-md;
+			line-height: $lh-authorize-application-label-md;
+			padding: 4px 9px;
 		}
 	}
 }
@@ -83,12 +107,9 @@
 	padding-right: 47px;
 }
 
-#approve {
-	// This is the primary CTA submit button.
-	background-color: $c-authorize-application-deep-blue;
-	border: none;
+#approve,
+#reject {
 	border-radius: $br-lg;
-	color: $c-authorize-application-sys-light-on-primary;
 	font-size: $fs-authorize-application-label-lg;
 	font-weight: $fw-medium;
 	line-height: $lh-authorize-application-label-lg;
@@ -96,6 +117,36 @@
 	padding: 10px 24px;
 }
 
-#footer-thankyou a {
-	color: $c-authorize-application-vivid-blue;
+#approve {
+	// This is the primary CTA submit button.
+	background-color: $c-authorize-application-deep-blue;
+	border: none;
+	color: $c-authorize-application-sys-light-on-primary;
+}
+
+#reject {
+	// This is the secondary CTA reject button.
+	background-color: $c-authorize-application-sys-light-on-primary;
+	border: 1px solid $c-authorize-application-xanadu;
+	color: $c-authorize-application-deep-blue;
+}
+
+#description-approve {
+	border-bottom: 1px solid $c-authorize-application-pumice;
+	margin: 0 0 33px;
+	padding: 0 0 31px;
+}
+
+#description-reject {
+	margin: 0 0 8px;
+}
+
+#footer-thankyou {
+	background-color: $c-authorize-application-sys-light-on-primary;
+	font-size: $fs-authorize-application-label-md;
+	line-height: $lh-authorize-application-label-md;
+
+	a {
+		color: $c-authorize-application-vivid-blue;
+	}
 }
