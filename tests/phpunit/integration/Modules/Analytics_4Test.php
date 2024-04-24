@@ -3539,7 +3539,7 @@ class Analytics_4Test extends TestCase {
 			array(
 				array(
 					'name'         => 'properties/12345/audiences/1',
-					'displayName'  => 'All Visitors',
+					'displayName'  => 'All visitors',
 					'description'  => 'All users',
 					'audienceType' => 'DEFAULT_AUDIENCE',
 					'audienceSlug' => 'all-users',
