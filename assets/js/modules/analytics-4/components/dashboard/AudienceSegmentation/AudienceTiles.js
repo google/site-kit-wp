@@ -60,9 +60,12 @@ export default function AudienceTiles( { Widget } ) {
 	const audiencesDimensionFilter = {
 		audienceResourceName: configuredAudiences,
 	};
-	const audiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
-	);
+	const audiences = useSelect( ( select ) => {
+		const audienceData =
+			select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+		return Object.values( audienceData );
+	} );
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
