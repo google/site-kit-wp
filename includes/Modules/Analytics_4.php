@@ -574,7 +574,7 @@ final class Analytics_4 extends Module
 			$datapoints['POST:save-resource-data-availability-date'] = array(
 				'service' => '',
 			);
-			$datapoints['POST:sync-audiences']    = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:sync-audiences']                       = array( 'service' => 'analyticsaudiences' );
 		}
 
 		return $datapoints;
@@ -1401,6 +1401,10 @@ final class Analytics_4 extends Module
 
 				if ( ! $this->resource_data_availability_date->is_valid_resource_type( $data['resourceType'] ) ) {
 					throw new Invalid_Param_Exception( 'resourceType' );
+				}
+
+				if ( ! $this->resource_data_availability_date->is_valid_resource_slug( $data['resourceSlug'], $data['resourceType'] ) ) {
+					throw new Invalid_Param_Exception( 'resourceSlug' );
 				}
 
 				if ( ! is_int( $data['date'] ) ) {
