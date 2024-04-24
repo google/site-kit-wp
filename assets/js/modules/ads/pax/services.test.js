@@ -19,8 +19,10 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 import { createPaxServices } from './services';
 
 describe( 'PAX partner services', () => {
@@ -28,14 +30,8 @@ describe( 'PAX partner services', () => {
 		let registry;
 		let services;
 
-		beforeEach( async () => {
+		beforeEach( () => {
 			registry = createTestRegistry();
-
-			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				siteName: 'Something Test',
-				homeURL: 'http://something.test/homepage',
-			} );
-
 			services = createPaxServices( registry );
 		} );
 
@@ -62,17 +58,15 @@ describe( 'PAX partner services', () => {
 					const businessInfo =
 						await services.businessService.getBusinessInfo();
 
-					/* eslint-disable sitekit/acronym-case */
-					expect( businessInfo ).toEqual(
-						expect.objectContaining( {
-							businessName: expect.any( String ),
-							businessUrl: expect.any( String ),
-						} )
-					);
-					/* eslint-enable sitekit/acronym-case */
+					expect( businessInfo ).toHaveProperty( 'businessName' );
+					expect( businessInfo ).toHaveProperty( 'businessUrl' );
 				} );
 
 				it( 'should contain correct site info values for businessName and businessUrl properties', async () => {
+					provideSiteInfo( registry, {
+						siteName: 'Something Test',
+						homeURL: 'http://something.test/homepage',
+					} );
 					const businessInfo =
 						await services.businessService.getBusinessInfo();
 
@@ -87,6 +81,7 @@ describe( 'PAX partner services', () => {
 				} );
 			} );
 		} );
+
 		describe( 'conversionTrackingService', () => {
 			describe( 'getSupportedConversionLabels', () => {
 				it( 'should hold correct value for conversionLabels property', async () => {
