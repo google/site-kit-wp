@@ -29,6 +29,7 @@ use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 
@@ -147,6 +148,11 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	public function register_tag() {
 		$ads_conversion_id = $this->get_settings()->get()['conversionID'];
+		$pax_conversion_id = $this->get_settings()->get()['paxConversionID'];
+
+		if ( Feature_Flags::enabled( 'adsPax' ) && ! empty( $pax_conversion_id ) ) {
+			$ads_conversion_id = $pax_conversion_id;
+		}
 
 		$tag = $this->context->is_amp()
 			? new AMP_Tag( $ads_conversion_id, self::MODULE_SLUG )
