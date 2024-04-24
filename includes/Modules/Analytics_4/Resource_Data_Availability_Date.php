@@ -89,29 +89,32 @@ class Resource_Data_Availability_Date {
 		$property_id         = $this->get_property_id();
 		$available_audiences = $this->get_available_audience_resource_names();
 
-		return array(
-			self::RESOURCE_TYPE_AUDIENCE         => array_reduce(
-				$available_audiences,
-				function ( $data_availability, $audience ) {
-					$data_availability[ $audience ] = $this->get_resource_date( $audience, self::RESOURCE_TYPE_AUDIENCE );
-					return $data_availability;
-				},
-				array()
-			),
-			self::RESOURCE_TYPE_CUSTOM_DIMENSION => array_reduce(
-				self::CUSTOM_DIMENSION_SLUGS,
-				function ( $data_availability, $custom_dimension ) {
-					$data_availability[ $custom_dimension ] = $this->get_resource_date( $custom_dimension, self::RESOURCE_TYPE_CUSTOM_DIMENSION );
-					return $data_availability;
-				},
-				array()
-			),
-			self::RESOURCE_TYPE_PROPERTY         => array(
-				$property_id => $this->get_resource_date(
-					$property_id,
-					self::RESOURCE_TYPE_PROPERTY
+		return array_map(
+			fn( $data_availability_dates ) => (object) array_filter( $data_availability_dates ),
+			array(
+				self::RESOURCE_TYPE_AUDIENCE         => array_reduce(
+					$available_audiences,
+					function ( $audience_data_availability_dates, $audience ) {
+						$audience_data_availability_dates[ $audience ] = $this->get_resource_date( $audience, self::RESOURCE_TYPE_AUDIENCE );
+						return $audience_data_availability_dates;
+					},
+					array()
 				),
-			),
+				self::RESOURCE_TYPE_CUSTOM_DIMENSION => array_reduce(
+					self::CUSTOM_DIMENSION_SLUGS,
+					function ( $custom_dimension_data_availability_dates, $custom_dimension ) {
+						$custom_dimension_data_availability_dates[ $custom_dimension ] = $this->get_resource_date( $custom_dimension, self::RESOURCE_TYPE_CUSTOM_DIMENSION );
+						return $custom_dimension_data_availability_dates;
+					},
+					array()
+				),
+				self::RESOURCE_TYPE_PROPERTY         => array(
+					$property_id => $this->get_resource_date(
+						$property_id,
+						self::RESOURCE_TYPE_PROPERTY
+					),
+				),
+			)
 		);
 	}
 

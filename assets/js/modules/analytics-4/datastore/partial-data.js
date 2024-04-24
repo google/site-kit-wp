@@ -323,40 +323,6 @@ const baseResolvers = {
 			resourceAvailabilityDates[ resourceType ][ resourceSlug ] ===
 			undefined
 		) {
-			yield baseActions.setResourceDataAvailabilityDate(
-				resourceSlug,
-				resourceType,
-				0
-			);
-			yield baseActions.determineResourceDataAvailabilityDate(
-				resourceSlug,
-				resourceType
-			);
-		}
-	},
-
-	*isResourcePartialData( resourceSlug, resourceType ) {
-		const { select, __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
-
-		if (
-			select( MODULES_ANALYTICS_4 ).isResourcePartialData(
-				resourceSlug,
-				resourceType
-			) !== undefined
-		) {
-			return;
-		}
-
-		const dataAvailabilityDate = yield Data.commonActions.await(
-			__experimentalResolveSelect(
-				MODULES_ANALYTICS_4
-			).getResourceDataAvailabilityDate( resourceSlug, resourceType )
-		);
-
-		// If the data availability date for the given resource is 0,
-		// We need to determine the date by making a report request.
-		if ( dataAvailabilityDate === 0 ) {
 			yield baseActions.determineResourceDataAvailabilityDate(
 				resourceSlug,
 				resourceType
@@ -457,12 +423,6 @@ const baseSelectors = {
 
 			const startDateYYYYMMDD = Number( startDate.replaceAll( '-', '' ) );
 
-			global.console.log( {
-				dataAvailabilityDate,
-				startDate: startDateYYYYMMDD,
-				isParialData: dataAvailabilityDate > startDateYYYYMMDD,
-			} );
-
 			return dataAvailabilityDate > startDateYYYYMMDD;
 		}
 	),
@@ -541,6 +501,27 @@ const baseSelectors = {
 			const endDate = select( CORE_USER ).getReferenceDate();
 
 			switch ( resourceType ) {
+				case RESOURCE_TYPE_AUDIENCE:
+					return {
+						startDate: getDateString(
+							new Date( propertyCreateTime )
+						),
+						endDate,
+						dimensions: [ 'date', 'audienceResourceName' ],
+						dimensionFilter: {
+							audienceResourceName: resourceSlug,
+						},
+						metrics: [ 'totalUsers' ],
+						orderby: [
+							{
+								dimension: {
+									dimensionName: 'date',
+								},
+							},
+						],
+						limit: 1,
+					};
+
 				case RESOURCE_TYPE_CUSTOM_DIMENSION:
 					return {
 						startDate: getDateString(
@@ -548,39 +529,7 @@ const baseSelectors = {
 						),
 						endDate,
 						dimensions: [ 'date', `customEvent:${ resourceSlug }` ],
-						metrics: [ { name: 'eventCount' } ],
-						limit: 1,
-					};
-
-				case RESOURCE_TYPE_AUDIENCE:
-					return {
-						startDate: getDateString(
-							new Date( propertyCreateTime )
-						),
-						endDate,
-						dimensions: [
-							{ name: 'date' },
-							{ name: 'audienceResourceName' },
-						],
-						dimensionFilter: {
-							filter: {
-								fieldName: 'audienceResourceName',
-								stringFilter: {
-									matchType: 'EXACT',
-									value: resourceSlug,
-								},
-							},
-						},
-						metrics: [ { name: 'totalUsers' } ],
-						orderBys: [
-							{
-								dimension: {
-									dimensionName: 'date',
-									orderType: 'ALPHANUMERIC',
-								},
-								desc: false,
-							},
-						],
+						metrics: [ 'eventCount' ],
 						limit: 1,
 					};
 
@@ -591,7 +540,7 @@ const baseSelectors = {
 						),
 						endDate,
 						dimensions: [ 'date' ],
-						metrics: [ { name: 'totalUsers' } ],
+						metrics: [ 'totalUsers' ],
 						limit: 1,
 					};
 			}
