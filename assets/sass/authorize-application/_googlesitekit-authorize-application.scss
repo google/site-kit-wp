@@ -24,7 +24,6 @@
 
 		h1 {
 			// This is the Authorize Application screen title.
-			// font-family: $f-authorize-application-title;
 			font-size: $fs-authorize-application-headline-sm;
 			line-height: $lh-authorize-application-headline-sm;
 			padding: 0;
@@ -88,8 +87,6 @@
 
 		code {
 			border-radius: 4px;
-
-			// background-color: $c-authorize-application-gallery;
 			color: $c-authorize-application-sys-light-on-surface;
 			display: inline-block;
 			font-family: $f-primary;
@@ -103,7 +100,7 @@
 #wpcontent,
 #wpfooter {
 	color: $c-authorize-application-sys-light-on-surface;
-	font-family: $f-primary; // $f-authorize-application-primary;
+	font-family: $f-primary;
 	padding: 0 10px;
 
 	@media (min-width: $width-wpAdminBarTablet + 1 + px) {
