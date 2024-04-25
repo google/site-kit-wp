@@ -58,7 +58,7 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 		>
 			<Grid
 				collapsed
-				className="googlesitekit-audience-segmentation-error-widget-primary-cell"
+				className="googlesitekit-audience-segmentation-error__widget-primary-cell"
 			>
 				<Row>
 					<Cell smSize={ 6 } mdSize={ 8 } lgSize={ 7 }>
@@ -92,7 +92,7 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 					</Cell>
 					{ ! isMobileBreakpoint && ! isTabletBreakpoint && (
 						<Cell
-							className="googlesitekit-widget-audience-segmentation-error-svg__wrapper"
+							className="googlesitekit-widget-audience-segmentation-error__svg-wrapper"
 							smSize={ 6 }
 							mdSize={ 3 }
 							lgSize={ 5 }
@@ -102,7 +102,7 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 					) }
 					{ isTabletBreakpoint && (
 						<Cell
-							className="googlesitekit-widget-audience-segmentation-error-svg__wrapper"
+							className="googlesitekit-widget-audience-segmentation-error__svg-wrapper"
 							mdSize={ 8 }
 						>
 							<AudienceSegmentationErrorSVG width="233px" />
@@ -110,7 +110,7 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 					) }
 					{ isMobileBreakpoint && (
 						<Cell
-							className="googlesitekit-widget-audience-segmentation-error-svg__wrapper"
+							className="googlesitekit-widget-audience-segmentation-error__svg-wrapper"
 							smSize={ 8 }
 						>
 							<AudienceSegmentationErrorSVG width="233px" />
