@@ -44,7 +44,11 @@ function Template( {} ) {
 }
 
 export const Default = Template.bind( null );
-Default.storyName = 'SettingsView';
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Modules/Ads/Settings/SettingsView',
+	delay: 250,
+};
 
 export default {
 	title: 'Modules/Ads/Settings/SettingsView',
@@ -72,3 +76,29 @@ export default {
 		},
 	],
 };
+
+export const PaxConnected = Template.bind( null );
+PaxConnected.storyName = 'With PAX onboarding';
+PaxConnected.scenario = {
+	label: 'Modules/Ads/Settings/SettingsView/PAX',
+	delay: 250,
+};
+PaxConnected.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			// Unset the value set in the prrevious scenario.
+			registry.dispatch( MODULES_ADS ).setConversionID( null );
+
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				paxConversionID: 'AW-54321',
+				extCustomerID: 'C-872756827HGFSD',
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
