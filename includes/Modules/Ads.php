@@ -243,6 +243,13 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	public function register_tag() {
 		$ads_conversion_id = $this->get_settings()->get()['conversionID'];
+		$pax_conversion_id = $this->get_settings()->get()['paxConversionID'];
+
+		// The PAX-supplied Conversion ID should take precedence over the
+		// user-supplied one, if both exist.
+		if ( Feature_Flags::enabled( 'adsPax' ) && ! empty( $pax_conversion_id ) ) {
+			$ads_conversion_id = $pax_conversion_id;
+		}
 
 		$tag = $this->context->is_amp()
 			? new AMP_Tag( $ads_conversion_id, self::MODULE_SLUG )
