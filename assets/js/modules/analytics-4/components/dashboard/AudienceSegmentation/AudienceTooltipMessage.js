@@ -36,7 +36,10 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 
 const { useSelect } = Data;
 
-export default function AudienceTooltipMessage( { audienceSlug } ) {
+export default function AudienceTooltipMessage( {
+	audienceSlug,
+	audienceName,
+} ) {
 	const documentationURL = useSelect( ( select ) =>
 		// TODO: The link must be updated here to the correct support URL once written.
 		select( CORE_SITE ).getDocumentationLinkURL( 'audience-segmentation' )
@@ -44,7 +47,7 @@ export default function AudienceTooltipMessage( { audienceSlug } ) {
 
 	const tooltipMessage = useMemo( () => {
 		switch ( audienceSlug ) {
-			case 'New visitors':
+			case 'new-visitors':
 				return createInterpolateElement(
 					sprintf(
 						/* translators: %s: is the audience name */
@@ -65,7 +68,7 @@ export default function AudienceTooltipMessage( { audienceSlug } ) {
 						),
 					}
 				);
-			case 'Returning visitors':
+			case 'returning-visitors':
 				return createInterpolateElement(
 					sprintf(
 						/* translators: %s: is the audience name */
@@ -94,7 +97,7 @@ export default function AudienceTooltipMessage( { audienceSlug } ) {
 							"%s is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. <link>Learn more</link>",
 							'google-site-kit'
 						),
-						`<strong>${ audienceSlug }</strong>`
+						`<strong>${ audienceName }</strong>`
 					),
 					{
 						strong: <strong />,
@@ -108,7 +111,7 @@ export default function AudienceTooltipMessage( { audienceSlug } ) {
 					}
 				);
 		}
-	}, [ audienceSlug, documentationURL ] );
+	}, [ audienceSlug, audienceName, documentationURL ] );
 
 	return tooltipMessage;
 }

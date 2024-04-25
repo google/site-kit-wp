@@ -1,23 +1,38 @@
 [
     {
-        "name": "properties/437749618/audiences/8004992724",
-        "displayName": "All visitors",
+        "name": "properties/12345/audiences/1",
         "description": "All users",
+        "displayName": "All Users",
         "audienceType": "DEFAULT_AUDIENCE",
         "audienceSlug": "all-users"
     },
     {
-        "name": "properties/437749618/audiences/8004992725",
-        "displayName": "Purchasers",
+        "name": "properties/12345/audiences/2",
         "description": "Users who have made a purchase",
+        "displayName": "Purchasers",
         "audienceType": "DEFAULT_AUDIENCE",
         "audienceSlug": "purchasers"
     },
     {
-        "name": "properties/437749618/audiences/8030142001",
-        "displayName": "Test Audience",
-        "description": "This is the test description for test audience.",
+        "name": "properties/12345/audiences/3",
+        "description": "People who visited the site for the first time",
+        "displayName": "New visitors",
+        "audienceType": "SITE_KIT_AUDIENCE",
+        "audienceSlug": "new-visitors"
+    },
+    {
+        "name": "properties/12345/audiences/4",
+        "adsPersonalizationEnabled": true,
+        "description": "People who have visited your site at least once before",
+        "displayName": "Returning visitors",
         "audienceType": "SITE_KIT_AUDIENCE",
         "audienceSlug": "returning-visitors"
+    },
+    {
+        "name": "properties/12345/audiences/5",
+        "description": "Description",
+        "displayName": "Test Audience",
+        "audienceType": "USER_AUDIENCE",
+        "audienceSlug": "test-users"
     }
 ]

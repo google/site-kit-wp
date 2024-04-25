@@ -177,9 +177,15 @@ export default function AudienceTiles( { Widget } ) {
 								( { name } ) => name === audienceResourceName
 							)?.[ 0 ]?.displayName || '';
 
+						const audienceSlug =
+							audiences?.filter(
+								( { name } ) => name === audienceResourceName
+							)?.[ 0 ]?.audienceSlug || '';
+
 						const tooltipMessage = (
 							<AudienceTooltipMessage
 								audienceName={ audienceName }
+								audienceSlug={ audienceSlug }
 							/>
 						);
 
@@ -213,6 +219,11 @@ export default function AudienceTiles( { Widget } ) {
 						audiences?.filter(
 							( { name } ) => name === audienceResourceName
 						)?.[ 0 ]?.displayName || '';
+
+					const audienceSlug =
+						audiences?.filter(
+							( { name } ) => name === audienceResourceName
+						)?.[ 0 ]?.audienceSlug || '';
 
 					const visitors =
 						Number(
@@ -274,6 +285,7 @@ export default function AudienceTiles( { Widget } ) {
 							infoTooltip={
 								<AudienceTooltipMessage
 									audienceName={ audienceName }
+									audienceSlug={ audienceSlug }
 								/>
 							}
 							visitors={ {
