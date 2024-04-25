@@ -9,7 +9,7 @@ exports[`AudienceSegmentationErrorWidget should render the default error state 1
       class="googlesitekit-widget__body"
     >
       <div
-        class="mdc-layout-grid googlesitekit-audience-segmentation-error-widget-primary-cell mdc-layout-grid--collapsed"
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
       >
         <div
           class="mdc-layout-grid__inner"
@@ -42,7 +42,7 @@ exports[`AudienceSegmentationErrorWidget should render the default error state 1
             </div>
           </div>
           <div
-            class="googlesitekit-widget-audience-segmentation-error-svg__wrapper mdc-layout-grid__cell"
+            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell"
           >
             <svg />
           </div>
@@ -62,7 +62,7 @@ exports[`AudienceSegmentationErrorWidget should render the insufficient permissi
       class="googlesitekit-widget__body"
     >
       <div
-        class="mdc-layout-grid googlesitekit-audience-segmentation-error-widget-primary-cell mdc-layout-grid--collapsed"
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
       >
         <div
           class="mdc-layout-grid__inner"
@@ -116,7 +116,7 @@ exports[`AudienceSegmentationErrorWidget should render the insufficient permissi
             </div>
           </div>
           <div
-            class="googlesitekit-widget-audience-segmentation-error-svg__wrapper mdc-layout-grid__cell"
+            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell"
           >
             <svg />
           </div>
