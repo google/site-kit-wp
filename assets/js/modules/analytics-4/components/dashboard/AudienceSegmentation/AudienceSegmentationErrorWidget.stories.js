@@ -82,8 +82,16 @@ Default.args = {
 			'getReport',
 			[
 				{
-					dimensions: [ 'ga:date' ],
-					metrics: [ { expression: 'ga:users' } ],
+					metrics: [
+						{
+							name: 'totalUsers',
+						},
+					],
+					dimensions: [
+						{
+							name: 'date',
+						},
+					],
 					startDate: '2020-08-11',
 					endDate: '2020-09-07',
 				},
@@ -141,23 +149,9 @@ export default {
 			const registry = createTestRegistry();
 
 			return (
-				<div
-					style={ {
-						minHeight: '200px',
-						display: 'flex',
-						alignItems: 'center',
-					} }
-				>
-					<div id="adminmenu">
-						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
-						<a href="http://test.test/?page=googlesitekit-settings" />
-					</div>
-					<div style={ { flex: 1 } }>
-						<WithTestRegistry registry={ registry }>
-							<Story />
-						</WithTestRegistry>
-					</div>
-				</div>
+				<WithTestRegistry registry={ registry }>
+					<Story />
+				</WithTestRegistry>
 			);
 		},
 	],

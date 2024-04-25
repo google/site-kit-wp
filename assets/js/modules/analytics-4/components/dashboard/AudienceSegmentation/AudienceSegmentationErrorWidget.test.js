@@ -64,8 +64,16 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 			'getReport',
 			[
 				{
-					dimensions: [ 'ga:date' ],
-					metrics: [ { expression: 'ga:users' } ],
+					metrics: [
+						{
+							name: 'totalUsers',
+						},
+					],
+					dimensions: [
+						{
+							name: 'date',
+						},
+					],
 					startDate: '2020-08-11',
 					endDate: '2020-09-07',
 				},
