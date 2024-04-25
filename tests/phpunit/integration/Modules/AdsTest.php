@@ -157,7 +157,6 @@ class AdsTest extends TestCase {
 				$head_html
 			);
 		} else {
-
 			$this->assertStringContainsString(
 				'gtag("config", "AW-987654321")',
 				$head_html
