@@ -18,9 +18,9 @@
 
 .googlesitekit-plugin {
 	.googlesitekit-audience-segmentation-error-widget {
-		border: 2px solid $c-red-r-500;
+		border: 2px solid $c-utility-error;
 
-		.googlesitekit-audience-segmentation-error-widget-primary-cell {
+		.googlesitekit-audience-segmentation-error__widget-primary-cell {
 			margin-bottom: $grid-gap-desktop / 2;
 			padding: 20px 36px;
 		}
@@ -40,18 +40,16 @@
 			align-items: flex-start;
 			display: flex;
 			flex-direction: column-reverse;
-			gap: 0;
 
 			.googlesitekit-error-retry-text {
 				color: $c-surfaces-on-surface;
 				flex: 1;
 				letter-spacing: $ls-s;
-				margin: 0;
-				transform: translateY(-18px);
+				margin: -18px 0 0;
 			}
 		}
 
-		.googlesitekit-widget-audience-segmentation-error-svg__wrapper {
+		.googlesitekit-widget-audience-segmentation-error__svg-wrapper {
 			bottom: -20px;
 			display: flex;
 			justify-content: flex-start;
