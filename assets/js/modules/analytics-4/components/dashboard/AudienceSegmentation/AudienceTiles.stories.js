@@ -32,30 +32,6 @@ import {
 import { audiences as audiencesFixture } from './../../../datastore/__fixtures__';
 import AudienceTiles from './AudienceTiles';
 
-const configuredAudiences = [
-	'properties/12345/audiences/1', // All Users
-	'properties/12345/audiences/3', // New visitors
-	'properties/12345/audiences/4', // Returning visitors
-];
-const audiencesDimensionFilter = {
-	audienceResourceName: configuredAudiences,
-};
-
-const reportOptions = {
-	compareEndDate: '2024-02-28',
-	compareStartDate: '2024-02-01',
-	endDate: '2024-03-27',
-	startDate: '2024-02-29',
-	dimensions: [ { name: 'audienceResourceName' } ],
-	dimensionFilter: audiencesDimensionFilter,
-	metrics: [
-		{ name: 'totalUsers' },
-		{ name: 'sessionsPerUser' },
-		{ name: 'screenPageViewsPerSession' },
-		{ name: 'screenPageViews' },
-	],
-};
-
 const totalPageviewsReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
@@ -106,15 +82,52 @@ function Template( { args } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.args = {};
+Default.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+};
 Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTiles/Default',
+};
+
+export const TwoTiles = Template.bind( {} );
+TwoTiles.storyName = 'Two Tiles';
+TwoTiles.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+	],
+};
+TwoTiles.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTiles/TwoTiles',
 };
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTiles',
 	decorators: [
-		( Story, { args: { grantedScopes } } ) => {
+		( Story, { args: { grantedScopes, configuredAudiences } } ) => {
+			const audiencesDimensionFilter = {
+				audienceResourceName: configuredAudiences,
+			};
+
+			const reportOptions = {
+				compareEndDate: '2024-02-28',
+				compareStartDate: '2024-02-01',
+				endDate: '2024-03-27',
+				startDate: '2024-02-29',
+				dimensions: [ { name: 'audienceResourceName' } ],
+				dimensionFilter: audiencesDimensionFilter,
+				metrics: [
+					{ name: 'totalUsers' },
+					{ name: 'sessionsPerUser' },
+					{ name: 'screenPageViewsPerSession' },
+					{ name: 'screenPageViews' },
+				],
+			};
+
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry, {
 					grantedScopes,
