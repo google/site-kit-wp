@@ -42,6 +42,8 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->conversion_tracking->register();
 
+		do_action( 'wp_enqueue_scripts' );
+
 		$enqueued = array_flip( $wp_scripts->queue );
 
 		$this->assertArrayHasKey(
