@@ -30,13 +30,16 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { SELECTION_PANEL_OPENED_KEY } from './constants';
+import {
+	SELECTION_PANEL_OPENED_KEY,
+	SELECTION_PANEL_HEADER_TEXT,
+} from './constants';
 import Link from '../Link';
 import CloseIcon from '../../../svg/icons/close.svg';
 import useViewOnly from '../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
-export default function SelectionPanelHeader() {
+function SelectionPanelHeader( { className, onClose } ) {
 	const isViewOnly = useViewOnly();
 
 	const settingsURL = useSelect( ( select ) =>
@@ -47,23 +50,27 @@ export default function SelectionPanelHeader() {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const { getValue } = useSelect( ( select ) => select( CORE_UI ) );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onCloseClick = useCallback( () => {
 		setValue( SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+		onClose();
+	}, [ setValue, onClose ] );
 
 	const onSettingsClick = useCallback(
 		() => navigateTo( `${ settingsURL }#/admin-settings` ),
 		[ navigateTo, settingsURL ]
 	);
 
+	const headerText = getValue( SELECTION_PANEL_HEADER_TEXT );
+
 	return (
-		<header className="googlesitekit-km-selection-panel-header">
-			<div className="googlesitekit-km-selection-panel-header__row">
+		<header className={ `${ className }` }>
+			<div className={ `${ className }__row` }>
 				<h3>{ __( 'Select your metrics', 'google-site-kit' ) }</h3>
 				<Link
-					className="googlesitekit-km-selection-panel-header__close"
+					className={ `${ className }__close` }
 					onClick={ onCloseClick }
 					linkButton
 				>
@@ -73,10 +80,8 @@ export default function SelectionPanelHeader() {
 			{ ! isViewOnly && (
 				<p>
 					{ createInterpolateElement(
-						__(
-							'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
-							'google-site-kit'
-						),
+						// eslint-disable-next-line @wordpress/i18n-no-variables
+						__( `${ headerText }`, 'google-site-kit' ),
 						{
 							link: (
 								<Link
@@ -93,3 +98,5 @@ export default function SelectionPanelHeader() {
 		</header>
 	);
 }
+
+export default SelectionPanelHeader;

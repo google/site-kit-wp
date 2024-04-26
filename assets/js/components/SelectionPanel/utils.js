@@ -1,5 +1,5 @@
 /**
- * Selection Panel components - constants.
+ * Metric Selection Panel utils.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,12 +16,15 @@
  * limitations under the License.
  */
 
-export const SELECTION_PANEL_OPENED_KEY =
-	'googlesitekit-selection-panel-opened';
-export const SELECTION_PANEL_SELECTED_ITEMS =
-	'googlesitekit-selection-panel-selected-items';
-export const SELECTION_PANEL_FORM = 'googlesitekit-selection-panel-form';
-export const SELECTION_PANEL_HEADER_TEXT =
-	'googlesitekit-selection-panel-header-text';
-export const MIN_SELECTED_COUNT = 2;
-export const MAX_SELECTED_COUNT = 4;
+/**
+ * Sorts an array without causing the mutation if the given parameter is an array.
+ * If the parameter is not an array, it returns the parameter as is.
+ *
+ * @since 1.110.0
+ *
+ * @param {Array|*} arr Param to be sorted.
+ * @return {Array|*} 	Safely sorted array without mutation.
+ */
+export const safelySort = ( arr ) => {
+	return Array.isArray( arr ) ? [ ...arr ].sort() : arr;
+};

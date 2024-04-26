@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,10 +35,12 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
 
-import { SELECTION_PANEL_OPENED_KEY } from '../../SelectionPanel/constants';
+import {
+	SELECTION_PANEL_OPENED_KEY,
+	SELECTION_PANEL_HEADER_TEXT,
+} from '../../SelectionPanel/constants';
 
-import SelectionPanel from '../../SelectionPanel';
-import Header from '../../SelectionPanel/SelectionPanelHeader';
+import SelectionPanel, { Header, Footer, Items } from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
@@ -62,6 +65,11 @@ export default function MetricsSelectionPanel() {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 
+	setValue(
+		SELECTION_PANEL_HEADER_TEXT,
+		'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>'
+	);
+
 	const onSideSheetOpen = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 		setValues( KEY_METRICS_SELECTION_FORM, {
@@ -74,6 +82,14 @@ export default function MetricsSelectionPanel() {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 	}, [ setValue ] );
 
+	const onClose = useCallback( () => {
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+	}, [ setValue ] );
+
+	function Label() {
+		return <p>This is the description for the item.</p>;
+	}
+
 	return (
 		<SelectionPanel
 			className="googlesitekit-km-selection-panel"
@@ -81,7 +97,20 @@ export default function MetricsSelectionPanel() {
 			onSideSheetOpen={ onSideSheetOpen }
 			sideSheetCloseFn={ sideSheetCloseFn }
 		>
-			<Header />
+			<Header
+				className="googlesitekit-km-selection-panel-header"
+				heading={ __( 'Select your metricss', 'google-site-kit' ) }
+				onClose={ onClose }
+			/>
+			<Items
+				selectedItems={ {
+					topVisitors: {
+						title: 'This is test',
+						children: <Label />, // ToDo: Provide the child component that needs to be rendered as an item.
+					},
+				} }
+			/>
+			<Footer />
 		</SelectionPanel>
 	);
 }

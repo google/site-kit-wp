@@ -121,8 +121,11 @@ export default function Metrics( { savedMetrics } ) {
 
 	const renderMetricItems = ( metricSlugs ) => {
 		return Object.keys( metricSlugs ).map( ( slug ) => {
-			const { title, description, disconnectedModules } =
-				metricSlugs[ slug ];
+			const {
+				title,
+				description,
+				disconnectedModules = [],
+			} = metricSlugs[ slug ];
 
 			const id = `key-metric-selection-checkbox-${ slug }`;
 

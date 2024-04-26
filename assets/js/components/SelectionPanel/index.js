@@ -18,6 +18,10 @@
 
 import SelectionPanel from './SelectionPanel';
 import SelectionPanelHeader from './SelectionPanelHeader';
+import SelectionPanelFooter from './SelectionPanelFooter';
+import PanelItems from './PanelItems';
 
-export const Header = SelectionPanelHeader;
 export default SelectionPanel;
+export const Header = SelectionPanelHeader;
+export const Footer = SelectionPanelFooter;
+export const Items = PanelItems;
