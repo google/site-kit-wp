@@ -37,24 +37,20 @@ class Conversion_TrackingTest extends TestCase {
 		);
 	}
 
-	public function test_register() {
-		global $wp_scripts;
+	public function tear_down() {
+		parent::tear_down();
 
+		$this->conversion_tracking::$conversion_event_providers = array();
+	}
+
+	public function test_register() {
 		$this->conversion_tracking->register();
 
 		do_action( 'wp_enqueue_scripts' );
 
-		$enqueued = array_flip( $wp_scripts->queue );
+		$this->assertTrue( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
 
-		$this->assertArrayHasKey(
-			'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG,
-			$enqueued,
-		);
-
-		$this->assertArrayNotHasKey(
-			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG,
-			$enqueued
-		);
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ) );
 	}
 
 	public function test_get_active_conversion_event_providers() {
