@@ -76,7 +76,7 @@ export default function AudienceTiles( { Widget } ) {
 	const reportOptions = {
 		...dates,
 		dimensions: [ { name: 'audienceResourceName' } ],
-		dimensionFilter: audiencesDimensionFilter,
+		dimensionFilters: audiencesDimensionFilter,
 		metrics: [
 			{ name: 'totalUsers' },
 			{ name: 'sessionsPerUser' },

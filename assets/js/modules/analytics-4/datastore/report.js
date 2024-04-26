@@ -388,7 +388,7 @@ const baseSelectors = {
 			return audienceResourceNames?.map( ( audienceResourceName ) =>
 				select( MODULES_ANALYTICS_4 ).getReport( {
 					...options,
-					dimensionFilter: {
+					dimensionFilters: {
 						audienceResourceName,
 					},
 				} )

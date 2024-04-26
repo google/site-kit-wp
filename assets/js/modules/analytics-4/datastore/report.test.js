@@ -611,7 +611,7 @@ describe( 'modules/analytics-4 report', () => {
 				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
 					{
 						...options,
-						dimensionFilter: {
+						dimensionFilters: {
 							audienceResourceName:
 								fixtures.audiences[
 									fixtures.audiences.length - 1
