@@ -47,8 +47,11 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import PreviewBlock from '../../../components/PreviewBlock';
 const { useSelect } = Data;
 
-// eslint-disable-next-line no-unused-vars
-export default function PAXEmbeddedApp( { displayMode = 'default', onReady } ) {
+export default function PAXEmbeddedApp( {
+	// eslint-disable-next-line no-unused-vars
+	displayMode = 'default',
+	onLaunch,
+} ) {
 	const [ launchGoogleAdsAvailable, setLaunchGoogleAdsAvailable ] = useState(
 		typeof global?.google?.ads?.integration?.integrator?.launchGoogleAds ===
 			'function'
@@ -167,11 +170,11 @@ export default function PAXEmbeddedApp( { displayMode = 'default', onReady } ) {
 
 			setIsLoading( false );
 
-			onReady?.();
+			onLaunch?.();
 		} catch ( error ) {
 			setLaunchError( error );
 		}
-	}, [ paxConfig, paxServices, onReady ] );
+	}, [ paxConfig, paxServices, onLaunch ] );
 
 	useInterval( () => {
 		if ( ! launchGoogleAdsAvailable || hasLaunchedPAXApp ) {
@@ -222,5 +225,5 @@ export default function PAXEmbeddedApp( { displayMode = 'default', onReady } ) {
 
 PAXEmbeddedApp.propTypes = {
 	displayMode: PropTypes.oneOf( [ 'default', 'reporting', 'setup' ] ),
-	onReady: PropTypes.func,
+	onLaunch: PropTypes.func,
 };
