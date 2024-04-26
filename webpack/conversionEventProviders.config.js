@@ -35,8 +35,7 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
-		'test-plugin-integration':
-			'./assets/js/event-providers/test-plugin-integration.js',
+		woocommerce: './assets/js/event-providers/woocommerce.js',
 	},
 	externals,
 	output: {
