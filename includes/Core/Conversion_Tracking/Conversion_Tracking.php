@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use InvalidArgumentException;
 
 /**
  * Class for managing conversion tracking.
@@ -27,14 +28,6 @@ class Conversion_Tracking {
 	 * @var Context
 	 */
 	private $context;
-
-	/**
-	 * Conversion_Event_Provider_Registry instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Conversion_Event_Provider_Registry
-	 */
-	private $registry;
 
 	/**
 	 * Supported conversion event providers.
@@ -81,9 +74,8 @@ class Conversion_Tracking {
 	 */
 	public function get_active_conversion_event_providers() {
 		$active_conversion_event_providers = array();
-		$conversion_event_provider_classes = $this->get_registry()->get_all();
 
-		foreach ( $conversion_event_provider_classes as $conversion_event_provider_class ) {
+		foreach ( self::$conversion_event_providers as $conversion_event_provider_class ) {
 			$instance = new $conversion_event_provider_class( $this->context );
 
 			if ( $instance->is_active() ) {
@@ -95,37 +87,28 @@ class Conversion_Tracking {
 	}
 
 	/**
-	 * Gets the configured conversion event provider registry instance.
+	 * Registers a conversion event provider class on the registry.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Conversion_Event_Provider_Registry
+	 * @param string $conversion_event_provider_classname Fully-qualified conversion event provider class name to register.
+	 * @throws InvalidArgumentException Thrown if an invalid conversion event provider class name is provided.
 	 */
-	protected function get_registry() {
-		if ( ! $this->registry instanceof Conversion_Event_Provider_Registry ) {
-			$this->registry = $this->setup_registry();
+	public function instantiate_conversion_event_provider( $conversion_event_provider_classname ) {
+		if ( ! is_string( $conversion_event_provider_classname ) || ! $conversion_event_provider_classname ) {
+			throw new InvalidArgumentException( 'A conversion event provider class name is required to instantiate a conversion event provider.' );
 		}
 
-		return $this->registry;
-	}
+		if ( ! class_exists( $conversion_event_provider_classname ) ) {
+			throw new InvalidArgumentException( "No class exists for '$conversion_event_provider_classname'" );
+		}
 
-	/**
-	 * Sets up a fresh conversion event provider registry instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return Conversion_Event_Provider_Registry
-	 */
-	protected function setup_registry() {
-		$registry = new Conversion_Event_Provider_Registry();
+		if ( ! is_subclass_of( $conversion_event_provider_classname, Conversion_Events_Provider::class ) ) {
+			throw new InvalidArgumentException(
+				sprintf( 'All conversion event provider classes must extend the base conversion event provider class: %s', Conversion_Events_Provider::class )
+			);
+		}
 
-		array_walk(
-			self::$conversion_event_providers,
-			function( $conversion_event_provider ) use ( $registry ) {
-				$registry->register( $conversion_event_provider );
-			}
-		);
-
-		return $registry;
+		return new $conversion_event_provider_classname( $this->context );
 	}
 }
