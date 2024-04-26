@@ -41,7 +41,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { AdBlockerWarning } from './common';
-import PAXEmbeddedAppErrorHandler from './PAXEmbeddedAppErrorHandler';
 import CTA from '../../../components/notifications/CTA';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import PreviewBlock from '../../../components/PreviewBlock';
@@ -203,23 +202,21 @@ export default function PAXEmbeddedApp( {
 	] );
 
 	return (
-		<PAXEmbeddedAppErrorHandler>
-			<div className="googlesitekit-pax-embedded-app">
-				{ isAdBlockerActive && <AdBlockerWarning /> }
+		<div className="googlesitekit-pax-embedded-app">
+			{ isAdBlockerActive && <AdBlockerWarning /> }
 
-				{ !! launchError && !! launchError?.message?.length && (
-					<CTA
-						title={ __( 'Google Ads error', 'google-site-kit' ) }
-						description={ launchError?.message }
-						error
-					/>
-				) }
+			{ !! launchError && !! launchError?.message?.length && (
+				<CTA
+					title={ __( 'Google Ads error', 'google-site-kit' ) }
+					description={ launchError?.message }
+					error
+				/>
+			) }
 
-				{ isLoading && <PreviewBlock width="100%" height="240px" /> }
+			{ isLoading && <PreviewBlock width="100%" height="240px" /> }
 
-				<div id={ elementID } />
-			</div>
-		</PAXEmbeddedAppErrorHandler>
+			<div id={ elementID } />
+		</div>
 	);
 }
 
