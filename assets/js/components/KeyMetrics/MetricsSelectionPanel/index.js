@@ -38,6 +38,7 @@ import {
 import {
 	SELECTION_PANEL_OPENED_KEY,
 	SELECTION_PANEL_HEADER_TEXT,
+	SELECTION_PANEL_HEADING,
 } from '../../SelectionPanel/constants';
 
 import SelectionPanel, { Header, Footer, Items } from '../../SelectionPanel';
@@ -64,6 +65,11 @@ export default function MetricsSelectionPanel() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
+
+	setValue(
+		SELECTION_PANEL_HEADING,
+		__( 'Select your metricss', 'google-site-kit' )
+	);
 
 	setValue(
 		SELECTION_PANEL_HEADER_TEXT,

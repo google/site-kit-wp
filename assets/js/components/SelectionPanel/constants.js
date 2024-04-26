@@ -21,6 +21,7 @@ export const SELECTION_PANEL_OPENED_KEY =
 export const SELECTION_PANEL_SELECTED_ITEMS =
 	'googlesitekit-selection-panel-selected-items';
 export const SELECTION_PANEL_FORM = 'googlesitekit-selection-panel-form';
+export const SELECTION_PANEL_HEADING = 'googlesitekit-selection-panel-heading';
 export const SELECTION_PANEL_HEADER_TEXT =
 	'googlesitekit-selection-panel-header-text';
 export const MIN_SELECTED_COUNT = 2;

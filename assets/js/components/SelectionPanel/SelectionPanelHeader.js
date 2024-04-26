@@ -33,6 +33,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	SELECTION_PANEL_OPENED_KEY,
 	SELECTION_PANEL_HEADER_TEXT,
+	SELECTION_PANEL_HEADING,
 } from './constants';
 import Link from '../Link';
 import CloseIcon from '../../../svg/icons/close.svg';
@@ -63,12 +64,13 @@ function SelectionPanelHeader( { className, onClose } ) {
 		[ navigateTo, settingsURL ]
 	);
 
+	const heading = getValue( SELECTION_PANEL_HEADING );
 	const headerText = getValue( SELECTION_PANEL_HEADER_TEXT );
 
 	return (
 		<header className={ `${ className }` }>
 			<div className={ `${ className }__row` }>
-				<h3>{ __( 'Select your metrics', 'google-site-kit' ) }</h3>
+				<h3>{ heading }</h3>
 				<Link
 					className={ `${ className }__close` }
 					onClick={ onCloseClick }
