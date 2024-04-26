@@ -44,6 +44,7 @@ import { AdBlockerWarning } from './common';
 import PAXEmbeddedAppErrorHandler from './PAXEmbeddedAppErrorHandler';
 import CTA from '../../../components/notifications/CTA';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import PreviewBlock from '../../../components/PreviewBlock';
 const { useSelect } = Data;
 
 // eslint-disable-next-line no-unused-vars
@@ -52,6 +53,7 @@ export default function PAXEmbeddedApp( { displayMode = 'default', onReady } ) {
 		typeof global?.google?.ads?.integration?.integrator?.launchGoogleAds ===
 			'function'
 	);
+	const [ hasLaunchedPAXApp, setHasLaunchedPAXApp ] = useState( false );
 	const [ isLoading, setIsLoading ] = useState( true );
 	const [ launchError, setLaunchError ] = useState( undefined );
 
@@ -163,6 +165,8 @@ export default function PAXEmbeddedApp( { displayMode = 'default', onReady } ) {
 					paxServices
 				);
 
+			setIsLoading( false );
+
 			onReady?.();
 		} catch ( error ) {
 			setLaunchError( error );
@@ -170,26 +174,30 @@ export default function PAXEmbeddedApp( { displayMode = 'default', onReady } ) {
 	}, [ paxConfig, paxServices, onReady ] );
 
 	useInterval( () => {
-		if ( ! launchGoogleAdsAvailable ) {
+		if ( ! launchGoogleAdsAvailable || hasLaunchedPAXApp ) {
 			return;
 		}
 
-		if ( global.google.ads.integration.integrator.launchGoogleAds ) {
+		if (
+			typeof global?.google?.ads?.integration?.integrator
+				?.launchGoogleAds === 'function'
+		) {
 			setLaunchGoogleAdsAvailable( true );
 		}
 	}, 50 );
 
 	useEffect( () => {
-		if (
-			isLoading &&
-			typeof global?.google?.ads?.integration?.integrator
-				?.launchGoogleAds === 'function'
-		) {
-			setIsLoading( false );
+		if ( launchGoogleAdsAvailable && ! hasLaunchedPAXApp ) {
+			setHasLaunchedPAXApp( true );
 
 			launchPAXApp();
 		}
-	}, [ isLoading, launchPAXApp ] );
+	}, [
+		hasLaunchedPAXApp,
+		isLoading,
+		launchGoogleAdsAvailable,
+		launchPAXApp,
+	] );
 
 	return (
 		<PAXEmbeddedAppErrorHandler>
@@ -203,6 +211,8 @@ export default function PAXEmbeddedApp( { displayMode = 'default', onReady } ) {
 						error
 					/>
 				) }
+
+				{ isLoading && <PreviewBlock width="100%" height="240px" /> }
 
 				<div id={ elementID } />
 			</div>
