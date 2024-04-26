@@ -11,6 +11,7 @@
 namespace Google\Tests\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
@@ -65,6 +66,34 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertArrayNotHasKey(
 			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG,
 			$active_conversion_event_providers
+		);
+	}
+
+	/**
+	 * @dataProvider data_register
+	 *
+	 * @param $classname
+	 * @param $expected_exception
+	 */
+	public function test_instantiate_conversion_event_provider( $classname, $expected_exception ) {
+		try {
+			$this->conversion_tracking->instantiate_conversion_event_provider( $classname );
+		} catch ( \Exception $exception ) {
+			if ( ! $expected_exception ) {
+				$this->fail( 'No exception expected but a ' . get_class( $exception ) . ' was thrown' );
+			}
+			$this->assertEquals( $expected_exception, $exception->getMessage() );
+		}
+	}
+
+	public function data_register() {
+		$exception_no_classname     = 'A conversion event provider class name is required to instantiate a conversion event provider.';
+		$exception_not_extends_base = 'All conversion event provider classes must extend the base conversion event provider class: ' . Conversion_Events_Provider::class;
+
+		return array(
+			'no class name'                     => array( '', $exception_no_classname ),
+			'non-existent class name'           => array( '\\Foo\\Bar', "No class exists for '\\Foo\\Bar'" ),
+			'existing class not-extending base' => array( __CLASS__, $exception_not_extends_base ),
 		);
 	}
 }
