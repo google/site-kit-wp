@@ -1,6 +1,6 @@
 <?php
 /**
- * Interface Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider
+ * Class Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider
  *
  * @package   Google\Site_Kit\Core\Conversion_Tracking
  * @copyright 2024 Google LLC
@@ -60,9 +60,7 @@ abstract class Conversion_Events_Provider {
 	 *
 	 * @return array List of event names.
 	 */
-	public function get_event_names() {
-		return array();
-	}
+	abstract public function get_event_names();
 
 	/**
 	 * Registers the script for the provider.

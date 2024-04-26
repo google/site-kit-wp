@@ -75,9 +75,13 @@ class Conversion_TrackingTest extends TestCase {
 	 * @param $classname
 	 * @param $expected_exception
 	 */
-	public function test_instantiate_conversion_event_provider( $classname, $expected_exception ) {
+	public function test_get_active_conversion_event_providers__classnames_exceptions( $classname, $expected_exception ) {
+		$this->conversion_tracking::$conversion_event_providers = array(
+			'conversion-event-provider' => $classname,
+		);
+
 		try {
-			$this->conversion_tracking->instantiate_conversion_event_provider( $classname );
+			$this->conversion_tracking->get_active_conversion_event_providers();
 		} catch ( \Exception $exception ) {
 			if ( ! $expected_exception ) {
 				$this->fail( 'No exception expected but a ' . get_class( $exception ) . ' was thrown' );

@@ -54,13 +54,18 @@ class Conversion_Tracking {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$active_conversion_event_providers = $this->get_active_conversion_event_providers();
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				$active_conversion_event_providers = $this->get_active_conversion_event_providers();
 
-		array_walk(
-			$active_conversion_event_providers,
-			function( Conversion_Events_Provider $active_conversion_event_provider ) {
-				$script_asset = $active_conversion_event_provider->register_script();
-				$script_asset->enqueue();
+				array_walk(
+					$active_conversion_event_providers,
+					function( Conversion_Events_Provider $active_conversion_event_provider ) {
+						$script_asset = $active_conversion_event_provider->register_script();
+						$script_asset->enqueue();
+					}
+				);
 			}
 		);
 	}
@@ -71,44 +76,33 @@ class Conversion_Tracking {
 	 * @since n.e.x.t
 	 *
 	 * @return array List of active Conversion_Events_Provider instances.
+	 * @throws InvalidArgumentException Thrown if an invalid conversion event provider class name is provided.
 	 */
 	public function get_active_conversion_event_providers() {
 		$active_conversion_event_providers = array();
 
-		foreach ( self::$conversion_event_providers as $conversion_event_provider_class ) {
+		foreach ( self::$conversion_event_providers as $conversion_event_provider_slug => $conversion_event_provider_class ) {
+			if ( ! is_string( $conversion_event_provider_class ) || ! $conversion_event_provider_class ) {
+				throw new InvalidArgumentException( 'A conversion event provider class name is required to instantiate a conversion event provider.' );
+			}
+
+			if ( ! class_exists( $conversion_event_provider_class ) ) {
+				throw new InvalidArgumentException( "No class exists for '$conversion_event_provider_class'" );
+			}
+
+			if ( ! is_subclass_of( $conversion_event_provider_class, Conversion_Events_Provider::class ) ) {
+				throw new InvalidArgumentException(
+					sprintf( 'All conversion event provider classes must extend the base conversion event provider class: %s', Conversion_Events_Provider::class )
+				);
+			}
+
 			$instance = new $conversion_event_provider_class( $this->context );
 
 			if ( $instance->is_active() ) {
-				$active_conversion_event_providers[ $instance::CONVERSION_EVENT_PROVIDER_SLUG ] = $instance;
+				$active_conversion_event_providers[ $conversion_event_provider_slug ] = $instance;
 			}
 		}
 
 		return $active_conversion_event_providers;
-	}
-
-	/**
-	 * Registers a conversion event provider class on the registry.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $conversion_event_provider_classname Fully-qualified conversion event provider class name to register.
-	 * @throws InvalidArgumentException Thrown if an invalid conversion event provider class name is provided.
-	 */
-	public function instantiate_conversion_event_provider( $conversion_event_provider_classname ) {
-		if ( ! is_string( $conversion_event_provider_classname ) || ! $conversion_event_provider_classname ) {
-			throw new InvalidArgumentException( 'A conversion event provider class name is required to instantiate a conversion event provider.' );
-		}
-
-		if ( ! class_exists( $conversion_event_provider_classname ) ) {
-			throw new InvalidArgumentException( "No class exists for '$conversion_event_provider_classname'" );
-		}
-
-		if ( ! is_subclass_of( $conversion_event_provider_classname, Conversion_Events_Provider::class ) ) {
-			throw new InvalidArgumentException(
-				sprintf( 'All conversion event provider classes must extend the base conversion event provider class: %s', Conversion_Events_Provider::class )
-			);
-		}
-
-		return new $conversion_event_provider_classname( $this->context );
 	}
 }
