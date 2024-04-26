@@ -119,7 +119,7 @@ export default {
 				endDate: '2024-03-27',
 				startDate: '2024-02-29',
 				dimensions: [ { name: 'audienceResourceName' } ],
-				dimensionFilter: audiencesDimensionFilter,
+				dimensionFilters: audiencesDimensionFilter,
 				metrics: [
 					{ name: 'totalUsers' },
 					{ name: 'sessionsPerUser' },
@@ -151,7 +151,7 @@ export default {
 				audiencesFixture.forEach( ( audience ) => {
 					provideAnalytics4MockReport( registry, {
 						...topCitiesReportOptions,
-						dimensionFilter: {
+						dimensionFilters: {
 							audienceResourceName: audience.name,
 						},
 					} );
@@ -160,7 +160,7 @@ export default {
 				audiencesFixture.forEach( ( audience ) => {
 					provideAnalytics4MockReport( registry, {
 						...topContentReportOptions,
-						dimensionFilter: {
+						dimensionFilters: {
 							audienceResourceName: audience.name,
 						},
 					} );
@@ -179,7 +179,7 @@ export default {
 						.receiveGetReport( pageTitlesReport, {
 							options: {
 								...topContentPageTitlesReportOptions,
-								dimensionFilter: {
+								dimensionFilters: {
 									audienceResourceName: audience.name,
 								},
 							},
