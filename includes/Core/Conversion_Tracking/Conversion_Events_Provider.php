@@ -60,9 +60,7 @@ abstract class Conversion_Events_Provider {
 	 *
 	 * @return array List of event names.
 	 */
-	public function get_event_names() {
-		return array();
-	}
+	abstract public function get_event_names();
 
 	/**
 	 * Registers the script for the provider.
