@@ -18,3 +18,6 @@
 
 export const SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-selection-panel-opened';
+
+export const MIN_SELECTED_COUNT = 2;
+export const MAX_SELECTED_COUNT = 4;

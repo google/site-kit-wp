@@ -37,6 +37,7 @@ import {
 import { SELECTION_PANEL_OPENED_KEY } from '../../SelectionPanel/constants';
 
 import SelectionPanel from '../../SelectionPanel';
+import Header from '../../SelectionPanel/SelectionPanelHeader';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
@@ -62,23 +63,25 @@ export default function MetricsSelectionPanel() {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const onSideSheetOpen = useCallback( () => {
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
 		} );
 		trackEvent( `${ viewContext }_kmw-sidebar`, 'metrics_sidebar_view' );
-	}, [ savedViewableMetrics, setValues, viewContext ] );
+	}, [ savedViewableMetrics, setValues, setValue, viewContext ] );
 
 	const sideSheetCloseFn = useCallback( () => {
-		if ( isOpen ) {
-			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-		}
-	}, [ setValue, isOpen ] );
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
+	}, [ setValue ] );
 
 	return (
 		<SelectionPanel
+			className="googlesitekit-km-selection-panel"
 			isOpen={ isOpen }
 			onSideSheetOpen={ onSideSheetOpen }
 			sideSheetCloseFn={ sideSheetCloseFn }
-		/>
+		>
+			<Header />
+		</SelectionPanel>
 	);
 }

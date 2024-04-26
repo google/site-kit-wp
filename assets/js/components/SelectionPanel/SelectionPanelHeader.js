@@ -1,5 +1,5 @@
 /**
- * Key Metrics Selection Panel Header
+ * Selection Panel Header
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -36,7 +36,7 @@ import CloseIcon from '../../../svg/icons/close.svg';
 import useViewOnly from '../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
-export default function Header() {
+export default function SelectionPanelHeader() {
 	const isViewOnly = useViewOnly();
 
 	const settingsURL = useSelect( ( select ) =>

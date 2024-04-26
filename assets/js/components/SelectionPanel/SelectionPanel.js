@@ -16,8 +16,32 @@
  * limitations under the License.
  */
 
-import SelectionPanel from './SelectionPanel';
-import SelectionPanelHeader from './SelectionPanelHeader';
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
-export const Header = SelectionPanelHeader;
-export default SelectionPanel;
+import SideSheet from '../SideSheet';
+
+export default function SelectionPanel( {
+	onSideSheetOpen,
+	sideSheetCloseFn,
+	isOpen,
+	className,
+	children,
+} ) {
+	return (
+		<Fragment>
+			{ isOpen && (
+				<SideSheet
+					className={ className }
+					isOpen={ isOpen }
+					onOpen={ onSideSheetOpen }
+					closeFn={ sideSheetCloseFn }
+				>
+					{ children }
+				</SideSheet>
+			) }
+		</Fragment>
+	);
+}
