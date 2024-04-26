@@ -40,7 +40,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { AdBlockerWarning } from './common';
 import CTA from '../../../components/notifications/CTA';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import PreviewBlock from '../../../components/PreviewBlock';
@@ -66,6 +65,10 @@ export default function PAXEmbeddedApp( {
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
 
+	const isAdBlockerActive = useSelect( ( select ) =>
+		select( CORE_USER ).isAdBlockerActive()
+	);
+
 	const instanceID = useInstanceId( PAXEmbeddedApp, 'PAXEmbeddedApp' );
 
 	const newPromise = async () => {};
@@ -80,10 +83,6 @@ export default function PAXEmbeddedApp( {
 			return callback;
 		};
 	}, [] );
-
-	const isAdBlockerActive = useSelect( ( select ) => {
-		return select( CORE_USER ).isAdBlockerActive();
-	} );
 
 	const paxAppRef = useRef();
 
@@ -167,12 +166,16 @@ export default function PAXEmbeddedApp( {
 					paxServices
 				);
 
-			setIsLoading( false );
-
 			onLaunch?.();
 		} catch ( error ) {
 			setLaunchError( error );
+			global.console.error(
+				'Google Ads Partner Experience Error:',
+				error
+			);
 		}
+
+		setIsLoading( false );
 	}, [ paxConfig, paxServices, onLaunch ] );
 
 	useInterval( () => {
@@ -203,12 +206,13 @@ export default function PAXEmbeddedApp( {
 
 	return (
 		<div className="googlesitekit-pax-embedded-app">
-			{ isAdBlockerActive && <AdBlockerWarning /> }
-
-			{ !! launchError && !! launchError?.message?.length && (
+			{ !! launchError && ! isAdBlockerActive && (
 				<CTA
 					title={ __( 'Google Ads error', 'google-site-kit' ) }
-					description={ launchError?.message }
+					description={ __(
+						'Could not load Google Ads content.',
+						'google-site-kit'
+					) }
 					error
 				/>
 			) }
