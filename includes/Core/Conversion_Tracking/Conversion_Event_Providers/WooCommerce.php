@@ -54,12 +54,10 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @return Script Script instance.
 	 */
 	public function register_script() {
-		$base_url = $this->context->url( 'dist/assets/' );
-
 		$script = new Script(
 			'gsk-cep-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'          => $base_url . 'js/woocommerce.js',
+				'src'          => $this->context->url( 'dist/assets/js/woocommerce.js' ),
 				'execution'    => 'async',
 				'dependencies' => array( 'woocommerce' ),
 			)
