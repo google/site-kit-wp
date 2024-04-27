@@ -35,8 +35,7 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
-		'test-plugin-integration':
-			'./assets/js/event-providers/test-plugin-integration.js',
+		'optin-monster': './assets/js/event-providers/optin-monster.js',
 	},
 	externals,
 	output: {
