@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Providers\OptinMonster;
 use InvalidArgumentException;
 
 /**
@@ -35,7 +36,9 @@ class Conversion_Tracking {
 	 * @since n.e.x.t
 	 * @var array
 	 */
-	public static $conversion_event_providers = array();
+	public static $conversion_event_providers = array(
+		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG => OptinMonster::class,
+	);
 
 	/**
 	 * Constructor.
