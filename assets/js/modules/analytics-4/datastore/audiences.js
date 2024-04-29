@@ -164,7 +164,7 @@ const baseResolvers = {
 			.getAvailableAudiences();
 
 		// If available audiences not present, sync the audience in state.
-		if ( audiences === undefined ) {
+		if ( audiences === null ) {
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
 
