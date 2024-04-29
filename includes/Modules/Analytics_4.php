@@ -2213,7 +2213,7 @@ final class Analytics_4 extends Module
 			$modules_data['analytics-4'] = array_merge(
 				$modules_data['analytics-4'] ?? array(),
 				array(
-					'resourceAvailabilityDates' => $this->resource_data_availability_date->get_resource_dates(),
+					'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
 				)
 			);
 		}
