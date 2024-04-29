@@ -37,6 +37,14 @@ export default function SettingsView() {
 		select( MODULES_ADS ).getConversionID()
 	);
 
+	const paxConversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getPaxConversionID()
+	);
+
+	const extCustomerID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getExtCustomerID()
+	);
+
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
 	);
@@ -44,8 +52,7 @@ export default function SettingsView() {
 	return (
 		<Fragment>
 			<AdBlockerWarning />
-
-			{ ! isAdBlockerActive && (
+			{ ! isAdBlockerActive && ! paxConversionID && ! extCustomerID && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
@@ -53,6 +60,36 @@ export default function SettingsView() {
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ conversionID ? (
 							<DisplaySetting value={ conversionID } />
+						) : (
+							__( 'None', 'google-site-kit' )
+						) }
+					</p>
+				</div>
+			) }
+
+			{ ! isAdBlockerActive && paxConversionID && extCustomerID && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ paxConversionID ? (
+							<DisplaySetting value={ paxConversionID } />
+						) : (
+							__( 'None', 'google-site-kit' )
+						) }
+					</p>
+				</div>
+			) }
+
+			{ ! isAdBlockerActive && paxConversionID && extCustomerID && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Customer ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ extCustomerID ? (
+							<DisplaySetting value={ extCustomerID } />
 						) : (
 							__( 'None', 'google-site-kit' )
 						) }

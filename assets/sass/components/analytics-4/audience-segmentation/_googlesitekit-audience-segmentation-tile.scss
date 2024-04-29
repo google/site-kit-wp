@@ -54,13 +54,21 @@
 			}
 
 			.googlesitekit-audience-segmentation-tile-metric__icon {
-				height: 20px;
-				margin: 16px 20px 16px 0;
-				min-width: 20px;
-				width: 20px;
+				align-items: center;
+				display: flex;
+				margin-right: 4px;
+				min-width: 36px;
+				width: 36px;
+
+				svg {
+					height: 20px;
+					width: 20px;
+				}
 
 				@media (min-width: $width-desktop + 1 + px) {
-					margin-left: 16px;
+					justify-content: center;
+					min-width: 52px;
+					width: 52px;
 				}
 			}
 
