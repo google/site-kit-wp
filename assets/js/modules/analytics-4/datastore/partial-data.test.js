@@ -90,7 +90,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 	describe( 'actions', () => {
 		describe( 'receiveResourceDataAvailabilityDates', () => {
-			it( 'requires a plain plain object as parameter', () => {
+			it( 'requires resourceAvailabilityDates to be a plain object', () => {
 				expect( () => {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -197,6 +197,7 @@ describe( 'modules/analytics-4 partial data', () => {
 						resourceAvailabilityDates,
 					},
 				};
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -214,6 +215,8 @@ describe( 'modules/analytics-4 partial data', () => {
 						.getResourceDataAvailabilityDates()
 				).toEqual( resourceAvailabilityDates );
 			} );
+
+			global._googlesitekitModulesData = undefined;
 		} );
 
 		describe( 'getResourceDataAvailabilityDate', () => {
@@ -414,7 +417,7 @@ describe( 'modules/analytics-4 partial data', () => {
 		} );
 
 		describe( 'isResourcePartialData', () => {
-			it( 'requires a resourceSlug to be a non-empty string', () => {
+			it( 'requires resourceSlug to be a non-empty string', () => {
 				expect( () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -422,7 +425,7 @@ describe( 'modules/analytics-4 partial data', () => {
 				} ).toThrow( 'resourceSlug must be a non-empty string.' );
 			} );
 
-			it( 'requires a resourceType to be a valid resource type', () => {
+			it( 'requires resourceType to be a valid resource type', () => {
 				expect( () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
