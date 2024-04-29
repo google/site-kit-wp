@@ -21,7 +21,9 @@
  */
 import {
 	createTestRegistry,
+	muteFetch,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
@@ -284,6 +286,94 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				expect( fetchMock ).not.toHaveFetched( getAudiencesEndpoint );
 				expect( audiences ).toEqual( audiencesFixture );
+			} );
+		} );
+
+		describe( 'haveAudiences', () => {
+			const testAudience1 = {
+				name: 'properties/12345/audiences/12345',
+			};
+
+			const testAudience2 = {
+				name: 'properties/12345/audiences/67890',
+			};
+
+			const testAudience1ResourceName = testAudience1.name;
+			const testAudience2ResourceName = testAudience2.name;
+
+			const availableAudiences = [ testAudience1, testAudience2 ];
+
+			it( 'returns undefined when available audiences have not loaded', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAudiences( testAudience1ResourceName )
+				).toBe( undefined );
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'returns false when available audiences are null or not set', async () => {
+				muteFetch( syncAvailableAudiencesEndpoint );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableAudiences: null,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAudiences( testAudience1ResourceName )
+				).toBe( false );
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'returns true when all provided audiences are available', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableAudiences,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAudiences( testAudience1ResourceName )
+				).toBe( true );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAudiences( [
+							testAudience1ResourceName,
+							testAudience2ResourceName,
+						] )
+				).toBe( true );
+			} );
+
+			it( 'returns false when some or all provided audiences are not available', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableAudiences,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAudiences( 'properties/12345/audiences/54321' )
+				).toBe( false );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.haveAudiences( [
+							testAudience1ResourceName,
+							'properties/12345/audiences/54321',
+						] )
+				).toBe( false );
 			} );
 		} );
 	} );
