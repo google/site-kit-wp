@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
-use InvalidArgumentException;
+use LogicException;
 
 /**
  * Class for managing conversion tracking.
@@ -35,7 +35,7 @@ class Conversion_Tracking {
 	 * @since n.e.x.t
 	 * @var array
 	 */
-	public static $conversion_event_providers = array();
+	public static $providers = array();
 
 	/**
 	 * Constructor.
@@ -57,12 +57,12 @@ class Conversion_Tracking {
 		add_action(
 			'wp_enqueue_scripts',
 			function() {
-				$active_conversion_event_providers = $this->get_active_conversion_event_providers();
+				$active_providers = $this->get_active_providers();
 
 				array_walk(
-					$active_conversion_event_providers,
-					function( Conversion_Events_Provider $active_conversion_event_provider ) {
-						$script_asset = $active_conversion_event_provider->register_script();
+					$active_providers,
+					function( Conversion_Events_Provider $active_provider ) {
+						$script_asset = $active_provider->register_script();
 						$script_asset->enqueue();
 					}
 				);
@@ -76,33 +76,33 @@ class Conversion_Tracking {
 	 * @since n.e.x.t
 	 *
 	 * @return array List of active Conversion_Events_Provider instances.
-	 * @throws InvalidArgumentException Thrown if an invalid conversion event provider class name is provided.
+	 * @throws LogicException Thrown if an invalid conversion event provider class name is provided.
 	 */
-	public function get_active_conversion_event_providers() {
-		$active_conversion_event_providers = array();
+	public function get_active_providers() {
+		$active_providers = array();
 
-		foreach ( self::$conversion_event_providers as $conversion_event_provider_slug => $conversion_event_provider_class ) {
-			if ( ! is_string( $conversion_event_provider_class ) || ! $conversion_event_provider_class ) {
-				throw new InvalidArgumentException( 'A conversion event provider class name is required to instantiate a conversion event provider.' );
+		foreach ( self::$providers as $provider_slug => $provider_class ) {
+			if ( ! is_string( $provider_class ) || ! $provider_class ) {
+				throw new LogicException( __( 'A conversion event provider class name is required to instantiate a conversion event provider.', 'google-site-kit' ) );
 			}
 
-			if ( ! class_exists( $conversion_event_provider_class ) ) {
-				throw new InvalidArgumentException( "No class exists for '$conversion_event_provider_class'" );
+			if ( ! class_exists( $provider_class ) ) {
+				throw new LogicException( sprintf( "%s '%s'", __( 'No class exists for', 'google-site-kit' ), $provider_class ) );
 			}
 
-			if ( ! is_subclass_of( $conversion_event_provider_class, Conversion_Events_Provider::class ) ) {
-				throw new InvalidArgumentException(
-					sprintf( 'All conversion event provider classes must extend the base conversion event provider class: %s', Conversion_Events_Provider::class )
+			if ( ! is_subclass_of( $provider_class, Conversion_Events_Provider::class ) ) {
+				throw new LogicException(
+					sprintf( '%s: %s', __( 'All conversion event provider classes must extend the base conversion event provider class', 'google-site-kit' ), Conversion_Events_Provider::class )
 				);
 			}
 
-			$instance = new $conversion_event_provider_class( $this->context );
+			$instance = new $provider_class( $this->context );
 
 			if ( $instance->is_active() ) {
-				$active_conversion_event_providers[ $conversion_event_provider_slug ] = $instance;
+				$active_providers[ $provider_slug ] = $instance;
 			}
 		}
 
-		return $active_conversion_event_providers;
+		return $active_providers;
 	}
 }

@@ -31,7 +31,7 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->conversion_tracking = new Conversion_Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->conversion_tracking::$conversion_event_providers = array(
+		Conversion_Tracking::$providers = array(
 			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG        => FakeConversionEventProvider::class,
 			FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeConversionEventProvider_Active::class,
 		);
@@ -40,7 +40,7 @@ class Conversion_TrackingTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 
-		$this->conversion_tracking::$conversion_event_providers = array();
+		Conversion_Tracking::$providers = array();
 	}
 
 	public function test_register() {
@@ -54,16 +54,16 @@ class Conversion_TrackingTest extends TestCase {
 	}
 
 	public function test_get_active_conversion_event_providers() {
-		$active_conversion_event_providers = $this->conversion_tracking->get_active_conversion_event_providers();
+		$active_providers = $this->conversion_tracking->get_active_providers();
 
 		$this->assertArrayHasKey(
 			FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG,
-			$active_conversion_event_providers
+			$active_providers
 		);
 
 		$this->assertArrayNotHasKey(
 			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG,
-			$active_conversion_event_providers
+			$active_providers
 		);
 	}
 
@@ -74,12 +74,12 @@ class Conversion_TrackingTest extends TestCase {
 	 * @param $expected_exception
 	 */
 	public function test_get_active_conversion_event_providers__classnames_exceptions( $classname, $expected_exception ) {
-		$this->conversion_tracking::$conversion_event_providers = array(
+		Conversion_Tracking::$providers = array(
 			'conversion-event-provider' => $classname,
 		);
 
 		try {
-			$this->conversion_tracking->get_active_conversion_event_providers();
+			$this->conversion_tracking->get_active_providers();
 		} catch ( \Exception $exception ) {
 			if ( ! $expected_exception ) {
 				$this->fail( 'No exception expected but a ' . get_class( $exception ) . ' was thrown' );
