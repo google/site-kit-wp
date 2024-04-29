@@ -83,16 +83,33 @@ class Conversion_Tracking {
 
 		foreach ( self::$providers as $provider_slug => $provider_class ) {
 			if ( ! is_string( $provider_class ) || ! $provider_class ) {
-				throw new LogicException( __( 'A conversion event provider class name is required to instantiate a conversion event provider.', 'google-site-kit' ) );
+				throw new LogicException(
+					sprintf(
+						/* translators: %s: provider slug */
+						__( 'A conversion event provider class name is required to instantiate a provider: %s', 'google-site-kit' ),
+						$provider_slug
+					)
+				);
 			}
 
 			if ( ! class_exists( $provider_class ) ) {
-				throw new LogicException( sprintf( "%s '%s'", __( 'No class exists for', 'google-site-kit' ), $provider_class ) );
+				throw new LogicException(
+					sprintf(
+						/* translators: %s: provider classname */
+						__( "The '%s' class does not exist", 'google-site-kit' ),
+						$provider_class
+					)
+				);
 			}
 
 			if ( ! is_subclass_of( $provider_class, Conversion_Events_Provider::class ) ) {
 				throw new LogicException(
-					sprintf( '%s: %s', __( 'All conversion event provider classes must extend the base conversion event provider class', 'google-site-kit' ), Conversion_Events_Provider::class )
+					sprintf(
+						/* translators: 1: provider classname 2: Conversion_Events_Provider classname */
+						__( "The '%1\$s' class must extend the base conversion event provider class: %2\$s", 'google-site-kit' ),
+						$provider_class,
+						Conversion_Events_Provider::class
+					)
 				);
 			}
 
