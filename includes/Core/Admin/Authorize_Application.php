@@ -64,6 +64,7 @@ final class Authorize_Application {
 	 */
 	public function register() {
 		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets' ) );
+		add_action( 'admin_footer', $this->get_method_proxy( 'render_custom_footer' ) );
 	}
 
 	/**
@@ -114,4 +115,15 @@ final class Authorize_Application {
 			$this->assets->enqueue_asset( 'googlesitekit-authorize-application-css' );
 		}
 	}
+
+	/**
+	 * Renders custom footer for the Authorize Application screen if the service is a Google service.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function render_custom_footer() {
+        if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
+            echo '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>';
+        }
+    }
 }
