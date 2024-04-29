@@ -86,11 +86,6 @@ const baseActions = {
 					audience
 				);
 
-			// Sync available audiences in the state.
-			if ( error === undefined ) {
-				yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
-			}
-
 			return { response, error };
 		}
 	),
@@ -127,7 +122,7 @@ const baseResolvers = {
 			.getAvailableAudiences();
 
 		// If available audiences not present, sync the audience in state.
-		if ( audiences === undefined ) {
+		if ( audiences === null ) {
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
 
