@@ -79,7 +79,7 @@ const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 			'resourceType must be a valid resource type.'
 		);
 
-		invariant( Number.isInteger( date ), 'date must be a integer.' );
+		invariant( Number.isInteger( date ), 'date must be an integer.' );
 	},
 } );
 
@@ -129,123 +129,12 @@ const baseActions = {
 			'resourceType must be a valid resource type.'
 		);
 
-		invariant( Number.isInteger( date ), 'date must be a integer.' );
+		invariant( Number.isInteger( date ), 'date must be an integer.' );
 
 		return {
 			payload: { resourceSlug, resourceType, date },
 			type: SET_RESOURCE_DATA_AVAILABILITY_DATE,
 		};
-	},
-
-	/**
-	 * Determines the data availability date for a specific resource.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} resourceSlug Resource slug.
-	 * @param {string} resourceType Resource type.
-	 */
-	*determineResourceDataAvailabilityDate( resourceSlug, resourceType ) {
-		const { select, __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
-
-		// Handle for custom dimensions.
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
-		);
-
-		// Validate if the resourceSlug is a valid resource.
-		switch ( resourceType ) {
-			case RESOURCE_TYPE_AUDIENCE:
-				yield Data.commonActions.await(
-					__experimentalResolveSelect(
-						MODULES_ANALYTICS_4
-					).getAvailableAudiences()
-				);
-
-				if (
-					! select( MODULES_ANALYTICS_4 ).haveAudiences(
-						resourceSlug
-					)
-				) {
-					return;
-				}
-				break;
-
-			case RESOURCE_TYPE_CUSTOM_DIMENSION:
-				if (
-					! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-						resourceSlug
-					)
-				) {
-					return;
-				}
-				break;
-
-			case RESOURCE_TYPE_PROPERTY:
-				if (
-					select( MODULES_ANALYTICS_4 ).getPropertyID() !==
-					resourceSlug
-				) {
-					return;
-				}
-				break;
-
-			default:
-				return;
-		}
-
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getAuthentication()
-		);
-
-		// Return early if user is not authenticated.
-		if ( ! select( CORE_USER ).isAuthenticated() ) {
-			return;
-		}
-
-		const reportArgs = yield Data.commonActions.await(
-			__experimentalResolveSelect(
-				MODULES_ANALYTICS_4
-			).getPartialDataReportOptions( resourceSlug, resourceType )
-		);
-
-		// Return early if reportArgs is not available.
-		if ( ! reportArgs ) {
-			return;
-		}
-
-		const report = yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
-				reportArgs
-			)
-		);
-
-		const hasReportError = !! select(
-			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ reportArgs ] );
-
-		const isDataAvailable =
-			! hasReportError &&
-			report?.rows?.[ 0 ]?.dimensionValues?.[ 0 ]?.value?.length;
-
-		if ( isDataAvailable ) {
-			const dataAvailabilityDate = Number(
-				report.rows[ 0 ].dimensionValues[ 0 ].value
-			);
-
-			yield baseActions.setResourceDataAvailabilityDate(
-				resourceSlug,
-				resourceType,
-				dataAvailabilityDate
-			);
-
-			yield fetchSaveResourceDataAvailabilityDateStore.actions.fetchSaveResourceDataAvailabilityDate(
-				resourceSlug,
-				resourceType,
-				dataAvailabilityDate
-			);
-		}
 	},
 };
 
@@ -336,10 +225,114 @@ const baseResolvers = {
 			resourceAvailabilityDates[ resourceType ][ resourceSlug ] ===
 			undefined
 		) {
-			yield baseActions.determineResourceDataAvailabilityDate(
-				resourceSlug,
-				resourceType
+			// Ensure the settings are loaded.
+			yield Data.commonActions.await(
+				__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 			);
+
+			// Validate if the resourceSlug is a valid resource.
+			switch ( resourceType ) {
+				case RESOURCE_TYPE_AUDIENCE:
+					yield Data.commonActions.await(
+						__experimentalResolveSelect(
+							MODULES_ANALYTICS_4
+						).getAvailableAudiences()
+					);
+
+					if (
+						! select( MODULES_ANALYTICS_4 ).haveAudiences(
+							resourceSlug
+						)
+					) {
+						return;
+					}
+					break;
+
+				case RESOURCE_TYPE_CUSTOM_DIMENSION:
+					if (
+						! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+							resourceSlug
+						)
+					) {
+						return;
+					}
+					break;
+
+				case RESOURCE_TYPE_PROPERTY:
+					if (
+						select( MODULES_ANALYTICS_4 ).getPropertyID() !==
+						resourceSlug
+					) {
+						return;
+					}
+					break;
+
+				default:
+					return;
+			}
+
+			yield Data.commonActions.await(
+				__experimentalResolveSelect( CORE_USER ).getAuthentication()
+			);
+
+			// Return early if user is not authenticated.
+			if ( ! select( CORE_USER ).isAuthenticated() ) {
+				yield baseActions.setResourceDataAvailabilityDate(
+					resourceSlug,
+					resourceType,
+					0
+				);
+				return;
+			}
+
+			const reportArgs = yield Data.commonActions.await(
+				__experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getPartialDataReportOptions( resourceSlug, resourceType )
+			);
+
+			// Return early if reportArgs is not available.
+			if ( ! reportArgs ) {
+				return;
+			}
+
+			const report = yield Data.commonActions.await(
+				__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
+					reportArgs
+				)
+			);
+
+			const hasReportError = !! select(
+				MODULES_ANALYTICS_4
+			).getErrorForSelector( 'getReport', [ reportArgs ] );
+
+			const isDataAvailable =
+				! hasReportError &&
+				report?.rows?.[ 0 ]?.dimensionValues?.[ 0 ]?.value?.length;
+
+			if ( isDataAvailable ) {
+				const dataAvailabilityDate = Number(
+					report.rows[ 0 ].dimensionValues[ 0 ].value
+				);
+
+				yield baseActions.setResourceDataAvailabilityDate(
+					resourceSlug,
+					resourceType,
+					dataAvailabilityDate
+				);
+
+				yield fetchSaveResourceDataAvailabilityDateStore.actions.fetchSaveResourceDataAvailabilityDate(
+					resourceSlug,
+					resourceType,
+					dataAvailabilityDate
+				);
+			} else {
+				yield baseActions.setResourceDataAvailabilityDate(
+					resourceSlug,
+					resourceType,
+					0
+				);
+			}
 		}
 	},
 
@@ -510,6 +503,10 @@ const baseSelectors = {
 
 			const propertyCreateTime =
 				select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+
+			if ( ! propertyCreateTime ) {
+				return undefined;
+			}
 
 			const endDate = select( CORE_USER ).getReferenceDate();
 
