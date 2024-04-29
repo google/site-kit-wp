@@ -39,6 +39,13 @@ class Authorize_ApplicationTest extends TestCase {
 
 		// Check that the expected assets are enqueued.
 		$this->assertTrue( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+
+		ob_start();
+        do_action('admin_footer');
+        $output = ob_get_clean();
+
+        // Check that the custom footer content is rendered.
+        $this->assertStringContainsString('<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output);
 	}
 
 	public function test_register_with_incorrect_success_url() {
@@ -61,6 +68,13 @@ class Authorize_ApplicationTest extends TestCase {
 
 		// Check that the assets aren't enqueued due to incorrect success URL.
 		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+
+		ob_start();
+		do_action( 'admin_footer' );
+		$output = ob_get_clean();
+	
+		// Check that the custom footer content isn't rendered.
+		$this->assertStringNotContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output );
 	}
 
 	public function test_register_with_incorrect_screen() {
@@ -83,6 +97,14 @@ class Authorize_ApplicationTest extends TestCase {
 
 		// Check that expected assets aren't enqueued due to incorrect screen.
 		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+
+		ob_start();
+		do_action( 'admin_footer' );
+		$output = ob_get_clean();
+	
+		// Check that the custom footer content isn't rendered.
+		$this->assertStringNotContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output );
+
 	}
 
 	public function set_global_get_params( $success_url ) {
