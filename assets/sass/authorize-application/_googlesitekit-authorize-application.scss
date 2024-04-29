@@ -20,7 +20,7 @@
 	background-color: $c-authorize-application-background;
 
 	.wrap {
-		margin: 30px 0 0;
+		margin-top: 30px;
 
 		h1 {
 			// This is the Authorize Application screen title.
@@ -67,6 +67,7 @@
 		input {
 			border: 1px solid $c-authorize-application-sys-light-outline;
 			border-radius: $br-xs;
+			color: $c-authorize-application-sys-light-on-surface;
 			font-size: $fs-authorize-application-body-md;
 			line-height: $lh-authorize-application-body-md;
 			margin: 8px 0 0;
@@ -132,7 +133,6 @@
 #wpfooter {
 	color: $c-authorize-application-sys-light-on-surface;
 	font-family: $f-primary;
-	padding: 0 10px;
 
 	@media (min-width: $bp-wpAdminBarTablet) {
 		padding: 0 47px;
