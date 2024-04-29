@@ -21,16 +21,16 @@
  */
 import {
 	createTestRegistry,
-	muteFetch,
+	freezeFetch,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { audiences as audiencesFixture } from './__fixtures__';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { audiences as audiencesFixture } from './__fixtures__';
 
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
@@ -304,10 +304,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			const availableAudiences = [ testAudience1, testAudience2 ];
 
 			it( 'returns undefined when available audiences have not loaded', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
+				freezeFetch( availableAudiences );
 
 				expect(
 					registry
@@ -319,7 +316,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'returns false when available audiences are null or not set', async () => {
-				muteFetch( syncAvailableAudiencesEndpoint );
+				freezeFetch( syncAvailableAudiencesEndpoint );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableAudiences: null,
