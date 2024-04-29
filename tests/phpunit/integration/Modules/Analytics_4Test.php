@@ -1113,6 +1113,7 @@ class Analytics_4Test extends TestCase {
 				'create-audience',
 				'audience-settings',
 				'sync-audiences',
+				'save-resource-data-availability-date',
 			),
 			$this->analytics->get_datapoints()
 		);

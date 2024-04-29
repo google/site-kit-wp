@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules;
 
 use Exception;
+use Google\Service\CloudHealthcare\Feature;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;
@@ -276,7 +277,9 @@ final class Analytics_4 extends Module
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
+		}
 
 		add_filter(
 			'googlesitekit_auth_scopes',
