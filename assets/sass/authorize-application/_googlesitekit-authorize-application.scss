@@ -16,10 +16,172 @@
  * limitations under the License.
  */
 
-.auth-app-card #approve {
-	background-color: $c-deep-blue;
+.authorize-application-php {
+	background-color: $c-authorize-application-background;
+
+	.wrap {
+		margin: 30px 0 0;
+
+		h1 {
+			// This is the Authorize Application screen title.
+			font-size: $fs-authorize-application-headline-sm;
+			line-height: $lh-authorize-application-headline-sm;
+			padding: 0;
+		}
+	}
+
+	.auth-app-card {
+		border: none;
+		margin: 37px 0 0;
+		padding: 0;
+	}
+
+	.title {
+		font-size: $fs-authorize-application-title-lg;
+		font-weight: $fw-medium;
+		line-height: $lh-authorize-application-title-lg;
+	}
+
+	p {
+		font-size: $fs-authorize-application-label-lg;
+		font-weight: $fw-medium;
+		line-height: $lh-authorize-application-label-lg;
+		margin: 19px 0 20px;
+	}
+
+	strong {
+		font-weight: $fw-medium;
+	}
+
+	.form-field {
+		margin: 20px 0 40px;
+		max-width: 512px;
+
+		label {
+			color: $c-authorize-application-sys-light-on-surface;
+			font-size: $fs-authorize-application-label-md;
+			font-weight: $fw-medium;
+			line-height: $lh-authorize-application-label-md;
+		}
+
+		input {
+			border: 1px solid $c-authorize-application-sys-light-outline;
+			border-radius: $br-xs;
+			font-size: $fs-authorize-application-body-md;
+			line-height: $lh-authorize-application-body-md;
+			margin: 8px 0 0;
+			padding: 12px 16px;
+			width: 100%;
+		}
+	}
+
+	.description {
+		color: $c-authorize-application-sys-light-on-surface;
+		font-size: $fs-authorize-application-label-md;
+		line-height: $lh-authorize-application-label-md;
+
+		strong {
+			display: block;
+			margin: 9px 0 0;
+			max-width: 512px;
+		}
+
+		code {
+			background-color: $c-authorize-application-gallery;
+			border-radius: 4px;
+			color: $c-authorize-application-sys-light-on-surface;
+			display: inline-block;
+			font-family: $f-primary;
+			font-size: $fs-authorize-application-label-md;
+			line-height: $lh-authorize-application-label-md;
+			padding: 4px 9px;
+		}
+	}
+
+	.googlesitekit-authorize-application__footer {
+		display: none;
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			bottom: 0;
+			display: block;
+			left: 0;
+			line-height: $lh-authorize-application-headline-sm;
+			margin-left: 36px;
+			padding: 0 47px;
+			position: absolute;
+
+			p {
+				color: $c-authorize-application-sys-light-on-surface;
+				font-family: $f-primary;
+				font-size: $fs-authorize-application-footer-lg;
+				font-weight: $fw-medium;
+			}
+		}
+
+		@media (min-width: $width-desktop + 1 + px) {
+			margin-left: 160px;
+		}
+	}
 }
 
-#footer-thankyou a {
-	color: $c-deep-blue;
+#wpbody-content {
+	padding-bottom: 100px;
+}
+
+#wpcontent,
+#wpfooter {
+	color: $c-authorize-application-sys-light-on-surface;
+	font-family: $f-primary;
+	padding: 0 10px;
+
+	@media (min-width: $bp-wpAdminBarTablet) {
+		padding: 0 47px;
+	}
+}
+
+#wpfooter {
+	bottom: 45px;
+}
+
+#approve,
+#reject {
+	border-radius: $br-lg;
+	font-size: $fs-authorize-application-label-lg;
+	font-weight: $fw-medium;
+	line-height: $lh-authorize-application-label-lg;
+	margin: 0 0 15px;
+	padding: 10px 24px;
+}
+
+#approve {
+	// This is the primary CTA submit button.
+	background-color: $c-authorize-application-sys-light-primary;
+	border: none;
+	color: $c-authorize-application-sys-light-on-primary;
+}
+
+#reject {
+	// This is the secondary CTA reject button.
+	background-color: $c-authorize-application-sys-light-on-primary;
+	border: 1px solid $c-authorize-application-sys-light-outline;
+	color: $c-authorize-application-sys-light-primary;
+}
+
+#description-approve {
+	border-bottom: 1px solid $c-authorize-application-pumice;
+	margin: 0 0 33px;
+	padding: 0 0 31px;
+}
+
+#description-reject {
+	margin: 0 0 8px;
+}
+
+#footer-thankyou {
+	font-size: $fs-authorize-application-label-md;
+	line-height: $lh-authorize-application-label-md;
+
+	a {
+		color: $c-authorize-application-vivid-blue;
+	}
 }
