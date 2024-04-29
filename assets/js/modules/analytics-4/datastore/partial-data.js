@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -96,6 +97,11 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveResourceDataAvailabilityDates( resourceAvailabilityDates ) {
+		invariant(
+			isPlainObject( resourceAvailabilityDates ),
+			'resourceAvailabilityDates must be a plain object.'
+		);
+
 		return {
 			payload: { resourceAvailabilityDates },
 			type: RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES,
