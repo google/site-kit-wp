@@ -109,7 +109,6 @@
 			margin-left: 36px;
 			padding: 0 47px;
 			position: absolute;
-			right: 0;
 
 			p {
 				color: $c-authorize-application-sys-light-on-surface;
@@ -119,10 +118,14 @@
 			}
 		}
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $width-desktop + 1 + px) {
 			margin-left: 160px;
 		}
 	}
+}
+
+#wpbody-content {
+	padding-bottom: 100px;
 }
 
 #wpcontent,
@@ -131,14 +134,13 @@
 	font-family: $f-primary;
 	padding: 0 10px;
 
-	@media (min-width: $width-wpAdminBarTablet + 1 + px) {
+	@media (min-width: $bp-wpAdminBarTablet) {
 		padding: 0 47px;
 	}
 }
 
 #wpfooter {
 	bottom: 45px;
-	z-index: 99;
 }
 
 #approve,
