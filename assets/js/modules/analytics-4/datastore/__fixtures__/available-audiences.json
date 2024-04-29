@@ -2,7 +2,7 @@
     {
         "name": "properties/12345/audiences/1",
         "description": "All users",
-        "displayName": "All Users",
+        "displayName": "All visitors",
         "audienceType": "DEFAULT_AUDIENCE",
         "audienceSlug": "all-users"
     },
@@ -33,6 +33,6 @@
         "description": "Description",
         "displayName": "Test Audience",
         "audienceType": "USER_AUDIENCE",
-        "audienceSlug": "test-users"
+        "audienceSlug": ""
     }
 ]
