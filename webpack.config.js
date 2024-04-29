@@ -22,7 +22,7 @@
 const { createRules } = require( './webpack/common' );
 const adminCssConfig = require( './webpack/adminCss.config' );
 const basicModulesConfig = require( './webpack/basicModules.config' );
-const conversionEventProviders = require( './webpack/conversionEventProviders.config' );
+// const conversionEventProviders = require( './webpack/conversionEventProviders.config' );
 const modulesConfig = require( './webpack/modules.config' );
 const testBundleConfig = require( './webpack/testBundle.config' );
 
@@ -43,7 +43,7 @@ function* webpackConfig( env, argv ) {
 	yield basicModulesConfig( mode );
 
 	// Build conversion event provider files.
-	yield conversionEventProviders( mode );
+	// yield conversionEventProviders( mode );
 
 	// Build the main plugin admin css.
 	yield adminCssConfig( mode );

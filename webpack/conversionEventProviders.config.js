@@ -34,10 +34,10 @@ const {
 } = require( './common' );
 
 module.exports = ( mode ) => ( {
-	entry: {
-		'test-plugin-integration':
-			'./assets/js/event-providers/test-plugin-integration.js',
-	},
+	// entry: {
+	// 	'example-plugin-integration':
+	// 		'./assets/js/event-providers/example-plugin-integration.js',
+	// },
 	externals,
 	output: {
 		filename:
