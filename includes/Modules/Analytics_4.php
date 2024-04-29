@@ -228,7 +228,17 @@ final class Analytics_4 extends Module
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
-					$this->resource_data_availability_date->reset_all_resource_dates();
+
+					$available_audiences = $old_value['availableAudiences'] ?? array();
+
+					$available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$available_audiences
+					);
+
+					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
 				}
 
 				// Reset property specific settings when propertyID changes.

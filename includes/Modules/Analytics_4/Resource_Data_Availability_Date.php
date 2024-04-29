@@ -162,20 +162,25 @@ class Resource_Data_Availability_Date {
 	 * Resets the data availability date for all resources.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param array/null  $available_audience_names Optional. List of available audience resource names. If not provided, it will be fetched from settings.
+	 * @param string/null $property_id Optional. Property ID. If not provided, it will be fetched from settings.
 	 */
-	public function reset_all_resource_dates() {
+	public function reset_all_resource_dates( $available_audience_names = null, $property_id = null ) {
 
 		foreach ( self::CUSTOM_DIMENSION_SLUGS as $custom_dimension ) {
 			$this->reset_resource_date( $custom_dimension, self::RESOURCE_TYPE_CUSTOM_DIMENSION );
 		}
 
-		$available_audiences = $this->get_available_audience_resource_names();
+		$available_audience_names = $available_audience_names ?: $this->get_available_audience_resource_names();
 
-		foreach ( $available_audiences as $audience_slug ) {
-			$this->reset_resource_date( $audience_slug, self::RESOURCE_TYPE_AUDIENCE );
+		foreach ( $available_audience_names as $audience_name ) {
+			$this->reset_resource_date( $audience_name, self::RESOURCE_TYPE_AUDIENCE );
 		}
 
-		$this->reset_resource_date( $this->get_property_id(), self::RESOURCE_TYPE_PROPERTY );
+		$property_id = $property_id ?: $this->get_property_id();
+
+		$this->reset_resource_date( $property_id, self::RESOURCE_TYPE_PROPERTY );
 	}
 
 	/**
