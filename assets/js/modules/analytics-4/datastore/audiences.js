@@ -207,6 +207,10 @@ const baseSelectors = {
 				return undefined;
 			}
 
+			if ( availableAudiences === null ) {
+				return false;
+			}
+
 			return audiencesToCheck.every( ( audienceResourceName ) =>
 				availableAudiences.some(
 					( { name } ) => name === audienceResourceName
