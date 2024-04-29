@@ -97,6 +97,32 @@
 			padding: 4px 9px;
 		}
 	}
+
+	.googlesitekit-authorize-application__footer {
+		display: none;
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			bottom: 0;
+			display: block;
+			left: 0;
+			line-height: $lh-authorize-application-headline-sm;
+			margin-left: 36px;
+			padding: 0 47px;
+			position: absolute;
+			right: 0;
+
+			p {
+				color: $c-authorize-application-sys-light-on-surface;
+				font-family: $f-primary;
+				font-size: $fs-authorize-application-footer-lg;
+				font-weight: $fw-medium;
+			}
+		}
+
+		@media (min-width: $bp-desktop) {
+			margin-left: 160px;
+		}
+	}
 }
 
 #wpcontent,
@@ -108,6 +134,11 @@
 	@media (min-width: $width-wpAdminBarTablet + 1 + px) {
 		padding: 0 47px;
 	}
+}
+
+#wpfooter {
+	bottom: 45px;
+	z-index: 99;
 }
 
 #approve,
