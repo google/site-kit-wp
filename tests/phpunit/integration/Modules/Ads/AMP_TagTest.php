@@ -78,7 +78,8 @@ class AMP_TagTest extends TestCase {
 		$this->ads     = new Ads( $this->get_amp_primary_context(), $this->options );
 		$this->ads->get_settings()->set(
 			array(
-				'conversionID' => static::CONVERSION_ID,
+				'conversionID'    => static::CONVERSION_ID,
+				'paxConversionID' => '',
 			)
 		);
 		remove_all_actions( 'wp_enqueue_scripts' );
