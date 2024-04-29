@@ -390,8 +390,8 @@ const baseSelectors = {
 	isResourcePartialData: createRegistrySelector(
 		( select ) => ( state, resourceSlug, resourceType ) => {
 			invariant(
-				typeof resourceSlug === 'string',
-				'resourceSlug must be a string.'
+				'string' === typeof resourceSlug && resourceSlug.length > 0,
+				'resourceSlug must be a non-empty string.'
 			);
 			invariant(
 				RESOURCE_TYPES.includes( resourceType ),
@@ -427,7 +427,8 @@ const baseSelectors = {
 				offsetDays: DATE_RANGE_OFFSET,
 			} );
 
-			const startDateYYYYMMDD = Number( startDate.replaceAll( '-', '' ) );
+			// TODO: use `replaceAll` instead when we upgrade our Node version.
+			const startDateYYYYMMDD = Number( startDate.replace( /-/g, '' ) );
 
 			return dataAvailabilityDate > startDateYYYYMMDD;
 		}
