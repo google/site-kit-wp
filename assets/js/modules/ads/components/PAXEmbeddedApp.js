@@ -41,9 +41,9 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import CTA from '../../../components/notifications/CTA';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import PreviewBlock from '../../../components/PreviewBlock';
-const { useSelect } = Data;
+import { createPaxServices } from '../pax/services';
+const { useRegistry, useSelect } = Data;
 
 export default function PAXEmbeddedApp( {
 	// eslint-disable-next-line no-unused-vars
@@ -54,35 +54,20 @@ export default function PAXEmbeddedApp( {
 		typeof global?.google?.ads?.integration?.integrator?.launchGoogleAds ===
 			'function'
 	);
+
 	const [ hasLaunchedPAXApp, setHasLaunchedPAXApp ] = useState( false );
 	const [ isLoading, setIsLoading ] = useState( true );
 	const [ launchError, setLaunchError ] = useState( undefined );
 
-	const siteName = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteName()
-	);
-	const siteURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getReferenceSiteURL()
-	);
+	const registry = useRegistry();
+
+	const paxServices = createPaxServices( registry );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
 	);
 
 	const instanceID = useInstanceId( PAXEmbeddedApp, 'PAXEmbeddedApp' );
-
-	const newPromise = async () => {};
-
-	const callbackWithArgs = useCallback( ( name, callback = newPromise() ) => {
-		return async ( ...args ) => {
-			await global.console.debug( `Callback for: ${ name }`, {
-				args,
-				return: callback,
-			} );
-
-			return callback;
-		};
-	}, [] );
 
 	const paxAppRef = useRef();
 
@@ -99,71 +84,37 @@ export default function PAXEmbeddedApp( {
 		};
 	}, [ elementID ] );
 
-	const paxServices = useMemo( () => {
+	const paxServicesWithAuthToken = useMemo( () => {
 		return {
 			authenticationService: {
-				get: callbackWithArgs( 'authenticationService:get', {
-					accessToken:
-						global?._googlesitekitPAXConfig?.authAccess
-							?.oauthTokenAccess,
-					authuser: '0',
-				} ),
-				fix: callbackWithArgs( 'authenticationService:fix', {
-					retryReady: true,
-				} ),
-			},
-			businessService: {
-				getBusinessInfo: callbackWithArgs(
-					'businessService:getBusinessInfo',
-					{
-						businessName: siteName,
-						// Part of the API for PAX.
-						// eslint-disable-next-line sitekit/acronym-case
-						businessUrl: siteURL,
-					}
-				),
-				fixBusinessInfo: callbackWithArgs(
-					'businessService:fixBusinessInfo',
-					{
+				// Marked as async for clarity, despite there being no await calls here.
+				// eslint-disable-next-line require-await
+				get: async () => {
+					return {
+						accessToken:
+							global?._googlesitekitPAXConfig?.authAccess
+								?.oauthTokenAccess,
+						authuser: '0',
+					};
+				},
+				// Marked as async for clarity, despite there being no await calls here.
+				// eslint-disable-next-line require-await
+				fix: async () => {
+					return {
 						retryReady: true,
-					}
-				),
+					};
+				},
 			},
-			conversionTrackingService: {
-				getSupportedConversionLabels: callbackWithArgs(
-					'conversionTrackingService:getSupportedConversionLabels',
-					{
-						conversionLabels: [
-							'purchase',
-							'subscribe',
-							'add_to_cart',
-							'begin_checkout',
-							'book_appointment',
-							'contact',
-							'request_quote',
-							'phone_call_leads',
-							'get_directions',
-							'submit_lead_form',
-							'sign_up',
-						],
-					}
-				),
-			},
-			termsAndConditionsService: {
-				notify: callbackWithArgs(
-					'termsAndConditionsService:notify',
-					{}
-				),
-			},
+			...paxServices,
 		};
-	}, [ callbackWithArgs, siteName, siteURL ] );
+	}, [ paxServices ] );
 
 	const launchPAXApp = useCallback( async () => {
 		try {
 			paxAppRef.current =
 				await global.google.ads.integration.integrator.launchGoogleAds(
 					paxConfig,
-					paxServices
+					paxServicesWithAuthToken
 				);
 
 			onLaunch?.();
@@ -176,20 +127,23 @@ export default function PAXEmbeddedApp( {
 		}
 
 		setIsLoading( false );
-	}, [ paxConfig, paxServices, onLaunch ] );
+	}, [ paxConfig, paxServicesWithAuthToken, onLaunch ] );
 
-	useInterval( () => {
-		if ( ! launchGoogleAdsAvailable || hasLaunchedPAXApp ) {
-			return;
-		}
+	useInterval(
+		() => {
+			if ( launchGoogleAdsAvailable || hasLaunchedPAXApp ) {
+				return;
+			}
 
-		if (
-			typeof global?.google?.ads?.integration?.integrator
-				?.launchGoogleAds === 'function'
-		) {
-			setLaunchGoogleAdsAvailable( true );
-		}
-	}, 50 );
+			if (
+				typeof global?.google?.ads?.integration?.integrator
+					?.launchGoogleAds === 'function'
+			) {
+				setLaunchGoogleAdsAvailable( true );
+			}
+		},
+		hasLaunchedPAXApp ? null : 50
+	);
 
 	useEffect( () => {
 		if ( launchGoogleAdsAvailable && ! hasLaunchedPAXApp ) {
