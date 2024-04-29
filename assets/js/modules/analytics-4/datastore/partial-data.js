@@ -508,7 +508,7 @@ const baseSelectors = {
 						),
 						endDate,
 						dimensions: [ 'date', 'audienceResourceName' ],
-						dimensionFilter: {
+						dimensionFilters: {
 							audienceResourceName: resourceSlug,
 						},
 						metrics: [ 'totalUsers' ],
