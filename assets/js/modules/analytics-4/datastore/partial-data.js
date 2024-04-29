@@ -250,6 +250,13 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES: {
 			const { resourceAvailabilityDates } = payload;
 
+			// Replace empty array value with empty object in resourceAvailabilityDates object.
+			Object.keys( resourceAvailabilityDates ).forEach( ( key ) => {
+				if ( Array.isArray( resourceAvailabilityDates[ key ] ) ) {
+					resourceAvailabilityDates[ key ] = {};
+				}
+			} );
+
 			state.resourceAvailabilityDates = resourceAvailabilityDates;
 			break;
 		}

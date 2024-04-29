@@ -117,7 +117,7 @@ class Resource_Data_Availability_Date {
 		$available_audiences = $this->get_available_audience_resource_names();
 
 		return array_map(
-			fn( $data_availability_dates ) => (object) array_filter( $data_availability_dates ),
+			fn( $data_availability_dates ) => array_filter( $data_availability_dates ),
 			array(
 				self::RESOURCE_TYPE_AUDIENCE         => array_reduce(
 					$available_audiences,
