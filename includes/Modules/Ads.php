@@ -224,7 +224,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function is_connected() {
 		$options = $this->get_settings()->get();
 
-		return parent::is_connected() && ! empty( $options['conversionID'] );
+		return parent::is_connected() && ( ! empty( $options['conversionID'] ) || ! empty( $options['paxConversionID'] ) || ! empty( $options['extCustomerID'] ) );
 	}
 
 	/**
