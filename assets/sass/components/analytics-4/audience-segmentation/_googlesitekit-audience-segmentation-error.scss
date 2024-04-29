@@ -64,7 +64,7 @@
 			justify-content: flex-start;
 			margin: $grid-gap-phone $grid-gap-phone / 2 0;
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $width-desktop + 1 + px) {
 				justify-content: space-evenly;
 				margin: 0;
 			}
