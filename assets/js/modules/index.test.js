@@ -82,8 +82,7 @@ describe( 'all modules', () => {
 				const filteredComponentNames = componentNames.filter(
 					( component ) =>
 						component !== 'custom-dimensions-report-options' &&
-						component !== 'AudienceSegmentation' &&
-						component !== 'audience-segmentation'
+						component !== 'AudienceSegmentation'
 				);
 
 				expect( indexExportNames ).toEqual( filteredComponentNames );
