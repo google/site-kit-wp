@@ -19,13 +19,17 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	untilResolved,
+} from '../../../../../tests/js/utils';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
 	MODULES_ANALYTICS_4,
 } from './constants';
 import { audiences as audiencesFixture } from './__fixtures__';
+import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
@@ -153,6 +157,67 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 					},
 				} );
+			} );
+		} );
+
+		describe( 'getAvailableAudiences', () => {
+			const availableAudiences = [
+				{
+					name: 'properties/123456789/audiences/0987654321',
+					displayName: 'All Users',
+					description: 'All visitors',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'all-users',
+				},
+			];
+
+			it( 'Should call resolver when audiences are not null', () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( audiences ).toEqual( availableAudiences );
+			} );
+
+			it( 'Should call resolver when audiences are null', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				// Simulate a scenario where getAvailableAudiences is null.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( null );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toBeNull();
+
+				// Wait until the resolver has finished fetching the audiences.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableAudiences();
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
+				expect( audiences ).toEqual( availableAudiences );
 			} );
 		} );
 
