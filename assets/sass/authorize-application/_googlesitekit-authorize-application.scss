@@ -20,7 +20,7 @@
 	background-color: $c-authorize-application-background;
 
 	.wrap {
-		margin-top: 30px;
+		margin: 30px 0 0;
 
 		h1 {
 			// This is the Authorize Application screen title.
@@ -129,6 +129,13 @@
 	padding-bottom: 100px;
 }
 
+// We need this specific rule in order to take precedence over the default styling:
+@media (max-width: $width-wpAdminBarTablet - 1 + px) {
+	.auto-fold #wpcontent {
+		padding: 0 26px;
+	}
+}
+
 #wpcontent,
 #wpfooter {
 	color: $c-authorize-application-sys-light-on-surface;
@@ -141,6 +148,7 @@
 
 #wpfooter {
 	bottom: 45px;
+	padding: 0 26px;
 }
 
 #approve,
