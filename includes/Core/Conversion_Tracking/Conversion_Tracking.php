@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Providers\OptinMonster;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use LogicException;
 
 /**
