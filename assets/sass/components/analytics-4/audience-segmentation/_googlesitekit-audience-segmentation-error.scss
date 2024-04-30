@@ -23,7 +23,7 @@
 		.googlesitekit-audience-segmentation-error__widget-primary-cell {
 			padding: 20px;
 
-			@media (min-width: $bp-nonMobile) {
+			@media (min-width: $bp-desktop) {
 				padding: 20px 36px;
 			}
 		}
@@ -37,8 +37,11 @@
 			margin: 0 0 14px;
 
 			@media (min-width: $bp-nonMobile) {
-				margin: 14px 0;
 				place-content: start;
+			}
+
+			@media (min-width: $bp-desktop) {
+				margin: 14px 0;
 			}
 		}
 
