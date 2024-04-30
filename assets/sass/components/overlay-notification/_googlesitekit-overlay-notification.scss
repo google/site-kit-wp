@@ -19,6 +19,8 @@
 .googlesitekit-overlay-notification {
 	background-color: $c-white;
 	border-radius: $br-sm;
+	display: flex;
+	flex-direction: column;
 	margin: $grid-gap-phone;
 
 	/**
