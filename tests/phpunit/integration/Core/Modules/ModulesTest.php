@@ -53,6 +53,9 @@ class ModulesTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @ignore Needs rewriting.
+	 */
 	public function test_get_available_modules__missing_dependency() {
 		// TODO: As Site Kit doesn't have any dependent modules at this moment,
 		// update this test case so that a dependency relationship can be

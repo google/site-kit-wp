@@ -26,36 +26,12 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { validateAudience } from '../utils/validation';
 
-const fetchGetAudiencesStore = createFetchStore( {
-	baseName: 'getAudiences',
-	controlCallback() {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'audiences',
-			{},
-			{
-				useCache: false,
-			}
-		);
-	},
-	reducerCallback( state, audiencesResponse ) {
-		return { ...state, audiences: audiencesResponse.audiences };
-	},
-} );
-
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
 		API.set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
-	reducerCallback( state, audience ) {
-		return {
-			...state,
-			audiences: [ ...( state.audiences || [] ), audience ],
-		};
-	},
 	argsToParams: ( audience ) => ( {
 		audience,
 	} ),
@@ -78,10 +54,6 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 		};
 	},
 } );
-
-const baseInitialState = {
-	audiences: undefined,
-};
 
 const baseActions = {
 	/**
@@ -133,8 +105,6 @@ const baseActions = {
 	},
 };
 
-const baseControls = {};
-
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
 		default: {
@@ -144,42 +114,32 @@ const baseReducer = ( state, { type } ) => {
 };
 
 const baseResolvers = {
-	*getAudiences() {
+	*getAvailableAudiences() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const audiences = registry.select( MODULES_ANALYTICS_4 ).getAudiences();
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
 
-		if ( audiences === undefined ) {
-			yield fetchGetAudiencesStore.actions.fetchGetAudiences();
+		// If available audiences not present, sync the audience in state.
+		if ( audiences === null ) {
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
-	},
-};
 
-const baseSelectors = {
-	/**
-	 * Gets the property audiences.
-	 *
-	 * @since 1.120.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} An array with audiences objects; `undefined` if not loaded.
-	 */
-	getAudiences( state ) {
-		return state.audiences;
+		return registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	},
 };
 
 const store = Data.combineStores(
-	fetchGetAudiencesStore,
 	fetchCreateAudienceStore,
 	fetchSyncAvailableAudiencesStore,
 	{
-		initialState: baseInitialState,
+		initialState: {},
 		actions: baseActions,
-		controls: baseControls,
+		controls: {},
 		reducer: baseReducer,
 		resolvers: baseResolvers,
-		selectors: baseSelectors,
+		selectors: {},
 	}
 );
 

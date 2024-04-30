@@ -36,18 +36,18 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 
 const { useSelect } = Data;
 
-export default function AudienceTooltipMessage( { audienceName } ) {
+export default function AudienceTooltipMessage( {
+	audienceSlug,
+	audienceName,
+} ) {
 	const documentationURL = useSelect( ( select ) =>
 		// TODO: The link must be updated here to the correct support URL once written.
 		select( CORE_SITE ).getDocumentationLinkURL( 'audience-segmentation' )
 	);
 
-	// TODO: audienceName is used temporarily here, however, the user will be able to rename
-	// the audience which will break this function. After #8486 and #8487 are resolved, this
-	// function should be updated to use the audienceSlug instead.
 	const tooltipMessage = useMemo( () => {
-		switch ( audienceName ) {
-			case 'New visitors':
+		switch ( audienceSlug ) {
+			case 'new-visitors':
 				return createInterpolateElement(
 					sprintf(
 						/* translators: %s: is the audience name */
@@ -68,7 +68,7 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 						),
 					}
 				);
-			case 'Returning visitors':
+			case 'returning-visitors':
 				return createInterpolateElement(
 					sprintf(
 						/* translators: %s: is the audience name */
@@ -111,11 +111,11 @@ export default function AudienceTooltipMessage( { audienceName } ) {
 					}
 				);
 		}
-	}, [ audienceName, documentationURL ] );
+	}, [ audienceSlug, audienceName, documentationURL ] );
 
 	return tooltipMessage;
 }
 
 AudienceTooltipMessage.propTypes = {
-	audienceName: PropTypes.string.isRequired,
+	audienceSlug: PropTypes.string.isRequired,
 };
