@@ -130,7 +130,9 @@ const baseResolvers = {
 
 		return registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	},
+};
 
+const baseSelectors = {
 	/**
 	 * Checks whether the provided audiences are available.
 	 *
@@ -175,7 +177,7 @@ const store = Data.combineStores(
 		controls: {},
 		reducer: baseReducer,
 		resolvers: baseResolvers,
-		selectors: {},
+		selectors: baseSelectors,
 	}
 );
 
