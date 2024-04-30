@@ -1109,7 +1109,6 @@ class Analytics_4Test extends TestCase {
 				'create-custom-dimension',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
-				'audiences',
 				'create-audience',
 				'audience-settings',
 				'sync-audiences',
@@ -3369,52 +3368,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'ca-pub-12345', $adsense_link->getAdClientCode() );
 	}
 
-	/**
-	 * @dataProvider data_access_token
-	 *
-	 * When an access token is provided, the user will be authenticated for the test.
-	 *
-	 * @param string $access_token Access token, or empty string if none.
-	 */
-	public function test_get_audiences( $access_token ) {
-		$this->enable_feature( 'audienceSegmentation' );
-
-		$this->setup_user_authentication( $access_token );
-
-		$property_id = '12345';
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => $property_id,
-			)
-		);
-
-		// Grant scopes so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		$this->fake_handler_and_invoke_register_method( $property_id );
-
-		// Fetch conversion events.
-		$data = $this->analytics->get_data(
-			'audiences'
-		);
-
-		$this->assertNotWPError( $data );
-
-		// Verify the audiences are returned by checking an audience name.
-		$this->assertEquals( "properties/$property_id/audiences/1", $data[0]['name'] );
-
-		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
-
-		$request_url = $this->request_handler_calls[0]['url'];
-
-		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1alpha/properties/$property_id/audiences", $request_url['path'] );
-	}
-
 	public function test_create_audience__required_scope() {
 		$this->enable_feature( 'audienceSegmentation' );
 
@@ -3587,7 +3540,7 @@ class Analytics_4Test extends TestCase {
 			array(
 				array(
 					'name'         => 'properties/12345/audiences/1',
-					'displayName'  => 'All Users',
+					'displayName'  => 'All visitors',
 					'description'  => 'All users',
 					'audienceType' => 'DEFAULT_AUDIENCE',
 					'audienceSlug' => 'all-users',
