@@ -21,15 +21,16 @@
 		border: 2px solid $c-utility-error;
 
 		.googlesitekit-audience-segmentation-error__widget-primary-cell {
-			margin-bottom: $grid-gap-desktop / 2;
 			padding: 20px 36px;
 		}
 
 		.googlesitekit-publisher-win__title {
 			display: grid;
+			font-family: $f-primary;
 			font-size: $fs-title-lg;
 			font-weight: $fw-medium;
 			line-height: $lh-title-lg;
+			margin: 14px 0;
 
 			@media (min-width: $bp-nonMobile) {
 				place-content: start;
@@ -41,25 +42,31 @@
 			display: flex;
 			flex-direction: column-reverse;
 
+			@media (min-width: $bp-desktop) {
+				padding-bottom: $grid-gap-phone - 6px;
+			}
+
+			.mdc-button {
+				font-weight: $fw-medium;
+				padding: 6px $grid-gap-phone;
+			}
+
 			.googlesitekit-error-retry-text {
 				color: $c-surfaces-on-surface;
 				flex: 1;
 				letter-spacing: $ls-s;
-				margin: -18px 0 0;
+				margin: -14px 0 0;
 			}
 		}
 
 		.googlesitekit-widget-audience-segmentation-error__svg-wrapper {
-			bottom: -20px;
 			display: flex;
 			justify-content: flex-start;
-			margin-bottom: $grid-gap-phone / 2;
-			position: relative;
+			margin: $grid-gap-phone $grid-gap-phone / 2 0;
 
-			@media (min-width: $bp-desktop) {
-				bottom: -10px;
+			@media (min-width: $width-desktop + 1 + px) {
 				justify-content: space-evenly;
-				margin-bottom: 0;
+				margin: 0;
 			}
 		}
 	}
