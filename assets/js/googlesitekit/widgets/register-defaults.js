@@ -39,6 +39,7 @@ import {
 	KeyMetricsSetupCTAWidget,
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
+import ConnectAnalyticsCTATile from '../../components/AudienceSegmentation/ConnectAnalyticsCTATile';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
@@ -68,6 +69,7 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_ENTITY_DASHBOARD_CONTENT,
 		CONTEXT_ENTITY_DASHBOARD_SPEED,
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} = ADDITIONAL_WIDGET_CONTEXTS;
 
 	const {
@@ -82,6 +84,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 		AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 		AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} = ADDITIONAL_WIDGET_AREAS;
 
 	/*
@@ -136,6 +139,21 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 		},
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		{
+			Component: ConnectAnalyticsCTATile,
+			title: __( 'Visitor Groups', 'google-site-kit' ),
+			subtitle: __(
+				'Understand how different visitor groups interact with your site',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 2,
+		},
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION
 	);
 
 	widgetsAPI.registerWidgetArea(

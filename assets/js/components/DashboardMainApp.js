@@ -37,6 +37,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 } from '../googlesitekit/widgets/default-contexts';
 import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
@@ -57,6 +58,7 @@ import {
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
+	ANCHOR_ID_AUDIENCE,
 } from '../googlesitekit/constants';
 import {
 	CORE_USER,
@@ -269,6 +271,14 @@ export default function DashboardMainApp() {
 				className={ classnames( {
 					'googlesitekit-widget-context--last':
 						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
+				} ) }
+			/>
+			<WidgetContextRenderer
+				id={ ANCHOR_ID_AUDIENCE }
+				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION }
+				className={ classnames( {
+					'googlesitekit-widget-context--last':
+						lastWidgetAnchor === ANCHOR_ID_AUDIENCE,
 				} ) }
 			/>
 			<WidgetContextRenderer

@@ -52,6 +52,7 @@ import {
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 } from '../../googlesitekit/widgets/default-areas';
 import {
 	CORE_USER,
@@ -81,6 +82,8 @@ import {
 	DashboardOverallPageMetricsWidgetGA4,
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
+import ConnectAnalyticsCTATile from '../../components/AudienceSegmentation/ConnectAnalyticsCTATile';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -429,5 +432,25 @@ export const registerWidgets = ( widgets ) => {
 				),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudienceSegmentation',
+		{
+			Component: ConnectAnalyticsCTATile,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				return (
+					select(
+						MODULES_ANALYTICS_4
+					).isAudienceSegmentationWidgetHidden() &&
+					isFeatureEnabled( 'audienceSegmentation' )
+				);
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
 	);
 };

@@ -35,6 +35,8 @@ export const AREA_ENTITY_DASHBOARD_SPEED_PRIMARY =
 	'entityDashboardSpeedPrimary';
 export const AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY =
 	'entityDashboardMonetizationPrimary';
+export const AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION =
+	'mainDashboardTrafficAudienceSegmentation';
 
 export default {
 	// Main dashboard

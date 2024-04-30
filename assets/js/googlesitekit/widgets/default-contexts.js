@@ -28,6 +28,8 @@ export const CONTEXT_ENTITY_DASHBOARD_CONTENT = 'entityDashboardContent';
 export const CONTEXT_ENTITY_DASHBOARD_SPEED = 'entityDashboardSpeed';
 export const CONTEXT_ENTITY_DASHBOARD_MONETIZATION =
 	'entityDashboardMonetization';
+export const CONTEXT_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION =
+	'mainDashboardTrafficAudienceSegmentation';
 
 export default {
 	// Main dashboard
@@ -41,4 +43,5 @@ export default {
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 };
