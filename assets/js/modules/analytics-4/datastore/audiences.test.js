@@ -171,7 +171,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				},
 			];
 
-			it( 'should call resolver when audiences are not null', () => {
+			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
@@ -189,7 +189,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( audiences ).toEqual( availableAudiences );
 			} );
 
-			it( 'should call resolver when audiences are null', async () => {
+			it( 'should sync cached audiences when the availableAudiences setting is null', async () => {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
