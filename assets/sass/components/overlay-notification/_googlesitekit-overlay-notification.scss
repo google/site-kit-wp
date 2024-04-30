@@ -26,7 +26,8 @@
 	/**
 	 * TODO: Remove fallback `right` inset and html[dir="rtl"] specific
 	 * overrides when `postcss-preset-env` is configured to not polyfill
-	 * `logical-properties-and-values`.
+	 * `logical-properties-and-values`, so the `inset-inline-end` property
+	 * can be used directly without the need for the workaround.
 	 * @see https://github.com/google/site-kit-wp/issues/8414
 	 */
 	@media (min-width: $bp-tablet) {
