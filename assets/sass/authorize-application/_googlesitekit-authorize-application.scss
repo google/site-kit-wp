@@ -67,6 +67,7 @@
 		input {
 			border: 1px solid $c-authorize-application-sys-light-outline;
 			border-radius: $br-xs;
+			color: $c-authorize-application-sys-light-on-surface;
 			font-size: $fs-authorize-application-body-md;
 			line-height: $lh-authorize-application-body-md;
 			margin: 8px 0 0;
@@ -128,11 +129,17 @@
 	padding-bottom: 100px;
 }
 
+// We need this specific rule in order to take precedence over the default styling:
+@media (max-width: $width-wpAdminBarTablet - 1 + px) {
+	.auto-fold #wpcontent {
+		padding: 0 26px;
+	}
+}
+
 #wpcontent,
 #wpfooter {
 	color: $c-authorize-application-sys-light-on-surface;
 	font-family: $f-primary;
-	padding: 0 10px;
 
 	@media (min-width: $bp-wpAdminBarTablet) {
 		padding: 0 47px;
@@ -141,6 +148,7 @@
 
 #wpfooter {
 	bottom: 45px;
+	padding: 0 26px;
 }
 
 #approve,
