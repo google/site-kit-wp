@@ -164,8 +164,8 @@ describe( 'modules/analytics-4 audiences', () => {
 			const availableAudiences = [
 				{
 					name: 'properties/123456789/audiences/0987654321',
-					displayName: 'All Users',
-					description: 'All visitors',
+					displayName: 'All visitors',
+					description: 'All users',
 					audienceType: 'DEFAULT_AUDIENCE',
 					audienceSlug: 'all-users',
 				},
@@ -225,7 +225,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			const availableAudiences = [
 				{
 					name: 'properties/123456789/audiences/0987654321',
-					displayName: 'All Users',
+					displayName: 'All visitors',
 					description: 'All users',
 					audienceType: 'DEFAULT_AUDIENCE',
 					audienceSlug: 'all-users',
