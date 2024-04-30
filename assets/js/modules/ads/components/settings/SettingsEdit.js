@@ -27,9 +27,12 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import SettingsForm from './SettingsForm';
 import SettingsView from './SettingsView';
 import AdBlockerWarning from '../common/AdBlockerWarning';
+import { useFeature } from './../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
+	const paxEnabled = useFeature( 'adsPax' );
+
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADS ).isDoingSubmitChanges()
 	);
@@ -53,7 +56,7 @@ export default function SettingsEdit() {
 	let viewComponent;
 	if ( isAdBlockerActive ) {
 		viewComponent = <AdBlockerWarning />;
-	} else if ( paxConversionID || extCustomerID ) {
+	} else if ( paxEnabled && ( paxConversionID || extCustomerID ) ) {
 		viewComponent = <SettingsView />;
 	} else if ( isDoingSubmitChanges || hasAdsAccess === undefined ) {
 		viewComponent = <ProgressBar />;
