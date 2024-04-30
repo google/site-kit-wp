@@ -21,7 +21,11 @@
 		border: 2px solid $c-utility-error;
 
 		.googlesitekit-audience-segmentation-error__widget-primary-cell {
-			padding: 20px 36px;
+			padding: 20px;
+
+			@media (min-width: $bp-desktop) {
+				padding: 20px 36px;
+			}
 		}
 
 		.googlesitekit-publisher-win__title {
@@ -30,10 +34,14 @@
 			font-size: $fs-title-lg;
 			font-weight: $fw-medium;
 			line-height: $lh-title-lg;
-			margin: 14px 0;
+			margin: 0 0 14px;
 
 			@media (min-width: $bp-nonMobile) {
 				place-content: start;
+			}
+
+			@media (min-width: $bp-desktop) {
+				margin: 14px 0;
 			}
 		}
 
