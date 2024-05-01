@@ -33,6 +33,7 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '../../googlesitekit/datastore/user/constants';
+import SetupMainPAX from './components/setup/SetupMainPAX';
 
 export { registerStore } from './datastore';
 
@@ -42,7 +43,9 @@ export const registerModule = ( modules ) => {
 			storeName: MODULES_ADS,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
+			SetupComponent: isFeatureEnabled( 'adsPax' )
+				? SetupMainPAX
+				: SetupMain,
 			Icon: AdsIcon,
 			features: [
 				__(
