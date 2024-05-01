@@ -217,6 +217,7 @@ final class Plugin {
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
 				( new Core\Consent_Mode\Consent_Mode( $this->context, $options ) )->register();
 				( new Core\Tags\GTag() )->register();
+				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
