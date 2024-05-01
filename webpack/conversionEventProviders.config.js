@@ -67,7 +67,7 @@ module.exports = ( mode ) => ( {
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Conversion Event Provider Modules',
+			name: 'Conversion Providers',
 			color: '#34dbeb',
 		} ),
 		new ManifestPlugin( {
