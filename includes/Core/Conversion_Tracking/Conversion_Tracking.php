@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use LogicException;
 
 /**
@@ -35,7 +36,9 @@ class Conversion_Tracking {
 	 * @since n.e.x.t
 	 * @var array
 	 */
-	public static $providers = array();
+	public static $providers = array(
+		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG => OptinMonster::class,
+	);
 
 	/**
 	 * Constructor.
