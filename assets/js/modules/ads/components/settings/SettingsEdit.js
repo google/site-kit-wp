@@ -22,7 +22,6 @@
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import SettingsForm from './SettingsForm';
 import SettingsView from './SettingsView';
@@ -35,10 +34,6 @@ export default function SettingsEdit() {
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADS ).isDoingSubmitChanges()
-	);
-
-	const hasAdsAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'ads' )
 	);
 
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -58,10 +53,10 @@ export default function SettingsEdit() {
 		viewComponent = <AdBlockerWarning />;
 	} else if ( paxEnabled && ( paxConversionID || extCustomerID ) ) {
 		viewComponent = <SettingsView />;
-	} else if ( isDoingSubmitChanges || hasAdsAccess === undefined ) {
+	} else if ( isDoingSubmitChanges ) {
 		viewComponent = <ProgressBar />;
 	} else {
-		viewComponent = <SettingsForm hasModuleAccess={ hasAdsAccess } />;
+		viewComponent = <SettingsForm />;
 	}
 
 	return (
