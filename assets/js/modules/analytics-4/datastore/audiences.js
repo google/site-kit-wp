@@ -93,7 +93,7 @@ const baseActions = {
 	/**
 	 * Syncs available audiences from the Analytics service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */

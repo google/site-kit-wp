@@ -20,7 +20,7 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 	/**
 	 * Gets the event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -33,7 +33,7 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 	/**
 	 * Registers the script for the provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 */
 	public function register_script() {
 		$base_url = $this->context->url( 'dist/assets/' );
