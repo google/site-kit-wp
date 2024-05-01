@@ -52,65 +52,43 @@ export default function SettingsView() {
 		select( CORE_USER ).isAdBlockerActive()
 	);
 
+	const conversionIDValue =
+		paxEnabled && paxConversionID ? paxConversionID : conversionID;
+
+	const isPaxView = paxEnabled && ( paxConversionID || extCustomerID );
+
 	return (
 		<Fragment>
 			<AdBlockerWarning />
-			{ ! isAdBlockerActive &&
-				( ( ! paxConversionID && ! extCustomerID ) ||
-					! paxEnabled ) && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __(
-								'Conversion Tracking ID',
-								'google-site-kit'
-							) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ conversionID ? (
-								<DisplaySetting value={ conversionID } />
-							) : (
-								__( 'None', 'google-site-kit' )
-							) }
-						</p>
-					</div>
-				) }
+			{ ! isAdBlockerActive && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ conversionIDValue ? (
+							<DisplaySetting value={ conversionIDValue } />
+						) : (
+							__( 'None', 'google-site-kit' )
+						) }
+					</p>
+				</div>
+			) }
 
-			{ ! isAdBlockerActive &&
-				paxEnabled &&
-				( paxConversionID || extCustomerID ) && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __(
-								'Conversion Tracking ID',
-								'google-site-kit'
-							) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ paxConversionID ? (
-								<DisplaySetting value={ paxConversionID } />
-							) : (
-								__( 'None', 'google-site-kit' )
-							) }
-						</p>
-					</div>
-				) }
-
-			{ ! isAdBlockerActive &&
-				paxEnabled &&
-				( paxConversionID || extCustomerID ) && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Customer ID', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ extCustomerID ? (
-								<DisplaySetting value={ extCustomerID } />
-							) : (
-								__( 'None', 'google-site-kit' )
-							) }
-						</p>
-					</div>
-				) }
+			{ ! isAdBlockerActive && isPaxView && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Customer ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ extCustomerID ? (
+							<DisplaySetting value={ extCustomerID } />
+						) : (
+							__( 'None', 'google-site-kit' )
+						) }
+					</p>
+				</div>
+			) }
 		</Fragment>
 	);
 }
