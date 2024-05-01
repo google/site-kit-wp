@@ -1,0 +1,32 @@
+<svg width="296" height="163" viewBox="0 0 296 163" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_100_3563)">
+<path d="M0 16C0 7.16344 7.16344 0 16 0H280C288.837 0 296 7.16344 296 16V163H0V16Z" fill="#B8E6CA"/>
+<g filter="url(#filter0_d_100_3563)">
+<rect x="24" y="23" width="248" height="174" rx="11" fill="white"/>
+<rect x="48" y="96" width="116" height="14" rx="7" fill="#9CEBEB"/>
+<rect x="48" y="124" width="141" height="14" rx="7" fill="#9CEBEB"/>
+<rect x="48" y="153" width="97" height="14" rx="7" fill="#9CEBEB"/>
+<path d="M222 103C222 99.134 225.134 96 229 96H241C244.866 96 248 99.134 248 103C248 106.866 244.866 110 241 110H229C225.134 110 222 106.866 222 103Z" fill="#EBEEF0"/>
+<path d="M222 131C222 127.134 225.134 124 229 124H241C244.866 124 248 127.134 248 131C248 134.866 244.866 138 241 138H229C225.134 138 222 134.866 222 131Z" fill="#EBEEF0"/>
+<path d="M222 159C222 155.134 225.134 152 229 152H241C244.866 152 248 155.134 248 159C248 162.866 244.866 166 241 166H229C225.134 166 222 162.866 222 159Z" fill="#EBEEF0"/>
+<rect x="48" y="44" width="36" height="9" rx="4.5" fill="#EBEEF0"/>
+<rect x="46.6719" y="162.656" width="55.7344" height="9.51562" rx="4.75781" fill="#EBEEF0"/>
+<path d="M272 72L24 72" stroke="#EBEEF0" stroke-width="2"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_100_3563" x="8" y="11" width="280" height="206" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="8"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_100_3563"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_100_3563" result="shape"/>
+</filter>
+<clipPath id="clip0_100_3563">
+<path d="M0 16C0 7.16344 7.16344 0 16 0H280C288.837 0 296 7.16344 296 16V163H0V16Z" fill="white"/>
+</clipPath>
+</defs>
+</svg>

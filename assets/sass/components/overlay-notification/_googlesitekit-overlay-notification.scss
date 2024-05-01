@@ -19,41 +19,95 @@
 .googlesitekit-overlay-notification {
 	background-color: $c-white;
 	border-radius: $br-sm;
-	bottom: 0;
-	box-shadow: 0 8px $grid-gap-desktop 0 rgba(0, 0, 0, 0.25);
-	max-width: 70vw;
-	position: fixed;
-	right: 0;
-	z-index: $z-index-sk-overlay-notification;
+	display: flex;
+	flex-direction: column;
+	margin: $grid-gap-phone;
 
+	/**
+	 * TODO: Remove fallback `right` inset and html[dir="rtl"] specific
+	 * overrides when `postcss-preset-env` is configured to not polyfill
+	 * `logical-properties-and-values`, so the `inset-inline-end` property
+	 * can be used directly without the need for the workaround.
+	 * @see https://github.com/google/site-kit-wp/issues/8414
+	 */
 	@media (min-width: $bp-tablet) {
-		bottom: 36px;
+		bottom: 32px;
+		box-shadow: 0 8px $grid-gap-desktop 0 rgba(0, 0, 0, 0.25);
+		inset-inline-end: 32px;
+		margin: 0;
 		max-width: 296px;
-		right: 36px;
+		position: fixed;
+		right: 32px;
+		z-index: $z-index-sk-overlay-notification;
+
+		html[dir="rtl"] & {
+			right: unset;
+		}
+	}
+
+	@media (min-width: $bp-desktop) {
+		bottom: 22px;
+		inset-inline-end: 42px;
+		right: 42px;
+
+		html[dir="rtl"] & {
+			right: unset;
+		}
 	}
 
 	.googlesitekit-overlay-notification__body {
-		padding: $grid-gap-desktop;
-		padding-bottom: 0;
+		color: $c-surfaces-on-surface;
+		padding: $grid-gap-phone;
 
 		h3 {
-			color: $c-neutral-n-500;
-			margin: 0 0 4px;
+			font-size: $fs-title-md;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xxs;
+			line-height: $lh-title-md;
+			margin: 0 0 10px;
 		}
 
 		p {
-			font-weight: $fw-medium;
-			letter-spacing: 0;
-			margin: 0 0 $grid-gap-desktop;
+			font-size: $fs-body-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin: 0;
+		}
+
+		@media (min-width: $bp-tablet) {
+			padding: $grid-gap-desktop;
+
+			h3 {
+				font-size: $fs-headline-sm;
+				font-weight: $fw-normal;
+				letter-spacing: unset;
+				line-height: $lh-headline-sm;
+				margin: 0 0 5px;
+			}
+
+			p {
+				font-size: $fs-body-md;
+				font-weight: $fw-normal;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+			}
 		}
 	}
 
 	.googlesitekit-overlay-notification__actions {
 		align-items: center;
 		display: flex;
+		flex-direction: row-reverse;
 		gap: 8px;
 		justify-content: flex-end;
-		padding: $grid-gap-desktop;
+		padding: $grid-gap-phone;
 		padding-top: 0;
+
+		@media (min-width: $bp-tablet) {
+			flex-direction: row;
+			padding: $grid-gap-desktop;
+			padding-top: 0;
+		}
 	}
 }

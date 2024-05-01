@@ -47,6 +47,9 @@ import { numFmt } from '../../../../../../util';
  */
 import { __, sprintf } from '@wordpress/i18n';
 
+// TODO: as part of #8484 the report props should be updated to expect
+// the full report rows for the current tile to reduce data manipulation
+// in AudienceTiles.
 export default function AudienceTile( {
 	title,
 	infoTooltip,
@@ -71,7 +74,10 @@ export default function AudienceTile( {
 							<div className="googlesitekit-audience-segmentation-tile__header-title">
 								{ title }
 								{ infoTooltip && (
-									<InfoTooltip title={ infoTooltip } />
+									<InfoTooltip
+										title={ infoTooltip }
+										tooltipClassName="googlesitekit-info-tooltip__content--audience"
+									/>
 								) }
 							</div>
 						</div>
@@ -80,7 +86,7 @@ export default function AudienceTile( {
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconVisitors }
 						title={ __( 'Visitors', 'google-site-kit' ) }
-						metricValue={ visitors.metricValue }
+						metricValue={ visitors.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ visitors.previousValue }
@@ -92,7 +98,7 @@ export default function AudienceTile( {
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconVisitsPerVisitor }
 						title={ __( 'Visits per visitor', 'google-site-kit' ) }
-						metricValue={ visitsPerVisitor.metricValue }
+						metricValue={ visitsPerVisitor.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ visitsPerVisitor.previousValue }
@@ -104,7 +110,7 @@ export default function AudienceTile( {
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconPagesPerVisit }
 						title={ __( 'Pages per visit', 'google-site-kit' ) }
-						metricValue={ pagesPerVisit.metricValue }
+						metricValue={ pagesPerVisit.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ pagesPerVisit.previousValue }
@@ -123,7 +129,7 @@ export default function AudienceTile( {
 								maximumFractionDigits: 1,
 							} )
 						) }
-						metricValue={ pageviews.metricValue }
+						metricValue={ pageviews.currentValue }
 						Badge={ () => (
 							<ChangeBadge
 								previousValue={ pageviews.previousValue }
@@ -158,7 +164,7 @@ export default function AudienceTile( {
 
 AudienceTile.propTypes = {
 	title: PropTypes.string.isRequired,
-	infoTooltip: PropTypes.string,
+	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
 	visitsPerVisitor: PropTypes.object,
 	pagesPerVisit: PropTypes.object,

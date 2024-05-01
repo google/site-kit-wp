@@ -19,5 +19,3 @@
 export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';
 export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
 export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';
-// @todo clean up the below AudienceSegmentation export, it is only present to satisfy the Jest test for now.
-export { default as AudienceSegmentation } from './AudienceSegmentation/AudienceSegmentationSetupCTAWidget';
