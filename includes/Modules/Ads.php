@@ -77,7 +77,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * Sets up the module's assets to register.
 	 *
 	 * @since 1.122.0
-	 * @since n.e.x.t Added PAX assets.
+	 * @since 1.126.0 Added PAX assets.
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -148,7 +148,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Populates module data to pass to JS via _googlesitekitModulesData.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
@@ -167,7 +167,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */

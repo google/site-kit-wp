@@ -2152,7 +2152,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets and returns available audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience[] $audiences The audiences to set.
 	 * @return array The available audiences.
@@ -2191,7 +2191,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience $audience The audience object.
 	 * @return string The audience slug.
@@ -2232,7 +2232,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the audience type based on the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param string $audience_slug The audience slug.
 	 * @return string The audience type.
@@ -2256,7 +2256,7 @@ final class Analytics_4 extends Module
 	 * Checks if an audience Site Kit identifier
 	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param array|object $data The array or object to search.
 	 * @param mixed        $identifier The identifier to search for.

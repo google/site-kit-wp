@@ -16,7 +16,7 @@ use LogicException;
 /**
  * Class for managing conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.126.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Conversion_Tracking {
 	/**
 	 * Supported conversion event providers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 * @var array
 	 */
 	public static $providers = array();
@@ -40,7 +40,7 @@ class Conversion_Tracking {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -51,7 +51,7 @@ class Conversion_Tracking {
 	/**
 	 * Registers the class functionality.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 */
 	public function register() {
 		add_action(
@@ -73,7 +73,7 @@ class Conversion_Tracking {
 	/**
 	 * Gets the instances of active conversion event providers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return array List of active Conversion_Events_Provider instances.
 	 * @throws LogicException Thrown if an invalid conversion event provider class name is provided.
