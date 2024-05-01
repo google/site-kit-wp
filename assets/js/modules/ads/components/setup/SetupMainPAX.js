@@ -46,10 +46,13 @@ import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { addQueryArgs } from '@wordpress/url';
 import PAXEmbeddedApp from '../PAXEmbeddedApp';
-const { useSelect, useDispatch } = Data;
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ pax, setPax ] = useQueryArg( 'pax' );
+
+	const registry = useRegistry();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -62,6 +65,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		pax: 1,
 		notification: 'ads', // Arbitrary value to prevent authentication_success from surfacing.
 	} );
+
 	const OAuthURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ ADWORDS_SCOPE ],
@@ -107,13 +111,33 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 					const { error } = await submitChanges();
 
+					// Since callback is mostly invoked pretty early, site info is not resolved yet.
+					// We need to ensure data is resolved otherwise admin url will be undefined and finishSetup
+					// will trigger console error instead of redirecting to the dashboard.
+					await registry
+						.__experimentalResolveSelect( CORE_SITE )
+						.getSiteInfo();
+
+					const adminURL = registry
+						.select( CORE_SITE )
+						.getAdminURL( 'googlesitekit-dashboard', {
+							notification: 'authentication_success',
+							slug: 'ads',
+						} );
+
 					if ( ! error ) {
-						finishSetup();
+						finishSetup( adminURL );
 					}
 				}
 			}
 		},
-		[ setExtCustomerID, setPaxConversionID, submitChanges, finishSetup ]
+		[
+			setExtCustomerID,
+			setPaxConversionID,
+			submitChanges,
+			registry,
+			finishSetup,
+		]
 	);
 
 	const clickCallback = useCallback( () => {
