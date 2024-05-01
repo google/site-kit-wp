@@ -22,7 +22,6 @@
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import SettingsForm from './SettingsForm';
 import AdBlockerWarning from '../common/AdBlockerWarning';
@@ -33,10 +32,6 @@ export default function SettingsEdit() {
 		select( MODULES_ADS ).isDoingSubmitChanges()
 	);
 
-	const hasAdsAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'ads' )
-	);
-
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
 	);
@@ -44,10 +39,10 @@ export default function SettingsEdit() {
 	let viewComponent;
 	if ( isAdBlockerActive ) {
 		viewComponent = <AdBlockerWarning />;
-	} else if ( isDoingSubmitChanges || hasAdsAccess === undefined ) {
+	} else if ( isDoingSubmitChanges ) {
 		viewComponent = <ProgressBar />;
 	} else {
-		viewComponent = <SettingsForm hasModuleAccess={ hasAdsAccess } />;
+		viewComponent = <SettingsForm />;
 	}
 
 	return (
