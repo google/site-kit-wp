@@ -117,7 +117,7 @@ export default function PAXEmbeddedApp( {
 					paxServicesWithAuthToken
 				);
 
-			onLaunch?.();
+			onLaunch?.( paxAppRef.current );
 		} catch ( error ) {
 			setLaunchError( error );
 			global.console.error(
