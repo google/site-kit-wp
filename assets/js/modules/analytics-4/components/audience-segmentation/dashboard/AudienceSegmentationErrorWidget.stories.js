@@ -100,7 +100,7 @@ Default.args = {
 	},
 };
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceSegmentationErrorWidget/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget/Default',
 };
 
 export const InsufficientPermissions = Template.bind( {} );
@@ -139,11 +139,11 @@ InsufficientPermissions.args = {
 	},
 };
 InsufficientPermissions.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceSegmentationErrorWidget/InsufficientPermissions',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget/InsufficientPermissions',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceSegmentationErrorWidget',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget',
 	decorators: [
 		( Story ) => {
 			const registry = createTestRegistry();

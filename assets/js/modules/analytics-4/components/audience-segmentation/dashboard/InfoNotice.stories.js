@@ -34,9 +34,9 @@ Default.args = {
 	dismissLabel: 'Got it',
 };
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/InfoNotice/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNotice/Default',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/InfoNotice',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNotice',
 };

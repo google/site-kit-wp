@@ -79,7 +79,7 @@ Default.args = {
 	},
 };
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTileError/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError/Default',
 };
 
 export const InsufficientPermissions = Template.bind( {} );
@@ -126,11 +126,11 @@ InsufficientPermissions.args = {
 	},
 };
 InsufficientPermissions.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTileError/InsufficientPermissions',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError/InsufficientPermissions',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTileError',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError',
 	component: AudienceTileError,
 	decorators: [
 		( Story ) => {
