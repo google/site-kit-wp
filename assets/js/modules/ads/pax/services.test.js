@@ -115,7 +115,7 @@ describe( 'PAX partner services', () => {
 
 					expect(
 						pageViewConversionSetting.enablePageViewConversion
-					).toBeTruthy();
+					).toBe( true );
 				} );
 
 				it( 'should hold correct value for websitePages property', async () => {
