@@ -24,7 +24,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 /**
  * Returns PAX services.
  *
- * @since n.e.x.t
+ * @since 1.126.0
  *
  * @param {Object} registry Registry object to dispatch to.
  * @return {Object} An object containing various service interfaces.

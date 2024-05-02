@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class to handle all wp-admin Authorize Application related functionality.
  *
- * @since n.e.x.t
+ * @since 1.126.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ final class Authorize_Application {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 * @var Context
 	 */
 	private $context;
@@ -36,7 +36,7 @@ final class Authorize_Application {
 	/**
 	 * Assets instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 * @var Assets
 	 */
 	private $assets;
@@ -44,7 +44,7 @@ final class Authorize_Application {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Assets  $assets  Optional. Assets API instance. Default is a new instance.
@@ -60,16 +60,17 @@ final class Authorize_Application {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 */
 	public function register() {
 		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets' ) );
+		add_action( 'admin_footer', $this->get_method_proxy( 'render_custom_footer' ) );
 	}
 
 	/**
 	 * Checks if the current screen is the Authorize Application screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return bool True if the current screen is the Authorize Application screen, false otherwise.
 	 */
@@ -86,7 +87,7 @@ final class Authorize_Application {
 	/**
 	 * Checks if the current service is a Google service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return bool True if the current service is a Google service, false otherwise.
 	 */
@@ -107,11 +108,22 @@ final class Authorize_Application {
 	/**
 	 * Enqueues assets for the Authorize Application screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 */
 	private function enqueue_assets() {
 		if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
 			$this->assets->enqueue_asset( 'googlesitekit-authorize-application-css' );
+		}
+	}
+
+	/**
+	 * Renders custom footer for the Authorize Application screen if the service is a Google service.
+	 *
+	 * @since 1.126.0
+	 */
+	private function render_custom_footer() {
+		if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
+			echo '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>';
 		}
 	}
 }

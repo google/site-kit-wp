@@ -1,6 +1,6 @@
 <?php
 /**
- * Interface Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider
+ * Class Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider
  *
  * @package   Google\Site_Kit\Core\Conversion_Tracking
  * @copyright 2024 Google LLC
@@ -10,14 +10,37 @@
 
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Script;
+
 /**
- * Interface for a conversion events provider.
+ * Base class for conversion events provider.
  *
  * @since 1.125.0
+ * @since 1.126.0 Changed from interface to abstract class.
  * @access private
  * @ignore
  */
-interface Conversion_Events_Provider {
+abstract class Conversion_Events_Provider {
+
+	/**
+	 * Plugin context.
+	 *
+	 * @since 1.126.0
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.126.0
+	 *
+	 * @param Context $context Plugin context.
+	 */
+	public function __construct( Context $context ) {
+		$this->context = $context;
+	}
 
 	/**
 	 * Checks if the provider is active.
@@ -26,7 +49,9 @@ interface Conversion_Events_Provider {
 	 *
 	 * @return bool True if the provider is active, false otherwise.
 	 */
-	public function is_active();
+	public function is_active() {
+		return false;
+	}
 
 	/**
 	 * Gets the event names.
@@ -35,12 +60,14 @@ interface Conversion_Events_Provider {
 	 *
 	 * @return array List of event names.
 	 */
-	public function get_event_names();
+	abstract public function get_event_names();
 
 	/**
 	 * Registers the script for the provider.
 	 *
 	 * @since 1.125.0
+	 *
+	 * @return Script Script instance.
 	 */
-	public function register_script();
+	abstract public function register_script();
 }
