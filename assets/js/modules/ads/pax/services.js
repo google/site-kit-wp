@@ -30,17 +30,14 @@ const restFetchWpPages = async () => {
 	try {
 		const wpPages = await apiFetch( {
 			path: '/wp/v2/pages?per_page=100',
-		} ).then( ( pages ) =>
-			pages.map( ( page ) => {
-				return {
-					title: page.title.rendered,
-					path: new URL( page.link ).pathname,
-				};
-			} )
-		);
-		if ( wpPages ) {
-			return wpPages;
-		}
+		} );
+
+		return wpPages.map( ( page ) => {
+			return {
+				title: page.title.rendered,
+				path: new URL( page.link ).pathname,
+			};
+		} );
 	} catch {
 		return [];
 	}
