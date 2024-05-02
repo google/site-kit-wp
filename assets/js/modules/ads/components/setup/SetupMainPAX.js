@@ -43,10 +43,10 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { addQueryArgs } from '@wordpress/url';
 import PAXEmbeddedApp from '../PAXEmbeddedApp';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
