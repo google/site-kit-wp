@@ -25,19 +25,6 @@ import {
 } from '../../../../../tests/js/utils';
 import { createPaxServices } from './services';
 
-const mockWpRestPagesResponse = [
-	{
-		id: 20,
-		title: { rendered: 'Foo Page' },
-		link: 'https://www.example.com/foo-page',
-	},
-	{
-		id: 20,
-		title: { rendered: 'Bar Child Page' },
-		link: 'https://www.example.com/foo/bar-page',
-	},
-];
-
 describe( 'PAX partner services', () => {
 	describe( 'createPaxServices', () => {
 		let registry;
@@ -122,7 +109,18 @@ describe( 'PAX partner services', () => {
 					const wpPagesEndpoint = new RegExp( '^/wp/v2/pages' );
 
 					fetchMock.getOnce( wpPagesEndpoint, {
-						body: mockWpRestPagesResponse,
+						body: [
+							{
+								id: 20,
+								title: { rendered: 'Foo Page' },
+								link: 'https://www.example.com/foo-page',
+							},
+							{
+								id: 20,
+								title: { rendered: 'Bar Child Page' },
+								link: 'https://www.example.com/foo/bar-page',
+							},
+						],
 						status: 200,
 					} );
 
@@ -130,6 +128,15 @@ describe( 'PAX partner services', () => {
 						await services.conversionTrackingService.getPageViewConversionSetting();
 
 					expect( fetchMock ).toHaveFetched( wpPagesEndpoint, {} );
+
+					expect( fetchMock ).toHaveFetched( wpPagesEndpoint, {} );
+
+					const wpPagesEndpointLastCall =
+						fetchMock.lastCall( wpPagesEndpoint );
+
+					expect( wpPagesEndpointLastCall[ 0 ] ).toContain(
+						'per_page=100'
+					);
 
 					expect(
 						pageViewConversionSetting.websitePages
