@@ -28,7 +28,10 @@ import {
 	AUDIENCE_FILTER_SCOPE_ENUM,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { audiences as audiencesFixture } from './__fixtures__';
+import {
+	audiences as audiencesFixture,
+	availableAudiences as availableAudiencesFixture,
+} from './__fixtures__';
 import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics-4 audiences', () => {
@@ -293,6 +296,161 @@ describe( 'modules/analytics-4 audiences', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
 				).toEqual( availableAudiences );
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		const defaultAudienceResourceNames = [
+			'properties/12345/audiences/1', // All visitors.
+			'properties/12345/audiences/2', // Purchasers.
+		];
+
+		const siteKitAudienceResourceNames = [
+			'properties/12345/audiences/3', // New visitors.
+			'properties/12345/audiences/4', // Returning visitors.
+		];
+
+		const userAudienceResourceNames = [
+			'properties/12345/audiences/5', // Test audience.
+		];
+
+		describe( 'isDefaultAudience', () => {
+			it( 'should return `true` if the audience is a default audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				defaultAudienceResourceNames.forEach(
+					( audienceResourceName ) => {
+						const isDefaultAudience = registry
+							.select( MODULES_ANALYTICS_4 )
+							.isDefaultAudience( audienceResourceName );
+
+						expect( isDefaultAudience ).toBe( true );
+					}
+				);
+			} );
+
+			it( 'should return `false` if the audience is not a default audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				[
+					...siteKitAudienceResourceNames,
+					...userAudienceResourceNames,
+				].forEach( ( audienceResourceName ) => {
+					const isDefaultAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isDefaultAudience( audienceResourceName );
+
+					expect( isDefaultAudience ).toBe( false );
+				} );
+			} );
+
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const isDefaultAudience = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isDefaultAudience( defaultAudienceResourceNames[ 0 ] );
+
+				expect( isDefaultAudience ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'isSiteKitAudience', () => {
+			it( 'should return `true` if the audience is a Site Kit audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				siteKitAudienceResourceNames.forEach(
+					( audienceResourceName ) => {
+						const isSiteKitAudience = registry
+							.select( MODULES_ANALYTICS_4 )
+							.isSiteKitAudience( audienceResourceName );
+
+						expect( isSiteKitAudience ).toBe( true );
+					}
+				);
+			} );
+
+			it( 'should return `false` if the audience is not a Site Kit audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				[
+					...defaultAudienceResourceNames,
+					...userAudienceResourceNames,
+				].forEach( ( audienceResourceName ) => {
+					const isSiteKitAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteKitAudience( audienceResourceName );
+
+					expect( isSiteKitAudience ).toBe( false );
+				} );
+			} );
+
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const isSiteKitAudience = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isSiteKitAudience( siteKitAudienceResourceNames[ 0 ] );
+
+				expect( isSiteKitAudience ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'isUserAudience', () => {
+			it( 'should return `true` if the audience is a user audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				userAudienceResourceNames.forEach( ( audienceResourceName ) => {
+					const isUserAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isUserAudience( audienceResourceName );
+
+					expect( isUserAudience ).toBe( true );
+				} );
+			} );
+
+			it( 'should return `false` if the audience is not a user audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				[
+					...defaultAudienceResourceNames,
+					...siteKitAudienceResourceNames,
+				].forEach( ( audienceResourceName ) => {
+					const isUserAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isUserAudience( audienceResourceName );
+
+					expect( isUserAudience ).toBe( false );
+				} );
+			} );
+
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const isUserAudience = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isUserAudience( userAudienceResourceNames[ 0 ] );
+
+				expect( isUserAudience ).toBeUndefined();
 			} );
 		} );
 	} );
