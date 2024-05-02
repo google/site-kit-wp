@@ -84,7 +84,7 @@ export function createPaxServices( registry ) {
 				const wordPressPages = await restFetchWpPages();
 				return {
 					enablePageViewConversion: true,
-					websitePages: [ wordPressPages ],
+					websitePages: wordPressPages,
 				};
 			},
 		},
