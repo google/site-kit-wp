@@ -84,37 +84,12 @@ export default function PAXEmbeddedApp( {
 		};
 	}, [ elementID ] );
 
-	const paxServicesWithAuthToken = useMemo( () => {
-		return {
-			authenticationService: {
-				// Marked as async for clarity, despite there being no await calls here.
-				// eslint-disable-next-line require-await
-				get: async () => {
-					return {
-						accessToken:
-							global?._googlesitekitPAXConfig?.authAccess
-								?.oauthTokenAccess,
-						authuser: '0',
-					};
-				},
-				// Marked as async for clarity, despite there being no await calls here.
-				// eslint-disable-next-line require-await
-				fix: async () => {
-					return {
-						retryReady: true,
-					};
-				},
-			},
-			...paxServices,
-		};
-	}, [ paxServices ] );
-
 	const launchPAXApp = useCallback( async () => {
 		try {
 			paxAppRef.current =
 				await global.google.ads.integration.integrator.launchGoogleAds(
 					paxConfig,
-					paxServicesWithAuthToken
+					paxServices
 				);
 
 			onLaunch?.( paxAppRef.current );
@@ -127,7 +102,7 @@ export default function PAXEmbeddedApp( {
 		}
 
 		setIsLoading( false );
-	}, [ paxConfig, paxServicesWithAuthToken, onLaunch ] );
+	}, [ paxConfig, paxServices, onLaunch ] );
 
 	useInterval(
 		() => {
@@ -142,6 +117,9 @@ export default function PAXEmbeddedApp( {
 				setLaunchGoogleAdsAvailable( true );
 			}
 		},
+		// Supplying `null` as the interval will stop the interval, so we
+		// use `null` once the app has been launched to prevent further
+		// checking of whether the app is _ready_ to launch.
 		hasLaunchedPAXApp ? null : 50
 	);
 
