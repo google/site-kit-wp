@@ -27,9 +27,9 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../material-components';
-import Layout from '../layout/Layout';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import Layout from '../../../../../components/layout/Layout';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
 export default function SettingsCardVisitorGroups() {
@@ -65,7 +65,7 @@ export default function SettingsCardVisitorGroups() {
 						<Cell size={ 12 }>
 							<Switch
 								label={ __(
-									'Display visitors groups in dashboard',
+									'Display visitor groups in dashboard',
 									'google-site-kit'
 								) }
 								checked={ ! audienceSegmentationWidgetHidden }
