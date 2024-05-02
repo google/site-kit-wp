@@ -34,10 +34,9 @@ const {
 } = require( './common' );
 
 module.exports = ( mode ) => ( {
-	// entry: {
-	// 	'example-plugin-integration':
-	// 		'./assets/js/event-providers/example-plugin-integration.js',
-	// },
+	entry: {
+		'optin-monster': './assets/js/event-providers/optin-monster.js',
+	},
 	externals,
 	output: {
 		filename:

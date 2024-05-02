@@ -97,7 +97,7 @@ class Consent_Mode {
 		 *
 		 * Allows these defaults to be modified, thus allowing users complete control over the consent mode parameters.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.126.0
 		 *
 		 * @param array $consent_mode_defaults Default values for consent mode.
 		 */
