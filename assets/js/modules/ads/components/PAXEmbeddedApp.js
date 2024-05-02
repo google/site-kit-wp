@@ -61,7 +61,9 @@ export default function PAXEmbeddedApp( {
 
 	const registry = useRegistry();
 
-	const paxServices = createPaxServices( registry );
+	const paxServices = useMemo( () => {
+		return createPaxServices( registry );
+	}, [ registry ] );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -71,9 +73,7 @@ export default function PAXEmbeddedApp( {
 
 	const paxAppRef = useRef();
 
-	const elementID = useMemo( () => {
-		return `googlesitekit-pax-embedded-app-${ instanceID }`;
-	}, [ instanceID ] );
+	const elementID = `googlesitekit-pax-embedded-app-${ instanceID }`;
 
 	const paxConfig = useMemo( () => {
 		return {
@@ -117,7 +117,7 @@ export default function PAXEmbeddedApp( {
 					paxServicesWithAuthToken
 				);
 
-			onLaunch?.();
+			onLaunch?.( paxAppRef.current );
 		} catch ( error ) {
 			setLaunchError( error );
 			global.console.error(
