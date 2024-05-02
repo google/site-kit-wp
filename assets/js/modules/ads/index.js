@@ -27,13 +27,12 @@ import { __ } from '@wordpress/i18n';
 import AdsIcon from '../../../svg/graphics/ads.svg';
 import { isFeatureEnabled } from '../../features';
 import { SettingsEdit, SettingsView } from './components/settings';
-import SetupMain from './components/setup/SetupMain';
+import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '../../googlesitekit/datastore/user/constants';
-import SetupMainPAX from './components/setup/SetupMainPAX';
 
 export { registerStore } from './datastore';
 
