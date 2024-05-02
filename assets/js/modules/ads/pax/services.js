@@ -81,10 +81,10 @@ export function createPaxServices( registry ) {
 			},
 			// eslint-disable-next-line require-await
 			getPageViewConversionSetting: async () => {
-				const wordPressPages = await restFetchWpPages();
+				const websitePages = await restFetchWpPages();
 				return {
 					enablePageViewConversion: true,
-					websitePages: wordPressPages,
+					websitePages,
 				};
 			},
 		},
