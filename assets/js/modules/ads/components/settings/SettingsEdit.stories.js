@@ -1,5 +1,5 @@
 /**
- * Ads SettingsView component stories.
+ * Ads SettingsEdit component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,24 +19,26 @@
 /**
  * Internal dependencies
  */
-import SettingsView from './SettingsView';
+import SettingsEdit from './SettingsEdit';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( {} ) {
+function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
-				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>
-								<SettingsView />
-							</Cell>
-						</Row>
-					</Grid>
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads">
+				<div className="googlesitekit-setup-module">
+					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+						<Grid>
+							<Row>
+								<Cell size={ 12 }>
+									<SettingsEdit { ...args } />
+								</Cell>
+							</Row>
+						</Grid>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -46,12 +48,27 @@ function Template( {} ) {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Modules/Ads/Settings/SettingsView',
+	label: 'Modules/Ads/Settings/SettingsEdit/Default',
 	delay: 250,
 };
+Default.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: 'AW-123456789',
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
-	title: 'Modules/Ads/Settings/SettingsView',
+	title: 'Modules/Ads/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
@@ -62,10 +79,6 @@ export default {
 						connected: true,
 					},
 				] );
-
-				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-					conversionID: 'AW-123456789',
-				} );
 			};
 
 			return (
@@ -75,12 +88,13 @@ export default {
 			);
 		},
 	],
+	features: [ 'adsModule' ],
 };
 
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {
-	label: 'Modules/Ads/Settings/SettingsView/PAX',
+	label: 'Modules/Ads/Settings/SettingsEdit/PAX',
 	delay: 250,
 };
 PaxConnected.parameters = {

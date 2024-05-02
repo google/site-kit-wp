@@ -19,7 +19,7 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Checks if the provider is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return bool True if the provider is active, false otherwise.
 	 */
@@ -30,7 +30,7 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Registers the script for the provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 */
 	public function register_script() {
 		$base_url = $this->context->url( 'dist/assets/' );

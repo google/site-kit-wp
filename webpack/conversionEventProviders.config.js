@@ -35,6 +35,7 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
+		'optin-monster': './assets/js/event-providers/optin-monster.js',
 		woocommerce: './assets/js/event-providers/woocommerce.js',
 	},
 	externals,

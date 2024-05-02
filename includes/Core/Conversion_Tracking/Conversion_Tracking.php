@@ -11,13 +11,14 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use LogicException;
 
 /**
  * Class for managing conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.126.0
  * @access private
  * @ignore
  */
@@ -33,17 +34,18 @@ class Conversion_Tracking {
 	/**
 	 * Supported conversion event providers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 * @var array
 	 */
 	public static $providers = array(
-		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG => WooCommerce::class,
+		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG => OptinMonster::class,
+		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG  => WooCommerce::class,
 	);
 
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -54,7 +56,7 @@ class Conversion_Tracking {
 	/**
 	 * Registers the class functionality.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 */
 	public function register() {
 		add_action(
@@ -81,7 +83,7 @@ class Conversion_Tracking {
 	/**
 	 * Gets the instances of active conversion event providers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @return array List of active Conversion_Events_Provider instances.
 	 * @throws LogicException Thrown if an invalid conversion event provider class name is provided.
