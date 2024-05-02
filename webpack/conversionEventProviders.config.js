@@ -36,6 +36,7 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		'optin-monster': './assets/js/event-providers/optin-monster.js',
+		wpforms: './assets/js/event-providers/wpforms.js',
 	},
 	externals,
 	output: {
