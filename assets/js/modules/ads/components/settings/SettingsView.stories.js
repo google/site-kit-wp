@@ -83,8 +83,11 @@ PaxConnected.scenario = {
 	label: 'Modules/Ads/Settings/SettingsView/PAX',
 	delay: 250,
 };
+PaxConnected.parameters = {
+	features: [ 'adsPax' ],
+};
 PaxConnected.decorators = [
-	( Story ) => {
+	( Story, { parameters } ) => {
 		const setupRegistry = ( registry ) => {
 			// Unset the value set in the prrevious scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
@@ -96,7 +99,10 @@ PaxConnected.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup func={ setupRegistry }>
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
 				<Story />
 			</WithRegistrySetup>
 		);

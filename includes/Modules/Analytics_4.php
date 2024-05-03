@@ -545,7 +545,6 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['GET:audiences']          = array( 'service' => 'analyticsaudiences' );
 			$datapoints['POST:create-audience']   = array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
@@ -936,22 +935,6 @@ final class Analytics_4 extends Module
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
 				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
-			case 'GET:audiences':
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
-
-				return $analyticsadmin
-					->properties_audiences
-					->listPropertiesAudiences( $property_id );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -2169,7 +2152,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets and returns available audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience[] $audiences The audiences to set.
 	 * @return array The available audiences.
@@ -2177,9 +2160,10 @@ final class Analytics_4 extends Module
 	private function set_available_audiences( $audiences ) {
 		$available_audiences = array_map(
 			function( GoogleAnalyticsAdminV1alphaAudience $audience ) {
+				$display_name  = $audience->getDisplayName();
 				$audience_item = array(
 					'name'        => $audience->getName(),
-					'displayName' => $audience->getDisplayName(),
+					'displayName' => ( 'All Users' === $display_name ) ? 'All visitors' : $display_name,
 					'description' => $audience->getDescription(),
 				);
 
@@ -2207,7 +2191,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience $audience The audience object.
 	 * @return string The audience slug.
@@ -2248,7 +2232,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the audience type based on the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param string $audience_slug The audience slug.
 	 * @return string The audience type.
@@ -2272,7 +2256,7 @@ final class Analytics_4 extends Module
 	 * Checks if an audience Site Kit identifier
 	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param array|object $data The array or object to search.
 	 * @param mixed        $identifier The identifier to search for.

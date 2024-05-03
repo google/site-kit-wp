@@ -376,7 +376,7 @@ const baseSelectors = {
 	 *
 	 * TODO: This will be refactored to use pivot reports in #8484.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param {Object}   state                 Data store's state.
 	 * @param {Object}   options               Options for generating the report.
@@ -388,7 +388,7 @@ const baseSelectors = {
 			return audienceResourceNames?.map( ( audienceResourceName ) =>
 				select( MODULES_ANALYTICS_4 ).getReport( {
 					...options,
-					dimensionFilter: {
+					dimensionFilters: {
 						audienceResourceName,
 					},
 				} )

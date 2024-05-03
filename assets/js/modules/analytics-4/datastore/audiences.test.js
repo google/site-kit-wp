@@ -28,14 +28,15 @@ import {
 	AUDIENCE_FILTER_SCOPE_ENUM,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { audiences as audiencesFixture } from './__fixtures__';
+import {
+	audiences as audiencesFixture,
+	availableAudiences as availableAudiencesFixture,
+} from './__fixtures__';
+import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
 
-	const getAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audiences'
-	);
 	const createAudienceEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
@@ -81,11 +82,8 @@ describe( 'modules/analytics-4 audiences', () => {
 		],
 	};
 
-	let store;
-
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
 	} );
 
 	describe( 'actions', () => {
@@ -145,7 +143,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					body: audiencesFixture[ 2 ],
 				} );
 
-				expect( store.getState().audiences ).toBeUndefined();
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					status: 200,
+					body: [ audiencesFixture[ 0 ], audiencesFixture[ 1 ] ],
+				} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -159,11 +160,67 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 					},
 				} );
+			} );
+		} );
 
-				expect( store.getState().audiences.length ).toBe( 1 );
-				expect( store.getState().audiences[ 0 ] ).toEqual(
-					audiencesFixture[ 2 ]
-				);
+		describe( 'getAvailableAudiences', () => {
+			const availableAudiences = [
+				{
+					name: 'properties/123456789/audiences/0987654321',
+					displayName: 'All visitors',
+					description: 'All users',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'all-users',
+				},
+			];
+
+			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( audiences ).toEqual( availableAudiences );
+			} );
+
+			it( 'should sync cached audiences when the availableAudiences setting is null', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				// Simulate a scenario where getAvailableAudiences is null.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( null );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toBeNull();
+
+				// Wait until the resolver has finished fetching the audiences.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableAudiences();
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
+				expect( audiences ).toEqual( availableAudiences );
 			} );
 		} );
 
@@ -171,7 +228,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			const availableAudiences = [
 				{
 					name: 'properties/123456789/audiences/0987654321',
-					displayName: 'All Users',
+					displayName: 'All visitors',
 					description: 'All users',
 					audienceType: 'DEFAULT_AUDIENCE',
 					audienceSlug: 'all-users',
@@ -244,46 +301,156 @@ describe( 'modules/analytics-4 audiences', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getAudiences', () => {
-			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.get( getAudiencesEndpoint, {
-					body: { audiences: audiencesFixture },
+		const defaultAudienceResourceNames = [
+			'properties/12345/audiences/1', // All visitors.
+			'properties/12345/audiences/2', // Purchasers.
+		];
+
+		const siteKitAudienceResourceNames = [
+			'properties/12345/audiences/3', // New visitors.
+			'properties/12345/audiences/4', // Returning visitors.
+		];
+
+		const userAudienceResourceNames = [
+			'properties/12345/audiences/5', // Test audience.
+		];
+
+		describe( 'isDefaultAudience', () => {
+			it( 'should return `true` if the audience is a default audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
 				} );
 
-				const initialAudiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiences();
+				defaultAudienceResourceNames.forEach(
+					( audienceResourceName ) => {
+						const isDefaultAudience = registry
+							.select( MODULES_ANALYTICS_4 )
+							.isDefaultAudience( audienceResourceName );
 
-				expect( initialAudiences ).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudiences();
-
-				const finalAudiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiences();
-
-				expect( finalAudiences ).toEqual( audiencesFixture );
+						expect( isDefaultAudience ).toBe( true );
+					}
+				);
 			} );
 
-			it( 'should not make a network request if properties for this account are already present', async () => {
+			it( 'should return `false` if the audience is not a default audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				[
+					...siteKitAudienceResourceNames,
+					...userAudienceResourceNames,
+				].forEach( ( audienceResourceName ) => {
+					const isDefaultAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isDefaultAudience( audienceResourceName );
+
+					expect( isDefaultAudience ).toBe( false );
+				} );
+			} );
+
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudiences( { audiences: audiencesFixture } );
+					.receiveGetSettings( {} );
 
-				const audiences = registry
+				const isDefaultAudience = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getAudiences();
+					.isDefaultAudience( defaultAudienceResourceNames[ 0 ] );
 
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudiences();
+				expect( isDefaultAudience ).toBeUndefined();
+			} );
+		} );
 
-				expect( fetchMock ).not.toHaveFetched( getAudiencesEndpoint );
-				expect( audiences ).toEqual( audiencesFixture );
+		describe( 'isSiteKitAudience', () => {
+			it( 'should return `true` if the audience is a Site Kit audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				siteKitAudienceResourceNames.forEach(
+					( audienceResourceName ) => {
+						const isSiteKitAudience = registry
+							.select( MODULES_ANALYTICS_4 )
+							.isSiteKitAudience( audienceResourceName );
+
+						expect( isSiteKitAudience ).toBe( true );
+					}
+				);
+			} );
+
+			it( 'should return `false` if the audience is not a Site Kit audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				[
+					...defaultAudienceResourceNames,
+					...userAudienceResourceNames,
+				].forEach( ( audienceResourceName ) => {
+					const isSiteKitAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteKitAudience( audienceResourceName );
+
+					expect( isSiteKitAudience ).toBe( false );
+				} );
+			} );
+
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const isSiteKitAudience = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isSiteKitAudience( siteKitAudienceResourceNames[ 0 ] );
+
+				expect( isSiteKitAudience ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'isUserAudience', () => {
+			it( 'should return `true` if the audience is a user audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				userAudienceResourceNames.forEach( ( audienceResourceName ) => {
+					const isUserAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isUserAudience( audienceResourceName );
+
+					expect( isUserAudience ).toBe( true );
+				} );
+			} );
+
+			it( 'should return `false` if the audience is not a user audience', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				[
+					...defaultAudienceResourceNames,
+					...siteKitAudienceResourceNames,
+				].forEach( ( audienceResourceName ) => {
+					const isUserAudience = registry
+						.select( MODULES_ANALYTICS_4 )
+						.isUserAudience( audienceResourceName );
+
+					expect( isUserAudience ).toBe( false );
+				} );
+			} );
+
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const isUserAudience = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isUserAudience( userAudienceResourceNames[ 0 ] );
+
+				expect( isUserAudience ).toBeUndefined();
 			} );
 		} );
 	} );
