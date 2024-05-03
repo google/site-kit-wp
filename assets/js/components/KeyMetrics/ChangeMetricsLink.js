@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { SELECTION_PANEL_OPENED_KEY } from '../SelectionPanel/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
 import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
@@ -46,7 +46,7 @@ export default function ChangeMetricsLink() {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const openMetricsSelectionPanel = useCallback( () => {
-		setValue( SELECTION_PANEL_OPENED_KEY, true );
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 		trackEvent( `${ viewContext }_kmw`, 'change_metrics' );
 	}, [ setValue, viewContext ] );
 

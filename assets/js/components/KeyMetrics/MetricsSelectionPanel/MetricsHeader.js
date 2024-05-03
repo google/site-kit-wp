@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,12 +31,11 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
-import Link from '../../Link';
-import CloseIcon from '../../../../svg/icons/close.svg';
 import useViewOnly from '../../../hooks/useViewOnly';
+import SelectionPanelHeader from '../../SelectionPanel/SelectionPanelHeader';
 const { useSelect, useDispatch } = Data;
 
-export default function Header() {
+export default function MetricsHeader() {
 	const isViewOnly = useViewOnly();
 
 	const settingsURL = useSelect( ( select ) =>
@@ -59,37 +58,13 @@ export default function Header() {
 	);
 
 	return (
-		<header className="googlesitekit-km-selection-panel-header">
-			<div className="googlesitekit-km-selection-panel-header__row">
-				<h3>{ __( 'Select your metrics', 'google-site-kit' ) }</h3>
-				<Link
-					className="googlesitekit-km-selection-panel-header__close"
-					onClick={ onCloseClick }
-					linkButton
-				>
-					<CloseIcon width="15" height="15" />
-				</Link>
-			</div>
-			{ ! isViewOnly && (
-				<p>
-					{ createInterpolateElement(
-						__(
-							'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
-							'google-site-kit'
-						),
-						{
-							link: (
-								<Link
-									secondary
-									onClick={ onSettingsClick }
-									disabled={ isSavingSettings }
-								/>
-							),
-							strong: <strong />,
-						}
-					) }
-				</p>
-			) }
-		</header>
+		<SelectionPanelHeader
+			heading={ __( 'Select your metrics', 'google-site-kit' ) }
+			headerText="Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>"
+			isViewOnly={ isViewOnly }
+			onCloseClick={ onCloseClick }
+			onSettingsClick={ onSettingsClick }
+			isSavingSettings={ isSavingSettings }
+		/>
 	);
 }

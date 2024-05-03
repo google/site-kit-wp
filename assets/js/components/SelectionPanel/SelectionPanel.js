@@ -32,16 +32,14 @@ export default function SelectionPanel( {
 } ) {
 	return (
 		<Fragment>
-			{ isOpen && (
-				<SideSheet
-					className={ className }
-					isOpen={ isOpen }
-					onOpen={ onSideSheetOpen }
-					closeFn={ sideSheetCloseFn }
-				>
-					{ children }
-				</SideSheet>
-			) }
+			<SideSheet
+				className={ className }
+				isOpen={ isOpen }
+				onOpen={ onSideSheetOpen }
+				closeFn={ sideSheetCloseFn }
+			>
+				{ children }
+			</SideSheet>
 		</Fragment>
 	);
 }

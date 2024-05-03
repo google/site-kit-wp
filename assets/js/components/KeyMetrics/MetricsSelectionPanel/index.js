@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,14 +33,8 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
-
-import {
-	SELECTION_PANEL_OPENED_KEY,
-	SELECTION_PANEL_HEADER_TEXT,
-	SELECTION_PANEL_HEADING,
-} from '../../SelectionPanel/constants';
-
-import SelectionPanel, { Header, Footer, Items } from '../../SelectionPanel';
+import MetricsHeader from './MetricsHeader';
+import SelectionPanel, { Footer, Items } from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
@@ -49,7 +42,7 @@ const { useSelect, useDispatch } = Data;
 export default function MetricsSelectionPanel() {
 	const viewContext = useViewContext();
 	const isOpen = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( SELECTION_PANEL_OPENED_KEY )
+		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
 	const savedViewableMetrics = useSelect( ( select ) => {
 		const metrics = select( CORE_USER ).getKeyMetrics();
@@ -66,29 +59,14 @@ export default function MetricsSelectionPanel() {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 
-	setValue(
-		SELECTION_PANEL_HEADING,
-		__( 'Select your metricss', 'google-site-kit' )
-	);
-
-	setValue(
-		SELECTION_PANEL_HEADER_TEXT,
-		'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>'
-	);
-
 	const onSideSheetOpen = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
 		} );
 		trackEvent( `${ viewContext }_kmw-sidebar`, 'metrics_sidebar_view' );
-	}, [ savedViewableMetrics, setValues, setValue, viewContext ] );
+	}, [ savedViewableMetrics, setValues, viewContext ] );
 
 	const sideSheetCloseFn = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
-
-	const onClose = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 	}, [ setValue ] );
 
@@ -103,11 +81,7 @@ export default function MetricsSelectionPanel() {
 			onSideSheetOpen={ onSideSheetOpen }
 			sideSheetCloseFn={ sideSheetCloseFn }
 		>
-			<Header
-				className="googlesitekit-km-selection-panel-header"
-				heading={ __( 'Select your metricss', 'google-site-kit' ) }
-				onClose={ onClose }
-			/>
+			<MetricsHeader />
 			<Items
 				selectedItems={ {
 					topVisitors: {
