@@ -1,5 +1,5 @@
 /**
- * InfoNotice Component Stories.
+ * AudienceSegmentationIntroductoryOverlayNotification component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,24 +19,20 @@
 /**
  * Internal dependencies
  */
-import InfoNotice from './InfoNotice';
 
-function Template( args ) {
-	return <InfoNotice { ...args } />;
+import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
+
+function Template() {
+	return <AudienceSegmentationIntroductoryOverlayNotification />;
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-
-Default.args = {
-	content:
-		'The higher the portion of new visitors you have, the more your audience is growing. Looking at what content brings them to your site may give you insights on how to reach even more people.',
-	dismissLabel: 'Got it',
-};
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/InfoNotice/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationIntroductoryOverlayNotification',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/InfoNotice',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationIntroductoryOverlayNotification',
+	component: AudienceSegmentationIntroductoryOverlayNotification,
 };
