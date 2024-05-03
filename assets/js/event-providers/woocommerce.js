@@ -25,7 +25,7 @@
 		global.gtag( 'event', 'add_to_cart' );
 	} );
 
-	body.on( 'checkout_place_order_success', function () {
+	body.on( 'checkout_place_order_success', () => {
 		global.gtag( 'event', 'purchase' );
 	} );
 } )( global.jQuery );

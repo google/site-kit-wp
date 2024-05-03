@@ -56,9 +56,7 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "lint-staged",
-			"prepare-commit-msg": "php -f bin/prepare-commit-msg.php $HUSKY_GIT_PARAMS",
-			"commit-msg": "php -f bin/check-commit-msg.php $HUSKY_GIT_PARAMS"
+			"pre-commit": "lint-staged"
 		}
 	},
 	"lint-staged": {
