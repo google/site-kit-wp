@@ -17,10 +17,31 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+
+/**
  * Internal dependencies
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
+const restFetchWpPages = async () => {
+	try {
+		const wpPages = await apiFetch( {
+			path: '/wp/v2/pages?per_page=100',
+		} );
+
+		return wpPages.map( ( page ) => {
+			return {
+				title: page.title.rendered,
+				path: new URL( page.link ).pathname,
+			};
+		} );
+	} catch {
+		return [];
+	}
+};
 /**
  * Returns PAX services.
  *
@@ -54,6 +75,14 @@ export function createPaxServices( registry ) {
 			// eslint-disable-next-line require-await
 			getSupportedConversionLabels: async () => {
 				return { conversionLabels: [] };
+			},
+			// eslint-disable-next-line require-await
+			getPageViewConversionSetting: async () => {
+				const websitePages = await restFetchWpPages();
+				return {
+					enablePageViewConversion: true,
+					websitePages,
+				};
 			},
 		},
 		termsAndConditionsService: {

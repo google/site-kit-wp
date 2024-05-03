@@ -144,7 +144,7 @@ export default function TotalUserCount( props ) {
 						</div>
 					) }
 					<div className="googlesitekit-data-block__change">
-						{ change && (
+						{ !! change && (
 							<span className="googlesitekit-data-block__arrow">
 								<ChangeArrow
 									direction={ 0 <= change ? 'up' : 'down' }

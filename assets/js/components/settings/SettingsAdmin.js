@@ -37,7 +37,7 @@ import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
 import PreviewBlock from '../PreviewBlock';
-import SettingsCardVisitorGroups from '../../modules/analytics-4/components/settings/AudienceSegmentation/SettingsCardVisitorGroups';
+import SettingsCardVisitorGroups from '../../modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
 import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
