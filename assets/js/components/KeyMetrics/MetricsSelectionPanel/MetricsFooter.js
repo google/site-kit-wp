@@ -25,19 +25,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	useCallback,
-	useEffect,
-	useState,
-	useMemo,
-	createInterpolateElement,
-} from '@wordpress/element';
+import { useCallback, useEffect, useState, useMemo } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import SelectionPanelFooter from '../../SelectionPanel/SelectionPanelFooter';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -65,7 +60,7 @@ import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function Footer( {
+export default function MetricsFooter( {
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
 } ) {
@@ -234,6 +229,36 @@ export default function Footer( {
 
 	const [ prevIsOpen, setPrevIsOpen ] = useState( null );
 
+	function CancelButton() {
+		return (
+			<Button
+				tertiary
+				onClick={ onCancelClick }
+				disabled={ isSavingSettings || isNavigatingToOAuthURL }
+			>
+				{ __( 'Cancel', 'google-site-kit' ) }
+			</Button>
+		);
+	}
+
+	function SaveButton() {
+		return (
+			<SpinnerButton
+				onClick={ onSaveClick }
+				isSaving={ isSavingSettings || isNavigatingToOAuthURL }
+				disabled={
+					selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
+					selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ||
+					isSavingSettings ||
+					( ! isOpen && wasSaved ) ||
+					isNavigatingToOAuthURL
+				}
+			>
+				{ finalButtonText || currentButtonText }
+			</SpinnerButton>
+		);
+	}
+
 	useEffect( () => {
 		if ( prevIsOpen !== null ) {
 			// if current isOpen is true, and different from prevIsOpen
@@ -277,10 +302,9 @@ export default function Footer( {
 	}
 
 	return (
-		<footer className="googlesitekit-km-selection-panel-footer">
-			{ saveError && <ErrorNotice error={ saveError } /> }
-			<div className="googlesitekit-km-selection-panel-footer__content">
-				{ haveSettingsChanged && metricsLimitError ? (
+		<SelectionPanelFooter
+			DisplayError={
+				haveSettingsChanged && metricsLimitError ? (
 					<ErrorNotice
 						error={ {
 							message: metricsLimitError,
@@ -290,54 +314,17 @@ export default function Footer( {
 							selectedMetricsCount > MAX_SELECTED_METRICS_COUNT
 						}
 					/>
-				) : (
-					<p className="googlesitekit-km-selection-panel-footer__metric-count">
-						{ createInterpolateElement(
-							sprintf(
-								/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
-								__(
-									'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
-									'google-site-kit'
-								),
-								selectedMetricsCount,
-								MAX_SELECTED_METRICS_COUNT
-							),
-							{
-								MaxCount: (
-									<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count" />
-								),
-							}
-						) }
-					</p>
-				) }
-				<div className="googlesitekit-km-selection-panel-footer__actions">
-					<Button
-						tertiary
-						onClick={ onCancelClick }
-						disabled={ isSavingSettings || isNavigatingToOAuthURL }
-					>
-						{ __( 'Cancel', 'google-site-kit' ) }
-					</Button>
-					<SpinnerButton
-						onClick={ onSaveClick }
-						isSaving={ isSavingSettings || isNavigatingToOAuthURL }
-						disabled={
-							selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
-							selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ||
-							isSavingSettings ||
-							( ! isOpen && wasSaved ) ||
-							isNavigatingToOAuthURL
-						}
-					>
-						{ finalButtonText || currentButtonText }
-					</SpinnerButton>
-				</div>
-			</div>
-		</footer>
+				) : null
+			}
+			saveError={ saveError }
+			selectedMetricsCount={ selectedMetricsCount }
+			CancelButton={ CancelButton }
+			SaveButton={ SaveButton }
+		/>
 	);
 }
 
-Footer.propTypes = {
+MetricsFooter.propTypes = {
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
 };

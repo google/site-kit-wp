@@ -34,7 +34,8 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
 import MetricsHeader from './MetricsHeader';
-import SelectionPanel, { Footer, Items } from '../../SelectionPanel';
+import MetricsFooter from './MetricsFooter';
+import SelectionPanel, { Items } from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
@@ -90,7 +91,7 @@ export default function MetricsSelectionPanel() {
 					},
 				} }
 			/>
-			<Footer />
+			<MetricsFooter />
 		</SelectionPanel>
 	);
 }
