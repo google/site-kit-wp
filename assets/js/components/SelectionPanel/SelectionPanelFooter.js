@@ -22,20 +22,13 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import ErrorNotice from '../ErrorNotice';
 
 export default function SelectionPanelFooter( {
-	DisplayError = null,
 	saveError,
-	selectedMetricsCount = 0,
+	Content,
 	CancelButton,
 	SaveButton,
 } ) {
@@ -45,30 +38,7 @@ export default function SelectionPanelFooter( {
 		<footer className={ className }>
 			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className={ `${ className }__content` }>
-				{ DisplayError !== null ? (
-					<DisplayError />
-				) : (
-					<p className={ `${ className }__metric-count` }>
-						{ createInterpolateElement(
-							sprintf(
-								/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
-								__(
-									'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
-									'google-site-kit'
-								),
-								selectedMetricsCount,
-								4
-							),
-							{
-								MaxCount: (
-									<span
-										className={ `${ className }__metric-count--max-count` }
-									/>
-								),
-							}
-						) }
-					</p>
-				) }
+				<Content className={ className } />
 				<div className={ `${ className }__actions` }>
 					<CancelButton />
 					<SaveButton />

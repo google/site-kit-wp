@@ -20,12 +20,17 @@
  * External dependencies
  */
 import { isEqual } from 'lodash';
-import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState, useMemo } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
+	useMemo,
+} from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -215,8 +220,8 @@ export default function MetricsFooter( {
 		isOpen,
 		currentButtonText,
 		setValues,
-		hasAnalytics4EditScope,
 		onNavigationToOAuthURL,
+		hasAnalytics4EditScope,
 		setValue,
 		setPermissionScopeError,
 		redirectURL,
@@ -229,6 +234,13 @@ export default function MetricsFooter( {
 
 	const [ prevIsOpen, setPrevIsOpen ] = useState( null );
 
+	/**
+	 * Returns the cancel button for key metrics selection panel.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {JSX} Cancel button element.
+	 */
 	function CancelButton() {
 		return (
 			<Button
@@ -241,6 +253,51 @@ export default function MetricsFooter( {
 		);
 	}
 
+	function Content( { className } ) {
+		if ( haveSettingsChanged && metricsLimitError ) {
+			return (
+				<ErrorNotice
+					error={ {
+						message: metricsLimitError,
+					} }
+					noPrefix={
+						selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
+						selectedMetricsCount > MAX_SELECTED_METRICS_COUNT
+					}
+				/>
+			);
+		}
+		return (
+			<p className={ `${ className }__metric-count` }>
+				{ createInterpolateElement(
+					sprintf(
+						/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
+						__(
+							'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
+							'google-site-kit'
+						),
+						selectedMetricsCount,
+						MAX_SELECTED_METRICS_COUNT
+					),
+					{
+						MaxCount: (
+							<span
+								className={ `${ className }__metric-count--max-count` }
+							/>
+						),
+					}
+				) }
+			</p>
+		);
+	}
+
+	/**
+	 * Returns the save button for key metrics selection panel.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {JSX} Save button element.
+	 */
 	function SaveButton() {
 		return (
 			<SpinnerButton
@@ -303,19 +360,7 @@ export default function MetricsFooter( {
 
 	return (
 		<SelectionPanelFooter
-			DisplayError={
-				haveSettingsChanged && metricsLimitError ? (
-					<ErrorNotice
-						error={ {
-							message: metricsLimitError,
-						} }
-						noPrefix={
-							selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ||
-							selectedMetricsCount > MAX_SELECTED_METRICS_COUNT
-						}
-					/>
-				) : null
-			}
+			Content={ Content }
 			saveError={ saveError }
 			selectedMetricsCount={ selectedMetricsCount }
 			CancelButton={ CancelButton }
@@ -323,8 +368,3 @@ export default function MetricsFooter( {
 		/>
 	);
 }
-
-MetricsFooter.propTypes = {
-	savedMetrics: PropTypes.array,
-	onNavigationToOAuthURL: PropTypes.func,
-};
