@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import { render, waitFor } from '../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { render, waitFor } from '../../../../../../../tests/js/test-utils';
+import { createTestRegistry } from '../../../../../../../tests/js/utils';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import SettingsCardVisitorGroups from './SettingsCardVisitorGroups';
 
 describe( 'SettingsCardVisitorGroups', () => {
@@ -39,7 +39,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 		} );
 
 		const switchControl = getByLabelText(
-			'Display visitors groups in dashboard'
+			'Display visitor groups in dashboard'
 		);
 
 		await waitFor( () => {
@@ -70,7 +70,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 		} );
 
 		const switchControl = getByLabelText(
-			'Display visitors groups in dashboard'
+			'Display visitor groups in dashboard'
 		);
 
 		expect( switchControl ).not.toBeChecked();

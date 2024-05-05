@@ -24,8 +24,8 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import SettingsCardVisitorGroups from './SettingsCardVisitorGroups';
 
 function Template() {
@@ -35,11 +35,11 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation//SettingsCardVisitorGroups/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups/Default',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/SettingsCardVisitorGroups',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

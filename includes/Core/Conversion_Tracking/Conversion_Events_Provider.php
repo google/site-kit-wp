@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Assets\Script;
  * Base class for conversion events provider.
  *
  * @since 1.125.0
- * @since n.e.x.t Changed from interface to abstract class.
+ * @since 1.126.0 Changed from interface to abstract class.
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ abstract class Conversion_Events_Provider {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 * @var Context
 	 */
 	protected $context;
@@ -34,7 +34,7 @@ abstract class Conversion_Events_Provider {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
