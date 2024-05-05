@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules;
 
 use Exception;
-use Google\Service\CloudHealthcare\Feature;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;

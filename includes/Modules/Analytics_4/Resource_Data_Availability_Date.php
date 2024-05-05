@@ -93,7 +93,7 @@ class Resource_Data_Availability_Date {
 	}
 
 	/**
-	 * Resets the data availability date for given resource.
+	 * Resets the data availability date for the given resource.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -110,15 +110,17 @@ class Resource_Data_Availability_Date {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Associative array of resource names and their data availability state.
+	 * @return array Associative array of resource names and their data availability date.
 	 */
 	public function get_all_resource_dates() {
 		$property_id         = $this->get_property_id();
 		$available_audiences = $this->get_available_audience_resource_names();
 
 		return array_map(
+			// Filter out falsy values (0) from every resource's data availability dates.
 			fn( $data_availability_dates ) => array_filter( $data_availability_dates ),
 			array(
+				// Get data availability dates for the available audiences.
 				self::RESOURCE_TYPE_AUDIENCE         => array_reduce(
 					$available_audiences,
 					function ( $audience_data_availability_dates, $audience ) {
@@ -127,6 +129,7 @@ class Resource_Data_Availability_Date {
 					},
 					array()
 				),
+				// Get data availability dates for the custom dimensions.
 				self::RESOURCE_TYPE_CUSTOM_DIMENSION => array_reduce(
 					self::CUSTOM_DIMENSION_SLUGS,
 					function ( $custom_dimension_data_availability_dates, $custom_dimension ) {
@@ -135,6 +138,7 @@ class Resource_Data_Availability_Date {
 					},
 					array()
 				),
+				// Get data availability date for the current property.
 				self::RESOURCE_TYPE_PROPERTY         => array(
 					$property_id => $this->get_resource_date(
 						$property_id,
@@ -204,15 +208,15 @@ class Resource_Data_Availability_Date {
 		}
 	}
 
-		/**
-		 * Gets data available date transient name for the given resource.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $resource_slug Resource slug.
-		 * @param string $resource_type Resource type.
-		 * @return string Data available date transient name.
-		 */
+	/**
+	 * Gets data available date transient name for the given resource.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $resource_slug Resource slug.
+	 * @param string $resource_type Resource type.
+	 * @return string Data available date transient name.
+	 */
 	protected function get_resource_transient_name( $resource_slug, $resource_type ) {
 		return "googlesitekit_{$resource_type}_{$resource_slug}_data_availability_date";
 	}
