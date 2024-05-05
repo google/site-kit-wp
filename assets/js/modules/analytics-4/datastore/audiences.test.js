@@ -456,7 +456,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 		} );
 
-		describe( 'haveAudiences', () => {
+		describe( 'hasAudiences', () => {
 			const testAudience1 = {
 				name: 'properties/12345/audiences/12345',
 			};
@@ -476,7 +476,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.haveAudiences( testAudience1ResourceName )
+						.hasAudiences( testAudience1ResourceName )
 				).toBe( undefined );
 
 				await waitForDefaultTimeouts();
@@ -492,7 +492,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.haveAudiences( testAudience1ResourceName )
+						.hasAudiences( testAudience1ResourceName )
 				).toBe( false );
 
 				await waitForDefaultTimeouts();
@@ -506,13 +506,13 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.haveAudiences( testAudience1ResourceName )
+						.hasAudiences( testAudience1ResourceName )
 				).toBe( true );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.haveAudiences( [
+						.hasAudiences( [
 							testAudience1ResourceName,
 							testAudience2ResourceName,
 						] )
@@ -527,13 +527,13 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.haveAudiences( 'properties/12345/audiences/54321' )
+						.hasAudiences( 'properties/12345/audiences/54321' )
 				).toBe( false );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.haveAudiences( [
+						.hasAudiences( [
 							testAudience1ResourceName,
 							'properties/12345/audiences/54321',
 						] )

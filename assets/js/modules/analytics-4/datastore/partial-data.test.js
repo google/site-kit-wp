@@ -65,7 +65,7 @@ const saveResourceDataAvailabilityDate = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/save-resource-data-availability-date'
 );
 
-// TODO: use `replaceAll` instead of `replace` accross the file when we upgrade our Node version.
+// TODO: use `replaceAll` instead of `replace` across the file when we upgrade our Node version.
 
 describe( 'modules/analytics-4 partial data', () => {
 	let registry;
@@ -237,7 +237,7 @@ describe( 'modules/analytics-4 partial data', () => {
 				).toEqual( 20201220 );
 			} );
 
-			it( 'uses a resolver to determine the date and if the date is available. save it to server', async () => {
+			it( 'uses a resolver to determine the date and if the date is available. saves it to server', async () => {
 				fetchMock.postOnce( saveResourceDataAvailabilityDate, {
 					body: true,
 					status: 200,

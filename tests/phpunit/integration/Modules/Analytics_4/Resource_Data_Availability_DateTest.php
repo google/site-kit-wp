@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Modules\Analytics_4\Resource_Data_Availability_DateTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Analytics_4
- * @copyright 2023 Google LLC
+ * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -33,10 +33,10 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	 */
 	protected $resource_data_availability_date;
 
-	// Test property ID
+	// Test property ID.
 	protected $test_property_id = '12345';
 
-	// Test audience resource names
+	// Test audience resource names.
 	protected $test_audience_1 = 'properties/12345/audiences/12345';
 	protected $test_audience_2 = 'properties/12345/audiences/67890';
 
@@ -66,13 +66,13 @@ class Resource_Data_Availability_DateTest extends TestCase {
 
 	public function test_get_set_resource_date() {
 		// Should be 0 if no date is set for a given resource.
-		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION, ) );
+		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION ) );
 		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( $this->test_audience_1, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE ) );
 		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( $this->test_property_id, Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY ) );
 
 		$this->set_test_resource_dates();
 
-		$this->assertEquals( 20201220, $this->resource_data_availability_date->get_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION, ) );
+		$this->assertEquals( 20201220, $this->resource_data_availability_date->get_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION ) );
 		$this->assertEquals( 20201221, $this->resource_data_availability_date->get_resource_date( $this->test_audience_1, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE ) );
 		$this->assertEquals( 20201223, $this->resource_data_availability_date->get_resource_date( $this->test_property_id, Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY ) );
 	}
@@ -80,11 +80,11 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	public function test_reset_resource_date() {
 		$this->set_test_resource_dates();
 
-		$this->resource_data_availability_date->reset_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION, );
+		$this->resource_data_availability_date->reset_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION );
 		$this->resource_data_availability_date->reset_resource_date( $this->test_audience_1, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE );
 		$this->resource_data_availability_date->reset_resource_date( $this->test_property_id, Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY );
 
-		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION, ) );
+		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION ) );
 		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( $this->test_audience_1, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE ) );
 		$this->assertEquals( 20201222, $this->resource_data_availability_date->get_resource_date( $this->test_audience_2, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE ) );
 		$this->assertEquals( 0, $this->resource_data_availability_date->get_resource_date( $this->test_property_id, Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY ) );

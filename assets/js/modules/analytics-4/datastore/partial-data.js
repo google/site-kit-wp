@@ -240,7 +240,7 @@ const baseResolvers = {
 					);
 
 					if (
-						! select( MODULES_ANALYTICS_4 ).haveAudiences(
+						! select( MODULES_ANALYTICS_4 ).hasAudiences(
 							resourceSlug
 						)
 					) {
@@ -484,6 +484,7 @@ const baseSelectors = {
 				RESOURCE_TYPE_PROPERTY
 			)
 	),
+
 	/**
 	 * Gets report options for determining data availability date for a given resource.
 	 *
@@ -509,14 +510,13 @@ const baseSelectors = {
 				return undefined;
 			}
 
+			const startDate = getDateString( new Date( propertyCreateTime ) );
 			const endDate = select( CORE_USER ).getReferenceDate();
 
 			switch ( resourceType ) {
 				case RESOURCE_TYPE_AUDIENCE:
 					return {
-						startDate: getDateString(
-							new Date( propertyCreateTime )
-						),
+						startDate,
 						endDate,
 						dimensions: [ 'date', 'audienceResourceName' ],
 						dimensionFilters: {
@@ -535,9 +535,7 @@ const baseSelectors = {
 
 				case RESOURCE_TYPE_CUSTOM_DIMENSION:
 					return {
-						startDate: getDateString(
-							new Date( propertyCreateTime )
-						),
+						startDate,
 						endDate,
 						dimensions: [ 'date', `customEvent:${ resourceSlug }` ],
 						metrics: [ 'eventCount' ],
@@ -546,9 +544,7 @@ const baseSelectors = {
 
 				case RESOURCE_TYPE_PROPERTY:
 					return {
-						startDate: getDateString(
-							new Date( propertyCreateTime )
-						),
+						startDate,
 						endDate,
 						dimensions: [ 'date' ],
 						metrics: [ 'totalUsers' ],

@@ -217,10 +217,10 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object}               state                 Data store's state.
-	 * @param {string|Array<string>} audienceResourceNames Custom dimensions to check.
+	 * @param {string|Array<string>} audienceResourceNames The audience resource names to check.
 	 * @return {boolean} True if all provided audiences are available, otherwise false. Undefined if available audiences are not loaded yet.
 	 */
-	haveAudiences: createRegistrySelector(
+	hasAudiences: createRegistrySelector(
 		( select ) => ( state, audienceResourceNames ) => {
 			const audiencesToCheck = Array.isArray( audienceResourceNames )
 				? audienceResourceNames
