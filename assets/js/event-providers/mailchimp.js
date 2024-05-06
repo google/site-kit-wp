@@ -19,11 +19,9 @@
 		return;
 	}
 
-	mc4wp.forms.on( 'subscribed', function ( form ) {
+	mc4wp.forms.on( 'subscribed', () => {
 		global.gtag( 'event', 'submit_lead_form', {
 			event_category: 'mailchimp',
-			formID: form.id,
-			formName: form.name,
 		} );
 	} );
 } )( global.mc4wp );
