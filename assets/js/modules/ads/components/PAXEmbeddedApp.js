@@ -86,13 +86,14 @@ export default function PAXEmbeddedApp( {
 
 	const launchPAXApp = useCallback( async () => {
 		try {
-			paxAppRef.current =
+			const app =
 				await global.google.ads.integration.integrator.launchGoogleAds(
 					paxConfig,
 					paxServices
 				);
+			paxAppRef.current = app;
 
-			onLaunch?.( paxAppRef.current );
+			onLaunch?.( app );
 		} catch ( error ) {
 			setLaunchError( error );
 			global.console.error(

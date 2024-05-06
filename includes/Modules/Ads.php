@@ -10,9 +10,12 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Assets\Script_Data;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -28,6 +31,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
@@ -35,6 +40,7 @@ use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
@@ -59,6 +65,36 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	const MODULE_SLUG = 'ads';
 
 	const SCOPE = 'https://www.googleapis.com/auth/adwords';
+
+	/**
+	 * Input access abstraction.
+	 *
+	 * @since n.e.x.t
+	 * @var Input
+	 */
+	private $input;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+		$this->input = new Input();
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -126,8 +162,12 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					},
 				)
 			);
-
-			if ( current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) && $this->is_connected() ) {
+			// Integrator should be included if either Ads module is connected already,
+			// or we are on the Ads module setup screen.
+			if (
+				current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) &&
+				( $this->is_connected() || is_admin() && 'googlesitekit-dashboard' === $this->input->filter( INPUT_GET, 'page' ) && 'ads' === $this->input->filter( INPUT_GET, 'slug' ) )
+			) {
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
 					array(
@@ -219,13 +259,18 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
 	 * @since 1.122.0
+	 * @since n.e.x.t Add additional check to account for paxConversionID and extCustomerID as well when feature flag is enabled.
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
 		$options = $this->get_settings()->get();
 
-		return parent::is_connected() && ( ! empty( $options['conversionID'] ) || ! empty( $options['paxConversionID'] ) || ! empty( $options['extCustomerID'] ) );
+		if ( Feature_Flags::enabled( 'adsPax' ) ) {
+			return parent::is_connected() && ( ! empty( $options['conversionID'] ) || ! empty( $options['paxConversionID'] ) || ! empty( $options['extCustomerID'] ) );
+		}
+
+		return parent::is_connected() && ! empty( $options['conversionID'] );
 	}
 
 	/**

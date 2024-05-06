@@ -92,6 +92,30 @@ class AdsTest extends TestCase {
 		$this->assertTrue( $this->ads->is_connected() );
 	}
 
+	public function test_is_connected__when_pax_conversion_id_is_set() {
+		$this->assertFalse( $this->ads->is_connected() );
+
+		self::enable_feature( 'adsPax' );
+
+		$this->ads->get_settings()->set(
+			array( 'paxConversionID' => 'AW-123456789' )
+		);
+
+		$this->assertTrue( $this->ads->is_connected() );
+	}
+
+	public function test_is_connected__when_ext_customer_id_is_set() {
+		$this->assertFalse( $this->ads->is_connected() );
+
+		self::enable_feature( 'adsPax' );
+
+		$this->ads->get_settings()->set(
+			array( 'extCustomerID' => '123456789' )
+		);
+
+		$this->assertTrue( $this->ads->is_connected() );
+	}
+
 	public function test_inline_modules_data__module_not_connected() {
 		self::enable_feature( 'adsPax' );
 

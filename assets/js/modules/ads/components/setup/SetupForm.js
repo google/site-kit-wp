@@ -38,14 +38,19 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupForm( { finishSetup } ) {
+export default function SetupForm( {
+	finishSetup,
+	createAccountCTA,
+	isNavigatingToOAuthURL,
+} ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADS ).canSubmitChanges()
 	);
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_ADS ).isDoingSubmitChanges() ||
-			select( CORE_LOCATION ).isNavigating()
+			( select( CORE_LOCATION ).isNavigating() &&
+				! isNavigatingToOAuthURL )
 	);
 
 	const { submitChanges } = useDispatch( MODULES_ADS );
@@ -71,6 +76,12 @@ export default function SetupForm( { finishSetup } ) {
 				<ConversionIDTextField />
 			</div>
 
+			{ createAccountCTA && (
+				<div className="googlesitekit-setup-module__create-account">
+					{ createAccountCTA }
+				</div>
+			) }
+
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
 					disabled={ ! canSubmitChanges || isSaving }
@@ -85,8 +96,10 @@ export default function SetupForm( { finishSetup } ) {
 
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
+	createAccountCTA: PropTypes.oneOf( [ PropTypes.node, null ] ),
 };
 
 SetupForm.defaultProps = {
 	finishSetup: () => {},
+	createAccountCTA: null,
 };
