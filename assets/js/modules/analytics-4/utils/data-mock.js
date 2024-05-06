@@ -30,8 +30,9 @@ import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
-import { isValidDateString } from '../../../util';
+import { isValidDateString, stringifyObject } from '../../../util';
 import { stringToDate } from '../../../util/date-range/string-to-date';
+import { isValidDimensionFilters } from './report-validation';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';
@@ -386,10 +387,18 @@ export function getAnalytics4MockResponse(
 	const args = cloneDeep( options );
 
 	const originalSeedValue = faker.seedValue;
-	const argsHash = parseInt(
-		md5( args.url || 'http://example.com' ).substring( 0, 8 ),
-		16
-	);
+	const argsURL = args.url || 'http://example.com';
+
+	let seed = argsURL;
+
+	if (
+		args.dimensionFilters &&
+		isValidDimensionFilters( args.dimensionFilters )
+	) {
+		seed += stringifyObject( args.dimensionFilters );
+	}
+
+	const argsHash = parseInt( md5( seed ).substring( 0, 8 ), 16 );
 
 	// We set seed for every data mock to make sure that the same arguments get the same report data.
 	// It means that everyone will have the same report data and will see the same widgets in the storybook.
