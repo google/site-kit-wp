@@ -211,7 +211,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $settings['adsLinkedLastSyncedAt'], 0 );
 	}
 
-	public function test_register__reset_resource_data_availability_date() {
+	public function test_register__reset_resource_data_availability_date__on_property_id_change() {
 		$this->enable_feature( 'audienceSegmentation' );
 
 		list(
@@ -236,6 +236,83 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
 		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
 		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+	}
+
+	public function test_register__reset_resource_data_availability_date__on_measurement_id_change() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'measurementID' => 'B1B2C3D4E5',
+			)
+		);
+
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+	}
+
+	public function test_register__reset_resource_data_availability_date__on_available_audiences_change() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			$test_resource_slug_audience,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		// Should not reset audience when it is available.
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableAudiences' => array(
+					array(
+						'name' => $test_resource_slug_audience,
+					),
+					array(
+						'name' => 'properties/12345678/audiences/67890',
+					),
+				),
+			)
+		);
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+
+		// Should reset audience when it is no longer available.
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableAudiences' => array(
+					array(
+						'name' => 'properties/12345678/audiences/67890',
+					),
+				),
+			)
+		);
+
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+
+		// Should not reset other resources.
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
 	}
 
 	public function test_handle_provisioning_callback() {

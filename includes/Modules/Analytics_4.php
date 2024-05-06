@@ -241,6 +241,31 @@ final class Analytics_4 extends Module
 					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
 				}
 
+				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
+				$old_available_audiences = $old_value['availableAudiences'];
+				if ( $old_available_audiences ) {
+					$old_available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$old_available_audiences
+					);
+
+					$new_available_audiences      = $new_value['availableAudiences'] ?? array();
+					$new_available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$new_available_audiences
+					);
+
+					$unavailable_audience_names = array_diff( $old_available_audience_names, $new_available_audience_names );
+
+					foreach ( $unavailable_audience_names as $unavailable_audience_name ) {
+						$this->resource_data_availability_date->reset_resource_date( $unavailable_audience_name, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE );
+					}
+				}
+
 				// Reset property specific settings when propertyID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->get_settings()->merge(
