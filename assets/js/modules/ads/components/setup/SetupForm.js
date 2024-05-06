@@ -96,7 +96,7 @@ export default function SetupForm( {
 
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
-	createAccountCTA: PropTypes.oneOf( [ PropTypes.node, null ] ),
+	createAccountCTA: PropTypes.oneOf( [ PropTypes.element, null ] ),
 };
 
 SetupForm.defaultProps = {
