@@ -49,6 +49,7 @@ export default function PAXEmbeddedApp( {
 	// eslint-disable-next-line no-unused-vars
 	displayMode = 'default',
 	onLaunch,
+	onCampaignCreated,
 } ) {
 	const [ launchGoogleAdsAvailable, setLaunchGoogleAdsAvailable ] = useState(
 		typeof global?.google?.ads?.integration?.integrator?.launchGoogleAds ===
@@ -62,8 +63,8 @@ export default function PAXEmbeddedApp( {
 	const registry = useRegistry();
 
 	const paxServices = useMemo( () => {
-		return createPaxServices( registry );
-	}, [ registry ] );
+		return createPaxServices( registry, onCampaignCreated );
+	}, [ registry, onCampaignCreated ] );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
