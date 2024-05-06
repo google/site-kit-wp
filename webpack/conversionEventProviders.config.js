@@ -36,6 +36,7 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		'optin-monster': './assets/js/event-providers/optin-monster.js',
+		woocommerce: './assets/js/event-providers/woocommerce.js',
 	},
 	externals,
 	output: {
@@ -67,8 +68,8 @@ module.exports = ( mode ) => ( {
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Conversion Event Provider Modules',
-			color: '#fb1105',
+			name: 'Conversion Providers',
+			color: '#34dbeb',
 		} ),
 		new ManifestPlugin( {
 			...manifestArgs( mode ),
