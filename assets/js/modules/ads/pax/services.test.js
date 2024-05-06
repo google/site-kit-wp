@@ -152,6 +152,28 @@ describe( 'PAX partner services', () => {
 					] );
 				} );
 			} );
+			describe( 'campaignService', () => {
+				describe( 'notifyNewCampaignCreated', () => {
+					it( 'should return a callback function', async () => {
+						const mockOnCampaignCreated = jest.fn();
+						const servicesWithCampaign = createPaxServices(
+							registry,
+							mockOnCampaignCreated
+						);
+
+						await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
+
+						expect( servicesWithCampaign ).toEqual(
+							expect.objectContaining( {
+								campaignService: expect.objectContaining( {
+									notifyNewCampaignCreated:
+										mockOnCampaignCreated,
+								} ),
+							} )
+						);
+					} );
+				} );
+			} );
 		} );
 	} );
 } );
