@@ -35,6 +35,7 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
+		mailchimp: './assets/js/event-providers/mailchimp.js',
 		'optin-monster': './assets/js/event-providers/optin-monster.js',
 	},
 	externals,
