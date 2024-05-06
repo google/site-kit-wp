@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use LogicException;
 
@@ -37,6 +38,7 @@ class Conversion_Tracking {
 	 * @var array
 	 */
 	public static $providers = array(
+		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG    => Mailchimp::class,
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG => OptinMonster::class,
 	);
 
