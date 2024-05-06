@@ -46,12 +46,14 @@ const restFetchWpPages = async () => {
  * Returns PAX services.
  *
  * @since 1.126.0
+ * @since n.e.x.t Added onCampaignCreated parameter.
  *
- * @param {Object} registry Registry object to dispatch to.
+ * @param {Object} registry          Registry object to dispatch to.
+ * @param {Object} onCampaignCreated Optional. Callback function that will be called when campaign is created.
  * @return {Object} An object containing various service interfaces.
  */
-export function createPaxServices( registry ) {
-	return {
+export function createPaxServices( registry, onCampaignCreated ) {
+	const services = {
 		businessService: {
 			getBusinessInfo: async () => {
 				await registry
@@ -89,4 +91,12 @@ export function createPaxServices( registry ) {
 			notify: async () => {},
 		},
 	};
+
+	if ( onCampaignCreated ) {
+		services.campaignService = {
+			notifyNewCampaignCreated: onCampaignCreated,
+		};
+	}
+
+	return services;
 }
