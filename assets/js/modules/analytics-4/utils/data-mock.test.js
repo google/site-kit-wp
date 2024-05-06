@@ -75,6 +75,32 @@ describe( 'getAnalytics4MockResponse', () => {
 		expect( report.rows ).toHaveLength( 5 );
 	} );
 
+	it( 'generates unique reports based on dimensionFilters', () => {
+		const reportArgs = {
+			startDate: '2020-12-29',
+			endDate: '2021-01-02',
+			metrics: [
+				{
+					name: 'sessions',
+				},
+				{
+					name: 'engagementRate',
+				},
+			],
+			dimensions: [ 'date', 'testDimension' ],
+		};
+		const report1 = getAnalytics4MockResponse( reportArgs );
+
+		const report2 = getAnalytics4MockResponse( {
+			...reportArgs,
+			dimensionFilters: {
+				testDimension: '1234',
+			},
+		} );
+
+		expect( report1 ).not.toEqual( report2 );
+	} );
+
 	it( 'generates a valid report with multiple distinct date ranges', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-01',
