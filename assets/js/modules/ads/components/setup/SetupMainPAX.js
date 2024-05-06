@@ -28,6 +28,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
+	useState,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
@@ -51,6 +52,7 @@ const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ pax, setPax ] = useQueryArg( 'pax' );
+	const [ paxApp, setPaxApp ] = useState( null );
 
 	const registry = useRegistry();
 
@@ -84,60 +86,63 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
 
+	const onCampaignCreated = useCallback( async () => {
+		if ( ! paxApp ) {
+			return;
+		}
+
+		/* eslint-disable sitekit/acronym-case */
+		// Disabling rule because function and property names
+		// are expected in current format by PAX API.
+		const customerData = await paxApp
+			.getServices()
+			?.accountService?.getAccountId( {} );
+		const conversionTrackingData = await paxApp
+			.getServices()
+			?.conversionTrackingIdService?.getConversionTrackingId( {} );
+
+		if (
+			customerData.externalCustomerId &&
+			conversionTrackingData.conversionTrackingId
+		) {
+			setExtCustomerID( customerData.externalCustomerId );
+			setPaxConversionID( conversionTrackingData.conversionTrackingId );
+			/* eslint-enable sitekit/acronym-case */
+		}
+
+		const { error } = await submitChanges();
+
+		// Since callback is mostly invoked pretty early, site info migth not be resolved yet.
+		// We need to ensure data is resolved otherwise admin url will be undefined and finishSetup
+		// will trigger console error instead of redirecting to the dashboard.
+		await registry.__experimentalResolveSelect( CORE_SITE ).getSiteInfo();
+
+		const adminURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-dashboard', {
+				notification: 'authentication_success',
+				slug: 'ads',
+			} );
+
+		if ( ! error ) {
+			finishSetup( adminURL );
+		}
+	}, [
+		paxApp,
+		setExtCustomerID,
+		setPaxConversionID,
+		submitChanges,
+		registry,
+		finishSetup,
+	] );
+
 	const onLaunch = useCallback(
-		async ( app ) => {
+		( app ) => {
 			if ( app && typeof app?.getServices === 'function' ) {
-				/* eslint-disable sitekit/acronym-case */
-				// Disabling rule because function and property names
-				// are expected in current format by PAX API.
-				const customerData = await app
-					.getServices()
-					?.accountService?.getAccountId( {} );
-				const conversionTrackingData = await app
-					.getServices()
-					?.conversionTrackingIdService?.getConversionTrackingId(
-						{}
-					);
-
-				if (
-					customerData.externalCustomerId &&
-					conversionTrackingData.conversionTrackingId
-				) {
-					setExtCustomerID( customerData.externalCustomerId );
-					setPaxConversionID(
-						conversionTrackingData.conversionTrackingId
-					);
-					/* eslint-enable sitekit/acronym-case */
-
-					const { error } = await submitChanges();
-
-					// Since callback is mostly invoked pretty early, site info is not resolved yet.
-					// We need to ensure data is resolved otherwise admin url will be undefined and finishSetup
-					// will trigger console error instead of redirecting to the dashboard.
-					await registry
-						.__experimentalResolveSelect( CORE_SITE )
-						.getSiteInfo();
-
-					const adminURL = registry
-						.select( CORE_SITE )
-						.getAdminURL( 'googlesitekit-dashboard', {
-							notification: 'authentication_success',
-							slug: 'ads',
-						} );
-
-					if ( ! error ) {
-						finishSetup( adminURL );
-					}
-				}
+				setPaxApp( app );
 			}
 		},
-		[
-			setExtCustomerID,
-			setPaxConversionID,
-			submitChanges,
-			registry,
-			finishSetup,
-		]
+		[ setPaxApp ]
 	);
 
 	const clickCallback = useCallback( () => {
@@ -164,7 +169,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 			{ ! isAdBlockerActive &&
 				( pax && hasAdwordsScope ? (
-					<PAXEmbeddedApp displayMode="setup" onLaunch={ onLaunch } />
+					<PAXEmbeddedApp
+						displayMode="setup"
+						onLaunch={ onLaunch }
+						onCampaignCreated={ onCampaignCreated }
+					/>
 				) : (
 					<Fragment>
 						<div className="googlesitekit-setup-module__description">
