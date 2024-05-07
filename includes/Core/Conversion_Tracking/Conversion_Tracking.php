@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMaker;
 use LogicException;
 
 /**
@@ -38,6 +39,7 @@ class Conversion_Tracking {
 	 */
 	public static $providers = array(
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG => OptinMonster::class,
+		PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG   => PopupMaker::class,
 	);
 
 	/**
