@@ -28,13 +28,13 @@ function PanelItem( {
 	description,
 	suffix,
 	onChange,
-	checked,
 	disabled,
+	savedMetric,
 } ) {
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
 			<SelectionBox
-				checked={ checked }
+				checked={ savedMetric }
 				disabled={ disabled }
 				id={ id }
 				onChange={ onChange }
