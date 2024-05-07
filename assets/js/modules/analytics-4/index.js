@@ -52,6 +52,7 @@ import {
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 } from '../../googlesitekit/widgets/default-areas';
 import {
 	CORE_USER,
@@ -81,6 +82,10 @@ import {
 	DashboardOverallPageMetricsWidgetGA4,
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
+import {
+	AudienceTilesWidget,
+	InfoNoticeWidget,
+} from './components/audience-segmentation/dashboard';
 
 export { registerStore } from './datastore';
 
@@ -114,6 +119,30 @@ export const registerWidgets = ( widgets ) => {
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudienceTiles',
+		{
+			Component: AudienceTilesWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudienceInfoNotice',
+		{
+			Component: InfoNoticeWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
 	);
 
 	widgets.registerWidget(
