@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use LogicException;
 
 /**
@@ -40,6 +41,7 @@ class Conversion_Tracking {
 	public static $providers = array(
 		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
+		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG    => WooCommerce::class,
 	);
 
 	/**
@@ -62,6 +64,11 @@ class Conversion_Tracking {
 		add_action(
 			'wp_enqueue_scripts',
 			function() {
+				// Do nothing if neither Ads nor Analytics snippet has been inserted.
+				if ( ! did_action( 'googlesitekit_ads_init_tag' ) && ! did_action( 'googlesitekit_analytics-4_init_tag' ) ) {
+					return;
+				}
+
 				$active_providers = $this->get_active_providers();
 
 				array_walk(
@@ -127,4 +134,5 @@ class Conversion_Tracking {
 
 		return $active_providers;
 	}
+
 }
