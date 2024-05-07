@@ -46,7 +46,6 @@ import { createPaxServices } from '../pax/services';
 const { useRegistry, useSelect } = Data;
 
 export default function PAXEmbeddedApp( {
-	// eslint-disable-next-line no-unused-vars
 	displayMode = 'default',
 	onLaunch,
 } ) {
