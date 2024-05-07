@@ -124,11 +124,11 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update WordPress Authorize Application Screen with enhanced design for Site Kit users. See [#8505](https://github.com/google/site-kit-wp/issues/8505).
 * Enqueue stylesheet specific to the Authorize Application screen. See [#8504](https://github.com/google/site-kit-wp/issues/8504).
 * Add stylesheet for Authorize Application screen. See [#8503](https://github.com/google/site-kit-wp/issues/8503).
-* Replace direct calls to retrieve audiences with use of the cached list of audiences. Props ankitrox. See [#8487](https://github.com/google/site-kit-wp/issues/8487).
-* Add REST and datastore APIs for audience caching. Props ankitrox. See [#8486](https://github.com/google/site-kit-wp/issues/8486).
-* Add the `googlesitekit_consent_defaults` filter to allow customisation of Consent Mode defaults. Props ankitrox. See [#8383](https://github.com/google/site-kit-wp/issues/8383).
+* Replace direct calls to retrieve audiences with use of the cached list of audiences. See [#8487](https://github.com/google/site-kit-wp/issues/8487).
+* Add REST and datastore APIs for audience caching. See [#8486](https://github.com/google/site-kit-wp/issues/8486).
+* Add the `googlesitekit_consent_defaults` filter to allow customisation of Consent Mode defaults. See [#8383](https://github.com/google/site-kit-wp/issues/8383).
 * Remove warning about Ad campaigns in the Consent Mode deactivation modal if Google Ads is not connected. See [#8381](https://github.com/google/site-kit-wp/issues/8381).
-* Improve the deprecation warning for the `googlesitekit_analytics-4_tag_block_on_consent` filter. Props ankitrox. See [#8362](https://github.com/google/site-kit-wp/issues/8362).
+* Improve the deprecation warning for the `googlesitekit_analytics-4_tag_block_on_consent` filter. See [#8362](https://github.com/google/site-kit-wp/issues/8362).
 * Add the Full Width Error Banner for the Audience Segmentation feature as a component in Storybook. See [#8230](https://github.com/google/site-kit-wp/issues/8230).
 * Add introductory popup for Audience Segmentation. See [#8171](https://github.com/google/site-kit-wp/issues/8171).
 * Add the Audience Tiles widget as a component in Storybook. See [#8136](https://github.com/google/site-kit-wp/issues/8136).
