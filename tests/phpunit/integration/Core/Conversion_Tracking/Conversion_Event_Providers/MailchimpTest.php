@@ -27,6 +27,16 @@ class MailchimpTest extends TestCase {
 		$this->mailchimp = new Mailchimp( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
+	public static function tear_down_after_class() {
+		parent::tear_down_after_class();
+
+		if ( function_exists( 'runkit7_constant_remove' ) ) {
+			runkit7_constant_remove( 'MC4WP_VERSION' );
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
+			runkit_constant_remove( 'MC4WP_VERSION' );
+		}
+	}
+
 	public function test_is_active() {
 		$this->assertFalse( $this->mailchimp->is_active() );
 		define( 'MC4WP_VERSION', 1 );
@@ -40,9 +50,12 @@ class MailchimpTest extends TestCase {
 	}
 
 	public function test_register_script() {
+		$handle = 'gsk-cep-' . Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG;
+		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
+
 		$script = $this->mailchimp->register_script();
 		$this->assertInstanceOf( Script::class, $script );
-		$this->assertTrue( wp_script_is( 'gsk-cep-' . Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG, 'registered' ) );
+		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
 
 }
