@@ -33,7 +33,7 @@ import {
 	audiences as audiencesFixture,
 	availableAudiences,
 } from './../../../datastore/__fixtures__';
-import AudienceTiles from './AudienceTiles';
+import AudienceTilesWidget from './AudienceTilesWidget';
 
 const totalPageviewsReportOptions = {
 	endDate: '2024-03-27',
@@ -77,7 +77,7 @@ const topContentPageTitlesReportOptions = {
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'audienceSegmentation'
-)( AudienceTiles );
+)( AudienceTilesWidget );
 
 function Template( { args } ) {
 	return <WidgetWithComponentProps { ...args } />;
@@ -93,7 +93,7 @@ Default.args = {
 	],
 };
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/Default',
 };
 
 export const TwoTiles = Template.bind( {} );
@@ -105,11 +105,11 @@ TwoTiles.args = {
 	],
 };
 TwoTiles.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles/TwoTiles',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTiles',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
 	decorators: [
 		( Story, { args: { grantedScopes, configuredAudiences } } ) => {
 			const audiencesDimensionFilter = {
