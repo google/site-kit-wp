@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-document.addEventListener( 'DOMContentLoaded', () => {
-	const { jQuery } = global;
+( ( jQuery ) => {
 	if ( ! jQuery ) {
 		return;
 	}
 
-	jQuery( '.wpforms-ajax-form' ).on( 'wpformsAjaxSubmitSuccess', () => {
+	jQuery( global.document.body ).on( 'wpformsAjaxSubmitSuccess', () => {
 		global.gtag( 'event', 'submit_lead_form' );
 	} );
-} );
+} )( global.jQuery );
