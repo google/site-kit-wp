@@ -27,25 +27,13 @@ import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import AudienceSegmentationSetupCTAWidget from './AudienceSegmentationSetupCTAWidget';
-import { __ } from '@wordpress/i18n';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'audienceSegmentationSetupCTATile'
+	'audienceSegmentationSetupCTA'
 )( AudienceSegmentationSetupCTAWidget );
 
 function Template() {
-	return (
-		<WidgetWithComponentProps
-			title={ __(
-				'Learn how different types of visitors interact with your site',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
-				'google-site-kit'
-			) }
-		/>
-	);
+	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );

@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback, useState } from '@wordpress/element';
 
@@ -32,6 +33,7 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import whenActive from '../../../../../util/when-active';
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
 	BREAKPOINT_SMALL,
@@ -42,7 +44,7 @@ import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-se
 import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 
-function AudienceSegmentationSetupCTAWidget( { Widget, title, description } ) {
+function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
@@ -52,83 +54,105 @@ function AudienceSegmentationSetupCTAWidget( { Widget, title, description } ) {
 		setIsSaving( true );
 	}, [] );
 
+	// TODO: We need to refactor this and the ConsentModeSetupCTAWidget to avoid this duplicate inlining of the widget context and area structure,
+	// and to ensure only one of these setup CTAs is shown at a time.
 	return (
-		<Widget
-			noPadding
-			className="googlesitekit-audience-segmentation-setup-cta-widget"
-		>
-			<Grid collapsed>
+		<div className="googlesitekit-widget-context">
+			<Grid className="googlesitekit-widget-area">
 				<Row>
-					<Cell
-						smSize={ 6 }
-						mdSize={ 8 }
-						lgSize={ 7 }
-						className="googlesitekit-widget-audience-segmentation-primary-cell"
-					>
-						<div className="googlesitekit-widget-audience-segmentation-text__wrapper">
-							<h3 className="googlesitekit-publisher-win__title">
-								{ title }
-							</h3>
-							<p>{ description }</p>
-						</div>
-						<div className="googlesitekit-widget-audience-segmentation-actions__wrapper">
-							<Fragment>
-								<SpinnerButton
-									className="googlesitekit-audience-segmentation-cta-button"
-									onClick={ onEnableGroups }
-									isSaving={ isSaving }
-								>
-									{ isSaving
-										? __(
-												'Enabling groups',
-												'google-site-kit'
-										  )
-										: __(
-												'Enable groups',
-												'google-site-kit'
-										  ) }
-								</SpinnerButton>
-								<Button
-									tertiary
-									onClick={ () => {
-										return false; // @todo update when logic ready.
-									} }
-								>
-									{ __( 'Maybe later', 'google-site-kit' ) }
-								</Button>
-							</Fragment>
-						</div>
+					<Cell size={ 12 }>
+						<Widget
+							noPadding
+							className="googlesitekit-audience-segmentation-setup-cta-widget"
+						>
+							<Grid collapsed>
+								<Row>
+									<Cell
+										smSize={ 6 }
+										mdSize={ 8 }
+										lgSize={ 7 }
+										className="googlesitekit-widget-audience-segmentation-primary-cell"
+									>
+										<div className="googlesitekit-widget-audience-segmentation-text__wrapper">
+											<h3 className="googlesitekit-publisher-win__title">
+												{ __(
+													'Learn how different types of visitors interact with your site',
+													'google-site-kit'
+												) }
+											</h3>
+											<p>
+												{ __(
+													'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
+													'google-site-kit'
+												) }
+											</p>
+										</div>
+										<div className="googlesitekit-widget-audience-segmentation-actions__wrapper">
+											<Fragment>
+												<SpinnerButton
+													className="googlesitekit-audience-segmentation-cta-button"
+													onClick={ onEnableGroups }
+													isSaving={ isSaving }
+												>
+													{ isSaving
+														? __(
+																'Enabling groups',
+																'google-site-kit'
+														  )
+														: __(
+																'Enable groups',
+																'google-site-kit'
+														  ) }
+												</SpinnerButton>
+												<Button
+													tertiary
+													onClick={ () => {
+														return false; // @todo update when logic ready.
+													} }
+												>
+													{ __(
+														'Maybe later',
+														'google-site-kit'
+													) }
+												</Button>
+											</Fragment>
+										</div>
+									</Cell>
+									{ ! isMobileBreakpoint &&
+										! isTabletBreakpoint && (
+											<Cell
+												alignBottom
+												className="googlesitekit-widget-audience-segmentation-svg__wrapper"
+												smSize={ 6 }
+												mdSize={ 3 }
+												lgSize={ 5 }
+											>
+												<BannerGraphicsSVGDesktop />
+											</Cell>
+										) }
+									{ isTabletBreakpoint && (
+										<Cell
+											className="googlesitekit-widget-audience-segmentation-svg__wrapper"
+											mdSize={ 8 }
+										>
+											<BannerGraphicsSVGTablet />
+										</Cell>
+									) }
+									{ isMobileBreakpoint && (
+										<Cell
+											className="googlesitekit-widget-audience-segmentation-svg__wrapper"
+											smSize={ 8 }
+										>
+											<BannerGraphicsSVGMobile />
+										</Cell>
+									) }
+								</Row>
+							</Grid>
+						</Widget>
 					</Cell>
-					{ ! isMobileBreakpoint && ! isTabletBreakpoint && (
-						<Cell
-							alignBottom
-							className="googlesitekit-widget-audience-segmentation-svg__wrapper"
-							smSize={ 6 }
-							mdSize={ 3 }
-							lgSize={ 5 }
-						>
-							<BannerGraphicsSVGDesktop />
-						</Cell>
-					) }
-					{ isTabletBreakpoint && (
-						<Cell
-							className="googlesitekit-widget-audience-segmentation-svg__wrapper"
-							mdSize={ 8 }
-						>
-							<BannerGraphicsSVGTablet />
-						</Cell>
-					) }
-					{ isMobileBreakpoint && (
-						<Cell
-							className="googlesitekit-widget-audience-segmentation-svg__wrapper"
-							smSize={ 8 }
-						>
-							<BannerGraphicsSVGMobile />
-						</Cell>
-					) }
 				</Row>
 			</Grid>
-		</Widget>
+		</div>
 	);
 }
 
@@ -137,6 +161,7 @@ AudienceSegmentationSetupCTAWidget.propTypes = {
 	WidgetNull: PropTypes.elementType,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
-	AudienceSegmentationSetupCTAWidget
-);
+export default compose(
+	whenActive( { moduleName: 'analytics-4' } ),
+	withWidgetComponentProps( 'audienceSegmentationSetupCTA' )
+)( AudienceSegmentationSetupCTAWidget );
