@@ -1,5 +1,5 @@
 /**
- * AudienceTiles component.
+ * AudienceTilesWidget component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -47,7 +47,7 @@ import AudienceTooltipMessage from './AudienceTooltipMessage';
 
 const { useSelect } = Data;
 
-export default function AudienceTiles( { Widget } ) {
+export default function AudienceTilesWidget( { Widget } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -351,6 +351,6 @@ export default function AudienceTiles( { Widget } ) {
 	);
 }
 
-AudienceTiles.propTypes = {
+AudienceTilesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
