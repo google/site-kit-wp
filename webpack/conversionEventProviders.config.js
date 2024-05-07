@@ -36,6 +36,7 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		'optin-monster': './assets/js/event-providers/optin-monster.js',
+		'popup-maker': './assets/js/event-providers/popup-maker.js',
 	},
 	externals,
 	output: {
