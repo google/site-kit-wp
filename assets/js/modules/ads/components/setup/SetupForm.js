@@ -97,9 +97,11 @@ export default function SetupForm( {
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
 	createAccountCTA: PropTypes.oneOf( [ PropTypes.node, null ] ),
+	isNavigatingToOAuthURL: PropTypes.bool,
 };
 
 SetupForm.defaultProps = {
 	finishSetup: () => {},
 	createAccountCTA: null,
+	isNavigatingToOAuthURL: false,
 };

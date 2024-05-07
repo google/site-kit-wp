@@ -50,7 +50,7 @@ import PAXEmbeddedApp from '../PAXEmbeddedApp';
 const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
-	const [ pax, setPax ] = useQueryArg( 'pax' );
+	const [ showPaxApp, setShowPaxApp ] = useQueryArg( 'pax' );
 
 	const registry = useRegistry();
 
@@ -66,18 +66,18 @@ export default function SetupMainPAX( { finishSetup } ) {
 		notification: 'ads', // Arbitrary value to prevent authentication_success from surfacing.
 	} );
 
-	const OAuthURL = useSelect( ( select ) =>
+	const oAuthURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ ADWORDS_SCOPE ],
 			redirectURL,
 		} )
 	);
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
-		if ( ! OAuthURL ) {
+		if ( ! oAuthURL ) {
 			return false;
 		}
 
-		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
+		return select( CORE_LOCATION ).isNavigatingTo( oAuthURL );
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -111,9 +111,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 					const { error } = await submitChanges();
 
-					// Since callback is mostly invoked pretty early, site info is not resolved yet.
-					// We need to ensure data is resolved otherwise admin url will be undefined and finishSetup
-					// will trigger console error instead of redirecting to the dashboard.
+					if ( error ) {
+						return;
+					}
+
+					// This callback is often invoked before all site info is resolved.
+					// We need to ensure data is resolved, otherwise the admin URL will be
+					// `undefined` and `finishSetup` will error instead of redirecting
+					// to the dashboard.
 					await registry
 						.__experimentalResolveSelect( CORE_SITE )
 						.getSiteInfo();
@@ -125,9 +130,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 							slug: 'ads',
 						} );
 
-					if ( ! error ) {
-						finishSetup( adminURL );
-					}
+					finishSetup( adminURL );
 				}
 			}
 		},
@@ -140,13 +143,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 		]
 	);
 
-	const clickCallback = useCallback( () => {
+	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
-			navigateTo( OAuthURL );
+			navigateTo( oAuthURL );
 		} else {
-			setPax( 1 );
+			setShowPaxApp( 1 );
 		}
-	}, [ navigateTo, setPax, hasAdwordsScope, OAuthURL ] );
+	}, [ navigateTo, setShowPaxApp, hasAdwordsScope, oAuthURL ] );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
@@ -159,67 +162,65 @@ export default function SetupMainPAX( { finishSetup } ) {
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
 				</h2>
 			</div>
-
 			<AdBlockerWarning />
 
-			{ ! isAdBlockerActive &&
-				( pax && hasAdwordsScope ? (
-					<PAXEmbeddedApp displayMode="setup" onLaunch={ onLaunch } />
-				) : (
-					<Fragment>
-						<div className="googlesitekit-setup-module__description">
-							{ createInterpolateElement(
-								__(
-									'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<SupportLink
-											path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
-											external
-										/>
-									),
-								}
-							) }
-							<br />
-							{ __(
-								'You can always change this later in Site Kit Settings.',
-								'google-site-kit'
-							) }
-						</div>
+			{ ! isAdBlockerActive && !! showPaxApp && hasAdwordsScope && (
+				<PAXEmbeddedApp displayMode="setup" onLaunch={ onLaunch } />
+			) }
 
-						<SetupForm
-							finishSetup={ finishSetup }
-							isNavigatingToOAuthURL={ isNavigatingToOAuthURL }
-							createAccountCTA={
-								<Fragment>
-									<SpinnerButton
-										onClick={ clickCallback }
-										disabled={ isNavigatingToOAuthURL }
-										isSaving={ isNavigatingToOAuthURL }
-										inverse
-									>
+			{ ! isAdBlockerActive && ( ! showPaxApp || ! hasAdwordsScope ) && (
+				<Fragment>
+					<div className="googlesitekit-setup-module__description">
+						{ createInterpolateElement(
+							__(
+								'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<SupportLink
+										path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+										external
+									/>
+								),
+							}
+						) }
+						<br />
+						{ __(
+							'You can always change this later in Site Kit Settings.',
+							'google-site-kit'
+						) }
+					</div>
+
+					<SetupForm
+						finishSetup={ finishSetup }
+						isNavigatingToOAuthURL={ isNavigatingToOAuthURL }
+						createAccountCTA={
+							<Fragment>
+								<SpinnerButton
+									onClick={ createAccount }
+									disabled={ isNavigatingToOAuthURL }
+									isSaving={ isNavigatingToOAuthURL }
+									inverse
+								>
+									{ __(
+										'Create an account',
+										'google-site-kit'
+									) }
+								</SpinnerButton>
+								{ ! hasAdwordsScope && (
+									<p className="googlesitekit-setup-module__permission-notice">
 										{ __(
-											'Create an account',
+											'Additional permissions are needed to create a new Ads account. You’ll be asked to grant these permissions during the account creation process. Clicking the button will direct you to the authorization flow.',
 											'google-site-kit'
 										) }
-									</SpinnerButton>
-									{ ! hasAdwordsScope && (
-										<div className="googlesitekit-error-text">
-											<p className="googlesitekit-setup-module__permission-notice">
-												{ __(
-													"Additional permissions are needed to create a new Ads account. You'll be asked to grant these permissions during the account creation process. Clicking the button will direct you to the authorization flow.",
-													'google-site-kit'
-												) }
-											</p>
-										</div>
-									) }
-								</Fragment>
-							}
-						/>
-					</Fragment>
-				) ) }
+									</p>
+								) }
+							</Fragment>
+						}
+					/>
+				</Fragment>
+			) }
 		</div>
 	);
 }

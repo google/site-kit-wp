@@ -166,7 +166,14 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			// or we are on the Ads module setup screen.
 			if (
 				current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) &&
-				( $this->is_connected() || is_admin() && 'googlesitekit-dashboard' === $this->input->filter( INPUT_GET, 'page' ) && 'ads' === $this->input->filter( INPUT_GET, 'slug' ) )
+				(
+					// Integrator should be included if either:
+					//
+					// The Ads module is already connected.
+					$this->is_connected() ||
+					// Or the user is on the Ads module setup screen.
+					is_admin() && 'googlesitekit-dashboard' === $this->input->filter( INPUT_GET, 'page' ) && 'ads' === $this->input->filter( INPUT_GET, 'slug' )
+				)
 			) {
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',

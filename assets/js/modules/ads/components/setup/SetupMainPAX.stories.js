@@ -17,19 +17,14 @@
  */
 
 /**
- * External dependecies.
- */
-import { withQuery } from '@storybook/addon-queryparams';
-
-/**
  * Internal dependencies
  */
 import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
-	provideSiteInfo,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import SetupMainPAX from './SetupMainPAX';
@@ -52,72 +47,34 @@ Default.args = {
 			.setSettings( { paxConversionID: 'AW-123456789' } );
 
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [ ADWORDS_SCOPE ],
+		} );
 	},
 };
 Default.scenario = {
 	label: 'Modules/Ads/Setup/SetupMainPAX/Default',
 };
 
-export const withAdwordsScope = Template.bind( {} );
-withAdwordsScope.storyName = 'WithAdWordsScope';
-withAdwordsScope.args = {
+export const WithoutAdWordsScope = Template.bind( {} );
+WithoutAdWordsScope.storyName = 'WithoutAdWordsScope';
+WithoutAdWordsScope.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ADS )
 			.setSettings( { paxConversionID: 'AW-123456789' } );
 
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
-
-		provideUserAuthentication( registry, {
-			grantedScopes: [ ADWORDS_SCOPE ],
-		} );
 	},
 };
-withAdwordsScope.scenario = {
-	label: 'Modules/Ads/Setup/SetupMainPAX/WithAdWordsScope',
-};
-
-export const withAccountCreated = Template.bind( {} );
-withAccountCreated.storyName = 'WithAccountCreated';
-withAccountCreated.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_ADS )
-			.setSettings( { paxConversionID: 'AW-123456789' } );
-
-		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
-
-		provideUserAuthentication( registry, {
-			grantedScopes: [ ADWORDS_SCOPE ],
-		} );
-
-		// Since PAX app can't launch in this context, placeholder is added to
-		// mark that PAX app is displayed.
-		const checkForPAXSelector = setInterval( () => {
-			const paxSelector = document.querySelector(
-				'.googlesitekit-pax-embedded-app'
-			);
-
-			if ( paxSelector ) {
-				paxSelector.innerHTML = 'PAX Embedded App Launcher';
-				clearInterval( checkForPAXSelector );
-			}
-		}, 10 );
-	},
-};
-withAccountCreated.parameters = {
-	query: {
-		pax: '1',
-	},
-};
-withAccountCreated.scenario = {
-	label: 'Modules/Ads/Setup/SetupMainPAX/WithAccountCreated',
+WithoutAdWordsScope.scenario = {
+	label: 'Modules/Ads/Setup/SetupMainPAX/WithoutAdWordsScope',
 };
 
 export default {
 	title: 'Modules/Ads/Setup/SetupMainPAX',
 	decorators: [
-		withQuery,
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
