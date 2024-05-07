@@ -210,6 +210,40 @@ const baseSelectors = {
 			return audience?.audienceType === 'USER_AUDIENCE';
 		}
 	),
+
+	/**
+	 * Checks whether the provided audiences are available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state                 Data store's state.
+	 * @param {string|Array<string>} audienceResourceNames The audience resource names to check.
+	 * @return {boolean} True if all provided audiences are available, otherwise false. Undefined if available audiences are not loaded yet.
+	 */
+	hasAudiences: createRegistrySelector(
+		( select ) => ( state, audienceResourceNames ) => {
+			const audiencesToCheck = Array.isArray( audienceResourceNames )
+				? audienceResourceNames
+				: [ audienceResourceNames ];
+
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			if ( availableAudiences === null ) {
+				return false;
+			}
+
+			return audiencesToCheck.every( ( audienceResourceName ) =>
+				availableAudiences.some(
+					( { name } ) => name === audienceResourceName
+				)
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(
