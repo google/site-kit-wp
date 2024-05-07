@@ -237,7 +237,7 @@ describe( 'modules/analytics-4 partial data', () => {
 				).toEqual( 20201220 );
 			} );
 
-			it( 'uses a resolver to determine the date and if the date is available. saves it to server', async () => {
+			it( 'uses a resolver to determine the date and if the date is available, saves it to server', async () => {
 				fetchMock.postOnce( saveResourceDataAvailabilityDate, {
 					body: true,
 					status: 200,

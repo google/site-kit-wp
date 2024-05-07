@@ -66,8 +66,6 @@ use WP_Query;
 use WP_User;
 use ReflectionMethod;
 
-use function PHPUnit\Framework\assertNotFalse;
-
 /**
  * @group Modules
  */
