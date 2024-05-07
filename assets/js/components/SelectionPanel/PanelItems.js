@@ -19,55 +19,39 @@
 import { Fragment } from '@wordpress/element';
 import PanelItem from './PanelItem';
 
-function PanelItems( {
-	selectedItems = {},
-	availableItems = {},
-	currentSelectionHeading = '',
-	availableSelectionHeading = '',
-} ) {
+function PanelItems( { heading, items, ItemComponent = PanelItem } ) {
 	const renderMetricItems = ( metricSlugs ) => {
 		return Object.keys( metricSlugs ).map( ( slug ) => {
-			const { title, children } = metricSlugs[ slug ];
-
+			const { description } = metricSlugs[ slug ];
 			const id = `key-metric-selection-checkbox-${ slug }`;
 
 			return (
-				<PanelItem
+				<ItemComponent
 					key={ id }
 					id={ id }
 					slug={ slug }
-					title={ title }
-					savedMetrics={ [ selectedItems, availableItems ] }
+					{ ...metricSlugs[ slug ] }
 				>
-					{ children }
-				</PanelItem>
+					{ description }
+				</ItemComponent>
 			);
 		} );
 	};
 
+	// Check if we have items, return if no items.
+	if ( ! Object.keys( items ).length ) {
+		return null;
+	}
+
 	return (
-		<div className="googlesitekit-km-selection-panel-metrics">
-			{
-				// Split list into two sections with sub-headings for current selection and
-				// additional metrics if there are already saved metrics.
-				selectedItems.length !== 0 && (
-					<Fragment>
-						<p className="googlesitekit-km-selection-panel-metrics__subheading">
-							{ currentSelectionHeading }
-						</p>
-						<div className="googlesitekit-km-selection-panel-metrics__subsection">
-							{ renderMetricItems( selectedItems ) }
-						</div>
-						<p className="googlesitekit-km-selection-panel-metrics__subheading">
-							{ availableSelectionHeading }
-						</p>
-					</Fragment>
-				)
-			}
+		<Fragment>
+			<p className="googlesitekit-km-selection-panel-metrics__subheading">
+				{ heading }
+			</p>
 			<div className="googlesitekit-km-selection-panel-metrics__subsection">
-				{ renderMetricItems( availableItems ) }
+				{ renderMetricItems( items ) }
 			</div>
-		</div>
+		</Fragment>
 	);
 }
 

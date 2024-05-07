@@ -17,12 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Link from '../Link';
@@ -30,11 +24,9 @@ import CloseIcon from '../../../svg/icons/close.svg';
 
 function SelectionPanelHeader( {
 	onCloseClick,
-	onSettingsClick,
 	heading,
-	headerText,
-	isSavingSettings,
 	isViewOnly,
+	EditContextHeader,
 } ) {
 	const className = 'googlesitekit-km-selection-panel-header';
 
@@ -50,24 +42,7 @@ function SelectionPanelHeader( {
 					<CloseIcon width="15" height="15" />
 				</Link>
 			</div>
-			{ ! isViewOnly && (
-				<p>
-					{ createInterpolateElement(
-						// eslint-disable-next-line @wordpress/i18n-no-variables
-						__( `${ headerText }`, 'google-site-kit' ),
-						{
-							link: (
-								<Link
-									secondary
-									onClick={ onSettingsClick }
-									disabled={ isSavingSettings }
-								/>
-							),
-							strong: <strong />,
-						}
-					) }
-				</p>
-			) }
+			{ ! isViewOnly && <EditContextHeader /> }
 		</header>
 	);
 }

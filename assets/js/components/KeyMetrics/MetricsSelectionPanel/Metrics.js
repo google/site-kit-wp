@@ -30,14 +30,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import MetricItem from './MetricItem';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../googlesitekit/widgets/default-areas';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import MetricItem from './MetricItem';
 import useViewOnly from '../../../hooks/useViewOnly';
-import { Fragment } from '@wordpress/element';
+import PanelItems from '../../SelectionPanel/PanelItems';
 const { useSelect } = Data;
 
 export default function Metrics( { savedMetrics } ) {
@@ -103,68 +103,53 @@ export default function Metrics( { savedMetrics } ) {
 			) || []
 	);
 
+	const addSavedMetricFlag = ( metricList, value ) => {
+		if ( Object.keys( metricList ).length > 0 ) {
+			Object.keys( metricList ).forEach( ( slug ) => {
+				metricList[ slug ] = {
+					savedMetric: value,
+					...metricList[ slug ],
+				};
+			} );
+		}
+
+		return metricList;
+	};
+
 	const savedMetricSlugs = widgets
 		.filter( ( { slug } ) => savedMetrics.includes( slug ) )
 		.map( ( { slug } ) => slug );
 
-	const availableSavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
+	let availableSavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
 		.filter( ( metricSlug ) => {
 			return savedMetricSlugs.includes( metricSlug );
 		} )
 		.reduce( metricsListReducer, {} );
 
-	const availableUnsavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
+	let availableUnsavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
 		.filter( ( metricSlug ) => {
 			return ! savedMetricSlugs.includes( metricSlug );
 		} )
 		.reduce( metricsListReducer, {} );
 
-	const renderMetricItems = ( metricSlugs ) => {
-		return Object.keys( metricSlugs ).map( ( slug ) => {
-			const {
-				title,
-				description,
-				disconnectedModules = [],
-			} = metricSlugs[ slug ];
-
-			const id = `key-metric-selection-checkbox-${ slug }`;
-
-			return (
-				<MetricItem
-					key={ id }
-					id={ id }
-					slug={ slug }
-					title={ title }
-					description={ description }
-					disconnectedModules={ disconnectedModules }
-					savedMetrics={ savedMetrics }
-				/>
-			);
-		} );
-	};
+	availableSavedMetrics = addSavedMetricFlag( availableSavedMetrics, true );
+	availableUnsavedMetrics = addSavedMetricFlag(
+		availableUnsavedMetrics,
+		false
+	);
 
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics">
-			{
-				// Split list into two sections with sub-headings for current selection and
-				// additional metrics if there are already saved metrics.
-				savedMetrics.length !== 0 && (
-					<Fragment>
-						<p className="googlesitekit-km-selection-panel-metrics__subheading">
-							{ __( 'Current selection', 'google-site-kit' ) }
-						</p>
-						<div className="googlesitekit-km-selection-panel-metrics__subsection">
-							{ renderMetricItems( availableSavedMetrics ) }
-						</div>
-						<p className="googlesitekit-km-selection-panel-metrics__subheading">
-							{ __( 'Additional metrics', 'google-site-kit' ) }
-						</p>
-					</Fragment>
-				)
-			}
-			<div className="googlesitekit-km-selection-panel-metrics__subsection">
-				{ renderMetricItems( availableUnsavedMetrics ) }
-			</div>
+			<PanelItems
+				heading={ __( 'Current Selection', 'google-site-kit' ) }
+				items={ availableSavedMetrics }
+				ItemComponent={ MetricItem }
+			/>
+			<PanelItems
+				heading={ __( 'Additional metrics', 'google-site-kit' ) }
+				items={ availableUnsavedMetrics }
+				ItemComponent={ MetricItem }
+			/>
 		</div>
 	);
 }

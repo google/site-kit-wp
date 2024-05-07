@@ -19,13 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Link from '../../Link';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
@@ -57,14 +58,35 @@ export default function MetricsHeader() {
 		[ navigateTo, settingsURL ]
 	);
 
+	function EditContextHeader() {
+		return (
+			<p>
+				{ createInterpolateElement(
+					__(
+						'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
+						'google-site-kit'
+					),
+					{
+						link: (
+							<Link
+								secondary
+								onClick={ onSettingsClick }
+								disabled={ isSavingSettings }
+							/>
+						),
+						strong: <strong />,
+					}
+				) }
+			</p>
+		);
+	}
+
 	return (
 		<SelectionPanelHeader
 			heading={ __( 'Select your metrics', 'google-site-kit' ) }
-			headerText="Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>"
 			isViewOnly={ isViewOnly }
 			onCloseClick={ onCloseClick }
-			onSettingsClick={ onSettingsClick }
-			isSavingSettings={ isSavingSettings }
+			EditContextHeader={ EditContextHeader }
 		/>
 	);
 }

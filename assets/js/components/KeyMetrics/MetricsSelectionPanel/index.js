@@ -33,9 +33,16 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
+
+/**
+ * Import Key metrics concrete components.
+ */
+import Metrics from './Metrics';
 import MetricsHeader from './MetricsHeader';
 import MetricsFooter from './MetricsFooter';
-import SelectionPanel, { Items } from '../../SelectionPanel';
+import CustomDimensionsNotice from './CustomDimensionsNotice';
+
+import SelectionPanel from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
@@ -76,10 +83,6 @@ export default function MetricsSelectionPanel() {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 	}, [ setValue ] );
 
-	function Label() {
-		return <p>This is the description for the item.</p>;
-	}
-
 	return (
 		<SelectionPanel
 			className="googlesitekit-km-selection-panel"
@@ -88,14 +91,8 @@ export default function MetricsSelectionPanel() {
 			sideSheetCloseFn={ sideSheetCloseFn }
 		>
 			<MetricsHeader />
-			<Items
-				selectedItems={ {
-					topVisitors: {
-						title: 'This is test',
-						children: <Label />, // ToDo: Provide the child component that needs to be rendered as an item.
-					},
-				} }
-			/>
+			<Metrics savedMetrics={ savedViewableMetrics } />
+			<CustomDimensionsNotice />
 			<MetricsFooter
 				onNavigationToOAuthURL={ () => {
 					setIsNavigatingToOAuthURL( true );

@@ -17,65 +17,33 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useCallback } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-const { useSelect, useDispatch } = Data;
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import SelectionBox from '../SelectionBox';
-import {
-	SELECTION_PANEL_FORM,
-	SELECTION_PANEL_SELECTED_ITEMS,
-} from './constants';
 
-function PanelItem( { id, slug, title, children, savedMetrics = [] } ) {
-	const selectedItems = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			SELECTION_PANEL_FORM,
-			SELECTION_PANEL_SELECTED_ITEMS
-		)
-	);
-
-	const { getValue } = useSelect( ( select ) => select( CORE_FORMS ) );
-	const { setValues } = useDispatch( CORE_FORMS );
-
-	const onCheckboxChange = useCallback(
-		( event ) => {
-			const metrics = getValue(
-				SELECTION_PANEL_FORM,
-				SELECTION_PANEL_SELECTED_ITEMS
-			);
-			setValues( SELECTION_PANEL_FORM, {
-				[ SELECTION_PANEL_SELECTED_ITEMS ]: event.target.checked
-					? metrics.concat( [ slug ] )
-					: metrics.filter(
-							( selectedMetric ) => selectedMetric !== slug
-					  ),
-			} );
-		},
-		[ getValue, setValues, slug ]
-	);
-
-	const isItemSelected = selectedItems?.includes( slug );
-	const isItemDisabled = ! savedMetrics.includes( slug );
-
+function PanelItem( {
+	id,
+	slug,
+	title,
+	description,
+	suffix,
+	onChange,
+	checked,
+	disabled,
+} ) {
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
 			<SelectionBox
-				checked={ isItemSelected }
-				disabled={ isItemDisabled }
+				checked={ checked }
+				disabled={ disabled }
 				id={ id }
-				onChange={ onCheckboxChange }
+				onChange={ onChange }
 				title={ title }
 				value={ slug }
 			>
-				{ children }
+				{ description }
 			</SelectionBox>
+			{ suffix }
 		</div>
 	);
 }

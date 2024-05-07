@@ -362,7 +362,6 @@ export default function MetricsFooter( {
 		<SelectionPanelFooter
 			Content={ Content }
 			saveError={ saveError }
-			selectedMetricsCount={ selectedMetricsCount }
 			CancelButton={ CancelButton }
 			SaveButton={ SaveButton }
 		/>
