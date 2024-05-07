@@ -54,7 +54,7 @@ describe( 'getAnalytics4MockResponse', () => {
 		).toThrow( 'a valid endDate is required' );
 	} );
 
-	it( 'throws if called with a invalid dimensionFilters', () => {
+	it( 'throws if called with an invalid dimensionFilters', () => {
 		expect( () =>
 			getAnalytics4MockResponse( {
 				startDate: '2020-12-31',
