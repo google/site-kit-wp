@@ -54,6 +54,18 @@ describe( 'getAnalytics4MockResponse', () => {
 		).toThrow( 'a valid endDate is required' );
 	} );
 
+	it( 'throws if called with a invalid dimensionFilters', () => {
+		expect( () =>
+			getAnalytics4MockResponse( {
+				startDate: '2020-12-31',
+				endDate: '2020-12-31',
+				dimensionFilters: { 'test-dimension': false },
+			} )
+		).toThrow(
+			'dimensionFilters must be an object with valid keys and values.'
+		);
+	} );
+
 	it( 'generates a valid report', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-29',

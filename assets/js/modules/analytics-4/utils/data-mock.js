@@ -391,10 +391,12 @@ export function getAnalytics4MockResponse(
 
 	let seed = argsURL;
 
-	if (
-		args.dimensionFilters &&
-		isValidDimensionFilters( args.dimensionFilters )
-	) {
+	if ( args.dimensionFilters ) {
+		invariant(
+			isValidDimensionFilters( args.dimensionFilters ),
+			'dimensionFilters must be an object with valid keys and values.'
+		);
+
 		seed += stringifyObject( args.dimensionFilters );
 	}
 
