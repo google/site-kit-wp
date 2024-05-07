@@ -51,7 +51,7 @@ class MailchimpTest extends TestCase {
 
 	public function test_register_script() {
 		$handle = 'gsk-cep-' . Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG;
-		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
+		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
 		$script = $this->mailchimp->register_script();
 		$this->assertInstanceOf( Script::class, $script );
