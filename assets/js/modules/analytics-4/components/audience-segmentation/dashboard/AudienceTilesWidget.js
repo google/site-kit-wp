@@ -30,6 +30,7 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import whenActive from '../../../../../util/when-active';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -47,7 +48,7 @@ import AudienceTooltipMessage from './AudienceTooltipMessage';
 
 const { useSelect } = Data;
 
-export default function AudienceTilesWidget( { Widget } ) {
+function AudienceTilesWidget( { Widget } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -354,3 +355,7 @@ export default function AudienceTilesWidget( { Widget } ) {
 AudienceTilesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( { moduleName: 'analytics-4' } )(
+	AudienceTilesWidget
+);
