@@ -51,12 +51,12 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/Default',
 	delay: 250,
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceSegmentationSetupCTATile',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupCTATile',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

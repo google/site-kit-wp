@@ -130,7 +130,7 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = readyProps;
 Ready.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/Ready',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/Ready',
 };
 
 export const ReadyWithToolTip = Template.bind( {} );
@@ -140,7 +140,7 @@ ReadyWithToolTip.args = {
 	infoTooltip: 'This is a tooltip',
 };
 ReadyWithToolTip.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/ReadyWithToolTip',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyWithToolTip',
 };
 
 export const ReadyViewOnly = Template.bind( {} );
@@ -150,7 +150,7 @@ ReadyViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ReadyViewOnly.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/ReadyViewOnly',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyViewOnly',
 };
 
 export const ReadyLongCityNames = Template.bind( {} );
@@ -184,7 +184,7 @@ ReadyLongCityNames.args = {
 	},
 };
 ReadyLongCityNames.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/ReadyLongCityNames',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyLongCityNames',
 };
 
 export const NoData = Template.bind( {} );
@@ -195,9 +195,9 @@ NoData.args = {
 	topContent: null,
 };
 NoData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile/NoData',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/NoData',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTile',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile',
 };
