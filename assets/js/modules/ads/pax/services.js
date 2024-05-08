@@ -25,6 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '../datastore/constants';
 
 const restFetchWpPages = async () => {
 	try {
@@ -74,7 +75,13 @@ export function createPaxServices( registry ) {
 		conversionTrackingService: {
 			// eslint-disable-next-line require-await
 			getSupportedConversionLabels: async () => {
-				return { conversionLabels: [] };
+				await registry
+					.__experimentalResolveSelect( MODULES_ADS )
+					.getModuleData();
+				const conversionEvents = registry
+					.select( MODULES_ADS )
+					.getSupportedConversionEvents();
+				return { conversionLabels: conversionEvents };
 			},
 			// eslint-disable-next-line require-await
 			getPageViewConversionSetting: async () => {
