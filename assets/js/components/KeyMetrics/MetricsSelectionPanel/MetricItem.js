@@ -43,7 +43,7 @@ export default function MetricItem( {
 	slug,
 	title,
 	description,
-	savedMetrics = [],
+	savedItemSlugs = [],
 } ) {
 	const { getModule } = useSelect( ( select ) => select( CORE_MODULES ) );
 	const widget = useSelect( ( select ) => select( CORE_WIDGETS ) ).getWidget(
@@ -92,7 +92,7 @@ export default function MetricItem( {
 
 	const isMetricSelected = selectedMetrics?.includes( slug );
 	const isMetricDisabled =
-		! savedMetrics.includes( slug ) && disconnectedModules.length > 0;
+		! savedItemSlugs.includes( slug ) && disconnectedModules.length > 0;
 
 	return (
 		<SelectionPanelItem
@@ -101,8 +101,8 @@ export default function MetricItem( {
 			title={ title }
 			description={ description }
 			disconnectedModules={ disconnectedModules }
-			isMetricSelected={ isMetricSelected }
-			isMetricDisabled={ isMetricDisabled }
+			isItemSelected={ isMetricSelected }
+			isItemDisabled={ isMetricDisabled }
 			onCheckboxChange={ onCheckboxChange }
 		>
 			{ disconnectedModules.length > 0 && (
@@ -130,5 +130,5 @@ MetricItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
-	savedMetrics: PropTypes.array,
+	savedItemSlugs: PropTypes.array,
 };

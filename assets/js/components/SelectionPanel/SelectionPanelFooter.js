@@ -20,11 +20,11 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import ErrorNotice from '../ErrorNotice';
-import { safelySort } from '../KeyMetrics/MetricsSelectionPanel/utils'; // FIXME.
+import { safelySort } from '../KeyMetrics/MetricsSelectionPanel/utils'; // FIXME, extract this to a common location.
 
 export default function SelectionPanelFooter( {
-	savedMetrics,
-	selectedMetrics,
+	savedItemSlugs,
+	selectedItemSlugs,
 	saveSettings,
 	saveError,
 	itemLimitError,
@@ -42,18 +42,18 @@ export default function SelectionPanelFooter( {
 	const haveSettingsChanged = useMemo( () => {
 		// Arrays need to be sorted to match in `isEqual`.
 		return ! isEqual(
-			safelySort( selectedMetrics ),
-			safelySort( savedMetrics )
+			safelySort( selectedItemSlugs ),
+			safelySort( savedItemSlugs )
 		);
-	}, [ savedMetrics, selectedMetrics ] );
+	}, [ savedItemSlugs, selectedItemSlugs ] );
 
 	const currentButtonText =
-		savedMetrics?.length > 0 && haveSettingsChanged
+		savedItemSlugs?.length > 0 && haveSettingsChanged
 			? __( 'Apply changes', 'google-site-kit' )
 			: __( 'Save selection', 'google-site-kit' );
 
 	const onSaveClick = useCallback( async () => {
-		const { error } = await saveSettings( selectedMetrics );
+		const { error } = await saveSettings( selectedItemSlugs );
 
 		if ( ! error ) {
 			onSaveSuccess();
@@ -61,13 +61,13 @@ export default function SelectionPanelFooter( {
 			// Close the panel after saving.
 			closeFn();
 
-			// lock the button label while panel is closing
+			// Lock the button label while panel is closing.
 			setFinalButtonText( currentButtonText );
 			setWasSaved( true );
 		}
 	}, [
 		saveSettings,
-		selectedMetrics,
+		selectedItemSlugs,
 		onSaveSuccess,
 		closeFn,
 		currentButtonText,
@@ -82,10 +82,10 @@ export default function SelectionPanelFooter( {
 
 	useEffect( () => {
 		if ( prevIsOpen !== null ) {
-			// if current isOpen is true, and different from prevIsOpen
+			// If current isOpen is true, and different from prevIsOpen
 			// meaning it transitioned from false to true and it is not
 			// in closing transition, we should reset the button label
-			// locked when save button was clicked
+			// locked when save button was clicked.
 			if ( prevIsOpen !== isOpen ) {
 				if ( isOpen ) {
 					setFinalButtonText( null );
@@ -97,7 +97,7 @@ export default function SelectionPanelFooter( {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
-	const selectedMetricsCount = selectedMetrics?.length || 0;
+	const selectedMetricsCount = selectedItemSlugs?.length || 0;
 
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">

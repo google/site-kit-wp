@@ -54,22 +54,26 @@ export default function MetricItems( { savedMetrics } ) {
 			)
 	);
 
-	const metricsListReducer = ( acc, metric ) => {
-		if ( ! isKeyMetricAvailable( metric ) ) {
+	const metricsListReducer = ( acc, metricSlug ) => {
+		if ( ! isKeyMetricAvailable( metricSlug ) ) {
 			return acc;
 		}
 
 		if (
-			typeof KEY_METRICS_WIDGETS[ metric ].displayInList === 'function' &&
-			! displayInList( metric )
+			typeof KEY_METRICS_WIDGETS[ metricSlug ].displayInList ===
+				'function' &&
+			! displayInList( metricSlug )
 		) {
 			return acc;
 		}
 
+		const { title, description } = KEY_METRICS_WIDGETS[ metricSlug ];
+
 		return {
 			...acc,
-			[ metric ]: {
-				...KEY_METRICS_WIDGETS[ metric ],
+			[ metricSlug ]: {
+				title,
+				description,
 			},
 		};
 	};
@@ -104,9 +108,9 @@ export default function MetricItems( { savedMetrics } ) {
 				'google-site-kit'
 			) }
 			availableItemsTitle={ __( 'Current selection', 'google-site-kit' ) }
-			savedMetrics={ savedMetrics }
-			availableSavedMetrics={ availableSavedMetrics }
-			availableUnsavedMetrics={ availableUnsavedMetrics }
+			savedItemSlugs={ savedMetrics }
+			availableSavedItems={ availableSavedMetrics }
+			availableUnsavedItems={ availableUnsavedMetrics }
 			ItemComponent={ MetricItem }
 		/>
 	);

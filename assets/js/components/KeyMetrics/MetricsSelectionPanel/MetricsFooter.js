@@ -225,8 +225,8 @@ export default function MetricsFooter( {
 
 	return (
 		<SelectionPanelFooter
-			savedMetrics={ savedMetrics }
-			selectedMetrics={ selectedMetrics }
+			savedItemSlugs={ savedMetrics }
+			selectedItemSlugs={ selectedMetrics }
 			saveSettings={ saveSettings }
 			saveError={ saveError }
 			itemLimitError={ metricsLimitError }

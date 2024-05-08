@@ -6,15 +6,15 @@ export default function SelectionPanelItem( {
 	slug,
 	title,
 	description,
-	isMetricSelected,
-	isMetricDisabled,
+	isItemSelected,
+	isItemDisabled,
 	onCheckboxChange,
 } ) {
 	return (
 		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
 			<SelectionBox
-				checked={ isMetricSelected }
-				disabled={ isMetricDisabled }
+				checked={ isItemSelected }
+				disabled={ isItemDisabled }
 				id={ id }
 				onChange={ onCheckboxChange }
 				title={ title }

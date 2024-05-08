@@ -8,9 +8,9 @@ import { Fragment } from '@wordpress/element';
 export default function SelectionPanelItems( {
 	currentSelectionTitle,
 	availableItemsTitle,
-	savedMetrics,
-	availableSavedMetrics,
-	availableUnsavedMetrics,
+	savedItemSlugs,
+	availableSavedItems,
+	availableUnsavedItems,
 	ItemComponent,
 } ) {
 	const renderMetricItems = ( metrics ) => {
@@ -26,7 +26,7 @@ export default function SelectionPanelItems( {
 					slug={ slug }
 					title={ title }
 					description={ description }
-					savedMetrics={ savedMetrics }
+					savedItemSlugs={ savedItemSlugs }
 				/>
 			);
 		} );
@@ -37,13 +37,13 @@ export default function SelectionPanelItems( {
 			{
 				// Split list into two sections with sub-headings for current selection and
 				// additional metrics if there are already saved metrics.
-				savedMetrics.length !== 0 && (
+				savedItemSlugs.length !== 0 && (
 					<Fragment>
 						<p className="googlesitekit-km-selection-panel-metrics__subheading">
 							{ currentSelectionTitle }
 						</p>
 						<div className="googlesitekit-km-selection-panel-metrics__subsection">
-							{ renderMetricItems( availableSavedMetrics ) }
+							{ renderMetricItems( availableSavedItems ) }
 						</div>
 						<p className="googlesitekit-km-selection-panel-metrics__subheading">
 							{ availableItemsTitle }
@@ -52,7 +52,7 @@ export default function SelectionPanelItems( {
 				)
 			}
 			<div className="googlesitekit-km-selection-panel-metrics__subsection">
-				{ renderMetricItems( availableUnsavedMetrics ) }
+				{ renderMetricItems( availableUnsavedItems ) }
 			</div>
 		</div>
 	);
