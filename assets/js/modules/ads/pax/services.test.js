@@ -44,6 +44,7 @@ describe( 'PAX partner services', () => {
 					} ),
 					conversionTrackingService: expect.objectContaining( {
 						getSupportedConversionLabels: expect.any( Function ),
+						getPageViewConversionSetting: expect.any( Function ),
 					} ),
 					termsAndConditionsService: expect.objectContaining( {
 						notify: expect.any( Function ),
@@ -91,6 +92,64 @@ describe( 'PAX partner services', () => {
 					expect(
 						supportedConversionLabels.conversionLabels
 					).toEqual( [] );
+				} );
+			} );
+
+			describe( 'getPageViewConversionSetting', () => {
+				it( 'should hold correct value for enablePageViewConversion property', async () => {
+					const pageViewConversionSetting =
+						await services.conversionTrackingService.getPageViewConversionSetting();
+
+					expect(
+						pageViewConversionSetting.enablePageViewConversion
+					).toBe( true );
+				} );
+
+				it( 'should hold correct value for websitePages property', async () => {
+					const wpPagesEndpoint = new RegExp( '^/wp/v2/pages' );
+
+					fetchMock.getOnce( wpPagesEndpoint, {
+						body: [
+							{
+								id: 20,
+								title: { rendered: 'Foo Page' },
+								link: 'https://www.example.com/foo-page',
+							},
+							{
+								id: 20,
+								title: { rendered: 'Bar Child Page' },
+								link: 'https://www.example.com/foo/bar-page',
+							},
+						],
+						status: 200,
+					} );
+
+					const pageViewConversionSetting =
+						await services.conversionTrackingService.getPageViewConversionSetting();
+
+					expect( fetchMock ).toHaveFetched( wpPagesEndpoint, {} );
+
+					expect( fetchMock ).toHaveFetched( wpPagesEndpoint, {} );
+
+					const wpPagesEndpointLastCall =
+						fetchMock.lastCall( wpPagesEndpoint );
+
+					expect( wpPagesEndpointLastCall[ 0 ] ).toContain(
+						'per_page=100'
+					);
+
+					expect(
+						pageViewConversionSetting.websitePages
+					).toMatchObject( [
+						{
+							title: 'Foo Page',
+							path: '/foo-page',
+						},
+						{
+							title: 'Bar Child Page',
+							path: '/foo/bar-page',
+						},
+					] );
 				} );
 			} );
 		} );

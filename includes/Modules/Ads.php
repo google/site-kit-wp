@@ -131,7 +131,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
 					array(
-						'src'          => 'https://www.gstatic.com/pax/latest/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/dev/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -225,7 +225,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function is_connected() {
 		$options = $this->get_settings()->get();
 
-		return parent::is_connected() && ! empty( $options['conversionID'] );
+		return parent::is_connected() && ( ! empty( $options['conversionID'] ) || ! empty( $options['paxConversionID'] ) || ! empty( $options['extCustomerID'] ) );
 	}
 
 	/**

@@ -93,7 +93,7 @@ Default.args = {
 	],
 };
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTiles/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles/Default',
 };
 
 export const TwoTiles = Template.bind( {} );
@@ -105,11 +105,11 @@ TwoTiles.args = {
 	],
 };
 TwoTiles.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTiles/TwoTiles',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles/TwoTiles',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/AudienceTiles',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles',
 	decorators: [
 		( Story, { args: { grantedScopes, configuredAudiences } } ) => {
 			const audiencesDimensionFilter = {
