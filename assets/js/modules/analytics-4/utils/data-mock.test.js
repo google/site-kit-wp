@@ -54,6 +54,18 @@ describe( 'getAnalytics4MockResponse', () => {
 		).toThrow( 'a valid endDate is required' );
 	} );
 
+	it( 'throws if called with an invalid dimensionFilters', () => {
+		expect( () =>
+			getAnalytics4MockResponse( {
+				startDate: '2020-12-31',
+				endDate: '2020-12-31',
+				dimensionFilters: { 'test-dimension': false },
+			} )
+		).toThrow(
+			'dimensionFilters must be an object with valid keys and values.'
+		);
+	} );
+
 	it( 'generates a valid report', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-29',
@@ -73,6 +85,32 @@ describe( 'getAnalytics4MockResponse', () => {
 
 		// Verify the correct number of rows for the date range.
 		expect( report.rows ).toHaveLength( 5 );
+	} );
+
+	it( 'generates unique reports based on dimensionFilters', () => {
+		const reportArgs = {
+			startDate: '2020-12-29',
+			endDate: '2021-01-02',
+			metrics: [
+				{
+					name: 'sessions',
+				},
+				{
+					name: 'engagementRate',
+				},
+			],
+			dimensions: [ 'date', 'testDimension' ],
+		};
+		const report1 = getAnalytics4MockResponse( reportArgs );
+
+		const report2 = getAnalytics4MockResponse( {
+			...reportArgs,
+			dimensionFilters: {
+				testDimension: '1234',
+			},
+		} );
+
+		expect( report1 ).not.toEqual( report2 );
 	} );
 
 	it( 'generates a valid report with multiple distinct date ranges', () => {
