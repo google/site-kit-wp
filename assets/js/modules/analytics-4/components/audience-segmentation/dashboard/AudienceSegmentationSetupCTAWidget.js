@@ -31,8 +31,16 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
+import { getPreviousDate } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
+// import { isZeroReport } from '../../../utils';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
@@ -44,15 +52,46 @@ import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-se
 import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 
+const { useSelect, useDispatch } = Data;
+
 function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
-	const onEnableGroups = useCallback( () => {
+	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
-	}, [] );
+
+		await enableAudienceGroup();
+	}, [ enableAudienceGroup ] );
+
+	const configuredAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+	);
+
+	const hasDataWithinPast90Days = useSelect( ( select ) => {
+		const endDate = select( CORE_USER ).getReferenceDate();
+
+		const startDate = getPreviousDate(
+			endDate,
+			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
+		);
+
+		const args = {
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate,
+		};
+
+		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
+	} );
+
+	if ( configuredAudiences || ! hasDataWithinPast90Days ) {
+		return null;
+	}
 
 	// TODO: We need to refactor this and the ConsentModeSetupCTAWidget to avoid this duplicate inlining of the widget context and area structure,
 	// and to ensure only one of these setup CTAs is shown at a time.

@@ -253,10 +253,14 @@ export default function DashboardMainApp() {
 				<HelpMenu />
 			</Header>
 
-			{ audienceSegmentationEnabled && ! viewOnlyDashboard && (
-				<AudienceSegmentationSetupCTAWidget />
+			{ ! viewOnlyDashboard && (
+				<Fragment>
+					{ audienceSegmentationEnabled && (
+						<AudienceSegmentationSetupCTAWidget />
+					) }
+					<ConsentModeSetupCTAWidget />
+				</Fragment>
 			) }
-			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
 
 			<OverlayNotificationsRenderer />
 
