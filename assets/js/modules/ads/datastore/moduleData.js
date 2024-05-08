@@ -40,7 +40,9 @@ function getModuleDataProperty( propName ) {
 const RECEIVE_MODULE_DATA = 'RECEIVE_MODULE_DATA';
 
 export const initialState = {
-	supportedConversionEvents: undefined,
+	moduleData: {
+		supportedConversionEvents: undefined,
+	},
 };
 
 export const actions = {
@@ -70,10 +72,11 @@ export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
 			const { supportedConversionEvents } = payload;
+			const moduleData = { supportedConversionEvents };
 
 			return {
 				...state,
-				supportedConversionEvents,
+				moduleData,
 			};
 		}
 
@@ -106,10 +109,10 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Site connection info.
+	 * @return {(Object|undefined)} Module data.
 	 */
 	getModuleData( state ) {
-		return state;
+		return state.moduleData;
 	},
 
 	/**
