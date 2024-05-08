@@ -97,7 +97,7 @@ export default function SelectionPanelFooter( {
 		setPrevIsOpen( isOpen );
 	}, [ isOpen, prevIsOpen ] );
 
-	const selectedMetricsCount = selectedItemSlugs?.length || 0;
+	const selectedItemCount = selectedItemSlugs?.length || 0;
 
 	return (
 		<footer className="googlesitekit-km-selection-panel-footer">
@@ -109,8 +109,8 @@ export default function SelectionPanelFooter( {
 							message: itemLimitError,
 						} }
 						noPrefix={
-							selectedMetricsCount < minSelectedItemCount ||
-							selectedMetricsCount > maxSelectedItemCount
+							selectedItemCount < minSelectedItemCount ||
+							selectedItemCount > maxSelectedItemCount
 						}
 					/>
 				) : (
@@ -122,7 +122,7 @@ export default function SelectionPanelFooter( {
 									'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
 									'google-site-kit'
 								),
-								selectedMetricsCount,
+								selectedItemCount,
 								maxSelectedItemCount
 							),
 							{
@@ -145,8 +145,8 @@ export default function SelectionPanelFooter( {
 						onClick={ onSaveClick }
 						isSaving={ isBusy }
 						disabled={
-							selectedMetricsCount < minSelectedItemCount ||
-							selectedMetricsCount > maxSelectedItemCount ||
+							selectedItemCount < minSelectedItemCount ||
+							selectedItemCount > maxSelectedItemCount ||
 							isBusy ||
 							( ! isOpen && wasSaved )
 						}
