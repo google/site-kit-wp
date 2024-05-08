@@ -78,9 +78,10 @@ export function createPaxServices( registry ) {
 				await registry
 					.__experimentalResolveSelect( MODULES_ADS )
 					.getModuleData();
-				const conversionEvents = registry
-					.select( MODULES_ADS )
-					.getSupportedConversionEvents();
+				const conversionEvents =
+					registry
+						.select( MODULES_ADS )
+						.getSupportedConversionEvents() || [];
 				return { conversionLabels: conversionEvents };
 			},
 			// eslint-disable-next-line require-await
