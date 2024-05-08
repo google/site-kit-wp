@@ -194,7 +194,7 @@ const baseActions = {
 		};
 	},
 
-	*enableAudienceGroups() {
+	*enableAudienceGroup() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
