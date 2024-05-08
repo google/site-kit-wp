@@ -105,7 +105,7 @@ export const selectors = {
 	 * Not intended to be used publicly; this is largely here so other selectors can
 	 * request data using the selector/resolver pattern.
 	 *
-	 * @since 1.7.0
+	 * @since n.e.x.t
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
