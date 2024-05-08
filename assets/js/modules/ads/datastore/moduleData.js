@@ -88,7 +88,7 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getModuleData() {
-		const moduleDataAds = global._googlesitekitModulesData?.[ 'ads' ];
+		const moduleDataAds = global._googlesitekitModulesData?.ads;
 
 		if ( ! moduleDataAds ) {
 			return;
