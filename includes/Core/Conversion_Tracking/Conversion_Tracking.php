@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
@@ -39,9 +40,10 @@ class Conversion_Tracking {
 	 * @var array
 	 */
 	public static $providers = array(
-		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG => OptinMonster::class,
-		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG  => WooCommerce::class,
-		WPForms::CONVERSION_EVENT_PROVIDER_SLUG      => WPForms::class,
+		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
+		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
+		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG    => WooCommerce::class,
+		WPForms::CONVERSION_EVENT_PROVIDER_SLUG        => WPForms::class,
 	);
 
 	/**
