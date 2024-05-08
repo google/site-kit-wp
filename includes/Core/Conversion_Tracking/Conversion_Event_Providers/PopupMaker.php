@@ -59,7 +59,7 @@ class PopupMaker extends Conversion_Events_Provider {
 			array(
 				'src'          => $this->context->url( 'dist/assets/js/popup-maker.js' ),
 				'dependencies' => array( 'popup-maker-site' ),
-				'execution'    => 'async',
+				'execution'    => 'defer',
 			)
 		);
 

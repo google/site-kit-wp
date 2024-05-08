@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-document.addEventListener( 'DOMContentLoaded', () => {
-	const { jQuery } = global;
+( ( jQuery ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery || ! PUM ) {
 		return;
@@ -25,4 +24,4 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	PUM.hooks.addAction( 'pum.integration.form.success', function () {
 		global.gtag( 'event', 'submit_lead_form' );
 	} );
-} );
+} )( global.jQuery );

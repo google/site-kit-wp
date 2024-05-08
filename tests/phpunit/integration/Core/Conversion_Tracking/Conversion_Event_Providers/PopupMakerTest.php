@@ -15,7 +15,6 @@ use Google\Site_Kit\Tests\TestCase;
 
 class PopupMakerTest extends TestCase {
 
-
 	/**
 	 * PopupMaker instance.
 	 *
@@ -26,6 +25,16 @@ class PopupMakerTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 		$this->popupmaker = new PopupMaker( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	public static function tear_down_after_class() {
+		parent::tear_down_after_class();
+
+		if ( function_exists( 'runkit7_constant_remove' ) ) {
+			runkit7_constant_remove( 'POPMAKE_VERSION' );
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
+			runkit_constant_remove( 'POPMAKE_VERSION' );
+		}
 	}
 
 	public function test_is_active() {
@@ -41,9 +50,13 @@ class PopupMakerTest extends TestCase {
 	}
 
 	public function test_register_script() {
+		$handle = 'gsk-cep-' . PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG;
+		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
+
 		$script = $this->popupmaker->register_script();
+
 		$this->assertInstanceOf( Script::class, $script );
-		$this->assertTrue( wp_script_is( 'gsk-cep-' . PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG, 'registered' ) );
+		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
 
 }
