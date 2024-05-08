@@ -28,15 +28,13 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import Link from '../../Link';
-import CloseIcon from '../../../../svg/icons/close.svg';
 import useViewOnly from '../../../hooks/useViewOnly';
+import { SelectionPanelHeader } from '../../SelectionPanel';
 const { useSelect, useDispatch } = Data;
 
-export default function Header() {
+export default function MetricsHeader( { closeFn } ) {
 	const isViewOnly = useViewOnly();
 
 	const settingsURL = useSelect( ( select ) =>
@@ -46,12 +44,7 @@ export default function Header() {
 		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
 
-	const { setValue } = useDispatch( CORE_UI );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-
-	const onCloseClick = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
 
 	const onSettingsClick = useCallback(
 		() => navigateTo( `${ settingsURL }#/admin-settings` ),
@@ -59,17 +52,10 @@ export default function Header() {
 	);
 
 	return (
-		<header className="googlesitekit-km-selection-panel-header">
-			<div className="googlesitekit-km-selection-panel-header__row">
-				<h3>{ __( 'Select your metrics', 'google-site-kit' ) }</h3>
-				<Link
-					className="googlesitekit-km-selection-panel-header__close"
-					onClick={ onCloseClick }
-					linkButton
-				>
-					<CloseIcon width="15" height="15" />
-				</Link>
-			</div>
+		<SelectionPanelHeader
+			title={ __( 'Select your metrics', 'google-site-kit' ) }
+			onCloseClick={ closeFn }
+		>
 			{ ! isViewOnly && (
 				<p>
 					{ createInterpolateElement(
@@ -90,6 +76,6 @@ export default function Header() {
 					) }
 				</p>
 			) }
-		</header>
+		</SelectionPanelHeader>
 	);
 }

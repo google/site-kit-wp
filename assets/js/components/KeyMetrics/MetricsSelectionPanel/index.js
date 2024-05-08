@@ -33,13 +33,13 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
-import SideSheet from '../../SideSheet';
-import Header from './Header';
-import Footer from './Footer';
-import Metrics from './Metrics';
+import MetricsHeader from './MetricsHeader';
+import MetricsFooter from './MetricsFooter';
+import MetricItems from './MetricItems';
 import CustomDimensionsNotice from './CustomDimensionsNotice';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
+import SelectionPanel from '../../SelectionPanel';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
@@ -79,25 +79,22 @@ export default function MetricsSelectionPanel() {
 		useState( false );
 
 	return (
-		<SideSheet
-			className="googlesitekit-km-selection-panel"
+		<SelectionPanel
 			isOpen={ isOpen || isNavigatingToOAuthURL }
 			onOpen={ onSideSheetOpen }
 			closeFn={ sideSheetCloseFn }
-			focusTrapOptions={ {
-				initialFocus:
-					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-selection-box input',
-			} }
 		>
-			<Header />
-			<Metrics savedMetrics={ savedViewableMetrics } />
+			<MetricsHeader closeFn={ sideSheetCloseFn } />
+			<MetricItems savedMetrics={ savedViewableMetrics } />
 			<CustomDimensionsNotice />
-			<Footer
+			<MetricsFooter
+				isOpen={ isOpen }
+				closeFn={ sideSheetCloseFn }
 				savedMetrics={ savedViewableMetrics }
 				onNavigationToOAuthURL={ () => {
 					setIsNavigatingToOAuthURL( true );
 				} }
 			/>
-		</SideSheet>
+		</SelectionPanel>
 	);
 }
