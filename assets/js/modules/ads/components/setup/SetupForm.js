@@ -47,8 +47,8 @@ export default function SetupForm( {
 	);
 	const isSaving = useSelect(
 		( select ) =>
-			select( MODULES_ADS ).isDoingSubmitChanges() ||
-			isNavigatingToOAuthURL
+			select( MODULES_ADS ).isDoingSubmitChanges() &&
+			! isNavigatingToOAuthURL
 	);
 
 	const { submitChanges } = useDispatch( MODULES_ADS );
