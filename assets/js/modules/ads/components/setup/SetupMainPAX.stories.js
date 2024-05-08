@@ -23,7 +23,6 @@ import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
-	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
@@ -77,14 +76,6 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'ads',
-						active: true,
-						connected: true,
-					},
-				] );
-
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 			};
@@ -96,7 +87,4 @@ export default {
 			);
 		},
 	],
-	parameters: {
-		features: [ 'adsModule', 'adsPax' ],
-	},
 };

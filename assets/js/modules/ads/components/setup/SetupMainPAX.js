@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import {
@@ -63,7 +58,15 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		pax: 1,
-		notification: 'ads', // Arbitrary value to prevent authentication_success from surfacing.
+		// The `notification: 'ads'` query value is arbitrary and serves
+		// two purposes:
+		//
+		// 1. To ensure that `authentication_success` isn't appended
+		//    when returning from OAuth.
+		// 2. To guarantee it doesn't match any existing notifications
+		//    in the `BannerNotifications` component, thus preventing
+		//    any unintended displays.
+		notification: 'ads',
 	} );
 
 	const oAuthURL = useSelect( ( select ) =>
@@ -86,52 +89,48 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 	const onLaunch = useCallback(
 		async ( app ) => {
-			if ( app && typeof app?.getServices === 'function' ) {
-				/* eslint-disable sitekit/acronym-case */
-				// Disabling rule because function and property names
-				// are expected in current format by PAX API.
-				const customerData = await app
-					.getServices()
-					?.accountService?.getAccountId( {} );
-				const conversionTrackingData = await app
-					.getServices()
-					?.conversionTrackingIdService?.getConversionTrackingId(
-						{}
-					);
+			/* eslint-disable sitekit/acronym-case */
+			// Disabling rule because function and property names
+			// are expected in current format by PAX API.
+			const customerData = await app
+				.getServices()
+				.accountService.getAccountId( {} );
+			const conversionTrackingData = await app
+				.getServices()
+				?.conversionTrackingIdService.getConversionTrackingId( {} );
 
-				if (
-					customerData.externalCustomerId &&
+			if (
+				customerData.externalCustomerId &&
+				conversionTrackingData.conversionTrackingId
+			) {
+				setExtCustomerID( customerData.externalCustomerId );
+				setPaxConversionID(
 					conversionTrackingData.conversionTrackingId
-				) {
-					setExtCustomerID( customerData.externalCustomerId );
-					setPaxConversionID(
-						conversionTrackingData.conversionTrackingId
-					);
-					/* eslint-enable sitekit/acronym-case */
+				);
+				/* eslint-enable sitekit/acronym-case */
 
-					const { error } = await submitChanges();
+				const { error } = await submitChanges();
 
-					if ( error ) {
-						return;
-					}
-
-					// This callback is often invoked before all site info is resolved.
-					// We need to ensure data is resolved, otherwise the admin URL will be
-					// `undefined` and `finishSetup` will error instead of redirecting
-					// to the dashboard.
-					await registry
-						.__experimentalResolveSelect( CORE_SITE )
-						.getSiteInfo();
-
-					const adminURL = registry
-						.select( CORE_SITE )
-						.getAdminURL( 'googlesitekit-dashboard', {
-							notification: 'authentication_success',
-							slug: 'ads',
-						} );
-
-					finishSetup( adminURL );
+				if ( error ) {
+					return;
 				}
+
+				// This callback is often invoked before all site info is resolved.
+				// We need to ensure data is resolved, otherwise the admin URL will be
+				// `undefined` and `finishSetup` will error instead of redirecting
+				// to the dashboard.
+				await registry
+					.__experimentalResolveSelect( CORE_SITE )
+					.getSiteInfo();
+
+				const adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'googlesitekit-dashboard', {
+						notification: 'authentication_success',
+						slug: 'ads',
+					} );
+
+				finishSetup( adminURL );
 			}
 		},
 		[
@@ -146,9 +145,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
-		} else {
-			setShowPaxApp( 1 );
+			return;
 		}
+
+		setShowPaxApp( true );
 	}, [ navigateTo, setShowPaxApp, hasAdwordsScope, oAuthURL ] );
 
 	return (
@@ -211,7 +211,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 								{ ! hasAdwordsScope && (
 									<p className="googlesitekit-setup-module__permission-notice">
 										{ __(
-											'Additional permissions are needed to create a new Ads account. You’ll be asked to grant these permissions during the account creation process. Clicking the button will direct you to the authorization flow.',
+											'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
 											'google-site-kit'
 										) }
 									</p>
@@ -224,10 +224,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 		</div>
 	);
 }
-
-SetupMainPAX.propTypes = {
-	finishSetup: PropTypes.func,
-};
 
 SetupMainPAX.defaultProps = {
 	finishSetup: () => {},

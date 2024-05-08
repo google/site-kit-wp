@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 const { useSelect, useDispatch } = Data;
@@ -49,8 +48,7 @@ export default function SetupForm( {
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_ADS ).isDoingSubmitChanges() ||
-			( select( CORE_LOCATION ).isNavigating() &&
-				! isNavigatingToOAuthURL )
+			isNavigatingToOAuthURL
 	);
 
 	const { submitChanges } = useDispatch( MODULES_ADS );
@@ -96,7 +94,7 @@ export default function SetupForm( {
 
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
-	createAccountCTA: PropTypes.oneOf( [ PropTypes.node, null ] ),
+	createAccountCTA: PropTypes.node,
 	isNavigatingToOAuthURL: PropTypes.bool,
 };
 
