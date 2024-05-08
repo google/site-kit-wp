@@ -46,6 +46,10 @@ import {
 } from '../../../../googlesitekit/constants';
 import PopularProductsWidget from './PopularProductsWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { provideCustomDimensionError } from '../../utils/custom-dimensions';
+
+const propertyID = '34567';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -83,9 +87,9 @@ const pageTitlesReportOptions = {
 	limit: 15,
 };
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
-	PopularProductsWidget
-);
+const WidgetWithComponentProps = withWidgetComponentProps(
+	KM_ANALYTICS_POPULAR_PRODUCTS
+)( PopularProductsWidget );
 
 function Template( { setupRegistry, viewContext, ...args } ) {
 	return (
@@ -103,9 +107,6 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
 			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -145,9 +146,6 @@ export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
 ReadyViewOnly.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
 			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -188,9 +186,6 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ reportOptions ] );
@@ -201,9 +196,6 @@ export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
@@ -222,7 +214,6 @@ export const NoProductPostType = Template.bind( {} );
 NoProductPostType.storyName = 'No Product Post Type';
 NoProductPostType.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
 		provideSiteInfo( registry, {
 			productPostType: null,
 		} );
@@ -244,9 +235,6 @@ export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',
@@ -270,13 +258,65 @@ Error.scenario = {
 	delay: 250,
 };
 
+export const ErrorMissingCustomDimensions = Template.bind( {} );
+ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
+ErrorMissingCustomDimensions.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID,
+			availableCustomDimensions: [],
+		} );
+	},
+};
+
+export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
+ErrorCustomDimensionsInsufficientPermissions.storyName =
+	'Error - Custom dimensions creation - Insufficient Permissions';
+ErrorCustomDimensionsInsufficientPermissions.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+		};
+
+		provideCustomDimensionError( registry, {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
+					.requiredCustomDimensions?.[ 0 ],
+			error,
+		} );
+	},
+};
+
+export const ErrorCustomDimensionsGeneric = Template.bind( {} );
+ErrorCustomDimensionsGeneric.storyName =
+	'Error - Custom dimensions creation - Generic';
+ErrorCustomDimensionsGeneric.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'test-error-reason',
+			},
+		};
+
+		provideCustomDimensionError( registry, {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
+					.requiredCustomDimensions?.[ 0 ],
+			error,
+		} );
+	},
+};
+
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
 InsufficientPermissions.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-
 		const errorObject = {
 			code: 403,
 			message: 'Test error message. ',
@@ -295,7 +335,6 @@ InsufficientPermissions.args = {
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
 };
-
 InsufficientPermissions.scenario = {
 	label: 'KeyMetrics/PopularProducts/InsufficientPermissions',
 	delay: 250,
@@ -306,6 +345,7 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
 				provideSiteInfo( registry );
 				provideKeyMetrics( registry );
 				provideModules( registry, [
@@ -318,23 +358,30 @@ export default {
 
 				provideModuleRegistrations( registry );
 
-				const [ accountID, propertyID, webDataStreamID ] = [
-					'12345',
-					'34567',
-					'56789',
-				];
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAccountID( accountID );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setPropertyID( propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setWebDataStreamID( webDataStreamID );
-
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions:
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
+							.requiredCustomDimensions,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+					{
+						createTime: '2014-10-02T15:01:23Z',
+					},
+					{ propertyID }
+				);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData(
+						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
+							.requiredCustomDimensions?.[ 0 ],
+						false
+					);
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
