@@ -33,6 +33,14 @@
 			margin: 0;
 		}
 
+		.googlesitekit-setup-module__create-account {
+			margin: $grid-gap-phone 0 0;
+
+			@media (min-width: $bp-desktop) {
+				margin: $grid-gap-desktop 0 0;
+			}
+		}
+
 		.googlesitekit-setup-module__action {
 			margin-bottom: 32px;
 		}
