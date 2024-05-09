@@ -25,7 +25,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import AdsIcon from '../../../svg/graphics/ads.svg';
-import { isFeatureEnabled } from '../../features';
 import { SettingsEdit, SettingsView } from './components/settings';
 import SetupMain from './components/setup/SetupMain';
 import { MODULES_ADS } from './datastore/constants';
@@ -37,42 +36,40 @@ import {
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	if ( isFeatureEnabled( 'adsModule' ) ) {
-		modules.registerModule( 'ads', {
-			storeName: MODULES_ADS,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
-			Icon: AdsIcon,
-			features: [
-				__(
-					'Tagging necessary for your ads campaigns to work',
-					'google-site-kit'
-				),
-				__(
-					'Conversion tracking for your ads campaigns',
-					'google-site-kit'
-				),
-			],
-			checkRequirements: async ( registry ) => {
-				const adBlockerActive = await registry
-					.__experimentalResolveSelect( CORE_USER )
-					.isAdBlockerActive();
+	modules.registerModule( 'ads', {
+		storeName: MODULES_ADS,
+		SettingsEditComponent: SettingsEdit,
+		SettingsViewComponent: SettingsView,
+		SetupComponent: SetupMain,
+		Icon: AdsIcon,
+		features: [
+			__(
+				'Tagging necessary for your ads campaigns to work',
+				'google-site-kit'
+			),
+			__(
+				'Conversion tracking for your ads campaigns',
+				'google-site-kit'
+			),
+		],
+		checkRequirements: async ( registry ) => {
+			const adBlockerActive = await registry
+				.__experimentalResolveSelect( CORE_USER )
+				.isAdBlockerActive();
 
-				if ( ! adBlockerActive ) {
-					return;
-				}
+			if ( ! adBlockerActive ) {
+				return;
+			}
 
-				const message = registry
-					.select( MODULES_ADS )
-					.getAdBlockerWarningMessage();
+			const message = registry
+				.select( MODULES_ADS )
+				.getAdBlockerWarningMessage();
 
-				throw {
-					code: ERROR_CODE_ADBLOCKER_ACTIVE,
-					message,
-					data: null,
-				};
-			},
-		} );
-	}
+			throw {
+				code: ERROR_CODE_ADBLOCKER_ACTIVE,
+				message,
+				data: null,
+			};
+		},
+	} );
 };
