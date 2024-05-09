@@ -97,7 +97,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 				.accountService.getAccountId( {} );
 			const conversionTrackingData = await app
 				.getServices()
-				?.conversionTrackingIdService.getConversionTrackingId( {} );
+				.conversionTrackingIdService.getConversionTrackingId( {} );
 
 			if (
 				customerData.externalCustomerId &&

@@ -88,6 +88,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	protected function setup_assets() {
 		$base_url = $this->context->url( 'dist/assets/' );
+		$input    = $this->context->input();
 
 		$assets = array(
 			new Script(
@@ -141,7 +142,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					// The Ads module is already connected.
 					$this->is_connected() ||
 					// Or the user is on the Ads module setup screen.
-					is_admin() && 'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page' ) && 'ads' === $this->context->input()->filter( INPUT_GET, 'slug' ) && $this->context->input()->filter( INPUT_GET, 'slug' )
+					is_admin() && 'googlesitekit-dashboard' === $input->filter( INPUT_GET, 'page' ) && 'ads' === $input->filter( INPUT_GET, 'slug' ) && $input->filter( INPUT_GET, 'reAuth' )
 				)
 			) {
 				$assets[] = new Script(
@@ -243,18 +244,18 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$options = $this->get_settings()->get();
 
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
-			if ( empty( $options['conversionID'] ) && empty( $options['paxConversionID'] ) && empty( $options['extCustomerID'] ) ) {
+			if ( empty( $options['conversionID'] ) && ( empty( $options['paxConversionID'] ) || empty( $options['extCustomerID'] ) ) ) {
 				return false;
 			}
 
-			return parent::is_connected() && ( ! empty( $options['conversionID'] ) || ! empty( $options['paxConversionID'] ) || ! empty( $options['extCustomerID'] ) );
+			return parent::is_connected();
 		}
 
 		if ( empty( $options['conversionID'] ) ) {
 			return false;
 		}
 
-		return parent::is_connected() && ! empty( $options['conversionID'] );
+		return parent::is_connected();
 	}
 
 	/**
