@@ -23,6 +23,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
+	useState,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
@@ -38,16 +39,14 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { addQueryArgs } from '@wordpress/url';
 import PAXEmbeddedApp from '../PAXEmbeddedApp';
-const { useSelect, useDispatch, useRegistry } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxApp, setShowPaxApp ] = useQueryArg( 'pax' );
-
-	const registry = useRegistry();
+	const [ paxApp, setPaxApp ] = useState( null );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -87,59 +86,47 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
 
+	const onCompleteSetup = useCallback( async () => {
+		/* eslint-disable sitekit/acronym-case */
+		// Disabling rule because function and property names
+		// are expected in current format by PAX API.
+		const customerData = await paxApp
+			.getServices()
+			.accountService.getAccountId( {} );
+		const conversionTrackingData = await paxApp
+			.getServices()
+			.conversionTrackingIdService.getConversionTrackingId( {} );
+
+		if (
+			! customerData.externalCustomerId &&
+			! conversionTrackingData.conversionTrackingId
+		) {
+			return;
+		}
+
+		setExtCustomerID( customerData.externalCustomerId );
+		setPaxConversionID( conversionTrackingData.conversionTrackingId );
+		/* eslint-enable sitekit/acronym-case */
+
+		const { error } = await submitChanges();
+
+		if ( error ) {
+			return;
+		}
+		finishSetup();
+	}, [
+		paxApp,
+		setExtCustomerID,
+		setPaxConversionID,
+		submitChanges,
+		finishSetup,
+	] );
+
 	const onLaunch = useCallback(
-		async ( app ) => {
-			/* eslint-disable sitekit/acronym-case */
-			// Disabling rule because function and property names
-			// are expected in current format by PAX API.
-			const customerData = await app
-				.getServices()
-				.accountService.getAccountId( {} );
-			const conversionTrackingData = await app
-				.getServices()
-				.conversionTrackingIdService.getConversionTrackingId( {} );
-
-			if (
-				customerData.externalCustomerId &&
-				conversionTrackingData.conversionTrackingId
-			) {
-				setExtCustomerID( customerData.externalCustomerId );
-				setPaxConversionID(
-					conversionTrackingData.conversionTrackingId
-				);
-				/* eslint-enable sitekit/acronym-case */
-
-				const { error } = await submitChanges();
-
-				if ( error ) {
-					return;
-				}
-
-				// This callback is often invoked before all site info is resolved.
-				// We need to ensure data is resolved, otherwise the admin URL will be
-				// `undefined` and `finishSetup` will error instead of redirecting
-				// to the dashboard.
-				await registry
-					.__experimentalResolveSelect( CORE_SITE )
-					.getSiteInfo();
-
-				const adminURL = registry
-					.select( CORE_SITE )
-					.getAdminURL( 'googlesitekit-dashboard', {
-						notification: 'authentication_success',
-						slug: 'ads',
-					} );
-
-				finishSetup( adminURL );
-			}
+		( app ) => {
+			setPaxApp( app );
 		},
-		[
-			setExtCustomerID,
-			setPaxConversionID,
-			submitChanges,
-			registry,
-			finishSetup,
-		]
+		[ setPaxApp ]
 	);
 
 	const createAccount = useCallback( () => {
@@ -165,7 +152,17 @@ export default function SetupMainPAX( { finishSetup } ) {
 			<AdBlockerWarning />
 
 			{ ! isAdBlockerActive && !! showPaxApp && hasAdwordsScope && (
-				<PAXEmbeddedApp displayMode="setup" onLaunch={ onLaunch } />
+				<Fragment>
+					<PAXEmbeddedApp displayMode="setup" onLaunch={ onLaunch } />
+					<div className="googlesitekit-setup-module__action">
+						<SpinnerButton
+							isSaving={ isNavigatingToOAuthURL }
+							onClick={ onCompleteSetup }
+						>
+							{ __( 'Complete setup', 'google-site-kit' ) }
+						</SpinnerButton>
+					</div>
+				</Fragment>
 			) }
 
 			{ ! isAdBlockerActive && ( ! showPaxApp || ! hasAdwordsScope ) && (
