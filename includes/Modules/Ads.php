@@ -138,7 +138,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) &&
 				(
 					// Integrator should be included if either:
-					//
 					// The Ads module is already connected.
 					$this->is_connected() ||
 					// Or the user is on the Ads module setup screen.
@@ -244,7 +243,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$options = $this->get_settings()->get();
 
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
-			if ( empty( $options['conversionID'] ) && ( empty( $options['paxConversionID'] ) || empty( $options['extCustomerID'] ) ) ) {
+			if ( empty( $options['conversionID'] ) && empty( $options['paxConversionID'] ) && empty( $options['extCustomerID'] ) ) {
 				return false;
 			}
 
