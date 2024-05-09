@@ -44,8 +44,10 @@ import { addQueryArgs } from '@wordpress/url';
 import PAXEmbeddedApp from '../PAXEmbeddedApp';
 const { useSelect, useDispatch } = Data;
 
+const PARAM_SHOW_PAX = 'pax';
+
 export default function SetupMainPAX( { finishSetup } ) {
-	const [ showPaxApp, setShowPaxApp ] = useQueryArg( 'pax' );
+	const [ showPaxApp, setShowPaxApp ] = useQueryArg( PARAM_SHOW_PAX );
 	const [ paxApp, setPaxApp ] = useState( null );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -56,16 +58,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	);
 
 	const redirectURL = addQueryArgs( global.location.href, {
-		pax: 1,
-		// The `notification: 'ads'` query value is arbitrary and serves
-		// two purposes:
-		//
-		// 1. To ensure that `authentication_success` isn't appended
-		//    when returning from OAuth.
-		// 2. To guarantee it doesn't match any existing notifications
-		//    in the `BannerNotifications` component, thus preventing
-		//    any unintended displays.
-		notification: 'ads',
+		[ PARAM_SHOW_PAX ]: 1,
 	} );
 
 	const oAuthURL = useSelect( ( select ) =>
