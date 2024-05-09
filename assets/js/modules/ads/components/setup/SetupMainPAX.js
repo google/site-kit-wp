@@ -26,21 +26,21 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
 import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../common/AdBlockerWarning';
-import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import { addQueryArgs } from '@wordpress/url';
 import PAXEmbeddedApp from '../PAXEmbeddedApp';
 const { useSelect, useDispatch } = Data;
 
