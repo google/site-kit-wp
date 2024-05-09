@@ -118,13 +118,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 		finishSetup,
 	] );
 
-	const onLaunch = useCallback(
-		( app ) => {
-			setPaxApp( app );
-		},
-		[ setPaxApp ]
-	);
-
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
@@ -149,7 +142,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 			{ ! isAdBlockerActive && !! showPaxApp && hasAdwordsScope && (
 				<Fragment>
-					<PAXEmbeddedApp displayMode="setup" onLaunch={ onLaunch } />
+					<PAXEmbeddedApp
+						displayMode="setup"
+						onLaunch={ setPaxApp }
+					/>
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton
 							isSaving={ isNavigatingToOAuthURL }
