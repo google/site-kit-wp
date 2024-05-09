@@ -41,9 +41,12 @@ class WooCommerceTest extends TestCase {
 	}
 
 	public function test_register_script() {
+		$handle = 'gsk-cep-' . WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG;
+		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
+
 		$script = $this->woocommerce->register_script();
 		$this->assertInstanceOf( Script::class, $script );
-		$this->assertTrue( wp_script_is( 'gsk-cep-' . WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG, 'registered' ) );
+		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
 
 }

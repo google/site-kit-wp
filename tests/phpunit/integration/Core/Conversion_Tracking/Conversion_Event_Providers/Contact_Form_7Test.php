@@ -10,50 +10,50 @@ namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Tests\TestCase;
 
-class OptinMonsterTest extends TestCase {
+class Contact_Form_7Test extends TestCase {
 
 	/**
-	 * OptinMonster instance.
+	 * Contact_Form_7 instance.
 	 *
-	 * @var OptinMonster
+	 * @var Contact_Form_7
 	 */
-	private $optinmonster;
+	private $contactform;
 
 	public function set_up() {
 		parent::set_up();
-		$this->optinmonster = new OptinMonster( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->contactform = new Contact_Form_7( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 	public static function tear_down_after_class() {
 		parent::tear_down_after_class();
 
 		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'OMAPI_FILE' );
+			runkit7_constant_remove( 'WPCF7_VERSION' );
 		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'OMAPI_FILE' );
+			runkit_constant_remove( 'WPCF7_VERSION' );
 		}
 	}
 
 	public function test_is_active() {
-		$this->assertFalse( $this->optinmonster->is_active() );
-		define( 'OMAPI_FILE', 1 );
-		$this->assertTrue( $this->optinmonster->is_active() );
+		$this->assertFalse( $this->contactform->is_active() );
+		define( 'WPCF7_VERSION', 1 );
+		$this->assertTrue( $this->contactform->is_active() );
 	}
 
 	public function test_get_event_names() {
-		$events = $this->optinmonster->get_event_names();
+		$events = $this->contactform->get_event_names();
 		$this->assertCount( 1, $events );
-		$this->assertEquals( 'submit_lead_form', $events[0] );
+		$this->assertEquals( 'contact', $events[0] );
 	}
 
 	public function test_register_script() {
-		$handle = 'gsk-cep-' . OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'gsk-cep-' . Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
-		$script = $this->optinmonster->register_script();
+		$script = $this->contactform->register_script();
 		$this->assertInstanceOf( Script::class, $script );
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
