@@ -49,6 +49,14 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import { numFmt } from '../../../../util';
 const { useSelect, useInViewSelect } = Data;
 
+/**
+ * Gets the report options for the Popular Authors widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
 function getPopularAuthorsWidgetReportOptions( select ) {
 	const dates = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,

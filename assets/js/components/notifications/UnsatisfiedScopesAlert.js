@@ -52,6 +52,15 @@ const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';
 const MESSAGE_GENERIC = 'generic';
 
+/**
+ * Maps unsatisfied scopes to module names.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array}  scopes  Array of unsatisfied scopes.
+ * @param {Object} modules Object of all modules.
+ * @return {Array} Array of module names. If a scope does not map to a module, it is set to `false`.
+ */
 function mapScopesToModuleNames( scopes, modules ) {
 	if ( modules === undefined ) {
 		return null;

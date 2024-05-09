@@ -59,6 +59,14 @@ import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
+/**
+ * Gets the report options for the Popular Products widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
 function getPopularProductsWidgetReportOptions( select ) {
 	const dates = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
