@@ -89,7 +89,7 @@ Ready.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -109,7 +109,7 @@ Loading.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -130,7 +130,7 @@ ZeroData.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -147,13 +147,13 @@ GatheringData.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
 			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-				.requiredCustomDimensions?.[ 0 ],
+				.requiredCustomDimensions[ 0 ],
 			true
 		);
 	},
@@ -189,7 +189,7 @@ Error.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -226,7 +226,7 @@ InsufficientPermissions.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -270,14 +270,14 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
@@ -304,14 +304,14 @@ ErrorCustomDimensionsGeneric.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
@@ -360,7 +360,7 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsCustomDimensionGatheringData(
 						KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-							.requiredCustomDimensions?.[ 0 ],
+							.requiredCustomDimensions[ 0 ],
 						false
 					);
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );

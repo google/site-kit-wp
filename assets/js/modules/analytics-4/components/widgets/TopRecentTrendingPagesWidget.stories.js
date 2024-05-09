@@ -167,7 +167,7 @@ GatheringData.args = {
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
 			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-				.requiredCustomDimensions?.[ 0 ],
+				.requiredCustomDimensions[ 0 ],
 			true
 		);
 	},
@@ -310,7 +310,7 @@ export default {
 					.receiveIsCustomDimensionGatheringData(
 						KEY_METRICS_WIDGETS[
 							KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
-						].requiredCustomDimensions?.[ 0 ],
+						].requiredCustomDimensions[ 0 ],
 						false
 					);
 
