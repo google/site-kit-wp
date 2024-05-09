@@ -22,7 +22,10 @@
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+} from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -85,6 +88,7 @@ Ready.args = {
 		} );
 
 		const reportOptions = getReportOptions( select );
+
 		const pageTitlesReportOptions = selectPageTitlesReportOptions( select );
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
@@ -289,6 +293,8 @@ export default {
 				] );
 
 				provideModuleRegistrations( registry );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-07' );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
 					{
