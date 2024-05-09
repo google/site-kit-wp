@@ -111,8 +111,8 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/conversion-tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		// This admin hasn't authenticated with the Site Kit proxy service yet,
-		// so they aren't allowed to modify Conversion Tracking settings.
+		// This request is made by a user who is not authenticated with dashboard
+		// view permissions and is therefore forbidden.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 
@@ -173,8 +173,9 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		// This admin hasn't authenticated with the Site Kit proxy service yet,
-		// so they aren't allowed to modify Conversion Tracking settings.
+
+		// This request is made by a user who is not authenticated with dashboard
+		// view permissions and is therefore forbidden.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 
@@ -225,8 +226,8 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/conversion-tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		// This admin hasn't authenticated with the Site Kit proxy service yet,
-		// so they aren't allowed to modify Dashboard Sharing settings.
+		// This request is made by a user who is not authenticated with dashboard
+		// view permissions and is therefore forbidden.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 

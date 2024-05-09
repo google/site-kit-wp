@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Dismissals\REST_Conversion_Tracking_Controller
+ * Class Google\Site_Kit\Core\Conversion_Tracking\REST_Conversion_Tracking_Controller
  *
- * @package   Google\Site_Kit\Core\Key_Metrics
+ * @package   Google\Site_Kit\Core\Conversion_Tracking
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -27,9 +27,9 @@ use WP_REST_Server;
 class REST_Conversion_Tracking_Controller {
 
 	/**
-	 * Key_Metrics_Settings instance.
+	 * Conversion_Tracking_Settings instance.
 	 *
-	 * @since 1.93.0
+	 * @since n.e.x.t
 	 * @var Conversion_Tracking_Settings
 	 */
 	protected $settings;
@@ -128,5 +128,4 @@ class REST_Conversion_Tracking_Controller {
 			),
 		);
 	}
-
 }
