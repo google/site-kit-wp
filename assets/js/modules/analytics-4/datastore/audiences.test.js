@@ -177,11 +177,6 @@ describe( 'modules/analytics-4 audiences', () => {
 			];
 
 			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );

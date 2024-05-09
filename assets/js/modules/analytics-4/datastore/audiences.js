@@ -127,8 +127,6 @@ const baseResolvers = {
 		if ( audiences === null ) {
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
-
-		return registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	},
 };
 
