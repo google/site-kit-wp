@@ -88,7 +88,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	protected function setup_assets() {
 		$base_url = $this->context->url( 'dist/assets/' );
-		$input    = $this->context->input();
 
 		$assets = array(
 			new Script(
@@ -109,6 +108,11 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		);
 
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
+			$input                      = $this->context->input();
+			$is_googlesitekit_dashboard = 'googlesitekit-dashboard' === $input->filter( INPUT_GET, 'page' );
+			$is_ads_slug                = 'ads' === $input->filter( INPUT_GET, 'slug' );
+			$is_re_auth                 = $input->filter( INPUT_GET, 'reAuth' );
+
 			$assets[] = new Script_Data(
 				'googlesitekit-ads-pax-config',
 				array(
@@ -141,7 +145,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					// The Ads module is already connected.
 					$this->is_connected() ||
 					// Or the user is on the Ads module setup screen.
-					is_admin() && 'googlesitekit-dashboard' === $input->filter( INPUT_GET, 'page' ) && 'ads' === $input->filter( INPUT_GET, 'slug' ) && $input->filter( INPUT_GET, 'reAuth' )
+					is_admin() && $is_googlesitekit_dashboard && $is_ads_slug && $is_re_auth
 				)
 			) {
 				$assets[] = new Script(
