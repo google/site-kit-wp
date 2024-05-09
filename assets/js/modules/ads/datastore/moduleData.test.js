@@ -28,7 +28,7 @@ import { initialState } from './index';
 import { MODULES_ADS } from './constants';
 
 describe( 'modules/ads module data', () => {
-	const baseModulesDataVar = '_googlesitekitModulesData';
+	const baseModulesGlobalName = '_googlesitekitModulesData';
 	const baseData = {
 		ads: {
 			supportedConversionEvents: [ 'add-to-cart' ],
@@ -38,12 +38,12 @@ describe( 'modules/ads module data', () => {
 	let registry;
 
 	beforeEach( () => {
-		global[ baseModulesDataVar ] = baseData;
+		global[ baseModulesGlobalName ] = baseData;
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
-		delete global[ baseModulesDataVar ];
+		delete global[ baseModulesGlobalName ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -60,20 +60,6 @@ describe( 'modules/ads module data', () => {
 					.dispatch( MODULES_ADS )
 					.receiveModuleData( baseData );
 
-				expect(
-					registry.select( MODULES_ADS ).getModuleData()
-				).toEqual( { supportedConversionEvents: undefined } );
-			} );
-		} );
-	} );
-
-	describe( 'selectors', () => {
-		describe( 'getModuleData', () => {
-			it( 'returns the correct supportedConversionEvents', async () => {
-				await registry
-					.dispatch( MODULES_ADS )
-					.receiveModuleData( baseData );
-
 				registry.select( MODULES_ADS ).getSupportedConversionEvents();
 
 				await untilResolved( registry, MODULES_ADS ).getModuleData();
@@ -86,9 +72,15 @@ describe( 'modules/ads module data', () => {
 					'add-to-cart',
 				] );
 			} );
+		} );
+	} );
 
+	describe( 'selectors', () => {
+		describe( 'getModuleData', () => {
 			it( 'uses a resolver to load module data from a global variable by default, and does not delete that global variable after consumption', async () => {
-				expect( global[ baseModulesDataVar ] ).not.toEqual( undefined );
+				expect( global[ baseModulesGlobalName ] ).not.toEqual(
+					undefined
+				);
 
 				await registry
 					.dispatch( MODULES_ADS )
@@ -107,13 +99,15 @@ describe( 'modules/ads module data', () => {
 				] );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
-				expect( global[ baseModulesDataVar ] ).not.toEqual( undefined );
+				expect( global[ baseModulesGlobalName ] ).not.toEqual(
+					undefined
+				);
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				delete global[ baseModulesDataVar ];
+				delete global[ baseModulesGlobalName ];
 
-				expect( global[ baseModulesDataVar ] ).toEqual( undefined );
+				expect( global[ baseModulesGlobalName ] ).toEqual( undefined );
 
 				const moduleData = registry
 					.select( MODULES_ADS )
