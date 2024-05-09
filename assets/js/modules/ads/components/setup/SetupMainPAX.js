@@ -87,12 +87,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 		/* eslint-disable sitekit/acronym-case */
 		// Disabling rule because function and property names
 		// are expected in current format by PAX API.
-		const customerData = await paxApp
-			.getServices()
-			.accountService.getAccountId( {} );
-		const conversionTrackingData = await paxApp
-			.getServices()
-			.conversionTrackingIdService.getConversionTrackingId( {} );
+		const { accountService, conversionTrackingIdService } =
+			paxApp.getServices();
+		const customerData = await accountService.getAccountId( {} );
+		const conversionTrackingData =
+			await conversionTrackingIdService.getConversionTrackingId( {} );
 
 		if (
 			! customerData.externalCustomerId &&
