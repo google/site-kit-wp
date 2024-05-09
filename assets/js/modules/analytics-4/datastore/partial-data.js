@@ -57,6 +57,18 @@ const RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES =
 const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 	'SET_RESOURCE_DATA_AVAILABILITY_DATE';
 
+/**
+ * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
+ * sorts them by total users, and returns the audienceResourceNames in that order.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry  Registry object.
+ * @param {Array}  audiences Array of available audiences.
+ * @param {string} startDate Start date for the report.
+ * @param {string} endDate   End date for the report.
+ * @return {Object} Object with audienceResourceNames array and error if any.
+ */
 async function getNonZeroDataAudiencesSortedByTotalUsers(
 	registry,
 	audiences,
