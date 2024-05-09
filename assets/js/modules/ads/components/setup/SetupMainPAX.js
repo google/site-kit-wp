@@ -149,6 +149,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton
 							isSaving={ isNavigatingToOAuthURL }
+							disabled={ isNavigatingToOAuthURL || ! paxApp }
 							onClick={ onCompleteSetup }
 						>
 							{ __( 'Complete setup', 'google-site-kit' ) }
