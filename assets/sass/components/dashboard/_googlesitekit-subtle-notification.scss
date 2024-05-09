@@ -36,7 +36,7 @@
 		display: none;
 
 		@media (min-width: $bp-tablet) {
-			display: block;
+			display: flex;
 		}
 	}
 
@@ -69,5 +69,10 @@
 
 	p.googlesitekit-subtle-notification__secondary_description {
 		font-weight: $fw-normal;
+	}
+
+	.googlesitekit-subtle-notification__primary-cta {
+		min-height: 32px;
+		padding: 6px 16px;
 	}
 }
