@@ -49,7 +49,9 @@ import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 
+const accountID = '12345';
 const propertyID = '34567';
+const webDataStreamID = '67890';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -263,7 +265,9 @@ ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
 ErrorMissingCustomDimensions.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			accountID,
 			propertyID,
+			webDataStreamID,
 			availableCustomDimensions: [],
 		} );
 	},
@@ -361,7 +365,9 @@ export default {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					accountID,
 					propertyID,
+					webDataStreamID,
 					availableCustomDimensions:
 						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
 							.requiredCustomDimensions,
