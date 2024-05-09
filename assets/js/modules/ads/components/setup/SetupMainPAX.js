@@ -87,6 +87,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 		useDispatch( MODULES_ADS );
 
 	const onCompleteSetup = useCallback( async () => {
+		if ( ! paxApp ) {
+			return;
+		}
+
 		/* eslint-disable sitekit/acronym-case */
 		// Disabling rule because function and property names
 		// are expected in current format by PAX API.
