@@ -412,8 +412,8 @@ final class Analytics_4 extends Module
 	 * @since 1.30.0
 	 */
 	public function on_deactivation() {
-		// We need to reset the resource data availability date before deleting the settings.
-		// This is because the audience resources are pulled from settings.
+		// We need to reset the resource data availability dates before deleting the settings.
+		// This is because the property ID and the audience resource names are pulled from settings.
 		$this->resource_data_availability_date->reset_all_resource_dates();
 		$this->get_settings()->delete();
 		$this->reset_data_available();
