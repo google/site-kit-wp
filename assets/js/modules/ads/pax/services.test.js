@@ -37,25 +37,24 @@ describe( 'PAX partner services', () => {
 		} );
 
 		it( 'should return object with correct services', () => {
-			expect( services ).toEqual(
-				expect.objectContaining( {
-					authenticationService: expect.objectContaining( {
-						get: expect.any( Function ),
-						fix: expect.any( Function ),
-					} ),
-					businessService: expect.objectContaining( {
-						getBusinessInfo: expect.any( Function ),
-						fixBusinessInfo: expect.any( Function ),
-					} ),
-					conversionTrackingService: expect.objectContaining( {
-						getSupportedConversionLabels: expect.any( Function ),
-						getPageViewConversionSetting: expect.any( Function ),
-					} ),
-					termsAndConditionsService: expect.objectContaining( {
-						notify: expect.any( Function ),
-					} ),
-				} )
-			);
+			expect( services ).toEqual( {
+				authenticationService: {
+					get: expect.any( Function ),
+					fix: expect.any( Function ),
+				},
+				businessService: {
+					getBusinessInfo: expect.any( Function ),
+					fixBusinessInfo: expect.any( Function ),
+				},
+				conversionTrackingService: {
+					getSupportedConversionLabels: expect.any( Function ),
+					getPageViewConversionSetting: expect.any( Function ),
+					getSupportedConversionTrackingTypes: expect.any( Function ),
+				},
+				termsAndConditionsService: {
+					notify: expect.any( Function ),
+				},
+			} );
 		} );
 
 		describe( 'authenticationService', () => {
