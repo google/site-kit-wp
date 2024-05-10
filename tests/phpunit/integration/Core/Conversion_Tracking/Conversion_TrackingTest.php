@@ -43,14 +43,33 @@ class Conversion_TrackingTest extends TestCase {
 		Conversion_Tracking::$providers = array();
 	}
 
-	public function test_register() {
+	public function test_register__not_enqueued_when_no_snippet_inserted() {
 		$this->conversion_tracking->register();
 
 		do_action( 'wp_enqueue_scripts' );
 
-		$this->assertTrue( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
-
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
 		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ) );
+	}
+
+	/**
+	 * @dataProvider data_modules
+	 */
+	public function test_register__enqueued_when_snippet_inserted( $module_slug ) {
+		$this->conversion_tracking->register();
+
+		do_action( "googlesitekit_{$module_slug}_init_tag" );
+		do_action( 'wp_enqueue_scripts' );
+
+		$this->assertTrue( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ) );
+	}
+
+	public function data_modules() {
+		return array(
+			'ads_module'        => array( 'ads' ),
+			'analytics_modules' => array( 'analytics-4' ),
+		);
 	}
 
 	public function test_get_active_conversion_event_providers() {

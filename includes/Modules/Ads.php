@@ -40,7 +40,6 @@ use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
@@ -65,36 +64,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	const MODULE_SLUG = 'ads';
 
 	const SCOPE = 'https://www.googleapis.com/auth/adwords';
-
-	/**
-	 * Input access abstraction.
-	 *
-	 * @since n.e.x.t
-	 * @var Input
-	 */
-	private $input;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
-	 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-		$this->input = new Input();
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -139,6 +108,11 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		);
 
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
+			$input                      = $this->context->input();
+			$is_googlesitekit_dashboard = 'googlesitekit-dashboard' === $input->filter( INPUT_GET, 'page' );
+			$is_ads_slug                = 'ads' === $input->filter( INPUT_GET, 'slug' );
+			$is_re_auth                 = $input->filter( INPUT_GET, 'reAuth' );
+
 			$assets[] = new Script_Data(
 				'googlesitekit-ads-pax-config',
 				array(
@@ -166,7 +140,13 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			// or we are on the Ads module setup screen.
 			if (
 				current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) &&
-				( $this->is_connected() || is_admin() && 'googlesitekit-dashboard' === $this->input->filter( INPUT_GET, 'page' ) && 'ads' === $this->input->filter( INPUT_GET, 'slug' ) )
+				(
+					// Integrator should be included if either:
+					// The Ads module is already connected.
+					$this->is_connected() ||
+					// Or the user is on the Ads module setup screen.
+					is_admin() && $is_googlesitekit_dashboard && $is_ads_slug && $is_re_auth
+				)
 			) {
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
@@ -267,10 +247,18 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$options = $this->get_settings()->get();
 
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
-			return parent::is_connected() && ( ! empty( $options['conversionID'] ) || ! empty( $options['paxConversionID'] ) || ! empty( $options['extCustomerID'] ) );
+			if ( empty( $options['conversionID'] ) && empty( $options['paxConversionID'] ) && empty( $options['extCustomerID'] ) ) {
+				return false;
+			}
+
+			return parent::is_connected();
 		}
 
-		return parent::is_connected() && ! empty( $options['conversionID'] );
+		if ( empty( $options['conversionID'] ) ) {
+			return false;
+		}
+
+		return parent::is_connected();
 	}
 
 	/**

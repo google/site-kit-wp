@@ -64,6 +64,8 @@ class AdsTest extends TestCase {
 
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->ads     = new Ads( $this->context );
+
+		$this->ads->get_settings()->register();
 	}
 
 	public function test_magic_methods() {
@@ -85,7 +87,7 @@ class AdsTest extends TestCase {
 	public function test_is_connected__when_ads_conversion_id_is_set() {
 		$this->assertFalse( $this->ads->is_connected() );
 
-		$this->ads->get_settings()->set(
+		$this->ads->get_settings()->merge(
 			array( 'conversionID' => 'AW-123456789' )
 		);
 
@@ -97,7 +99,7 @@ class AdsTest extends TestCase {
 
 		self::enable_feature( 'adsPax' );
 
-		$this->ads->get_settings()->set(
+		$this->ads->get_settings()->merge(
 			array( 'paxConversionID' => 'AW-123456789' )
 		);
 
@@ -109,12 +111,29 @@ class AdsTest extends TestCase {
 
 		self::enable_feature( 'adsPax' );
 
-		$this->ads->get_settings()->set(
+		$this->ads->get_settings()->merge(
 			array( 'extCustomerID' => '123456789' )
 		);
 
 		$this->assertTrue( $this->ads->is_connected() );
 	}
+
+	public function test_is_connected__feature_flag_is_disabled_but_pax_conversion_id_or_ext_customer_id_are_set() {
+		$this->assertFalse( $this->ads->is_connected() );
+
+		$this->ads->get_settings()->merge(
+			array( 'paxConversionID' => 'AW-123456789' )
+		);
+
+		$this->assertFalse( $this->ads->is_connected() );
+
+		$this->ads->get_settings()->merge(
+			array( 'extCustomerID' => '123456789' )
+		);
+
+		$this->assertFalse( $this->ads->is_connected() );
+	}
+
 
 	public function test_inline_modules_data__module_not_connected() {
 		self::enable_feature( 'adsPax' );
@@ -132,12 +151,8 @@ class AdsTest extends TestCase {
 		$this->ads->register();
 
 		// Ensure the module is connected.
-		$options = new Options( $this->context );
-		$options->set(
-			Settings::OPTION,
-			array(
-				'conversionID' => 'AW-12345',
-			)
+		$this->ads->get_settings()->merge(
+			array( 'conversionID' => 'AW-123456789' )
 		);
 
 		$this->assertTrue( $this->ads->is_connected() );
@@ -190,7 +205,7 @@ class AdsTest extends TestCase {
 	public function test_get_scopes__already_has_extCustomerID_setting() {
 		self::enable_feature( 'adsPax' );
 
-		$this->ads->get_settings()->set( array( 'extCustomerID' => '123456789' ) );
+		$this->ads->get_settings()->merge( array( 'extCustomerID' => '123456789' ) );
 		$this->ads->register();
 
 		$module_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
@@ -199,7 +214,7 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_get_debug_fields() {
-		$this->ads->get_settings()->set( array( 'conversionID' => 'AW-123456789' ) );
+		$this->ads->get_settings()->merge( array( 'conversionID' => 'AW-123456789' ) );
 
 		$this->assertEqualSets(
 			array(

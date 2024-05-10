@@ -46,7 +46,6 @@ import { createPaxServices } from '../pax/services';
 const { useRegistry, useSelect } = Data;
 
 export default function PAXEmbeddedApp( {
-	// eslint-disable-next-line no-unused-vars
 	displayMode = 'default',
 	onLaunch,
 	onCampaignCreated,
@@ -82,19 +81,26 @@ export default function PAXEmbeddedApp( {
 			clientConfig: {
 				contentContainer: `#${ elementID }`,
 			},
+			contentConfig: {
+				partnerAdsExperienceConfig: {
+					reportingStyle:
+						displayMode === 'reporting'
+							? 'REPORTING_STYLE_MINI'
+							: 'REPORTING_STYLE_FULL',
+				},
+			},
 		};
-	}, [ elementID ] );
+	}, [ elementID, displayMode ] );
 
 	const launchPAXApp = useCallback( async () => {
 		try {
-			const app =
+			paxAppRef.current =
 				await global.google.ads.integration.integrator.launchGoogleAds(
 					paxConfig,
 					paxServices
 				);
-			paxAppRef.current = app;
 
-			onLaunch?.( app );
+			onLaunch?.( paxAppRef.current );
 		} catch ( error ) {
 			setLaunchError( error );
 			global.console.error(
