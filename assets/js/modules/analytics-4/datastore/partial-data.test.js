@@ -27,7 +27,10 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate, stringToDate } from '../../../util';
-import { properties } from './__fixtures__';
+import {
+	properties,
+	availableAudiences as availableAudiencesFixture,
+} from './__fixtures__';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
@@ -186,6 +189,95 @@ describe( 'modules/analytics-4 partial data', () => {
 						)
 				).toEqual( 20201220 );
 			} );
+		} );
+
+		describe( 'enableAudienceGroup', () => {
+			const syncAvailableAudiencesEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+			);
+			const audienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			);
+
+			const referenceDate = '2024-05-10';
+			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+
+			const availableUserAudienceFixture = availableAudiencesFixture[ 4 ];
+
+			function getReportOptions( audiences ) {
+				return {
+					metrics: [ { name: 'totalUsers' } ],
+					dimensions: [ 'audienceResourceName' ],
+					dimensionFilters: {
+						audienceResourceName: audiences.map(
+							( { name } ) => name
+						),
+					},
+					startDate,
+					endDate: referenceDate,
+				};
+			}
+
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( referenceDate );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						configuredAudiences: null,
+						isAudienceSegmentationWidgetHidden: false,
+					} );
+			} );
+
+			it( 'syncs `availableAudiences`', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: [
+							availableUserAudienceFixture.name,
+						],
+						isAudienceSegmentationWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				const options = getReportOptions( [
+					availableUserAudienceFixture,
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( {}, { options } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					syncAvailableAudiencesEndpoint
+				);
+			} );
+
+			it( 'adds the top 2 user audiences with data over the past 90 days to `configuredAudiences`, sorted by user count', () => {} );
+
+			it( 'fills available space in `configuredAudiences` with pre-existing "new visitors" and "returning visitors" audiences', () => {} );
+
+			it( 'creates the "new visitors" and "returning visitors" audiences, and adds them to `configuredAudiences` if they do not exist and no suitable pre-existing audiences are present to populate `configuredAudiences`', () => {} );
+
+			it( "syncs `availableCustomDimensions if it's not already synced", () => {} );
+
+			it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", () => {} );
 		} );
 	} );
 
