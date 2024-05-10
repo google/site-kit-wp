@@ -60,12 +60,14 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	async function dismissNotificationForUser() {
-		await dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
+	function dismissNotificationForUser() {
+		dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
 	}
 
 	function scrollToWidgetArea() {
-		// TODO: This will be implemented via a future issue.
+		dismissNotificationForUser();
+
+		// TODO: Scrolling to the widget area will be implemented in a subsequent issue.
 	}
 
 	// Ensure resolution of the report has completed before showing this

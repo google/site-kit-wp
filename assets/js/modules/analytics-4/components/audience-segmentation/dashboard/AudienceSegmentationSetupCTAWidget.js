@@ -40,7 +40,6 @@ import {
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { getPreviousDate } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
-// import { isZeroReport } from '../../../utils';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
@@ -94,7 +93,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 	}
 
 	// TODO: We need to refactor this and the ConsentModeSetupCTAWidget to avoid this duplicate inlining of the widget context and area structure,
-	// and to ensure only one of these setup CTAs is shown at a time.
+	// and to ensure only one of these setup CTAs is shown at a time. This will be handled in a subsequent issue.
 	return (
 		<div className="googlesitekit-widget-context">
 			<Grid className="googlesitekit-widget-area">
