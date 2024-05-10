@@ -33,11 +33,26 @@ describe( 'PAX partner services', () => {
 		beforeEach( () => {
 			registry = createTestRegistry();
 			services = createPaxServices( registry );
+			global._googlesitekitPAXConfig = {
+				authAccess: {
+					oauthTokenAccess: {
+						token: 'test-auth-token',
+					},
+				},
+			};
+		} );
+
+		afterAll( () => {
+			global._googlesitekitPAXConfig = undefined;
 		} );
 
 		it( 'should return object with correct services', () => {
 			expect( services ).toEqual(
 				expect.objectContaining( {
+					authenticationService: expect.objectContaining( {
+						get: expect.any( Function ),
+						fix: expect.any( Function ),
+					} ),
 					businessService: expect.objectContaining( {
 						getBusinessInfo: expect.any( Function ),
 						fixBusinessInfo: expect.any( Function ),
@@ -51,6 +66,27 @@ describe( 'PAX partner services', () => {
 					} ),
 				} )
 			);
+		} );
+
+		describe( 'authenticationService', () => {
+			describe( 'get', () => {
+				it( 'should contain accessToken property', async () => {
+					const authAccess =
+						await services.authenticationService.get();
+
+					expect( authAccess ).toHaveProperty( 'accessToken' );
+				} );
+				it( 'should contain correct accessToken', async () => {
+					const authAccess =
+						await services.authenticationService.get();
+
+					/* eslint-disable sitekit/acronym-case */
+					expect( authAccess.accessToken ).toEqual(
+						'test-auth-token'
+					);
+					/* eslint-enable sitekit/acronym-case */
+				} );
+			} );
 		} );
 
 		describe( 'businessService', () => {
