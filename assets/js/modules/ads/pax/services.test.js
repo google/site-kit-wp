@@ -34,17 +34,6 @@ describe( 'PAX partner services', () => {
 		beforeEach( () => {
 			registry = createTestRegistry();
 			services = createPaxServices( registry );
-			global._googlesitekitPAXConfig = {
-				authAccess: {
-					oauthTokenAccess: {
-						token: 'test-auth-token',
-					},
-				},
-			};
-		} );
-
-		afterAll( () => {
-			global._googlesitekitPAXConfig = undefined;
 		} );
 
 		it( 'should return object with correct services', () => {
@@ -78,6 +67,17 @@ describe( 'PAX partner services', () => {
 					expect( authAccess ).toHaveProperty( 'accessToken' );
 				} );
 				it( 'should contain correct accessToken', async () => {
+					const _googlesitekitPAXConfig = {
+						authAccess: {
+							oauthTokenAccess: {
+								token: 'test-auth-token',
+							},
+						},
+					};
+					services = createPaxServices( registry, {
+						_googlesitekitPAXConfig,
+					} );
+
 					const authAccess =
 						await services.authenticationService.get();
 
