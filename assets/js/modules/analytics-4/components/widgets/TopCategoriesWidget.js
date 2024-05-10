@@ -52,7 +52,7 @@ const { useSelect, useInViewSelect } = Data;
 /**
  * Gets the report options for the Top Categories widget.
  *
- * @since n.e.x.t
+ * @since 1.113.0
  *
  * @param {Function} select Data store 'select' function.
  * @return {Object} The report options.
