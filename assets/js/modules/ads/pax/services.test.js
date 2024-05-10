@@ -85,13 +85,34 @@ describe( 'PAX partner services', () => {
 
 		describe( 'conversionTrackingService', () => {
 			describe( 'getSupportedConversionLabels', () => {
-				it( 'should hold correct value for conversionLabels property', async () => {
+				it( 'should hold correct default value for conversionLabels property', async () => {
 					const supportedConversionLabels =
 						await services.conversionTrackingService.getSupportedConversionLabels();
 
 					expect(
 						supportedConversionLabels.conversionLabels
 					).toEqual( [] );
+				} );
+
+				it( 'should hold correct value for conversionLabels property when data is present', async () => {
+					const mockSupportedEvents = [ 'mock-event' ];
+					const adsModuleDataVar = '_googlesitekitModulesData';
+					const adsModuleDataVarValue = {
+						ads: {
+							supportedConversionEvents: mockSupportedEvents,
+						},
+					};
+
+					global[ adsModuleDataVar ] = adsModuleDataVarValue;
+
+					const supportedConversionLabels =
+						await services.conversionTrackingService.getSupportedConversionLabels();
+
+					expect(
+						supportedConversionLabels.conversionLabels
+					).toEqual( mockSupportedEvents );
+
+					delete global[ adsModuleDataVar ];
 				} );
 			} );
 
