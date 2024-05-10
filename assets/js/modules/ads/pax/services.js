@@ -49,11 +49,13 @@ const restFetchWpPages = async () => {
  * @since 1.126.0
  *
  * @param {Object} registry Registry object to dispatch to.
+ * @param {Object} _global  The global window object.
  * @return {Object} An object containing various service interfaces.
  */
-export function createPaxServices( registry ) {
+export function createPaxServices( registry, _global = global ) {
+	const { select, __experimentalResolveSelect: resolveSelect } = registry;
 	const accessToken =
-		global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
 
 	return {
 		authenticationService: {
@@ -68,14 +70,12 @@ export function createPaxServices( registry ) {
 		},
 		businessService: {
 			getBusinessInfo: async () => {
-				await registry
-					.__experimentalResolveSelect( CORE_SITE )
-					.getSiteInfo();
+				await resolveSelect( CORE_SITE ).getSiteInfo();
 
 				/* eslint-disable sitekit/acronym-case */
 				// Disabling rule because businessName and businessUrl are expected by PAX API.
-				const businessName = registry.select( CORE_SITE ).getSiteName();
-				const businessUrl = registry.select( CORE_SITE ).getHomeURL();
+				const businessName = select( CORE_SITE ).getSiteName();
+				const businessUrl = select( CORE_SITE ).getHomeURL();
 
 				return { businessName, businessUrl };
 				/* eslint-enable sitekit/acronym-case */
@@ -86,18 +86,13 @@ export function createPaxServices( registry ) {
 			},
 		},
 		conversionTrackingService: {
-			// eslint-disable-next-line require-await
 			getSupportedConversionLabels: async () => {
-				await registry
-					.__experimentalResolveSelect( MODULES_ADS )
-					.getModuleData();
+				await resolveSelect( MODULES_ADS ).getModuleData();
 				const conversionEvents =
-					registry
-						.select( MODULES_ADS )
-						.getSupportedConversionEvents() || [];
+					select( MODULES_ADS ).getSupportedConversionEvents() || [];
+
 				return { conversionLabels: conversionEvents };
 			},
-			// eslint-disable-next-line require-await
 			getPageViewConversionSetting: async () => {
 				const websitePages = await restFetchWpPages();
 				return {
