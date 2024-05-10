@@ -56,6 +56,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const hasAdwordsScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( ADWORDS_SCOPE )
 	);
+	const hasPaxSettings = useSelect( ( select ) => {
+		const { getPaxConversionID, getExtCustomerID } = select( MODULES_ADS );
+
+		return getPaxConversionID() && getExtCustomerID();
+	} );
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		[ PARAM_SHOW_PAX ]: 1,
@@ -146,7 +151,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton
 							isSaving={ isNavigatingToOAuthURL }
-							disabled={ isNavigatingToOAuthURL || ! paxApp }
+							disabled={
+								isNavigatingToOAuthURL ||
+								! paxApp ||
+								! hasPaxSettings
+							}
 							onClick={ onCompleteSetup }
 						>
 							{ __( 'Complete setup', 'google-site-kit' ) }
