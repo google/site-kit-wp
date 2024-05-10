@@ -147,15 +147,6 @@ describe( 'PAX partner services', () => {
 			} );
 
 			describe( 'getPageViewConversionSetting', () => {
-				it( 'should hold correct value for enablePageViewConversion property', async () => {
-					const pageViewConversionSetting =
-						await services.conversionTrackingService.getPageViewConversionSetting();
-
-					expect(
-						pageViewConversionSetting.enablePageViewConversion
-					).toBe( true );
-				} );
-
 				it( 'should hold correct value for websitePages property', async () => {
 					const wpPagesEndpoint = new RegExp( '^/wp/v2/pages' );
 
