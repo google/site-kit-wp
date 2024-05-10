@@ -77,7 +77,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 ) {
 	const { select, __experimentalResolveSelect } = registry;
 
-	const args = {
+	const reportOptions = {
 		metrics: [ { name: 'totalUsers' } ],
 		dimensions: [ 'audienceResourceName' ],
 		dimensionFilters: {
@@ -89,11 +89,11 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 
 	const report = await __experimentalResolveSelect(
 		MODULES_ANALYTICS_4
-	).getReport( args );
+	).getReport( reportOptions );
 
 	const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 		'getReport',
-		[ args ]
+		[ reportOptions ]
 	);
 
 	if ( error ) {
