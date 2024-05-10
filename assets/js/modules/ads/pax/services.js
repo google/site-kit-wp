@@ -52,7 +52,20 @@ const restFetchWpPages = async () => {
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry ) {
+	const accessToken =
+		global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+
 	return {
+		authenticationService: {
+			// eslint-disable-next-line require-await
+			get: async () => {
+				return { accessToken };
+			},
+			// eslint-disable-next-line require-await
+			fix: async () => {
+				return { retryReady: true };
+			},
+		},
 		businessService: {
 			getBusinessInfo: async () => {
 				await registry
