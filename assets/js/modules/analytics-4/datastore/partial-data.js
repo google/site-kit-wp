@@ -207,7 +207,7 @@ const baseActions = {
 	},
 
 	/**
-	 * Populates the configured audiences with the top 2 user audiences and/or the Site Kit-created audiences,
+	 * Populates the configured audiences with the top two user audiences and/or the Site Kit-created audiences,
 	 * depending on their availability and suitability (data over the last 90 days is required for user audiences).
 	 *
 	 * If no suitable audiences are available, creates the "new-visitors" and "returning-visitors" audiences.
@@ -238,7 +238,7 @@ const baseActions = {
 
 		if ( userAudiences.length > 0 ) {
 			// If there are user audiences, filter and sort them by total users over the last 90 days,
-			// and add the top 2 (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
+			// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
 
 			const endDate = select( CORE_USER ).getReferenceDate();
 
@@ -266,8 +266,8 @@ const baseActions = {
 		}
 
 		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
-			// If there are less than 2 (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
-			// up to the limit of 2.
+			// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
+			// up to the limit of two.
 
 			const siteKitAudiences = availableAudiences.filter(
 				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
