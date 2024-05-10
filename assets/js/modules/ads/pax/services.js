@@ -25,6 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '../datastore/constants';
 
 const restFetchWpPages = async () => {
 	try {
@@ -51,7 +52,20 @@ const restFetchWpPages = async () => {
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry ) {
+	const accessToken =
+		global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+
 	return {
+		authenticationService: {
+			// eslint-disable-next-line require-await
+			get: async () => {
+				return { accessToken };
+			},
+			// eslint-disable-next-line require-await
+			fix: async () => {
+				return { retryReady: true };
+			},
+		},
 		businessService: {
 			getBusinessInfo: async () => {
 				await registry
@@ -74,7 +88,14 @@ export function createPaxServices( registry ) {
 		conversionTrackingService: {
 			// eslint-disable-next-line require-await
 			getSupportedConversionLabels: async () => {
-				return { conversionLabels: [] };
+				await registry
+					.__experimentalResolveSelect( MODULES_ADS )
+					.getModuleData();
+				const conversionEvents =
+					registry
+						.select( MODULES_ADS )
+						.getSupportedConversionEvents() || [];
+				return { conversionLabels: conversionEvents };
 			},
 			// eslint-disable-next-line require-await
 			getPageViewConversionSetting: async () => {
