@@ -117,7 +117,7 @@ GatheringData.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
 			KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-				.requiredCustomDimensions?.[ 0 ],
+				.requiredCustomDimensions[ 0 ],
 			true
 		);
 	},
@@ -153,7 +153,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
@@ -175,7 +175,7 @@ ErrorCustomDimensionsGeneric.args = {
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
@@ -215,7 +215,7 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsCustomDimensionGatheringData(
 						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-							.requiredCustomDimensions?.[ 0 ],
+							.requiredCustomDimensions[ 0 ],
 						false
 					);
 
