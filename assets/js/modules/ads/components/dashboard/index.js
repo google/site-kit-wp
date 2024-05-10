@@ -1,5 +1,5 @@
 /**
- * Ads Common components.
+ * Ads Dashboard components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-export { default as AdBlockerWarning } from './AdBlockerWarning';
-export { default as ConversionIDTextField } from './ConversionIDTextField';
-export { default as PAXEmbeddedApp } from './PAXEmbeddedApp';
+export { default as PartnerAdsWidget } from './PartnerAdsWidget';
