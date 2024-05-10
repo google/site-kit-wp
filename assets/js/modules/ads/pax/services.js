@@ -99,7 +99,8 @@ export function createPaxServices( registry, _global = global ) {
 					websitePages,
 				};
 			},
-			getSupportedConversionTrackingTypes: () => {
+			// eslint-disable-next-line require-await
+			getSupportedConversionTrackingTypes: async () => {
 				return {
 					conversionTrackingTypes: [
 						// @TODO: Include TYPE_CONVERSION_EVENT in a future update.
