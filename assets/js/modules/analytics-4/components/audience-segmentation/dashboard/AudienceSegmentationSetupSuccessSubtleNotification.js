@@ -116,10 +116,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 					<Button tertiary onClick={ dismissNotificationForUser }>
 						{ __( 'Got it', 'google-site-kit' ) }
 					</Button>
-					<Button
-						className="googlesitekit-subtle-notification__primary-cta"
-						onClick={ scrollToWidgetArea }
-					>
+					<Button onClick={ scrollToWidgetArea }>
 						{ __( 'Show me', 'google-site-kit' ) }
 					</Button>
 				</Cell>
