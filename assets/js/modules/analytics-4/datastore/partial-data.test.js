@@ -31,7 +31,11 @@ import {
 	properties,
 	availableAudiences as availableAudiencesFixture,
 } from './__fixtures__';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+	SITE_KIT_AUDIENCE_DEFINITIONS,
+} from './constants';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const testAudience1 = {
@@ -192,11 +196,14 @@ describe( 'modules/analytics-4 partial data', () => {
 		} );
 
 		describe( 'enableAudienceGroup', () => {
-			const syncAvailableAudiencesEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
-			);
 			const audienceSettingsEndpoint = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			);
+			const createAudienceEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
+			);
+			const syncAvailableAudiencesEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 			);
 
 			const referenceDate = '2024-05-10';
@@ -583,7 +590,163 @@ describe( 'modules/analytics-4 partial data', () => {
 				}
 			);
 
-			it( 'creates the "new visitors" and "returning visitors" audiences, and adds them to `configuredAudiences` if they do not exist and no suitable pre-existing audiences are present to populate `configuredAudiences`', () => {} );
+			it( 'creates the "new visitors" and "returning visitors" audiences, and adds them to `configuredAudiences` if they do not exist and no suitable pre-existing audiences are present to populate `configuredAudiences`', async () => {
+				const createdNewVisitorsAudienceName =
+					'properties/12345/audiences/888';
+				const createdReturningVisitorsAudienceName =
+					'properties/12345/audiences/999';
+
+				const finalAvailableAudiences = [
+					[
+						...availableAudiencesFixture,
+						{
+							...availableNewVisitorsAudienceFixture,
+							name: createdNewVisitorsAudienceName,
+						},
+						{
+							...availableReturningVisitorsAudienceFixture,
+							name: createdReturningVisitorsAudienceName,
+						},
+					],
+				];
+
+				fetchMock.post(
+					{
+						url: syncAvailableAudiencesEndpoint,
+						repeat: 2,
+					},
+					() => {
+						const callCount = fetchMock.calls(
+							syncAvailableAudiencesEndpoint
+						).length;
+
+						return {
+							body:
+								callCount === 1
+									? availableUserAudiences
+									: finalAvailableAudiences,
+							status: 200,
+						};
+					}
+				);
+
+				const expectedConfiguredAudiences = [
+					createdNewVisitorsAudienceName,
+					createdReturningVisitorsAudienceName,
+				];
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: expectedConfiguredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				fetchMock.post(
+					{ url: createAudienceEndpoint, repeat: 2 },
+					( url, opts ) => {
+						return {
+							body: opts.body.includes( 'new_visitors' )
+								? {
+										...SITE_KIT_AUDIENCE_DEFINITIONS[
+											'new-visitors'
+										],
+										name: createdNewVisitorsAudienceName,
+								  }
+								: {
+										...SITE_KIT_AUDIENCE_DEFINITIONS[
+											'returning-visitors'
+										],
+										name: createdReturningVisitorsAudienceName,
+								  },
+							status: 200,
+						};
+					}
+				);
+
+				const options = getReportOptions( availableUserAudiences );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+					createMockReport( {
+						[ availableUserAudiences[ 0 ].name ]: 0,
+						[ availableUserAudiences[ 1 ].name ]: 0,
+						[ availableUserAudiences[ 2 ].name ]: 0,
+					} ),
+					{ options }
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					2,
+					syncAvailableAudiencesEndpoint
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( finalAvailableAudiences );
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					createAudienceEndpoint,
+					{
+						body: {
+							data: {
+								audience:
+									SITE_KIT_AUDIENCE_DEFINITIONS[
+										'new-visitors'
+									],
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					createAudienceEndpoint,
+					{
+						body: {
+							data: {
+								audience:
+									SITE_KIT_AUDIENCE_DEFINITIONS[
+										'returning-visitors'
+									],
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					audienceSettingsEndpoint,
+					{
+						body: {
+							data: {
+								settings: {
+									configuredAudiences:
+										expectedConfiguredAudiences,
+									isAudienceSegmentationWidgetHidden,
+								},
+							},
+						},
+					}
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual( expectedConfiguredAudiences );
+			} );
 
 			it( "syncs `availableCustomDimensions if it's not already synced", () => {} );
 
