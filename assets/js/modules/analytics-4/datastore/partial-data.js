@@ -353,6 +353,22 @@ const baseActions = {
 
 			if ( error ) {
 				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+			} else {
+				// If the custom dimension was created successfully, mark it as gathering
+				// data immediately so that it doesn't cause unnecessary report requests.
+				dispatch(
+					MODULES_ANALYTICS_4
+				).receiveIsCustomDimensionGatheringData(
+					'googlesitekit_post_type',
+					true
+				);
+
+				// Resync available custom dimensions to ensure the newly created custom dimension is available.
+				yield Data.commonActions.await(
+					dispatch(
+						MODULES_ANALYTICS_4
+					).fetchSyncAvailableCustomDimensions()
+				);
 			}
 		}
 
