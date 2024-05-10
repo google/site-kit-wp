@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
+import { MODULES_ADS } from '../datastore/constants';
 import { createPaxServices } from './services';
 
 describe( 'PAX partner services', () => {
@@ -132,14 +133,9 @@ describe( 'PAX partner services', () => {
 
 				it( 'should hold correct value for conversionLabels property when data is present', async () => {
 					const mockSupportedEvents = [ 'mock-event' ];
-					const adsModuleDataVar = '_googlesitekitModulesData';
-					const adsModuleDataVarValue = {
-						ads: {
-							supportedConversionEvents: mockSupportedEvents,
-						},
-					};
-
-					global[ adsModuleDataVar ] = adsModuleDataVarValue;
+					registry.dispatch( MODULES_ADS ).receiveModuleData( {
+						supportedConversionEvents: mockSupportedEvents,
+					} );
 
 					const supportedConversionLabels =
 						await services.conversionTrackingService.getSupportedConversionLabels();
@@ -147,8 +143,6 @@ describe( 'PAX partner services', () => {
 					expect(
 						supportedConversionLabels.conversionLabels
 					).toEqual( mockSupportedEvents );
-
-					delete global[ adsModuleDataVar ];
 				} );
 			} );
 
