@@ -204,6 +204,18 @@ describe( 'modules/analytics-4 partial data', () => {
 
 			const availableUserAudienceFixture = availableAudiencesFixture[ 4 ];
 
+			const isAudienceSegmentationWidgetHidden = false;
+
+			function createAvailableUserAudience( audienceID ) {
+				return {
+					name: `properties/12345/audiences/${ audienceID }`,
+					description: `Description ${ audienceID }`,
+					displayName: `Test Audience ${ audienceID }`,
+					audienceType: 'USER_AUDIENCE',
+					audienceSlug: '',
+				};
+			}
+
 			function getReportOptions( audiences ) {
 				return {
 					metrics: [ { name: 'totalUsers' } ],
@@ -218,6 +230,97 @@ describe( 'modules/analytics-4 partial data', () => {
 				};
 			}
 
+			function createMockReport( totalUsersByAudience ) {
+				return {
+					kind: 'analyticsData#runReport',
+					rowCount: 3,
+					dimensionHeaders: [
+						{
+							name: 'audienceResourceName',
+						},
+					],
+					metricHeaders: [
+						{
+							name: 'totalUsers',
+							type: 'TYPE_INTEGER',
+						},
+					],
+					rows: Object.entries( totalUsersByAudience ).map(
+						( [ audienceResourceName, totalUsers ] ) => ( {
+							dimensionValues: [
+								{
+									value: audienceResourceName,
+								},
+							],
+							metricValues: [
+								{
+									value: totalUsers,
+								},
+							],
+						} )
+					),
+					totals: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_TOTAL',
+								},
+							],
+							metricValues: [
+								{
+									value: Object.values( totalUsersByAudience )
+										.reduce(
+											( acc, totalUsers ) =>
+												acc + totalUsers,
+											0
+										)
+										.toString(),
+								},
+							],
+						},
+					],
+					maximums: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_MAX',
+								},
+							],
+							metricValues: [
+								{
+									value: Math.max(
+										...Object.values( totalUsersByAudience )
+									).toString(),
+								},
+							],
+						},
+					],
+					minimums: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_MIN',
+								},
+							],
+							metricValues: [
+								{
+									value: Math.min(
+										...Object.values( totalUsersByAudience )
+									).toString(),
+								},
+							],
+						},
+					],
+					metadata: {
+						currencyCode: 'USD',
+						dataLossFromOtherRow: null,
+						emptyReason: null,
+						subjectToThresholding: null,
+						timeZone: 'Etc/UTC',
+					},
+				};
+			}
+
 			beforeEach( () => {
 				registry
 					.dispatch( CORE_USER )
@@ -227,7 +330,7 @@ describe( 'modules/analytics-4 partial data', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAudienceSettings( {
 						configuredAudiences: null,
-						isAudienceSegmentationWidgetHidden: false,
+						isAudienceSegmentationWidgetHidden,
 					} );
 			} );
 
@@ -242,7 +345,7 @@ describe( 'modules/analytics-4 partial data', () => {
 						configuredAudiences: [
 							availableUserAudienceFixture.name,
 						],
-						isAudienceSegmentationWidgetHidden: false,
+						isAudienceSegmentationWidgetHidden,
 					},
 					status: 200,
 				} );
@@ -267,9 +370,84 @@ describe( 'modules/analytics-4 partial data', () => {
 					1,
 					syncAvailableAudiencesEndpoint
 				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( availableAudiencesFixture );
 			} );
 
-			it( 'adds the top 2 user audiences with data over the past 90 days to `configuredAudiences`, sorted by user count', () => {} );
+			it( 'adds the top 2 user audiences with data over the past 90 days to `configuredAudiences`, sorted by user count', async () => {
+				// The fixture only contains 1 user audience. Add another two so we can test the filtering and sorting.
+				const availableUserAudiences = [
+					availableUserAudienceFixture,
+					createAvailableUserAudience( 6 ),
+					createAvailableUserAudience( 7 ),
+				];
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						...availableAudiencesFixture,
+						...availableUserAudiences.slice( 1 ),
+					],
+					status: 200,
+				} );
+
+				const expectedConfiguredAudiences = [
+					availableUserAudiences[ 2 ].name,
+					availableUserAudiences[ 0 ].name,
+				];
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: expectedConfiguredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				const options = getReportOptions( availableUserAudiences );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+					createMockReport( {
+						[ availableUserAudiences[ 0 ].name ]: 10,
+						[ availableUserAudiences[ 1 ].name ]: 0,
+						[ availableUserAudiences[ 2 ].name ]: 123,
+					} ),
+					{ options }
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					audienceSettingsEndpoint,
+					{
+						body: {
+							data: {
+								settings: {
+									configuredAudiences:
+										expectedConfiguredAudiences,
+									isAudienceSegmentationWidgetHidden,
+								},
+							},
+						},
+					}
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual( expectedConfiguredAudiences );
+			} );
 
 			it( 'fills available space in `configuredAudiences` with pre-existing "new visitors" and "returning visitors" audiences', () => {} );
 
