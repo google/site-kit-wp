@@ -195,5 +195,18 @@ describe( 'PAX partner services', () => {
 				} );
 			} );
 		} );
+
+		describe( 'getSupportedConversionTrackingTypes', () => {
+			it( 'should return the expected supported types', () => {
+				const supportedTypes =
+					services.conversionTrackingService.getSupportedConversionTrackingTypes(
+						{}
+					);
+
+				expect( supportedTypes ).toMatchObject( {
+					conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
+				} );
+			} );
+		} );
 	} );
 } );
