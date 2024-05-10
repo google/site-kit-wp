@@ -101,8 +101,16 @@ export function createPaxServices( registry ) {
 			getPageViewConversionSetting: async () => {
 				const websitePages = await restFetchWpPages();
 				return {
-					enablePageViewConversion: true,
 					websitePages,
+				};
+			},
+			getSupportedConversionTrackingTypes: () => {
+				return {
+					conversionTrackingTypes: [
+						// @TODO: Include TYPE_CONVERSION_EVENT in a future update.
+						// 'TYPE_CONVERSION_EVENT',
+						'TYPE_PAGE_VIEW',
+					],
 				};
 			},
 		},
