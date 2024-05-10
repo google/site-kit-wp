@@ -297,7 +297,7 @@ const baseActions = {
 		}
 
 		if ( configuredAudiences.length === 0 ) {
-			// If there are no configured audiences by this points, create the "new-visitors" and "returning-visitors" audiences,
+			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
 			const [ newVisitorsResult, returningVisitorsResult ] =
 				yield Data.commonActions.await(
