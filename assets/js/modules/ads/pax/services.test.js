@@ -197,9 +197,9 @@ describe( 'PAX partner services', () => {
 		} );
 
 		describe( 'getSupportedConversionTrackingTypes', () => {
-			it( 'should return the expected supported types', () => {
+			it( 'should return the expected supported types', async () => {
 				const supportedTypes =
-					services.conversionTrackingService.getSupportedConversionTrackingTypes(
+					await services.conversionTrackingService.getSupportedConversionTrackingTypes(
 						{}
 					);
 
