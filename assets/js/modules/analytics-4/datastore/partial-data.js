@@ -206,6 +206,15 @@ const baseActions = {
 		};
 	},
 
+	/**
+	 * Populates the configured audiences with the top 2 user audiences and/or the Site Kit-created audiences,
+	 * depending on their availability and suitability (data over the last 90 days is required for user audiences).
+	 *
+	 * If no suitable audiences are available, creates the "new-visitors" and "returning-visitors" audiences.
+	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
+	 *
+	 * @since n.e.x.t
+	 */
 	*enableAudienceGroup() {
 		const registry = yield Data.commonActions.getRegistry();
 
