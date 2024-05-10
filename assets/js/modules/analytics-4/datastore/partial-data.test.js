@@ -597,7 +597,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				const finalAvailableAudiences = [
 					[
-						...availableAudiencesFixture,
+						...availableUserAudiences,
 						{
 							...availableNewVisitorsAudienceFixture,
 							name: createdNewVisitorsAudienceName,
