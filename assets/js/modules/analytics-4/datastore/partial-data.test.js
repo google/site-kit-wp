@@ -202,6 +202,8 @@ describe( 'modules/analytics-4 partial data', () => {
 			const referenceDate = '2024-05-10';
 			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
 
+			const availableNewVisitorsAudienceFixture =
+				availableAudiencesFixture[ 2 ];
 			const availableUserAudienceFixture = availableAudiencesFixture[ 4 ];
 
 			// The fixture only contains one user audience. Create another two so we can test the filtering and sorting.
@@ -487,7 +489,69 @@ describe( 'modules/analytics-4 partial data', () => {
 				}
 			);
 
-			it( 'fills available space in `configuredAudiences` with pre-existing "new visitors" and "returning visitors" audiences', () => {} );
+			it( 'fills available space in `configuredAudiences` with pre-existing "new visitors" and "returning visitors" audiences', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						...availableAudiencesFixture,
+						...availableUserAudiences.slice( 1 ),
+					],
+					status: 200,
+				} );
+
+				const expectedConfiguredAudiences = [
+					availableUserAudiences[ 2 ].name,
+					availableNewVisitorsAudienceFixture.name,
+				];
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: expectedConfiguredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				const options = getReportOptions( availableUserAudiences );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+					createMockReport( {
+						[ availableUserAudiences[ 0 ].name ]: 0,
+						[ availableUserAudiences[ 1 ].name ]: 0,
+						[ availableUserAudiences[ 2 ].name ]: 123,
+					} ),
+					{ options }
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					audienceSettingsEndpoint,
+					{
+						body: {
+							data: {
+								settings: {
+									configuredAudiences:
+										expectedConfiguredAudiences,
+									isAudienceSegmentationWidgetHidden,
+								},
+							},
+						},
+					}
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual( expectedConfiguredAudiences );
+			} );
 
 			it( 'creates the "new visitors" and "returning visitors" audiences, and adds them to `configuredAudiences` if they do not exist and no suitable pre-existing audiences are present to populate `configuredAudiences`', () => {} );
 
