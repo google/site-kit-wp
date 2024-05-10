@@ -33,7 +33,7 @@ import Data from 'googlesitekit-data';
 import whenActive from '../../../../util/when-active';
 import whenScopesGranted from '../../../../util/whenScopesGranted';
 import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
-import PAXEmbeddedApp from '../PAXEmbeddedApp';
+import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 import { AdBlockerWarning } from '../common';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';

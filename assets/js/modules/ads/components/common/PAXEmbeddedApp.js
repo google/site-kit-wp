@@ -39,10 +39,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import CTA from '../../../components/notifications/CTA';
-import PreviewBlock from '../../../components/PreviewBlock';
-import { createPaxServices } from '../pax/services';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import CTA from '../../../../components/notifications/CTA';
+import PreviewBlock from '../../../../components/PreviewBlock';
+import { createPaxServices } from '../../pax/services';
 import { useMemoOne } from 'use-memo-one';
 const { useRegistry, useSelect } = Data;
 export default function PAXEmbeddedApp( {
