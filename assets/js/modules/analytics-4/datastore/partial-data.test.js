@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -360,9 +361,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
-						configuredAudiences: [
-							availableUserAudienceFixture.name,
-						],
+						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
 					},
 					status: 200,
@@ -748,9 +747,120 @@ describe( 'modules/analytics-4 partial data', () => {
 				).toEqual( expectedConfiguredAudiences );
 			} );
 
-			it( "syncs `availableCustomDimensions if it's not already synced", () => {} );
+			describe( 'custom dimension handling', () => {
+				const createCustomDimensionEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+				);
+				const syncAvailableCustomDimensionsEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				);
 
-			it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", () => {} );
+				const postTypeCustomDimension = {
+					parameterName: 'googlesitekit_post_type',
+					displayName: 'WordPress Post Type',
+					description: 'Created by Site Kit: Content type of a post',
+					scope: 'EVENT',
+				};
+
+				beforeEach( () => {
+					provideUserAuthentication( registry );
+					provideUserCapabilities( registry );
+
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						availableAudiences: null,
+						availableCustomDimensions: null,
+						propertyID: testPropertyID,
+					} );
+				} );
+
+				it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", async () => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableAudiencesFixture,
+						status: 200,
+					} );
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: [],
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					fetchMock.post(
+						{
+							url: syncAvailableCustomDimensionsEndpoint,
+							repeat: 2,
+						},
+						() => {
+							const callCount = fetchMock.calls(
+								syncAvailableCustomDimensionsEndpoint
+							).length;
+
+							return {
+								body:
+									callCount === 1
+										? []
+										: [ postTypeCustomDimension ],
+								status: 200,
+							};
+						}
+					);
+
+					fetchMock.postOnce( createCustomDimensionEndpoint, {
+						body: postTypeCustomDimension,
+						status: 200,
+					} );
+
+					const options = getReportOptions( [
+						availableUserAudienceFixture,
+					] );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport( {}, { options } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.finishResolution( 'getReport', [ options ] );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						createCustomDimensionEndpoint,
+						{
+							body: {
+								data: {
+									propertyID: testPropertyID,
+									customDimension: postTypeCustomDimension,
+								},
+							},
+						}
+					);
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						2,
+						syncAvailableCustomDimensionsEndpoint
+					);
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getAvailableCustomDimensions()
+					).toEqual( [ postTypeCustomDimension ] );
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isCustomDimensionGatheringData(
+								'googlesitekit_post_type'
+							)
+					).toBe( true );
+				} );
+			} );
 		} );
 	} );
 
