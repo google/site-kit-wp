@@ -55,7 +55,7 @@ const MESSAGE_GENERIC = 'generic';
 /**
  * Maps unsatisfied scopes to module names.
  *
- * @since 1.38.0
+ * @since 1.39.0
  *
  * @param {Array}  scopes  Array of unsatisfied scopes.
  * @param {Object} modules Object of all modules.
