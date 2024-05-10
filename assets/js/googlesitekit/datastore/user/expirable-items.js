@@ -35,7 +35,7 @@ const { getRegistry } = commonActions;
 function reducerCallback( state, expirableItems ) {
 	return {
 		...state,
-		expirableItems: Array.isArray( expirableItems ) ? expirableItems : [],
+		expirableItems,
 	};
 }
 
@@ -48,16 +48,22 @@ const fetchGetExpirableItemsStore = createFetchStore( {
 
 const fetchSetExpirableItemTimersStore = createFetchStore( {
 	baseName: 'expirableItems',
-	controlCallback: ( { slug, expiresInSeconds } ) =>
-		API.set( 'core', 'user', 'set-expirable-item-timers', {
-			slug,
-			expiration: expiresInSeconds,
-		} ),
+	controlCallback: ( items ) =>
+		API.set( 'core', 'user', 'set-expirable-item-timers', items ),
 	reducerCallback,
 	argsToParams: ( items ) => {
-		return items;
+		return items.map( ( item ) => {
+			const { slug, expiresInSeconds } = item;
+
+			return {
+				slug,
+				expiration: expiresInSeconds,
+			};
+		} );
 	},
 	validateParams: ( items = [] ) => {
+		invariant( items.length, 'Items are required.' );
+
 		items.forEach( ( item ) => {
 			const { slug, expiresInSeconds = 0 } = item;
 			invariant( slug, 'slug is required.' );
@@ -127,7 +133,13 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if exists, otherwise FALSE, `undefined` if not resolved yet.
 	 */
 	hasExpirableItem: createRegistrySelector( ( select ) => ( state, slug ) => {
-		return select( CORE_USER ).getExpirableItems()?.includes( slug );
+		const items = select( CORE_USER ).getExpirableItems();
+
+		if ( items ) {
+			return Object.keys( items )?.includes( slug );
+		}
+
+		return false;
 	} ),
 
 	/**
@@ -148,9 +160,9 @@ const baseSelectors = {
 				const expirableItems = select( CORE_USER ).getExpirableItems();
 				expirableItems.forEach( ( item ) => {
 					const { expiresInSeconds = 0 } = item;
-					const timeStamp = Math.floor( Date.now() / 1000 );
 
-					if ( expiresInSeconds < timeStamp ) {
+					// Compare with the current timestamp.
+					if ( expiresInSeconds < Math.floor( Date.now() / 1000 ) ) {
 						active = true;
 					}
 				} );

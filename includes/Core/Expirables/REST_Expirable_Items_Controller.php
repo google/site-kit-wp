@@ -124,7 +124,7 @@ class REST_Expirable_Items_Controller {
 
 							$expiration = null;
 							if ( isset( $datum['expiration'] ) && intval( $datum['expiration'] ) > 0 ) {
-								$expiration = $data['expiration'];
+								$expiration = $datum['expiration'];
 							}
 
 							if ( ! $expiration ) {
@@ -144,8 +144,21 @@ class REST_Expirable_Items_Controller {
 					'permission_callback' => $can_manage_expirable_item,
 					'args'                => array(
 						'data' => array(
-							'type'     => 'object',
-							'required' => true,
+							'type'         => 'array',
+							'required'     => true,
+							'show_in_rest' => array(
+								'schema' => array(
+									'type'       => 'object',
+									'properties' => array(
+										'slug'       => array(
+											'type' => 'string',
+										),
+										'expiration' => array(
+											'type' => 'integer',
+										),
+									),
+								),
+							),
 						),
 					),
 				)

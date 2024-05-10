@@ -120,7 +120,7 @@ class Expirable_Items extends User_Setting {
 		$expirable_items = $this->get();
 		$expirable_items = $this->filter_expirable_items( $expirable_items );
 
-		return array_keys( $expirable_items );
+		return (array) $expirable_items;
 	}
 
 	/**
