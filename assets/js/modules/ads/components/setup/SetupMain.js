@@ -45,15 +45,13 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
-			<div className="googlesitekit-setup-module__step">
-				<div className="googlesitekit-setup-module__logo">
-					<AdsIcon width="33" height="33" />
-				</div>
-
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
-				</h2>
+			<div className="googlesitekit-setup-module__logo">
+				<AdsIcon width="33" height="33" />
 			</div>
+
+			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
+			</h2>
 
 			<AdBlockerWarning />
 
