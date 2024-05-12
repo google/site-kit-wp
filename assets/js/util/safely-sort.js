@@ -1,7 +1,7 @@
 /**
- * Metric Selection Panel utils.
+ * `safelySort` utility function.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
  * If the parameter is not an array, it returns the parameter as is.
  *
  * @since 1.110.0
+ * @since n.e.x.t Moved to the common utility directory from the key metrics directory.
  *
  * @param {Array|*} arr Param to be sorted.
  * @return {Array|*} 	Safely sorted array without mutation.

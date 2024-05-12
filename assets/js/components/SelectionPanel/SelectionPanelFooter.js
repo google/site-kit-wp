@@ -20,7 +20,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import ErrorNotice from '../ErrorNotice';
-import { safelySort } from '../KeyMetrics/MetricsSelectionPanel/utils'; // FIXME, extract this to a common location.
+import { safelySort } from '../../util';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs,
