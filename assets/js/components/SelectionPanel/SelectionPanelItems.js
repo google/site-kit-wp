@@ -31,8 +31,8 @@ export default function SelectionPanelItems( {
 	currentSelectionTitle = __( 'Current selection', 'google-site-kit' ),
 	availableItemsTitle = __( 'Additional items', 'google-site-kit' ),
 	savedItemSlugs = [],
-	availableSavedItems,
-	availableUnsavedItems,
+	availableSavedItems = {},
+	availableUnsavedItems = {},
 	ItemComponent,
 } ) {
 	const renderItems = ( items ) => {

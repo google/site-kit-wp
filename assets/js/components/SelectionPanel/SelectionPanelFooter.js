@@ -47,8 +47,8 @@ export default function SelectionPanelFooter( {
 	saveSettings,
 	saveError,
 	itemLimitError,
-	minSelectedItemCount,
-	maxSelectedItemCount,
+	minSelectedItemCount = 0,
+	maxSelectedItemCount = 0,
 	isBusy,
 	onSaveSuccess,
 	onCancel,
@@ -136,7 +136,7 @@ export default function SelectionPanelFooter( {
 					<p className="googlesitekit-selection-panel-footer__item-count">
 						{ createInterpolateElement(
 							sprintf(
-								/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
+								/* translators: 1: Number of selected items. 2: Maximum number of items that can be selected. */
 								__(
 									'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
 									'google-site-kit'
