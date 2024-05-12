@@ -37,7 +37,7 @@ export default function SelectionPanelItem( {
 	onCheckboxChange,
 } ) {
 	return (
-		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
+		<div className="googlesitekit-selection-panel-item">
 			<SelectionBox
 				checked={ isItemSelected }
 				disabled={ isItemDisabled }

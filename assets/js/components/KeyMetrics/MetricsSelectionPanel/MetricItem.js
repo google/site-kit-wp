@@ -106,7 +106,7 @@ export default function MetricItem( {
 			onCheckboxChange={ onCheckboxChange }
 		>
 			{ disconnectedModules.length > 0 && (
-				<div className="googlesitekit-km-selection-panel-metrics__metric-item-error">
+				<div className="googlesitekit-selection-panel-item-error">
 					{ sprintf(
 						/* translators: %s: module names. */
 						_n(

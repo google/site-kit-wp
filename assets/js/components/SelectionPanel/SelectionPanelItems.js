@@ -47,25 +47,25 @@ export default function SelectionPanelItems( {
 	};
 
 	return (
-		<div className="googlesitekit-km-selection-panel-metrics">
+		<div className="googlesitekit-selection-panel-items">
 			{
 				// Split list into two sections with sub-headings for current selection and
 				// additional items if there are already saved items.
 				savedItemSlugs.length !== 0 && (
 					<Fragment>
-						<p className="googlesitekit-km-selection-panel-metrics__subheading">
+						<p className="googlesitekit-selection-panel-items__subheading">
 							{ currentSelectionTitle }
 						</p>
-						<div className="googlesitekit-km-selection-panel-metrics__subsection">
+						<div className="googlesitekit-selection-panel-items__subsection">
 							{ renderItems( availableSavedItems ) }
 						</div>
-						<p className="googlesitekit-km-selection-panel-metrics__subheading">
+						<p className="googlesitekit-selection-panel-items__subheading">
 							{ availableItemsTitle }
 						</p>
 					</Fragment>
 				)
 			}
-			<div className="googlesitekit-km-selection-panel-metrics__subsection">
+			<div className="googlesitekit-selection-panel-items__subsection">
 				{ renderItems( availableUnsavedItems ) }
 			</div>
 		</div>

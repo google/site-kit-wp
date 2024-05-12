@@ -119,9 +119,9 @@ export default function SelectionPanelFooter( {
 	const selectedItemCount = selectedItemSlugs?.length || 0;
 
 	return (
-		<footer className="googlesitekit-km-selection-panel-footer">
+		<footer className="googlesitekit-selection-panel-footer">
 			{ saveError && <ErrorNotice error={ saveError } /> }
-			<div className="googlesitekit-km-selection-panel-footer__content">
+			<div className="googlesitekit-selection-panel-footer__content">
 				{ haveSettingsChanged && itemLimitError ? (
 					<ErrorNotice
 						error={ {
@@ -133,7 +133,7 @@ export default function SelectionPanelFooter( {
 						}
 					/>
 				) : (
-					<p className="googlesitekit-km-selection-panel-footer__metric-count">
+					<p className="googlesitekit-selection-panel-footer__item-count">
 						{ createInterpolateElement(
 							sprintf(
 								/* translators: 1: Number of selected metrics. 2: Maximum number of metrics that can be selected. */
@@ -146,13 +146,13 @@ export default function SelectionPanelFooter( {
 							),
 							{
 								MaxCount: (
-									<span className="googlesitekit-km-selection-panel-footer__metric-count--max-count" />
+									<span className="googlesitekit-selection-panel-footer__item-count--max-count" />
 								),
 							}
 						) }
 					</p>
 				) }
-				<div className="googlesitekit-km-selection-panel-footer__actions">
+				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
 						tertiary
 						onClick={ onCancelClick }

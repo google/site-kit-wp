@@ -33,11 +33,11 @@ export default function SelectionPanelHeader( {
 	onCloseClick,
 } ) {
 	return (
-		<header className="googlesitekit-km-selection-panel-header">
-			<div className="googlesitekit-km-selection-panel-header__row">
+		<header className="googlesitekit-selection-panel-header">
+			<div className="googlesitekit-selection-panel-header__row">
 				<h3>{ title }</h3>
 				<Link
-					className="googlesitekit-km-selection-panel-header__close"
+					className="googlesitekit-selection-panel-header__close"
 					onClick={ onCloseClick }
 					linkButton
 				>

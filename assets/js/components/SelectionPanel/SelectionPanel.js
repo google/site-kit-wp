@@ -34,13 +34,13 @@ export default function SelectionPanel( {
 } ) {
 	return (
 		<SideSheet
-			className="googlesitekit-km-selection-panel"
+			className="googlesitekit-selection-panel"
 			isOpen={ isOpen }
 			onOpen={ onOpen }
 			closeFn={ closeFn }
 			focusTrapOptions={ {
 				initialFocus:
-					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-selection-box input',
+					'.googlesitekit-selection-panel-item .googlesitekit-selection-box input',
 			} }
 		>
 			{ children }
