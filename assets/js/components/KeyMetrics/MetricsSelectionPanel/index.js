@@ -83,6 +83,7 @@ export default function MetricsSelectionPanel() {
 			isOpen={ isOpen || isNavigatingToOAuthURL }
 			onOpen={ onSideSheetOpen }
 			closeFn={ sideSheetCloseFn }
+			className="googlesitekit-km-selection-panel"
 		>
 			<MetricsHeader closeFn={ sideSheetCloseFn } />
 			<MetricItems savedMetrics={ savedViewableMetrics } />

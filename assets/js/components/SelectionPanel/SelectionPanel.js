@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -31,10 +32,14 @@ export default function SelectionPanel( {
 	isOpen,
 	onOpen,
 	closeFn,
+	className,
 } ) {
 	return (
 		<SideSheet
-			className="googlesitekit-selection-panel"
+			className={ classnames(
+				'googlesitekit-selection-panel',
+				className
+			) }
 			isOpen={ isOpen }
 			onOpen={ onOpen }
 			closeFn={ closeFn }
@@ -53,4 +58,5 @@ SelectionPanel.propTypes = {
 	isOpen: PropTypes.bool,
 	onOpen: PropTypes.func,
 	closeFn: PropTypes.func,
+	className: PropTypes.string,
 };
