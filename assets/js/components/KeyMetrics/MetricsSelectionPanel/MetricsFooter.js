@@ -36,9 +36,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
@@ -134,7 +132,6 @@ export default function MetricsFooter( {
 
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
-	const { setValue } = useDispatch( CORE_UI );
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const saveSettings = useCallback(
@@ -163,9 +160,10 @@ export default function MetricsFooter( {
 				// so that the panel is kept open.
 				onNavigationToOAuthURL();
 
-				// Ensure the state is set, just in case the user navigates to the
-				// OAuth URL before the function is fully executed.
-				setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false ); // TODO: Can call `closeFn()` instead.
+				// Ensure the state is set (the panel is closed), just in case
+				// the user navigates to the OAuth URL before the
+				// function is fully executed.
+				closeFn();
 
 				setPermissionScopeError( {
 					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
@@ -189,7 +187,7 @@ export default function MetricsFooter( {
 		setValues,
 		hasAnalytics4EditScope,
 		onNavigationToOAuthURL,
-		setValue,
+		closeFn,
 		setPermissionScopeError,
 		redirectURL,
 	] );
@@ -242,6 +240,8 @@ export default function MetricsFooter( {
 }
 
 MetricsFooter.propTypes = {
+	isOpen: PropTypes.bool,
+	closeFn: PropTypes.func,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
 };

@@ -39,7 +39,6 @@ import { SelectionPanelItem } from '../../SelectionPanel';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricItem( {
-	id,
 	slug,
 	title,
 	description,
@@ -94,13 +93,14 @@ export default function MetricItem( {
 	const isMetricDisabled =
 		! savedItemSlugs.includes( slug ) && disconnectedModules.length > 0;
 
+	const id = `key-metric-selection-checkbox-${ slug }`;
+
 	return (
 		<SelectionPanelItem
 			id={ id }
 			slug={ slug }
 			title={ title }
 			description={ description }
-			disconnectedModules={ disconnectedModules }
 			isItemSelected={ isMetricSelected }
 			isItemDisabled={ isMetricDisabled }
 			onCheckboxChange={ onCheckboxChange }
@@ -126,7 +126,6 @@ export default function MetricItem( {
 }
 
 MetricItem.propTypes = {
-	id: PropTypes.string.isRequired,
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,

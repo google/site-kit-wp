@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
@@ -30,8 +35,8 @@ import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constan
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import Link from '../../Link';
-import useViewOnly from '../../../hooks/useViewOnly';
 import { SelectionPanelHeader } from '../../SelectionPanel';
+import useViewOnly from '../../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsHeader( { closeFn } ) {
@@ -79,3 +84,7 @@ export default function MetricsHeader( { closeFn } ) {
 		</SelectionPanelHeader>
 	);
 }
+
+MetricsHeader.propTypes = {
+	closeFn: PropTypes.func,
+};

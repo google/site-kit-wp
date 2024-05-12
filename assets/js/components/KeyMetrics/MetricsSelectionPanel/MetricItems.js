@@ -35,8 +35,8 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import MetricItem from './MetricItem';
-import useViewOnly from '../../../hooks/useViewOnly';
 import { SelectionPanelItems } from '../../SelectionPanel';
+import useViewOnly from '../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 export default function MetricItems( { savedMetrics } ) {
@@ -103,11 +103,10 @@ export default function MetricItems( { savedMetrics } ) {
 
 	return (
 		<SelectionPanelItems
-			currentSelectionTitle={ __(
+			availableItemsTitle={ __(
 				'Additional metrics',
 				'google-site-kit'
 			) }
-			availableItemsTitle={ __( 'Current selection', 'google-site-kit' ) }
 			savedItemSlugs={ savedMetrics }
 			availableSavedItems={ availableSavedMetrics }
 			availableUnsavedItems={ availableUnsavedMetrics }

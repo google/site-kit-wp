@@ -33,13 +33,13 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
+import CustomDimensionsNotice from './CustomDimensionsNotice';
 import MetricsHeader from './MetricsHeader';
 import MetricsFooter from './MetricsFooter';
 import MetricItems from './MetricItems';
-import CustomDimensionsNotice from './CustomDimensionsNotice';
+import SelectionPanel from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-import SelectionPanel from '../../SelectionPanel';
 const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
