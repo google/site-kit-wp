@@ -72,6 +72,38 @@ describe( 'core/user expirable-items', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( fetchExpirableItem, {
+					body: response,
+					status: 500,
+				} );
+
+				const args = [
+					{
+						slug: 'baz',
+						expiresInSeconds: 700,
+					},
+				];
+
+				await registry
+					.dispatch( CORE_USER )
+					.setExpirableItemTimers( args );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getErrorForAction( 'expirableItems', [ args ] )
+				).toMatchObject( response );
+
+				expect( console ).toHaveErrored();
+			} );
 		} );
 	} );
 } );

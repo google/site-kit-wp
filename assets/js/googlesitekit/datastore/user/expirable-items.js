@@ -111,6 +111,10 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	getState( state ) {
+		return state;
+	},
+
 	/**
 	 * Returns the expirable items.
 	 *
