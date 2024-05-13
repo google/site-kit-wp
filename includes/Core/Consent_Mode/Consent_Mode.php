@@ -111,7 +111,7 @@ class Consent_Mode {
 				// TODO: The value for `region` should be retrieved from $this->consent_mode_settings->get_regions(),
 				// but we'll need to migrate/clean up the incorrect values that were set from the initial release.
 				// See https://github.com/google/site-kit-wp/issues/8444.
-				'region'             => Regions::EU_USER_CONSENT_POLICY,
+				'region'             => Regions::get_regions(),
 				'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
 			)
 		);
