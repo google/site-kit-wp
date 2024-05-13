@@ -143,7 +143,7 @@ const baseSelectors = {
 			return Object.keys( items )?.includes( slug );
 		}
 
-		return false;
+		return items;
 	} ),
 
 	/**
@@ -157,10 +157,10 @@ const baseSelectors = {
 	 */
 	isExpirableItemActive: createRegistrySelector(
 		( select ) => ( state, slug ) => {
-			let active = false;
 			const itemExists = select( CORE_USER ).hasExpirableItem( slug );
 
 			if ( itemExists ) {
+				let active = false;
 				const expirableItems = select( CORE_USER ).getExpirableItems();
 				expirableItems.forEach( ( item ) => {
 					const { expiresInSeconds = 0 } = item;
@@ -170,9 +170,11 @@ const baseSelectors = {
 						active = true;
 					}
 				} );
+
+				return active;
 			}
 
-			return active;
+			return itemExists;
 		}
 	),
 };

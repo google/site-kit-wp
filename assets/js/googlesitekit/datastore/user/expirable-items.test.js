@@ -20,10 +20,18 @@
  * Internal dependencies
  */
 import { CORE_USER } from './constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	untilResolved,
+} from '../../../../../tests/js/utils';
 import fetchMock from 'fetch-mock';
 
 describe( 'core/user expirable-items', () => {
+	const fetchGetExpiredItems = new RegExp(
+		'^/google-site-kit/v1/core/user/data/expirable-items'
+	);
+
 	const fetchExpirableItem = new RegExp(
 		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
@@ -103,6 +111,77 @@ describe( 'core/user expirable-items', () => {
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getExpirableItems', () => {
+			it( 'should return undefined util resolved', async () => {
+				muteFetch( fetchGetExpiredItems, [] );
+				expect(
+					registry.select( CORE_USER ).getExpirableItems()
+				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getExpirableItems();
+			} );
+
+			it( 'should return expirable items received from API', async () => {
+				fetchMock.getOnce( fetchGetExpiredItems, {
+					body: [ { foo: 1000, bar: 2000 } ],
+				} );
+
+				const expirableItems = registry
+					.select( CORE_USER )
+					.getExpirableItems();
+				expect( expirableItems ).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getExpirableItems();
+
+				expect(
+					registry.select( CORE_USER ).getExpirableItems()
+				).toEqual( [ { foo: 1000, bar: 2000 } ] );
+				expect( fetchMock ).toHaveFetched();
+			} );
+
+			it( 'should throw an error', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( fetchGetExpiredItems, {
+					body: response,
+					status: 500,
+				} );
+
+				const expirableItems = registry
+					.select( CORE_USER )
+					.getExpirableItems();
+				expect( expirableItems ).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getExpirableItems();
+
+				registry.select( CORE_USER ).getExpirableItems();
+
+				const error = registry
+					.select( CORE_USER )
+					.getErrorForSelector( 'getExpirableItems' );
+				expect( error ).toMatchObject( response );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'isExpirableItemActive', () => {
+			it( 'should return undefined if getExpirableItems selector is not resolved yet', async () => {
+				fetchMock.getOnce( fetchGetExpiredItems, { body: [] } );
+				const isItemActive = registry
+					.select( CORE_USER )
+					.isExpirableItemActive( 'foo' );
+				expect( isItemActive ).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getExpirableItems();
 			} );
 		} );
 	} );
