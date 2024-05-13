@@ -222,7 +222,7 @@ final class Plugin {
 				( new Core\Tags\GTag() )->register();
 
 				if ( Feature_Flags::enabled( 'conversionInfra' ) ) {
-					( new Core\Conversion_Tracking\Conversion_Tracking( $this->context ) )->register();
+					( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
 				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.

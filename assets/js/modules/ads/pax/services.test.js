@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
+import { MODULES_ADS } from '../datastore/constants';
 import { createPaxServices } from './services';
 
 describe( 'PAX partner services', () => {
@@ -36,21 +37,56 @@ describe( 'PAX partner services', () => {
 		} );
 
 		it( 'should return object with correct services', () => {
-			expect( services ).toEqual(
-				expect.objectContaining( {
-					businessService: expect.objectContaining( {
-						getBusinessInfo: expect.any( Function ),
-						fixBusinessInfo: expect.any( Function ),
-					} ),
-					conversionTrackingService: expect.objectContaining( {
-						getSupportedConversionLabels: expect.any( Function ),
-						getPageViewConversionSetting: expect.any( Function ),
-					} ),
-					termsAndConditionsService: expect.objectContaining( {
-						notify: expect.any( Function ),
-					} ),
-				} )
-			);
+			expect( services ).toEqual( {
+				authenticationService: {
+					get: expect.any( Function ),
+					fix: expect.any( Function ),
+				},
+				businessService: {
+					getBusinessInfo: expect.any( Function ),
+					fixBusinessInfo: expect.any( Function ),
+				},
+				conversionTrackingService: {
+					getSupportedConversionLabels: expect.any( Function ),
+					getPageViewConversionSetting: expect.any( Function ),
+					getSupportedConversionTrackingTypes: expect.any( Function ),
+				},
+				termsAndConditionsService: {
+					notify: expect.any( Function ),
+				},
+			} );
+		} );
+
+		describe( 'authenticationService', () => {
+			describe( 'get', () => {
+				it( 'should contain accessToken property', async () => {
+					const authAccess =
+						await services.authenticationService.get();
+
+					expect( authAccess ).toHaveProperty( 'accessToken' );
+				} );
+				it( 'should contain correct accessToken', async () => {
+					const _googlesitekitPAXConfig = {
+						authAccess: {
+							oauthTokenAccess: {
+								token: 'test-auth-token',
+							},
+						},
+					};
+					services = createPaxServices( registry, {
+						_googlesitekitPAXConfig,
+					} );
+
+					const authAccess =
+						await services.authenticationService.get();
+
+					/* eslint-disable sitekit/acronym-case */
+					expect( authAccess.accessToken ).toEqual(
+						'test-auth-token'
+					);
+					/* eslint-enable sitekit/acronym-case */
+				} );
+			} );
 		} );
 
 		describe( 'businessService', () => {
@@ -96,14 +132,9 @@ describe( 'PAX partner services', () => {
 
 				it( 'should hold correct value for conversionLabels property when data is present', async () => {
 					const mockSupportedEvents = [ 'mock-event' ];
-					const adsModuleDataVar = '_googlesitekitModulesData';
-					const adsModuleDataVarValue = {
-						ads: {
-							supportedConversionEvents: mockSupportedEvents,
-						},
-					};
-
-					global[ adsModuleDataVar ] = adsModuleDataVarValue;
+					registry.dispatch( MODULES_ADS ).receiveModuleData( {
+						supportedConversionEvents: mockSupportedEvents,
+					} );
 
 					const supportedConversionLabels =
 						await services.conversionTrackingService.getSupportedConversionLabels();
@@ -111,21 +142,10 @@ describe( 'PAX partner services', () => {
 					expect(
 						supportedConversionLabels.conversionLabels
 					).toEqual( mockSupportedEvents );
-
-					delete global[ adsModuleDataVar ];
 				} );
 			} );
 
 			describe( 'getPageViewConversionSetting', () => {
-				it( 'should hold correct value for enablePageViewConversion property', async () => {
-					const pageViewConversionSetting =
-						await services.conversionTrackingService.getPageViewConversionSetting();
-
-					expect(
-						pageViewConversionSetting.enablePageViewConversion
-					).toBe( true );
-				} );
-
 				it( 'should hold correct value for websitePages property', async () => {
 					const wpPagesEndpoint = new RegExp( '^/wp/v2/pages' );
 
@@ -171,6 +191,19 @@ describe( 'PAX partner services', () => {
 							path: '/foo/bar-page',
 						},
 					] );
+				} );
+			} );
+		} );
+
+		describe( 'getSupportedConversionTrackingTypes', () => {
+			it( 'should return the expected supported types', async () => {
+				const supportedTypes =
+					await services.conversionTrackingService.getSupportedConversionTrackingTypes(
+						{}
+					);
+
+				expect( supportedTypes ).toMatchObject( {
+					conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
 				} );
 			} );
 		} );
