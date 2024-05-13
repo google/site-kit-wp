@@ -93,9 +93,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
 
-	const onLaunch = useCallback( ( app ) => {
+	const onLaunch = ( app ) => {
 		paxApp.current = app;
-	}, [] );
+	};
 
 	const onCampaignCreated = useCallbackOne( async () => {
 		if ( ! paxApp.current ) {
