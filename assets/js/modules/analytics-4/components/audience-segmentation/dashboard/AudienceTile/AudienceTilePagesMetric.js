@@ -53,9 +53,11 @@ export default function AudienceTilePagesMetric( {
 		} )
 	);
 
+	const hasDimensionValues = topContent?.dimensionValues?.some( Boolean );
+
 	function ContentLinkComponent( { content } ) {
-		const pageTitle = topContentTitles[ content.value ];
-		const url = content.value;
+		const pageTitle = topContentTitles[ content?.value ];
+		const url = content?.value;
 
 		const serviceURL = useSelect( ( select ) => {
 			return ! viewOnlyDashboard
@@ -100,22 +102,24 @@ export default function AudienceTilePagesMetric( {
 					{ title }
 				</div>
 				<div className="googlesitekit-audience-segmentation-tile-metric__content">
-					{ topContent === null && <AudienceTileNoData /> }
-					{ topContent?.dimensionValues.map( ( content, index ) => {
-						return (
-							<div
-								key={ content.value }
-								className="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
-							>
-								<ContentLinkComponent content={ content } />
-								<div className="googlesitekit-audience-segmentation-tile-metric__page-metric-value">
-									{ numFmt(
-										topContent.metricValues[ index ].value
-									) }
+					{ ! hasDimensionValues && <AudienceTileNoData /> }
+					{ hasDimensionValues &&
+						topContent.dimensionValues.map( ( content, index ) => {
+							return (
+								<div
+									key={ content?.value }
+									className="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+								>
+									<ContentLinkComponent content={ content } />
+									<div className="googlesitekit-audience-segmentation-tile-metric__page-metric-value">
+										{ numFmt(
+											topContent?.metricValues[ index ]
+												?.value
+										) }
+									</div>
 								</div>
-							</div>
-						);
-					} ) }
+							);
+						} ) }
 				</div>
 			</div>
 		</div>
