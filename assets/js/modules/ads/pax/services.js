@@ -26,6 +26,9 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { formatPaxDate } from './utils';
 
 const restFetchWpPages = async () => {
 	try {
@@ -95,6 +98,21 @@ export function createPaxServices( registry ) {
 		},
 		termsAndConditionsService: {
 			notify: async () => {},
+		},
+		partnerDateRangeService: {
+			// eslint-disable-next-line require-await
+			get: async () => {
+				const { startDate, endDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+
+				return {
+					startDate: formatPaxDate( startDate ),
+					endDate: formatPaxDate( endDate ),
+				};
+			},
 		},
 	};
 }
