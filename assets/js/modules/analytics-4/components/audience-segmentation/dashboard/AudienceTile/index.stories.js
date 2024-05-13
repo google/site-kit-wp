@@ -48,6 +48,7 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 const readyProps = {
 	title: 'New visitors',
 	toolTip: 'This is a tooltip',
+	loaded: true,
 	visitors: {
 		metricValue: 24200,
 		currentValue: 24200,
