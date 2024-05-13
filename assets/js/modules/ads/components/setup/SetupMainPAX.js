@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useCallbackOne } from 'use-memo-one';
+
+/**
  * WordPress dependencies
  */
 import {
@@ -84,7 +89,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
 
-	const onCampaignCreated = useCallback( async () => {
+	const onCampaignCreated = useCallbackOne( async () => {
 		if ( ! paxApp ) {
 			return;
 		}
