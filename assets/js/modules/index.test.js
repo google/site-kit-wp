@@ -50,9 +50,11 @@ describe( 'all modules', () => {
 	describe.each( directories( '.' ) )( '%s', ( moduleSlug ) => {
 		const components = directories( `${ moduleSlug }/components` );
 
-		// Filter out the custom-dimensions-report-options directory
+		// Filter out the directories that don't have an index.js file.
 		const filteredComponents = components.filter(
-			( component ) => component !== 'custom-dimensions-report-options'
+			( component ) =>
+				component !== 'audience-segmentation' &&
+				component !== 'custom-dimensions-report-options'
 		);
 
 		if ( ! filteredComponents.length ) {
@@ -75,6 +77,7 @@ describe( 'all modules', () => {
 					...indexExports
 				} = require( `${ componentDirPath }/index.js` );
 				const indexExportNames = Object.keys( indexExports ).sort();
+
 				const componentNames =
 					getComponentNames( componentDirPath ).sort();
 

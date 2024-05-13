@@ -69,6 +69,7 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedM
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
+use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
@@ -147,6 +148,14 @@ final class Analytics_4 extends Module
 	protected $audience_settings;
 
 	/**
+	 * Resource_Data_Availability_Date instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Resource_Data_Availability_Date
+	 */
+	protected $resource_data_availability_date;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -167,6 +176,7 @@ final class Analytics_4 extends Module
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->audience_settings                = new Audience_Settings( $this->user_options );
+		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
 	}
 
 	/**
@@ -218,6 +228,42 @@ final class Analytics_4 extends Module
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
+
+					$available_audiences = $old_value['availableAudiences'] ?? array();
+
+					$available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$available_audiences
+					);
+
+					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
+				}
+
+				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
+				$old_available_audiences = $old_value['availableAudiences'];
+				if ( $old_available_audiences ) {
+					$old_available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$old_available_audiences
+					);
+
+					$new_available_audiences      = $new_value['availableAudiences'] ?? array();
+					$new_available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$new_available_audiences
+					);
+
+					$unavailable_audience_names = array_diff( $old_available_audience_names, $new_available_audience_names );
+
+					foreach ( $unavailable_audience_names as $unavailable_audience_name ) {
+						$this->resource_data_availability_date->reset_resource_date( $unavailable_audience_name, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE );
+					}
 				}
 
 				// Reset property specific settings when propertyID changes.
@@ -254,6 +300,10 @@ final class Analytics_4 extends Module
 		);
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
+
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
+		}
 
 		add_filter(
 			'googlesitekit_auth_scopes',
@@ -362,6 +412,9 @@ final class Analytics_4 extends Module
 	 * @since 1.30.0
 	 */
 	public function on_deactivation() {
+		// We need to reset the resource data availability dates before deleting the settings.
+		// This is because the property ID and the audience resource names are pulled from settings.
+		$this->resource_data_availability_date->reset_all_resource_dates();
 		$this->get_settings()->delete();
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
@@ -545,19 +598,21 @@ final class Analytics_4 extends Module
 		);
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['GET:audiences']          = array( 'service' => 'analyticsaudiences' );
-			$datapoints['POST:create-audience']   = array(
+			$datapoints['POST:create-audience']                      = array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['GET:audience-settings']  = array(
+			$datapoints['GET:audience-settings']                     = array(
 				'service' => '',
 			);
-			$datapoints['POST:audience-settings'] = array(
+			$datapoints['POST:audience-settings']                    = array(
 				'service' => '',
 			);
-			$datapoints['POST:sync-audiences']    = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:save-resource-data-availability-date'] = array(
+				'service' => '',
+			);
+			$datapoints['POST:sync-audiences']                       = array( 'service' => 'analyticsaudiences' );
 		}
 
 		return $datapoints;
@@ -936,22 +991,6 @@ final class Analytics_4 extends Module
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
 				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
-			case 'GET:audiences':
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
-
-				return $analyticsadmin
-					->properties_audiences
-					->listPropertiesAudiences( $property_id );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -1368,6 +1407,34 @@ final class Analytics_4 extends Module
 
 				return function() use ( $data ) {
 					return $this->custom_dimensions_data_available->set_data_available( $data['customDimension'] );
+				};
+			case 'POST:save-resource-data-availability-date':
+				if ( ! isset( $data['resourceType'] ) ) {
+					throw new Missing_Required_Param_Exception( 'resourceType' );
+				}
+
+				if ( ! isset( $data['resourceSlug'] ) ) {
+					throw new Missing_Required_Param_Exception( 'resourceSlug' );
+				}
+
+				if ( ! isset( $data['date'] ) ) {
+					throw new Missing_Required_Param_Exception( 'date' );
+				}
+
+				if ( ! $this->resource_data_availability_date->is_valid_resource_type( $data['resourceType'] ) ) {
+					throw new Invalid_Param_Exception( 'resourceType' );
+				}
+
+				if ( ! $this->resource_data_availability_date->is_valid_resource_slug( $data['resourceSlug'], $data['resourceType'] ) ) {
+					throw new Invalid_Param_Exception( 'resourceSlug' );
+				}
+
+				if ( ! is_int( $data['date'] ) ) {
+					throw new Invalid_Param_Exception( 'date' );
+				}
+
+				return function() use ( $data ) {
+					return $this->resource_data_availability_date->set_resource_date( $data['resourceSlug'], $data['resourceType'], $data['date'] );
 				};
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
@@ -2144,6 +2211,29 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	private function inline_resource_availability_dates_data( $modules_data ) {
+		if ( $this->is_connected() ) {
+			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
+			// If `analytics-4` key already exists, merge the data.
+			$modules_data['analytics-4'] = array_merge(
+				$modules_data['analytics-4'] ?? array(),
+				array(
+					'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
+				)
+			);
+		}
+
+		return $modules_data;
+	}
+
+	/**
 	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
 	 *
 	 * If the Analytics-4 module is enabled, and the snippet is enabled, then the option to exclude
@@ -2169,7 +2259,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets and returns available audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience[] $audiences The audiences to set.
 	 * @return array The available audiences.
@@ -2177,9 +2267,10 @@ final class Analytics_4 extends Module
 	private function set_available_audiences( $audiences ) {
 		$available_audiences = array_map(
 			function( GoogleAnalyticsAdminV1alphaAudience $audience ) {
+				$display_name  = $audience->getDisplayName();
 				$audience_item = array(
 					'name'        => $audience->getName(),
-					'displayName' => $audience->getDisplayName(),
+					'displayName' => ( 'All Users' === $display_name ) ? 'All visitors' : $display_name,
 					'description' => $audience->getDescription(),
 				);
 
@@ -2207,7 +2298,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience $audience The audience object.
 	 * @return string The audience slug.
@@ -2248,7 +2339,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the audience type based on the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param string $audience_slug The audience slug.
 	 * @return string The audience type.
@@ -2272,7 +2363,7 @@ final class Analytics_4 extends Module
 	 * Checks if an audience Site Kit identifier
 	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.126.0
 	 *
 	 * @param array|object $data The array or object to search.
 	 * @param mixed        $identifier The identifier to search for.

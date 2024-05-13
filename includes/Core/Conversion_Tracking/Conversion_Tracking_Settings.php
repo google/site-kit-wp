@@ -2,7 +2,7 @@
 /**
  * Class Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings
  *
- * @package   Google\Site_Kit\Core\Key_Metrics
+ * @package   Google\Site_Kit\Core\Conversion_Tracking
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class for handling the Conversion Tracking settings.
+ * Class to store conversion tracking settings.
  *
  * @since n.e.x.t
  * @access private
@@ -22,7 +22,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 class Conversion_Tracking_Settings extends Setting {
 
 	/**
-	 * The option_name for this setting.
+	 * The option name for this setting.
 	 */
 	const OPTION = 'googlesitekit_conversion_tracking';
 
@@ -31,18 +31,18 @@ class Conversion_Tracking_Settings extends Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string The type name.
+	 * @return string The expected type of the setting option.
 	 */
 	protected function get_type() {
 		return 'object';
 	}
 
 	/**
-	 * The default value for the setting.
+	 * Gets the default value.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array The default values
+	 * @return array The default value.
 	 */
 	protected function get_default() {
 		return array(
@@ -75,9 +75,10 @@ class Conversion_Tracking_Settings extends Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool TRUE if Conversion Tracking is enabled, otherwise FALSE.
+	 * @return bool TRUE if conversion tracking is enabled, otherwise FALSE.
 	 */
 	public function is_conversion_tracking_enabled() {
 		return $this->get()['enabled'];
 	}
+
 }

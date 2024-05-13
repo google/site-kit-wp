@@ -24,14 +24,18 @@
 			border-bottom: 1px solid $c-utility-divider;
 			color: $c-surfaces-on-surface;
 			font-size: $fs-title-sm;
-			line-height: $lh-title-sm;
+			line-height: 16px;
 			padding: 25px;
 			width: 100%;
 
-			.googlesitekit-info-tooltip {
-				display: inline-block;
-				margin-left: 5px;
-				vertical-align: middle;
+			.googlesitekit-audience-segmentation-tile__header-title {
+				display: flex;
+
+				.googlesitekit-info-tooltip {
+					display: inline-block;
+					height: 16px;
+					margin-left: 5px;
+				}
 			}
 		}
 
@@ -50,13 +54,21 @@
 			}
 
 			.googlesitekit-audience-segmentation-tile-metric__icon {
-				height: 20px;
-				margin: 16px 20px 16px 0;
-				min-width: 20px;
-				width: 20px;
+				align-items: center;
+				display: flex;
+				margin-right: 4px;
+				min-width: 36px;
+				width: 36px;
+
+				svg {
+					height: 20px;
+					width: 20px;
+				}
 
 				@media (min-width: $width-desktop + 1 + px) {
-					margin-left: 16px;
+					justify-content: center;
+					min-width: 52px;
+					width: 52px;
 				}
 			}
 
@@ -65,6 +77,7 @@
 
 				.googlesitekit-audience-segmentation-tile-metric__value {
 					color: $c-surfaces-on-surface;
+					font-family: $f-secondary;
 					font-size: $fs-headline-md;
 					font-weight: $fw-normal;
 					line-height: 32px; // Fixed line hight required for this components height to match designs.
@@ -74,6 +87,7 @@
 					color: $c-surfaces-on-surface-variant;
 					font-size: $fs-body-md;
 					font-weight: $fw-normal;
+					letter-spacing: 0.25px;
 					line-height: 20px; // Fixed line hight required for this components height to match designs.
 				}
 			}
