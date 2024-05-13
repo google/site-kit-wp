@@ -51,7 +51,7 @@ const fetchSetExpirableItemTimersStore = createFetchStore( {
 	controlCallback: ( items ) =>
 		API.set( 'core', 'user', 'set-expirable-item-timers', items ),
 	reducerCallback,
-	argsToParams: ( items ) => {
+	argsToParams: ( items = [] ) => {
 		return items.map( ( item ) => {
 			const { slug, expiresInSeconds } = item;
 
@@ -61,8 +61,8 @@ const fetchSetExpirableItemTimersStore = createFetchStore( {
 			};
 		} );
 	},
-	validateParams: ( items = [] ) => {
-		invariant( items.length, 'Items are required.' );
+	validateParams: ( items ) => {
+		invariant( Array.isArray( items ), 'items are required.' );
 
 		items.forEach( ( item ) => {
 			const { slug, expiresInSeconds = 0 } = item;
