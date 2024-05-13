@@ -73,7 +73,7 @@ describe( 'PAX partner services', () => {
 							},
 						},
 					};
-					services = createPaxServices( registry, {
+					services = createPaxServices( registry, null, {
 						_googlesitekitPAXConfig,
 					} );
 
