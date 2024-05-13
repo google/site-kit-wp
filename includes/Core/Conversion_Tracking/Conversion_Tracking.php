@@ -43,6 +43,14 @@ class Conversion_Tracking {
 	protected $conversion_tracking_settings;
 
 	/**
+	 * REST_Conversion_Tracking_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Conversion_Tracking_Controller
+	 */
+	protected $rest_conversion_tracking_controller;
+
+	/**
 	 * Supported conversion event providers.
 	 *
 	 * @since 1.126.0
@@ -64,9 +72,10 @@ class Conversion_Tracking {
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, Options $options = null ) {
-		$this->context                      = $context;
-		$options                            = $options ?: new Options( $context );
-		$this->conversion_tracking_settings = new Conversion_Tracking_Settings( $options );
+		$this->context                             = $context;
+		$options                                   = $options ?: new Options( $context );
+		$this->conversion_tracking_settings        = new Conversion_Tracking_Settings( $options );
+		$this->rest_conversion_tracking_controller = new REST_Conversion_Tracking_Controller( $this->conversion_tracking_settings );
 	}
 
 	/**
@@ -76,6 +85,7 @@ class Conversion_Tracking {
 	 */
 	public function register() {
 		$this->conversion_tracking_settings->register();
+		$this->rest_conversion_tracking_controller->register();
 
 		add_action(
 			'wp_enqueue_scripts',
