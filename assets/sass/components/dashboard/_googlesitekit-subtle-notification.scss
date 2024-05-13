@@ -65,6 +65,10 @@
 		min-height: 32px;
 		padding: 6px 16px;
 
+		&.mdc-button--tertiary:not(:disabled) {
+			color: $c-site-kit-sk-600;
+		}
+
 		@media (min-width: $bp-tablet) {
 			margin: 0;
 		}
