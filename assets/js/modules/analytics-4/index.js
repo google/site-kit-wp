@@ -129,6 +129,11 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				const configuredAudiences =
+					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+				return configuredAudiences?.length > 0;
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
 	);
