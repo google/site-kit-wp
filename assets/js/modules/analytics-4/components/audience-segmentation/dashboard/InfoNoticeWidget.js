@@ -34,7 +34,7 @@ import InfoNotice from './InfoNotice';
 
 function InfoNoticeWidget( { Widget } ) {
 	return (
-		<Widget>
+		<Widget noPadding>
 			<InfoNotice
 				content={ __(
 					'The higher the portion of new visitors you have, the more your audience is growing. Looking at what content brings them to your site may give you insights on how to reach even more people.',
