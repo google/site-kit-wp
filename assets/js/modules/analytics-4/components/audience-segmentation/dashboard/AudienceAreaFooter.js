@@ -24,14 +24,49 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../datastore/constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
+import useViewOnly from '../../../../../hooks/useViewOnly';
+const { useSelect } = Data;
 
 export default function AudienceAreaFooter() {
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const sourceLinkURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL( 'audiences', {
+			dates,
+		} );
+	} );
+
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
+	if ( ! isAnalyticsConnected ) {
+		return null;
+	}
+
 	return (
 		<SourceLink
-			// className="googlesitekit-data-block__source"
+			className="googlesitekit-audience-widget__source"
 			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			// href={ serviceURL }
+			href={ sourceLinkURL }
 			external
 		/>
 	);
