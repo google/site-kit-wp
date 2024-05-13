@@ -199,5 +199,52 @@ describe( 'core/user expirable-items', () => {
 
 			expect( isItemActive ).toBe( true );
 		} );
+
+		it( 'should return FALSE if the item is not in expirables', () => {
+			const someValidTime = Math.floor( Date.now() / 1000 ) + 10000;
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+				foo: someValidTime,
+				bar: someValidTime,
+			} );
+
+			const isItemActive = registry
+				.select( CORE_USER )
+				.isExpirableItemActive( 'baz' );
+
+			expect( isItemActive ).toBe( false );
+		} );
+	} );
+
+	describe( 'hasExpirableItem', () => {
+		it( 'should return TRUE if the item is not in expirables', () => {
+			const someValidTime = Math.floor( Date.now() / 1000 ) + 10000;
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+				foo: someValidTime,
+				bar: someValidTime,
+			} );
+
+			const itemExists = registry
+				.select( CORE_USER )
+				.isExpirableItemActive( 'foo' );
+
+			expect( itemExists ).toBe( true );
+		} );
+
+		it( 'should return FALSE if the item is not in expirables', () => {
+			const someValidTime = Math.floor( Date.now() / 1000 ) + 10000;
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+				foo: someValidTime,
+				bar: someValidTime,
+			} );
+
+			const itemExists = registry
+				.select( CORE_USER )
+				.isExpirableItemActive( 'baz' );
+
+			expect( itemExists ).toBe( false );
+		} );
 	} );
 } );
