@@ -89,6 +89,11 @@ function AudienceTilesWidget( { Widget } ) {
 	const report = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
+	const reportLoaded = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			reportOptions,
+		] )
+	);
 
 	const { rows = [] } = report || {};
 
@@ -103,6 +108,11 @@ function AudienceTilesWidget( { Widget } ) {
 			totalPageviewsReportOptions
 		);
 	} );
+	const totalPageviewsReportLoaded = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			totalPageviewsReportOptions,
+		] )
+	);
 
 	const totalPageviews =
 		totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value || 0;
@@ -129,6 +139,16 @@ function AudienceTilesWidget( { Widget } ) {
 			configuredAudiences
 		)
 	);
+	const topCitiesReportLoaded = useSelect( ( select ) =>
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topCitiesReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
+		)
+	);
 
 	const topContentReportOptions = {
 		startDate,
@@ -143,6 +163,16 @@ function AudienceTilesWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
 			topContentReportOptions,
 			configuredAudiences
+		)
+	);
+	const topContentReportLoaded = useSelect( ( select ) =>
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topContentReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
 		)
 	);
 
@@ -161,6 +191,23 @@ function AudienceTilesWidget( { Widget } ) {
 			configuredAudiences
 		)
 	);
+	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topContentPageTitlesReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
+		)
+	);
+
+	const loading =
+		! reportLoaded ||
+		! totalPageviewsReportLoaded ||
+		! topCitiesReportLoaded ||
+		! topContentReportLoaded ||
+		! topContentPageTitlesReportLoaded;
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
@@ -281,6 +328,7 @@ function AudienceTilesWidget( { Widget } ) {
 
 					return (
 						<AudienceTile
+							loaded={ ! loading }
 							key={ audienceResourceName }
 							title={ audienceName }
 							infoTooltip={
