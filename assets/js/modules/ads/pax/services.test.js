@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { createPaxServices } from './services';
 
 describe( 'PAX partner services', () => {
@@ -48,6 +49,9 @@ describe( 'PAX partner services', () => {
 					} ),
 					termsAndConditionsService: expect.objectContaining( {
 						notify: expect.any( Function ),
+					} ),
+					partnerDateRangeService: expect.objectContaining( {
+						get: expect.any( Function ),
 					} ),
 				} )
 			);
@@ -171,6 +175,41 @@ describe( 'PAX partner services', () => {
 							path: '/foo/bar-page',
 						},
 					] );
+				} );
+			} );
+
+			describe( 'partnerDateRangeService', () => {
+				describe( 'get', () => {
+					it( 'should contain startDate and endDate properties', async () => {
+						const partnerDateRange =
+							await services.partnerDateRangeService.get();
+
+						expect( partnerDateRange ).toHaveProperty(
+							'startDate'
+						);
+						expect( partnerDateRange ).toHaveProperty( 'endDate' );
+					} );
+					it( 'should contain correct accessToken', async () => {
+						registry
+							.dispatch( CORE_USER )
+							.setReferenceDate( '2020-09-08' );
+
+						const partnerDateRange =
+							await services.partnerDateRangeService.get();
+
+						/* eslint-disable sitekit/acronym-case */
+						expect( partnerDateRange.startDate ).toEqual( {
+							day: 11,
+							month: 8,
+							year: 2020,
+						} );
+						expect( partnerDateRange.endDate ).toEqual( {
+							day: 7,
+							month: 9,
+							year: 2020,
+						} );
+						/* eslint-enable sitekit/acronym-case */
+					} );
 				} );
 			} );
 		} );
