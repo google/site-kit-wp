@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
@@ -76,7 +80,7 @@ const topContentPageTitlesReportOptions = {
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'audienceSegmentation'
+	'analyticsAudienceTiles' // analyticsAudienceTiles
 )( AudienceTilesWidget );
 
 function Template( { args } ) {
@@ -135,6 +139,14 @@ export default {
 				provideUserAuthentication( registry, {
 					grantedScopes,
 				} );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+				provideModuleRegistrations( registry );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
