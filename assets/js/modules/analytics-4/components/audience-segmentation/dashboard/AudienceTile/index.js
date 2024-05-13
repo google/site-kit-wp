@@ -46,11 +46,13 @@ import { numFmt } from '../../../../../../util';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import PreviewBlock from '../../../../../../components/PreviewBlock';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
 // in AudienceTiles.
 export default function AudienceTile( {
+	loaded,
 	title,
 	infoTooltip,
 	visitors,
@@ -64,6 +66,11 @@ export default function AudienceTile( {
 	Widget,
 } ) {
 	const breakpoint = useBreakpoint();
+
+	// TODO: Loading states will be implemented as part of https://github.com/google/site-kit-wp/issues/8145.
+	if ( ! loaded ) {
+		return <PreviewBlock width="100%" height="500px" />;
+	}
 
 	return (
 		<Widget noPadding>
@@ -163,6 +170,7 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
+	loaded: PropTypes.bool,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
