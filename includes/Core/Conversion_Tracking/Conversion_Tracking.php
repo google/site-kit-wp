@@ -11,11 +11,12 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\GTag;
 use LogicException;
 
 /**
@@ -94,7 +95,11 @@ class Conversion_Tracking {
 						$script_asset->enqueue();
 					}
 				);
-			}
+
+				wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit = window._googlesitekit || {};' );
+				wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit.trackEvent = (name, data) => gtag("event", name, {...data, _source: "site-kit" });' );
+			},
+			30
 		);
 	}
 
