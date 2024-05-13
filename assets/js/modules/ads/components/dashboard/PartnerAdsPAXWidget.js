@@ -1,5 +1,5 @@
 /**
- * PartnerAdsWidget component.
+ * PartnerAdsPAXWidget component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -39,7 +39,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
 const { useSelect } = Data;
 
-function PartnerAdsWidget( { WidgetNull, Widget } ) {
+function PartnerAdsPAXWidget( { WidgetNull, Widget } ) {
 	const isAdblockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
 	);
@@ -49,7 +49,7 @@ function PartnerAdsWidget( { WidgetNull, Widget } ) {
 	);
 
 	const widgetRendered = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).isWidgetActive( 'partnerAds' )
+		select( CORE_WIDGETS ).isWidgetActive( 'partnerAdsPAX' )
 	);
 
 	// If the user doesn't have a PAX Conversion ID, then they haven't set up
@@ -86,7 +86,7 @@ function PartnerAdsWidget( { WidgetNull, Widget } ) {
 	);
 }
 
-PartnerAdsWidget.propTypes = {
+PartnerAdsPAXWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 };
@@ -94,4 +94,4 @@ PartnerAdsWidget.propTypes = {
 export default compose(
 	whenActive( { moduleName: 'ads' } ),
 	whenScopesGranted( { scopes: [ ADWORDS_SCOPE ] } )
-)( PartnerAdsWidget );
+)( PartnerAdsPAXWidget );

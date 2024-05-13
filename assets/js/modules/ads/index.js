@@ -33,7 +33,7 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '../../googlesitekit/datastore/user/constants';
-import PartnerAdsWidget from './components/dashboard/PartnerAdsWidget';
+import PartnerAdsPAXWidget from './components/dashboard/PartnerAdsPAXWidget';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 
 export { registerStore } from './datastore';
@@ -84,9 +84,9 @@ export const registerModule = ( modules ) => {
 export const registerWidgets = ( widgets ) => {
 	if ( isFeatureEnabled( 'adsPax' ) ) {
 		widgets.registerWidget(
-			'partnerAds',
+			'partnerAdsPAX',
 			{
-				Component: PartnerAdsWidget,
+				Component: PartnerAdsPAXWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 20,
 				wrapWidget: false,

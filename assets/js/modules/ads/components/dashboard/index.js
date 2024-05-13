@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as PartnerAdsWidget } from './PartnerAdsWidget';
+export { default as PartnerAdsPAXWidget } from './PartnerAdsPAXWidget';
