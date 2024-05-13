@@ -54,7 +54,7 @@ class Expirables {
 	}
 
 	/**
-	 * Gets the reference to the Dismissed_Items instance.
+	 * Gets the reference to the Expirable_Items instance.
 	 *
 	 * @since n.e.x.t
 	 *
