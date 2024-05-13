@@ -122,7 +122,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
 		setShowPaxApp( PAX_SETUP_ENUM.PAX_SETUP_FINISHED );
 		/* eslint-enable sitekit/acronym-case */
-	}, [ paxApp, setExtCustomerID, setPaxConversionID ] );
+	}, [ setExtCustomerID, setPaxConversionID ] );
 
 	const onCompleteSetup = useCallback( async () => {
 		const { error } = await submitChanges();
@@ -162,7 +162,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 							isSaving={ isNavigatingToOAuthURL }
 							disabled={
 								isNavigatingToOAuthURL ||
-								! paxApp ||
+								! paxApp.current ||
 								! hasPaxSettings
 							}
 							onClick={ onCompleteSetup }
