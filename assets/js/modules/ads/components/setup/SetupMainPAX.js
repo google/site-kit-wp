@@ -28,7 +28,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
-	useState,
+	useRef,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -44,7 +44,11 @@ import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
+import {
+	ADWORDS_SCOPE,
+	MODULES_ADS,
+	PAX_SETUP_ENUM,
+} from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../PAXEmbeddedApp';
 const { useSelect, useDispatch } = Data;
@@ -53,7 +57,7 @@ const PARAM_SHOW_PAX = 'pax';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxApp, setShowPaxApp ] = useQueryArg( PARAM_SHOW_PAX );
-	const [ paxApp, setPaxApp ] = useState( null );
+	const paxApp = useRef();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -68,7 +72,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	} );
 
 	const redirectURL = addQueryArgs( global.location.href, {
-		[ PARAM_SHOW_PAX ]: 1,
+		[ PARAM_SHOW_PAX ]: PAX_SETUP_ENUM.PAX_SETUP_LAUNCH,
 	} );
 
 	const oAuthURL = useSelect( ( select ) =>
@@ -89,8 +93,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
 
+	const onLaunch = useCallback( ( app ) => {
+		paxApp.current = app;
+	}, [] );
+
 	const onCampaignCreated = useCallbackOne( async () => {
-		if ( ! paxApp ) {
+		if ( ! paxApp.current ) {
 			return;
 		}
 
@@ -98,7 +106,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		// Disabling rule because function and property names
 		// are expected in current format by PAX API.
 		const { accountService, conversionTrackingIdService } =
-			paxApp.getServices();
+			paxApp.current.g;
 		const customerData = await accountService.getAccountId( {} );
 		const conversionTrackingData =
 			await conversionTrackingIdService.getConversionTrackingId( {} );
@@ -112,6 +120,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		setExtCustomerID( customerData.externalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
+		setShowPaxApp( PAX_SETUP_ENUM.PAX_SETUP_FINISHED );
 		/* eslint-enable sitekit/acronym-case */
 	}, [ paxApp, setExtCustomerID, setPaxConversionID ] );
 
@@ -130,7 +139,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
-		setShowPaxApp( true );
+		setShowPaxApp( PAX_SETUP_ENUM.PAX_SETUP_LAUNCH );
 	}, [ navigateTo, setShowPaxApp, hasAdwordsScope, oAuthURL ] );
 
 	return (
@@ -146,13 +155,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			<AdBlockerWarning />
 
-			{ ! isAdBlockerActive && !! showPaxApp && hasAdwordsScope && (
-				<Fragment>
-					<PAXEmbeddedApp
-						displayMode="setup"
-						onLaunch={ setPaxApp }
-						onCampaignCreated={ onCampaignCreated }
-					/>
+			{ ! isAdBlockerActive &&
+				PAX_SETUP_ENUM.PAX_SETUP_FINISHED === showPaxApp && (
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton
 							isSaving={ isNavigatingToOAuthURL }
@@ -166,8 +170,18 @@ export default function SetupMainPAX( { finishSetup } ) {
 							{ __( 'Complete setup', 'google-site-kit' ) }
 						</SpinnerButton>
 					</div>
-				</Fragment>
-			) }
+				) }
+			{ ! isAdBlockerActive &&
+				PAX_SETUP_ENUM.PAX_SETUP_LAUNCH === showPaxApp &&
+				hasAdwordsScope && (
+					<Fragment>
+						<PAXEmbeddedApp
+							displayMode="setup"
+							onLaunch={ onLaunch }
+							onCampaignCreated={ onCampaignCreated }
+						/>
+					</Fragment>
+				) }
 
 			{ ! isAdBlockerActive && ( ! showPaxApp || ! hasAdwordsScope ) && (
 				<Fragment>
