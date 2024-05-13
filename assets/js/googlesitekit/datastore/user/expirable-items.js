@@ -160,11 +160,14 @@ const baseSelectors = {
 				const expirableItems = select( CORE_USER ).getExpirableItems();
 
 				Object.keys( expirableItems ).forEach( ( itemSlug ) => {
-					const { expiresInSeconds = 0 } = expirableItems[ itemSlug ];
-
-					// Compare with the current timestamp.
-					if ( expiresInSeconds < Math.floor( Date.now() / 1000 ) ) {
-						active = true;
+					if ( slug === itemSlug ) {
+						const expiresInSeconds = expirableItems[ itemSlug ];
+						// Compare with the current timestamp.
+						if (
+							expiresInSeconds > Math.floor( Date.now() / 1000 )
+						) {
+							active = true;
+						}
 					}
 				} );
 
