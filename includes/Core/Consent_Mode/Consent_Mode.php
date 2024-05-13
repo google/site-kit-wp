@@ -84,6 +84,8 @@ class Consent_Mode {
 				return $consent_mode_enabled ? 'enabled' : 'disabled';
 			}
 		);
+
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
 	}
 
 	/**
@@ -198,5 +200,19 @@ window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_ca
 </script>
 <!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php
+	}
+
+	/**
+	 * Extends base data with a static list of consent mode regions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Inline base data.
+	 * @return array Filtered $data.
+	 */
+	protected function inline_js_base_data( $data ) {
+		$data['consentModeRegions'] = Regions::get_regions();
+
+		return $data;
 	}
 }
