@@ -57,7 +57,7 @@ const PARAM_SHOW_PAX = 'pax';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxApp, setShowPaxApp ] = useQueryArg( PARAM_SHOW_PAX );
-	const paxApp = useRef();
+	const paxAppRef = useRef();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -94,11 +94,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 		useDispatch( MODULES_ADS );
 
 	const onLaunch = ( app ) => {
-		paxApp.current = app;
+		paxAppRef.current = app;
 	};
 
 	const onCampaignCreated = useCallbackOne( async () => {
-		if ( ! paxApp.current ) {
+		if ( ! paxAppRef?.current ) {
 			return;
 		}
 
@@ -106,7 +106,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		// Disabling rule because function and property names
 		// are expected in current format by PAX API.
 		const { accountService, conversionTrackingIdService } =
-			paxApp.current.g;
+			paxAppRef.current.g;
 		const customerData = await accountService.getAccountId( {} );
 		const conversionTrackingData =
 			await conversionTrackingIdService.getConversionTrackingId( {} );
@@ -162,7 +162,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 							isSaving={ isNavigatingToOAuthURL }
 							disabled={
 								isNavigatingToOAuthURL ||
-								! paxApp.current ||
+								! paxAppRef?.current ||
 								! hasPaxSettings
 							}
 							onClick={ onCompleteSetup }
