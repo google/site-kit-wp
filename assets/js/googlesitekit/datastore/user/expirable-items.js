@@ -111,10 +111,6 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
-	getState( state ) {
-		return state;
-	},
-
 	/**
 	 * Returns the expirable items.
 	 *
@@ -162,8 +158,9 @@ const baseSelectors = {
 			if ( itemExists ) {
 				let active = false;
 				const expirableItems = select( CORE_USER ).getExpirableItems();
-				expirableItems.forEach( ( item ) => {
-					const { expiresInSeconds = 0 } = item;
+
+				Object.keys( expirableItems ).forEach( ( itemSlug ) => {
+					const { expiresInSeconds = 0 } = expirableItems[ itemSlug ];
 
 					// Compare with the current timestamp.
 					if ( expiresInSeconds < Math.floor( Date.now() / 1000 ) ) {

@@ -184,5 +184,20 @@ describe( 'core/user expirable-items', () => {
 				await untilResolved( registry, CORE_USER ).getExpirableItems();
 			} );
 		} );
+
+		it( 'should return TRUE if the item is expirable', () => {
+			const someValidTime = Math.floor( Date.now() / 1000 ) + 10000;
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+				foo: someValidTime,
+				bar: someValidTime,
+			} );
+
+			const isItemActive = registry
+				.select( CORE_USER )
+				.isExpirableItemActive( 'foo' );
+
+			expect( isItemActive ).toBe( true );
+		} );
 	} );
 } );
