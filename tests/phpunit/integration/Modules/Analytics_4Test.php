@@ -313,6 +313,29 @@ class Analytics_4Test extends TestCase {
 		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
 	}
 
+	public function test_register__reset_resource_data_availability_date__on_deactivation() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		$this->analytics->on_deactivation();
+
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+	}
+
 	public function test_handle_provisioning_callback() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$analytics = new Analytics_4( $context );

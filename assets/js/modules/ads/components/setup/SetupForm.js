@@ -33,19 +33,22 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupForm( { finishSetup } ) {
+export default function SetupForm( {
+	finishSetup,
+	createAccountCTA,
+	isNavigatingToOAuthURL,
+} ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADS ).canSubmitChanges()
 	);
 	const isSaving = useSelect(
 		( select ) =>
-			select( MODULES_ADS ).isDoingSubmitChanges() ||
-			select( CORE_LOCATION ).isNavigating()
+			select( MODULES_ADS ).isDoingSubmitChanges() &&
+			! isNavigatingToOAuthURL
 	);
 
 	const { submitChanges } = useDispatch( MODULES_ADS );
@@ -71,6 +74,12 @@ export default function SetupForm( { finishSetup } ) {
 				<ConversionIDTextField />
 			</div>
 
+			{ createAccountCTA && (
+				<div className="googlesitekit-setup-module__create-account">
+					{ createAccountCTA }
+				</div>
+			) }
+
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
 					disabled={ ! canSubmitChanges || isSaving }
@@ -85,8 +94,12 @@ export default function SetupForm( { finishSetup } ) {
 
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
+	createAccountCTA: PropTypes.node,
+	isNavigatingToOAuthURL: PropTypes.bool,
 };
 
 SetupForm.defaultProps = {
 	finishSetup: () => {},
+	createAccountCTA: null,
+	isNavigatingToOAuthURL: false,
 };
