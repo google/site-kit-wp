@@ -43,7 +43,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import CTA from '../../../components/notifications/CTA';
 import PreviewBlock from '../../../components/PreviewBlock';
 import { createPaxServices } from '../pax/services';
-import { getPaxDateRange } from '../pax/utils';
+import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
 const { useRegistry, useSelect } = Data;
 
 export default function PAXEmbeddedApp( {
@@ -65,8 +65,15 @@ export default function PAXEmbeddedApp( {
 		return createPaxServices( registry );
 	}, [ registry ] );
 
-	const paxDateRange =
-		displayMode === 'reporting' ? getPaxDateRange( registry ) : null;
+	const paxDateRange = useSelect( ( select ) => {
+		if ( displayMode !== 'reporting' ) {
+			return {};
+		}
+
+		return select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+	} );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()

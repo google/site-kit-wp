@@ -26,7 +26,9 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../datastore/constants';
-import { formatPaxDate, getPaxDateRange } from './utils';
+import { formatPaxDate } from './utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
 
 const restFetchWpPages = async () => {
 	try {
@@ -117,7 +119,11 @@ export function createPaxServices( registry, _global = global ) {
 		partnerDateRangeService: {
 			// eslint-disable-next-line require-await
 			get: async () => {
-				const { startDate, endDate } = getPaxDateRange( registry );
+				const { startDate, endDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
 
 				return {
 					startDate: formatPaxDate( startDate ),
