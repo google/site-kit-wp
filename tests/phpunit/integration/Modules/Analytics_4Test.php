@@ -1263,6 +1263,26 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_debug_fields__audience_segmentation_enabled() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$this->assertEqualSets(
+			array(
+				'analytics_4_account_id',
+				'analytics_4_property_id',
+				'analytics_4_web_data_stream_id',
+				'analytics_4_measurement_id',
+				'analytics_4_use_snippet',
+				'analytics_4_available_custom_dimensions',
+				'analytics_4_ads_conversion_id',
+				'analytics_4_ads_linked',
+				'analytics_4_ads_linked_last_synced_at',
+				'analytics_4_site_kit_audience',
+			),
+			array_keys( $this->analytics->get_debug_fields() )
+		);
+	}
+
 	public function test_get_debug_fields__AdSense_disabled() {
 		$this->assertEqualSets(
 			array(
@@ -3842,6 +3862,41 @@ class Analytics_4Test extends TestCase {
 			0,
 			$this->analytics->get_settings()->get()['availableAudiencesLastSyncedAt']
 		);
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 */
+	public function test_site_kit_audiences_returned_in_debug_fields( $access_token ) {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '12345';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$this->analytics->set_data( 'sync-audiences', array() );
+		$debug_fields = $this->analytics->get_debug_fields();
+
+		$this->assertArrayHasKey( 'analytics_4_site_kit_audience', $debug_fields );
+
+		$audience_field = $debug_fields['analytics_4_site_kit_audience'];
+
+		$this->assertEquals( 'Analytics site created audiences', $audience_field['label'] );
+		$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
+		$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
 	}
 
 	public function test_register_template_redirect_amp() {
