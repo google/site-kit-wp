@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useCallbackOne } from 'use-memo-one';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -93,8 +94,19 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
 
+	useMount( () => {
+		if ( PAX_SETUP_ENUM.PAX_SETUP_FINISHED === +showPaxApp ) {
+			// If setup finished query param is present in the URL on the load
+			// set the step back to the PAX launch, as values are only temporarly
+			// saved in state after PAX campaign setup signal is received.
+			setShowPaxApp( PAX_SETUP_ENUM.PAX_SETUP_LAUNCH );
+		}
+	} );
+
 	const onLaunch = ( app ) => {
-		paxAppRef.current = app;
+		if ( ! paxAppRef.current ) {
+			paxAppRef.current = app;
+		}
 	};
 
 	const onCampaignCreated = useCallbackOne( async () => {
@@ -106,7 +118,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		// Disabling rule because function and property names
 		// are expected in current format by PAX API.
 		const { accountService, conversionTrackingIdService } =
-			paxAppRef.current.g;
+			paxAppRef.current.getServices();
 		const customerData = await accountService.getAccountId( {} );
 		const conversionTrackingData =
 			await conversionTrackingIdService.getConversionTrackingId( {} );
@@ -156,7 +168,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			<AdBlockerWarning />
 
 			{ ! isAdBlockerActive &&
-				PAX_SETUP_ENUM.PAX_SETUP_FINISHED === showPaxApp && (
+				PAX_SETUP_ENUM.PAX_SETUP_FINISHED === +showPaxApp && (
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton
 							isSaving={ isNavigatingToOAuthURL }
@@ -172,7 +184,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 					</div>
 				) }
 			{ ! isAdBlockerActive &&
-				PAX_SETUP_ENUM.PAX_SETUP_LAUNCH === showPaxApp &&
+				PAX_SETUP_ENUM.PAX_SETUP_LAUNCH === +showPaxApp &&
 				hasAdwordsScope && (
 					<Fragment>
 						<PAXEmbeddedApp
