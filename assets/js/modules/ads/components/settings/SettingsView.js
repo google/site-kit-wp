@@ -66,11 +66,12 @@ export default function SettingsView() {
 						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ conversionIDValue ? (
-							<DisplaySetting value={ conversionIDValue } />
-						) : (
-							__( 'None', 'google-site-kit' )
-						) }
+						{ conversionIDValue === '' &&
+							__( 'None', 'google-site-kit' ) }
+						{ conversionIDValue ||
+							( typeof conversionIDValue === 'undefined' && (
+								<DisplaySetting value={ conversionIDValue } />
+							) ) }
 					</p>
 				</div>
 			) }
@@ -81,11 +82,12 @@ export default function SettingsView() {
 						{ __( 'Customer ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ extCustomerID ? (
-							<DisplaySetting value={ extCustomerID } />
-						) : (
-							__( 'None', 'google-site-kit' )
-						) }
+						{ extCustomerID === '' &&
+							__( 'None', 'google-site-kit' ) }
+						{ extCustomerID ||
+							( typeof extCustomerID === 'undefined' && (
+								<DisplaySetting value={ extCustomerID } />
+							) ) }
 					</p>
 				</div>
 			) }
