@@ -65,6 +65,9 @@ export default function PAXEmbeddedApp( {
 		return createPaxServices( registry );
 	}, [ registry ] );
 
+	const paxDateRange =
+		displayMode === 'reporting' ? getPaxDateRange( registry ) : null;
+
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
 	);
@@ -137,21 +140,30 @@ export default function PAXEmbeddedApp( {
 
 			launchPAXApp();
 		}
-
-		if ( displayMode === 'reporting' && paxAppRef?.current ) {
-			const { startDate, endDate } = getPaxDateRange( registry );
-			paxAppRef.current
-				.getServices()
-				.adsDateRangeService.update( { startDate, endDate } );
-		}
 	}, [
 		hasLaunchedPAXApp,
 		isLoading,
 		launchGoogleAdsAvailable,
 		launchPAXApp,
+	] );
+
+	/* eslint-disable react-hooks/exhaustive-deps */
+	// Rule disabled for compiled `paxDateRange` properties, instead of using the main object
+	// to ensure effect runs every time dates are changed.
+	useEffect( () => {
+		if ( displayMode === 'reporting' && paxAppRef?.current ) {
+			const { startDate, endDate } = paxDateRange;
+
+			paxAppRef.current
+				.getServices()
+				.adsDateRangeService.update( { startDate, endDate } );
+		}
+	}, [
 		registry,
 		displayMode,
+		`${ paxDateRange?.startDate }|${ paxDateRange?.endDate }`,
 	] );
+	/* eslint-enable react-hooks/exhaustive-deps */
 
 	return (
 		<div className="googlesitekit-pax-embedded-app">
