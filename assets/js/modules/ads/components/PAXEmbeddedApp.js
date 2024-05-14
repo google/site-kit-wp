@@ -43,6 +43,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import CTA from '../../../components/notifications/CTA';
 import PreviewBlock from '../../../components/PreviewBlock';
 import { createPaxServices } from '../pax/services';
+import { getPaxDateRange } from '../pax/utils';
 const { useRegistry, useSelect } = Data;
 
 export default function PAXEmbeddedApp( {
@@ -136,11 +137,20 @@ export default function PAXEmbeddedApp( {
 
 			launchPAXApp();
 		}
+
+		if ( displayMode === 'reporting' && paxAppRef?.current ) {
+			const { startDate, endDate } = getPaxDateRange( registry );
+			paxAppRef.current
+				.getServices()
+				.adsDateRangeService.update( { startDate, endDate } );
+		}
 	}, [
 		hasLaunchedPAXApp,
 		isLoading,
 		launchGoogleAdsAvailable,
 		launchPAXApp,
+		registry,
+		displayMode,
 	] );
 
 	return (
