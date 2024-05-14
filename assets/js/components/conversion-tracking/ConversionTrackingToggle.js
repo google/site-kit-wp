@@ -34,15 +34,18 @@ import ErrorText from '../../components/ErrorText';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { useFeature } from '../../hooks/useFeature';
 
 const { useDispatch, useSelect } = Data;
 
 export default function ConversionTrackingToggle( { loading } ) {
+	const iceEnabled = useFeature( 'conversionInfra' );
+
 	const viewContext = useViewContext();
 
-	const [ saveError, setSaveError ] = useState( null );
+	const [ saveError ] = useState( null );
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
 
 	const isConversionTrackingEnabled = useSelect( ( select ) =>
@@ -53,13 +56,11 @@ export default function ConversionTrackingToggle( { loading } ) {
 		select( CORE_SITE ).isFetchingSaveConversionTrackingSettings()
 	);
 
-	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
-		useDispatch( CORE_SITE );
+	const { setConversionTrackingEnabled } = useDispatch( CORE_SITE );
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-	const { triggerSurvey } = useDispatch( CORE_USER );
+	if ( ! iceEnabled ) {
+		return null;
+	}
 
 	return (
 		<Fragment>
@@ -72,7 +73,7 @@ export default function ConversionTrackingToggle( { loading } ) {
 					>
 						<Switch
 							label={ __(
-								'Enable consent mode',
+								'Enable enhanced conversion tracking',
 								'google-site-kit'
 							) }
 							checked={ isConversionTrackingEnabled }
@@ -96,7 +97,7 @@ export default function ConversionTrackingToggle( { loading } ) {
 									// Consent Mode is not currently enabled, so this toggle
 									// enables it.
 									setConversionTrackingEnabled( true );
-									saveSettings();
+									// saveSettings();
 								}
 							} }
 							hideLabel={ false }
@@ -104,14 +105,6 @@ export default function ConversionTrackingToggle( { loading } ) {
 					</LoadingWrapper>
 				}
 				{ saveError && <ErrorText message={ saveError.message } /> }
-				{ ! loading && isConversionTrackingEnabled && (
-					<p className="googlesitekit-settings-conversion-tracking-switch__enabled-notice">
-						{ __(
-							'Conversion tracking enabled.',
-							'google-site-kit'
-						) }
-					</p>
-				) }
 				{
 					<LoadingWrapper
 						className="googlesitekit-settings-conversion-tracking-switch-description--loading"
@@ -123,10 +116,10 @@ export default function ConversionTrackingToggle( { loading } ) {
 						tabletWidth="540px"
 						tabletHeight="84px"
 					>
-						<p>
+						<p className="googlesitekit-settings-module__fields-group-helper-text">
 							{ createInterpolateElement(
 								__(
-									'Conversion tracking will... <br />Some more info... <a>Learn more</a>',
+									'Conversion tracking allows you to measure additional events on your site from other plugins that Site Kit integrates with to optimize your campaign performance. <a>Learn more</a>',
 									'google-site-kit'
 								),
 								{
@@ -163,7 +156,7 @@ export default function ConversionTrackingToggle( { loading } ) {
 
 						setConversionTrackingEnabled( false );
 						setShowConfirmDialog( false );
-						saveSettings();
+						// saveSettings();
 					} }
 					onCancel={ () => {
 						trackEvent(

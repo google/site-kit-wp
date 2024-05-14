@@ -23,19 +23,14 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { listFormat, trackEvent } from '../../util';
+import { trackEvent } from '../../util';
 import ModalDialog from '../ModalDialog';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useSelect } = Data;
 
 export default function ConfirmDisableConversionTrackingDialog( {
 	onConfirm,
@@ -43,69 +38,34 @@ export default function ConfirmDisableConversionTrackingDialog( {
 } ) {
 	const viewContext = useViewContext();
 
-	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
-	);
-
-	const dependentModuleNames = useSelect( ( select ) =>
-		[ 'analytics-4', 'ads' ].reduce( ( names, slug ) => {
-			if ( select( CORE_MODULES ).isModuleConnected( slug ) ) {
-				return [
-					...names,
-					select( CORE_MODULES ).getModule( slug ).name,
-				];
-			}
-			return names;
-		}, [] )
-	);
-
-	const dependentModulesText =
-		dependentModuleNames.length > 0
-			? sprintf(
-					/* translators: %s: list of dependent modules */
-					__(
-						'these active modules depend on consent mode and will be affected: %s',
-						'google-site-kit'
-					),
-					listFormat( dependentModuleNames )
-			  )
-			: null;
-
 	useMount( () => {
-		trackEvent( `${ viewContext }_CoMo`, 'view_modal' );
+		trackEvent( `${ viewContext }_CoTr`, 'view_modal' );
 	} );
 
-	let provides = [
-		__( 'Track how visitors interact with your site', 'google-site-kit' ),
-	];
-	let subtitle = __(
-		'Disabling consent mode may affect your ability in the European Economic Area and the United Kingdom to:',
+	const subtitle = __(
+		'By disabling enhanced conversion tracking, you will no longer have access to:',
 		'google-site-kit'
 	);
 
-	if ( isAdsConnected ) {
-		provides = [
-			__( 'Performance of your Ad campaigns', 'google-site-kit' ),
-			__(
-				'How visitors interact with your site via Analytics',
-				'google-site-kit'
-			),
-		];
-		subtitle = __(
-			'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
+	const provides = [
+		__( 'Performance of your Ad campaigns', 'google-site-kit' ),
+		__(
+			'Tracking additional conversion-related events via Analytics',
 			'google-site-kit'
-		);
-	}
+		),
+	];
 
 	return (
 		<ModalDialog
 			dialogActive
-			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
+			title={ __(
+				'Disable enhanced conversion tracking',
+				'google-site-kit'
+			) }
 			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
 			handleDialog={ onCancel }
 			provides={ provides }
-			dependentModules={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
 		/>
