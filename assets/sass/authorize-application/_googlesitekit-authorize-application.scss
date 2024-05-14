@@ -125,6 +125,16 @@
 	}
 }
 
+html[dir="rtl"] .googlesitekit-authorize-application__footer {
+	left: auto;
+	margin-right: 36px;
+	right: 0;
+
+	@media (min-width: $width-desktop + 1 + px) {
+		margin-right: 160px;
+	}
+}
+
 #wpbody-content {
 	padding-bottom: 100px;
 }
