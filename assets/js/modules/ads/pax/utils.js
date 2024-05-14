@@ -19,12 +19,14 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { stringToDate } from '../../../util';
+import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
 
 /**
- * Returns PAX services.
+ * Returns formatted date object.
  *
- * @since 1.126.0
+ * @since n.e.x.t
  *
  * @param {string} dateString Date in 'YYYY-MM-DD' format.
  * @return {Date} Date instance.
@@ -38,5 +40,26 @@ export function formatPaxDate( dateString ) {
 		// to the 0-index so we need to revert it here.
 		month: dateObject.getMonth() + 1,
 		day: dateObject.getDate(),
+	};
+}
+
+/**
+ * Returns the current date range as a list of formatted date objects.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Registry object to dispatch to.
+ * @return {Date} Date instance.
+ */
+export function getPaxDateRange( registry ) {
+	const { startDate, endDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+	return {
+		startDate: formatPaxDate( startDate ),
+		endDate: formatPaxDate( endDate ),
 	};
 }
