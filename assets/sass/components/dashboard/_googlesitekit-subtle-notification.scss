@@ -62,6 +62,10 @@
 	.mdc-button {
 		margin: 0 auto;
 
+		&.mdc-button--tertiary:not(:disabled) {
+			color: $c-site-kit-sk-600;
+		}
+
 		@media (min-width: $bp-tablet) {
 			margin: 0;
 		}
