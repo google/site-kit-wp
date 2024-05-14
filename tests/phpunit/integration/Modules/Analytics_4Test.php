@@ -31,6 +31,7 @@ use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
+use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
@@ -206,6 +207,133 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertFalse( $settings['adsLinked'] );
 		$this->assertEquals( $settings['adsLinkedLastSyncedAt'], 0 );
+	}
+
+	public function test_register__reset_resource_data_availability_date__on_property_id_change() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '87654321',
+			)
+		);
+
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+	}
+
+	public function test_register__reset_resource_data_availability_date__on_measurement_id_change() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'measurementID' => 'B1B2C3D4E5',
+			)
+		);
+
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+	}
+
+	public function test_register__reset_resource_data_availability_date__on_available_audiences_change() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			$test_resource_slug_audience,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		// Should not reset audience when it is available.
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableAudiences' => array(
+					array(
+						'name' => $test_resource_slug_audience,
+					),
+					array(
+						'name' => 'properties/12345678/audiences/67890',
+					),
+				),
+			)
+		);
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+
+		// Should reset audience when it is no longer available.
+		$this->analytics->get_settings()->merge(
+			array(
+				'availableAudiences' => array(
+					array(
+						'name' => 'properties/12345678/audiences/67890',
+					),
+				),
+			)
+		);
+
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+
+		// Should not reset other resources.
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+	}
+
+	public function test_register__reset_resource_data_availability_date__on_deactivation() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		$this->analytics->on_deactivation();
+
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
 	}
 
 	public function test_handle_provisioning_callback() {
@@ -1112,6 +1240,7 @@ class Analytics_4Test extends TestCase {
 				'create-audience',
 				'audience-settings',
 				'sync-audiences',
+				'save-resource-data-availability-date',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -3158,6 +3287,59 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_inline_module_data__audienceSegmentation() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		// Ensure the module is connected.
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'webDataStreamID' => '1234567890',
+				'propertyID'      => '12345678',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $inline_modules_data['analytics-4'] );
+
+		$this->assertEquals(
+			array(
+				'audience'        => array(),
+				'customDimension' => array(),
+				'property'        => array(),
+			),
+			$inline_modules_data['analytics-4']['resourceAvailabilityDates']
+		);
+
+		list(
+			$test_resource_slug_audience,
+			$test_resource_slug_custom_dimension,
+			$test_resource_slug_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'audience'        => array(
+					$test_resource_slug_audience => 20201231,
+				),
+				'customDimension' => array(
+					$test_resource_slug_custom_dimension => 20201231,
+				),
+				'property'        => array(
+					$test_resource_slug_property => 20201231,
+				),
+			),
+			$inline_modules_data['analytics-4']['resourceAvailabilityDates']
+		);
+	}
+
 	public function test_set_custom_dimension_data_available() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
@@ -3365,6 +3547,86 @@ class Analytics_4Test extends TestCase {
 		$adsense_link = $result[0];
 		$this->assertEquals( 'properties/12345/adSenseLinks/12345', $adsense_link->getName() );
 		$this->assertEquals( 'ca-pub-12345', $adsense_link->getAdClientCode() );
+	}
+
+	public function test_set_data__save_resource_data_availability_date() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		list(
+			$test_resource_slug_audience,
+			,
+			,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
+		) = $this->set_test_resource_data_availability_dates();
+
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+
+		// Test missing required parameters.
+		$data = $this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array()
+		);
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: resourceType.', $data );
+
+		$data = $this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE,
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: resourceSlug.', $data );
+
+		$data = $this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE,
+				'resourceSlug' => $test_resource_slug_audience,
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: date.', $data );
+
+		// Test invalid resource type.
+		$data = $this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => 'invalid-resource-type',
+				'resourceSlug' => $test_resource_slug_audience,
+				'date'         => 20201231,
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Invalid parameter: resourceType.', $data );
+
+		// Test invalid resource slug.
+		$data = $this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE,
+				'resourceSlug' => 'invalid-resource-slug',
+				'date'         => 20201231,
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Invalid parameter: resourceSlug.', $data );
+
+		// Test invalid date.
+		$data = $this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE,
+				'resourceSlug' => $test_resource_slug_audience,
+				'date'         => '20201231',
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Invalid parameter: date.', $data );
 	}
 
 	public function test_create_audience__required_scope() {
@@ -3807,6 +4069,71 @@ class Analytics_4Test extends TestCase {
 				$this->authentication->get_oauth_client()->get_required_scopes(),
 				(array) $scope
 			)
+		);
+	}
+
+	protected function set_test_resource_data_availability_dates() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$test_resource_slug_audience         = 'properties/12345678/audiences/12345';
+		$test_resource_slug_custom_dimension = 'googlesitekit_post_type';
+		$test_resource_slug_property         = '12345678';
+
+		$test_resource_data_availability_transient_audience         = 'googlesitekit_' . Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE . "_{$test_resource_slug_audience}_data_availability_date";
+		$test_resource_data_availability_transient_custom_dimension = 'googlesitekit_' . Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION . "_{$test_resource_slug_custom_dimension}_data_availability_date";
+		$test_resource_data_availability_transient_property         = 'googlesitekit_' . Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY . "_{$test_resource_slug_property}_data_availability_date";
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'         => $test_resource_slug_property,
+				'measurementID'      => 'A1B2C3D4E5',
+				'availableAudiences' => array(
+					array(
+						'name' => $test_resource_slug_audience,
+					),
+				),
+			)
+		);
+
+		$this->analytics->register();
+
+		$this->grant_scope( Analytics_4::READONLY_SCOPE );
+
+		$this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE,
+				'resourceSlug' => $test_resource_slug_audience,
+				'date'         => 20201231,
+			)
+		);
+
+		$this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION,
+				'resourceSlug' => $test_resource_slug_custom_dimension,
+				'date'         => 20201231,
+			)
+		);
+
+		$this->analytics->set_data(
+			'save-resource-data-availability-date',
+			array(
+				'resourceType' => Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY,
+				'resourceSlug' => $test_resource_slug_property,
+				'date'         => 20201231,
+			)
+		);
+
+		// Return the resource slugs and transient names for testing.
+		return array(
+			$test_resource_slug_audience,
+			$test_resource_slug_custom_dimension,
+			$test_resource_slug_property,
+			$test_resource_data_availability_transient_audience,
+			$test_resource_data_availability_transient_custom_dimension,
+			$test_resource_data_availability_transient_property,
 		);
 	}
 

@@ -17,30 +17,65 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+
+/**
  * Internal dependencies
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '../datastore/constants';
 
+const restFetchWpPages = async () => {
+	try {
+		const wpPages = await apiFetch( {
+			path: '/wp/v2/pages?per_page=100',
+		} );
+
+		return wpPages.map( ( page ) => {
+			return {
+				title: page.title.rendered,
+				path: new URL( page.link ).pathname,
+			};
+		} );
+	} catch {
+		return [];
+	}
+};
 /**
  * Returns PAX services.
  *
  * @since 1.126.0
  *
  * @param {Object} registry Registry object to dispatch to.
+ * @param {Object} _global  The global window object.
  * @return {Object} An object containing various service interfaces.
  */
-export function createPaxServices( registry ) {
+export function createPaxServices( registry, _global = global ) {
+	const { select, __experimentalResolveSelect: resolveSelect } = registry;
+	const accessToken =
+		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+
 	return {
+		authenticationService: {
+			// eslint-disable-next-line require-await
+			get: async () => {
+				return { accessToken };
+			},
+			// eslint-disable-next-line require-await
+			fix: async () => {
+				return { retryReady: true };
+			},
+		},
 		businessService: {
 			getBusinessInfo: async () => {
-				await registry
-					.__experimentalResolveSelect( CORE_SITE )
-					.getSiteInfo();
+				await resolveSelect( CORE_SITE ).getSiteInfo();
 
 				/* eslint-disable sitekit/acronym-case */
 				// Disabling rule because businessName and businessUrl are expected by PAX API.
-				const businessName = registry.select( CORE_SITE ).getSiteName();
-				const businessUrl = registry.select( CORE_SITE ).getHomeURL();
+				const businessName = select( CORE_SITE ).getSiteName();
+				const businessUrl = select( CORE_SITE ).getHomeURL();
 
 				return { businessName, businessUrl };
 				/* eslint-enable sitekit/acronym-case */
@@ -51,9 +86,28 @@ export function createPaxServices( registry ) {
 			},
 		},
 		conversionTrackingService: {
-			// eslint-disable-next-line require-await
 			getSupportedConversionLabels: async () => {
-				return { conversionLabels: [] };
+				await resolveSelect( MODULES_ADS ).getModuleData();
+				const conversionEvents =
+					select( MODULES_ADS ).getSupportedConversionEvents() || [];
+
+				return { conversionLabels: conversionEvents };
+			},
+			getPageViewConversionSetting: async () => {
+				const websitePages = await restFetchWpPages();
+				return {
+					websitePages,
+				};
+			},
+			// eslint-disable-next-line require-await
+			getSupportedConversionTrackingTypes: async () => {
+				return {
+					conversionTrackingTypes: [
+						// @TODO: Include TYPE_CONVERSION_EVENT in a future update.
+						// 'TYPE_CONVERSION_EVENT',
+						'TYPE_PAGE_VIEW',
+					],
+				};
 			},
 		},
 		termsAndConditionsService: {

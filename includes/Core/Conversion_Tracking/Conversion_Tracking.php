@@ -11,6 +11,13 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMaker;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
 use LogicException;
 
 /**
@@ -30,12 +37,35 @@ class Conversion_Tracking {
 	private $context;
 
 	/**
+	 * Conversion_Tracking_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Conversion_Tracking_Settings
+	 */
+	protected $conversion_tracking_settings;
+
+	/**
+	 * REST_Conversion_Tracking_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Conversion_Tracking_Controller
+	 */
+	protected $rest_conversion_tracking_controller;
+
+	/**
 	 * Supported conversion event providers.
 	 *
 	 * @since 1.126.0
 	 * @var array
 	 */
-	public static $providers = array();
+	public static $providers = array(
+		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
+		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG      => Mailchimp::class,
+		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
+		PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG     => PopupMaker::class,
+		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG    => WooCommerce::class,
+		WPForms::CONVERSION_EVENT_PROVIDER_SLUG        => WPForms::class,
+	);
 
 	/**
 	 * Constructor.
@@ -43,9 +73,13 @@ class Conversion_Tracking {
 	 * @since 1.126.0
 	 *
 	 * @param Context $context Plugin context.
+	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
+	public function __construct( Context $context, Options $options = null ) {
+		$this->context                             = $context;
+		$options                                   = $options ?: new Options( $context );
+		$this->conversion_tracking_settings        = new Conversion_Tracking_Settings( $options );
+		$this->rest_conversion_tracking_controller = new REST_Conversion_Tracking_Controller( $this->conversion_tracking_settings );
 	}
 
 	/**
@@ -54,9 +88,17 @@ class Conversion_Tracking {
 	 * @since 1.126.0
 	 */
 	public function register() {
+		$this->conversion_tracking_settings->register();
+		$this->rest_conversion_tracking_controller->register();
+
 		add_action(
 			'wp_enqueue_scripts',
 			function() {
+				// Do nothing if neither Ads nor Analytics snippet has been inserted.
+				if ( ! did_action( 'googlesitekit_ads_init_tag' ) && ! did_action( 'googlesitekit_analytics-4_init_tag' ) ) {
+					return;
+				}
+
 				$active_providers = $this->get_active_providers();
 
 				array_walk(
@@ -122,4 +164,5 @@ class Conversion_Tracking {
 
 		return $active_providers;
 	}
+
 }

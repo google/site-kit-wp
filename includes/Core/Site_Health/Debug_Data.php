@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -190,6 +191,10 @@ class Debug_Data {
 			'capabilities'         => $this->get_capabilities_field(),
 			'enabled_features'     => $this->get_feature_fields(),
 		);
+
+		if ( Feature_Flags::enabled( 'conversionInfra' ) ) {
+			$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
+		}
 
 		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
 
@@ -613,4 +618,30 @@ class Debug_Data {
 			),
 		);
 	}
+
+	/**
+	 * Gets the conversion event names registered by the currently supported
+	 * active plugins.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_active_conversion_event_provider_fields() {
+		$value               = array();
+		$conversion_tracking = new Conversion_Tracking( $this->context );
+		$active_providers    = $conversion_tracking->get_active_providers();
+
+		foreach ( $active_providers as $active_provider_slug => $active_provider ) {
+			$value[ $active_provider_slug ] = implode( ', ', $active_provider->get_event_names() );
+		}
+
+		return array(
+			'active_conversion_event_providers' => array(
+				'label' => __( 'Active conversion event providers', 'google-site-kit' ),
+				'value' => $value,
+			),
+		);
+	}
+
 }

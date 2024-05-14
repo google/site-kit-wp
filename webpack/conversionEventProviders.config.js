@@ -34,10 +34,14 @@ const {
 } = require( './common' );
 
 module.exports = ( mode ) => ( {
-	// entry: {
-	// 	'example-plugin-integration':
-	// 		'./assets/js/event-providers/example-plugin-integration.js',
-	// },
+	entry: {
+		'contact-form-7': './assets/js/event-providers/contact-form-7.js',
+		mailchimp: './assets/js/event-providers/mailchimp.js',
+		'optin-monster': './assets/js/event-providers/optin-monster.js',
+		'popup-maker': './assets/js/event-providers/popup-maker.js',
+		woocommerce: './assets/js/event-providers/woocommerce.js',
+		wpforms: './assets/js/event-providers/wpforms.js',
+	},
 	externals,
 	output: {
 		filename:
@@ -68,8 +72,8 @@ module.exports = ( mode ) => ( {
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Conversion Event Provider Modules',
-			color: '#fb1105',
+			name: 'Conversion Providers',
+			color: '#34dbeb',
 		} ),
 		new ManifestPlugin( {
 			...manifestArgs( mode ),

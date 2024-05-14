@@ -158,7 +158,6 @@ export default {
 		},
 	],
 	parameters: {
-		features: [ 'adsModule' ],
 		padding: 0,
 	},
 };
