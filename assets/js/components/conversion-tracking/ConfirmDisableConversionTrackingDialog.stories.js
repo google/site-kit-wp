@@ -27,6 +27,10 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConfirmDisableConversionTrackingDialog';
+Default.scenario = {
+	label: 'Components/Conversion Tracking/ConfirmDisableConversionTrackingDialog/Default',
+	delay: 250,
+};
 Default.decorators = [
 	( Story ) => {
 		return <Story />;
