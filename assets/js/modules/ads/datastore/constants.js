@@ -20,7 +20,7 @@ export const MODULES_ADS = 'modules/ads';
 
 export const ADWORDS_SCOPE = 'https://www.googleapis.com/auth/adwords';
 
-export const PAX_SETUP_ENUM = {
-	PAX_SETUP_LAUNCH: 1,
-	PAX_SETUP_FINISHED: 2,
+export const PAX_SETUP_STEP = {
+	LAUNCH: 1,
+	FINISHED: 2,
 };

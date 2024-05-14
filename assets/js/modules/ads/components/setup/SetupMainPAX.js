@@ -48,7 +48,7 @@ import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/cons
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
-	PAX_SETUP_ENUM,
+	PAX_SETUP_STEP,
 } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../PAXEmbeddedApp';
@@ -57,7 +57,10 @@ const { useSelect, useDispatch } = Data;
 const PARAM_SHOW_PAX = 'pax';
 
 export default function SetupMainPAX( { finishSetup } ) {
-	const [ showPaxApp, setShowPaxApp ] = useQueryArg( PARAM_SHOW_PAX );
+	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
+		useQueryArg( PARAM_SHOW_PAX );
+	const showPaxAppStep =
+		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -73,7 +76,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	} );
 
 	const redirectURL = addQueryArgs( global.location.href, {
-		[ PARAM_SHOW_PAX ]: PAX_SETUP_ENUM.PAX_SETUP_LAUNCH,
+		[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
 	} );
 
 	const oAuthURL = useSelect( ( select ) =>
@@ -95,11 +98,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 		useDispatch( MODULES_ADS );
 
 	useMount( () => {
-		if ( PAX_SETUP_ENUM.PAX_SETUP_FINISHED === +showPaxApp ) {
-			// If setup finished query param is present in the URL on the load
+		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
+			// If the PAX query param indicates the setup is finished on page load,
 			// set the step back to the PAX launch, as values are only temporarly
 			// saved in state after PAX campaign setup signal is received.
-			setShowPaxApp( PAX_SETUP_ENUM.PAX_SETUP_LAUNCH );
+			setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 		}
 	} );
 
@@ -132,7 +135,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		setExtCustomerID( customerData.externalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
-		setShowPaxApp( PAX_SETUP_ENUM.PAX_SETUP_FINISHED );
+		setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
 		/* eslint-enable sitekit/acronym-case */
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
@@ -151,8 +154,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
-		setShowPaxApp( PAX_SETUP_ENUM.PAX_SETUP_LAUNCH );
-	}, [ navigateTo, setShowPaxApp, hasAdwordsScope, oAuthURL ] );
+		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
+	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
@@ -168,7 +171,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			<AdBlockerWarning />
 
 			{ ! isAdBlockerActive &&
-				PAX_SETUP_ENUM.PAX_SETUP_FINISHED === +showPaxApp && (
+				PAX_SETUP_STEP.FINISHED === showPaxAppStep && (
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton
 							isSaving={ isNavigatingToOAuthURL }
@@ -184,7 +187,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 					</div>
 				) }
 			{ ! isAdBlockerActive &&
-				PAX_SETUP_ENUM.PAX_SETUP_LAUNCH === +showPaxApp &&
+				PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
 				hasAdwordsScope && (
 					<Fragment>
 						<PAXEmbeddedApp
@@ -195,59 +198,60 @@ export default function SetupMainPAX( { finishSetup } ) {
 					</Fragment>
 				) }
 
-			{ ! isAdBlockerActive && ( ! showPaxApp || ! hasAdwordsScope ) && (
-				<Fragment>
-					<div className="googlesitekit-setup-module__description">
-						{ createInterpolateElement(
-							__(
-								'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
-								'google-site-kit'
-							),
-							{
-								a: (
-									<SupportLink
-										path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
-										external
-									/>
+			{ ! isAdBlockerActive &&
+				( ! showPaxAppStep || ! hasAdwordsScope ) && (
+					<Fragment>
+						<div className="googlesitekit-setup-module__description">
+							{ createInterpolateElement(
+								__(
+									'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
+									'google-site-kit'
 								),
-							}
-						) }
-						<br />
-						{ __(
-							'You can always change this later in Site Kit Settings.',
-							'google-site-kit'
-						) }
-					</div>
+								{
+									a: (
+										<SupportLink
+											path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+											external
+										/>
+									),
+								}
+							) }
+							<br />
+							{ __(
+								'You can always change this later in Site Kit Settings.',
+								'google-site-kit'
+							) }
+						</div>
 
-					<SetupForm
-						finishSetup={ finishSetup }
-						isNavigatingToOAuthURL={ isNavigatingToOAuthURL }
-						createAccountCTA={
-							<Fragment>
-								<SpinnerButton
-									onClick={ createAccount }
-									disabled={ isNavigatingToOAuthURL }
-									isSaving={ isNavigatingToOAuthURL }
-									inverse
-								>
-									{ __(
-										'Create an account',
-										'google-site-kit'
-									) }
-								</SpinnerButton>
-								{ ! hasAdwordsScope && (
-									<p className="googlesitekit-setup-module__permission-notice">
+						<SetupForm
+							finishSetup={ finishSetup }
+							isNavigatingToOAuthURL={ isNavigatingToOAuthURL }
+							createAccountCTA={
+								<Fragment>
+									<SpinnerButton
+										onClick={ createAccount }
+										disabled={ isNavigatingToOAuthURL }
+										isSaving={ isNavigatingToOAuthURL }
+										inverse
+									>
 										{ __(
-											'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
+											'Create an account',
 											'google-site-kit'
 										) }
-									</p>
-								) }
-							</Fragment>
-						}
-					/>
-				</Fragment>
-			) }
+									</SpinnerButton>
+									{ ! hasAdwordsScope && (
+										<p className="googlesitekit-setup-module__permission-notice">
+											{ __(
+												'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
+												'google-site-kit'
+											) }
+										</p>
+									) }
+								</Fragment>
+							}
+						/>
+					</Fragment>
+				) }
 		</div>
 	);
 }
