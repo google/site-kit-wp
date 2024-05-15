@@ -54,4 +54,28 @@ class Expirable_ItemsTest extends TestCase {
 		$this->assertArrayHasKey( 'bar', $user_options );
 		$this->assertEqualsWithDelta( $expected_time_foo_bar, $user_options['bar'], 2 );
 	}
+
+	public function test_remove() {
+		$this->user_options->set(
+			Expirable_Items::OPTION,
+			array(
+				'foo' => time() + 50,
+				'bar' => time() + 100,
+				'baz' => time() + 500,
+			)
+		);
+
+		$user_options = $this->user_options->get( Expirable_Items::OPTION );
+
+		$this->assertEqualsWithDelta( time() + 50, $user_options['foo'], 2 );
+		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2 );
+		$this->assertEqualsWithDelta( time() + 500, $user_options['baz'], 2 );
+
+		$this->expirable_items->remove( 'bar' );
+
+		$user_options_updated = $this->user_options->get( Expirable_Items::OPTION );
+
+		$this->assertEqualsWithDelta( time() + 50, $user_options_updated['foo'], 2 );
+		$this->assertEqualsWithDelta( time() + 500, $user_options_updated['baz'], 2 );
+	}
 }
