@@ -110,8 +110,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-10-29',
-			endDate: '2020-11-25',
+			startDate: '2020-10-28',
+			endDate: '2020-11-24',
 		},
 		{
 			dimensions: [ 'DATE' ],
@@ -121,8 +121,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-10-29',
-			endDate: '2020-11-25',
+			startDate: '2020-10-28',
+			endDate: '2020-11-24',
 		},
 		{
 			metrics: [
@@ -131,8 +131,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-10-01',
-			endDate: '2020-10-28',
+			startDate: '2020-09-30',
+			endDate: '2020-10-27',
 		},
 		{
 			dimensions: [ 'DATE' ],
@@ -142,8 +142,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-10-01',
-			endDate: '2020-10-28',
+			startDate: '2020-09-30',
+			endDate: '2020-10-27',
 		},
 	] ),
 	additionalVariants: {
