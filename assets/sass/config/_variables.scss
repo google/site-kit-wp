@@ -327,3 +327,28 @@ $z-index-sk-side-sheet: 10000;
 $z-index-sk-side-sheet-overlay: 9990;
 $z-index-sk-header: 9980;
 $z-index-sk-overlay-notification: 9970;
+
+// Start Authorize Application screen specific styles.
+$c-authorize-application-background: $c-base;
+$c-authorize-application-sys-light-primary: #0b57d0;
+$c-authorize-application-sys-light-on-primary: $c-base;
+$c-authorize-application-sys-light-on-surface: #1f1f1f;
+$c-authorize-application-sys-light-outline: #747775;
+$c-authorize-application-gallery: #ededed; // Gallery color name from http://chir.ag/projects/name-that-color/.
+$c-authorize-application-pumice: #c4c7c5; // Pumice color name as above.
+$c-authorize-application-vivid-blue: #1a73e8; // Vivid Blue color name as above.
+
+$fs-authorize-application-headline-sm: 24px;
+$fs-authorize-application-title-lg: 18px;
+$fs-authorize-application-label-lg: 14px;
+$fs-authorize-application-label-md: 12px;
+$fs-authorize-application-body-md: 14px;
+$fs-authorize-application-footer-lg: 16px;
+
+$lh-authorize-application-headline-sm: 32px;
+$lh-authorize-application-title-lg: 24px;
+$lh-authorize-application-label-lg: 20px;
+$lh-authorize-application-label-md: 16px;
+$lh-authorize-application-body-md: 20px;
+
+// End Authorize Application screen specific styles.

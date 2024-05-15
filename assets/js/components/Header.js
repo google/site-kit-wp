@@ -119,7 +119,7 @@ function Header( { children, subHeader, showNavigation } ) {
 
 			{ showNavigation && <DashboardNavigation /> }
 
-			<SubtleNotifications />
+			{ isDashboard && <SubtleNotifications /> }
 
 			<EntityHeader />
 		</Fragment>

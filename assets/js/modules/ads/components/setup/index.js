@@ -18,3 +18,4 @@
 
 export { default as SetupForm } from './SetupForm';
 export { default as SetupMain } from './SetupMain';
+export { default as SetupMainPAX } from './SetupMainPAX';

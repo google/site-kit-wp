@@ -41,12 +41,15 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.122.0
+	 * @since 1.126.0 Added new settings fields for PAX.
 	 *
 	 * @return array An array of default settings values.
 	 */
 	protected function get_default() {
 		return array(
-			'conversionID' => '',
+			'conversionID'    => '',
+			'paxConversionID' => '',
+			'extCustomerID'   => '',
 		);
 	}
 
@@ -54,10 +57,15 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Returns keys for owned settings.
 	 *
 	 * @since 1.122.0
+	 * @since 1.126.0 Added new settings fields for PAX.
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
 	public function get_owned_keys() {
-		return array( 'conversionID' );
+		return array(
+			'conversionID',
+			'paxConversionID',
+			'extCustomerID',
+		);
 	}
 }

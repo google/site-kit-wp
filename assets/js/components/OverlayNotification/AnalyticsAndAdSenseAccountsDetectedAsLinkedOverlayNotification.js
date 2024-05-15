@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,7 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import AnalyticsAdsenseLinkedGraphic from '../../../svg/graphics/analytics-adsense-linked.svg';
+import AnalyticsAdsenseLinkedGraphicDesktop from '../../../svg/graphics/analytics-adsense-linked-desktop.svg';
+import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics-adsense-linked-mobile.svg';
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -59,15 +60,6 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
 
 	const viewContext = useViewContext();
-
-	const isShowingNotification = useSelect( ( select ) =>
-		select( CORE_UI ).isShowingOverlayNotification(
-			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-		)
-	);
-
-	const { setOverlayNotificationToShow, dismissOverlayNotification } =
-		useDispatch( CORE_UI );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -174,6 +166,15 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		isAdSenseLinked &&
 		reportDataAvailable;
 
+	const { dismissOverlayNotification } = useDispatch( CORE_UI );
+
+	const trackEventOnView = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_top-earning-pages-widget`,
+			'view_overlay_CTA'
+		);
+	}, [ viewContext ] );
+
 	const dismissNotification = () => {
 		// Dismiss the notification, which also dismisses it from
 		// the current user's profile with the `dismissItem` action.
@@ -203,34 +204,14 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		}, 50 );
 	};
 
-	useEffect( () => {
-		if ( shouldShowNotification && ! isShowingNotification ) {
-			// If the conditions to show this notification are met AND no other
-			// notifications are showing, show this notification.
-			setOverlayNotificationToShow(
-				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-			);
-
-			trackEvent(
-				`${ viewContext }_top-earning-pages-widget`,
-				'view_overlay_CTA'
-			);
-		}
-	}, [
-		shouldShowNotification,
-		isShowingNotification,
-		setOverlayNotificationToShow,
-		viewContext,
-	] );
-
-	if ( ! shouldShowNotification || ! isShowingNotification ) {
-		return null;
-	}
-
 	return (
-		<OverlayNotification animateNotification={ isShowingNotification }>
-			<AnalyticsAdsenseLinkedGraphic />
-
+		<OverlayNotification
+			shouldShowNotification={ shouldShowNotification }
+			GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
+			GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
+			notificationID={ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION }
+			onShow={ trackEventOnView }
+		>
 			<div className="googlesitekit-overlay-notification__body">
 				<h3>
 					{ __( 'See your top earning content', 'google-site-kit' ) }

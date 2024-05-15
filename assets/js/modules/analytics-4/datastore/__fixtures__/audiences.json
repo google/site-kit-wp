@@ -17,17 +17,131 @@
     },
     {
         "adsPersonalizationEnabled": true,
-        "description": "Description",
-        "displayName": "Test Audience",
+        "description": "People who visited the site for the first time",
+        "displayName": "New visitors",
         "exclusionDurationMode": null,
         "membershipDurationDays": 30,
         "name": "properties/12345/audiences/3",
         "filterClauses": [
             {
-				"clauseType": "INCLUDE",
-				"simpleFilter": {
-					"scope": "AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS",
-					"filterExpression": {
+                "clauseType": "INCLUDE",
+                "simpleFilter": {
+                    "scope": "AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS",
+                    "filterExpression": {
+                        "andGroup": {
+                            "filterExpressions": [
+                                {
+                                    "orGroup": {
+                                        "filterExpressions": [
+                                            {
+                                                "dimensionOrMetricFilter": {
+                                                    "atAnyPointInTime": null,
+                                                    "fieldName": "newVsReturning",
+                                                    "inAnyNDayPeriod": null,
+                                                    "stringFilter": {
+                                                        "caseSensitive": null,
+                                                        "matchType": "EXACT",
+                                                        "value": "new"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "orGroup": {
+                                        "filterExpressions": [
+                                            {
+                                                "notExpression": {
+                                                    "dimensionOrMetricFilter": {
+                                                        "fieldName": "groupId",
+                                                        "stringFilter": {
+                                                            "matchType": "EXACT",
+                                                            "value": "created_by_googlesitekit:new_visitors"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "adsPersonalizationEnabled": true,
+        "description": "People who have visited your site at least once before",
+        "displayName": "Returning visitors",
+        "exclusionDurationMode": null,
+        "membershipDurationDays": 30,
+        "name": "properties/12345/audiences/4",
+        "filterClauses": [
+            {
+                "clauseType": "INCLUDE",
+                "simpleFilter": {
+                    "scope": "AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS",
+                    "filterExpression": {
+                        "andGroup": {
+                            "filterExpressions": [
+                                {
+                                    "orGroup": {
+                                        "filterExpressions": [
+                                            {
+                                                "dimensionOrMetricFilter": {
+                                                    "atAnyPointInTime": null,
+                                                    "fieldName": "newVsReturning",
+                                                    "inAnyNDayPeriod": null,
+                                                    "stringFilter": {
+                                                        "caseSensitive": null,
+                                                        "matchType": "EXACT",
+                                                        "value": "returning"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "orGroup": {
+                                        "filterExpressions": [
+                                            {
+                                                "notExpression": {
+                                                    "dimensionOrMetricFilter": {
+                                                        "fieldName": "groupId",
+                                                        "stringFilter": {
+                                                            "matchType": "EXACT",
+                                                            "value": "created_by_googlesitekit:returning_visitors"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "adsPersonalizationEnabled": true,
+        "description": "Description",
+        "displayName": "Test Audience",
+        "exclusionDurationMode": null,
+        "membershipDurationDays": 30,
+        "name": "properties/12345/audiences/5",
+        "filterClauses": [
+            {
+                "clauseType": "INCLUDE",
+                "simpleFilter": {
+                    "scope": "AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS",
+                    "filterExpression": {
                         "andGroup": {
                             "filterExpressions": [
                                 {
@@ -51,8 +165,8 @@
                             ]
                         }
                     }
-				}
-			}
+                }
+            }
         ]
     }
 ]

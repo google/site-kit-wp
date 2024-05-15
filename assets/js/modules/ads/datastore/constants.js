@@ -17,3 +17,5 @@
  */
 
 export const MODULES_ADS = 'modules/ads';
+
+export const ADWORDS_SCOPE = 'https://www.googleapis.com/auth/adwords';

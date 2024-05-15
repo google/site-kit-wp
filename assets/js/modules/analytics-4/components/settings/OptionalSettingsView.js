@@ -30,15 +30,15 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
-	const adsModuleEnabled = useFeature( 'adsModule' );
-
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
+	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
 	);
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getTrackingDisabled() || []
@@ -77,7 +77,7 @@ export default function OptionalSettingsView() {
 				</div>
 			</div>
 
-			{ ! adsModuleEnabled && useSnippet && (
+			{ useSnippet && ! adsConversionIDMigratedAtMs && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
@@ -94,7 +94,7 @@ export default function OptionalSettingsView() {
 				</div>
 			) }
 
-			{ adsModuleEnabled && <AdsConversionIDSettingsNotice /> }
+			<AdsConversionIDSettingsNotice />
 		</Fragment>
 	);
 }

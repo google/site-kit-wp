@@ -26,7 +26,6 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import {
 	deactivateUtilityPlugins,
-	enableFeature,
 	resetSiteKit,
 	setupSiteKit,
 	step,
@@ -77,7 +76,6 @@ describe( 'Ads setup (with no Conversion Tracking ID present)', () => {
 	} );
 
 	beforeEach( async () => {
-		await enableFeature( 'adsModule' );
 		await setupSiteKit();
 	} );
 

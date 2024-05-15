@@ -87,6 +87,8 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 	protected function get_tag_blocked_on_consent_deprecated_args() {
 		return array(
 			'1.122.0', // Deprecated in this version.
+			'',
+			__( 'Please use the Consent Mode feature instead.', 'google-site-kit' ),
 		);
 	}
 

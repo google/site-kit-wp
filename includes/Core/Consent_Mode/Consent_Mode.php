@@ -92,18 +92,37 @@ class Consent_Mode {
 	 * @since 1.122.0
 	 */
 	protected function render_gtag_consent_snippet() {
-		$consent_defaults = array(
-			'ad_personalization' => 'denied',
-			'ad_storage'         => 'denied',
-			'ad_user_data'       => 'denied',
-			'analytics_storage'  => 'denied',
-			// TODO: The value for `region` should be retrieved from $this->consent_mode_settings->get_regions(),
-			// but we'll need to migrate/clean up the incorrect values that were set from the initial release.
-			// See https://github.com/google/site-kit-wp/issues/8444.
-			'region'             => Regions::EU_USER_CONSENT_POLICY,
-			'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
+		/**
+		 * Filters the consent mode defaults.
+		 *
+		 * Allows these defaults to be modified, thus allowing users complete control over the consent mode parameters.
+		 *
+		 * @since 1.126.0
+		 *
+		 * @param array $consent_mode_defaults Default values for consent mode.
+		 */
+		$consent_defaults = apply_filters(
+			'googlesitekit_consent_defaults',
+			array(
+				'ad_personalization' => 'denied',
+				'ad_storage'         => 'denied',
+				'ad_user_data'       => 'denied',
+				'analytics_storage'  => 'denied',
+				// TODO: The value for `region` should be retrieved from $this->consent_mode_settings->get_regions(),
+				// but we'll need to migrate/clean up the incorrect values that were set from the initial release.
+				// See https://github.com/google/site-kit-wp/issues/8444.
+				'region'             => Regions::EU_USER_CONSENT_POLICY,
+				'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
+			)
 		);
 
+		/**
+		 * Filters the consent category mapping.
+		 *
+		 * @since 1.124.0
+		 *
+		 * @param array $consent_category_map Default consent category mapping.
+		 */
 		$consent_category_map = apply_filters(
 			'googlesitekit_consent_category_map',
 			array(

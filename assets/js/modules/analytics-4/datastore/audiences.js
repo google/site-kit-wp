@@ -26,23 +26,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { validateAudience } from '../utils/validation';
 
-const fetchGetAudiencesStore = createFetchStore( {
-	baseName: 'getAudiences',
-	controlCallback() {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'audiences',
-			{},
-			{
-				useCache: false,
-			}
-		);
-	},
-	reducerCallback( state, audiencesResponse ) {
-		return { ...state, audiences: audiencesResponse.audiences };
-	},
-} );
+const { createRegistrySelector } = Data;
 
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
@@ -50,12 +34,6 @@ const fetchCreateAudienceStore = createFetchStore( {
 		API.set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
-	reducerCallback( state, audience ) {
-		return {
-			...state,
-			audiences: [ ...( state.audiences || [] ), audience ],
-		};
-	},
 	argsToParams: ( audience ) => ( {
 		audience,
 	} ),
@@ -64,9 +42,20 @@ const fetchCreateAudienceStore = createFetchStore( {
 	},
 } );
 
-const baseInitialState = {
-	audiences: undefined,
-};
+const fetchSyncAvailableAudiencesStore = createFetchStore( {
+	baseName: 'syncAvailableAudiences',
+	controlCallback: () =>
+		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
+	reducerCallback: ( state, audiences ) => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				availableAudiences: [ ...audiences ],
+			},
+		};
+	},
+} );
 
 const baseActions = {
 	/**
@@ -102,9 +91,21 @@ const baseActions = {
 			return { response, error };
 		}
 	),
-};
 
-const baseControls = {};
+	/**
+	 * Syncs available audiences from the Analytics service.
+	 *
+	 * @since 1.126.0
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*syncAvailableAudiences() {
+		const { response, error } =
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+
+		return { response, error };
+	},
+};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
@@ -115,38 +116,143 @@ const baseReducer = ( state, { type } ) => {
 };
 
 const baseResolvers = {
-	*getAudiences() {
+	*getAvailableAudiences() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const audiences = registry.select( MODULES_ANALYTICS_4 ).getAudiences();
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
 
-		if ( audiences === undefined ) {
-			yield fetchGetAudiencesStore.actions.fetchGetAudiences();
+		// If available audiences not present, sync the audience in state.
+		if ( audiences === null ) {
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
+
+		return registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets the property audiences.
+	 * Checks if the given audience is a default audience.
 	 *
-	 * @since 1.120.0
+	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} An array with audiences objects; `undefined` if not loaded.
+	 * @param {string} audienceResourceName The audience resource name.
+	 * @param {Object} state                Data store's state.
+	 * @return {(boolean|undefined)} `true` if the audience is a default audience, `false` if not, `undefined` if not loaded.
 	 */
-	getAudiences( state ) {
-		return state.audiences;
-	},
+	isDefaultAudience: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audience = availableAudiences.find(
+				( { name } ) => name === audienceResourceName
+			);
+
+			return audience?.audienceType === 'DEFAULT_AUDIENCE';
+		}
+	),
+
+	/**
+	 * Checks if the given audience is a Site Kit-created audience.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} audienceResourceName The audience resource name.
+	 * @param {Object} state                Data store's state.
+	 * @return {(boolean|undefined)} `true` if the audience is a Site Kit-created audience, `false` if not, `undefined` if not loaded.
+	 */
+	isSiteKitAudience: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audience = availableAudiences.find(
+				( { name } ) => name === audienceResourceName
+			);
+
+			return audience?.audienceType === 'SITE_KIT_AUDIENCE';
+		}
+	),
+
+	/**
+	 * Checks if the given audience is a user-defined audience.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} audienceResourceName The audience resource name.
+	 * @param {Object} state                Data store's state.
+	 * @return {(boolean|undefined)} `true` if the audience is a user-defined audience, `false` if not, `undefined` if not loaded.
+	 */
+	isUserAudience: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audience = availableAudiences.find(
+				( { name } ) => name === audienceResourceName
+			);
+
+			return audience?.audienceType === 'USER_AUDIENCE';
+		}
+	),
+
+	/**
+	 * Checks whether the provided audiences are available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state                 Data store's state.
+	 * @param {string|Array<string>} audienceResourceNames The audience resource names to check.
+	 * @return {boolean} True if all provided audiences are available, otherwise false. Undefined if available audiences are not loaded yet.
+	 */
+	hasAudiences: createRegistrySelector(
+		( select ) => ( state, audienceResourceNames ) => {
+			const audiencesToCheck = Array.isArray( audienceResourceNames )
+				? audienceResourceNames
+				: [ audienceResourceNames ];
+
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			if ( availableAudiences === null ) {
+				return false;
+			}
+
+			return audiencesToCheck.every( ( audienceResourceName ) =>
+				availableAudiences.some(
+					( { name } ) => name === audienceResourceName
+				)
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(
-	fetchGetAudiencesStore,
 	fetchCreateAudienceStore,
+	fetchSyncAvailableAudiencesStore,
 	{
-		initialState: baseInitialState,
+		initialState: {},
 		actions: baseActions,
-		controls: baseControls,
+		controls: {},
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
