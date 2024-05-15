@@ -1,5 +1,5 @@
 /**
- * PAX util functions tests.
+ * PAX utility functions tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
