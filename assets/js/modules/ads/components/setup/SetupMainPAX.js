@@ -41,7 +41,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import PAXEmbeddedApp from '../PAXEmbeddedApp';
+import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 const { useSelect, useDispatch } = Data;
 
 const PARAM_SHOW_PAX = 'pax';
