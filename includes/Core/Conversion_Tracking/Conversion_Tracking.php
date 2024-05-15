@@ -39,7 +39,7 @@ class Conversion_Tracking {
 	/**
 	 * Conversion_Tracking_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 * @var Conversion_Tracking_Settings
 	 */
 	protected $conversion_tracking_settings;
@@ -47,7 +47,7 @@ class Conversion_Tracking {
 	/**
 	 * REST_Conversion_Tracking_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 * @var REST_Conversion_Tracking_Controller
 	 */
 	protected $rest_conversion_tracking_controller;
