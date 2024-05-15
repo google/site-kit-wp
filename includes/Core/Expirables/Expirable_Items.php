@@ -110,20 +110,6 @@ class Expirable_Items extends User_Setting {
 	}
 
 	/**
-	 * Gets expirable items.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array Expirable items array.
-	 */
-	public function get_expirable_items() {
-		$expirable_items = $this->get();
-		$expirable_items = $this->filter_expirable_items( $expirable_items );
-
-		return (array) $expirable_items;
-	}
-
-	/**
 	 * Filters expirable items.
 	 *
 	 * @since n.e.x.t
