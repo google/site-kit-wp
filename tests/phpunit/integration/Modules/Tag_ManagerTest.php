@@ -488,6 +488,14 @@ class Tag_ManagerTest extends TestCase {
 		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
+	/**
+	 * @return int The error code returned by the listAccountsContainers( "accounts/{account_id}" )
+	 * endpoint when permission is denied.
+	 */
+	protected function get_service_entity_no_access_error_code() {
+		return 404;
+	}
+
 	protected function set_up_check_service_entity_access( Module $module ) {
 		$module->get_settings()->merge(
 			array(

@@ -1,6 +1,4 @@
 /**
- * Ads module entrypoint.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import { registerStore, registerModule, registerWidgets } from './modules/ads';
+( ( jQuery ) => {
+	// eslint-disable-next-line no-undef
+	if ( ! jQuery || ! PUM ) {
+		return;
+	}
 
-registerStore( Data );
-registerModule( Modules );
-registerWidgets( Widgets );
+	// eslint-disable-next-line no-undef
+	PUM.hooks.addAction( 'pum.integration.form.success', function () {
+		global.gtag( 'event', 'submit_lead_form' );
+	} );
+} )( global.jQuery );
