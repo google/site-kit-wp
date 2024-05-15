@@ -209,6 +209,7 @@ describe( 'PAX partner services', () => {
 						);
 						expect( partnerDateRange ).toHaveProperty( 'endDate' );
 					} );
+
 					it( 'should contain correct accessToken', async () => {
 						registry
 							.dispatch( CORE_USER )
