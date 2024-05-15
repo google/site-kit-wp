@@ -50,6 +50,7 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import { isValidConversionID } from '../../ads/utils/validation';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -139,53 +140,49 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Only make the API request to enable the Enhanced Measurement setting, not to disable it.
 		if ( isEnhancedMeasurementEnabled ) {
-			await dispatch(
-				MODULES_ANALYTICS_4
-			).setEnhancedMeasurementStreamEnabled(
+			await updateEnhancedMeasurementSettings( {
+				select,
+				dispatch,
 				propertyID,
 				webDataStreamID,
-				isEnhancedMeasurementEnabled
-			);
-
-			if (
-				select(
-					MODULES_ANALYTICS_4
-				).haveEnhancedMeasurementSettingsChanged(
-					propertyID,
-					webDataStreamID
-				)
-			) {
-				const { error } = await dispatch(
-					MODULES_ANALYTICS_4
-				).updateEnhancedMeasurementSettings(
-					propertyID,
-					webDataStreamID
-				);
-
-				if ( error ) {
-					return { error };
-				}
-
-				const shouldDismissActivationBanner = select(
-					CORE_FORMS
-				).getValue(
-					ENHANCED_MEASUREMENT_FORM,
-					ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
-				);
-
-				if ( shouldDismissActivationBanner ) {
-					await dispatch( CORE_USER ).dismissItem(
-						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
-					);
-				}
-			}
+				isEnhancedMeasurementEnabled,
+			} );
 		}
 	}
 
-	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
-		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
-		if ( error ) {
-			return { error };
+	const haveSettingsChanged =
+		select( MODULES_ANALYTICS_4 ).haveSettingsChanged();
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+
+	if ( haveSettingsChanged || haveConversionTrackingSettingsChanged ) {
+		// Since conversion tracking settings are module agnostic we need to check
+		// if conversion tracking can be updated individually, or together with GA4 settings.
+		if ( haveSettingsChanged ) {
+			const { error } = await dispatch(
+				MODULES_ANALYTICS_4
+			).saveSettings();
+			if ( error ) {
+				return { error };
+			}
+
+			if ( haveConversionTrackingSettingsChanged ) {
+				const { error: conversionTrackingError } = await dispatch(
+					CORE_SITE
+				).saveConversionTrackingSettings();
+
+				if ( conversionTrackingError ) {
+					return { conversionTrackingError };
+				}
+			}
+		} else if ( haveConversionTrackingSettingsChanged ) {
+			const { error } = await dispatch(
+				CORE_SITE
+			).saveConversionTrackingSettings();
+
+			if ( error ) {
+				return { error };
+			}
 		}
 	}
 
@@ -193,6 +190,46 @@ export async function submitChanges( { select, dispatch } ) {
 
 	return {};
 }
+
+const updateEnhancedMeasurementSettings = async ( {
+	select,
+	dispatch,
+	propertyID,
+	webDataStreamID,
+	isEnhancedMeasurementEnabled,
+} ) => {
+	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled(
+		propertyID,
+		webDataStreamID,
+		isEnhancedMeasurementEnabled
+	);
+
+	if (
+		select( MODULES_ANALYTICS_4 ).haveEnhancedMeasurementSettingsChanged(
+			propertyID,
+			webDataStreamID
+		)
+	) {
+		const { error } = await dispatch(
+			MODULES_ANALYTICS_4
+		).updateEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+		if ( error ) {
+			return { error };
+		}
+
+		const shouldDismissActivationBanner = select( CORE_FORMS ).getValue(
+			ENHANCED_MEASUREMENT_FORM,
+			ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
+		);
+
+		if ( shouldDismissActivationBanner ) {
+			await dispatch( CORE_USER ).dismissItem(
+				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			);
+		}
+	}
+};
 
 export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
