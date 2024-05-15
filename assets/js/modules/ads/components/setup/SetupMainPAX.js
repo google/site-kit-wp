@@ -112,6 +112,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 	};
 
+	// Callback to be executed when a campaign is created in PAX.
+	//
+	// We use `useCallbackOne` to ensure the function is only created once
+	// and not recreated when React potentially uncaches the callback causing
+	// it to be recreated and trigger the PAX app to re-render.
 	const onCampaignCreated = useCallbackOne( async () => {
 		if ( ! paxAppRef?.current ) {
 			return;
