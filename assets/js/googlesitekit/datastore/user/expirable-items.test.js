@@ -107,7 +107,7 @@ describe( 'core/user expirable-items', () => {
 				expect(
 					registry
 						.select( CORE_USER )
-						.getErrorForAction( 'expirableItems', [ args ] )
+						.getErrorForAction( 'setExpirableItemTimers', [ args ] )
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();

@@ -47,7 +47,7 @@ const fetchGetExpirableItemsStore = createFetchStore( {
 } );
 
 const fetchSetExpirableItemTimersStore = createFetchStore( {
-	baseName: 'expirableItems',
+	baseName: 'setExpirableItemTimers',
 	controlCallback: ( items ) =>
 		API.set( 'core', 'user', 'set-expirable-item-timers', items ),
 	reducerCallback,
@@ -93,7 +93,7 @@ const baseActions = {
 			} );
 		},
 		function ( items ) {
-			return fetchSetExpirableItemTimersStore.actions.fetchExpirableItems(
+			return fetchSetExpirableItemTimersStore.actions.fetchSetExpirableItemTimers(
 				items
 			);
 		}
