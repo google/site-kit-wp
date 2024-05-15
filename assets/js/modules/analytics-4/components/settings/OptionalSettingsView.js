@@ -37,6 +37,9 @@ export default function OptionalSettingsView() {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
+	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
+	);
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getTrackingDisabled() || []
 	);
@@ -74,7 +77,7 @@ export default function OptionalSettingsView() {
 				</div>
 			</div>
 
-			{ useSnippet && (
+			{ useSnippet && ! adsConversionIDMigratedAtMs && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
