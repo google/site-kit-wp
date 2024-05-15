@@ -32,6 +32,14 @@ describe( 'formatPaxDate', () => {
 		}
 	);
 
+	it( 'uses a one-indexed month', () => {
+		const date = formatPaxDate( '2019-01-31' );
+
+		expect( date.year ).toBe( 2019 );
+		expect( date.month ).toBe( 1 );
+		expect( date.day ).toBe( 31 );
+	} );
+
 	it( 'returns a valid date instance for the given date string', () => {
 		const date = formatPaxDate( '2019-10-31' );
 
