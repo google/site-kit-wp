@@ -54,9 +54,9 @@ import { trackEvent } from '../../../util';
 import { SelectionPanelFooter } from '../../SelectionPanel';
 const { useSelect, useDispatch } = Data;
 
-export default function MetricsFooter( {
+export default function Footer( {
 	isOpen,
-	closeFn,
+	closePanel,
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
 } ) {
@@ -160,10 +160,9 @@ export default function MetricsFooter( {
 				// so that the panel is kept open.
 				onNavigationToOAuthURL();
 
-				// Ensure the state is set (the panel is closed), just in case
-				// the user navigates to the OAuth URL before the
-				// function is fully executed.
-				closeFn();
+				// Ensure the panel is closed, just in case the user navigates to
+				// the OAuth URL before the function is fully executed.
+				closePanel();
 
 				setPermissionScopeError( {
 					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
@@ -187,7 +186,7 @@ export default function MetricsFooter( {
 		setValues,
 		hasAnalytics4EditScope,
 		onNavigationToOAuthURL,
-		closeFn,
+		closePanel,
 		setPermissionScopeError,
 		redirectURL,
 	] );
@@ -234,14 +233,14 @@ export default function MetricsFooter( {
 			onSaveSuccess={ onSaveSuccess }
 			onCancel={ onCancel }
 			isOpen={ isOpen }
-			closeFn={ closeFn }
+			closePanel={ closePanel }
 		/>
 	);
 }
 
-MetricsFooter.propTypes = {
+Footer.propTypes = {
 	isOpen: PropTypes.bool,
-	closeFn: PropTypes.func,
+	closePanel: PropTypes.func.isRequired,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
 };

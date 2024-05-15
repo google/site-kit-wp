@@ -39,7 +39,7 @@ import { SelectionPanelHeader } from '../../SelectionPanel';
 import useViewOnly from '../../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
-export default function MetricsHeader( { closeFn } ) {
+export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
 
 	const settingsURL = useSelect( ( select ) =>
@@ -59,7 +59,7 @@ export default function MetricsHeader( { closeFn } ) {
 	return (
 		<SelectionPanelHeader
 			title={ __( 'Select your metrics', 'google-site-kit' ) }
-			onCloseClick={ closeFn }
+			onCloseClick={ closePanel }
 		>
 			{ ! isViewOnly && (
 				<p>
@@ -85,6 +85,6 @@ export default function MetricsHeader( { closeFn } ) {
 	);
 }
 
-MetricsHeader.propTypes = {
-	closeFn: PropTypes.func,
+Header.propTypes = {
+	closePanel: PropTypes.func.isRequired,
 };

@@ -34,8 +34,8 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
 import CustomDimensionsNotice from './CustomDimensionsNotice';
-import MetricsHeader from './MetricsHeader';
-import MetricsFooter from './MetricsFooter';
+import Header from './Header';
+import Footer from './Footer';
 import MetricItems from './MetricItems';
 import SelectionPanel from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
@@ -69,7 +69,7 @@ export default function MetricsSelectionPanel() {
 		trackEvent( `${ viewContext }_kmw-sidebar`, 'metrics_sidebar_view' );
 	}, [ savedViewableMetrics, setValues, viewContext ] );
 
-	const sideSheetCloseFn = useCallback( () => {
+	const closePanel = useCallback( () => {
 		if ( isOpen ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 		}
@@ -82,15 +82,15 @@ export default function MetricsSelectionPanel() {
 		<SelectionPanel
 			isOpen={ isOpen || isNavigatingToOAuthURL }
 			onOpen={ onSideSheetOpen }
-			closeFn={ sideSheetCloseFn }
+			closePanel={ closePanel }
 			className="googlesitekit-km-selection-panel"
 		>
-			<MetricsHeader closeFn={ sideSheetCloseFn } />
+			<Header closePanel={ closePanel } />
 			<MetricItems savedMetrics={ savedViewableMetrics } />
 			<CustomDimensionsNotice />
-			<MetricsFooter
+			<Footer
 				isOpen={ isOpen }
-				closeFn={ sideSheetCloseFn }
+				closePanel={ closePanel }
 				savedMetrics={ savedViewableMetrics }
 				onNavigationToOAuthURL={ () => {
 					setIsNavigatingToOAuthURL( true );
