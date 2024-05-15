@@ -44,22 +44,19 @@ export default function MetricItem( {
 	description,
 	savedItemSlugs = [],
 } ) {
-	const { getModule } = useSelect( ( select ) => select( CORE_MODULES ) );
-	const widget = useSelect( ( select ) => select( CORE_WIDGETS ) ).getWidget(
-		slug
-	);
+	const disconnectedModules = useSelect( ( select ) => {
+		const { getModule } = select( CORE_MODULES );
+		const widget = select( CORE_WIDGETS ).getWidget( slug );
 
-	const disconnectedModules = widget.modules.reduce(
-		( modulesAcc, widgetSlug ) => {
+		return widget?.modules.reduce( ( modulesAcc, widgetSlug ) => {
 			const module = getModule( widgetSlug );
 			if ( module?.connected || ! module?.name ) {
 				return modulesAcc;
 			}
 
 			return [ ...modulesAcc, module.name ];
-		},
-		[]
-	);
+		}, [] );
+	} );
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
