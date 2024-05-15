@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 /**
  * Class for managing Analytics 4 resource data availability date.
  *
- * @since n.e.x.t
+ * @since 1.127.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * List of valid custom dimension slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 * @var array
 	 */
 	const CUSTOM_DIMENSION_SLUGS = array(
@@ -39,7 +39,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 * @var Transients
 	 */
 	protected $transients;
@@ -47,7 +47,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 * @var Module_Settings
 	 */
 	protected $settings;
@@ -55,7 +55,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param Transients      $transients Transients instance.
 	 * @param Module_Settings $settings Module settings instance.
@@ -68,7 +68,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Gets the data availability date for the given resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param string $resource_slug Resource slug.
 	 * @param string $resource_type Resource type.
@@ -81,7 +81,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Sets the data availability date for the given resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param string $resource_slug Resource slug.
 	 * @param string $resource_type Resource type.
@@ -95,7 +95,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Resets the data availability date for the given resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param string $resource_slug Resource slug.
 	 * @param string $resource_type Resource type.
@@ -108,7 +108,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Gets data availability dates for all resources.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @return array Associative array of resource names and their data availability date.
 	 */
@@ -152,7 +152,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Resets the data availability date for all resources.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param array/null  $available_audience_names Optional. List of available audience resource names. If not provided, it will be fetched from settings.
 	 * @param string/null $property_id Optional. Property ID. If not provided, it will be fetched from settings.
@@ -177,7 +177,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Checks whether the given resource type is valid.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param string $resource_type Resource type.
 	 * @return bool True if valid, false otherwise.
@@ -189,7 +189,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Checks whether the given resource slug is valid.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param string $resource_slug Resource slug.
 	 * @param string $resource_type Resource type.
@@ -211,7 +211,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Gets data available date transient name for the given resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param string $resource_slug Resource slug.
 	 * @param string $resource_type Resource type.
@@ -224,7 +224,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Gets available audience resource names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @return array List of available audience resource names.
 	 */
@@ -243,7 +243,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Gets the property ID from settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @return string Property ID.
 	 */

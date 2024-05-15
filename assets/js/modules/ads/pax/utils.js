@@ -24,7 +24,7 @@ import { stringToDate } from '../../../util';
 /**
  * Returns formatted date object.
  *
- * @since n.e.x.t
+ * @since 1.127.0
  *
  * @param {string} dateString Date in 'YYYY-MM-DD' format.
  * @return {Date} Date instance.

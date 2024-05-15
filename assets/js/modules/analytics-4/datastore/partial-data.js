@@ -91,7 +91,7 @@ const baseActions = {
 	/**
 	 * Receives the data availability dates for all resources.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} resourceAvailabilityDates Resource data availability dates.
 	 * @return {Object} Redux-style action.
@@ -111,7 +111,7 @@ const baseActions = {
 	/**
 	 * Sets the data availability date for a specific resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {string} resourceSlug Resource slug.
 	 * @param {string} resourceType Resource type.
@@ -352,7 +352,7 @@ const baseSelectors = {
 	/**
 	 * Gets the data availability date for all resources.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Resource data availability dates. Undefined if not loaded.
@@ -364,7 +364,7 @@ const baseSelectors = {
 	/**
 	 * Gets the data availability date for a specific resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} resourceSlug Resource slug.
@@ -380,7 +380,7 @@ const baseSelectors = {
 	/**
 	 * Gets whether the given resource is in partial data state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} resourceSlug Resource slug.
@@ -437,7 +437,7 @@ const baseSelectors = {
 	/**
 	 * Gets whether the given audience is in partial data state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} audienceSlug Audience slug.
@@ -454,7 +454,7 @@ const baseSelectors = {
 	/**
 	 * Gets whether the given custom dimension is in partial data state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} customDimensionSlug Custom dimension slug.
@@ -471,7 +471,7 @@ const baseSelectors = {
 	/**
 	 * Gets whether the given property is in partial data state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID Property ID.
@@ -488,7 +488,7 @@ const baseSelectors = {
 	/**
 	 * Gets report options for determining data availability date for a given resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} resourceSlug Resource slug.
