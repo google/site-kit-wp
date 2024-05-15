@@ -45,6 +45,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET } from '../../../analytics-4/datastore/constants';
 import { createPaxServices } from '../../pax/services';
 import { useMemoOne } from 'use-memo-one';
+import { formatPaxDate } from '../../pax/utils';
 
 const { useRegistry, useSelect } = Data;
 export default function PAXEmbeddedApp( {
@@ -168,11 +169,13 @@ export default function PAXEmbeddedApp( {
 		if ( displayMode === 'reporting' && paxAppRef?.current ) {
 			const { startDate, endDate } = paxDateRange;
 
-			paxAppRef.current
-				.getServices()
-				.adsDateRangeService.update( { startDate, endDate } );
+			paxAppRef.current.getServices().adsDateRangeService.update( {
+				startDate: formatPaxDate( startDate ),
+				endDate: formatPaxDate( endDate ),
+			} );
 		}
 	}, [
+		paxAppRef?.current,
 		registry,
 		displayMode,
 		`${ paxDateRange?.startDate }|${ paxDateRange?.endDate }`,
