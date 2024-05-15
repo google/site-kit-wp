@@ -92,8 +92,8 @@ const baseActions = {
 				);
 			} );
 		},
-		function* ( items ) {
-			return yield fetchSetExpirableItemTimersStore.actions.fetchExpirableItems(
+		function ( items ) {
+			return fetchSetExpirableItemTimersStore.actions.fetchExpirableItems(
 				items
 			);
 		}
@@ -133,13 +133,13 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if exists, otherwise FALSE, `undefined` if not resolved yet.
 	 */
 	hasExpirableItem: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const items = select( CORE_USER ).getExpirableItems();
+		const expirableItems = select( CORE_USER ).getExpirableItems();
 
-		if ( items ) {
-			return Object.keys( items )?.includes( slug );
+		if ( expirableItems === undefined ) {
+			return undefined;
 		}
 
-		return items;
+		return expirableItems.hasOwnProperty( slug );
 	} ),
 
 	/**
@@ -153,28 +153,19 @@ const baseSelectors = {
 	 */
 	isExpirableItemActive: createRegistrySelector(
 		( select ) => ( state, slug ) => {
-			const itemExists = select( CORE_USER ).hasExpirableItem( slug );
+			const expirableItems = select( CORE_USER ).getExpirableItems();
 
-			if ( itemExists ) {
-				let active = false;
-				const expirableItems = select( CORE_USER ).getExpirableItems();
-
-				Object.keys( expirableItems ).forEach( ( itemSlug ) => {
-					if ( slug === itemSlug ) {
-						const expiresInSeconds = expirableItems[ itemSlug ];
-						// Compare with the current timestamp.
-						if (
-							expiresInSeconds > Math.floor( Date.now() / 1000 )
-						) {
-							active = true;
-						}
-					}
-				} );
-
-				return active;
+			if ( expirableItems === undefined ) {
+				return undefined;
 			}
 
-			return itemExists;
+			const expiresInSeconds = expirableItems[ slug ];
+
+			if ( expiresInSeconds === undefined ) {
+				return false;
+			}
+
+			return expiresInSeconds > Math.floor( Date.now() / 1000 );
 		}
 	),
 };

@@ -37,7 +37,7 @@ class Expirable_Items extends User_Setting {
 	 */
 	public function add( $item, $expires_in_seconds ) {
 		$items          = $this->get();
-		$items[ $item ] = $expires_in_seconds ? time() + $expires_in_seconds : 0;
+		$items[ $item ] = time() + $expires_in_seconds;
 
 		$this->set( $items );
 	}

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Expirables;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Expirables\Expirable_Items;
 use Google\Site_Kit\Core\Expirables\REST_Expirable_Items_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -18,9 +19,12 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Core\Storage\Options;
 
 class REST_Expirable_Items_ControllerTest extends TestCase {
 
+	use Fake_Site_Connection_Trait;
 	use RestTestTrait;
 
 	/**
@@ -37,14 +41,21 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
+	/**
+	 * Context instance.
+	 *
+	 * @var Context
+	 */
+	private $context;
+
 	public function set_up() {
 		parent::set_up();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context               = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options          = new User_Options( $context, $user_id );
+		$this->context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options          = new User_Options( $this->context, $user_id );
 		$this->expirable_items = new Expirable_Items( $user_options );
 		$this->controller      = new REST_Expirable_Items_Controller( $this->expirable_items );
 	}
@@ -70,6 +81,8 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
+		$this->grant_manage_options_permission();
+
 		$this->expirable_items->add( 'foo', 100 );
 		$this->expirable_items->add( 'bar', 100 );
 		$this->expirable_items->add( 'baz', -10 );
@@ -78,16 +91,17 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEqualSets(
-			array( 'foo', 'bar', 'baz' ),
-			array_keys( $data )
-		);
+		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2 );
+		$this->assertEqualsWithDelta( time() + 100, $data['bar'], 2 );
+		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2 );
 	}
 
-	public function test_expirable_item() {
+	public function test_set_expirable_item_timers() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
+
+		$this->grant_manage_options_permission();
 
 		$this->expirable_items->add( 'foo', 100 );
 		$this->expirable_items->add( 'baz', -10 );
@@ -106,9 +120,23 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 
 		$data = rest_get_server()->dispatch( $request )->get_data();
 
-		$this->assertEqualSets(
-			array( 'foo', 'bar', 'baz' ),
-			array_keys( $data )
+		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2 );
+		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2 );
+	}
+
+	private function grant_manage_options_permission() {
+		// Setup SiteKit.
+		$this->fake_proxy_site_connection();
+		// Override any existing filter to make sure the setup is marked as complete all the time.
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+
+		// Verify and authenticate the current user.
+		$authentication = new Authentication( $this->context );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
 		);
 	}
 

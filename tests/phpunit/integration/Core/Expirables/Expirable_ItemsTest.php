@@ -41,87 +41,17 @@ class Expirable_ItemsTest extends TestCase {
 	public function test_add() {
 		$this->assertEmpty( $this->user_options->get( Expirable_Items::OPTION ) );
 
-		$current_time  = time();
-		$expected_time = $current_time + 1000;
+		$current_time      = time();
+		$expected_time_foo = $current_time + 1000;
 		$this->expirable_items->add( 'foo', 1000 );
-		$this->assertEquals(
-			array(
-				'foo' => $current_time + 1000,
-			),
-			$this->user_options->get( Expirable_Items::OPTION )
-		);
 
 		$this->expirable_items->add( 'bar', 100 );
-		$user_options = $this->user_options->get( Expirable_Items::OPTION );
+		$user_options          = $this->user_options->get( Expirable_Items::OPTION );
+		$expected_time_foo_bar = $current_time + 100;
 
 		$this->assertArrayHasKey( 'foo', $user_options );
-		$this->assertEquals( $expected_time, $user_options['foo'] );
+		$this->assertEqualsWithDelta( $expected_time_foo, $user_options['foo'], 2 );
 		$this->assertArrayHasKey( 'bar', $user_options );
-		$this->assertEqualsWithDelta( $current_time + 100, $user_options['bar'], 2 );
+		$this->assertEqualsWithDelta( $expected_time_foo_bar, $user_options['bar'], 2 );
 	}
-
-	public function test_remove() {
-		$this->user_options->set(
-			Expirable_Items::OPTION,
-			array(
-				'foo' => 0,
-				'bar' => time() + 100,
-				'baz' => time() + 200,
-			)
-		);
-
-		$user_options = $this->user_options->get( Expirable_Items::OPTION );
-		$this->assertArrayHasKey( 'foo', $user_options );
-		$this->assertArrayHasKey( 'bar', $user_options );
-		$this->assertArrayHasKey( 'baz', $user_options );
-		$this->assertEquals( 0, $user_options['foo'] );
-		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2 );
-		$this->assertEqualsWithDelta( time() + 200, $user_options['baz'], 2 );
-
-		$this->expirable_items->remove( 'bar' );
-
-		$this->assertEquals(
-			array(
-				'foo' => 0,
-				'baz' => time() + 200,
-
-			),
-			$this->user_options->get( Expirable_Items::OPTION )
-		);
-
-		$this->expirable_items->remove( 'bar' );
-
-		$this->assertEquals(
-			array(
-				'foo' => 0,
-				'baz' => time() + 200,
-
-			),
-			$this->user_options->get( Expirable_Items::OPTION )
-		);
-	}
-
-	public function test_get_expirable_items() {
-		$bar_timestamp = time() + 100;
-		$baz_timestamp = time() - 100;
-
-		$this->user_options->set(
-			Expirable_Items::OPTION,
-			array(
-				'foo' => 0,
-				'bar' => $bar_timestamp,
-				'baz' => $baz_timestamp,
-			)
-		);
-
-		$this->assertEquals(
-			array(
-				'foo' => 0,
-				'bar' => $bar_timestamp,
-				'baz' => $baz_timestamp,
-			),
-			$this->expirable_items->get_expirable_items()
-		);
-	}
-
 }

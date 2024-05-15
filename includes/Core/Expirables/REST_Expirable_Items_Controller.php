@@ -82,7 +82,7 @@ class REST_Expirable_Items_Controller {
 	 */
 	protected function get_rest_routes() {
 		$can_manage_expirable_item = function() {
-			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
+			return current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
 		return array(
@@ -91,7 +91,7 @@ class REST_Expirable_Items_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => function () {
-						return new WP_REST_Response( $this->expirable_items->get_expirable_items() );
+						return new WP_REST_Response( $this->expirable_items->get() );
 					},
 					'permission_callback' => $can_manage_expirable_item,
 				)
@@ -139,23 +139,24 @@ class REST_Expirable_Items_Controller {
 							$this->expirable_items->add( $datum['slug'], $expiration );
 						}
 
-						return new WP_REST_Response( $this->expirable_items->get_expirable_items() );
+						return new WP_REST_Response( $this->expirable_items->get() );
 					},
 					'permission_callback' => $can_manage_expirable_item,
 					'args'                => array(
 						'data' => array(
-							'type'         => 'array',
-							'required'     => true,
-							'show_in_rest' => array(
-								'schema' => array(
-									'type'       => 'object',
-									'properties' => array(
-										'slug'       => array(
-											'type' => 'string',
-										),
-										'expiration' => array(
-											'type' => 'integer',
-										),
+							'type'     => 'array',
+							'required' => true,
+							'items'    => array(
+								'type'                 => 'object',
+								'additionalProperties' => false,
+								'properties'           => array(
+									'slug'       => array(
+										'type'     => 'string',
+										'required' => true,
+									),
+									'expiration' => array(
+										'type'     => 'integer',
+										'required' => true,
 									),
 								),
 							),

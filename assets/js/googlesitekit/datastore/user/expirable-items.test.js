@@ -43,7 +43,7 @@ describe( 'core/user expirable-items', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'expirableItem', () => {
+		describe( 'setExpirableItemTimers', () => {
 			it( 'should save settings and return new expirable items', async () => {
 				fetchMock.postOnce( fetchExpirableItem, {
 					body: [ { foo: 1000 }, { bar: 2000 }, { baz: 700 } ],
@@ -117,7 +117,7 @@ describe( 'core/user expirable-items', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getExpirableItems', () => {
-			it( 'should return undefined util resolved', async () => {
+			it( 'should return undefined until resolved', async () => {
 				muteFetch( fetchGetExpiredItems, [] );
 				expect(
 					registry.select( CORE_USER ).getExpirableItems()
@@ -185,12 +185,12 @@ describe( 'core/user expirable-items', () => {
 			} );
 		} );
 
-		it( 'should return TRUE if the item is expirable', () => {
-			const ts = Math.floor( Date.now() / 1000 );
+		it( 'should return TRUE if the item has not expired', () => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
-				foo: ts + 100,
-				bar: ts + 100,
+				foo: currentTimeInSeconds + 100,
+				bar: currentTimeInSeconds - 100,
 			} );
 
 			const isItemActive = registry
@@ -200,12 +200,27 @@ describe( 'core/user expirable-items', () => {
 			expect( isItemActive ).toBe( true );
 		} );
 
-		it( 'should return FALSE if the item is not in expirables', () => {
-			const ts = Math.floor( Date.now() / 1000 );
+		it( 'should return FALSE if the item has expired', () => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
-				foo: ts - 100,
-				bar: ts - 100,
+				foo: currentTimeInSeconds + 100,
+				bar: currentTimeInSeconds - 100,
+			} );
+
+			const isItemActive = registry
+				.select( CORE_USER )
+				.isExpirableItemActive( 'bar' );
+
+			expect( isItemActive ).toBe( false );
+		} );
+
+		it( 'should return FALSE if the item is not in expirables', () => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+				foo: currentTimeInSeconds - 100,
+				bar: currentTimeInSeconds - 100,
 			} );
 
 			const isItemActive = registry
@@ -218,11 +233,11 @@ describe( 'core/user expirable-items', () => {
 
 	describe( 'hasExpirableItem', () => {
 		it( 'should return TRUE if the item is not in expirables', () => {
-			const ts = Math.floor( Date.now() / 1000 );
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
-				foo: ts + 100,
-				bar: ts + 100,
+				foo: currentTimeInSeconds + 100,
+				bar: currentTimeInSeconds + 100,
 			} );
 
 			const itemExists = registry
@@ -233,11 +248,11 @@ describe( 'core/user expirable-items', () => {
 		} );
 
 		it( 'should return FALSE if the item is not in expirables', () => {
-			const ts = Math.floor( Date.now() / 1000 );
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
-				foo: ts - 100,
-				bar: ts - 100,
+				foo: currentTimeInSeconds - 100,
+				bar: currentTimeInSeconds - 100,
 			} );
 
 			const itemExists = registry
