@@ -34,8 +34,10 @@ export function formatPaxDate( dateString ) {
 
 	return {
 		year: dateObject.getFullYear(),
-		// PAX is expecting 1-index number, `stringToDate()` will convert it
-		// to the 0-index so we need to revert it here.
+		// PAX uses a 1-indexed month value (to match the month string value).
+		//
+		// Our `stringToDate()` function returns 0-indexed month values,
+		// so we need to adjust the values for PAX.
 		month: dateObject.getMonth() + 1,
 		day: dateObject.getDate(),
 	};
