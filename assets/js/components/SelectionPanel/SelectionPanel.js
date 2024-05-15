@@ -31,7 +31,7 @@ export default function SelectionPanel( {
 	children,
 	isOpen,
 	onOpen,
-	closeFn,
+	closePanel,
 	className,
 } ) {
 	return (
@@ -42,7 +42,7 @@ export default function SelectionPanel( {
 			) }
 			isOpen={ isOpen }
 			onOpen={ onOpen }
-			closeFn={ closeFn }
+			closeSheet={ closePanel }
 			focusTrapOptions={ {
 				initialFocus:
 					'.googlesitekit-selection-panel-item .googlesitekit-selection-box input',
@@ -57,6 +57,6 @@ SelectionPanel.propTypes = {
 	children: PropTypes.node,
 	isOpen: PropTypes.bool,
 	onOpen: PropTypes.func,
-	closeFn: PropTypes.func,
+	closePanel: PropTypes.func,
 	className: PropTypes.string,
 };

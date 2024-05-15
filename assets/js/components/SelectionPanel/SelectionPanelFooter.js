@@ -51,9 +51,9 @@ export default function SelectionPanelFooter( {
 	maxSelectedItemCount = 0,
 	isBusy,
 	onSaveSuccess,
-	onCancel,
+	onCancel = () => {},
 	isOpen,
-	closeFn,
+	closePanel = () => {},
 } ) {
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
 	const [ wasSaved, setWasSaved ] = useState( false );
@@ -78,7 +78,7 @@ export default function SelectionPanelFooter( {
 			onSaveSuccess();
 
 			// Close the panel after saving.
-			closeFn();
+			closePanel();
 
 			// Lock the button label while panel is closing.
 			setFinalButtonText( currentButtonText );
@@ -88,14 +88,14 @@ export default function SelectionPanelFooter( {
 		saveSettings,
 		selectedItemSlugs,
 		onSaveSuccess,
-		closeFn,
+		closePanel,
 		currentButtonText,
 	] );
 
 	const onCancelClick = useCallback( () => {
-		closeFn();
+		closePanel();
 		onCancel();
-	}, [ closeFn, onCancel ] );
+	}, [ closePanel, onCancel ] );
 
 	const [ prevIsOpen, setPrevIsOpen ] = useState( null );
 
@@ -190,5 +190,5 @@ SelectionPanelFooter.propTypes = {
 	onSaveSuccess: PropTypes.func,
 	onCancel: PropTypes.func,
 	isOpen: PropTypes.bool,
-	closeFn: PropTypes.func,
+	closePanel: PropTypes.func,
 };
