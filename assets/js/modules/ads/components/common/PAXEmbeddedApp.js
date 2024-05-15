@@ -39,13 +39,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import CTA from '../../../components/notifications/CTA';
-import PreviewBlock from '../../../components/PreviewBlock';
-import { createPaxServices } from '../pax/services';
-import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
-const { useRegistry, useSelect } = Data;
+import PreviewBlock from '../../../../components/PreviewBlock';
+import CTA from '../../../../components/notifications/CTA';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '../../../analytics-4/datastore/constants';
+import { createPaxServices } from '../../pax/services';
+import { useMemoOne } from 'use-memo-one';
 
+const { useRegistry, useSelect } = Data;
 export default function PAXEmbeddedApp( {
 	displayMode = 'default',
 	onLaunch,
@@ -83,9 +84,11 @@ export default function PAXEmbeddedApp( {
 
 	const paxAppRef = useRef();
 
-	const elementID = `googlesitekit-pax-embedded-app-${ instanceID }`;
+	const elementID = useMemoOne( () => {
+		return `googlesitekit-pax-embedded-app-${ instanceID }`;
+	}, [ instanceID ] );
 
-	const paxConfig = useMemo( () => {
+	const paxConfig = useMemoOne( () => {
 		return {
 			...( global?._googlesitekitPAXConfig || {} ),
 			clientConfig: {
@@ -103,6 +106,12 @@ export default function PAXEmbeddedApp( {
 	}, [ elementID, displayMode ] );
 
 	const launchPAXApp = useCallback( async () => {
+		if ( hasLaunchedPAXApp || paxAppRef.current ) {
+			return;
+		}
+
+		setHasLaunchedPAXApp( true );
+
 		try {
 			paxAppRef.current =
 				await global.google.ads.integration.integrator.launchGoogleAds(
@@ -120,7 +129,7 @@ export default function PAXEmbeddedApp( {
 		}
 
 		setIsLoading( false );
-	}, [ paxConfig, paxServices, onLaunch ] );
+	}, [ hasLaunchedPAXApp, paxConfig, paxServices, onLaunch ] );
 
 	useInterval(
 		() => {
@@ -142,9 +151,7 @@ export default function PAXEmbeddedApp( {
 	);
 
 	useEffect( () => {
-		if ( launchGoogleAdsAvailable && ! hasLaunchedPAXApp ) {
-			setHasLaunchedPAXApp( true );
-
+		if ( launchGoogleAdsAvailable ) {
 			launchPAXApp();
 		}
 	}, [
