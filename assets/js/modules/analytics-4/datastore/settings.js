@@ -140,16 +140,32 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Only make the API request to enable the Enhanced Measurement setting, not to disable it.
 		if ( isEnhancedMeasurementEnabled ) {
-			await updateEnhancedMeasurementSettings( {
+			const { error } = await updateEnhancedMeasurementSettings( {
 				select,
 				dispatch,
 				propertyID,
 				webDataStreamID,
 				isEnhancedMeasurementEnabled,
 			} );
+
+			if ( error ) {
+				return { error };
+			}
 		}
 	}
 
+	const { error } = await saveSettings( select, dispatch );
+
+	if ( error ) {
+		return error;
+	}
+
+	await API.invalidateCache( 'modules', 'analytics-4' );
+
+	return {};
+}
+
+const saveSettings = async ( select, dispatch ) => {
 	const haveSettingsChanged =
 		select( MODULES_ANALYTICS_4 ).haveSettingsChanged();
 	const haveConversionTrackingSettingsChanged =
@@ -186,10 +202,8 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'analytics-4' );
-
 	return {};
-}
+};
 
 const updateEnhancedMeasurementSettings = async ( {
 	select,
@@ -229,6 +243,8 @@ const updateEnhancedMeasurementSettings = async ( {
 			);
 		}
 	}
+
+	return {};
 };
 
 export function rollbackChanges( { select, dispatch } ) {
