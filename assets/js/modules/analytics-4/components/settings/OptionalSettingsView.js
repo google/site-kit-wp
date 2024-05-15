@@ -77,22 +77,26 @@ export default function OptionalSettingsView() {
 				</div>
 			</div>
 
-			{ useSnippet && ! adsConversionIDMigratedAtMs && (
-				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ !! adsConversionID && (
-								<DisplaySetting value={ adsConversionID } />
-							) }
-							{ ! adsConversionID &&
-								__( 'None', 'google-site-kit' ) }
-						</p>
+			{ /* Prevent the Ads Conversion ID setting displaying after this field has been
+				 migrated to the Ads module, even after resetting the Analytics module. */ }
+			{ useSnippet &&
+				! adsConversionIDMigratedAtMs &&
+				!! adsConversionID && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Ads Conversion ID', 'google-site-kit' ) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ !! adsConversionID && (
+									<DisplaySetting value={ adsConversionID } />
+								) }
+								{ ! adsConversionID &&
+									__( 'None', 'google-site-kit' ) }
+							</p>
+						</div>
 					</div>
-				</div>
-			) }
+				) }
 
 			<AdsConversionIDSettingsNotice />
 		</Fragment>
