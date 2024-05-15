@@ -69,7 +69,7 @@ export default function PAXEmbeddedApp( {
 
 	const paxDateRange = useSelect( ( select ) => {
 		if ( displayMode !== 'reporting' ) {
-			return {};
+			return null;
 		}
 
 		return select( CORE_USER ).getDateRangeDates( {
@@ -106,6 +106,20 @@ export default function PAXEmbeddedApp( {
 		};
 	}, [ elementID, displayMode ] );
 
+	const setDateRangeForReportingMode = useCallback( () => {
+		if (
+			displayMode === 'reporting' &&
+			paxAppRef?.current &&
+			paxDateRange.startDate &&
+			paxDateRange.endDate
+		) {
+			paxAppRef.current.getServices().adsDateRangeService.update( {
+				startDate: formatPaxDate( paxDateRange.startDate ),
+				endDate: formatPaxDate( paxDateRange.endDate ),
+			} );
+		}
+	}, [ displayMode, paxDateRange.endDate, paxDateRange.startDate ] );
+
 	const launchPAXApp = useCallback( async () => {
 		if ( hasLaunchedPAXApp || paxAppRef.current ) {
 			return;
@@ -120,6 +134,8 @@ export default function PAXEmbeddedApp( {
 					paxServices
 				);
 
+			setDateRangeForReportingMode();
+
 			onLaunch?.( paxAppRef.current );
 		} catch ( error ) {
 			setLaunchError( error );
@@ -130,7 +146,13 @@ export default function PAXEmbeddedApp( {
 		}
 
 		setIsLoading( false );
-	}, [ hasLaunchedPAXApp, paxConfig, paxServices, onLaunch ] );
+	}, [
+		hasLaunchedPAXApp,
+		paxConfig,
+		paxServices,
+		setDateRangeForReportingMode,
+		onLaunch,
+	] );
 
 	useInterval(
 		() => {
@@ -162,25 +184,18 @@ export default function PAXEmbeddedApp( {
 		launchPAXApp,
 	] );
 
-	/* eslint-disable react-hooks/exhaustive-deps */
-	// Rule disabled for compiled `paxDateRange` properties, instead of using the main object
-	// to ensure effect runs every time dates are changed.
 	useEffect( () => {
-		if ( displayMode === 'reporting' && paxAppRef?.current ) {
-			const { startDate, endDate } = paxDateRange;
-
-			paxAppRef.current.getServices().adsDateRangeService.update( {
-				startDate: formatPaxDate( startDate ),
-				endDate: formatPaxDate( endDate ),
-			} );
-		}
+		setDateRangeForReportingMode();
 	}, [
-		paxAppRef?.current,
-		registry,
-		displayMode,
-		`${ paxDateRange?.startDate }|${ paxDateRange?.endDate }`,
+		setDateRangeForReportingMode,
+		// `setDateRangeForReportingMode` will change whenever the date range
+		// updates, causing this effect to run again, so the two date range
+		// dependencies are technically redundant, but are explicitly listed
+		// here to make the intent of the code clearer. (They're harmless
+		// to include and do not cause extra renders/requests.)
+		paxDateRange.startDate,
+		paxDateRange.endDate,
 	] );
-	/* eslint-enable react-hooks/exhaustive-deps */
 
 	return (
 		<div className="googlesitekit-pax-embedded-app">
