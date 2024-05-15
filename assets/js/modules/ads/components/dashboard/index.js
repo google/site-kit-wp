@@ -1,5 +1,5 @@
 /**
- * Ads module entrypoint.
+ * Ads Dashboard components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,14 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import { registerStore, registerModule, registerWidgets } from './modules/ads';
-
-registerStore( Data );
-registerModule( Modules );
-registerWidgets( Widgets );
+export { default as PartnerAdsPAXWidget } from './PartnerAdsPAXWidget';

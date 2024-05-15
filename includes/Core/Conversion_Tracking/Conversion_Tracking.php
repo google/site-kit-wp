@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMaker;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
 use LogicException;
@@ -61,6 +62,7 @@ class Conversion_Tracking {
 		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
 		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG      => Mailchimp::class,
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
+		PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG     => PopupMaker::class,
 		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG    => WooCommerce::class,
 		WPForms::CONVERSION_EVENT_PROVIDER_SLUG        => WPForms::class,
 	);
