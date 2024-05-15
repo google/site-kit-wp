@@ -217,7 +217,6 @@ describe( 'PAX partner services', () => {
 						const partnerDateRange =
 							await services.partnerDateRangeService.get();
 
-						/* eslint-disable sitekit/acronym-case */
 						expect( partnerDateRange.startDate ).toEqual( {
 							day: 11,
 							month: 8,
@@ -228,7 +227,6 @@ describe( 'PAX partner services', () => {
 							month: 9,
 							year: 2020,
 						} );
-						/* eslint-enable sitekit/acronym-case */
 					} );
 				} );
 			} );
