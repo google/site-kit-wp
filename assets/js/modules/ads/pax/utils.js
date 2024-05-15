@@ -1,5 +1,5 @@
 /**
- * PAX util functions.
+ * PAX utility functions.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
