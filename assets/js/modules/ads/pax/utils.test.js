@@ -36,7 +36,7 @@ describe( 'formatPaxDate', () => {
 		const date = formatPaxDate( '2019-10-31' );
 
 		expect( date.year ).toBe( 2019 );
-		expect( date.month ).toBe( 10 ); // 1-imdex based month
+		expect( date.month ).toBe( 10 ); // 1-index based month
 		expect( date.day ).toBe( 31 );
 	} );
 } );
