@@ -73,8 +73,8 @@ describe( 'PAX partner services', () => {
 							},
 						},
 					};
-					services = createPaxServices( registry, null, {
-						_googlesitekitPAXConfig,
+					services = createPaxServices( registry, {
+						_global: { _googlesitekitPAXConfig },
 					} );
 
 					const authAccess =
@@ -199,7 +199,7 @@ describe( 'PAX partner services', () => {
 						const mockOnCampaignCreated = jest.fn();
 						const servicesWithCampaign = createPaxServices(
 							registry,
-							mockOnCampaignCreated
+							{ onCampaignCreated: mockOnCampaignCreated }
 						);
 
 						await servicesWithCampaign.campaignService.notifyNewCampaignCreated();

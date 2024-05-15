@@ -47,18 +47,17 @@ const restFetchWpPages = async () => {
  * Returns PAX services.
  *
  * @since 1.126.0
- * @since n.e.x.t Added onCampaignCreated parameter.
+ * @since n.e.x.t Added options parameter.
  *
- * @param {Object} registry          Registry object to dispatch to.
- * @param {Object} onCampaignCreated Optional. Callback function that will be called when campaign is created.
- * @param {Object} _global           The global window object.
+ * @param {Object}   registry                  Registry object to dispatch to.
+ * @param {Object}   options                   Optional. Additional options.
+ * @param {Function} options.onCampaignCreated Callback function that will be called when campaign is created.
+ * @param {Object}   options._global           The global window object.
  * @return {Object} An object containing various service interfaces.
  */
-export function createPaxServices(
-	registry,
-	onCampaignCreated,
-	_global = global
-) {
+export function createPaxServices( registry, options = {} ) {
+	const { onCampaignCreated = null, _global = global } = options;
+
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
 	const accessToken =
 		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;

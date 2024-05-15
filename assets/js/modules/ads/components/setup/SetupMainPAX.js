@@ -95,7 +95,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 		useDispatch( MODULES_ADS );
 
 	useMount( () => {
-		if ( PAX_SETUP_ENUM.PAX_SETUP_FINISHED === +showPaxApp ) {
+		if (
+			PAX_SETUP_ENUM.PAX_SETUP_FINISHED === parseInt( showPaxApp, 10 )
+		) {
 			// If setup finished query param is present in the URL on the load
 			// set the step back to the PAX launch, as values are only temporarly
 			// saved in state after PAX campaign setup signal is received.
@@ -168,7 +170,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 			<AdBlockerWarning />
 
 			{ ! isAdBlockerActive &&
-				PAX_SETUP_ENUM.PAX_SETUP_FINISHED === +showPaxApp && (
+				PAX_SETUP_ENUM.PAX_SETUP_FINISHED ===
+					parseInt( showPaxApp, 10 ) && (
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton
 							isSaving={ isNavigatingToOAuthURL }
@@ -184,7 +187,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 					</div>
 				) }
 			{ ! isAdBlockerActive &&
-				PAX_SETUP_ENUM.PAX_SETUP_LAUNCH === +showPaxApp &&
+				PAX_SETUP_ENUM.PAX_SETUP_LAUNCH ===
+					parseInt( showPaxApp, 10 ) &&
 				hasAdwordsScope && (
 					<Fragment>
 						<PAXEmbeddedApp

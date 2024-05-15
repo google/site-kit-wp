@@ -62,7 +62,7 @@ export default function PAXEmbeddedApp( {
 	const registry = useRegistry();
 
 	const paxServices = useMemo( () => {
-		return createPaxServices( registry, onCampaignCreated );
+		return createPaxServices( registry, { onCampaignCreated } );
 	}, [ registry, onCampaignCreated ] );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
