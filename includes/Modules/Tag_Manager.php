@@ -594,7 +594,7 @@ final class Tag_Manager extends Module
 		try {
 			$containers = $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$account_id}" );
 		} catch ( Exception $e ) {
-			if ( $e->getCode() === 403 ) {
+			if ( $e->getCode() === 404 ) {
 				return false;
 			}
 			return $this->exception_to_error( $e );

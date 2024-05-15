@@ -51,7 +51,7 @@ import {
 	PAX_SETUP_STEP,
 } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import PAXEmbeddedApp from '../PAXEmbeddedApp';
+import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 const { useSelect, useDispatch } = Data;
 
 const PARAM_SHOW_PAX = 'pax';

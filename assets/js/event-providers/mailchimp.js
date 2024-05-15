@@ -1,6 +1,4 @@
 /**
- * Ads module entrypoint.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import { registerStore, registerModule, registerWidgets } from './modules/ads';
+( ( mc4wp ) => {
+	if ( ! mc4wp ) {
+		return;
+	}
 
-registerStore( Data );
-registerModule( Modules );
-registerWidgets( Widgets );
+	mc4wp.forms.on( 'subscribed', () => {
+		global.gtag( 'event', 'submit_lead_form', {
+			event_category: 'mailchimp',
+		} );
+	} );
+} )( global.mc4wp );
