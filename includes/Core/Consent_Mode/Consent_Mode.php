@@ -84,6 +84,8 @@ class Consent_Mode {
 				return $consent_mode_enabled ? 'enabled' : 'disabled';
 			}
 		);
+
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
 	}
 
 	/**
@@ -111,7 +113,7 @@ class Consent_Mode {
 				// TODO: The value for `region` should be retrieved from $this->consent_mode_settings->get_regions(),
 				// but we'll need to migrate/clean up the incorrect values that were set from the initial release.
 				// See https://github.com/google/site-kit-wp/issues/8444.
-				'region'             => Regions::EU_USER_CONSENT_POLICY,
+				'region'             => Regions::get_regions(),
 				'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
 			)
 		);
@@ -198,5 +200,19 @@ window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_ca
 </script>
 <!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php
+	}
+
+	/**
+	 * Extends base data with a static list of consent mode regions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Inline base data.
+	 * @return array Filtered $data.
+	 */
+	protected function inline_js_base_data( $data ) {
+		$data['consentModeRegions'] = Regions::get_regions();
+
+		return $data;
 	}
 }

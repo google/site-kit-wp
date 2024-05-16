@@ -47,7 +47,7 @@ class Consent_Mode_Settings extends Setting {
 	protected function get_default() {
 		return array(
 			'enabled' => false,
-			'regions' => Regions::EU_USER_CONSENT_POLICY,
+			'regions' => Regions::get_regions(),
 		);
 	}
 
