@@ -70,7 +70,7 @@ export default function PAXEmbeddedApp( {
 
 	const paxDateRange = useSelect( ( select ) => {
 		if ( displayMode !== 'reporting' ) {
-			return null;
+			return {};
 		}
 
 		return select( CORE_USER ).getDateRangeDates( {
