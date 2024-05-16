@@ -106,12 +106,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 	} );
 
-	const onLaunch = ( app ) => {
-		if ( ! paxAppRef.current ) {
-			paxAppRef.current = app;
-		}
-	};
-
 	// Callback to be executed when a campaign is created in PAX.
 	//
 	// We use `useCallbackOne` to ensure the function is only created once
@@ -197,7 +191,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 					<Fragment>
 						<PAXEmbeddedApp
 							displayMode="setup"
-							onLaunch={ onLaunch }
+							onLaunch={ ( app ) => {
+								paxAppRef.current = app;
+							} }
 							onCampaignCreated={ onCampaignCreated }
 						/>
 					</Fragment>
