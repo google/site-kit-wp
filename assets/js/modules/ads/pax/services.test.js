@@ -78,7 +78,7 @@ describe( 'PAX partner services', () => {
 						},
 					};
 					services = createPaxServices( registry, {
-						_googlesitekitPAXConfig,
+						_global: { _googlesitekitPAXConfig },
 					} );
 
 					const authAccess =
@@ -195,6 +195,28 @@ describe( 'PAX partner services', () => {
 							path: '/foo/bar-page',
 						},
 					] );
+				} );
+			} );
+			describe( 'campaignService', () => {
+				describe( 'notifyNewCampaignCreated', () => {
+					it( 'should return a callback function', async () => {
+						const mockOnCampaignCreated = jest.fn();
+						const servicesWithCampaign = createPaxServices(
+							registry,
+							{ onCampaignCreated: mockOnCampaignCreated }
+						);
+
+						await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
+
+						expect( servicesWithCampaign ).toEqual(
+							expect.objectContaining( {
+								campaignService: expect.objectContaining( {
+									notifyNewCampaignCreated:
+										mockOnCampaignCreated,
+								} ),
+							} )
+						);
+					} );
 				} );
 			} );
 
