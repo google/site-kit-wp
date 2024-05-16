@@ -165,53 +165,39 @@ export async function submitChanges( { select, dispatch } ) {
 	return {};
 }
 
-const saveSettings = async ( select, dispatch ) => {
+async function saveSettings( select, dispatch ) {
 	const haveSettingsChanged =
 		select( MODULES_ANALYTICS_4 ).haveSettingsChanged();
+
+	if ( haveSettingsChanged ) {
+		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+		if ( error ) {
+			return { error };
+		}
+	}
+
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+	if ( haveConversionTrackingSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveConversionTrackingSettings();
 
-	if ( haveSettingsChanged || haveConversionTrackingSettingsChanged ) {
-		// Since conversion tracking settings are module agnostic we need to check
-		// if conversion tracking can be updated individually, or together with GA4 settings.
-		if ( haveSettingsChanged ) {
-			const { error } = await dispatch(
-				MODULES_ANALYTICS_4
-			).saveSettings();
-			if ( error ) {
-				return { error };
-			}
-
-			if ( haveConversionTrackingSettingsChanged ) {
-				const { error: conversionTrackingError } = await dispatch(
-					CORE_SITE
-				).saveConversionTrackingSettings();
-
-				if ( conversionTrackingError ) {
-					return { conversionTrackingError };
-				}
-			}
-		} else if ( haveConversionTrackingSettingsChanged ) {
-			const { error } = await dispatch(
-				CORE_SITE
-			).saveConversionTrackingSettings();
-
-			if ( error ) {
-				return { error };
-			}
+		if ( error ) {
+			return { error };
 		}
 	}
 
 	return {};
-};
+}
 
-const updateEnhancedMeasurementSettings = async ( {
+async function updateEnhancedMeasurementSettings( {
 	select,
 	dispatch,
 	propertyID,
 	webDataStreamID,
 	isEnhancedMeasurementEnabled,
-} ) => {
+} ) {
 	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled(
 		propertyID,
 		webDataStreamID,
@@ -245,7 +231,7 @@ const updateEnhancedMeasurementSettings = async ( {
 	}
 
 	return {};
-};
+}
 
 export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {

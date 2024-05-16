@@ -90,28 +90,6 @@ describe( 'core/site Conversion Tracking', () => {
 				expect( response ).toEqual( updatedSettings );
 			} );
 
-			it( 'sets isDoingSaveSettings', () => {
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetConversionTrackingSettings( {
-						enabled: false,
-					} );
-
-				fetchMock.postOnce( conversionTrackingSettingsEndpointRegExp, {
-					body: { enabled: true },
-					status: 200,
-				} );
-
-				registry
-					.dispatch( CORE_SITE )
-					.saveConversionTrackingSettings( {} );
-				expect(
-					registry
-						.select( CORE_SITE )
-						.isDoingSaveConversionTrackingSettings()
-				).toEqual( true );
-			} );
-
 			it( 'returns an error if the request fails', async () => {
 				const errorResponse = {
 					code: 'internal_server_error',

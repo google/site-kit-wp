@@ -149,24 +149,6 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Indicates whether saving the settings is currently in progress.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} True if the settings are being saved, false otherwise.
-	 */
-	isDoingSaveConversionTrackingSettings( state ) {
-		// Since isFetchingSaveSettings (via createFetchStore)
-		// holds information based on specific values but we only need
-		// generic information here, we need to check whether ANY such
-		// request is in progress.
-		return Object.values(
-			state.isFetchingSaveConversionTrackingSettings
-		).some( Boolean );
-	},
-
-	/**
 	 * Indicates whether the current settings have changed from what is saved.
 	 *
 	 * @since n.e.x.t

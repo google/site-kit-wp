@@ -40,37 +40,25 @@ export const INVARIANT_INVALID_CONVERSION_ID =
 
 export async function submitChanges( { select, dispatch } ) {
 	const haveSettingsChanged = select( MODULES_ADS ).haveSettingsChanged();
-	const haveConversionTrackingSettingsChanged =
-		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
 
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( haveSettingsChanged || haveConversionTrackingSettingsChanged ) {
-		// Since conversion tracking settings are module agnostic we need to check
-		// if conversion tracking can be updated individually, or together with Ads settings.
-		if ( haveSettingsChanged ) {
-			const { error } = await dispatch( MODULES_ADS ).saveSettings();
-			if ( error ) {
-				return { error };
-			}
+	if ( haveSettingsChanged ) {
+		const { error } = await dispatch( MODULES_ADS ).saveSettings();
+		if ( error ) {
+			return { error };
+		}
+	}
 
-			if ( haveConversionTrackingSettingsChanged ) {
-				const { error: conversionTrackingError } = await dispatch(
-					CORE_SITE
-				).saveConversionTrackingSettings();
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+	if ( haveConversionTrackingSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveConversionTrackingSettings();
 
-				if ( conversionTrackingError ) {
-					return { conversionTrackingError };
-				}
-			}
-		} else if ( haveConversionTrackingSettingsChanged ) {
-			const { error } = await dispatch(
-				CORE_SITE
-			).saveConversionTrackingSettings();
-
-			if ( error ) {
-				return { error };
-			}
+		if ( error ) {
+			return { error };
 		}
 	}
 
