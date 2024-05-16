@@ -623,7 +623,7 @@ class Debug_Data {
 	 * Gets the conversion event names registered by the currently supported
 	 * active plugins.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @return array
 	 */

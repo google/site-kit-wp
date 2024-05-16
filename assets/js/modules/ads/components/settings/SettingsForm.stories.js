@@ -95,5 +95,4 @@ export default {
 			);
 		},
 	],
-	features: [ 'adsModule' ],
 };

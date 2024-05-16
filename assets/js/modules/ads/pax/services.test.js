@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADS } from '../datastore/constants';
 import { createPaxServices } from './services';
 
@@ -54,6 +55,9 @@ describe( 'PAX partner services', () => {
 				termsAndConditionsService: {
 					notify: expect.any( Function ),
 				},
+				partnerDateRangeService: expect.objectContaining( {
+					get: expect.any( Function ),
+				} ),
 			} );
 		} );
 
@@ -74,7 +78,7 @@ describe( 'PAX partner services', () => {
 						},
 					};
 					services = createPaxServices( registry, {
-						_googlesitekitPAXConfig,
+						_global: { _googlesitekitPAXConfig },
 					} );
 
 					const authAccess =
@@ -191,6 +195,62 @@ describe( 'PAX partner services', () => {
 							path: '/foo/bar-page',
 						},
 					] );
+				} );
+			} );
+			describe( 'campaignService', () => {
+				describe( 'notifyNewCampaignCreated', () => {
+					it( 'should return a callback function', async () => {
+						const mockOnCampaignCreated = jest.fn();
+						const servicesWithCampaign = createPaxServices(
+							registry,
+							{ onCampaignCreated: mockOnCampaignCreated }
+						);
+
+						await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
+
+						expect( servicesWithCampaign ).toEqual(
+							expect.objectContaining( {
+								campaignService: expect.objectContaining( {
+									notifyNewCampaignCreated:
+										mockOnCampaignCreated,
+								} ),
+							} )
+						);
+					} );
+				} );
+			} );
+
+			describe( 'partnerDateRangeService', () => {
+				describe( 'get', () => {
+					it( 'should contain startDate and endDate properties', async () => {
+						const partnerDateRange =
+							await services.partnerDateRangeService.get();
+
+						expect( partnerDateRange ).toHaveProperty(
+							'startDate'
+						);
+						expect( partnerDateRange ).toHaveProperty( 'endDate' );
+					} );
+
+					it( 'should contain correct accessToken', async () => {
+						registry
+							.dispatch( CORE_USER )
+							.setReferenceDate( '2020-09-08' );
+
+						const partnerDateRange =
+							await services.partnerDateRangeService.get();
+
+						expect( partnerDateRange.startDate ).toEqual( {
+							day: 11,
+							month: 8,
+							year: 2020,
+						} );
+						expect( partnerDateRange.endDate ).toEqual( {
+							day: 7,
+							month: 9,
+							year: 2020,
+						} );
+					} );
 				} );
 			} );
 		} );

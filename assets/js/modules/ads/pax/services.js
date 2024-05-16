@@ -26,6 +26,9 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../datastore/constants';
+import { formatPaxDate } from './utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
 
 const restFetchWpPages = async () => {
 	try {
@@ -47,18 +50,31 @@ const restFetchWpPages = async () => {
  * Returns PAX services.
  *
  * @since 1.126.0
+ * @since n.e.x.t Added options parameter.
  *
- * @param {Object} registry Registry object to dispatch to.
- * @param {Object} _global  The global window object.
+ * @param {Object}   registry                  Registry object to dispatch to.
+ * @param {Object}   options                   Optional. Additional options.
+ * @param {Function} options.onCampaignCreated Callback function that will be called when campaign is created.
+ * @param {Object}   options._global           The global window object.
  * @return {Object} An object containing various service interfaces.
  */
-export function createPaxServices( registry, _global = global ) {
+export function createPaxServices( registry, options = {} ) {
+	const { onCampaignCreated = null, _global = global } = options;
+
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
 	const accessToken =
 		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
 
-	return {
+	const services = {
 		authenticationService: {
+			// Ignore the ESLint rule that requires `await` in the function body.
+			//
+			// We mark this function as `async` to make it clear that it returns a
+			// promise and in case, in the future, anything here wants to be async.
+			//
+			// Marking this function as `async` makes it clear that this will be
+			// allowed.
+			//
 			// eslint-disable-next-line require-await
 			get: async () => {
 				return { accessToken };
@@ -113,5 +129,36 @@ export function createPaxServices( registry, _global = global ) {
 		termsAndConditionsService: {
 			notify: async () => {},
 		},
+		partnerDateRangeService: {
+			// Ignore the ESLint rule that requires `await` in the function body.
+			//
+			// We mark this function as `async` to make it clear that it returns a
+			// promise and in case, in the future, anything here wants to be async.
+			//
+			// Marking this function as `async` makes it clear that this will be
+			// allowed.
+			//
+			// eslint-disable-next-line require-await
+			get: async () => {
+				const { startDate, endDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+
+				return {
+					startDate: formatPaxDate( startDate ),
+					endDate: formatPaxDate( endDate ),
+				};
+			},
+		},
 	};
+
+	if ( onCampaignCreated ) {
+		services.campaignService = {
+			notifyNewCampaignCreated: onCampaignCreated,
+		};
+	}
+
+	return services;
 }

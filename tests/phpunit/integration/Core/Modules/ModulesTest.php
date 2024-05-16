@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
@@ -42,6 +43,7 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
+				'ads'                => 'Google\\Site_Kit\\Modules\\Ads',
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
@@ -356,6 +358,7 @@ class ModulesTest extends TestCase {
 		$default_modules = array(
 			Site_Verification::MODULE_SLUG,
 			Search_Console::MODULE_SLUG,
+			Ads::MODULE_SLUG,
 			AdSense::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
