@@ -96,15 +96,37 @@ describe( 'core/user date-range', () => {
 				additionalOptions = {}
 			) => {
 				registry.dispatch( CORE_USER ).setDateRange( dateRange );
+
 				expect(
 					registry.select( CORE_USER ).getDateRangeDates( {
 						...options,
 						...additionalOptions,
 					} )
 				).toEqual( expected );
+
+				if ( additionalOptions.offsetDays === undefined ) {
+					// eslint-disable-next-line no-console
+					expect( console.warn ).toHaveBeenCalled();
+				}
 			};
 
-			describe( 'with date range', () => {
+			describe( 'with date range and w/o offset', () => {
+				beforeAll( () => {
+					jest.spyOn( console, 'warn' ).mockImplementation(
+						() => {}
+					);
+				} );
+
+				afterAll( () => {
+					// eslint-disable-next-line no-console
+					console.warn.mockRestore();
+				} );
+
+				afterEach( () => {
+					// eslint-disable-next-line no-console
+					console.warn.mockClear();
+				} );
+
 				// [ dateRange, expectedReturnDates ]
 				const valuesToTest = [
 					[
