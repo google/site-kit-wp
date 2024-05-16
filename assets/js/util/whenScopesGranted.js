@@ -35,7 +35,7 @@ const { useSelect } = Data;
  * cause 404s at best and possibly errors, so it's better to wrap them in HOCs
  * and "return early".
  *
- * @since n.e.x.t
+ * @since 1.127.0
  *
  * @param {Object}      options                     Options for enhancing function.
  * @param {string}      options.scopes              Array of scopes to check.

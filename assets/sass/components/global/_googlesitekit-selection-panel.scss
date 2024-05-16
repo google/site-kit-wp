@@ -1,7 +1,7 @@
 /**
- * Key Metrics Selection Panel styles.
+ * Selection Panel component styles.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-km-selection-panel {
+	.googlesitekit-selection-panel {
 		display: flex;
 		flex-direction: column;
 	}
 
-	.googlesitekit-km-selection-panel-header {
+	.googlesitekit-selection-panel-header {
 		padding: $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
@@ -43,22 +43,22 @@
 		}
 	}
 
-	.googlesitekit-km-selection-panel-header__row {
+	.googlesitekit-selection-panel-header__row {
 		align-items: center;
 		display: flex;
 		justify-content: space-between;
 	}
 
-	.googlesitekit-km-selection-panel-header__close {
+	.googlesitekit-selection-panel-header__close {
 		color: $c-surfaces-on-surface-variant;
 		display: flex;
 		padding: 8px; // Tweak the padding to ensure the link is aligned in its focus state.
 	}
 
-	.googlesitekit-km-selection-panel-metrics {
+	.googlesitekit-selection-panel-items {
 		overflow: auto;
 
-		.googlesitekit-km-selection-panel-metrics__subheading {
+		.googlesitekit-selection-panel-items__subheading {
 			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
 			font-weight: $fw-medium;
@@ -70,7 +70,7 @@
 			}
 		}
 
-		.googlesitekit-km-selection-panel-metrics__subheading:first-child {
+		.googlesitekit-selection-panel-items__subheading:first-child {
 			margin: 0 0 0 $grid-gap-phone;
 
 			@media (min-width: $bp-tablet) {
@@ -79,10 +79,10 @@
 		}
 	}
 
-	.googlesitekit-km-selection-panel-metrics__metric-item {
+	.googlesitekit-selection-panel-item {
 		padding: 0 $grid-gap-desktop;
 
-		.googlesitekit-km-selection-panel-metrics__metric-item-error {
+		.googlesitekit-selection-panel-item-error {
 			color: $c-red-600;
 			padding-top: 10px;
 		}
@@ -92,7 +92,7 @@
 		}
 	}
 
-	.googlesitekit-km-selection-panel-notice {
+	.googlesitekit-selection-panel-notice {
 		background-color: $c-utility-warning-container;
 		padding: $grid-gap-phone $grid-gap-desktop;
 
@@ -104,7 +104,7 @@
 		}
 	}
 
-	.googlesitekit-km-selection-panel-footer {
+	.googlesitekit-selection-panel-footer {
 		background-color: $c-surfaces-background;
 		margin-top: auto;
 		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
@@ -118,7 +118,7 @@
 		}
 	}
 
-	.googlesitekit-km-selection-panel-footer__content {
+	.googlesitekit-selection-panel-footer__content {
 
 		@media (min-width: $bp-tablet) {
 			align-items: center;
@@ -130,16 +130,16 @@
 		}
 	}
 
-	.googlesitekit-km-selection-panel-footer__metric-count {
+	.googlesitekit-selection-panel-footer__item-count {
 		font-weight: $fw-medium;
 
-		.googlesitekit-km-selection-panel-footer__metric-count--max-count {
+		.googlesitekit-selection-panel-footer__item-count--max-count {
 			color: $c-surfaces-on-surface-variant;
 			font-weight: $fw-normal;
 		}
 	}
 
-	.googlesitekit-km-selection-panel-footer__actions {
+	.googlesitekit-selection-panel-footer__actions {
 		align-items: center;
 		column-gap: $grid-gap-phone / 2;
 		display: flex;

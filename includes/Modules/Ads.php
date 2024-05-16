@@ -239,7 +239,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
 	 * @since 1.122.0
-	 * @since n.e.x.t Add additional check to account for paxConversionID and extCustomerID as well when feature flag is enabled.
+	 * @since 1.127.0 Add additional check to account for paxConversionID and extCustomerID as well when feature flag is enabled.
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */

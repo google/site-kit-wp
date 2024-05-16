@@ -1,7 +1,7 @@
 /**
- * String to Date utility tests.
+ * PAX utility functions tests.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,32 +19,32 @@
 /**
  * Internal dependencies
  */
-import { stringToDate } from './string-to-date';
-import { INVALID_DATE_STRING_ERROR } from './constants';
+import { INVALID_DATE_STRING_ERROR } from '../../../util';
+import { formatPaxDate } from './utils';
 
-describe( 'stringToDate', () => {
+describe( 'formatPaxDate', () => {
 	it.each( [ null, NaN, '', '12345', '1900-00-00', 'not a date string' ] )(
 		'throws an error when given the invalid date string: %s',
 		( invalidDateString ) => {
-			expect( () => stringToDate( invalidDateString ) ).toThrow(
+			expect( () => formatPaxDate( invalidDateString ) ).toThrow(
 				INVALID_DATE_STRING_ERROR
 			);
 		}
 	);
 
-	it( 'uses a zero-indexed month', () => {
-		const date = stringToDate( '2019-01-31' );
+	it( 'uses a one-indexed month', () => {
+		const date = formatPaxDate( '2019-01-31' );
 
-		expect( date.getFullYear() ).toBe( 2019 );
-		expect( date.getMonth() ).toBe( 0 );
-		expect( date.getDate() ).toBe( 31 );
+		expect( date.year ).toBe( 2019 );
+		expect( date.month ).toBe( 1 );
+		expect( date.day ).toBe( 31 );
 	} );
 
 	it( 'returns a valid date instance for the given date string', () => {
-		const date = stringToDate( '2019-10-31' );
+		const date = formatPaxDate( '2019-10-31' );
 
-		expect( date.getFullYear() ).toBe( 2019 );
-		expect( date.getMonth() ).toBe( 10 - 1 ); // 0-based month
-		expect( date.getDate() ).toBe( 31 );
+		expect( date.year ).toBe( 2019 );
+		expect( date.month ).toBe( 10 ); // 1-index based month
+		expect( date.day ).toBe( 31 );
 	} );
 } );

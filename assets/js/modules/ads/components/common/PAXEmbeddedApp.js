@@ -39,11 +39,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import CTA from '../../../../components/notifications/CTA';
 import PreviewBlock from '../../../../components/PreviewBlock';
+import CTA from '../../../../components/notifications/CTA';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '../../../analytics-4/datastore/constants';
 import { createPaxServices } from '../../pax/services';
 import { useMemoOne } from 'use-memo-one';
+import { formatPaxDate } from '../../pax/utils';
+
 const { useRegistry, useSelect } = Data;
 export default function PAXEmbeddedApp( {
 	displayMode = 'default',
@@ -64,6 +67,16 @@ export default function PAXEmbeddedApp( {
 	const paxServices = useMemo( () => {
 		return createPaxServices( registry, { onCampaignCreated } );
 	}, [ registry, onCampaignCreated ] );
+
+	const paxDateRange = useSelect( ( select ) => {
+		if ( displayMode !== 'reporting' ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+	} );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -94,6 +107,20 @@ export default function PAXEmbeddedApp( {
 		};
 	}, [ elementID, displayMode ] );
 
+	const setDateRangeForReportingMode = useCallback( () => {
+		if (
+			displayMode === 'reporting' &&
+			paxAppRef?.current &&
+			paxDateRange.startDate &&
+			paxDateRange.endDate
+		) {
+			paxAppRef.current.getServices().adsDateRangeService.update( {
+				startDate: formatPaxDate( paxDateRange.startDate ),
+				endDate: formatPaxDate( paxDateRange.endDate ),
+			} );
+		}
+	}, [ displayMode, paxDateRange.endDate, paxDateRange.startDate ] );
+
 	const launchPAXApp = useCallback( async () => {
 		if ( hasLaunchedPAXApp || paxAppRef.current ) {
 			return;
@@ -108,6 +135,8 @@ export default function PAXEmbeddedApp( {
 					paxServices
 				);
 
+			setDateRangeForReportingMode();
+
 			onLaunch?.( paxAppRef.current );
 		} catch ( error ) {
 			setLaunchError( error );
@@ -118,7 +147,13 @@ export default function PAXEmbeddedApp( {
 		}
 
 		setIsLoading( false );
-	}, [ hasLaunchedPAXApp, paxConfig, paxServices, onLaunch ] );
+	}, [
+		hasLaunchedPAXApp,
+		paxConfig,
+		paxServices,
+		setDateRangeForReportingMode,
+		onLaunch,
+	] );
 
 	useInterval(
 		() => {
@@ -148,6 +183,19 @@ export default function PAXEmbeddedApp( {
 		isLoading,
 		launchGoogleAdsAvailable,
 		launchPAXApp,
+	] );
+
+	useEffect( () => {
+		setDateRangeForReportingMode();
+	}, [
+		setDateRangeForReportingMode,
+		// `setDateRangeForReportingMode` will change whenever the date range
+		// updates, causing this effect to run again, so the two date range
+		// dependencies are technically redundant, but are explicitly listed
+		// here to make the intent of the code clearer. (They're harmless
+		// to include and do not cause extra renders/requests.)
+		paxDateRange.startDate,
+		paxDateRange.endDate,
 	] );
 
 	return (
