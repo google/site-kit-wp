@@ -144,11 +144,27 @@
 
 			// Top content custom metric.
 			&.googlesitekit-audience-segmentation-tile-metric--top-content {
-
 				.googlesitekit-audience-segmentation-tile-metric__title {
 					height: 20px;
 					line-height: 20px;
 					margin-bottom: 10px;
+				}
+
+				.googlesitekit-cta-link,
+				.googlesitekit-audience-segmentation-tile__top-content-metric-name {
+					margin-right: 1rem;
+				}
+
+				.googlesitekit-audience-segmentation-tile-metric__container,
+				.googlesitekit-cta-link {
+					min-width: 0;
+
+					.googlesitekit-cta-link__contents,
+					.googlesitekit-audience-segmentation-tile__top-content-metric-name {
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
 				}
 
 				.googlesitekit-audience-segmentation-tile-metric__page-metric-container {
