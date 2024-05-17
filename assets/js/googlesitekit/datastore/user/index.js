@@ -27,6 +27,7 @@ import { CORE_USER } from './constants';
 import dateRange from './date-range';
 import disconnect from './disconnect';
 import dismissedItems from './dismissed-items';
+import expirableItems from './expirable-items';
 import featureTours from './feature-tours';
 import keyMetrics from './key-metrics';
 import notifications from './notifications';
@@ -46,6 +47,7 @@ const store = Data.combineStores(
 	dateRange,
 	disconnect,
 	dismissedItems,
+	expirableItems,
 	featureTours,
 	keyMetrics,
 	notifications,
