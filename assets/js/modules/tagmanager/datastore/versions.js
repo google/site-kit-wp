@@ -60,11 +60,18 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 				{ useCache: false }
 			);
 		} catch ( err ) {
-			// If the container has no published version, it will error with a 404.
-			if ( 404 === err.code ) {
+			// If the container has no published version, it will error with a 404
+			// and the message will be "Published container version not found".
+			// If the user has no permission to access the container, the error is also a 404
+			// with a different message. In this case or any other case, we want to display
+			// the error message along with the option to retry, so we allow it to be thrown
+			// but filter out the former case.
+			if (
+				404 === err.code &&
+				err.message.includes( 'container version not found' )
+			) {
 				return null;
 			}
-			// Otherwise rethrow the error to be handled as usual.
 			throw err;
 		}
 	},
