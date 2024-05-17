@@ -24,3 +24,5 @@ export const PAX_SETUP_STEP = {
 	LAUNCH: 1,
 	FINISHED: 2,
 };
+
+export const PAX_SETUP_SUCCESS_NOTIFICATION = 'pax_setup_success_notification';
