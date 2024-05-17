@@ -21,12 +21,18 @@
  */
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../../googlesitekit/constants';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import AudienceTile from '.';
+import { getPreviousDate } from '../../../../../../util';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
@@ -127,6 +133,8 @@ const readyProps = {
 	},
 };
 
+const audienceResourceName = 'properties/12345/audiences/12345';
+
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = readyProps;
@@ -197,6 +205,74 @@ NoData.args = {
 };
 NoData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/NoData',
+};
+
+export const AudiencePartialData = Template.bind( {} );
+AudiencePartialData.storyName = 'Audience partial data';
+AudiencePartialData.args = {
+	...readyProps,
+	infoTooltip: 'This is a tooltip',
+	audienceResourceName,
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					[ audienceResourceName ]: dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+	},
+};
+AudiencePartialData.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/AudiencePartialData',
+};
+
+export const TopContentPartialData = Template.bind( {} );
+TopContentPartialData.storyName = 'Top content partial data';
+TopContentPartialData.args = {
+	...readyProps,
+	infoTooltip: 'This is a tooltip',
+	audienceResourceName,
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {},
+				customDimension: {
+					googlesitekit_post_type: dataAvailabilityDate,
+				},
+				property: {},
+			} );
+	},
+};
+TopContentPartialData.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/TopContentPartialData',
 };
 
 export default {

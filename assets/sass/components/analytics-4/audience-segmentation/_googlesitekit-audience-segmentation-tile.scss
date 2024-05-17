@@ -21,9 +21,12 @@
 		margin-bottom: 16px;
 
 		.googlesitekit-audience-segmentation-tile__header {
+			align-items: center;
 			border-bottom: 1px solid $c-utility-divider;
 			color: $c-surfaces-on-surface;
+			display: flex;
 			font-size: $fs-title-sm;
+			justify-content: space-between;
 			line-height: 16px;
 			padding: 25px;
 			width: 100%;
@@ -36,6 +39,13 @@
 					height: 16px;
 					margin-left: 5px;
 				}
+			}
+		}
+
+		.googlesitekit-audience-segmentation-tile__metrics {
+
+			> .googlesitekit-audience-segmentation-partial-data-badge {
+				margin: 16px 16px 10px;
 			}
 		}
 
@@ -148,6 +158,13 @@
 					height: 20px;
 					line-height: 20px;
 					margin-bottom: 10px;
+
+					&:has(.googlesitekit-audience-segmentation-partial-data-badge) {
+						align-items: center;
+						display: flex;
+						height: auto;
+						justify-content: space-between;
+					}
 				}
 
 				.googlesitekit-cta-link,
@@ -174,6 +191,20 @@
 					line-height: $lh-body-sm;
 					margin: 6px 0;
 				}
+
+				.googlesitekit-audience-segmentation-tile-metric__content {
+
+					.googlesitekit-audience-segmentation-partial-data-badge {
+						margin-top: 10px;
+					}
+				}
+			}
+		}
+
+		&.googlesitekit-audience-segmentation-tile--partial-data {
+
+			.googlesitekit-audience-segmentation-tile__header {
+				padding: 19px 25px;
 			}
 		}
 	}
