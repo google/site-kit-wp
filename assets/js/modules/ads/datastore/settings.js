@@ -30,6 +30,7 @@ import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
 import { isValidConversionID } from '../utils/validation';
 
@@ -38,10 +39,24 @@ export const INVARIANT_INVALID_CONVERSION_ID =
 	'a valid conversionID is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
+	const haveSettingsChanged = select( MODULES_ADS ).haveSettingsChanged();
+
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( select( MODULES_ADS ).haveSettingsChanged() ) {
+	if ( haveSettingsChanged ) {
 		const { error } = await dispatch( MODULES_ADS ).saveSettings();
+		if ( error ) {
+			return { error };
+		}
+	}
+
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+	if ( haveConversionTrackingSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveConversionTrackingSettings();
+
 		if ( error ) {
 			return { error };
 		}

@@ -50,6 +50,7 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import { isValidConversionID } from '../../ads/utils/validation';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -139,57 +140,95 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Only make the API request to enable the Enhanced Measurement setting, not to disable it.
 		if ( isEnhancedMeasurementEnabled ) {
-			await dispatch(
-				MODULES_ANALYTICS_4
-			).setEnhancedMeasurementStreamEnabled(
+			const { error } = await updateEnhancedMeasurementSettings( {
+				select,
+				dispatch,
 				propertyID,
 				webDataStreamID,
-				isEnhancedMeasurementEnabled
-			);
+				isEnhancedMeasurementEnabled,
+			} );
 
-			if (
-				select(
-					MODULES_ANALYTICS_4
-				).haveEnhancedMeasurementSettingsChanged(
-					propertyID,
-					webDataStreamID
-				)
-			) {
-				const { error } = await dispatch(
-					MODULES_ANALYTICS_4
-				).updateEnhancedMeasurementSettings(
-					propertyID,
-					webDataStreamID
-				);
-
-				if ( error ) {
-					return { error };
-				}
-
-				const shouldDismissActivationBanner = select(
-					CORE_FORMS
-				).getValue(
-					ENHANCED_MEASUREMENT_FORM,
-					ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
-				);
-
-				if ( shouldDismissActivationBanner ) {
-					await dispatch( CORE_USER ).dismissItem(
-						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
-					);
-				}
+			if ( error ) {
+				return { error };
 			}
 		}
 	}
 
-	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+	const { error } = await saveSettings( select, dispatch );
+
+	if ( error ) {
+		return error;
+	}
+
+	await API.invalidateCache( 'modules', 'analytics-4' );
+
+	return {};
+}
+
+async function saveSettings( select, dispatch ) {
+	const haveSettingsChanged =
+		select( MODULES_ANALYTICS_4 ).haveSettingsChanged();
+
+	if ( haveSettingsChanged ) {
 		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 		if ( error ) {
 			return { error };
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'analytics-4' );
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+	if ( haveConversionTrackingSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveConversionTrackingSettings();
+
+		if ( error ) {
+			return { error };
+		}
+	}
+
+	return {};
+}
+
+async function updateEnhancedMeasurementSettings( {
+	select,
+	dispatch,
+	propertyID,
+	webDataStreamID,
+	isEnhancedMeasurementEnabled,
+} ) {
+	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled(
+		propertyID,
+		webDataStreamID,
+		isEnhancedMeasurementEnabled
+	);
+
+	if (
+		select( MODULES_ANALYTICS_4 ).haveEnhancedMeasurementSettingsChanged(
+			propertyID,
+			webDataStreamID
+		)
+	) {
+		const { error } = await dispatch(
+			MODULES_ANALYTICS_4
+		).updateEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+		if ( error ) {
+			return { error };
+		}
+
+		const shouldDismissActivationBanner = select( CORE_FORMS ).getValue(
+			ENHANCED_MEASUREMENT_FORM,
+			ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
+		);
+
+		if ( shouldDismissActivationBanner ) {
+			await dispatch( CORE_USER ).dismissItem(
+				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			);
+		}
+	}
 
 	return {};
 }
