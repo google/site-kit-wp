@@ -37,6 +37,7 @@ export * from './chart';
 export * from './urls';
 export * from './is-valid-numeric-id';
 export * from './isnumeric';
+export * from './safely-sort';
 
 global._gsktag = trackEvent;
 /**

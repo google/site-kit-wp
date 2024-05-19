@@ -26,6 +26,9 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../datastore/constants';
+import { formatPaxDate } from './utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
 
 const restFetchWpPages = async () => {
 	try {
@@ -47,16 +50,31 @@ const restFetchWpPages = async () => {
  * Returns PAX services.
  *
  * @since 1.126.0
+ * @since n.e.x.t Added options parameter.
  *
- * @param {Object} registry Registry object to dispatch to.
+ * @param {Object}   registry                  Registry object to dispatch to.
+ * @param {Object}   options                   Optional. Additional options.
+ * @param {Function} options.onCampaignCreated Callback function that will be called when campaign is created.
+ * @param {Object}   options._global           The global window object.
  * @return {Object} An object containing various service interfaces.
  */
-export function createPaxServices( registry ) {
-	const accessToken =
-		global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+export function createPaxServices( registry, options = {} ) {
+	const { onCampaignCreated = null, _global = global } = options;
 
-	return {
+	const { select, __experimentalResolveSelect: resolveSelect } = registry;
+	const accessToken =
+		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+
+	const services = {
 		authenticationService: {
+			// Ignore the ESLint rule that requires `await` in the function body.
+			//
+			// We mark this function as `async` to make it clear that it returns a
+			// promise and in case, in the future, anything here wants to be async.
+			//
+			// Marking this function as `async` makes it clear that this will be
+			// allowed.
+			//
 			// eslint-disable-next-line require-await
 			get: async () => {
 				return { accessToken };
@@ -68,14 +86,12 @@ export function createPaxServices( registry ) {
 		},
 		businessService: {
 			getBusinessInfo: async () => {
-				await registry
-					.__experimentalResolveSelect( CORE_SITE )
-					.getSiteInfo();
+				await resolveSelect( CORE_SITE ).getSiteInfo();
 
 				/* eslint-disable sitekit/acronym-case */
 				// Disabling rule because businessName and businessUrl are expected by PAX API.
-				const businessName = registry.select( CORE_SITE ).getSiteName();
-				const businessUrl = registry.select( CORE_SITE ).getHomeURL();
+				const businessName = select( CORE_SITE ).getSiteName();
+				const businessUrl = select( CORE_SITE ).getHomeURL();
 
 				return { businessName, businessUrl };
 				/* eslint-enable sitekit/acronym-case */
@@ -86,28 +102,63 @@ export function createPaxServices( registry ) {
 			},
 		},
 		conversionTrackingService: {
-			// eslint-disable-next-line require-await
 			getSupportedConversionLabels: async () => {
-				await registry
-					.__experimentalResolveSelect( MODULES_ADS )
-					.getModuleData();
+				await resolveSelect( MODULES_ADS ).getModuleData();
 				const conversionEvents =
-					registry
-						.select( MODULES_ADS )
-						.getSupportedConversionEvents() || [];
+					select( MODULES_ADS ).getSupportedConversionEvents() || [];
+
 				return { conversionLabels: conversionEvents };
 			},
-			// eslint-disable-next-line require-await
 			getPageViewConversionSetting: async () => {
 				const websitePages = await restFetchWpPages();
 				return {
-					enablePageViewConversion: true,
 					websitePages,
+				};
+			},
+			// eslint-disable-next-line require-await
+			getSupportedConversionTrackingTypes: async () => {
+				return {
+					conversionTrackingTypes: [
+						// @TODO: Include TYPE_CONVERSION_EVENT in a future update.
+						// 'TYPE_CONVERSION_EVENT',
+						'TYPE_PAGE_VIEW',
+					],
 				};
 			},
 		},
 		termsAndConditionsService: {
 			notify: async () => {},
 		},
+		partnerDateRangeService: {
+			// Ignore the ESLint rule that requires `await` in the function body.
+			//
+			// We mark this function as `async` to make it clear that it returns a
+			// promise and in case, in the future, anything here wants to be async.
+			//
+			// Marking this function as `async` makes it clear that this will be
+			// allowed.
+			//
+			// eslint-disable-next-line require-await
+			get: async () => {
+				const { startDate, endDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+
+				return {
+					startDate: formatPaxDate( startDate ),
+					endDate: formatPaxDate( endDate ),
+				};
+			},
+		},
 	};
+
+	if ( onCampaignCreated ) {
+		services.campaignService = {
+			notifyNewCampaignCreated: onCampaignCreated,
+		};
+	}
+
+	return services;
 }

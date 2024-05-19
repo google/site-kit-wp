@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import cache from './cache';
 import connection from './connection';
 import consentMode from './consent-mode';
+import conversionTracking from './conversion-tracking';
 import errors from './errors';
 import html from './html';
 import info from './info';
@@ -39,6 +40,7 @@ const store = Data.combineStores(
 	Data.commonStore,
 	connection,
 	consentMode,
+	conversionTracking,
 	errors,
 	html,
 	info,

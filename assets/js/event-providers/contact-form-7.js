@@ -15,7 +15,7 @@
  */
 
 document.addEventListener( 'wpcf7mailsent', ( event ) => {
-	global.gtag( 'event', 'contact', {
+	global._googlesitekit?.trackEvent?.( 'contact', {
 		// eslint-disable-next-line sitekit/acronym-case
 		event_category: event.detail.contactFormId,
 		event_label: event.detail.unitTag,
