@@ -125,6 +125,7 @@ export default function Header( { slug } ) {
 				href={ adminReauthURL }
 				onClick={ onActionClick }
 				disabled={ error ? true : false }
+				inverse
 			>
 				{ sprintf(
 					/* translators: %s: module name. */
