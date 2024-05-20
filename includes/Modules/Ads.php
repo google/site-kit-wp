@@ -34,7 +34,7 @@ use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Ads\Settings;
-use Google\Site_Kit\Modules\Ads\Tag_Guard;
+use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
@@ -294,7 +294,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		}
 
 		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+		$tag->use_guard( new Has_Tag_Guard( $ads_conversion_id ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( ! $tag->can_register() ) {
