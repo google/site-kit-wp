@@ -253,17 +253,17 @@ describe( 'PAX partner services', () => {
 					} );
 				} );
 			} );
-		} );
 
-		describe( 'getSupportedConversionTrackingTypes', () => {
-			it( 'should return the expected supported types', async () => {
-				const supportedTypes =
-					await services.conversionTrackingService.getSupportedConversionTrackingTypes(
-						{}
-					);
+			describe( 'getSupportedConversionTrackingTypes', () => {
+				it( 'should return the expected supported types', async () => {
+					const supportedTypes =
+						await services.conversionTrackingService.getSupportedConversionTrackingTypes(
+							{}
+						);
 
-				expect( supportedTypes ).toMatchObject( {
-					conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
+					expect( supportedTypes ).toMatchObject( {
+						conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
+					} );
 				} );
 			} );
 		} );
