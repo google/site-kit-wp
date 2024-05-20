@@ -67,7 +67,7 @@ export default function Header( { slug } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
-	const error = useSelect( ( select ) =>
+	const requirementsError = useSelect( ( select ) =>
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
 	);
 
@@ -124,7 +124,7 @@ export default function Header( { slug } ) {
 			<Button
 				href={ adminReauthURL }
 				onClick={ onActionClick }
-				disabled={ error ? true : false }
+				disabled={ requirementsError ? true : false }
 				inverse
 			>
 				{ sprintf(
