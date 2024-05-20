@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Ads\Tag_GuardTest
+ * Class Google\Site_Kit\Tests\Modules\Ads\Has_Tag_GuardTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Ads
  * @copyright 2024 Google LLC
