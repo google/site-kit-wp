@@ -269,13 +269,15 @@ describe( 'PAX partner services', () => {
 		} );
 
 		describe( 'termsAndConditionsService', () => {
-			it( 'notify callback should return an empty object', async () => {
-				const termsAndConditionsServiceNotifyResponse =
-					await services.termsAndConditionsService.notify();
+			describe( 'notify', () => {
+				it( 'notify callback should return an empty object', async () => {
+					const termsAndConditionsServiceNotifyResponse =
+						await services.termsAndConditionsService.notify();
 
-				expect( termsAndConditionsServiceNotifyResponse ).toEqual(
-					{}
-				);
+					expect( termsAndConditionsServiceNotifyResponse ).toEqual(
+						{}
+					);
+				} );
 			} );
 		} );
 	} );
