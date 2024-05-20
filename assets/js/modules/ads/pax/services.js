@@ -25,10 +25,9 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ADS } from '../datastore/constants';
 import { formatPaxDate } from './utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET } from '../../analytics-4/datastore/constants';
 
 const restFetchWpPages = async () => {
 	try {
