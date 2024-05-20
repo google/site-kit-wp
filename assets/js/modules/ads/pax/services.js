@@ -127,7 +127,9 @@ export function createPaxServices( registry, options = {} ) {
 			},
 		},
 		termsAndConditionsService: {
-			notify: async () => {},
+			notify: () => {
+				return {};
+			},
 		},
 		partnerDateRangeService: {
 			// Ignore the ESLint rule that requires `await` in the function body.
