@@ -114,9 +114,9 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 **Enhanced**
 
 * Update PAX conversion tracking service code to improve compatibility with the new PAX version 1 API. See [#8693](https://github.com/google/site-kit-wp/issues/8693).
+* Add date range support to PAX app. See [#8687](https://github.com/google/site-kit-wp/issues/8687).
 * Add the partner authentication service to the PAX app. See [#8686](https://github.com/google/site-kit-wp/issues/8686).
 * Add support for the Partner Ads Experience `reportingStyle` config. See [#8637](https://github.com/google/site-kit-wp/issues/8637).
-* Add `ConversionTrackingService` to PAX resolver/selectors. See [#8620](https://github.com/google/site-kit-wp/issues/8620).
 * Add support for `supportedConversionEvents` in Ads datastore. See [#8619](https://github.com/google/site-kit-wp/issues/8619).
 * Add REST API routes to the Conversion Tracking class. See [#8613](https://github.com/google/site-kit-wp/issues/8613).
 * Add settings infrastructure for conversion tracking. See [#8612](https://github.com/google/site-kit-wp/issues/8612).
@@ -138,7 +138,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Fix typo in the "Visitor groups" admin setting. See [#8496](https://github.com/google/site-kit-wp/issues/8496).
 * Add partial data states infrastructure for Analytics resources. See [#8141](https://github.com/google/site-kit-wp/issues/8141).
 * Add datastore API for determining audience type. See [#8129](https://github.com/google/site-kit-wp/issues/8129).
-* Add date range support to PAX app. See [#8687](https://github.com/google/site-kit-wp/issues/8687).
 
 **Fixed**
 
