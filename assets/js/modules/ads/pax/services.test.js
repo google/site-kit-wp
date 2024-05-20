@@ -273,7 +273,7 @@ describe( 'PAX partner services', () => {
 				const termsAndConditionsServiceNotifyResponse =
 					await services.termsAndConditionsService.notify();
 
-				expect( termsAndConditionsServiceNotifyResponse ).toMatchObject(
+				expect( termsAndConditionsServiceNotifyResponse ).toEqual(
 					{}
 				);
 			} );
