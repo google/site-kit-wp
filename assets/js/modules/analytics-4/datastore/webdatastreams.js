@@ -213,12 +213,12 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
+		( { resolveSelect } ) => {
 			return async ( { payload } ) => {
 				const { propertyID } = payload;
-				await __experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getWebDataStreams( propertyID );
+				await resolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreams(
+					propertyID
+				);
 			};
 		}
 	),

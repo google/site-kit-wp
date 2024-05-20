@@ -118,7 +118,7 @@ const baseActions = {
 			const registry = yield Data.commonActions.getRegistry();
 			const audienceSettings = yield Data.commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getAudienceSettings()
 			);
 

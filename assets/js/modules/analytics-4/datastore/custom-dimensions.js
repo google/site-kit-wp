@@ -115,15 +115,9 @@ const baseActions = {
 		// Wait for the necessary settings to be loaded before checking.
 		yield Data.commonActions.await(
 			Promise.all( [
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getSettings(),
-				registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getKeyMetricsSettings(),
-				registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getUserInputSettings(),
+				registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				registry.resolveSelect( CORE_USER ).getKeyMetricsSettings(),
+				registry.resolveSelect( CORE_USER ).getUserInputSettings(),
 			] )
 		);
 
@@ -287,14 +281,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getAvailableCustomDimensions() {
-		const { select, __experimentalResolveSelect } =
+		const { select, resolveSelect } =
 			yield Data.commonActions.getRegistry();
 		const { isAuthenticated, hasCapability } = select( CORE_USER );
 
 		const isGA4Connected = yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).isModuleConnected(
-				'analytics-4'
-			)
+			resolveSelect( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 		);
 
 		if ( ! isGA4Connected ) {
@@ -303,7 +295,7 @@ const baseResolvers = {
 
 		// Wait for settings to be loaded before proceeding.
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		const availableCustomDimensions =
@@ -315,7 +307,7 @@ const baseResolvers = {
 
 		// Wait for permissions to be loaded before checking if the user can manage options.
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getCapabilities()
+			resolveSelect( CORE_USER ).getCapabilities()
 		);
 
 		if ( ! hasCapability( PERMISSION_MANAGE_OPTIONS ) ) {

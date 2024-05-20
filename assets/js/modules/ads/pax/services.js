@@ -61,7 +61,7 @@ const restFetchWpPages = async () => {
 export function createPaxServices( registry, options = {} ) {
 	const { onCampaignCreated = null, _global = global } = options;
 
-	const { select, __experimentalResolveSelect: resolveSelect } = registry;
+	const { select, resolveSelect: resolveSelect } = registry;
 	const accessToken =
 		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
 
