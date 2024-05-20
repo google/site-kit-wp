@@ -94,6 +94,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 			'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
 			'googlesitekit-main-dashboard':
 				'./assets/js/googlesitekit-main-dashboard.js',
+			'googlesitekit-public-dashboard':
+				'./assets/js/googlesitekit-public-dashboard.js',
 			'googlesitekit-entity-dashboard':
 				'./assets/js/googlesitekit-entity-dashboard.js',
 			'googlesitekit-splash': './assets/js/googlesitekit-splash.js',
