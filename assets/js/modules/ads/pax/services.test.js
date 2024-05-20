@@ -55,9 +55,9 @@ describe( 'PAX partner services', () => {
 				termsAndConditionsService: {
 					notify: expect.any( Function ),
 				},
-				partnerDateRangeService: expect.objectContaining( {
+				partnerDateRangeService: {
 					get: expect.any( Function ),
-				} ),
+				},
 			} );
 		} );
 
@@ -119,6 +119,27 @@ describe( 'PAX partner services', () => {
 						'http://something.test/homepage'
 					);
 					/* eslint-enable sitekit/acronym-case */
+				} );
+			} );
+		} );
+
+		describe( 'campaignService', () => {
+			describe( 'notifyNewCampaignCreated', () => {
+				it( 'should return a callback function', async () => {
+					const mockOnCampaignCreated = jest.fn();
+					const servicesWithCampaign = createPaxServices( registry, {
+						onCampaignCreated: mockOnCampaignCreated,
+					} );
+
+					await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
+
+					expect( servicesWithCampaign ).toEqual(
+						expect.objectContaining( {
+							campaignService: expect.objectContaining( {
+								notifyNewCampaignCreated: mockOnCampaignCreated,
+							} ),
+						} )
+					);
 				} );
 			} );
 		} );
@@ -197,62 +218,6 @@ describe( 'PAX partner services', () => {
 					] );
 				} );
 			} );
-			describe( 'campaignService', () => {
-				describe( 'notifyNewCampaignCreated', () => {
-					it( 'should return a callback function', async () => {
-						const mockOnCampaignCreated = jest.fn();
-						const servicesWithCampaign = createPaxServices(
-							registry,
-							{ onCampaignCreated: mockOnCampaignCreated }
-						);
-
-						await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
-
-						expect( servicesWithCampaign ).toEqual(
-							expect.objectContaining( {
-								campaignService: expect.objectContaining( {
-									notifyNewCampaignCreated:
-										mockOnCampaignCreated,
-								} ),
-							} )
-						);
-					} );
-				} );
-			} );
-
-			describe( 'partnerDateRangeService', () => {
-				describe( 'get', () => {
-					it( 'should contain startDate and endDate properties', async () => {
-						const partnerDateRange =
-							await services.partnerDateRangeService.get();
-
-						expect( partnerDateRange ).toHaveProperty(
-							'startDate'
-						);
-						expect( partnerDateRange ).toHaveProperty( 'endDate' );
-					} );
-
-					it( 'should contain correct accessToken', async () => {
-						registry
-							.dispatch( CORE_USER )
-							.setReferenceDate( '2020-09-08' );
-
-						const partnerDateRange =
-							await services.partnerDateRangeService.get();
-
-						expect( partnerDateRange.startDate ).toEqual( {
-							day: 11,
-							month: 8,
-							year: 2020,
-						} );
-						expect( partnerDateRange.endDate ).toEqual( {
-							day: 7,
-							month: 9,
-							year: 2020,
-						} );
-					} );
-				} );
-			} );
 
 			describe( 'getSupportedConversionTrackingTypes', () => {
 				it( 'should return the expected supported types', async () => {
@@ -263,6 +228,43 @@ describe( 'PAX partner services', () => {
 
 					expect( supportedTypes ).toMatchObject( {
 						conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
+					} );
+				} );
+			} );
+		} );
+
+		describe( 'partnerDateRangeService', () => {
+			describe( 'get', () => {
+				it( 'should contain startDate and endDate properties', async () => {
+					const partnerDateRange =
+						await services.partnerDateRangeService.get();
+
+					expect( partnerDateRange ).toHaveProperty( 'startDate' );
+					expect( partnerDateRange ).toHaveProperty( 'endDate' );
+				} );
+
+				it( 'should contain correct Date values', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( '2020-09-08' );
+					// Set the date range so that it selects the range we should expect:
+					// Sept 1 - Sept 7
+					registry
+						.dispatch( CORE_USER )
+						.setDateRange( 'last-7-days' );
+
+					const partnerDateRange =
+						await services.partnerDateRangeService.get();
+
+					expect( partnerDateRange.startDate ).toEqual( {
+						month: 9,
+						day: 1,
+						year: 2020,
+					} );
+					expect( partnerDateRange.endDate ).toEqual( {
+						month: 9,
+						day: 7,
+						year: 2020,
 					} );
 				} );
 			} );
