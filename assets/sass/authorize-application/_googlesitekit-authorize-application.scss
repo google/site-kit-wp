@@ -141,6 +141,10 @@
 	color: $c-authorize-application-sys-light-on-surface;
 	font-family: $f-primary;
 
+	a {
+		color: $c-authorize-application-vivid-blue;
+	}
+
 	@media (min-width: $bp-wpAdminBarTablet) {
 		padding: 0 47px;
 	}
@@ -187,8 +191,4 @@
 #footer-thankyou {
 	font-size: $fs-authorize-application-label-md;
 	line-height: $lh-authorize-application-label-md;
-
-	a {
-		color: $c-authorize-application-vivid-blue;
-	}
 }
