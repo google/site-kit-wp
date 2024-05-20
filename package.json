@@ -119,7 +119,7 @@
 		"@react-hook/merged-ref": "^1.3.0",
 		"@react-hook/window-size": "^3.0.7",
 		"@wordpress/api-fetch": "^3.18.0",
-		"@wordpress/compose": "^3.19.1",
+		"@wordpress/compose": "^3.25.3",
 		"@wordpress/data": "^4.27.3",
 		"@wordpress/dom-ready": "^2.10.0",
 		"@wordpress/element": "^2.20.3",
