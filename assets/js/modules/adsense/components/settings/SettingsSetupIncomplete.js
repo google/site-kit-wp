@@ -57,7 +57,9 @@ export default function SettingsSetupIncomplete() {
 
 	return (
 		<Fragment>
-			<AdBlockerWarning />
+			<div className="googlesitekit-settings-module__fields-group">
+				<AdBlockerWarning />
+			</div>
 
 			{ createInterpolateElement(
 				sprintf( statusText, `<a>${ actionText }</a>` ),
