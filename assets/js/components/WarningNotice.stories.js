@@ -26,6 +26,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import WarningNotice from './WarningNotice';
 import Link from './Link';
+import ExternalIcon from '../../svg/icons/external-rounded.svg';
 
 function Template( args ) {
 	return <WarningNotice { ...args } />;
@@ -40,7 +41,14 @@ Default.args = {
 	children: createInterpolateElement(
 		'Ad blocker detected; please disable it to get the latest AdSense data. <Link>Get help</Link>',
 		{
-			Link: <Link href="#" external />,
+			Link: (
+				<Link
+					href="#"
+					external
+					hideExternalIndicator
+					trailingIcon={ <ExternalIcon width={ 13 } height={ 14 } /> }
+				/>
+			),
 		}
 	),
 };
