@@ -83,16 +83,18 @@ export default function PAXSetupSuccessSubtleNotification() {
 							) }
 						</p>
 					</div>
-					<Button tertiary onClick={ onDismiss }>
-						{ __( 'Got it', 'google-site-kit' ) }
-					</Button>
-					<Button
-						onClick={ ( event ) => {
-							scrollToWidget( event );
-						} }
-					>
-						{ __( 'Show me', 'google-site-kit' ) }
-					</Button>
+					<div className="googlesitekit-subtle-notification__action">
+						<Button tertiary onClick={ onDismiss }>
+							{ __( 'Got it', 'google-site-kit' ) }
+						</Button>
+						<Button
+							onClick={ ( event ) => {
+								scrollToWidget( event );
+							} }
+						>
+							{ __( 'Show me', 'google-site-kit' ) }
+						</Button>
+					</div>
 				</Cell>
 			</Row>
 		</Grid>
