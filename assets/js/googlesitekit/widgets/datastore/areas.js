@@ -83,6 +83,7 @@ export const actions = {
 	 * @since 1.107.0 Extended to support an optional CTA component.
 	 * @since 1.110.0 Extended to support an optional filterActiveWidgets function.
 	 * @since n.e.x.t Extended to make title optional and support an optional Footer component.
+	 * @since n.e.x.t Extended to support an optional hasNewBadge parameter.
 	 *
 	 * @param {string}      slug                           Widget Area's slug.
 	 * @param {Object}      settings                       Widget Area's settings.
@@ -91,6 +92,7 @@ export const actions = {
 	 * @param {WPComponent} [settings.Icon]                Optional. React component to render icon for this widget area.
 	 * @param {string}      [settings.style]               Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
 	 * @param {number}      [settings.priority]            Optional. Priority for this widget area. Default: 10.
+	 * @param {boolean}     [settings.hasNewBadge]         Optional. Whether this widget area should display a new badge.
 	 * @param {WPComponent} [settings.CTA]                 Optional. React component used as CTA appearing beside the subtitle.
 	 * @param {WPComponent} [settings.Footer]              Optional. React component used as footer for the widget area.
 	 * @param {Function}    [settings.filterActiveWidgets] Optional. Function used to filter active widgets.
@@ -104,6 +106,7 @@ export const actions = {
 			title,
 			subtitle,
 			Icon,
+			hasNewBadge = false,
 			CTA,
 			Footer,
 			filterActiveWidgets,
@@ -124,6 +127,7 @@ export const actions = {
 					title,
 					subtitle,
 					Icon,
+					hasNewBadge,
 					CTA,
 					Footer,
 					filterActiveWidgets,
