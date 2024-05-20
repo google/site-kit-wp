@@ -27,11 +27,7 @@ import { render } from '@wordpress/element';
  */
 import { clearCache } from './googlesitekit/api/cache';
 import Root from './components/Root';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_MODULE_SETUP,
-} from './googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from './googlesitekit/constants';
 import DashboardEntryPoint from './components/DashboardEntryPoint';
 
 // Initialize the app once the DOM is ready.
@@ -45,18 +41,9 @@ domReady( async () => {
 	);
 
 	if ( renderTarget ) {
-		const { setupModuleSlug, viewOnly } = renderTarget.dataset;
-
-		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
-		if ( ! setupModuleSlug ) {
-			viewContext = viewOnly
-				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
-				: VIEW_CONTEXT_MAIN_DASHBOARD;
-		}
-
 		render(
-			<Root viewContext={ viewContext }>
-				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
+			<Root viewContext={ VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }>
+				<DashboardEntryPoint />
 			</Root>,
 			renderTarget
 		);
