@@ -609,13 +609,6 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-public-dashboard',
-				array(
-					'src'          => $base_url . 'js/googlesitekit-public-dashboard.js',
-					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
-				)
-			),
-			new Script(
 				'googlesitekit-settings',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-settings.js',
