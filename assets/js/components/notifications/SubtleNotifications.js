@@ -25,8 +25,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import SetupSuccessSubtleNotification from '../../modules/ads/components/notifications/SetupSuccessSubtleNotification';
-import PAXSetupSuccessSubtleNotification from '../../modules/ads/components/notifications/PAXSetupSuccessSubtleNotification';
+import {
+	SetupSuccessSubtleNotification,
+	PAXSetupSuccessSubtleNotification,
+} from '../../modules/ads/components/notifications/';
 
 export default function SubtleNotifications() {
 	// Each notification component rendered here has its own logic to determine
