@@ -42,7 +42,7 @@ export default function SettingsSetupIncomplete() {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-settings-module__fields-group">
+			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 				<AdBlockerWarning />
 			</div>
 

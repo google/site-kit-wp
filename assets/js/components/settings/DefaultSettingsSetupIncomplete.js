@@ -47,7 +47,7 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 
 	return (
 		<Cell size={ 12 }>
-			<div className="googlesitekit-settings-module__fields-group">
+			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 				<ModuleSettingsWarning slug={ slug } />
 			</div>
 			{ createInterpolateElement(
