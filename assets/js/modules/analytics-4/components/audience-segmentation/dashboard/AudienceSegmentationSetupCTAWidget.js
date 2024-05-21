@@ -90,6 +90,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 	} );
 
 	const onEnableGroups = useCallback( async () => {
+		setIsSaving( true );
 		const scopes = [];
 
 		if ( ! hasAnalytics4EditScope ) {
@@ -101,7 +102,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 		// this particular case has some special handling to improve UX.
 		if ( scopes.length > 0 ) {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-				autoSubmit: false,
+				autoSubmit: true,
 			} );
 
 			setPermissionScopeError( {
@@ -122,7 +123,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 		}
 
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
-		setIsSaving( true );
 		await enableAudienceGroup();
 	}, [
 		enableAudienceGroup,
@@ -158,7 +158,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 	} );
 
 	if (
-		( configuredAudiences !== undefined && configuredAudiences.length ) ||
+		( configuredAudiences && configuredAudiences.length ) ||
 		! hasDataWithinPast90Days
 	) {
 		return null;
