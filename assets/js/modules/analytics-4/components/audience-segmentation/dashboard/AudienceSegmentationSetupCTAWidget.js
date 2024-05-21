@@ -88,7 +88,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
 	} );
 
-	if ( configuredAudiences || ! hasDataWithinPast90Days ) {
+	if ( configuredAudiences !== null || ! hasDataWithinPast90Days ) {
 		return null;
 	}
 
