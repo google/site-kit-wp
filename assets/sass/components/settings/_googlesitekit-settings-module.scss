@@ -72,6 +72,7 @@
 		.googlesitekit-settings-module__content--open {
 			border: none;
 			display: block;
+			margin-top: -10px; // Remove some default duplicated <Grid> padding gap between header and content
 		}
 
 		.googlesitekit-settings-module__heading {
