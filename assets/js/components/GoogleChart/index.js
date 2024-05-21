@@ -97,7 +97,7 @@ export default function GoogleChart( props ) {
 	const breakpoint = useBreakpoint();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
+		select( CORE_USER ).getDateRangeDates( { offsetDays: 0 } )
 	);
 
 	const viewContext = useViewContext();

@@ -164,6 +164,7 @@ export const reducer = ( state, { payload, type } ) => {
 				productPostType,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupNew,
+				consentModeRegions,
 			} = payload.siteInfo;
 
 			return {
@@ -197,6 +198,7 @@ export const reducer = ( state, { payload, type } ) => {
 					productPostType,
 					keyMetricsSetupCompletedBy,
 					keyMetricsSetupNew,
+					consentModeRegions,
 				},
 			};
 		}
@@ -275,6 +277,7 @@ export const resolvers = {
 			productPostType,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupNew,
+			consentModeRegions,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -313,6 +316,7 @@ export const resolvers = {
 			productPostType,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupNew,
+			consentModeRegions,
 		} );
 	},
 };
@@ -848,6 +852,15 @@ export const selectors = {
 			negateDefined( selectors.getKeyMetricsSetupCompletedBy( state ) )
 		);
 	},
+
+	/**
+	 * Get the static list of consent mode regions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>} Array of consent mode regions.
+	 */
+	getConsentModeRegions: getSiteInfoProperty( 'consentModeRegions' ),
 };
 
 export default {

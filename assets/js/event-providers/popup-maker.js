@@ -1,7 +1,5 @@
 /**
- * Metric Selection Panel utils.
- *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Sorts an array without causing the mutation if the given parameter is an array.
- * If the parameter is not an array, it returns the parameter as is.
- *
- * @since 1.110.0
- *
- * @param {Array|*} arr Param to be sorted.
- * @return {Array|*} 	Safely sorted array without mutation.
- */
-export const safelySort = ( arr ) => {
-	return Array.isArray( arr ) ? [ ...arr ].sort() : arr;
-};
+( ( jQuery ) => {
+	// eslint-disable-next-line no-undef
+	if ( ! jQuery || ! PUM ) {
+		return;
+	}
+
+	// eslint-disable-next-line no-undef
+	PUM.hooks.addAction( 'pum.integration.form.success', function () {
+		global._googlesitekit?.trackEvent?.( 'submit_lead_form' );
+	} );
+} )( global.jQuery );

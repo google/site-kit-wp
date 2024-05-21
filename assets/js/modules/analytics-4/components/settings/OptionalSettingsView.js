@@ -30,15 +30,15 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
-	const adsModuleEnabled = useFeature( 'adsModule' );
-
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
+	);
+	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
 	);
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getTrackingDisabled() || []
@@ -77,24 +77,28 @@ export default function OptionalSettingsView() {
 				</div>
 			</div>
 
-			{ ! adsModuleEnabled && useSnippet && (
-				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ !! adsConversionID && (
-								<DisplaySetting value={ adsConversionID } />
-							) }
-							{ ! adsConversionID &&
-								__( 'None', 'google-site-kit' ) }
-						</p>
+			{ /* Prevent the Ads Conversion ID setting displaying after this field has been
+				 migrated to the Ads module, even after resetting the Analytics module. */ }
+			{ useSnippet &&
+				! adsConversionIDMigratedAtMs &&
+				!! adsConversionID && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Ads Conversion ID', 'google-site-kit' ) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ !! adsConversionID && (
+									<DisplaySetting value={ adsConversionID } />
+								) }
+								{ ! adsConversionID &&
+									__( 'None', 'google-site-kit' ) }
+							</p>
+						</div>
 					</div>
-				</div>
-			) }
+				) }
 
-			{ adsModuleEnabled && <AdsConversionIDSettingsNotice /> }
+			<AdsConversionIDSettingsNotice />
 		</Fragment>
 	);
 }

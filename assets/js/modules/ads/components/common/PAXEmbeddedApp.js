@@ -39,15 +39,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import CTA from '../../../components/notifications/CTA';
-import PreviewBlock from '../../../components/PreviewBlock';
-import { createPaxServices } from '../pax/services';
-const { useRegistry, useSelect } = Data;
+import PreviewBlock from '../../../../components/PreviewBlock';
+import CTA from '../../../../components/notifications/CTA';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '../../../analytics-4/datastore/constants';
+import { createPaxServices } from '../../pax/services';
+import { useMemoOne } from 'use-memo-one';
+import { formatPaxDate } from '../../pax/utils';
 
+const { useRegistry, useSelect } = Data;
 export default function PAXEmbeddedApp( {
 	displayMode = 'default',
 	onLaunch,
+	onCampaignCreated,
 } ) {
 	const [ launchGoogleAdsAvailable, setLaunchGoogleAdsAvailable ] = useState(
 		typeof global?.google?.ads?.integration?.integrator?.launchGoogleAds ===
@@ -61,8 +65,18 @@ export default function PAXEmbeddedApp( {
 	const registry = useRegistry();
 
 	const paxServices = useMemo( () => {
-		return createPaxServices( registry );
-	}, [ registry ] );
+		return createPaxServices( registry, { onCampaignCreated } );
+	}, [ registry, onCampaignCreated ] );
+
+	const paxDateRange = useSelect( ( select ) => {
+		if ( displayMode !== 'reporting' ) {
+			return {};
+		}
+
+		return select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+	} );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -72,9 +86,11 @@ export default function PAXEmbeddedApp( {
 
 	const paxAppRef = useRef();
 
-	const elementID = `googlesitekit-pax-embedded-app-${ instanceID }`;
+	const elementID = useMemoOne( () => {
+		return `googlesitekit-pax-embedded-app-${ instanceID }`;
+	}, [ instanceID ] );
 
-	const paxConfig = useMemo( () => {
+	const paxConfig = useMemoOne( () => {
 		return {
 			...( global?._googlesitekitPAXConfig || {} ),
 			clientConfig: {
@@ -91,13 +107,35 @@ export default function PAXEmbeddedApp( {
 		};
 	}, [ elementID, displayMode ] );
 
+	const setDateRangeForReportingMode = useCallback( () => {
+		if (
+			displayMode === 'reporting' &&
+			paxAppRef?.current &&
+			paxDateRange.startDate &&
+			paxDateRange.endDate
+		) {
+			paxAppRef.current.getServices().adsDateRangeService.update( {
+				startDate: formatPaxDate( paxDateRange.startDate ),
+				endDate: formatPaxDate( paxDateRange.endDate ),
+			} );
+		}
+	}, [ displayMode, paxDateRange.endDate, paxDateRange.startDate ] );
+
 	const launchPAXApp = useCallback( async () => {
+		if ( hasLaunchedPAXApp || paxAppRef.current ) {
+			return;
+		}
+
+		setHasLaunchedPAXApp( true );
+
 		try {
 			paxAppRef.current =
 				await global.google.ads.integration.integrator.launchGoogleAds(
 					paxConfig,
 					paxServices
 				);
+
+			setDateRangeForReportingMode();
 
 			onLaunch?.( paxAppRef.current );
 		} catch ( error ) {
@@ -109,7 +147,13 @@ export default function PAXEmbeddedApp( {
 		}
 
 		setIsLoading( false );
-	}, [ paxConfig, paxServices, onLaunch ] );
+	}, [
+		hasLaunchedPAXApp,
+		paxConfig,
+		paxServices,
+		setDateRangeForReportingMode,
+		onLaunch,
+	] );
 
 	useInterval(
 		() => {
@@ -131,9 +175,7 @@ export default function PAXEmbeddedApp( {
 	);
 
 	useEffect( () => {
-		if ( launchGoogleAdsAvailable && ! hasLaunchedPAXApp ) {
-			setHasLaunchedPAXApp( true );
-
+		if ( launchGoogleAdsAvailable ) {
 			launchPAXApp();
 		}
 	}, [
@@ -141,6 +183,19 @@ export default function PAXEmbeddedApp( {
 		isLoading,
 		launchGoogleAdsAvailable,
 		launchPAXApp,
+	] );
+
+	useEffect( () => {
+		setDateRangeForReportingMode();
+	}, [
+		setDateRangeForReportingMode,
+		// `setDateRangeForReportingMode` will change whenever the date range
+		// updates, causing this effect to run again, so the two date range
+		// dependencies are technically redundant, but are explicitly listed
+		// here to make the intent of the code clearer. (They're harmless
+		// to include and do not cause extra renders/requests.)
+		paxDateRange.startDate,
+		paxDateRange.endDate,
 	] );
 
 	return (
