@@ -25,8 +25,9 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
+import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,6 +37,8 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
+	EDIT_SCOPE,
+	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { getPreviousDate } from '../../../../../util';
@@ -50,6 +53,8 @@ import {
 import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
 import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 
 const { useSelect, useDispatch } = Data;
 
@@ -59,17 +64,81 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
-
-	const onEnableGroups = useCallback( async () => {
-		setIsSaving( true );
-
-		await enableAudienceGroup();
-	}, [ enableAudienceGroup ] );
 
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
+
+	const hasAnalytics4EditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_SEGMENTATION_SETUP_FORM,
+			'autoSubmit'
+		)
+	);
+
+	const hasRequiredScope = hasAnalytics4EditScope;
+
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'audience_segmentation',
+	} );
+
+	const onEnableGroups = useCallback( async () => {
+		const scopes = [];
+
+		if ( ! hasAnalytics4EditScope ) {
+			scopes.push( EDIT_SCOPE );
+		}
+
+		// If scope not granted, trigger scope error right away. These are
+		// typically handled automatically based on API responses, but
+		// this particular case has some special handling to improve UX.
+		if ( scopes.length > 0 ) {
+			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+				autoSubmit: false,
+			} );
+
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create new audiences in Analytics.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes: [ EDIT_SCOPE ],
+					skipModal: true,
+					redirectURL,
+				},
+			} );
+
+			return;
+		}
+
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
+		setIsSaving( true );
+		await enableAudienceGroup();
+	}, [
+		enableAudienceGroup,
+		hasAnalytics4EditScope,
+		setPermissionScopeError,
+		redirectURL,
+		setValues,
+	] );
+
+	// If the user ends up back on this component with the required scope granted,
+	// and already submitted the form, trigger the submit again.
+	useEffect( () => {
+		if ( hasRequiredScope && autoSubmit ) {
+			onEnableGroups();
+		}
+	}, [ hasRequiredScope, autoSubmit, onEnableGroups ] );
 
 	const hasDataWithinPast90Days = useSelect( ( select ) => {
 		const endDate = select( CORE_USER ).getReferenceDate();
@@ -88,7 +157,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
 	} );
 
-	if ( configuredAudiences || ! hasDataWithinPast90Days ) {
+	if (
+		( configuredAudiences !== undefined && configuredAudiences.length ) ||
+		! hasDataWithinPast90Days
+	) {
 		return null;
 	}
 

@@ -209,3 +209,5 @@ export const SITE_KIT_AUDIENCE_DEFINITIONS = {
 		],
 	},
 };
+
+export const AUDIENCE_SEGMENTATION_SETUP_FORM = 'audiencePermissionsSetup';
