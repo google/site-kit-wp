@@ -92,7 +92,7 @@ class Admin_Columns_REST_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request['queryParams'];
+						$data = $request['data'];
 
 						$response = $this->columns_data->request_columns_data( $data );
 

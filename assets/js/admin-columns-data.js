@@ -49,20 +49,27 @@ async function fetchColumnsData() {
 			postIDs.push( post.getAttribute( 'data-id' ) );
 		}
 
-		const data = await API.get( 'core', 'admin', 'columns-data', {
-			queryParams: {
-				post_type: 'post',
-				posts: postIDs,
+		const data = await API.get(
+			'core',
+			'admin',
+			'columns-data',
+			{
+				data: {
+					post_type: 'post',
+					posts: postIDs,
+				},
 			},
-			useCache: false,
-		} );
+			{ useCache: false }
+		);
 
 		if ( data ) {
 			for ( const postID in data ) {
 				const viewSpan = document.querySelector(
 					`.googlesitekit-views-column[data-id="${ postID }"]`
 				);
-				viewSpan.textContent = data[ postID ].views;
+				if ( viewSpan ) {
+					viewSpan.textContent = data[ postID ].views;
+				}
 			}
 		}
 	}
