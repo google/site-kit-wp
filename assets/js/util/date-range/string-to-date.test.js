@@ -32,6 +32,14 @@ describe( 'stringToDate', () => {
 		}
 	);
 
+	it( 'uses a zero-indexed month', () => {
+		const date = stringToDate( '2019-01-31' );
+
+		expect( date.getFullYear() ).toBe( 2019 );
+		expect( date.getMonth() ).toBe( 0 );
+		expect( date.getDate() ).toBe( 31 );
+	} );
+
 	it( 'returns a valid date instance for the given date string', () => {
 		const date = stringToDate( '2019-10-31' );
 

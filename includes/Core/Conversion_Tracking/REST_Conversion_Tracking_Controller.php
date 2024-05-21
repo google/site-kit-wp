@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Dismissals\REST_Conversion_Tracking_Controller
+ * Class Google\Site_Kit\Core\Conversion_Tracking\REST_Conversion_Tracking_Controller
  *
- * @package   Google\Site_Kit\Core\Key_Metrics
+ * @package   Google\Site_Kit\Core\Conversion_Tracking
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -20,16 +20,16 @@ use WP_REST_Server;
 /**
  * Class for handling rest routes for Conversion Tracking settings.
  *
- * @since n.e.x.t
+ * @since 1.127.0
  * @access private
  * @ignore
  */
 class REST_Conversion_Tracking_Controller {
 
 	/**
-	 * Key_Metrics_Settings instance.
+	 * Conversion_Tracking_Settings instance.
 	 *
-	 * @since 1.93.0
+	 * @since 1.127.0
 	 * @var Conversion_Tracking_Settings
 	 */
 	protected $settings;
@@ -37,7 +37,7 @@ class REST_Conversion_Tracking_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param Conversion_Tracking_Settings $settings Conversion Tracking settings.
 	 */
@@ -48,7 +48,7 @@ class REST_Conversion_Tracking_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 */
 	public function register() {
 		add_filter(
@@ -74,7 +74,7 @@ class REST_Conversion_Tracking_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -128,5 +128,4 @@ class REST_Conversion_Tracking_Controller {
 			),
 		);
 	}
-
 }

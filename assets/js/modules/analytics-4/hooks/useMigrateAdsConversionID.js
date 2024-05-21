@@ -28,7 +28,6 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { MODULES_ADS } from '../../ads/datastore/constants';
-import { useFeature } from '../../../hooks/useFeature';
 
 const { useSelect, useDispatch } = Data;
 
@@ -41,8 +40,6 @@ const { useSelect, useDispatch } = Data;
  */
 export default function useMigrateAdsConversionID() {
 	const [ loading, setLoading ] = useState( false );
-
-	const adsModuleEnabled = useFeature( 'adsModule' );
 
 	const legacyAdsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
@@ -60,7 +57,7 @@ export default function useMigrateAdsConversionID() {
 		select( CORE_MODULES ).isModuleConnected( 'ads' )
 	);
 	const adsConversionID = useSelect( ( select ) => {
-		if ( ! adsModuleEnabled || ! adsModuleAvailable ) {
+		if ( ! adsModuleAvailable ) {
 			return null;
 		}
 
@@ -74,12 +71,10 @@ export default function useMigrateAdsConversionID() {
 		submitChanges: submitAnalyticsChanges,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
-	// TODO: Destructure actions here when the `adsModule` feature flag is removed.
-	const dispatch = useDispatch( MODULES_ADS );
+	const { setConversionID, submitChanges } = useDispatch( MODULES_ADS );
 
 	useEffect( () => {
 		if (
-			! adsModuleEnabled ||
 			isDoingSubmitChanges ||
 			loading ||
 			! adsModuleAvailable ||
@@ -93,8 +88,8 @@ export default function useMigrateAdsConversionID() {
 		const migrate = async () => {
 			setLoading( true );
 
-			await dispatch.setConversionID( legacyAdsConversionID );
-			await dispatch.submitChanges();
+			await setConversionID( legacyAdsConversionID );
+			await submitChanges();
 
 			await setLegacyAdsConversionID( '' );
 			await setAdsConversionIDMigratedAtMs( Date.now() );
@@ -120,15 +115,15 @@ export default function useMigrateAdsConversionID() {
 		adsModuleActive,
 		adsModuleAvailable,
 		adsModuleConnected,
-		adsModuleEnabled,
-		dispatch,
 		fetchGetModules,
 		isDoingSubmitChanges,
 		legacyAdsConversionID,
 		loading,
 		setAdsConversionIDMigratedAtMs,
+		setConversionID,
 		setLegacyAdsConversionID,
 		submitAnalyticsChanges,
+		submitChanges,
 	] );
 
 	return loading;

@@ -15,6 +15,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isPlainObject, isEqual } from 'lodash';
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -22,8 +28,6 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
 import { CORE_SITE } from './constants';
-import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
 
 const { createRegistrySelector } = Data;
 const { getRegistry } = Data.commonActions;
@@ -32,6 +36,7 @@ const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
 
 const settingsReducerCallback = createReducer( ( state, settings ) => {
 	state.conversionTracking.settings = settings;
+	state.conversionTracking.savedSettings = settings;
 } );
 
 const fetchGetConversionTrackingSettingsStore = createFetchStore( {
@@ -64,6 +69,7 @@ const fetchSaveConversionTrackingSettingsStore = createFetchStore( {
 const baseInitialState = {
 	conversionTracking: {
 		settings: undefined,
+		savedSettings: undefined,
 	},
 };
 
@@ -89,7 +95,7 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} enabled Conversion Tracking enabled status.
+	 * @param {string} enabled Consent Mode enabled status.
 	 * @return {Object} Redux-style action.
 	 */
 	setConversionTrackingEnabled( enabled ) {
@@ -129,11 +135,11 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the Conversion Tracking enabled status.
+	 * Gets the Consent Mode enabled status.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean|undefined} Conversion Tracking enabled status, or `undefined` if not loaded.
+	 * @return {boolean|undefined} Consent Mode enabled status, or `undefined` if not loaded.
 	 */
 	isConversionTrackingEnabled: createRegistrySelector( ( select ) => () => {
 		const { enabled } =
@@ -141,13 +147,29 @@ const baseSelectors = {
 
 		return enabled;
 	} ),
+
+	/**
+	 * Indicates whether the current settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
+	haveConversionTrackingSettingsChanged( state ) {
+		const { settings, savedSettings } = state.conversionTracking;
+
+		return ! isEqual( settings, savedSettings );
+	},
 };
 
 const baseResolvers = {
 	*getConversionTrackingSettings() {
 		const { select } = yield getRegistry();
+		const conversionTrackingSettings =
+			select( CORE_SITE ).getConversionTrackingSettings();
 
-		if ( select( CORE_SITE ).getConversionTrackingSettings() ) {
+		if ( conversionTrackingSettings ) {
 			return;
 		}
 

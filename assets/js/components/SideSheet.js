@@ -46,7 +46,7 @@ export default function SideSheet( {
 	children,
 	isOpen,
 	onOpen = () => {},
-	closeFn = () => {},
+	closeSheet = () => {},
 	focusTrapOptions = {},
 } ) {
 	const sideSheetRef = useRef();
@@ -65,9 +65,9 @@ export default function SideSheet( {
 		}
 	}, [ isOpen, onOpen ] );
 
-	useClickAway( sideSheetRef, closeFn );
+	useClickAway( sideSheetRef, closeSheet );
 
-	useKey( ( event ) => isOpen && ESCAPE === event.keyCode, closeFn );
+	useKey( ( event ) => isOpen && ESCAPE === event.keyCode, closeSheet );
 
 	return (
 		<Portal>
@@ -105,6 +105,6 @@ SideSheet.propTypes = {
 	children: PropTypes.node,
 	isOpen: PropTypes.bool,
 	onOpen: PropTypes.func,
-	closeFn: PropTypes.func,
+	closeSheet: PropTypes.func,
 	focusTrapOptions: PropTypes.object,
 };

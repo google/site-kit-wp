@@ -298,6 +298,53 @@ describe( 'modules/tagmanager versions', () => {
 				expect( console ).toHaveErrored();
 			} );
 
+			it( 'dispatches an error if the request fails when access is denied', async () => {
+				const { accountID, internalContainerID } = parseIDs(
+					factories.buildLiveContainerVersionWeb()
+				);
+				const permissionDeniedResponse = {
+					code: 404,
+					message: 'Not found or permission denied.',
+					data: {
+						status: 404,
+						reason: 'notFound',
+					},
+				};
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					),
+					{ body: permissionDeniedResponse, status: 404 }
+				);
+
+				registry
+					.select( MODULES_TAGMANAGER )
+					.getLiveContainerVersion( accountID, internalContainerID );
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( accountID, internalContainerID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getErrorForSelector( 'getLiveContainerVersion', [
+							accountID,
+							internalContainerID,
+						] )
+				).toEqual( permissionDeniedResponse );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getLiveContainerVersion(
+							accountID,
+							internalContainerID
+						)
+				).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+
 			it( 'receives null if the container has no published version', async () => {
 				const { accountID, internalContainerID } = parseIDs(
 					factories.buildLiveContainerVersionWeb()
