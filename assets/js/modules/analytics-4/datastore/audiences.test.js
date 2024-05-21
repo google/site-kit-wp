@@ -313,7 +313,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				};
 			}
 
-			function getReportOptions( audiences ) {
+			function getAudiencesTotalUsersReportOptions( audiences ) {
 				return {
 					metrics: [ { name: 'totalUsers' } ],
 					dimensions: [ 'audienceResourceName' ],
@@ -327,7 +327,9 @@ describe( 'modules/analytics-4 audiences', () => {
 				};
 			}
 
-			function createMockReport( totalUsersByAudience ) {
+			function createAudiencesTotalUsersMockReport(
+				totalUsersByAudience
+			) {
 				return {
 					kind: 'analyticsData#runReport',
 					rowCount: 3,
@@ -484,7 +486,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				const options = getReportOptions( [
+				const options = getAudiencesTotalUsersReportOptions( [
 					availableUserAudienceFixture,
 				] );
 
@@ -573,12 +575,16 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					const options = getReportOptions( availableUserAudiences );
+					const options = getAudiencesTotalUsersReportOptions(
+						availableUserAudiences
+					);
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetReport(
-							createMockReport( totalUsersByAudience ),
+							createAudiencesTotalUsersMockReport(
+								totalUsersByAudience
+							),
 							{ options }
 						);
 
@@ -665,12 +671,16 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					const options = getReportOptions( availableUserAudiences );
+					const options = getAudiencesTotalUsersReportOptions(
+						availableUserAudiences
+					);
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.receiveGetReport(
-							createMockReport( totalUsersByAudience ),
+							createAudiencesTotalUsersMockReport(
+								totalUsersByAudience
+							),
 							{ options }
 						);
 
@@ -781,10 +791,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					}
 				);
 
-				const options = getReportOptions( availableUserAudiences );
+				const options = getAudiencesTotalUsersReportOptions(
+					availableUserAudiences
+				);
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-					createMockReport( {
+					createAudiencesTotalUsersMockReport( {
 						[ availableUserAudiences[ 0 ].name ]: 0,
 						[ availableUserAudiences[ 1 ].name ]: 0,
 						[ availableUserAudiences[ 2 ].name ]: 0,
@@ -929,7 +941,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					const options = getReportOptions( [
+					const options = getAudiencesTotalUsersReportOptions( [
 						availableUserAudienceFixture,
 					] );
 
