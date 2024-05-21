@@ -31,6 +31,7 @@ import {
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
+	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
@@ -884,13 +885,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 				);
 
-				const postTypeCustomDimension = {
-					parameterName: 'googlesitekit_post_type',
-					displayName: 'WordPress Post Type',
-					description: 'Created by Site Kit: Content type of a post',
-					scope: 'EVENT',
-				};
-
 				beforeEach( () => {
 					provideUserAuthentication( registry );
 					provideUserCapabilities( registry );
@@ -930,14 +924,16 @@ describe( 'modules/analytics-4 audiences', () => {
 								body:
 									callCount === 1
 										? []
-										: [ postTypeCustomDimension ],
+										: [
+												CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+										  ],
 								status: 200,
 							};
 						}
 					);
 
 					fetchMock.postOnce( createCustomDimensionEndpoint, {
-						body: postTypeCustomDimension,
+						body: CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 						status: 200,
 					} );
 
@@ -964,7 +960,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							body: {
 								data: {
 									propertyID: testPropertyID,
-									customDimension: postTypeCustomDimension,
+									customDimension:
+										CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 								},
 							},
 						}
@@ -979,7 +976,9 @@ describe( 'modules/analytics-4 audiences', () => {
 						registry
 							.select( MODULES_ANALYTICS_4 )
 							.getAvailableCustomDimensions()
-					).toEqual( [ postTypeCustomDimension ] );
+					).toEqual( [
+						CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+					] );
 
 					expect(
 						registry
