@@ -206,6 +206,7 @@ final class Plugin {
 				( new Core\Admin\Pointers() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Authorize_Application( $this->context, $assets ) )->register();
+				( new Core\Public_Dashboard\Public_Dashboard( $this->context, $assets ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
 				( new Core\Site_Health\Site_Health( $this->context, $options, $user_options, $authentication, $modules, $permissions ) )->register();
 				( new Core\Util\Health_Checks( $authentication ) )->register();
