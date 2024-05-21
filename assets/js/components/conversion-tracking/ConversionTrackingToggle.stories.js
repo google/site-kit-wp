@@ -21,7 +21,6 @@
  */
 import ConversionTrackingToggle from './ConversionTrackingToggle';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { WithTestRegistry } from '../../../../tests/js/utils';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import fetchMock from 'fetch-mock';
 
@@ -78,10 +77,28 @@ Default.parameters = {
 };
 Default.decorators = [
 	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetConversionTrackingSettings( { enabled: false } );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'google-site-kit/v1/core/site/data/conversion-tracking'
+				),
+				{
+					body: { enabled: false },
+					status: 200,
+				}
+			);
+		};
 		return (
-			<WithTestRegistry features={ parameters.features || [] }>
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];
