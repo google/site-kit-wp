@@ -32,7 +32,7 @@ import {
 	useRequestInterception,
 } from '../../../utils';
 
-describe( 'Ads setup (with no Conversion Tracking ID present)', () => {
+describe( 'Ads module setup', () => {
 	async function setUpAdsModule() {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 
