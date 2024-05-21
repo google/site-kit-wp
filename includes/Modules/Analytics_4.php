@@ -167,7 +167,7 @@ final class Analytics_4 extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
-		$admin_columns = new Admin_Columns( $this->context, $this, $this->transients, array( 'post' ) );
+		$admin_columns = new Admin_Columns( $this->context, $this, $this->transients, $this->assets, array( 'post' ) );
 		$admin_columns->add(
 			'views',
 			__( 'Views', 'google-site-kit' ),

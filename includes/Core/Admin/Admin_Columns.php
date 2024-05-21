@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Storage\Transients;
 
@@ -57,6 +58,22 @@ class Admin_Columns {
 	protected $transients;
 
 	/**
+	 * Assets instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Assets
+	 */
+	protected $assets;
+
+	/**
+	 * Admin_Columns_REST_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Admin_Columns_REST_Controller
+	 */
+	protected $rest_controller;
+
+	/**
 	 * Columns_Data instance.
 	 *
 	 * @since n.e.x.t
@@ -80,17 +97,20 @@ class Admin_Columns {
 	 * @param Context    $context    Plugin context.
 	 * @param Module     $module     Module instance.
 	 * @param Transients $transients Optional. Transient API instance. Default is a new instance.
+	 * @param Assets     $assets     Assets instance.
 	 * @param array      $allowed_post_types Optional. Post types slugs array on which custom columns should be shown.
 	 */
 	public function __construct(
 		Context $context,
 		Module $module,
 		Transients $transients = null,
+		Assets $assets,
 		$allowed_post_types = array( 'post', 'page' )
 	) {
 		$this->context    = $context;
 		$this->module     = $module;
 		$this->transients = $transients ?: new Transients( $this->context );
+		$this->assets     = $assets;
 
 		/**
 		 * Allowed post types for which to show column data.
@@ -109,6 +129,8 @@ class Admin_Columns {
 			$this,
 			$this->transients
 		);
+
+		$this->rest_controller = new Admin_Columns_REST_Controller( $this->context, $this->columns_data );
 	}
 
 
@@ -152,6 +174,15 @@ class Admin_Columns {
 		);
 
 		$this->columns_data->register();
+
+		add_action(
+			'admin_enqueue_scripts',
+			function() {
+				$this->assets->enqueue_asset( 'googlesitekit-admin-columns-data' );
+			}
+		);
+
+		$this->rest_controller->register();
 	}
 
 	/**

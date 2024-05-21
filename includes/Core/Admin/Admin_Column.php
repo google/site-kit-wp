@@ -124,7 +124,9 @@ class Admin_Column {
 				'<span class="googlesitekit-views-column" data-column="%s" data-id="%s">%d</span>',
 				esc_attr( $key ),
 				esc_attr( $post_id ),
-				esc_html( $data[ $post_id ]['views'] )
+				0
+				// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+				// esc_html( $data[ $post_id ]['views'] ).
 			);
 		} else {
 			printf(

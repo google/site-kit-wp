@@ -118,13 +118,14 @@ class Columns_Data {
 				if ( $screen && ! in_array( $screen->id, $allowed_edit_screens, true ) ) {
 					return;
 				}
-
-				add_action(
-					'posts_selection',
-					function( $selection ) use ( $query ) {
-						$this->maybe_request_columns_data( $query );
-					}
-				);
+				// phpcs:disable
+				/* add_action(
+				 	'posts_selection',
+				 	function( $selection ) use ( $query ) {
+				 		$this->maybe_request_columns_data( $query );
+				 	}
+				); */
+				// phpcs:enable
 			}
 		);
 	}
@@ -135,12 +136,15 @@ class Columns_Data {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param WP_Query $query WP_Query instance.
+	 * @param Array $data Parameters array.
 	 */
-	public function request_columns_data( $query ) {
+	public function request_columns_data( $data ) {
 		// @TODO adapt `maybe_request_columns_data` method to work with client side.
-		// It will accept post_type, post ids array and column_key then rparse that into the data array
-		// and return back to the cient to then append the data in the span[data-id] elements.
+		// It will accept post_type, post ids array and column_key then parse that into the data array
+		// and return back to the client to then append the data in the span[data-id] elements.
+		$this->maybe_request_columns_data_for_fe_mode( $data );
+
+		return $this->get_data( $data['post_type'] );
 	}
 
 	/**
@@ -158,6 +162,62 @@ class Columns_Data {
 
 		if ( $query->posts ) {
 			foreach ( $query->posts as $post ) {
+				$this->prepare_posts_data( $post, $current_posts_data, $columns_definition['columns'] );
+			}
+		}
+
+		// If there is no posts yet, bail early.
+		if ( empty( $current_posts_data ) ) {
+			return;
+		}
+
+		// If module is in gathering data state, bail early.
+		if ( $this->module instanceof Module_With_Data_Available_State && ! $this->module->is_data_available() ) {
+			return;
+		}
+
+		$transient_key    = $this->get_transient_key( $current_post_type );
+		$stored_data      = $this->transients->get( $transient_key );
+		$make_new_request = empty( $stored_data ) ? true : false;
+
+		// If current posts in the admin posts view have changed from the ones
+		// previously stored requesting new data is needed.
+		if ( ! empty( $stored_data ) && array_diff( array_keys( $current_posts_data ), array_keys( $stored_data ) ) ) {
+			$make_new_request = true;
+		}
+
+		if ( $make_new_request ) {
+			$paths = wp_list_pluck( $current_posts_data, 'path' );
+			$data  = $this->get_report_data( $paths, $columns_definition['metrics'] );
+
+			$this->process_report_data( $data, $current_posts_data, $transient_key );
+		}
+	}
+
+	/**
+	 * Makes a report request if transient is not present, or mismatches current
+	 * posts in admin posts list page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Array $data Array of parameters to query data for.
+	 */
+	protected function maybe_request_columns_data_for_fe_mode( $data ) {
+		$current_posts_data = array();
+		$current_post_type  = $data['post_type'];
+		$columns_definition = $this->extract_columns_definition();
+
+		if ( $data['posts'] ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+			$posts = get_posts(
+				array(
+					'post_type'        => $data['post_type'],
+					'include'          => $data['posts'],
+					'suppress_filters' => false,
+				)
+			);
+
+			foreach ( $posts as $post ) {
 				$this->prepare_posts_data( $post, $current_posts_data, $columns_definition['columns'] );
 			}
 		}
@@ -298,12 +358,15 @@ class Columns_Data {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param string $post_type Post type.
 	 * @return string Transient key.
 	 */
-	public function get_data() {
+	public function get_data( $post_type = 'post' ) {
 		global $typenow;
 
-		$transient_key = $this->get_transient_key( $typenow );
+		// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+		// $transient_key = $this->get_transient_key( $typenow );
+		$transient_key = $this->get_transient_key( $post_type );
 		$stored_data   = $this->transients->get( $transient_key );
 
 		if ( empty( $stored_data ) ) {

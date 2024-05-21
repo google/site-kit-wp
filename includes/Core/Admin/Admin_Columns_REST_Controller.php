@@ -92,9 +92,11 @@ class Admin_Columns_REST_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request['data'];
+						$data = $request['queryParams'];
 
-						return new WP_REST_Response( $this->columns_data->request_columns_data( $data ) );
+						$response = $this->columns_data->request_columns_data( $data );
+
+						return new WP_REST_Response( $response );
 					},
 					'permission_callback' => $can_view_columns,
 				)

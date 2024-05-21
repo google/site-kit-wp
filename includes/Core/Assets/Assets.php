@@ -674,6 +674,16 @@ final class Assets {
 					'version' => null,
 				)
 			),
+			// Admin columns data.
+			new Script(
+				'googlesitekit-admin-columns-data',
+				array(
+					'src'          => $base_url . 'js/admin-columns-data.js',
+					'dependencies' => $dependencies,
+					'execution'    => 'defer',
+				)
+			),
+
 		);
 
 		/**
