@@ -163,7 +163,7 @@ export default function Header( { slug } ) {
 					>
 						<ModuleIcon
 							slug={ slug }
-							size={ 24 }
+							size={ 40 }
 							className="googlesitekit-settings-module__heading-icon"
 						/>
 
