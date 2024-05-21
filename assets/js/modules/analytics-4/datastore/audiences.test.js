@@ -303,30 +303,6 @@ describe( 'modules/analytics-4 audiences', () => {
 		} );
 
 		describe( 'enableAudienceGroup', () => {
-			const audienceSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
-			);
-
-			const testPropertyID = propertiesFixture[ 0 ]._id;
-
-			const referenceDate = '2024-05-10';
-			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
-
-			const availableNewVisitorsAudienceFixture =
-				availableAudiencesFixture[ 2 ];
-			const availableReturningVisitorsAudienceFixture =
-				availableAudiencesFixture[ 3 ];
-			const availableUserAudienceFixture = availableAudiencesFixture[ 4 ];
-
-			// The fixture only contains one user audience. Create another two so we can test the filtering and sorting.
-			const availableUserAudiences = [
-				availableUserAudienceFixture,
-				createAvailableUserAudience( 6 ),
-				createAvailableUserAudience( 7 ),
-			];
-
-			const isAudienceSegmentationWidgetHidden = false;
-
 			function createAvailableUserAudience( audienceID ) {
 				return {
 					name: `properties/12345/audiences/${ audienceID }`,
@@ -441,6 +417,30 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 				};
 			}
+
+			const audienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			);
+
+			const testPropertyID = propertiesFixture[ 0 ]._id;
+
+			const referenceDate = '2024-05-10';
+			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+
+			const availableNewVisitorsAudienceFixture =
+				availableAudiencesFixture[ 2 ];
+			const availableReturningVisitorsAudienceFixture =
+				availableAudiencesFixture[ 3 ];
+			const availableUserAudienceFixture = availableAudiencesFixture[ 4 ];
+
+			// The fixture only contains one user audience. Create another two so we can test the filtering and sorting.
+			const availableUserAudiences = [
+				availableUserAudienceFixture,
+				createAvailableUserAudience( 6 ),
+				createAvailableUserAudience( 7 ),
+			];
+
+			const isAudienceSegmentationWidgetHidden = false;
 
 			beforeEach( () => {
 				provideModules( registry, [
