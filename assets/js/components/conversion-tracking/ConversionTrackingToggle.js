@@ -34,17 +34,13 @@ import ErrorText from '../../components/ErrorText';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
 import { useFeature } from '../../hooks/useFeature';
+import PropTypes from 'prop-types';
 
 const { useDispatch, useSelect } = Data;
 
 export default function ConversionTrackingToggle( { loading } ) {
 	const iceEnabled = useFeature( 'conversionInfra' );
-
-	const viewContext = useViewContext();
-
 	const [ saveError ] = useState( null );
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
 
@@ -77,27 +73,16 @@ export default function ConversionTrackingToggle( { loading } ) {
 								'google-site-kit'
 							) }
 							checked={ isConversionTrackingEnabled }
-							disabled={ loading || isSaving }
+							disabled={ isSaving || loading }
 							onClick={ () => {
-								// If Consent Mode is currently enabled, show a confirmation
+								// If Conversion Tracking is currently enabled, show a confirmation
 								// dialog warning users about the impact of disabling it.
 								if ( isConversionTrackingEnabled ) {
-									trackEvent(
-										`${ viewContext }_CoTr`,
-										'cotr_disable'
-									);
-
 									setShowConfirmDialog( true );
 								} else {
-									trackEvent(
-										`${ viewContext }_CoTr`,
-										'cotr_enable'
-									);
-
-									// Consent Mode is not currently enabled, so this toggle
+									// Conversion Tracking is not currently enabled, so this toggle
 									// enables it.
 									setConversionTrackingEnabled( true );
-									// saveSettings();
 								}
 							} }
 							hideLabel={ false }
@@ -132,12 +117,6 @@ export default function ConversionTrackingToggle( { loading } ) {
 												'Learn more about conversion tracking',
 												'google-site-kit'
 											) }
-											onClick={ async () => {
-												await trackEvent(
-													`${ viewContext }_CoTr`,
-													'cotr_learn_more'
-												);
-											} }
 										/>
 									),
 								}
@@ -149,21 +128,10 @@ export default function ConversionTrackingToggle( { loading } ) {
 			{ showConfirmDialog && (
 				<ConfirmDisableConversionTrackingDialog
 					onConfirm={ () => {
-						trackEvent(
-							`${ viewContext }_CoTr`,
-							'confirm_disconnect'
-						);
-
 						setConversionTrackingEnabled( false );
 						setShowConfirmDialog( false );
-						// saveSettings();
 					} }
 					onCancel={ () => {
-						trackEvent(
-							`${ viewContext }_CoTr`,
-							'cancel_disconnect'
-						);
-
 						setShowConfirmDialog( false );
 					} }
 				/>
@@ -171,3 +139,7 @@ export default function ConversionTrackingToggle( { loading } ) {
 		</Fragment>
 	);
 }
+
+ConversionTrackingToggle.propTypes = {
+	loading: PropTypes.bool,
+};
