@@ -18,7 +18,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -28,20 +27,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { trackEvent } from '../../util';
 import ModalDialog from '../ModalDialog';
-import useViewContext from '../../hooks/useViewContext';
 
 export default function ConfirmDisableConversionTrackingDialog( {
 	onConfirm,
 	onCancel,
 } ) {
-	const viewContext = useViewContext();
-
-	useMount( () => {
-		trackEvent( `${ viewContext }_CoTr`, 'view_modal' );
-	} );
-
 	const subtitle = __(
 		'By disabling enhanced conversion tracking, you will no longer have access to:',
 		'google-site-kit'
