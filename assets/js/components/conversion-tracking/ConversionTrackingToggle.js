@@ -60,63 +60,70 @@ export default function ConversionTrackingToggle( { loading } ) {
 
 	return (
 		<Fragment>
-			<LoadingWrapper loading={ loading } width="180px" height="21.3px">
-				<Switch
-					label={ __(
-						'Enable enhanced conversion tracking',
-						'google-site-kit'
-					) }
-					checked={ isConversionTrackingEnabled }
-					disabled={ isSaving || loading }
-					onClick={ () => {
-						// If Conversion Tracking is currently enabled, show a confirmation
-						// dialog warning users about the impact of disabling it.
-						if ( isConversionTrackingEnabled ) {
-							setShowConfirmDialog( true );
-						} else {
-							// Conversion Tracking is not currently enabled, so this toggle
-							// enables it.
-							setConversionTrackingEnabled( true );
-						}
-					} }
-					hideLabel={ false }
-				/>
-			</LoadingWrapper>
-			{ saveError && <ErrorText message={ saveError.message } /> }
-			{
-				<LoadingWrapper
-					className="googlesitekit-settings-conversion-tracking-switch-description--loading"
-					loading={ loading }
-					width="750px"
-					height="42px"
-					smallWidth="386px"
-					smallHeight="84px"
-					tabletWidth="540px"
-					tabletHeight="84px"
-				>
-					<p className="googlesitekit-settings-module__fields-group-helper-text">
-						{ createInterpolateElement(
-							__(
-								'Conversion tracking allows you to measure additional events on your site from other plugins that Site Kit integrates with to optimize your campaign performance. <a>Learn more</a>',
+			<div>
+				{
+					<LoadingWrapper
+						loading={ loading }
+						width="180px"
+						height="21.3px"
+					>
+						<Switch
+							label={ __(
+								'Enable enhanced conversion tracking',
 								'google-site-kit'
-							),
-							{
-								br: <br />,
-								a: (
-									<Link
-										href="#"
-										external
-										aria-label={ __(
-											'Learn more about conversion tracking',
-											'google-site-kit'
-										) }
-									/>
+							) }
+							checked={ isConversionTrackingEnabled }
+							disabled={ isSaving || loading }
+							onClick={ () => {
+								// If Conversion Tracking is currently enabled, show a confirmation
+								// dialog warning users about the impact of disabling it.
+								if ( isConversionTrackingEnabled ) {
+									setShowConfirmDialog( true );
+								} else {
+									// Conversion Tracking is not currently enabled, so this toggle
+									// enables it.
+									setConversionTrackingEnabled( true );
+								}
+							} }
+							hideLabel={ false }
+						/>
+					</LoadingWrapper>
+				}
+				{ !! saveError && <ErrorText message={ saveError.message } /> }
+				{
+					<LoadingWrapper
+						className="googlesitekit-settings-conversion-tracking-switch-description--loading"
+						loading={ loading }
+						width="750px"
+						height="42px"
+						smallWidth="386px"
+						smallHeight="84px"
+						tabletWidth="540px"
+						tabletHeight="84px"
+					>
+						<p className="googlesitekit-settings-module__fields-group-helper-text">
+							{ createInterpolateElement(
+								__(
+									'Conversion tracking allows you to measure additional events on your site from other plugins that Site Kit integrates with to optimize your campaign performance. <a>Learn more</a>',
+									'google-site-kit'
 								),
-							}
-						) }
-					</p>
-				</LoadingWrapper>
-			}
+								{
+									a: (
+										<Link
+											href="#"
+											external
+											aria-label={ __(
+												'Learn more about conversion tracking',
+												'google-site-kit'
+											) }
+										/>
+									),
+								}
+							) }
+						</p>
+					</LoadingWrapper>
+				}
+			</div>
 			{ showConfirmDialog && (
 				<ConfirmDisableConversionTrackingDialog
 					onConfirm={ () => {
