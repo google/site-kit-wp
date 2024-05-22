@@ -84,7 +84,10 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ conversionTrackingSettingValue }
+                                                        value={isConversionTrackingEnabled
+		? __( 'Enabled', 'google-site-kit' )
+		: __( 'Disabled', 'google-site-kit' )
+}
 						/>
 					</p>
 				</div>
