@@ -53,7 +53,7 @@ export default function AudienceTilePagesMetric( {
 	title,
 	topContent,
 	topContentTitles,
-	isTopContentPartialData = false,
+	isTopContentPartialData,
 } ) {
 	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();
