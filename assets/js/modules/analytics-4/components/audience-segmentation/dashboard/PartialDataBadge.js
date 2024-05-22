@@ -30,33 +30,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
 import InfoTooltip from '../../../../../components/InfoTooltip';
 
-export default function PartialDataBadge( { content } ) {
-	const breakpoint = useBreakpoint();
-
-	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
-		breakpoint
-	);
-
+export default function PartialDataBadge( { tooltipTitle } ) {
 	return (
 		<span className="googlesitekit-audience-segmentation-partial-data-badge">
-			{ isMobileBreakpoint && content }
-			{ ! isMobileBreakpoint && (
-				<Fragment>
-					{ __( 'Partial data', 'google-site-kit' ) }
-					{ content && <InfoTooltip title={ content } /> }
-				</Fragment>
-			) }
+			<Fragment>
+				{ __( 'Partial data', 'google-site-kit' ) }
+				{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
+			</Fragment>
 		</span>
 	);
 }
 
 PartialDataBadge.propTypes = {
-	content: PropTypes.node,
+	tooltipTitle: PropTypes.node,
 };

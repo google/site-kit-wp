@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation PartialDataBadge styles.
+ * Audience Segmentation PartialDataNotice component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,23 +16,19 @@
  * limitations under the License.
  */
 
-.googlesitekit-audience-segmentation-partial-data-badge {
-	background-color: $c-utility-warning-container;
-	border-radius: $br-lg;
-	color: $c-yellow-y-600;
-	display: inline-flex;
-	font-size: $fs-label-sm;
-	font-weight: $fw-medium;
-	letter-spacing: $ls-xs;
-	line-height: 16px;
-	padding: 6px 10px;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-	.googlesitekit-info-tooltip {
-		height: 16px;
-		margin-left: 4px;
-
-		svg path {
-			fill: $c-utility-on-warning-container;
-		}
-	}
+export default function PartialDataNotice( { content } ) {
+	return (
+		<span className="googlesitekit-audience-segmentation-partial-data-notice">
+			{ content }
+		</span>
+	);
 }
+
+PartialDataNotice.propTypes = {
+	content: PropTypes.node,
+};

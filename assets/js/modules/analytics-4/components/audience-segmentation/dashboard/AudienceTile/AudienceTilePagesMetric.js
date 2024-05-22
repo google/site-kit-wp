@@ -43,6 +43,7 @@ import {
 import AudienceTileNoData from './AudienceTileNoData';
 import Link from '../../../../../../components/Link';
 import PartialDataBadge from '../PartialDataBadge';
+import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 
@@ -115,7 +116,7 @@ export default function AudienceTilePagesMetric( {
 					{ title }
 					{ ! isMobileBreakpoint && isTopContentPartialData && (
 						<PartialDataBadge
-							content={ __(
+							tooltipTitle={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this metric',
 								'google-site-kit'
 							) }
@@ -140,7 +141,7 @@ export default function AudienceTilePagesMetric( {
 						);
 					} ) }
 					{ isMobileBreakpoint && isTopContentPartialData && (
-						<PartialDataBadge
+						<PartialDataNotice
 							content={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this metric',
 								'google-site-kit'

@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation PartialDataBadge styles.
+ * Audience Segmentation PartialDataNotice styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,23 +16,13 @@
  * limitations under the License.
  */
 
-.googlesitekit-audience-segmentation-partial-data-badge {
+.googlesitekit-audience-segmentation-partial-data-notice {
 	background-color: $c-utility-warning-container;
-	border-radius: $br-lg;
-	color: $c-yellow-y-600;
-	display: inline-flex;
-	font-size: $fs-label-sm;
-	font-weight: $fw-medium;
+	border-radius: $br-xs;
+	color: $c-utility-on-warning-container;
+	display: flex;
+	font-size: $fs-body-sm;
 	letter-spacing: $ls-xs;
-	line-height: 16px;
-	padding: 6px 10px;
-
-	.googlesitekit-info-tooltip {
-		height: 16px;
-		margin-left: 4px;
-
-		svg path {
-			fill: $c-utility-on-warning-container;
-		}
-	}
+	line-height: $lh-body-sm;
+	padding: 16px;
 }

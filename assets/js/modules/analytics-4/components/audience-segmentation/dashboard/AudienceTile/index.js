@@ -49,6 +49,7 @@ import AudienceTilePagesMetric from './AudienceTilePagesMetric';
 import ChangeBadge from '../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
+import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
 
 const { useSelect } = Data;
@@ -124,7 +125,7 @@ export default function AudienceTile( {
 						</div>
 						{ isAudiencePartialData && (
 							<PartialDataBadge
-								content={ __(
+								tooltipTitle={ __(
 									'Still collecting full data for this timeframe, partial data is displayed for this group',
 									'google-site-kit'
 								) }
@@ -134,7 +135,7 @@ export default function AudienceTile( {
 				) }
 				<div className="googlesitekit-audience-segmentation-tile__metrics">
 					{ isMobileBreakpoint && isAudiencePartialData && (
-						<PartialDataBadge
+						<PartialDataNotice
 							content={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this group',
 								'google-site-kit'
