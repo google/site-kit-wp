@@ -73,7 +73,7 @@ export default function SettingsView() {
 	const isMigratingAdsConversionID = useMigrateAdsConversionID();
 
 	const isConversionTrackingEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isConversionTrackingEnabled()
+		iceEnabled ? select( CORE_SITE ).isConversionTrackingEnabled() : false
 	);
 
 	const conversionTrackingSettingValue = isConversionTrackingEnabled
