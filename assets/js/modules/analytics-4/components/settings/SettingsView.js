@@ -72,13 +72,13 @@ export default function SettingsView() {
 
 	const isMigratingAdsConversionID = useMigrateAdsConversionID();
 
-	const isConversionTrackingEnabled = useSelect( ( select ) =>
-		iceEnabled ? select( CORE_SITE ).isConversionTrackingEnabled() : false
-	);
+	const isConversionTrackingEnabled = useSelect( ( select ) => {
+		if ( ! iceEnabled ) {
+			return false;
+		}
 
-	const conversionTrackingSettingValue = isConversionTrackingEnabled
-		? __( 'Enabled', 'google-site-kit' )
-		: __( 'Disabled', 'google-site-kit' );
+		return select( CORE_SITE ).isConversionTrackingEnabled();
+	} );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
@@ -213,7 +213,11 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ conversionTrackingSettingValue }
+							value={
+								isConversionTrackingEnabled
+									? __( 'Enabled', 'google-site-kit' )
+									: __( 'Disabled', 'google-site-kit' )
+							}
 						/>
 					</p>
 				</div>

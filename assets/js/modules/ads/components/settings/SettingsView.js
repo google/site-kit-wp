@@ -59,13 +59,13 @@ export default function SettingsView() {
 
 	const isPaxView = paxEnabled && ( paxConversionID || extCustomerID );
 
-	const isConversionTrackingEnabled = useSelect( ( select ) =>
-		iceEnabled ? select( CORE_SITE ).isConversionTrackingEnabled() : false
-	);
+	const isConversionTrackingEnabled = useSelect( ( select ) => {
+		if ( ! iceEnabled ) {
+			return false;
+		}
 
-	const conversionTrackingSettingValue = isConversionTrackingEnabled
-		? __( 'Enabled', 'google-site-kit' )
-		: __( 'Disabled', 'google-site-kit' );
+		return select( CORE_SITE ).isConversionTrackingEnabled();
+	} );
 
 	return (
 		<Fragment>
@@ -84,10 +84,11 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-                                                        value={isConversionTrackingEnabled
-		? __( 'Enabled', 'google-site-kit' )
-		: __( 'Disabled', 'google-site-kit' )
-}
+							value={
+								isConversionTrackingEnabled
+									? __( 'Enabled', 'google-site-kit' )
+									: __( 'Disabled', 'google-site-kit' )
+							}
 						/>
 					</p>
 				</div>
