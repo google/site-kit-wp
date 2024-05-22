@@ -67,13 +67,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	} );
 
 	it( 'banner is not rendering when configured audiences present', async () => {
-		const { getByText, waitForRegistry } = render(
-			<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-			{
-				registry,
-			}
-		);
-
 		fetchMock.get( audienceSettingsEndpoint, {
 			configuredAudiences: audiencesFixture,
 			isAudienceSegmentationWidgetHidden: false,
@@ -86,6 +79,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveSyncAvailableAudiences( audiencesFixture );
+
+		const { getByText, waitForRegistry } = render(
+			<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+			{
+				registry,
+			}
+		);
 
 		expect( () =>
 			getByText(
