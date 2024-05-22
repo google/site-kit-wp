@@ -62,7 +62,7 @@
 
 	.mdc-button {
 		margin: 0 auto;
-		min-height: 32px; // Default min-height across the plugin is 40px, but in this instance it shouldn't be that big.
+		min-height: 32px;
 
 		&.mdc-button--tertiary:not(:disabled) {
 			color: $c-site-kit-sk-600;

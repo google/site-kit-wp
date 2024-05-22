@@ -51,6 +51,8 @@ export default function PAXSetupSuccessSubtleNotification() {
 				top: getContextScrollTop( widgetClass, breakpoint ),
 				behavior: 'smooth',
 			} );
+
+			setNotification( undefined );
 		}, 50 );
 	};
 
