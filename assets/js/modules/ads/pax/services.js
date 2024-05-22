@@ -58,7 +58,11 @@ const restFetchWpPages = async () => {
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry, options = {} ) {
-	const { onCampaignCreated = null, _global = global } = options;
+	const {
+		onCampaignCreated = null,
+		onFinishAndCloseSignUpFlow = null,
+		_global = global,
+	} = options;
 
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
 	const accessToken =
@@ -162,12 +166,32 @@ export function createPaxServices( registry, options = {} ) {
 				};
 			},
 		},
+
+		userActionService: {
+			// Ignore the ESLint rule that requires `await` in the function body.
+			//
+			// We mark this function as `async` to make it clear that it returns a
+			// promise and in case, in the future, anything here wants to be async.
+			//
+			// Marking this function as `async` makes it clear that this will be
+			// allowed.
+			//
+			// eslint-disable-next-line require-await
+			finishAndCloseSignUpFlow: async () => {
+				return {};
+			},
+		},
 	};
 
 	if ( onCampaignCreated ) {
 		services.campaignService = {
 			notifyNewCampaignCreated: onCampaignCreated,
 		};
+	}
+
+	if ( onFinishAndCloseSignUpFlow ) {
+		services.userActionService.finishAndCloseSignUpFlow =
+			onFinishAndCloseSignUpFlow;
 	}
 
 	return services;

@@ -134,7 +134,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		setExtCustomerID( customerData.externalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
-		setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
+		//setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
 		/* eslint-enable sitekit/acronym-case */
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
@@ -144,6 +144,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		if ( error ) {
 			return;
 		}
+		setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
 		finishSetup();
 	}, [ submitChanges, finishSetup ] );
 
@@ -195,6 +196,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 								paxAppRef.current = app;
 							} }
 							onCampaignCreated={ onCampaignCreated }
+							onFinishAndCloseSignUpFlow={ onCompleteSetup }
 						/>
 					</Fragment>
 				) }
