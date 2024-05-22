@@ -520,29 +520,20 @@ final class Analytics_4 extends Module
 		// Check if the audienceSegmentation feature is enabled.
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
 			// Return the SITE_KIT_AUDIENCE audiences.
-			$site_kit_audiences = ( function ( $audiences ) {
-				$created_audiences = array();
-				// Ensure that audiences are availables, else return empty string.
-				if ( empty( $audiences ) || ! is_array( $audiences ) ) {
-					return '-';
-				}
+			$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
 
-				$created_audiences = array_filter( $audiences, fn( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
-
-				if ( empty( $created_audiences ) ) {
-					return '-';
-				}
-
-				$created_audiences = wp_list_pluck( $created_audiences, 'displayName' );
-
-				return implode( ', ', $created_audiences );
-
-			} )( $settings['availableAudiences'] );
-
-			$debug_fields['analytics_4_site_kit_audience'] = array(
+			$debug_fields['analytics_4_site_kit_audiences'] = array(
 				'label' => __( 'Analytics site created audiences', 'google-site-kit' ),
-				'value' => $site_kit_audiences,
-				'debug' => $site_kit_audiences,
+				'value' => empty( $site_kit_audiences )
+				? __( 'None', 'google-site-kit' )
+				: join(
+					/* translators: used between list items, there is a space after the comma */
+					__( ', ', 'google-site-kit' ),
+					$site_kit_audiences
+				),
+				'debug' => empty( $site_kit_audiences )
+				? 'none'
+				: join( ', ', $site_kit_audiences ),
 			);
 		}
 
@@ -2418,5 +2409,31 @@ final class Analytics_4 extends Module
 		}
 
 		return false;
+	}
+
+	/**
+	 * Gets the list of site kit created audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $audiences List of audiences.
+	 *
+	 * @return array
+	 */
+	private function get_site_kit_audiences( $audiences ) {
+		$created_audiences = array();
+
+		// Ensure that audiences are available, otherwise return an empty array.
+		if ( empty( $audiences ) || ! is_array( $audiences ) ) {
+			return $created_audiences;
+		}
+
+		$created_audiences = array_filter( $audiences, fn( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
+
+		if ( empty( $created_audiences ) ) {
+			return array();
+		}
+
+		return wp_list_pluck( $created_audiences, 'displayName' );
 	}
 }
