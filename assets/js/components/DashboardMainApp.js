@@ -47,6 +47,7 @@ import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
+import AdsModuleSetupCTAWidget from '../modules/ads/components/dashboard/AdsModuleSetupCTAWidget';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
@@ -250,6 +251,7 @@ export default function DashboardMainApp() {
 			</Header>
 
 			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
+			{ ! viewOnlyDashboard && <AdsModuleSetupCTAWidget /> }
 
 			<OverlayNotificationsRenderer />
 
