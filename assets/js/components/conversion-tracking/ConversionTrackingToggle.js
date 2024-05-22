@@ -89,7 +89,7 @@ export default function ConversionTrackingToggle( { loading } ) {
 						/>
 					</LoadingWrapper>
 				}
-				{ saveError && <ErrorText message={ saveError.message } /> }
+				{ !! saveError && <ErrorText message={ saveError.message } /> }
 				{
 					<LoadingWrapper
 						className="googlesitekit-settings-conversion-tracking-switch-description--loading"
