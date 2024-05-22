@@ -88,7 +88,6 @@ export default {
 			);
 		},
 	],
-	features: [ 'adsModule' ],
 };
 
 export const PaxConnected = Template.bind( null );

@@ -61,7 +61,6 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		renderHook( () => useMigrateAdsConversionID(), {
 			registry,
-			features: [ 'adsModule' ],
 		} );
 
 		expect(
@@ -83,7 +82,6 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		renderHook( () => useMigrateAdsConversionID(), {
 			registry,
-			features: [ 'adsModule' ],
 		} );
 
 		// Verify that the value has not changed.
@@ -104,7 +102,6 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		renderHook( () => useMigrateAdsConversionID(), {
 			registry,
-			features: [ 'adsModule' ],
 		} );
 
 		expect( fetchMock ).not.toHaveFetched();
@@ -124,7 +121,6 @@ describe( 'useMigrateAdsConversionID', () => {
 
 		renderHook( () => useMigrateAdsConversionID(), {
 			registry,
-			features: [ 'adsModule' ],
 		} );
 
 		expect( fetchMock ).not.toHaveFetched();
@@ -144,7 +140,6 @@ describe( 'useMigrateAdsConversionID', () => {
 			() => useMigrateAdsConversionID(),
 			{
 				registry,
-				features: [ 'adsModule' ],
 			}
 		);
 
@@ -178,7 +173,6 @@ describe( 'useMigrateAdsConversionID', () => {
 			() => useMigrateAdsConversionID(),
 			{
 				registry,
-				features: [ 'adsModule' ],
 			}
 		);
 
@@ -237,7 +231,6 @@ describe( 'useMigrateAdsConversionID', () => {
 			() => useMigrateAdsConversionID(),
 			{
 				registry,
-				features: [ 'adsModule' ],
 			}
 		);
 
