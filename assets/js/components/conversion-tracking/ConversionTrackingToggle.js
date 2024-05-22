@@ -48,6 +48,12 @@ export default function ConversionTrackingToggle( { loading } ) {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
+	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'enhanced-conversion-tracking'
+		)
+	);
+
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_SITE ).isFetchingSaveConversionTrackingSettings()
 	);
@@ -102,7 +108,7 @@ export default function ConversionTrackingToggle( { loading } ) {
 						{
 							a: (
 								<Link
-									href="#" // @TODO add appropriate link here.
+									href={ conversionTrackingDocumentationURL }
 									external
 									aria-label={ __(
 										'Learn more about conversion tracking',
