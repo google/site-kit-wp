@@ -22,4 +22,5 @@ export { default as AudienceSegmentationIntroductoryOverlayNotification } from '
 export { default as AudienceSegmentationSetupCTAWidget } from './AudienceSegmentationSetupCTAWidget';
 export { default as AudienceTiles } from './AudienceTiles';
 export { default as AudienceTooltipMessage } from './AudienceTooltipMessage';
+export { default as AudienceSelectionPanel } from './AudienceSelectionPanel';
 export { default as InfoNotice } from './InfoNotice';
