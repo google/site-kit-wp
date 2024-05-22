@@ -24,14 +24,13 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
-	waitForTimeouts,
-	untilResolved,
 } from '../../../../../../../tests/js/test-utils';
 
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { EDIT_SCOPE, MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import AudienceSegmentationSetupCTAWidget from './AudienceSegmentationSetupCTAWidget';
 import fetchMock from 'fetch-mock';
+import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
@@ -67,7 +66,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
-	/*it( 'banner is not rendering when configured audiences present', async () => {
+	it( 'banner is not rendering when configured audiences present', async () => {
 		const { getByText, waitForRegistry } = render(
 			<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 			{
@@ -96,7 +95,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 		// Wait for resolvers to finish to avoid an unhandled React state update.
 		await waitForRegistry();
-	} );*/
+	} );
 
 	it( 'banner is rendering when no configured audiences and past data exists', async () => {
 		const { dispatch } = registry;
@@ -113,13 +112,24 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			},
 		} );
 
-		// Wait for resolvers to run.
-		await waitForTimeouts( 30000 );
-
-		const args = {
-			endDate: '2024-05-01',
-			metrics: [ { name: 'totalUsers' } ],
-			startDate: '2024-01-31',
+		const report = {
+			rows: 2,
+			totals: [
+				{
+					metricValues: [
+						{
+							value: 2,
+						},
+					],
+				},
+			],
+		};
+		const reportOptions = {
+			options: {
+				endDate: '2024-05-01',
+				metrics: [ { name: 'totalUsers' } ],
+				startDate: '2024-01-31',
+			},
 		};
 
 		await dispatch( MODULES_ANALYTICS_4 ).receiveSyncAvailableAudiences(
@@ -129,15 +139,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		await dispatch( CORE_USER ).setReferenceDate( '2024-05-01' );
 
 		await dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{ rows: 2 },
-			{
-				options: args,
-			}
+			report,
+			reportOptions
 		);
 
-		await untilResolved( registry, MODULES_ANALYTICS_4 ).hasZeroData(
-			args
-		);
+		await dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions.options,
+		] );
 
 		const { getByText, waitForRegistry } = render(
 			<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
