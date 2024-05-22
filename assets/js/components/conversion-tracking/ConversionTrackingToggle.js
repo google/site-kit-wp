@@ -108,7 +108,6 @@ export default function ConversionTrackingToggle( { loading } ) {
 									'google-site-kit'
 								),
 								{
-									br: <br />,
 									a: (
 										<Link
 											href="#"
