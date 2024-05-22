@@ -120,7 +120,8 @@ const readyProps = {
 		total: 1768,
 	},
 	topContentTitles: {
-		'/en/test-post-1/': 'Test Post 1',
+		'/en/test-post-1/':
+			'Test Post 1 - This is a very long title to test the audience segmentation tile that it wraps up and doesn not extend to the next line. It should show ellipsis instead. It must also have some gap at the right side so that the post title does not collide with the user count being shown next to it.',
 		'/en/test-post-2/': 'Test Post 2',
 		'/en/test-post-3/': 'Test Post 3',
 	},

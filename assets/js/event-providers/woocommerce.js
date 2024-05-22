@@ -22,10 +22,10 @@
 	const body = jQuery( 'body' );
 
 	body.on( 'added_to_cart', () => {
-		global.gtag( 'event', 'add_to_cart' );
+		global._googlesitekit?.trackEvent?.( 'add_to_cart' );
 	} );
 
 	body.on( 'checkout_place_order_success', () => {
-		global.gtag( 'event', 'purchase' );
+		global._googlesitekit?.trackEvent?.( 'purchase' );
 	} );
 } )( global.jQuery );

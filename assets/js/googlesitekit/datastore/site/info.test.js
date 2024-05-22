@@ -374,6 +374,7 @@ describe( 'core/site site info', () => {
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
 			[ 'getProductPostType', 'productPostType' ],
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
+			[ 'getConsentModeRegions', 'consentModeRegions' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

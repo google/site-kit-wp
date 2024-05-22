@@ -22,6 +22,6 @@
 
 	// eslint-disable-next-line no-undef
 	PUM.hooks.addAction( 'pum.integration.form.success', function () {
-		global.gtag( 'event', 'submit_lead_form' );
+		global._googlesitekit?.trackEvent?.( 'submit_lead_form' );
 	} );
 } )( global.jQuery );
