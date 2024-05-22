@@ -17,3 +17,4 @@
  */
 
 export { default as PartnerAdsPAXWidget } from './PartnerAdsPAXWidget';
+export { default as AdsModuleSetupCTAWidget } from './AdsModuleSetupCTAWidget';
