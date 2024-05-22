@@ -22,6 +22,7 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -96,3 +97,109 @@ export default {
 		},
 	],
 };
+
+export const IceEnabled = Template.bind( null );
+IceEnabled.title = 'Modules/Analytics4/Settings/SettingsView/IceEnabled';
+IceEnabled.storyName = 'SettingsView ICE Enabled';
+IceEnabled.scenario = {
+	label: 'Modules/Analytics4/Settings/SettingsView/ICE/Enabled',
+	delay: 250,
+};
+IceEnabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceEnabled.decorators = [
+	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				accountID,
+				propertyID,
+				webDataStreamID,
+				measurementID,
+				useSnippet: true,
+				...googleTagSettings,
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setEnhancedMeasurementStreamEnabled(
+					propertyID,
+					webDataStreamID,
+					true
+				);
+
+			registry.dispatch( CORE_SITE ).setConversionTrackingEnabled( true );
+		};
+
+		return (
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const IceDisabled = Template.bind( null );
+IceDisabled.title = 'Modules/Analytics4/Settings/SettingsView/IceDisabled';
+IceDisabled.storyName = 'SettingsView ICE Disabled';
+IceDisabled.scenario = {
+	label: 'Modules/Analytics4/Settings/SettingsView/ICE/Disabled',
+	delay: 250,
+};
+IceDisabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceDisabled.decorators = [
+	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				accountID,
+				propertyID,
+				webDataStreamID,
+				measurementID,
+				useSnippet: true,
+				...googleTagSettings,
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setEnhancedMeasurementStreamEnabled(
+					propertyID,
+					webDataStreamID,
+					true
+				);
+
+			registry
+				.dispatch( CORE_SITE )
+				.setConversionTrackingEnabled( false );
+		};
+
+		return (
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
