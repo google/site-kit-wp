@@ -22,6 +22,7 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
@@ -96,6 +97,62 @@ PaxConnected.decorators = [
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-872756827HGFSD',
 			} );
+		};
+
+		return (
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'With ICE enabled';
+IceEnabled.scenario = {
+	label: 'Modules/Ads/Settings/SettingsView/ICE/Enabled',
+	delay: 250,
+};
+IceEnabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceEnabled.decorators = [
+	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ADS ).setConversionID( 'AW-12345' );
+			registry.dispatch( CORE_SITE ).setConversionTrackingEnabled( true );
+		};
+
+		return (
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const IceDisabled = Template.bind( null );
+IceDisabled.storyName = 'With ICE disabled';
+IceDisabled.scenario = {
+	label: 'Modules/Ads/Settings/SettingsView/ICE/Disabled',
+	delay: 250,
+};
+IceDisabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceDisabled.decorators = [
+	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ADS ).setConversionID( 'AW-12345' );
+			registry
+				.dispatch( CORE_SITE )
+				.setConversionTrackingEnabled( false );
 		};
 
 		return (
