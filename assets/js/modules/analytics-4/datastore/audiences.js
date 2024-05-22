@@ -384,7 +384,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the given audience is a default audience.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {string} audienceResourceName The audience resource name.
 	 * @param {Object} state                Data store's state.
@@ -410,7 +410,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the given audience is a Site Kit-created audience.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {string} audienceResourceName The audience resource name.
 	 * @param {Object} state                Data store's state.
@@ -436,7 +436,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the given audience is a user-defined audience.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {string} audienceResourceName The audience resource name.
 	 * @param {Object} state                Data store's state.
@@ -462,7 +462,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the provided audiences are available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param {Object}               state                 Data store's state.
 	 * @param {string|Array<string>} audienceResourceNames The audience resource names to check.

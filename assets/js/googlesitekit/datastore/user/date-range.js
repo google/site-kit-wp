@@ -152,10 +152,17 @@ export const selectors = {
 		state,
 		{
 			compare = false,
-			offsetDays = 0,
+			offsetDays,
 			referenceDate = state.referenceDate,
 		} = {}
 	) {
+		if ( offsetDays === undefined ) {
+			global.console.warn(
+				'getDateRangeDates was called without offsetDays'
+			);
+			offsetDays = 0;
+		}
+
 		const dateRange = selectors.getDateRange( state );
 		const endDate = getPreviousDate( referenceDate, offsetDays );
 		const matches = dateRange.match( '-(.*)-' );

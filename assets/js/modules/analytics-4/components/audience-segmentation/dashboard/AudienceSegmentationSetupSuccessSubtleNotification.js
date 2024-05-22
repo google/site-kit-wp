@@ -70,9 +70,6 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 		// TODO: Scrolling to the widget area will be implemented in a subsequent issue.
 	}
 
-	// Ensure resolution of the report has completed before showing this
-	// notification, since it should only appear when the user has no data in
-	// the report.
 	const shouldShowNotification =
 		// Only show this notification on the main dashboard, where the Setup CTA Banner is shown.
 		dashboardType === DASHBOARD_TYPE_MAIN &&

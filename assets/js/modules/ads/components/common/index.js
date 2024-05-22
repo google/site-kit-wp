@@ -18,3 +18,4 @@
 
 export { default as AdBlockerWarning } from './AdBlockerWarning';
 export { default as ConversionIDTextField } from './ConversionIDTextField';
+export { default as PAXEmbeddedApp } from './PAXEmbeddedApp';

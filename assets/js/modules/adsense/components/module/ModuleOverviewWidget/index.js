@@ -30,7 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	DATE_RANGE_OFFSET,
+} from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { SITE_STATUS_ADDED, legacyAccountStatuses } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -67,7 +70,11 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		siteStatus === SITE_STATUS_ADDED;
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
-		( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } )
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				compare: true,
+				offsetDays: DATE_RANGE_OFFSET,
+			} )
 	);
 
 	const currentRangeArgs = {

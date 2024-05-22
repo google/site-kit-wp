@@ -28,6 +28,7 @@ import {
 	setSiteVerification,
 	setSearchConsoleProperty,
 	wpApiFetch,
+	enableFeature,
 } from '../../utils';
 
 const euUserConsentPolicyRegions = [
@@ -194,6 +195,29 @@ describe( 'Consent Mode snippet', () => {
 					ad_personalization: 'granted',
 					ad_storage: 'granted',
 					ad_user_data: 'granted',
+				},
+			},
+		] );
+	} );
+
+	it( 'includes Switzerland (CH) in the list of regions when the consentModeSwitzerland feature flag is enabled', async () => {
+		await enableFeature( 'consentModeSwitzerland' );
+
+		await page.reload();
+
+		const dataLayer = await page.evaluate( () => window.dataLayer );
+
+		expect( dataLayer ).toEqual( [
+			{
+				0: 'consent',
+				1: 'default',
+				2: {
+					ad_personalization: 'denied',
+					ad_storage: 'denied',
+					ad_user_data: 'denied',
+					analytics_storage: 'denied',
+					region: [ ...euUserConsentPolicyRegions, 'CH' ],
+					wait_for_update: 500,
 				},
 			},
 		] );

@@ -36,6 +36,14 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;
 
+	const reportOptions = {
+		options: {
+			endDate: '2024-05-01',
+			metrics: [ { name: 'totalUsers' } ],
+			startDate: '2024-01-31',
+		},
+	};
+
 	const { Widget } = getWidgetComponentProps(
 		'audienceSegmentationSetupCTA'
 	);
@@ -123,13 +131,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					],
 				},
 			],
-		};
-		const reportOptions = {
-			options: {
-				endDate: '2024-05-01',
-				metrics: [ { name: 'totalUsers' } ],
-				startDate: '2024-01-31',
-			},
 		};
 
 		await dispatch( MODULES_ANALYTICS_4 ).receiveSyncAvailableAudiences(

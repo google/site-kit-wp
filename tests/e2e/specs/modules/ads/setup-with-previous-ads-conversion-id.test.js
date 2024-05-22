@@ -29,7 +29,6 @@ import {
 	resetSiteKit,
 	setupSiteKit,
 	setupAnalytics4,
-	enableFeature,
 	useRequestInterception,
 	step,
 } from '../../../utils';
@@ -72,7 +71,6 @@ describe( 'Ads setup with Conversion Tracking ID present', () => {
 	} );
 
 	beforeEach( async () => {
-		await enableFeature( 'adsModule' );
 		await setupSiteKit();
 		await setupAnalytics4( {
 			adsConversionID: 'AW-12345',
