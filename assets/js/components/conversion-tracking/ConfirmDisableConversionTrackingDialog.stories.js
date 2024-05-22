@@ -22,7 +22,12 @@
 import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
 
 function Template() {
-	return <ConfirmDisableConversionTrackingDialog />;
+	return (
+		<ConfirmDisableConversionTrackingDialog
+			onConfirm={ () => {} }
+			onCancel={ () => {} }
+		/>
+	);
 }
 
 export const Default = Template.bind( {} );
