@@ -39,9 +39,13 @@ import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
 import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
+import { useFeature } from '../../../../hooks/useFeature';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SettingsView() {
+	const iceEnabled = useFeature( 'conversionInfra' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -67,6 +71,14 @@ export default function SettingsView() {
 	);
 
 	const isMigratingAdsConversionID = useMigrateAdsConversionID();
+
+	const isConversionTrackingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isConversionTrackingEnabled()
+	);
+
+	const conversionTrackingSettingValue = isConversionTrackingEnabled
+		? __( 'Enabled', 'google-site-kit' )
+		: __( 'Disabled', 'google-site-kit' );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
@@ -190,6 +202,22 @@ export default function SettingsView() {
 			<SettingsEnhancedMeasurementView />
 
 			<OptionalSettingsView />
+
+			{ iceEnabled && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __(
+							'Enhanced conversion tracking',
+							'google-site-kit'
+						) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting
+							value={ conversionTrackingSettingValue }
+						/>
+					</p>
+				</div>
+			) }
 		</div>
 	);
 }
