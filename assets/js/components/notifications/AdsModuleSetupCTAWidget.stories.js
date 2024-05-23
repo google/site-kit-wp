@@ -24,12 +24,12 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdsModuleSetupCTAWidget from './AdsModuleSetupCTAWidget';
-import { ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY } from '../../datastore/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY } from '../../modules/ads/datastore/constants';
+import { WEEK_IN_SECONDS } from '../../util';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 function Template() {
 	return <AdsModuleSetupCTAWidget />;

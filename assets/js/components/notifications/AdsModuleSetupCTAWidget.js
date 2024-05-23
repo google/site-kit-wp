@@ -37,17 +37,17 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
-import { ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
-import { Cell, Grid, Row } from '../../../../material-components';
-import whenInactive from '../../../../util/when-inactive';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import AdsSetupSVG from '../../../../../svg/graphics/ads-setup.svg';
-import AdsSetupTabletSVG from '../../../../../svg/graphics/ads-setup-tablet.svg';
-import AdsSetupMobileSVG from '../../../../../svg/graphics/ads-setup-mobile.svg';
+} from '../../hooks/useBreakpoint';
+import { ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY } from '../../modules/ads/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { WEEK_IN_SECONDS } from '../../util';
+import { Cell, Grid, Row } from '../../material-components';
+import whenInactive from '../../util/when-inactive';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
+import AdsSetupSVG from '../../../svg/graphics/ads-setup.svg';
+import AdsSetupTabletSVG from '../../../svg/graphics/ads-setup-tablet.svg';
+import AdsSetupMobileSVG from '../../../svg/graphics/ads-setup-mobile.svg';
 
 const { useSelect, useDispatch } = Data;
 
