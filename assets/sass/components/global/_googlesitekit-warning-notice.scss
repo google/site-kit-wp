@@ -1,5 +1,5 @@
 /**
- * Ads Setup styles.
+ * Warning notice styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,29 +16,21 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-warning-notice {
+	background-color: $c-utility-warning-container;
+	border-radius: $br-xs;
+	color: $c-utility-on-warning-container;
+	font-size: $fs-label-sm;
+	letter-spacing: $ls-xs;
+	line-height: $lh-label-sm;
+	padding: $grid-gap-phone - 2 $grid-gap-desktop;
 
-	.googlesitekit-setup-module--ads {
+	.googlesitekit-cta-link {
+		color: $c-utility-on-warning-container;
+		font-weight: $fw-medium;
 
-		.googlesitekit-settings-module__fields-group-title {
-			font-size: $fs-body-md;
-			font-weight: $fw-medium;
-		}
-
-		.googlesitekit-setup-module__inputs > .googlesitekit-settings-module__fields-group {
-			margin: 0;
-		}
-
-		.googlesitekit-setup-module__create-account {
-			margin: $grid-gap-phone 0 0;
-
-			@media (min-width: $bp-desktop) {
-				margin: $grid-gap-desktop 0 0;
-			}
-		}
-
-		.googlesitekit-setup-module__action {
-			margin-bottom: 32px;
+		svg {
+			fill: none;
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Ads Setup styles.
+ * WarningNotice component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,29 +16,15 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-	.googlesitekit-setup-module--ads {
-
-		.googlesitekit-settings-module__fields-group-title {
-			font-size: $fs-body-md;
-			font-weight: $fw-medium;
-		}
-
-		.googlesitekit-setup-module__inputs > .googlesitekit-settings-module__fields-group {
-			margin: 0;
-		}
-
-		.googlesitekit-setup-module__create-account {
-			margin: $grid-gap-phone 0 0;
-
-			@media (min-width: $bp-desktop) {
-				margin: $grid-gap-desktop 0 0;
-			}
-		}
-
-		.googlesitekit-setup-module__action {
-			margin-bottom: 32px;
-		}
-	}
+export default function WarningNotice( { children } ) {
+	return <div className="googlesitekit-warning-notice">{ children }</div>;
 }
+
+WarningNotice.propTypes = {
+	children: PropTypes.node.isRequired,
+};

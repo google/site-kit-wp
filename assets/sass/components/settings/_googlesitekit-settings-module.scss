@@ -70,7 +70,9 @@
 		}
 
 		.googlesitekit-settings-module__content--open {
+			border: none;
 			display: block;
+			margin-top: -10px; // Remove some default duplicated <Grid> padding gap between header and content
 		}
 
 		.googlesitekit-settings-module__heading {
@@ -91,7 +93,7 @@
 		.googlesitekit-settings-module__heading-icon {
 			height: auto;
 			margin-right: $grid-gap-phone;
-			width: 24px;
+			width: 40px;
 		}
 
 		.googlesitekit-settings-module__heading-badges {
@@ -284,8 +286,6 @@
 			}
 
 			.mdc-button {
-				background-color: $c-surfaces-surface-2;
-				color: $c-surfaces-on-surface;
 				font-weight: $fw-medium;
 			}
 

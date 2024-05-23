@@ -21,8 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import classnames from 'classnames';
-import ErrorIcon from '../../../svg/icons/error.svg';
+import WarningNotice from '../WarningNotice';
 
 const { useSelect } = Data;
 
@@ -38,14 +37,5 @@ export default function ModuleSettingsWarning( { slug } ) {
 		return null;
 	}
 
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-settings-module-warning',
-				'googlesitekit-settings-module-warning--modules-list'
-			) }
-		>
-			<ErrorIcon height="20" width="23" /> { error.message }
-		</div>
-	);
+	return <WarningNotice>{ error.message }</WarningNotice>;
 }

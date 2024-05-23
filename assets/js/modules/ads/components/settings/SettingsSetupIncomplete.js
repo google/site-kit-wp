@@ -1,7 +1,7 @@
 /**
- * AdSense Settings Setup Incomplete component.
+ * Ads Settings Setup Incomplete component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment, createInterpolateElement } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,36 +28,17 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { isPendingAccountStatus } from '../../util/status';
+import { MODULES_ADS } from '../../datastore/constants';
 import { AdBlockerWarning } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsSetupIncomplete() {
-	const accountStatus = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountStatus()
-	);
-	const isPendingStatus = isPendingAccountStatus( accountStatus );
 	const adminReauthURL = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAdminReauthURL()
+		select( MODULES_ADS ).getAdminReauthURL()
 	);
 	const requirementsError = useSelect( ( select ) =>
-		select( CORE_MODULES )?.getCheckRequirementsError( 'adsense' )
+		select( CORE_MODULES )?.getCheckRequirementsError( 'ads' )
 	);
-
-	let statusText, actionText;
-	if ( isPendingStatus ) {
-		/* translators: %s: link with next step */
-		statusText = __(
-			'Site Kit has placed AdSense code on your site: %s',
-			'google-site-kit'
-		);
-		actionText = __( 'check module page', 'google-site-kit' );
-	} else {
-		/* translators: %s: link with next step */
-		statusText = __( 'Setup incomplete: %s', 'google-site-kit' );
-		actionText = __( 'continue module setup', 'google-site-kit' );
-	}
 
 	return (
 		<Fragment>
@@ -66,7 +47,10 @@ export default function SettingsSetupIncomplete() {
 			</div>
 
 			{ createInterpolateElement(
-				sprintf( statusText, `<a>${ actionText }</a>` ),
+				__(
+					'Setup incomplete: <a>continue module setup</a>',
+					'google-site-kit'
+				),
 				{
 					a: (
 						<Link
