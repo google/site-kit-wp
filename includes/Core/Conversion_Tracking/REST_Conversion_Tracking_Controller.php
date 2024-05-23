@@ -80,7 +80,7 @@ class REST_Conversion_Tracking_Controller {
 	 */
 	protected function get_rest_routes() {
 		$has_capabilities = function() {
-			return current_user_can( Permissions::VIEW_DASHBOARD );
+			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
 		return array(
