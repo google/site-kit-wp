@@ -186,8 +186,10 @@ final class Entity_Factory {
 	 * @return Entity The entity for the post.
 	 */
 	public static function create_entity_for_post( WP_Post $post, $page ) {
+		$url = self::paginate_post_url( get_permalink( $post ), $post, $page );
+
 		return new Entity(
-			self::paginate_post_url( get_permalink( $post ), $post, $page ),
+			urldecode( $url ),
 			array(
 				'type'  => 'post',
 				'title' => $post->post_title,
