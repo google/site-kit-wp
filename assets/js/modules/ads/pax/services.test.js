@@ -47,6 +47,9 @@ describe( 'PAX partner services', () => {
 					getBusinessInfo: expect.any( Function ),
 					fixBusinessInfo: expect.any( Function ),
 				},
+				campaignService: {
+					notifyNewCampaignCreated: expect.any( Function ),
+				},
 				conversionTrackingService: {
 					getSupportedConversionLabels: expect.any( Function ),
 					getPageViewConversionSetting: expect.any( Function ),
@@ -57,6 +60,9 @@ describe( 'PAX partner services', () => {
 				},
 				partnerDateRangeService: {
 					get: expect.any( Function ),
+				},
+				userActionService: {
+					finishAndCloseSignUpFlow: expect.any( Function ),
 				},
 			} );
 		} );
@@ -133,13 +139,7 @@ describe( 'PAX partner services', () => {
 
 					await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
 
-					expect( servicesWithCampaign ).toEqual(
-						expect.objectContaining( {
-							campaignService: expect.objectContaining( {
-								notifyNewCampaignCreated: mockOnCampaignCreated,
-							} ),
-						} )
-					);
+					expect( mockOnCampaignCreated ).toHaveBeenCalledTimes( 1 );
 				} );
 			} );
 		} );
