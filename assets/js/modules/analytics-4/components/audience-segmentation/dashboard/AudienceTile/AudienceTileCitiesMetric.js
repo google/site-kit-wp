@@ -33,6 +33,8 @@ export default function AudienceTileCitiesMetric( {
 	topCities,
 } ) {
 	const hasDimensionValues = topCities?.dimensionValues?.some( Boolean );
+	const validDimensionValues =
+		topCities?.dimensionValues?.filter( Boolean ) || [];
 
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities">
@@ -46,7 +48,7 @@ export default function AudienceTileCitiesMetric( {
 				<div className="googlesitekit-audience-segmentation-tile-metric__content">
 					{ ! hasDimensionValues && <AudienceTileNoData /> }
 					{ hasDimensionValues &&
-						topCities.dimensionValues.map( ( city, index ) => (
+						validDimensionValues.map( ( city, index ) => (
 							<div
 								key={ city?.value }
 								className="googlesitekit-audience-segmentation-tile-metric__cities-metric"
