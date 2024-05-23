@@ -1,6 +1,6 @@
 <?php
 /**
- * Migration for 1.128.0
+ * Migration for Conversion ID.
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2024 Google LLC
@@ -18,17 +18,17 @@ use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 
 /**
- * Class Migration_1_128_0
+ * Class Migration_Conversion_ID
  *
- * @since 1.128.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Migration_1_128_0 {
+class Migration_Conversion_ID {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = '1.128.0';
+	const DB_VERSION = 'n.e.x.t';
 
 	/**
 	 * DB version option name.
@@ -48,7 +48,7 @@ class Migration_1_128_0 {
 	/**
 	 * Context instance.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 * @var Context
 	 */
 	protected $context;
@@ -56,7 +56,7 @@ class Migration_1_128_0 {
 	/**
 	 * Options instance.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 * @var Options
 	 */
 	protected $options;
@@ -64,7 +64,7 @@ class Migration_1_128_0 {
 	/**
 	 * Analytics_Settings instance.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 * @var Analytics_Settings
 	 */
 	protected $analytics_settings;
@@ -72,7 +72,7 @@ class Migration_1_128_0 {
 	/**
 	 * Ads_Settings instance.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 * @var Ads_Settings
 	 */
 	protected $ads_settings;
@@ -80,7 +80,7 @@ class Migration_1_128_0 {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -98,7 +98,7 @@ class Migration_1_128_0 {
 	/**
 	 * Registers hooks.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -107,7 +107,7 @@ class Migration_1_128_0 {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
@@ -123,7 +123,7 @@ class Migration_1_128_0 {
 	/**
 	 * Migrates the Ads Conversion ID to the new Ads module.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 */
 	protected function migrate_analytics_conversion_id_setting() {
 		if ( ! $this->analytics_settings->has() ) {
@@ -140,33 +140,25 @@ class Migration_1_128_0 {
 
 		if ( array_key_exists( 'conversionID', $ads_settings ) && ! empty( $ads_settings['conversionID'] ) ) {
 			// If there is already an adsConversionID set in the Ads module, do not overwrite it, remove it from the Analytics module.
-			$this->options->set( self::ANALYTICS_OPTIONS, array_merge( $analytics_settings, array( 'adsConversionID' => '' ) ) );
+			unset( $analytics_settings['adsConversionID'] );
+			$this->options->set( self::ANALYTICS_OPTIONS, $analytics_settings );
 
 			return;
 		}
 
-		$new_ads_settings = array_merge(
-			$ads_settings,
-			array(
-				'conversionID' => $analytics_settings['adsConversionID'],
-			)
-		);
-		$this->options->set( self::ADS_OPTIONS, array_merge( $ads_settings, $new_ads_settings ) );
+		$ads_settings['conversionID'] = $analytics_settings['adsConversionID'];
+		$this->options->set( self::ADS_OPTIONS, $ads_settings );
 
-		$new_analytics_settings = array_merge(
-			$analytics_settings,
-			array(
-				'adsConversionID'             => '',
-				'adsConversionIDMigratedAtMs' => time() * 1000,
-			)
-		);
-		$this->options->set( self::ANALYTICS_OPTIONS, array_merge( $analytics_settings, $new_analytics_settings ) );
+		unset( $analytics_settings['adsConversionID'] );
+		$analytics_settings['adsConversionIDMigratedAtMs'] = time() * 1000;
+
+		$this->options->set( self::ANALYTICS_OPTIONS, $analytics_settings );
 	}
 
 	/**
 	 * Activates the ads module if the Ads Conversion ID was previously set.
 	 *
-	 * @since 1.128.0
+	 * @since n.e.x.t
 	 */
 	protected function activate_ads_module() {
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );

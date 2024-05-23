@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_1_128_0Test
+ * \Google\Site_Kit\Tests\Core\Util\Migration_Conversion_IDTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2024 Google LLC
@@ -13,12 +13,12 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_1_128_0;
+use Google\Site_Kit\Core\Util\Migration_Conversion_ID;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_1_128_0Test extends TestCase {
+class Migration_Conversion_IDTest extends TestCase {
 
 	/**
 	 * @var Context
@@ -52,7 +52,7 @@ class Migration_1_128_0Test extends TestCase {
 	}
 
 	public function get_new_migration_instance() {
-		return new Migration_1_128_0(
+		return new Migration_Conversion_ID(
 			$this->context,
 			$this->options
 		);
@@ -204,7 +204,7 @@ class Migration_1_128_0Test extends TestCase {
 		}
 
 		$this->options->set(
-			Migration_1_128_0::ANALYTICS_OPTIONS,
+			Migration_Conversion_ID::ANALYTICS_OPTIONS,
 			$options
 		);
 	}
@@ -220,16 +220,16 @@ class Migration_1_128_0Test extends TestCase {
 		}
 
 		$this->options->set(
-			Migration_1_128_0::ADS_OPTIONS,
+			Migration_Conversion_ID::ADS_OPTIONS,
 			$options
 		);
 	}
 
 	protected function get_db_version() {
-		return $this->options->get( Migration_1_128_0::DB_VERSION_OPTION );
+		return $this->options->get( Migration_Conversion_ID::DB_VERSION_OPTION );
 	}
 
 	protected function delete_db_version() {
-		$this->options->delete( Migration_1_128_0::DB_VERSION_OPTION );
+		$this->options->delete( Migration_Conversion_ID::DB_VERSION_OPTION );
 	}
 }
