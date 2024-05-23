@@ -2412,28 +2412,26 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Gets the list of site kit created audiences.
+	 * Returns the Site Kit-created audience display names from the passed list of audiences.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $audiences List of audiences.
 	 *
-	 * @return array
+	 * @return array List of Site Kit-created audience display names.
 	 */
 	private function get_site_kit_audiences( $audiences ) {
-		$created_audiences = array();
-
 		// Ensure that audiences are available, otherwise return an empty array.
 		if ( empty( $audiences ) || ! is_array( $audiences ) ) {
-			return $created_audiences;
-		}
-
-		$created_audiences = array_filter( $audiences, fn( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
-
-		if ( empty( $created_audiences ) ) {
 			return array();
 		}
 
-		return wp_list_pluck( $created_audiences, 'displayName' );
+		$site_kit_audiences = array_filter( $audiences, fn( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
+
+		if ( empty( $site_kit_audiences ) ) {
+			return array();
+		}
+
+		return wp_list_pluck( $site_kit_audiences, 'displayName' );
 	}
 }
