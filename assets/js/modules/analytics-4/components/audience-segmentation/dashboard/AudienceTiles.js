@@ -29,21 +29,21 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Tab, TabBar } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import AudienceTile from './AudienceTile';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import { Tab, TabBar } from 'googlesitekit-components';
-import InfoTooltip from '../../../../../components/InfoTooltip';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../datastore/constants';
+import AudienceTile from './AudienceTile';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
+import InfoTooltip from '../../../../../components/InfoTooltip';
 
 const { useSelect } = Data;
 
@@ -343,6 +343,7 @@ export default function AudienceTiles( { Widget } ) {
 							} }
 							topContentTitles={ topContentTitles }
 							Widget={ Widget }
+							audienceResourceName={ audienceResourceName }
 						/>
 					);
 				} ) }
