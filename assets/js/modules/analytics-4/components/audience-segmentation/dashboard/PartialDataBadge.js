@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,10 +34,8 @@ import InfoTooltip from '../../../../../components/InfoTooltip';
 export default function PartialDataBadge( { tooltipTitle } ) {
 	return (
 		<span className="googlesitekit-audience-segmentation-partial-data-badge">
-			<Fragment>
-				{ __( 'Partial data', 'google-site-kit' ) }
-				{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
-			</Fragment>
+			{ __( 'Partial data', 'google-site-kit' ) }
+			{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
 		</span>
 	);
 }
