@@ -152,6 +152,7 @@
 @import "components/dashboard/googlesitekit-DashboardPageSpeed";
 @import "components/dashboard/googlesitekit-ReportMetric";
 @import "components/dashboard/googlesitekit-subtle-notification";
+@import "components/dashboard/googlesitekit-setup-cta-banner";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -162,9 +163,6 @@
 @import "components/dashboard/wizard/googlesitekit-wizard-progress";
 @import "components/dashboard/wizard/googlesitekit-wizard-progress-step";
 @import "components/dashboard/wizard/googlesitekit-wizard-step";
-
-// Consent Mode
-@import "components/consent-mode/googlesitekit-consent-mode-setup-cta";
 
 // Key Metrics
 @import "components/key-metrics/googlesitekit-key-metrics-setup-cta";
