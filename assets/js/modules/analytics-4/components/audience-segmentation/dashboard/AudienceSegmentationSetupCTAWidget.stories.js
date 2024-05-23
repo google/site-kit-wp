@@ -24,28 +24,18 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { getAnalytics4MockResponse } from '../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget from './AudienceSegmentationSetupCTAWidget';
-import { __ } from '@wordpress/i18n';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'audienceSegmentationSetupCTATile'
+	'audienceSegmentationSetupCTA'
 )( AudienceSegmentationSetupCTAWidget );
 
 function Template() {
-	return (
-		<WidgetWithComponentProps
-			title={ __(
-				'Learn how different types of visitors interact with your site',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
-				'google-site-kit'
-			) }
-		/>
-	);
+	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
@@ -61,6 +51,7 @@ export default {
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				global._googlesitekitUserData.isUserInputCompleted = false;
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -69,9 +60,40 @@ export default {
 					},
 				] );
 				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsDataAvailableOnLoad( true );
+
+				const referenceDate = '2024-05-10';
+				const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( referenceDate );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						configuredAudiences: null,
+						isAudienceSegmentationWidgetHidden: false,
+					} );
+
+				const options = {
+					metrics: [ { name: 'totalUsers' } ],
+					startDate,
+					endDate: referenceDate,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( getAnalytics4MockResponse( options ), {
+						options,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
 			};
 
 			return (
