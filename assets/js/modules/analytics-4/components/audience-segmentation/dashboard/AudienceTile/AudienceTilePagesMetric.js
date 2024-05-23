@@ -17,34 +17,46 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useSelect } from '@wordpress/data';
-
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import Link from '../../../../../../components/Link';
-import useViewOnly from '../../../../../../hooks/useViewOnly';
+import Data from 'googlesitekit-data';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../../hooks/useBreakpoint';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTileNoData from './AudienceTileNoData';
+import Link from '../../../../../../components/Link';
+import PartialDataBadge from '../PartialDataBadge';
+import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
+
+const { useSelect } = Data;
 
 export default function AudienceTilePagesMetric( {
 	TileIcon,
 	title,
 	topContent,
 	topContentTitles,
+	isTopContentPartialData,
 } ) {
+	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
@@ -94,6 +106,10 @@ export default function AudienceTilePagesMetric( {
 		);
 	}
 
+	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
+		breakpoint
+	);
+
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content">
 			<div className="googlesitekit-audience-segmentation-tile-metric__icon">
@@ -102,6 +118,14 @@ export default function AudienceTilePagesMetric( {
 			<div className="googlesitekit-audience-segmentation-tile-metric__container">
 				<div className="googlesitekit-audience-segmentation-tile-metric__title">
 					{ title }
+					{ ! isMobileBreakpoint && isTopContentPartialData && (
+						<PartialDataBadge
+							tooltipTitle={ __(
+								'Still collecting full data for this timeframe, partial data is displayed for this metric',
+								'google-site-kit'
+							) }
+						/>
+					) }
 				</div>
 				<div className="googlesitekit-audience-segmentation-tile-metric__content">
 					{ ! hasDimensionValues && <AudienceTileNoData /> }
@@ -122,6 +146,14 @@ export default function AudienceTilePagesMetric( {
 								</div>
 							);
 						} ) }
+					{ isMobileBreakpoint && isTopContentPartialData && (
+						<PartialDataNotice
+							content={ __(
+								'Still collecting full data for this timeframe, partial data is displayed for this metric',
+								'google-site-kit'
+							) }
+						/>
+					) }
 				</div>
 			</div>
 		</div>
@@ -133,4 +165,5 @@ AudienceTilePagesMetric.propTypes = {
 	title: PropTypes.string.isRequired,
 	topContent: PropTypes.object,
 	topContentTitles: PropTypes.object,
+	isTopContentPartialData: PropTypes.bool,
 };

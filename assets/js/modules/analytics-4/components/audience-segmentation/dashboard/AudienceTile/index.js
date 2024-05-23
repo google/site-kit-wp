@@ -19,34 +19,40 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import InfoTooltip from '../../../../../../components/InfoTooltip';
-import ChangeBadge from '../../../../../../components/ChangeBadge';
+import Data from 'googlesitekit-data';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../../hooks/useBreakpoint';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceMetricIconVisitors from '../../../../../../../svg/icons/audience-metric-icon-visitors.svg';
 import AudienceMetricIconVisitsPerVisitor from '../../../../../../../svg/icons/audience-metric-icon-visits-per-visitor.svg';
 import AudienceMetricIconPagesPerVisit from '../../../../../../../svg/icons/audience-metric-icon-pages-per-visit.svg';
 import AudienceMetricIconPageviews from '../../../../../../../svg/icons/audience-metric-icon-pageviews.svg';
 import AudienceMetricIconCities from '../../../../../../../svg/icons/audience-metric-icon-cities.svg';
 import AudienceMetricIconTopContent from '../../../../../../../svg/icons/audience-metric-icon-top-content.svg';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../../../hooks/useBreakpoint';
 import AudienceTileMetric from './AudienceTileMetric';
 import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
-import { numFmt } from '../../../../../../util';
-
-/**
- * WordPress dependencies
- */
-import { __, sprintf } from '@wordpress/i18n';
 import PreviewBlock from '../../../../../../components/PreviewBlock';
+import ChangeBadge from '../../../../../../components/ChangeBadge';
+import InfoTooltip from '../../../../../../components/InfoTooltip';
+import PartialDataBadge from '../PartialDataBadge';
+import PartialDataNotice from '../PartialDataNotice';
+import { numFmt } from '../../../../../../util';
+const { useSelect } = Data;
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
@@ -64,8 +70,37 @@ export default function AudienceTile( {
 	topContent,
 	topContentTitles,
 	Widget,
+	audienceResourceName,
 } ) {
 	const breakpoint = useBreakpoint();
+
+	const isPropertyPartialData = useSelect( ( select ) => {
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		return (
+			propertyID &&
+			select( MODULES_ANALYTICS_4 ).isPropertyPartialData( propertyID )
+		);
+	} );
+	const isAudiencePartialData = useSelect(
+		( select ) =>
+			! isPropertyPartialData &&
+			audienceResourceName &&
+			select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+				audienceResourceName
+			)
+	);
+	const isTopContentPartialData = useSelect(
+		( select ) =>
+			! isAudiencePartialData &&
+			select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
+				'googlesitekit_post_type'
+			)
+	);
+
+	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
+		breakpoint
+	);
 
 	// TODO: Loading states will be implemented as part of https://github.com/google/site-kit-wp/issues/8145.
 	if ( ! loaded ) {
@@ -74,22 +109,45 @@ export default function AudienceTile( {
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-audience-segmentation-tile">
-				{ breakpoint !== BREAKPOINT_TABLET &&
-					breakpoint !== BREAKPOINT_SMALL && (
-						<div className="googlesitekit-audience-segmentation-tile__header">
-							<div className="googlesitekit-audience-segmentation-tile__header-title">
-								{ title }
-								{ infoTooltip && (
-									<InfoTooltip
-										title={ infoTooltip }
-										tooltipClassName="googlesitekit-info-tooltip__content--audience"
-									/>
-								) }
-							</div>
+			<div
+				className={ classnames(
+					'googlesitekit-audience-segmentation-tile',
+					{
+						'googlesitekit-audience-segmentation-tile--partial-data':
+							isAudiencePartialData,
+					}
+				) }
+			>
+				{ ! isMobileBreakpoint && (
+					<div className="googlesitekit-audience-segmentation-tile__header">
+						<div className="googlesitekit-audience-segmentation-tile__header-title">
+							{ title }
+							{ infoTooltip && (
+								<InfoTooltip
+									title={ infoTooltip }
+									tooltipClassName="googlesitekit-info-tooltip__content--audience"
+								/>
+							) }
 						</div>
-					) }
+						{ isAudiencePartialData && (
+							<PartialDataBadge
+								tooltipTitle={ __(
+									'Still collecting full data for this timeframe, partial data is displayed for this group',
+									'google-site-kit'
+								) }
+							/>
+						) }
+					</div>
+				) }
 				<div className="googlesitekit-audience-segmentation-tile__metrics">
+					{ isMobileBreakpoint && isAudiencePartialData && (
+						<PartialDataNotice
+							content={ __(
+								'Still collecting full data for this timeframe, partial data is displayed for this group',
+								'google-site-kit'
+							) }
+						/>
+					) }
 					<AudienceTileMetric
 						TileIcon={ AudienceMetricIconVisitors }
 						title={ __( 'Visitors', 'google-site-kit' ) }
@@ -162,6 +220,7 @@ export default function AudienceTile( {
 						) }
 						topContentTitles={ topContentTitles }
 						topContent={ topContent }
+						isTopContentPartialData={ isTopContentPartialData }
 					/>
 				</div>
 			</div>
@@ -182,4 +241,5 @@ AudienceTile.propTypes = {
 	topContent: PropTypes.object,
 	topContentTitles: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
+	audienceResourceName: PropTypes.string.isRequired,
 };
