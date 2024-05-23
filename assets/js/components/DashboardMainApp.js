@@ -42,6 +42,7 @@ import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
+import { AudienceSegmentationSetupCTAWidget } from '../modules/analytics-4/components/audience-segmentation/dashboard';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
@@ -75,9 +76,12 @@ import {
 import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
+import { useFeature } from '../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
+	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
+
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewOnlyDashboard = useViewOnly();
@@ -249,7 +253,14 @@ export default function DashboardMainApp() {
 				<HelpMenu />
 			</Header>
 
-			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
+			{ ! viewOnlyDashboard && (
+				<Fragment>
+					{ audienceSegmentationEnabled && (
+						<AudienceSegmentationSetupCTAWidget />
+					) }
+					<ConsentModeSetupCTAWidget />
+				</Fragment>
+			) }
 
 			<OverlayNotificationsRenderer />
 
