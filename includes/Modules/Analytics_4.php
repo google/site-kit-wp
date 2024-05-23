@@ -525,15 +525,15 @@ final class Analytics_4 extends Module
 			$debug_fields['analytics_4_site_kit_audiences'] = array(
 				'label' => __( 'Analytics site created audiences', 'google-site-kit' ),
 				'value' => empty( $site_kit_audiences )
-				? __( 'None', 'google-site-kit' )
-				: join(
-					/* translators: used between list items, there is a space after the comma */
-					__( ', ', 'google-site-kit' ),
-					$site_kit_audiences
-				),
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$site_kit_audiences
+					),
 				'debug' => empty( $site_kit_audiences )
-				? 'none'
-				: join( ', ', $site_kit_audiences ),
+					? 'none'
+					: join( ', ', $site_kit_audiences ),
 			);
 		}
 
