@@ -87,6 +87,7 @@ export function createPaxServices( registry, options = {} ) {
 				return { retryReady: true };
 			},
 		},
+
 		businessService: {
 			getBusinessInfo: async () => {
 				await resolveSelect( CORE_SITE ).getSiteInfo();
@@ -104,6 +105,16 @@ export function createPaxServices( registry, options = {} ) {
 				return { retryReady: true };
 			},
 		},
+
+		campaignService: {
+			notifyNewCampaignCreated: async () => {
+				if ( onCampaignCreated ) {
+					await onCampaignCreated();
+				}
+				return {};
+			},
+		},
+
 		conversionTrackingService: {
 			getSupportedConversionLabels: async () => {
 				await resolveSelect( MODULES_ADS ).getModuleData();
@@ -129,6 +140,7 @@ export function createPaxServices( registry, options = {} ) {
 				};
 			},
 		},
+
 		termsAndConditionsService: {
 			// Ignore the ESLint rule that requires `await` in the function body.
 			//
@@ -143,6 +155,7 @@ export function createPaxServices( registry, options = {} ) {
 				return {};
 			},
 		},
+
 		partnerDateRangeService: {
 			// Ignore the ESLint rule that requires `await` in the function body.
 			//
@@ -168,31 +181,14 @@ export function createPaxServices( registry, options = {} ) {
 		},
 
 		userActionService: {
-			// Ignore the ESLint rule that requires `await` in the function body.
-			//
-			// We mark this function as `async` to make it clear that it returns a
-			// promise and in case, in the future, anything here wants to be async.
-			//
-			// Marking this function as `async` makes it clear that this will be
-			// allowed.
-			//
-			// eslint-disable-next-line require-await
 			finishAndCloseSignUpFlow: async () => {
+				if ( onFinishAndCloseSignUpFlow ) {
+					await onFinishAndCloseSignUpFlow();
+				}
 				return {};
 			},
 		},
 	};
-
-	if ( onCampaignCreated ) {
-		services.campaignService = {
-			notifyNewCampaignCreated: onCampaignCreated,
-		};
-	}
-
-	if ( onFinishAndCloseSignUpFlow ) {
-		services.userActionService.finishAndCloseSignUpFlow =
-			onFinishAndCloseSignUpFlow;
-	}
 
 	return services;
 }
