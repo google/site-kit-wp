@@ -34,7 +34,7 @@ use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Ads\Settings;
-use Google\Site_Kit\Modules\Ads\Tag_Guard;
+use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
@@ -151,7 +151,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
 					array(
-						'src'          => 'https://www.gstatic.com/pax/dev/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/latest/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -239,7 +239,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
 	 * @since 1.122.0
-	 * @since n.e.x.t Add additional check to account for paxConversionID and extCustomerID as well when feature flag is enabled.
+	 * @since 1.127.0 Add additional check to account for paxConversionID and extCustomerID as well when feature flag is enabled.
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -294,7 +294,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		}
 
 		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+		$tag->use_guard( new Has_Tag_Guard( $ads_conversion_id ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( ! $tag->can_register() ) {

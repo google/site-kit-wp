@@ -36,7 +36,9 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		'contact-form-7': './assets/js/event-providers/contact-form-7.js',
+		mailchimp: './assets/js/event-providers/mailchimp.js',
 		'optin-monster': './assets/js/event-providers/optin-monster.js',
+		'popup-maker': './assets/js/event-providers/popup-maker.js',
 		woocommerce: './assets/js/event-providers/woocommerce.js',
 		wpforms: './assets/js/event-providers/wpforms.js',
 	},

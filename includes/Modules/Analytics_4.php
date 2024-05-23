@@ -150,7 +150,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Resource_Data_Availability_Date instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 * @var Resource_Data_Availability_Date
 	 */
 	protected $resource_data_availability_date;
@@ -2213,7 +2213,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.

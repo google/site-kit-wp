@@ -36,7 +36,7 @@
 		display: none;
 
 		@media (min-width: $bp-tablet) {
-			display: block;
+			display: flex;
 		}
 	}
 
@@ -60,7 +60,14 @@
 	}
 
 	.mdc-button {
+		font-weight: $fw-medium;
 		margin: 0 auto;
+		min-height: 32px;
+		padding: 6px $grid-gap-phone;
+
+		&.mdc-button--tertiary:not(:disabled) {
+			color: $c-site-kit-sk-600;
+		}
 
 		@media (min-width: $bp-tablet) {
 			margin: 0;

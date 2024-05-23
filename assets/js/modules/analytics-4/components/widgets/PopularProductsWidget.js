@@ -62,7 +62,7 @@ const { useSelect, useInViewSelect, useDispatch } = Data;
 /**
  * Gets the report options for the Popular Products widget.
  *
- * @since n.e.x.t
+ * @since 1.127.0
  *
  * @param {Function} select Data store 'select' function.
  * @return {Object} The report options.

@@ -344,34 +344,39 @@ const baseSelectors = {
 	 *
 	 * @since 1.95.0
 	 * @since 1.107.0 Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
+	 * @since n.e.x.t Add optional `reportArgs` parameter to allow checking zero data for a specific report.
 	 *
+	 * @param {Object}           state      Data store's state.
+	 * @param {Object|undefined} reportArgs Optional. Options for generating the report.
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
-	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const args = getSampleReportArgs( select );
+	hasZeroData: createRegistrySelector(
+		( select ) => ( state, reportArgs ) => {
+			const args = reportArgs || getSampleReportArgs( select );
 
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ args ] );
+			// Disable reason: select needs to be called here or it will never run.
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const report = select( MODULES_ANALYTICS_4 ).getReport( args );
+			const hasResolvedReport = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getReport', [ args ] );
 
-		if ( ! hasResolvedReport ) {
-			return undefined;
+			if ( ! hasResolvedReport ) {
+				return undefined;
+			}
+
+			const hasReportError = select(
+				MODULES_ANALYTICS_4
+			).getErrorForSelector( 'getReport', [ args ] );
+
+			// If there is an error, we assume it's a zero report.
+			if ( hasReportError ) {
+				return true;
+			}
+
+			return isZeroReport( report );
 		}
-
-		const hasReportError = select(
-			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ args ] );
-
-		// If there is an error, we assume it's a zero report.
-		if ( hasReportError ) {
-			return true;
-		}
-
-		return isZeroReport( report );
-	} ),
+	),
 
 	/**
 	 * Gets a given report for each of the provided audiences.

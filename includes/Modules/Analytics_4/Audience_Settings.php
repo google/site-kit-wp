@@ -47,7 +47,7 @@ class Audience_Settings extends User_Setting {
 	 */
 	protected function get_default() {
 		return array(
-			'configuredAudiences'                => array(),
+			'configuredAudiences'                => null,
 			'isAudienceSegmentationWidgetHidden' => false,
 		);
 	}
