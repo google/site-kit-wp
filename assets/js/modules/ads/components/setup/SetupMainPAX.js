@@ -146,7 +146,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
 		finishSetup();
-	}, [ submitChanges, finishSetup ] );
+	}, [ submitChanges, setShowPaxAppQueryParam, finishSetup ] );
 
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
