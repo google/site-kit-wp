@@ -54,6 +54,8 @@ export default function AudienceTilePagesMetric( {
 	);
 
 	const hasDimensionValues = topContent?.dimensionValues?.some( Boolean );
+	const validDimensionValues =
+		topContent?.dimensionValues?.filter( Boolean ) || [];
 
 	function ContentLinkComponent( { content } ) {
 		const pageTitle = topContentTitles[ content?.value ];
@@ -104,7 +106,7 @@ export default function AudienceTilePagesMetric( {
 				<div className="googlesitekit-audience-segmentation-tile-metric__content">
 					{ ! hasDimensionValues && <AudienceTileNoData /> }
 					{ hasDimensionValues &&
-						topContent.dimensionValues.map( ( content, index ) => {
+						validDimensionValues.map( ( content, index ) => {
 							return (
 								<div
 									key={ content?.value }
