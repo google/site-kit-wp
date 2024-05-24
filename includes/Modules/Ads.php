@@ -130,7 +130,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 							),
 							'locale'          => substr( $this->context->get_locale( 'user' ), 0, 2 ),
 							'debuggingConfig' => array(
-								'env' => 'PROD',
+								'env' => 'QA_PROD',
 							),
 						);
 					},
