@@ -23,5 +23,18 @@
 		.googlesitekit-selection-box .mdc-checkbox__description {
 			padding-top: 4px;
 		}
+
+		.googlesitekit-audience-selection-panel__learn-more {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: auto;
+			padding: $grid-gap-phone + 4px $grid-gap-desktop;
+		}
+
+		.googlesitekit-selection-panel-footer {
+			margin: 0;
+		}
 	}
 }

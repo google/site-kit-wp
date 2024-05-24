@@ -36,6 +36,7 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceItems from './AudienceItems';
 import Footer from './Footer';
 import Header from './Header';
+import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
 
 const { useSelect, useDispatch } = Data;
@@ -72,6 +73,7 @@ export default function AudienceSelectionPanel() {
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems />
+			<LearnMoreLink />
 			<Footer closePanel={ closePanel } isOpen={ isOpen } />
 		</SelectionPanel>
 	);
