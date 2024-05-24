@@ -30,7 +30,7 @@ import { useMemo, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_WIDGETS } from '../datastore/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import BaseWidget from './Widget';
@@ -38,8 +38,6 @@ import WidgetRecoverableModules from './WidgetRecoverableModules';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
 import useViewOnly from '../../../hooks/useViewOnly';
-
-const { useSelect } = Data;
 
 function WidgetRenderer( { slug, OverrideComponent } ) {
 	const widget = useSelect( ( select ) =>

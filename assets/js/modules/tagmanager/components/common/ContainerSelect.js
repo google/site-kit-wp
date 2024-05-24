@@ -31,13 +31,12 @@ import { _x, __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_TAGMANAGER,
 	CONTAINER_CREATE,
 } from '../../datastore/constants';
 import { isValidAccountID } from '../../util';
-const { useSelect } = Data;
 
 export default function ContainerSelect( {
 	containers,

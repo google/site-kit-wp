@@ -29,7 +29,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -48,7 +48,6 @@ import useViewOnly from '../../../../hooks/useViewOnly';
 import { AdSenseLinkCTA } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
-const { useSelect, useInViewSelect } = Data;
 
 function TopEarningContentWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();

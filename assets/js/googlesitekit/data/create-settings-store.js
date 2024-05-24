@@ -26,7 +26,12 @@ import { isPlainObject, isEqual, pick } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	commonStore,
+	combineStores,
+} from 'googlesitekit-data';
 import { createStrictSelect } from './utils';
 import {
 	camelCaseToPascalCase,
@@ -35,7 +40,6 @@ import {
 import { createFetchStore } from './create-fetch-store';
 import { actions as errorStoreActions } from '../data/create-error-store';
 
-const { createRegistrySelector } = Data;
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
@@ -194,7 +198,7 @@ export const createSettingsStore = (
 		 * @return {Object} Response and error, if any.
 		 */
 		*saveSettings() {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
 			yield clearError( 'saveSettings', [] );
 
@@ -249,7 +253,7 @@ export const createSettingsStore = (
 
 	const resolvers = {
 		*getSettings() {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 			const existingSettings = registry
 				.select( STORE_NAME )
 				.getSettings();
@@ -420,8 +424,8 @@ export const createSettingsStore = (
 		);
 	} );
 
-	const store = Data.combineStores(
-		Data.commonStore,
+	const store = combineStores(
+		commonStore,
 		fetchGetSettingsStore,
 		fetchSaveSettingsStore,
 		{

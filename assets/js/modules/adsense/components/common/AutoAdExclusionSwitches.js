@@ -25,11 +25,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-
-const { useSelect, useDispatch } = Data;
 
 export const AUTO_ADS_LOGGED_IN_USERS = 'loggedinUsers';
 export const AUTO_ADS_CONTENT_CREATORS = 'contentCreators';

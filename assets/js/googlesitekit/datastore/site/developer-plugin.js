@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
@@ -45,7 +45,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getDeveloperPluginState() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingDeveloperPluginState = registry
 			.select( CORE_SITE )
@@ -85,7 +85,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetDeveloperPluginState, {
+const store = combineStores( fetchGetDeveloperPluginState, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

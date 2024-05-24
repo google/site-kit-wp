@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "paths": {
+      "googlesitekit-data": [
+        "./assets/js/googlesitekit/data"
+      ],
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

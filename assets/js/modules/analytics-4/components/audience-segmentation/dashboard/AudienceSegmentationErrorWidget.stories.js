@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -32,8 +32,6 @@ import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/u
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import AudienceSegmentationErrorWidget from './AudienceSegmentationErrorWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
-
-const { useSelect } = Data;
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'audienceSegmentationErrorWidget'

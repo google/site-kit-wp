@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -47,8 +47,6 @@ import {
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 import { ZeroDataMessage } from '../common';
-
-const { useSelect, useInViewSelect } = Data;
 
 export default function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();

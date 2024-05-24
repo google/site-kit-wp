@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -39,7 +39,6 @@ import ConnectedIcon from '../../../svg/icons/connected.svg';
 import PreviewBlock from '../PreviewBlock';
 import SettingsCardVisitorGroups from '../../modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
 import { useFeature } from '../../hooks/useFeature';
-const { useSelect } = Data;
 
 export default function SettingsAdmin() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );

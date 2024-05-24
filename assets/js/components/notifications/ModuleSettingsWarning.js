@@ -19,12 +19,10 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import classnames from 'classnames';
 import ErrorIcon from '../../../svg/icons/error.svg';
-
-const { useSelect } = Data;
 
 /*
  * A single module. Keeps track of its own active state and settings.

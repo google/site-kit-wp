@@ -24,12 +24,10 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { MODULES_ADS } from '../../ads/datastore/constants';
-
-const { useSelect, useDispatch } = Data;
 
 /**
  * Migrates the Ads Conversion ID from Analytics to the Ads module.

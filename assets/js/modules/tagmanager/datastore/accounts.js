@@ -25,7 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
@@ -33,7 +37,6 @@ import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { ACCOUNT_CREATE } from '../../analytics-4/datastore/constants';
-const { createRegistrySelector } = Data;
 
 // Actions
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -66,7 +69,7 @@ export const baseActions = {
 	 * @private
 	 */
 	*resetAccounts() {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
 			payload: {},
@@ -94,7 +97,7 @@ export const baseActions = {
 			);
 		},
 		function* ( accountID ) {
-			const { select, dispatch } = yield Data.commonActions.getRegistry();
+			const { select, dispatch } = yield commonActions.getRegistry();
 
 			// Do nothing if the accountID to select is the same as the current.
 			if ( accountID === select( MODULES_TAGMANAGER ).getAccountID() ) {
@@ -195,7 +198,7 @@ export const baseReducer = ( state, { type } ) => {
 
 export const baseResolvers = {
 	*getAccounts() {
-		const { select, dispatch } = yield Data.commonActions.getRegistry();
+		const { select, dispatch } = yield commonActions.getRegistry();
 		let accounts = select( MODULES_TAGMANAGER ).getAccounts();
 
 		// Only fetch accounts if they have not been received yet.
@@ -244,7 +247,7 @@ export const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetAccountsStore, {
+const store = combineStores( fetchGetAccountsStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	reducer: baseReducer,

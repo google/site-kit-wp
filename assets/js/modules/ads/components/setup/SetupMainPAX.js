@@ -37,7 +37,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
@@ -52,7 +52,6 @@ import {
 } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
-const { useSelect, useDispatch } = Data;
 
 const PARAM_SHOW_PAX = 'pax';
 

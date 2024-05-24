@@ -38,7 +38,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useRegistry } from 'googlesitekit-data';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import CTA from '../../../../components/notifications/CTA';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -47,7 +47,6 @@ import { createPaxServices } from '../../pax/services';
 import { useMemoOne } from 'use-memo-one';
 import { formatPaxDate } from '../../pax/utils';
 
-const { useRegistry, useSelect } = Data;
 export default function PAXEmbeddedApp( {
 	displayMode = 'default',
 	onLaunch,

@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -56,8 +56,6 @@ import {
 	AnalyticsUpdateError,
 	CustomDimensionsMissingError,
 } from '../components/key-metrics';
-
-const { useSelect, useDispatch } = Data;
 
 export default function withCustomDimensions( options = {} ) {
 	const {

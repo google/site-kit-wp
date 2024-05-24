@@ -68,4 +68,21 @@ Data.withSelect = withSelect;
 Data.withDispatch = withDispatch;
 Data.RegistryProvider = RegistryProvider;
 
+export {
+	combineStores,
+	commonActions,
+	commonControls,
+	commonStore,
+	createReducer,
+	useInViewSelect,
+	createRegistryControl,
+	createRegistrySelector,
+	useSelect,
+	useDispatch,
+	useRegistry,
+	withSelect,
+	withDispatch,
+	RegistryProvider,
+};
+
 export default Data;

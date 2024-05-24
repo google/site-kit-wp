@@ -30,7 +30,7 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -44,8 +44,6 @@ import {
 import AudienceTile from './AudienceTile';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import InfoTooltip from '../../../../../components/InfoTooltip';
-
-const { useSelect } = Data;
 
 export default function AudienceTiles( { Widget } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );

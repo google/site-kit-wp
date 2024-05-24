@@ -30,12 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { TYPE_WARNING } from '../SettingsNotice';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import SettingsNoticeSingleRow from '../SettingsNotice/SettingsNoticeSingleRow';
 import { Button } from 'googlesitekit-components';
-const { useSelect } = Data;
 
 function OfflineNotification() {
 	const [ dismissed, setDismissed ] = useState( false );

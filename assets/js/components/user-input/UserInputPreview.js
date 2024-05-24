@@ -32,7 +32,7 @@ import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -52,7 +52,6 @@ import LoadingWrapper from '../LoadingWrapper';
 import CancelUserInputButton from './CancelUserInputButton';
 import { Row, Cell } from '../../material-components';
 import { hasErrorForAnswer } from './util/validation';
-const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
 	const {

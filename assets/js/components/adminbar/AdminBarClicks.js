@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -37,7 +37,6 @@ import DataBlock from '../DataBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-const { useSelect } = Data;
 
 function AdminBarClicks( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>

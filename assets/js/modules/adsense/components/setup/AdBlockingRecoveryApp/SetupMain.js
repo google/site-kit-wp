@@ -23,7 +23,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import Link from '../../../../../components/Link';
 import PageHeader from '../../../../../components/PageHeader';
 import Stepper from '../../../../../components/Stepper';
@@ -44,8 +44,6 @@ import {
 import Content from './Content';
 import CreateMessageStep from './steps/CreateMessageStep';
 import PlaceTagsStep from './steps/PlaceTagsStep';
-
-const { useSelect, useDispatch } = Data;
 
 export default function SetupMain() {
 	const viewContext = useViewContext();

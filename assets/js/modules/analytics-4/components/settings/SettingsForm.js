@@ -29,14 +29,13 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { TrackingExclusionSwitches } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsControls from './SettingsControls';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
-const { useSelect } = Data;
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>

@@ -19,12 +19,11 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 
 import { MODULES_ADS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockerWarningMessage from '../../../../components/AdBlockerWarningMessage';
-const { useSelect } = Data;
 
 export default function AdBlockerWarning() {
 	const adBlockerWarningMessage = useSelect( ( select ) =>

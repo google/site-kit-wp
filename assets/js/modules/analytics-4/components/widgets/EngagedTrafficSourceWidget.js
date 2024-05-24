@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -43,7 +43,6 @@ import { MetricTileText } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import whenActive from '../../../../util/when-active';
-const { useSelect, useInViewSelect } = Data;
 
 function EngagedTrafficSourceWidget( props ) {
 	const { Widget } = props;

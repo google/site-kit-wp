@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createNotificationsStore } from '../../data/create-notifications-store';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -125,7 +125,7 @@ const baseActions = {
 	),
 };
 
-const notifications = Data.combineStores(
+const notifications = combineStores(
 	createNotificationsStore( 'core', 'site', 'notifications', {
 		storeName: CORE_SITE,
 	} ),

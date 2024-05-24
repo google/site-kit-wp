@@ -25,7 +25,7 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -39,7 +39,6 @@ import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
 import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
-const { useSelect } = Data;
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>

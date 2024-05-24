@@ -25,12 +25,10 @@ import { useMount } from 'react-use';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
-
-const { useDispatch } = Data;
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );

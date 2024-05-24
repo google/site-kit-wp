@@ -33,7 +33,7 @@ import { isURL } from '@wordpress/url';
 /*
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Cell } from '../../../material-components';
 import { getStickyHeaderHeightWithoutNav } from '../../../util/scroll';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
@@ -53,7 +53,6 @@ import {
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import BannerDescription from './BannerDescription';
-const { useSelect, useDispatch } = Data;
 
 export * from './constants';
 

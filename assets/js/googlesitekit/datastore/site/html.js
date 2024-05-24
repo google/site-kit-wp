@@ -29,13 +29,15 @@ import { isURL, addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { extractExistingTag } from '../../../util/tag';
-
-const { createRegistryControl } = Data;
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
@@ -106,7 +108,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetHTMLForURL( url ) {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
 			payload: { url },
@@ -204,7 +206,7 @@ const baseReducer = ( state, { type, payload } ) => {
 
 export const baseResolvers = {
 	*getHTMLForURL( url ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingHTML = registry.select( CORE_SITE ).getHTMLForURL( url );
 
@@ -234,7 +236,7 @@ export const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchHTMLForURLStore, {
+const store = combineStores( fetchHTMLForURLStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,

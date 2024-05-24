@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -28,7 +28,6 @@ import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
 import SettingsForm from './SettingsForm';
 import { AccountCreate, AccountCreateLegacy } from '../common';
-const { useSelect } = Data;
 
 export default function SettingsEdit() {
 	const accounts =

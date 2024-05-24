@@ -30,10 +30,9 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { combineStores, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-const { combineStores, createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

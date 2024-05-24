@@ -20,20 +20,22 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import {
+	combineStores,
+	createRegistrySelector,
+	commonActions,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate } from '../../../util';
 import { validateAudience } from '../utils/validation';
-
-const { createRegistrySelector } = Data;
 
 const MAX_INITIAL_AUDIENCES = 2;
 
@@ -187,12 +189,12 @@ const baseActions = {
 	 * @since n.e.x.t
 	 */
 	*enableAudienceGroup() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
-			yield Data.commonActions.await(
+			yield commonActions.await(
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 			);
 
@@ -218,15 +220,14 @@ const baseActions = {
 				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
 			);
 
-			const { audienceResourceNames, error } =
-				yield Data.commonActions.await(
-					getNonZeroDataAudiencesSortedByTotalUsers(
-						registry,
-						userAudiences,
-						startDate,
-						endDate
-					)
-				);
+			const { audienceResourceNames, error } = yield commonActions.await(
+				getNonZeroDataAudiencesSortedByTotalUsers(
+					registry,
+					userAudiences,
+					startDate,
+					endDate
+				)
+			);
 
 			if ( ! error ) {
 				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
@@ -271,7 +272,7 @@ const baseActions = {
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
 			const [ newVisitorsResult, returningVisitorsResult ] =
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					Promise.all( [
 						dispatch( MODULES_ANALYTICS_4 ).createAudience(
 							SITE_KIT_AUDIENCE_DEFINITIONS[ 'new-visitors' ]
@@ -296,13 +297,13 @@ const baseActions = {
 			}
 
 			// Resync available audiences to ensure the newly created audiences are available.
-			yield Data.commonActions.await(
+			yield commonActions.await(
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 			);
 		}
 
 		// Create custom dimension if it doesn't exist.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			__experimentalResolveSelect(
 				MODULES_ANALYTICS_4
 			).getAvailableCustomDimensions()
@@ -315,7 +316,7 @@ const baseActions = {
 		) {
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
-			const { error } = yield Data.commonActions.await(
+			const { error } = yield commonActions.await(
 				dispatch( MODULES_ANALYTICS_4 ).fetchCreateCustomDimension(
 					propertyID,
 					CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
@@ -335,7 +336,7 @@ const baseActions = {
 				);
 
 				// Resync available custom dimensions to ensure the newly created custom dimension is available.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch(
 						MODULES_ANALYTICS_4
 					).fetchSyncAvailableCustomDimensions()
@@ -347,7 +348,7 @@ const baseActions = {
 			configuredAudiences
 		);
 
-		const { error } = yield Data.commonActions.await(
+		const { error } = yield commonActions.await(
 			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings()
 		);
 
@@ -367,7 +368,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAvailableAudiences() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const audiences = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -494,7 +495,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchCreateAudienceStore,
 	fetchSyncAvailableAudiencesStore,
 	{

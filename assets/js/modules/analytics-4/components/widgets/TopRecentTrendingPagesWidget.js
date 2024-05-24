@@ -29,7 +29,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import Link from '../../../../components/Link';
 import { ZeroDataMessage } from '../common';
@@ -46,7 +46,6 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 } from '../../../../googlesitekit/datastore/user/constants';
-const { useSelect, useInViewSelect } = Data;
 
 /**
  * Computes the dates for the last three days relative to today (reference date).

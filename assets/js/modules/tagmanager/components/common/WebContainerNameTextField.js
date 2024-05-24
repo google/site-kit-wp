@@ -30,7 +30,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -39,7 +39,6 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
-const { useSelect, useDispatch } = Data;
 
 export default function WebContainerNameTextField() {
 	const containerID = useSelect( ( select ) =>

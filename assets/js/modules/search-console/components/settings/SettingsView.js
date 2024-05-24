@@ -24,10 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
-const { useSelect } = Data;
 
 export default function SettingsView() {
 	const propertyID = useSelect( ( select ) =>

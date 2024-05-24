@@ -30,7 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
 import Link from '../../../../../../components/Link';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
@@ -43,7 +43,6 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
-const { useSelect, useDispatch } = Data;
 
 export default function CreateMessageStep() {
 	const viewContext = useViewContext();
