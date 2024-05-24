@@ -36,7 +36,13 @@ import { SelectionPanelItem } from '../../../../../../components/SelectionPanel'
 
 const { useSelect, useDispatch } = Data;
 
-export default function AudienceItem( { slug, title, description } ) {
+export default function AudienceItem( {
+	slug,
+	title,
+	description,
+	subtitle,
+	userCount,
+} ) {
 	const selectedItems = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AUDIENCE_SELECTION_FORM,
@@ -68,9 +74,11 @@ export default function AudienceItem( { slug, title, description } ) {
 			id={ id }
 			slug={ slug }
 			title={ title }
+			subtitle={ subtitle }
 			description={ description }
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
+			meta={ userCount }
 		/>
 	);
 }
@@ -79,4 +87,5 @@ AudienceItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
+	subtitle: PropTypes.string.isRequired,
 };
