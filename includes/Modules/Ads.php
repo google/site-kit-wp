@@ -151,7 +151,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
 					array(
-						'src'          => 'https://www.gstatic.com/pax/dev/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.0.8/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
