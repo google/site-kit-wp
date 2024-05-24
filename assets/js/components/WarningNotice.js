@@ -1,7 +1,7 @@
 /**
- * Metric Selection Panel utils.
+ * WarningNotice component.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
  */
 
 /**
- * Sorts an array without causing the mutation if the given parameter is an array.
- * If the parameter is not an array, it returns the parameter as is.
- *
- * @since 1.110.0
- *
- * @param {Array|*} arr Param to be sorted.
- * @return {Array|*} 	Safely sorted array without mutation.
+ * External dependencies
  */
-export const safelySort = ( arr ) => {
-	return Array.isArray( arr ) ? [ ...arr ].sort() : arr;
+import PropTypes from 'prop-types';
+
+export default function WarningNotice( { children } ) {
+	return <div className="googlesitekit-warning-notice">{ children }</div>;
+}
+
+WarningNotice.propTypes = {
+	children: PropTypes.node.isRequired,
 };

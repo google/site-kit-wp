@@ -20,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for handling rest routes for Conversion Tracking settings.
  *
- * @since n.e.x.t
+ * @since 1.127.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class REST_Conversion_Tracking_Controller {
 	/**
 	 * Conversion_Tracking_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 * @var Conversion_Tracking_Settings
 	 */
 	protected $settings;
@@ -37,7 +37,7 @@ class REST_Conversion_Tracking_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @param Conversion_Tracking_Settings $settings Conversion Tracking settings.
 	 */
@@ -48,7 +48,7 @@ class REST_Conversion_Tracking_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 */
 	public function register() {
 		add_filter(
@@ -74,13 +74,13 @@ class REST_Conversion_Tracking_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.127.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
 		$has_capabilities = function() {
-			return current_user_can( Permissions::VIEW_DASHBOARD );
+			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
 		return array(
