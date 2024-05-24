@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import AdBlockerWarningMessage from '../AdBlockerWarningMessage';
+import AdBlockerWarningMessage from './AdBlockerWarningMessage';
 const { useSelect } = Data;
 
 export default function AdBlockerWarning( { moduleSlug } ) {
