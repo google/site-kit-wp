@@ -70,7 +70,7 @@ export default function PAXEmbeddedApp( {
 			onCampaignCreated,
 			onFinishAndCloseSignUpFlow,
 		} );
-	}, [ registry, onCampaignCreated ] );
+	}, [ registry, onCampaignCreated, onFinishAndCloseSignUpFlow ] );
 
 	const paxDateRange = useSelect( ( select ) => {
 		if ( displayMode !== 'reporting' ) {
