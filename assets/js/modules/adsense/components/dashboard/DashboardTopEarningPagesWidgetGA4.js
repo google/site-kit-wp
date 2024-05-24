@@ -51,7 +51,8 @@ import PreviewTable from '../../../../components/PreviewTable';
 import ReportTable from '../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import { ZeroDataMessage } from '../../../analytics-4/components/common';
-import { AdSenseLinkCTA, AdBlockerWarning } from '../common';
+import { AdSenseLinkCTA } from '../common';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 
 const { useSelect, useInViewSelect } = Data;
 
@@ -200,7 +201,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	if ( isAdblockerActive ) {
 		return (
 			<Widget Footer={ Footer }>
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="adsense" />
 			</Widget>
 		);
 	}

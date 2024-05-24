@@ -42,7 +42,7 @@ import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
 import SupportLink from '../../../../components/SupportLink';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
@@ -168,7 +168,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 				</h2>
 			</div>
 			<div className="googlesitekit-setup-module__step">
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="ads" />
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.FINISHED === showPaxAppStep && (
