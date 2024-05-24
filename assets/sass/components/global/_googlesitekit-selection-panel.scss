@@ -90,6 +90,20 @@
 		&:last-child .googlesitekit-selection-box {
 			border: none;
 		}
+
+		.googlesitekit-selection-box .mdc-checkbox__description {
+
+			&:has(.googlesitekit-selection-panel-item-subtitle) {
+				padding-top: 1px;
+			}
+		}
+
+		.googlesitekit-selection-panel-item-subtitle {
+			color: $c-surfaces-on-surface;
+			display: block;
+			letter-spacing: $ls-xs;
+			margin-bottom: 6px;
+		}
 	}
 
 	.googlesitekit-selection-panel-notice {

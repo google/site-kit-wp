@@ -24,9 +24,11 @@
 
 	.mdc-form-field {
 		align-items: flex-start;
+		width: 100%;
 	}
 
 	.mdc-checkbox__content {
+		flex: 1;
 		padding-top: 9px;
 	}
 
@@ -52,7 +54,7 @@
 		color: $c-surfaces-on-surface-variant;
 		font-size: $fs-body-sm;
 		line-height: $lh-body-sm;
-		padding: 7px 0 5px;
+		padding: 4px 0 5px;
 	}
 
 	+ .googlesitekit-selection-box {
@@ -66,5 +68,14 @@
 			color: $c-interactive-on-disable-container;
 			pointer-events: none;
 		}
+	}
+
+	.mdc-checkbox__heading {
+		align-items: center;
+		display: flex;
+	}
+
+	.mdc-checkbox__meta {
+		font-weight: $fw-medium;
 	}
 }
