@@ -35,6 +35,7 @@ export default function SelectionBox( {
 	onChange,
 	title,
 	value,
+	meta,
 } ) {
 	return (
 		<div
@@ -50,6 +51,7 @@ export default function SelectionBox( {
 				name={ id }
 				onChange={ onChange }
 				value={ value }
+				meta={ meta }
 			>
 				{ title }
 			</Checkbox>
@@ -65,4 +67,5 @@ SelectionBox.propTypes = {
 	onChange: PropTypes.func,
 	title: PropTypes.string,
 	value: PropTypes.string,
+	meta: PropTypes.node,
 };
