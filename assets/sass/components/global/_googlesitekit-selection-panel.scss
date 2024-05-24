@@ -138,7 +138,6 @@
 		background-color: $c-surfaces-background;
 		margin-top: auto;
 		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
-		text-align: center;
 		width: 100%;
 
 		p {
@@ -173,7 +172,7 @@
 		align-items: center;
 		column-gap: $grid-gap-phone / 2;
 		display: flex;
-		justify-content: center;
+		justify-content: flex-end;
 
 		.googlesitekit-cta-link {
 			color: $c-surfaces-on-surface-variant;
