@@ -29,10 +29,8 @@ import {
 	UseSnippetSwitch,
 	UserProfile,
 } from '../assets/js/modules/adsense/components/common';
-import AdBlockerWarning from '../assets/js/components/notifications/AdBlockerWarning';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
-import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 
 function SetupWrap( { children } ) {
@@ -107,21 +105,6 @@ storiesOf( 'AdSense Module', module )
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<UseSnippetSwitch />
-					</div>
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'AdBlocker Warning', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<div className="googlesitekit-setup-module__inputs">
-						<AdBlockerWarning slug="adsense" />
 					</div>
 				</SetupWrap>
 			</WithTestRegistry>
