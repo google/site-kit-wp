@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -25,13 +30,13 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceItems from './AudienceItems';
+import Footer from './Footer';
 import Header from './Header';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
-import { useCallback } from '@wordpress/element';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -67,6 +72,7 @@ export default function AudienceSelectionPanel() {
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems />
+			<Footer closePanel={ closePanel } isOpen={ isOpen } />
 		</SelectionPanel>
 	);
 }
