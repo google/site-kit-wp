@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
 import CheckFill from '../../../../../../svg/icons/check-fill.svg';
@@ -34,8 +34,6 @@ import useViewOnly from '../../../../../hooks/useViewOnly';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../hooks/useDashboardType';
-
-const { useSelect, useDispatch } = Data;
 
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 	'audience_segmentation_setup_success_notification';

@@ -25,12 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADS } from '../../datastore/constants';
 import { AdBlockerWarning } from '../common';
-const { useSelect } = Data;
 
 export default function SettingsSetupIncomplete() {
 	const adminReauthURL = useSelect( ( select ) =>

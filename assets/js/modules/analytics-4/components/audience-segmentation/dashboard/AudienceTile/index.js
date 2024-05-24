@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -51,8 +51,6 @@ import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
 import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
-
-const { useSelect } = Data;
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation

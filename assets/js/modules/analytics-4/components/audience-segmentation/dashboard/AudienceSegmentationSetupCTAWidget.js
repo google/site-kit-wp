@@ -31,7 +31,7 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -50,8 +50,6 @@ import {
 import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
 import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
-
-const { useSelect, useDispatch } = Data;
 
 function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
