@@ -36,7 +36,7 @@ export default function SelectionPanelItem( {
 	isItemDisabled,
 	onCheckboxChange,
 	subtitle,
-	meta,
+	suffix,
 } ) {
 	return (
 		<div className="googlesitekit-selection-panel-item">
@@ -47,7 +47,6 @@ export default function SelectionPanelItem( {
 				onChange={ onCheckboxChange }
 				title={ title }
 				value={ slug }
-				meta={ meta }
 			>
 				{ subtitle && (
 					<span className="googlesitekit-selection-panel-item-subtitle">
@@ -57,6 +56,11 @@ export default function SelectionPanelItem( {
 				{ description }
 				{ children }
 			</SelectionBox>
+			{ !! suffix && (
+				<span className="googlesitekit-selection-panel-item-suffix">
+					{ suffix }
+				</span>
+			) }
 		</div>
 	);
 }
@@ -71,5 +75,5 @@ SelectionPanelItem.propTypes = {
 	isItemDisabled: PropTypes.bool,
 	onCheckboxChange: PropTypes.func,
 	subtitle: PropTypes.string,
-	meta: PropTypes.node,
+	suffix: PropTypes.node,
 };

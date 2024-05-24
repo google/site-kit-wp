@@ -78,7 +78,7 @@ export default function AudienceItem( {
 			description={ description }
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
-			meta={ userCount }
+			suffix={ userCount }
 		/>
 	);
 }

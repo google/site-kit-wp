@@ -24,11 +24,9 @@
 
 	.mdc-form-field {
 		align-items: flex-start;
-		width: 100%;
 	}
 
 	.mdc-checkbox__content {
-		flex: 1;
 		padding-top: 9px;
 	}
 
@@ -68,14 +66,5 @@
 			color: $c-interactive-on-disable-container;
 			pointer-events: none;
 		}
-	}
-
-	.mdc-checkbox__heading {
-		align-items: center;
-		display: flex;
-	}
-
-	.mdc-checkbox__meta {
-		font-weight: $fw-medium;
 	}
 }
