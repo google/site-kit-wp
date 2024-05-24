@@ -60,6 +60,7 @@ export default function AudienceSelectionPanel() {
 
 	return (
 		<SelectionPanel
+			className="googlesitekit-audience-selection-panel"
 			closePanel={ closePanel }
 			isOpen={ isOpen }
 			onOpen={ onSideSheetOpen }
