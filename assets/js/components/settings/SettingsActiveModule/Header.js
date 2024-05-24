@@ -66,6 +66,9 @@ export default function Header( { slug } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
+	const requirementsError = useSelect( ( select ) =>
+		select( CORE_MODULES )?.getCheckRequirementsError( slug )
+	);
 
 	const openHeader = useCallback( () => {
 		if ( isOpen ) {
@@ -117,7 +120,12 @@ export default function Header( { slug } ) {
 		moduleStatus = <p>{ __( 'Connected', 'google-site-kit' ) }</p>;
 	} else {
 		moduleStatus = (
-			<Button href={ adminReauthURL } onClick={ onActionClick }>
+			<Button
+				href={ adminReauthURL }
+				onClick={ onActionClick }
+				disabled={ requirementsError ? true : false }
+				inverse
+			>
 				{ sprintf(
 					/* translators: %s: module name. */
 					__( 'Complete setup for %s', 'google-site-kit' ),
@@ -154,7 +162,7 @@ export default function Header( { slug } ) {
 					>
 						<ModuleIcon
 							slug={ slug }
-							size={ 24 }
+							size={ 40 }
 							className="googlesitekit-settings-module__heading-icon"
 						/>
 

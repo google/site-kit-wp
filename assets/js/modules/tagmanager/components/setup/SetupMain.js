@@ -68,15 +68,18 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
-			<div className="googlesitekit-setup-module__logo">
-				<TagManagerIcon width="33" height="33" />
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<TagManagerIcon width="40" height="40" />
+				</div>
+
+				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
+				</h2>
 			</div>
-
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
-			</h2>
-
-			{ viewComponent }
+			<div className="googlesitekit-setup-module__step">
+				{ viewComponent }
+			</div>
 		</div>
 	);
 }
