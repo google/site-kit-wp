@@ -25,7 +25,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import AdsIcon from '../../../svg/graphics/ads.svg';
-import { SettingsEdit, SettingsView } from './components/settings';
+import {
+	SettingsEdit,
+	SettingsView,
+	SettingsSetupIncomplete,
+} from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
 import {
@@ -44,6 +48,7 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: isFeatureEnabled( 'adsPax' ) ? SetupMainPAX : SetupMain,
+		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 		Icon: AdsIcon,
 		features: [
 			__(
