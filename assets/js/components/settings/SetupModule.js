@@ -122,8 +122,6 @@ export default function SetupModule( { slug, name, description } ) {
 				{ description }
 			</p>
 
-			<ModuleSettingsWarning slug={ slug } />
-
 			<p className="googlesitekit-settings-connect-module__cta">
 				<Link
 					onClick={ onSetup }
@@ -138,6 +136,8 @@ export default function SetupModule( { slug, name, description } ) {
 					) }
 				</Link>
 			</p>
+
+			<ModuleSettingsWarning slug={ slug } />
 		</div>
 	);
 }
