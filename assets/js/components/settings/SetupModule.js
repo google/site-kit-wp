@@ -90,11 +90,7 @@ export default function SetupModule( { slug, name, description } ) {
 		<div
 			className={ classnames(
 				'googlesitekit-settings-connect-module',
-				`googlesitekit-settings-connect-module--${ slug }`,
-				{
-					'googlesitekit-settings-connect-module--disabled':
-						canActivateModule === false,
-				}
+				`googlesitekit-settings-connect-module--${ slug }`
 			) }
 			key={ slug }
 		>
