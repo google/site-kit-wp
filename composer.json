@@ -5,14 +5,11 @@
   "type": "wordpress-plugin",
   "homepage": "https://sitekit.withgoogle.com",
   "require-dev": {
-    "automattic/vipwpcs": "^2",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.0",
     "roave/security-advisories": "dev-latest",
     "roots/wordpress": ">=5.2",
     "squizlabs/php_codesniffer": "^3.7",
-    "wp-coding-standards/wpcs": "^2",
     "wp-phpunit/wp-phpunit": ">=5.2",
     "yoast/phpunit-polyfills": "^2.0"
   },
@@ -46,7 +43,6 @@
     },
     "sort-packages": true,
     "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true,
       "roots/wordpress-core-installer": true
     }
   },
