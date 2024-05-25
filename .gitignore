@@ -7,6 +7,7 @@ vendor
 !/php-scoper/README.md
 /third-party
 /release
+phpcs.xml
 phpunit.xml
 .idea
 npm-debug.log
