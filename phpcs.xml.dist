@@ -50,12 +50,15 @@
 		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable"/>
 	</rule>
 
-	<!-- Show details about violated sniffs -->
-	<arg value="s"/>
+	<!-- Show progress and details about violated sniffs -->
+	<arg value="ps"/>
 
 	<!-- Iterate over all PHP files by default -->
 	<arg name="extensions" value="php"/>
 	<file>.</file>
+
+	<!-- Check up to 20 files simultaneously. -->
+	<arg name="parallel" value="20"/>
 
 	<!-- Test-specific exclusions -->
 	<rule ref="WordPress.DB.DirectDatabaseQuery">
