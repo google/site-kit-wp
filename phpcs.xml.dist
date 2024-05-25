@@ -12,7 +12,7 @@
 		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
 		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode"/>
 		<!-- Allow short ternary -->
-		<exclude name="WordPress.PHP.DisallowShortTernary" />
+		<exclude name="Universal.Operators.DisallowShortTernary" />
 		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->
 		<exclude name="WordPress.WP.TimezoneChange.DeprecatedSniff"/>
 	</rule>
