@@ -5,6 +5,7 @@
   "type": "wordpress-plugin",
   "homepage": "https://sitekit.withgoogle.com",
   "require-dev": {
+    "automattic/vipwpcs": "^3",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.0",
     "roave/security-advisories": "dev-latest",
