@@ -32,6 +32,7 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { AUDIENCE_SELECTED, AUDIENCE_SELECTION_FORM } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { numFmt } from '../../../../../../util';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
 
 const { useSelect, useDispatch } = Data;
@@ -78,7 +79,7 @@ export default function AudienceItem( {
 			description={ description }
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
-			suffix={ userCount }
+			suffix={ !! userCount && numFmt( userCount ) }
 		/>
 	);
 }

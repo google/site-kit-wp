@@ -56,7 +56,7 @@ export default function SelectionPanelItem( {
 				{ description }
 				{ children }
 			</SelectionBox>
-			{ !! suffix && (
+			{ suffix && (
 				<span className="googlesitekit-selection-panel-item-suffix">
 					{ suffix }
 				</span>
