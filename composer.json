@@ -44,7 +44,8 @@
     },
     "sort-packages": true,
     "allow-plugins": {
-      "roots/wordpress-core-installer": true
+      "roots/wordpress-core-installer": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "extra": {
