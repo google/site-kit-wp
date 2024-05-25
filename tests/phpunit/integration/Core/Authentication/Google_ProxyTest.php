@@ -492,7 +492,7 @@ class Google_ProxyTest extends TestCase {
 	 * @group ms-excluded
 	 */
 	public function test_get_platform() {
-		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit
 	}
 
 	/**
