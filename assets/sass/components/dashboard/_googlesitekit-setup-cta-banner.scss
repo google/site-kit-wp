@@ -1,5 +1,5 @@
 /**
- * Consent Mode Setup CTA styles.
+ * Setup CTA banner styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *		 https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,8 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-consent-mode-setup-cta-widget {
-		.googlesitekit-consent-mode-setup-cta-widget__primary-cell {
+	.googlesitekit-setup-cta-banner {
+		.googlesitekit-setup-cta-banner__primary-cell {
 			padding: $grid-gap-phone $grid-gap-phone 0;
 
 			@media (min-width: $width-desktop + 1 + px) {
@@ -26,7 +26,7 @@
 			}
 		}
 
-		.googlesitekit-consent-mode-setup-cta-widget__title {
+		.googlesitekit-setup-cta-banner__title {
 			font-family: $f-primary;
 			font-size: $fs-title-md;
 			font-weight: $fw-medium;
@@ -41,7 +41,7 @@
 			}
 		}
 
-		.googlesitekit-consent-mode-setup-cta-widget__description {
+		.googlesitekit-setup-cta-banner__description {
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
@@ -54,7 +54,7 @@
 			}
 		}
 
-		.googlesitekit-consent-mode-setup-cta-widget__actions-wrapper {
+		.googlesitekit-setup-cta-banner__actions-wrapper {
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
@@ -68,7 +68,7 @@
 		}
 	}
 
-	.googlesitekit-consent-mode-setup-cta-widget__svg-wrapper {
+	.googlesitekit-setup-cta-banner__svg-wrapper {
 		align-items: center;
 		display: flex;
 		height: 100%;

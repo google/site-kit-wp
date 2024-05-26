@@ -24,3 +24,9 @@ export const PAX_SETUP_STEP = {
 	LAUNCH: 1,
 	FINISHED: 2,
 };
+
+// Date range offset days for Ads report requests.
+export const DATE_RANGE_OFFSET = 1;
+
+export const ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY =
+	'ads_module_setup_banner_prompt_dismissed_key';

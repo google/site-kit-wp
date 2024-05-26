@@ -27,6 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { isPendingAccountStatus } from '../../util/status';
 import { AdBlockerWarning } from '../common';
@@ -39,6 +40,9 @@ export default function SettingsSetupIncomplete() {
 	const isPendingStatus = isPendingAccountStatus( accountStatus );
 	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdminReauthURL()
+	);
+	const requirementsError = useSelect( ( select ) =>
+		select( CORE_MODULES )?.getCheckRequirementsError( 'adsense' )
 	);
 
 	let statusText, actionText;
@@ -57,7 +61,9 @@ export default function SettingsSetupIncomplete() {
 
 	return (
 		<Fragment>
-			<AdBlockerWarning />
+			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
+				<AdBlockerWarning />
+			</div>
 
 			{ createInterpolateElement(
 				sprintf( statusText, `<a>${ actionText }</a>` ),
@@ -66,6 +72,7 @@ export default function SettingsSetupIncomplete() {
 						<Link
 							className="googlesitekit-settings-module__edit-button"
 							href={ adminReauthURL }
+							disabled={ requirementsError ? true : false }
 						/>
 					),
 				}
