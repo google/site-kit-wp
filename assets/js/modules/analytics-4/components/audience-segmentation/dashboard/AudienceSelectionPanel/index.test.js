@@ -204,7 +204,7 @@ describe( 'AudienceSelectionPanel', () => {
 				)
 				?.forEach( ( item ) => {
 					const audienceName = item?.querySelector(
-						'input[type ="checkbox"]'
+						'input[type="checkbox"]'
 					)?.value;
 
 					const rowIndex = report?.rows?.findIndex(
@@ -243,7 +243,7 @@ describe( 'AudienceSelectionPanel', () => {
 				)
 				?.forEach( ( item ) => {
 					const audienceName = item?.querySelector(
-						'input[type ="checkbox"]'
+						'input[type="checkbox"]'
 					)?.value;
 
 					const audienceType = availableAudiences.find(
