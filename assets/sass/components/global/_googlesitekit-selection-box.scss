@@ -17,6 +17,9 @@
  */
 
 .googlesitekit-selection-box {
+	border-bottom: 2px solid $c-neutral-n-66;
+	outline: 1px solid $c-white;
+	outline-offset: -1px;
 	padding: 6px 10px 6px 7px;
 
 	.mdc-form-field {

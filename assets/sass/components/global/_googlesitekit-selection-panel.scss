@@ -86,17 +86,19 @@
 		outline: 1px solid $c-white;
 		outline-offset: -1px;
 
+		&:last-child {
+			border: none;
+		}
+
 		.googlesitekit-selection-panel-item-error {
 			color: $c-red-600;
 			padding-top: 10px;
 		}
 
 		.googlesitekit-selection-box {
-			flex: 1;
-		}
-
-		&:last-child .googlesitekit-selection-box {
 			border: none;
+			flex: 1;
+			outline: none;
 		}
 
 		.googlesitekit-selection-box .mdc-checkbox__description {
