@@ -45,7 +45,8 @@
 		"lint:css-fix": "stylelint ./assets/sass ./.storybook/assets/sass --fix",
 		"env:start": "./bin/local-env/start.sh",
 		"env:stop": "./bin/local-env/stop.sh",
-		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
+		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site",
+		"postinstall": "patch-package"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
@@ -230,6 +231,7 @@
 		"lint-staged": "^10.2.11",
 		"mini-css-extract-plugin": "^1.2.1",
 		"node-fetch": "^2.6.8",
+		"patch-package": "^8.0.0",
 		"postcss": "^8.4.31",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^4.0.0",
