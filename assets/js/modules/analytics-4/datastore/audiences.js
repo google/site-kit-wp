@@ -55,7 +55,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 	startDate,
 	endDate
 ) {
-	const { select, __experimentalResolveSelect } = registry;
+	const { select, resolveSelect } = registry;
 
 	const reportOptions = {
 		metrics: [ { name: 'totalUsers' } ],
@@ -67,9 +67,9 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 		endDate,
 	};
 
-	const report = await __experimentalResolveSelect(
-		MODULES_ANALYTICS_4
-	).getReport( reportOptions );
+	const report = await resolveSelect( MODULES_ANALYTICS_4 ).getReport(
+		reportOptions
+	);
 
 	const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 		'getReport',
@@ -189,7 +189,7 @@ const baseActions = {
 	*enableAudienceGroup() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const { dispatch, select, __experimentalResolveSelect } = registry;
+		const { dispatch, select, resolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
 			yield Data.commonActions.await(
@@ -303,9 +303,7 @@ const baseActions = {
 
 		// Create custom dimension if it doesn't exist.
 		yield Data.commonActions.await(
-			__experimentalResolveSelect(
-				MODULES_ANALYTICS_4
-			).getAvailableCustomDimensions()
+			resolveSelect( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
 		);
 
 		if (
