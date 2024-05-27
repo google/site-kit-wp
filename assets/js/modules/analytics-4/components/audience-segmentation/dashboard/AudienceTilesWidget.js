@@ -115,7 +115,9 @@ function AudienceTilesWidget( { Widget } ) {
 	);
 
 	const totalPageviews =
-		totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value || 0;
+		Number(
+			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
+		) || 0;
 
 	const topCitiesReportOptions = {
 		startDate,
