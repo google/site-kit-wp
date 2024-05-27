@@ -39,7 +39,7 @@ export default function AdBlockerWarning( { moduleSlug } ) {
 	);
 	const getHelpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
-			moduleSlug + '-ad-blocker-detected'
+		`${ moduleSlug }-ad-blocker-detected`
 		)
 	);
 
