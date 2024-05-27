@@ -109,9 +109,7 @@ const fetchGetReportStore = createFetchStore( {
 		if ( dimensionFilters ) {
 			invariant(
 				isValidDimensionFilters( dimensionFilters ),
-				`dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values. ${ JSON.stringify(
-					dimensionFilters
-				) }`
+				'dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values.'
 			);
 		}
 
