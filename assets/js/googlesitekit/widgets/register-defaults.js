@@ -40,10 +40,10 @@ import {
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
-import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
-import { isFeatureEnabled } from '../../features';
+import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import { AudienceAreaFooter } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
+import { isFeatureEnabled } from '../../features';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
