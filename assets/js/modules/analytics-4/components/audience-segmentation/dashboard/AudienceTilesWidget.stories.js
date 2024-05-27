@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import {
-	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
@@ -80,7 +79,7 @@ const topContentPageTitlesReportOptions = {
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'analyticsAudienceTiles' // analyticsAudienceTiles
+	'analyticsAudienceTiles'
 )( AudienceTilesWidget );
 
 function Template( { args } ) {
@@ -146,7 +145,6 @@ export default {
 						connected: true,
 					},
 				] );
-				provideModuleRegistrations( registry );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
