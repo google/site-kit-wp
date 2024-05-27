@@ -272,7 +272,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
 			<div className="googlesitekit-setup-module__step">
 				<div className="googlesitekit-setup-module__logo">
-					<AdSenseIcon width="33" height="33" />
+					<AdSenseIcon width="40" height="40" />
 				</div>
 
 				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

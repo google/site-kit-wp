@@ -61,7 +61,7 @@ describe( 'AdBlockerWarning', () => {
 		} );
 
 		expect(
-			container.querySelector( '.googlesitekit-settings-module-warning' )
+			container.querySelector( '.googlesitekit-warning-notice' )
 		).not.toEqual( null );
 
 		expect( container.textContent ).toContain( 'to set up AdSense' );
@@ -73,7 +73,7 @@ describe( 'AdBlockerWarning', () => {
 		} );
 
 		expect(
-			container.querySelector( '.googlesitekit-settings-module-warning' )
+			container.querySelector( '.googlesitekit-warning-notice' )
 		).not.toEqual( null );
 
 		expect( container.textContent ).toContain( 'latest AdSense data' );
