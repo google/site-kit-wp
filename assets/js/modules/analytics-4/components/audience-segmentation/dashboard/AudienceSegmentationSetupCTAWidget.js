@@ -36,12 +36,10 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
 	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { getPreviousDate } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
@@ -140,26 +138,14 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 		}
 	}, [ hasRequiredScope, autoSubmit, onEnableGroups ] );
 
-	const hasDataWithinPast90Days = useSelect( ( select ) => {
-		const endDate = select( CORE_USER ).getReferenceDate();
-
-		const startDate = getPreviousDate(
-			endDate,
-			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-		);
-
-		const args = {
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
 	if (
 		( configuredAudiences && configuredAudiences.length ) ||
-		! hasDataWithinPast90Days
+		! analyticsIsDataAvailableOnLoad
 	) {
 		return null;
 	}
