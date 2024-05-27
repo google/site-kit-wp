@@ -30,9 +30,9 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from './Link';
-import WarningNotice from './WarningNotice';
-import ExternalIcon from '../../svg/icons/external-rounded.svg';
+import Link from '../Link';
+import WarningNotice from '../WarningNotice';
+import ExternalIcon from '../../../svg/icons/external-rounded.svg';
 
 export default function AdBlockerWarningMessage( {
 	getHelpLink = '',
