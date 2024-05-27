@@ -354,7 +354,9 @@ function AudienceTilesWidget( { Widget } ) {
 								previousValue: prevPageviews,
 							} }
 							percentageOfTotalPageViews={
-								pageviews / totalPageviews
+								totalPageviews !== 0
+									? pageviews / totalPageviews
+									: 0
 							}
 							topCities={ {
 								dimensionValues: [
