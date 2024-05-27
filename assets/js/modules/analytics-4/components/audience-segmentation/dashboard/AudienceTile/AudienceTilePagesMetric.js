@@ -65,9 +65,9 @@ export default function AudienceTilePagesMetric( {
 		} )
 	);
 
-	const hasDimensionValues = topContent?.dimensionValues?.some( Boolean );
 	const validDimensionValues =
 		topContent?.dimensionValues?.filter( Boolean ) || [];
+	const hasDimensionValues = !! validDimensionValues.length;
 
 	function ContentLinkComponent( { content } ) {
 		const pageTitle = topContentTitles[ content?.value ];

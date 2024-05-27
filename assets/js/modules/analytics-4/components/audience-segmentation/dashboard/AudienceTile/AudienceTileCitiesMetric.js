@@ -32,9 +32,9 @@ export default function AudienceTileCitiesMetric( {
 	title,
 	topCities,
 } ) {
-	const hasDimensionValues = topCities?.dimensionValues?.some( Boolean );
 	const validDimensionValues =
 		topCities?.dimensionValues?.filter( Boolean ) || [];
+	const hasDimensionValues = !! validDimensionValues.length;
 
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities">
