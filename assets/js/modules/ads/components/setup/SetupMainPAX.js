@@ -49,9 +49,11 @@ import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	PAX_SETUP_STEP,
+	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 const PARAM_SHOW_PAX = 'pax';
@@ -74,6 +76,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		return getPaxConversionID() && getExtCustomerID();
 	} );
+
+	const setupSuccessRedirectURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+		} )
+	);
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
@@ -144,8 +152,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 		if ( error ) {
 			return;
 		}
-		finishSetup();
-	}, [ submitChanges, finishSetup ] );
+		finishSetup( setupSuccessRedirectURL );
+	}, [ submitChanges, finishSetup, setupSuccessRedirectURL ] );
 
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
