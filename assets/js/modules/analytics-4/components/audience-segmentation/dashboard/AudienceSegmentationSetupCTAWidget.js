@@ -38,7 +38,7 @@ import {
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { getPreviousDate } from '../../../../../util';
+import { WEEK_IN_SECONDS, getPreviousDate } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
@@ -50,14 +50,40 @@ import {
 import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
 import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import {
+	AdminMenuTooltip,
+	useShowTooltip,
+	useTooltipState,
+} from '../../../../../components/AdminMenuTooltip';
 
 const { useSelect, useDispatch } = Data;
 
-function AudienceSegmentationSetupCTAWidget( { Widget } ) {
+export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
+	'audience_segmentation_setup_cta-notification';
+
+function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
+
+	const showTooltip = useShowTooltip(
+		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+	);
+	const { isTooltipVisible } = useTooltipState(
+		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+	);
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isPromptDismissed(
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		)
+	);
+	const dismissCount = useSelect( ( select ) =>
+		select( CORE_USER ).getPromptDismissCount(
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		)
+	);
 
 	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
 
@@ -88,7 +114,49 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
 	} );
 
-	if ( configuredAudiences !== null || ! hasDataWithinPast90Days ) {
+	const { dismissPrompt } = useDispatch( CORE_USER );
+	const handleDismissClick = async () => {
+		showTooltip();
+
+		// For the first dismissal, we show the notification again in two weeks.
+		if ( dismissCount < 1 ) {
+			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
+			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION, {
+				expiresInSeconds: twoWeeksInSeconds,
+			} );
+		} else {
+			// For the second dismissal, dismiss the notification permanently.
+			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION );
+		}
+	};
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<WidgetNull />
+				<AdminMenuTooltip
+					title={ __(
+						'You can always enable groups from Settings later',
+						'google-site-kit'
+					) }
+					content={ __(
+						'The visitors group section will be added to your dashboard once you set it up.',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					tooltipStateKey={
+						AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+					}
+				/>
+			</Fragment>
+		);
+	}
+
+	if (
+		configuredAudiences !== null ||
+		! hasDataWithinPast90Days ||
+		isDismissed
+	) {
 		return null;
 	}
 
@@ -144,14 +212,19 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 												</SpinnerButton>
 												<Button
 													tertiary
-													onClick={ () => {
-														return false; // @todo update when logic ready.
-													} }
+													onClick={
+														handleDismissClick
+													}
 												>
-													{ __(
-														'Maybe later',
-														'google-site-kit'
-													) }
+													{ dismissCount < 1
+														? __(
+																'Maybe later',
+																'google-site-kit'
+														  )
+														: __(
+																'Don’t show again',
+																'google-site-kit'
+														  ) }
 												</Button>
 											</Fragment>
 										</div>
