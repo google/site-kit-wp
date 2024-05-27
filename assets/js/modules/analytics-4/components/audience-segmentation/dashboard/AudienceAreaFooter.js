@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation Get Help Link component.
+ * AudienceAreaFooter component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
