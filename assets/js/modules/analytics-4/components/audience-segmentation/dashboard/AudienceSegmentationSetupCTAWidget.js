@@ -71,7 +71,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
-	if ( configuredAudiences !== null || ! analyticsIsDataAvailableOnLoad ) {
+	if (
+		( configuredAudiences && configuredAudiences.length ) ||
+		! analyticsIsDataAvailableOnLoad
+	) {
 		return null;
 	}
 
