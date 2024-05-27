@@ -21,14 +21,12 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import classnames from 'classnames';
-import ErrorIcon from '../../../svg/icons/error.svg';
+import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../googlesitekit/datastore/user/constants';
+import WarningNotice from '../WarningNotice';
+import AdBlockerWarning from './AdBlockerWarning';
 
 const { useSelect } = Data;
 
-/*
- * A single module. Keeps track of its own active state and settings.
- */
 export default function ModuleSettingsWarning( { slug } ) {
 	const error = useSelect( ( select ) =>
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
@@ -38,14 +36,11 @@ export default function ModuleSettingsWarning( { slug } ) {
 		return null;
 	}
 
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-settings-module-warning',
-				'googlesitekit-settings-module-warning--modules-list'
-			) }
-		>
-			<ErrorIcon height="20" width="23" /> { error.message }
-		</div>
-	);
+	// The AdBlockerWarning component also renders the "Get help"
+	// documentation URL in addition to the error message.
+	if ( ERROR_CODE_ADBLOCKER_ACTIVE === error.code ) {
+		return <AdBlockerWarning moduleSlug={ slug } />;
+	}
+
+	return <WarningNotice>{ error.message }</WarningNotice>;
 }

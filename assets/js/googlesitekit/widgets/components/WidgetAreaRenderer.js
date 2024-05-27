@@ -175,7 +175,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		</WidgetCellWrapper>
 	) );
 
-	const { Icon, title, style, subtitle, CTA } = widgetArea;
+	const { Icon, title, style, subtitle, CTA, Footer } = widgetArea;
 
 	return (
 		<InViewProvider value={ inViewState }>
@@ -232,6 +232,16 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 							) }
 						</Row>
 					</div>
+					{ Footer && (
+						<Row>
+							<Cell
+								className="googlesitekit-widget-area-footer"
+								size={ 12 }
+							>
+								<Footer />
+							</Cell>
+						</Row>
+					) }
 				</Grid>
 			) }
 			{
