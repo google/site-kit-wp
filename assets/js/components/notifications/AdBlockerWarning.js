@@ -35,7 +35,7 @@ export default function AdBlockerWarning( { moduleSlug } ) {
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
 	);
 	const adBlockerWarningMessage = useSelect( ( select ) =>
-		select( storeName ).getAdBlockerWarningMessage()
+		select( storeName )?.getAdBlockerWarningMessage()
 	);
 	const getHelpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
