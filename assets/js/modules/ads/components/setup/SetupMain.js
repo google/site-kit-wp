@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
 import SupportLink from '../../../../components/SupportLink';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
@@ -47,43 +47,44 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
 			<div className="googlesitekit-setup-module__step">
 				<div className="googlesitekit-setup-module__logo">
-					<AdsIcon width="33" height="33" />
+					<AdsIcon width="40" height="40" />
 				</div>
 
 				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
 				</h2>
 			</div>
+			<div className="googlesitekit-setup-module__step">
+				<AdBlockerWarning moduleSlug="ads" />
 
-			<AdBlockerWarning />
-
-			{ ! isAdBlockerActive && (
-				<Fragment>
-					<div className="googlesitekit-setup-module__description">
-						{ createInterpolateElement(
-							__(
-								'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
-								'google-site-kit'
-							),
-							{
-								a: (
-									<SupportLink
-										path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
-										external
-									/>
+				{ ! isAdBlockerActive && (
+					<Fragment>
+						<p>
+							{ createInterpolateElement(
+								__(
+									'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
+									'google-site-kit'
 								),
-							}
-						) }
-						<br />
-						{ __(
-							'You can always change this later in Site Kit Settings.',
-							'google-site-kit'
-						) }
-					</div>
+								{
+									a: (
+										<SupportLink
+											path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+											external
+										/>
+									),
+								}
+							) }
+							<br />
+							{ __(
+								'You can always change this later in Site Kit Settings.',
+								'google-site-kit'
+							) }
+						</p>
 
-					<SetupForm finishSetup={ finishSetup } />
-				</Fragment>
-			) }
+						<SetupForm finishSetup={ finishSetup } />
+					</Fragment>
+				) }
+			</div>
 		</div>
 	);
 }

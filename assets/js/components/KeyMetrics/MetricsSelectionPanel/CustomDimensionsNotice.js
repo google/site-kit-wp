@@ -89,7 +89,7 @@ function CustomDimensionsNotice() {
 			if (
 				currentFocusedElement &&
 				currentFocusedElement.closest(
-					'.googlesitekit-km-selection-panel-metrics__metric-item'
+					'.googlesitekit-selection-panel-item'
 				) &&
 				elementsOverlap( noticeRef.current, currentFocusedElement )
 			) {
@@ -113,10 +113,7 @@ function CustomDimensionsNotice() {
 		  );
 
 	return (
-		<div
-			className="googlesitekit-km-selection-panel-notice"
-			ref={ noticeRef }
-		>
+		<div className="googlesitekit-selection-panel-notice" ref={ noticeRef }>
 			<p>{ customDimensionMessage }</p>
 		</div>
 	);

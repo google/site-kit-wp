@@ -35,7 +35,7 @@ function Template( args ) {
 			<Button onClick={ () => setIsOpen( true ) }>Open Side Sheet</Button>
 			<SideSheet
 				isOpen={ isOpen }
-				closeFn={ () => setIsOpen( false ) }
+				closeSheet={ () => setIsOpen( false ) }
 				{ ...args }
 			>
 				<div>Side Sheet content</div>

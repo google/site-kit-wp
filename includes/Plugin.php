@@ -174,6 +174,9 @@ final class Plugin {
 
 				$dismissed_items = $dismissals->get_dismissed_items();
 
+				$expirables = new Core\Expirables\Expirables( $this->context, $user_options );
+				$expirables->register();
+
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 

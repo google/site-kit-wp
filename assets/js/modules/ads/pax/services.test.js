@@ -55,9 +55,9 @@ describe( 'PAX partner services', () => {
 				termsAndConditionsService: {
 					notify: expect.any( Function ),
 				},
-				partnerDateRangeService: expect.objectContaining( {
+				partnerDateRangeService: {
 					get: expect.any( Function ),
-				} ),
+				},
 			} );
 		} );
 
@@ -78,7 +78,7 @@ describe( 'PAX partner services', () => {
 						},
 					};
 					services = createPaxServices( registry, {
-						_googlesitekitPAXConfig,
+						_global: { _googlesitekitPAXConfig },
 					} );
 
 					const authAccess =
@@ -119,6 +119,27 @@ describe( 'PAX partner services', () => {
 						'http://something.test/homepage'
 					);
 					/* eslint-enable sitekit/acronym-case */
+				} );
+			} );
+		} );
+
+		describe( 'campaignService', () => {
+			describe( 'notifyNewCampaignCreated', () => {
+				it( 'should return a callback function', async () => {
+					const mockOnCampaignCreated = jest.fn();
+					const servicesWithCampaign = createPaxServices( registry, {
+						onCampaignCreated: mockOnCampaignCreated,
+					} );
+
+					await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
+
+					expect( servicesWithCampaign ).toEqual(
+						expect.objectContaining( {
+							campaignService: expect.objectContaining( {
+								notifyNewCampaignCreated: mockOnCampaignCreated,
+							} ),
+						} )
+					);
 				} );
 			} );
 		} );
@@ -198,50 +219,66 @@ describe( 'PAX partner services', () => {
 				} );
 			} );
 
-			describe( 'partnerDateRangeService', () => {
-				describe( 'get', () => {
-					it( 'should contain startDate and endDate properties', async () => {
-						const partnerDateRange =
-							await services.partnerDateRangeService.get();
-
-						expect( partnerDateRange ).toHaveProperty(
-							'startDate'
+			describe( 'getSupportedConversionTrackingTypes', () => {
+				it( 'should return the expected supported types', async () => {
+					const supportedTypes =
+						await services.conversionTrackingService.getSupportedConversionTrackingTypes(
+							{}
 						);
-						expect( partnerDateRange ).toHaveProperty( 'endDate' );
-					} );
 
-					it( 'should contain correct accessToken', async () => {
-						registry
-							.dispatch( CORE_USER )
-							.setReferenceDate( '2020-09-08' );
-
-						const partnerDateRange =
-							await services.partnerDateRangeService.get();
-
-						expect( partnerDateRange.startDate ).toEqual( {
-							day: 11,
-							month: 8,
-							year: 2020,
-						} );
-						expect( partnerDateRange.endDate ).toEqual( {
-							day: 7,
-							month: 9,
-							year: 2020,
-						} );
+					expect( supportedTypes ).toMatchObject( {
+						conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
 					} );
 				} );
 			} );
 		} );
 
-		describe( 'getSupportedConversionTrackingTypes', () => {
-			it( 'should return the expected supported types', async () => {
-				const supportedTypes =
-					await services.conversionTrackingService.getSupportedConversionTrackingTypes(
+		describe( 'partnerDateRangeService', () => {
+			describe( 'get', () => {
+				it( 'should contain startDate and endDate properties', async () => {
+					const partnerDateRange =
+						await services.partnerDateRangeService.get();
+
+					expect( partnerDateRange ).toHaveProperty( 'startDate' );
+					expect( partnerDateRange ).toHaveProperty( 'endDate' );
+				} );
+
+				it( 'should contain correct Date values', async () => {
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( '2020-09-08' );
+					// Set the date range so that it selects the range we should expect:
+					// Sept 1 - Sept 7
+					registry
+						.dispatch( CORE_USER )
+						.setDateRange( 'last-7-days' );
+
+					const partnerDateRange =
+						await services.partnerDateRangeService.get();
+
+					expect( partnerDateRange.startDate ).toEqual( {
+						month: 9,
+						day: 1,
+						year: 2020,
+					} );
+					expect( partnerDateRange.endDate ).toEqual( {
+						month: 9,
+						day: 7,
+						year: 2020,
+					} );
+				} );
+			} );
+		} );
+
+		describe( 'termsAndConditionsService', () => {
+			describe( 'notify', () => {
+				it( 'notify callback should return an empty object', async () => {
+					const termsAndConditionsServiceNotifyResponse =
+						await services.termsAndConditionsService.notify();
+
+					expect( termsAndConditionsServiceNotifyResponse ).toEqual(
 						{}
 					);
-
-				expect( supportedTypes ).toMatchObject( {
-					conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
 				} );
 			} );
 		} );

@@ -16,7 +16,7 @@
 
 document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
 	if ( 'conversion' === detail.Analytics.type ) {
-		global.gtag( 'event', 'submit_lead_form', {
+		global._googlesitekit?.trackEvent?.( 'submit_lead_form', {
 			campaignID: detail.Campaign.id,
 			campaignType: detail.Campaign.type,
 		} );
