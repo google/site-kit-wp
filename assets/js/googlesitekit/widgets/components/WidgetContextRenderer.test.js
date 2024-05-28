@@ -23,6 +23,7 @@ import WidgetContextRenderer from './WidgetContextRenderer';
 import { CORE_WIDGETS } from '../datastore/constants';
 import {
 	createTestRegistry,
+	muteFetch,
 	provideModules,
 	render,
 	waitFor,
@@ -54,6 +55,11 @@ describe( 'WidgetContextRenderer', () => {
 		registry
 			.dispatch( CORE_WIDGETS )
 			.assignWidgetArea( 'TestArea1', 'TestContext' );
+
+		const fetchGetExpiredItems = new RegExp(
+			'^/google-site-kit/v1/core/user/data/expirable-items'
+		);
+		muteFetch( fetchGetExpiredItems );
 	} );
 
 	it( 'should render the registered widget areas', async () => {

@@ -135,7 +135,6 @@ export function registerDefaults( widgetsAPI ) {
 				'Track your site’s traffic over time',
 				'google-site-kit'
 			),
-			hasNewBadge: true, // TODO: remove this as this is only for testing the new badge with a title.
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 		},
