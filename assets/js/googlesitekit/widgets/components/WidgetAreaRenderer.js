@@ -49,6 +49,9 @@ import WidgetCellWrapper from './WidgetCellWrapper';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
 import useLatestIntersection from '../../../hooks/useLatestIntersection';
+import NewBadge from '../../../components/NewBadge';
+import { WEEK_IN_SECONDS } from '../../../util';
+import { useDispatch } from '@wordpress/data';
 const { useSelect } = Data;
 
 /**
@@ -95,6 +98,10 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const widgetArea = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
+
+	const { Icon, title, style, subtitle, hasNewBadge, CTA, Footer } =
+		widgetArea;
+
 	const widgets = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug, {
 			modules: viewableModules ? viewableModules : undefined,
@@ -128,6 +135,47 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 				: !! intersectionEntry?.intersectionRatio,
 		} );
 	}, [ intersectionEntry, slug, activeContextID, contextID ] );
+
+	// NewBadge Expirable Item
+	const expirableBadgeSlug = `widget-area-expirable-new-badge-${ slug }`;
+
+	const hasBadgeBeenSeen = useSelect( ( select ) =>
+		select( CORE_USER ).hasExpirableItem( expirableBadgeSlug )
+	);
+	const isExpiredBadgeActive = useSelect( ( select ) =>
+		select( CORE_USER ).isExpirableItemActive( expirableBadgeSlug )
+	);
+
+	// Show the new badge if this widget area allows new badges, it's new badge
+	// has not been seen yet, or the badge has been seen and is still active.
+	const showNewBadge =
+		hasNewBadge && ( hasBadgeBeenSeen === false || isExpiredBadgeActive );
+
+	const { setExpirableItemTimers } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		// Wait until the selectors have resolved.
+		if (
+			hasBadgeBeenSeen !== undefined &&
+			isExpiredBadgeActive !== undefined
+		) {
+			// Only set the expirable item if the badge is new and the user is viewing it for the first time.
+			if ( hasNewBadge && ! hasBadgeBeenSeen ) {
+				setExpirableItemTimers( [
+					{
+						slug: expirableBadgeSlug,
+						expiresInSeconds: WEEK_IN_SECONDS * 4,
+					},
+				] );
+			}
+		}
+	}, [
+		hasNewBadge,
+		expirableBadgeSlug,
+		hasBadgeBeenSeen,
+		isExpiredBadgeActive,
+		setExpirableItemTimers,
+	] );
 
 	if ( viewableModules === undefined ) {
 		return null;
@@ -175,8 +223,6 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		</WidgetCellWrapper>
 	) );
 
-	const { Icon, title, style, subtitle, CTA, Footer } = widgetArea;
-
 	return (
 		<InViewProvider value={ inViewState }>
 			{ !! isActive && (
@@ -198,6 +244,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 							{ title && (
 								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
 									{ title }
+									{ showNewBadge && <NewBadge /> }
 								</h3>
 							) }
 
@@ -206,6 +253,9 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 									{ subtitle && (
 										<h4 className="googlesitekit-widget-area-header__subtitle">
 											{ subtitle }
+											{ showNewBadge && ! title && (
+												<NewBadge />
+											) }
 										</h4>
 									) }
 

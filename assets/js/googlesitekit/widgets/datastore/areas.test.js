@@ -492,12 +492,16 @@ describe( 'core/widgets Widget areas', () => {
 				expect(
 					registry.select( CORE_WIDGETS ).getWidgetArea( 'TestArea' )
 				).toEqual( {
-					Icon: undefined,
-					priority: 10,
+					slug: 'TestArea',
 					title: 'Test Header',
 					subtitle: 'Cool stuff for yoursite.com',
+					Icon: undefined,
 					style: 'composite',
-					slug: 'TestArea',
+					priority: 10,
+					hasNewBadge: false,
+					CTA: undefined,
+					Footer: undefined,
+					filterActiveWidgets: undefined,
 				} );
 			} );
 

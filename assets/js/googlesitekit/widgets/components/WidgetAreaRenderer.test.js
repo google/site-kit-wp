@@ -38,6 +38,7 @@ import {
 	provideModules,
 	provideUserCapabilities,
 	unsubscribeFromAll,
+	muteFetch,
 } from '../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -100,6 +101,11 @@ describe( 'WidgetAreaRenderer', () => {
 
 		const connection = { connected: true };
 		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
+
+		const fetchGetExpiredItems = new RegExp(
+			'^/google-site-kit/v1/core/user/data/expirable-items'
+		);
+		muteFetch( fetchGetExpiredItems );
 	} );
 
 	afterEach( () => {

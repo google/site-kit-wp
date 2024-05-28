@@ -149,6 +149,7 @@ export function registerDefaults( widgetsAPI ) {
 					'Understand how different visitor groups interact with your site',
 					'google-site-kit'
 				),
+				hasNewBadge: true,
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 2,
 				Footer: AudienceAreaFooter,
