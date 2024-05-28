@@ -141,18 +141,18 @@ class Migration_Conversion_ID {
 		if ( array_key_exists( 'conversionID', $ads_settings ) && ! empty( $ads_settings['conversionID'] ) ) {
 			// If there is already an adsConversionID set in the Ads module, do not overwrite it, remove it from the Analytics module.
 			unset( $analytics_settings['adsConversionID'] );
-			$this->options->set( self::ANALYTICS_OPTIONS, $analytics_settings );
+			$this->analytics_settings->set( $analytics_settings );
 
 			return;
 		}
 
 		$ads_settings['conversionID'] = $analytics_settings['adsConversionID'];
-		$this->options->set( self::ADS_OPTIONS, $ads_settings );
+		$this->ads_settings->set( $ads_settings );
 
 		unset( $analytics_settings['adsConversionID'] );
-		$analytics_settings['adsConversionIDMigratedAtMs'] = time() * 1000;
+		$analytics_settings['adsConversionIDMigratedAtMs'] = time();
 
-		$this->options->set( self::ANALYTICS_OPTIONS, $analytics_settings );
+		$this->analytics_settings->set( $analytics_settings );
 	}
 
 	/**
