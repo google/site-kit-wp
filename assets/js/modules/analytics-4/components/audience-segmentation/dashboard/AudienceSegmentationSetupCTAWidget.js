@@ -32,6 +32,7 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { WEEK_IN_SECONDS } from '../../../../../util';
@@ -51,7 +52,6 @@ import {
 	useShowTooltip,
 	useTooltipState,
 } from '../../../../../components/AdminMenuTooltip';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -138,7 +138,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
-		( configuredAudiences && configuredAudiences.length ) ||
+		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed
 	) {
