@@ -67,15 +67,18 @@ export default function SettingsView() {
 		return select( CORE_SITE ).isConversionTrackingEnabled();
 	} );
 
+	let adBlockerWarningClassName = '';
+
+	if ( iceEnabled && isAdBlockerActive ) {
+		adBlockerWarningClassName =
+			'googlesitekit-settings-module-warning--settings';
+	}
+
 	return (
 		<Fragment>
-			<AdBlockerWarning />
+			<AdBlockerWarning className={ adBlockerWarningClassName } />
 			{ iceEnabled && (
 				<div className="googlesitekit-settings-module__meta-item">
-					{
-						// This is required to add correct spacing if the <AdBlockerWarning> component is present.
-						isAdBlockerActive && <br />
-					}
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __(
 							'Enhanced conversion tracking',
