@@ -34,6 +34,7 @@ import ErrorIcon from '../../svg/icons/error.svg';
 import Link from './Link';
 
 export default function AdBlockerWarningMessage( {
+	className = '',
 	getHelpLink = '',
 	warningMessage = null,
 } ) {
@@ -41,8 +42,14 @@ export default function AdBlockerWarningMessage( {
 		return null;
 	}
 
+	let messageClassName = 'googlesitekit-settings-module-warning';
+
+	if ( className ) {
+		messageClassName = `${ messageClassName } ${ className }`;
+	}
+
 	return (
-		<div className="googlesitekit-settings-module-warning">
+		<div className={ messageClassName }>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */
@@ -63,6 +70,7 @@ export default function AdBlockerWarningMessage( {
 }
 
 AdBlockerWarningMessage.propTypes = {
+	className: PropTypes.string,
 	getHelpLink: PropTypes.string,
 	warningMessage: PropTypes.string,
 };
