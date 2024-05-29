@@ -124,7 +124,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'banner is visible for no configured audiences and google analytics data loaded on the page', async () => {
+		it( 'should render the widget when no configured audiences and google analytics data is loaded on the page', async () => {
 			const settings = {
 				configuredAudiences: [],
 				isAudienceSegmentationWidgetHidden: false,
@@ -158,7 +158,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
 		} );
 
-		it( 'banner is not visible for no configured audiences and google analytics data is not loaded on the page', async () => {
+		it( 'should not render the widget when no configured audiences and google analytics data is not loaded on the page', async () => {
 			const settings = {
 				configuredAudiences: [],
 				isAudienceSegmentationWidgetHidden: false,
@@ -194,7 +194,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toThrow();
 		} );
 
-		it( 'banner is not visible when configured audiences present and google analytics data loaded on the page', async () => {
+		it( 'should not render the widget when configured audiences present and google analytics data is loaded on the page', async () => {
 			const settings = {
 				configuredAudiences: [
 					audiencesFixture[ 0 ],
