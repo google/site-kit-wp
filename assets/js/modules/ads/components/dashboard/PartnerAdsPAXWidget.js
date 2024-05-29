@@ -34,7 +34,7 @@ import whenActive from '../../../../util/when-active';
 import whenScopesGranted from '../../../../util/whenScopesGranted';
 import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
-import { AdBlockerWarning } from '../common';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
 const { useSelect } = Data;
@@ -65,7 +65,7 @@ function PartnerAdsPAXWidget( { WidgetNull, Widget } ) {
 	if ( isAdblockerActive ) {
 		return (
 			<Widget>
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="ads" />
 			</Widget>
 		);
 	}

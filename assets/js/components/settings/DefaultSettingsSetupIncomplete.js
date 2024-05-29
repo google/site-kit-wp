@@ -44,17 +44,29 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 	const adminReauthURL = useSelect( ( select ) =>
 		select( storeName )?.getAdminReauthURL?.()
 	);
+	const requirementsError = useSelect( ( select ) =>
+		select( CORE_MODULES )?.getCheckRequirementsError( slug )
+	);
 
 	return (
 		<Cell size={ 12 }>
-			<ModuleSettingsWarning slug={ slug } />
+			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
+				<ModuleSettingsWarning slug={ slug } />
+			</div>
+
 			{ createInterpolateElement(
 				__(
 					'Setup incomplete: <a>continue module setup</a>',
 					'google-site-kit'
 				),
 				{
-					a: <Link href={ adminReauthURL } />,
+					a: (
+						<Link
+							className="googlesitekit-settings-module__edit-button"
+							href={ adminReauthURL }
+							disabled={ requirementsError ? true : false }
+						/>
+					),
 				}
 			) }
 		</Cell>

@@ -40,6 +40,16 @@ class Audience_SettingsTest extends TestCase {
 		$this->audience_settings->register();
 	}
 
+	public function test_get_default() {
+		$this->assertEquals(
+			array(
+				'configuredAudiences'                => null,
+				'isAudienceSegmentationWidgetHidden' => false,
+			),
+			$this->audience_settings->get()
+		);
+	}
+
 	public function data_audience_settings() {
 		return array(
 			'empty by default' => array(

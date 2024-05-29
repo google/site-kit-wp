@@ -30,8 +30,9 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import ErrorIcon from '../../svg/icons/error.svg';
-import Link from './Link';
+import Link from '../Link';
+import WarningNotice from '../WarningNotice';
+import ExternalIcon from '../../../svg/icons/external-rounded.svg';
 
 export default function AdBlockerWarningMessage( {
 	className = '',
@@ -42,30 +43,29 @@ export default function AdBlockerWarningMessage( {
 		return null;
 	}
 
-	let messageClassName = 'googlesitekit-settings-module-warning';
-
-	if ( className ) {
-		messageClassName = `${ messageClassName } ${ className }`;
-	}
-
 	return (
-		<div className={ messageClassName }>
+		<WarningNotice className={ className }>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */
-					__(
-						'<ErrorIcon /> %1$s. <Link>%2$s</Link>',
-						'google-site-kit'
-					),
+					__( '%1$s. <Link>%2$s</Link>', 'google-site-kit' ),
 					warningMessage,
 					__( 'Get help', 'google-site-kit' )
 				),
 				{
-					ErrorIcon: <ErrorIcon height="20" width="23" />,
-					Link: <Link href={ getHelpLink } external />,
+					Link: (
+						<Link
+							href={ getHelpLink }
+							external
+							hideExternalIndicator
+							trailingIcon={
+								<ExternalIcon width={ 13 } height={ 14 } />
+							}
+						/>
+					),
 				}
 			) }
-		</div>
+		</WarningNotice>
 	);
 }
 
