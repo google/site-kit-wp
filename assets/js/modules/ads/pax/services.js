@@ -49,7 +49,7 @@ const restFetchWpPages = async () => {
  * Returns PAX services.
  *
  * @since 1.126.0
- * @since n.e.x.t Added options parameter.
+ * @since 1.128.0 Added options parameter.
  *
  * @param {Object}   registry                  Registry object to dispatch to.
  * @param {Object}   options                   Optional. Additional options.
