@@ -141,12 +141,15 @@
 	color: $c-authorize-application-sys-light-on-surface;
 	font-family: $f-primary;
 
-	a {
-		color: $c-authorize-application-vivid-blue;
-	}
-
 	@media (min-width: $bp-wpAdminBarTablet) {
 		padding: 0 47px;
+	}
+}
+
+#wpbody-content,
+#wpfooter {
+	a {
+		color: $c-authorize-application-vivid-blue;
 	}
 }
 
