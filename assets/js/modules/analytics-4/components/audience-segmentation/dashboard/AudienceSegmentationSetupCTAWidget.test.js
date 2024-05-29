@@ -123,6 +123,112 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				queryByText( /Don’t show again/i )
 			).not.toBeInTheDocument();
 		} );
+
+		it( 'banner is visible for no configured audiences and google analytics data loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data available on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveSaveAudienceSettings( settings, settings );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'Learn how different types of visitors interact with your site'
+				)
+			).toBeInTheDocument();
+
+			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
+		} );
+
+		it( 'banner is not visible for no configured audiences and google analytics data is not loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			// Set the data available on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( false );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveSaveAudienceSettings( settings, settings );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect( () =>
+				getByText(
+					'Learn how different types of visitors interact with your site'
+				)
+			).toThrow();
+		} );
+
+		it( 'banner is not visible when configured audiences present and google analytics data loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [
+					audiencesFixture[ 0 ],
+					audiencesFixture[ 1 ],
+					audiencesFixture[ 2 ],
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data available on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveSaveAudienceSettings( settings, settings );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect( () =>
+				getByText(
+					'Learn how different types of visitors interact with your site'
+				)
+			).toThrow();
+		} );
 	} );
 
 	describe( 'CTA actions', () => {
@@ -276,112 +382,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 
 			expect( queryByText( /Maybe later/i ) ).not.toBeInTheDocument();
-		} );
-
-		it( 'banner is visible for no configured audiences and google analytics data loaded on the page', async () => {
-			const settings = {
-				configuredAudiences: [],
-				isAudienceSegmentationWidgetHidden: false,
-			};
-
-			// Set the data available on page load to true.
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( true );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveSaveAudienceSettings( settings, settings );
-
-			const { getByText, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
-			);
-
-			// Wait for resolvers to finish to avoid an unhandled React state update.
-			await waitForRegistry();
-
-			expect(
-				getByText(
-					'Learn how different types of visitors interact with your site'
-				)
-			).toBeInTheDocument();
-
-			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
-		} );
-
-		it( 'banner is not visible for no configured audiences and google analytics data is not loaded on the page', async () => {
-			const settings = {
-				configuredAudiences: [],
-				isAudienceSegmentationWidgetHidden: false,
-			};
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsGatheringData( false );
-
-			// Set the data available on page load to true.
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( false );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveSaveAudienceSettings( settings, settings );
-
-			const { getByText, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
-			);
-
-			// Wait for resolvers to finish to avoid an unhandled React state update.
-			await waitForRegistry();
-
-			expect( () =>
-				getByText(
-					'Learn how different types of visitors interact with your site'
-				)
-			).toThrow();
-		} );
-
-		it( 'banner is not visible when configured audiences present and google analytics data loaded on the page', async () => {
-			const settings = {
-				configuredAudiences: [
-					audiencesFixture[ 0 ],
-					audiencesFixture[ 1 ],
-					audiencesFixture[ 2 ],
-				],
-				isAudienceSegmentationWidgetHidden: false,
-			};
-
-			// Set the data available on page load to true.
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( true );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveSaveAudienceSettings( settings, settings );
-
-			const { getByText, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
-			);
-
-			// Wait for resolvers to finish to avoid an unhandled React state update.
-			await waitForRegistry();
-
-			expect( () =>
-				getByText(
-					'Learn how different types of visitors interact with your site'
-				)
-			).toThrow();
 		} );
 	} );
 } );
