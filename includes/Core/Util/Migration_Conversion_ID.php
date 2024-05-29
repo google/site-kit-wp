@@ -130,13 +130,13 @@ class Migration_Conversion_ID {
 			return;
 		}
 
-		$analytics_settings = $this->options->get( self::ANALYTICS_OPTIONS );
+		$analytics_settings = $this->analytics_settings->get();
 
 		if ( empty( $analytics_settings ) || ! array_key_exists( 'adsConversionID', $analytics_settings ) || empty( $analytics_settings['adsConversionID'] ) ) {
 			return;
 		}
 
-		$ads_settings = $this->options->get( self::ADS_OPTIONS );
+		$ads_settings = $this->ads_settings->get();
 
 		if ( array_key_exists( 'conversionID', $ads_settings ) && ! empty( $ads_settings['conversionID'] ) ) {
 			// If there is already an adsConversionID set in the Ads module, do not overwrite it, remove it from the Analytics module.
@@ -167,7 +167,7 @@ class Migration_Conversion_ID {
 			return;
 		}
 
-		$ads_settings = $this->options->get( self::ADS_OPTIONS );
+		$ads_settings = $this->ads_settings->get();
 
 		// Activate the Ads module if the Ads Conversion ID was previously set
 		// and the Ads module is not already active.
