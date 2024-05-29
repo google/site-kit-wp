@@ -177,7 +177,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveSaveAudienceSettings( settings, settings );
 
-			const { getByText, waitForRegistry } = render(
+			const { queryByText, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
@@ -187,11 +187,11 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			// Wait for resolvers to finish to avoid an unhandled React state update.
 			await waitForRegistry();
 
-			expect( () =>
-				getByText(
-					'Learn how different types of visitors interact with your site'
+			expect(
+				queryByText(
+					/Learn how different types of visitors interact with your site/i
 				)
-			).toThrow();
+			).not.toBeInTheDocument();
 		} );
 
 		it( 'should not render the widget when configured audiences present and google analytics data is loaded on the page', async () => {
@@ -213,7 +213,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveSaveAudienceSettings( settings, settings );
 
-			const { getByText, waitForRegistry } = render(
+			const { queryByText, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
@@ -223,11 +223,11 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			// Wait for resolvers to finish to avoid an unhandled React state update.
 			await waitForRegistry();
 
-			expect( () =>
-				getByText(
-					'Learn how different types of visitors interact with your site'
+			expect(
+				queryByText(
+					/Learn how different types of visitors interact with your site/i
 				)
-			).toThrow();
+			).not.toBeInTheDocument();
 		} );
 	} );
 
