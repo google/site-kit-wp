@@ -20,10 +20,13 @@
  * Internal dependencies
  */
 import AdBlockerWarning from './AdBlockerWarning';
-import { render } from '../../../../../../tests/js/test-utils';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
+import { render } from '../../../../tests/js/test-utils';
+import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	provideModules,
+	provideModuleRegistrations,
+} from '../../../../tests/js/utils';
 
 const setupAdBlockerNotConnectedRegistry = ( registry ) => {
 	provideModules( registry, [
@@ -33,6 +36,7 @@ const setupAdBlockerNotConnectedRegistry = ( registry ) => {
 			connected: false,
 		},
 	] );
+	provideModuleRegistrations( registry );
 	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 };
@@ -45,44 +49,62 @@ const setupAdBlockerConnectedRegistry = ( registry ) => {
 			connected: true,
 		},
 	] );
+	provideModuleRegistrations( registry );
 	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 };
 
 const setupNoAdBlockerRegistry = ( registry ) => {
+	provideModules( registry, [
+		{
+			slug: 'adsense',
+			active: true,
+			connected: true,
+		},
+	] );
+	provideModuleRegistrations( registry );
 	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 };
 
 describe( 'AdBlockerWarning', () => {
 	it( 'should render the warning when an AdBlocker is active and module is not connected', () => {
-		const { container } = render( <AdBlockerWarning />, {
-			setupRegistry: setupAdBlockerNotConnectedRegistry,
-		} );
+		const { container } = render(
+			<AdBlockerWarning moduleSlug="adsense" />,
+			{
+				setupRegistry: setupAdBlockerNotConnectedRegistry,
+			}
+		);
 
 		expect(
-			container.querySelector( '.googlesitekit-settings-module-warning' )
+			container.querySelector( '.googlesitekit-warning-notice' )
 		).not.toEqual( null );
 
 		expect( container.textContent ).toContain( 'to set up AdSense' );
 	} );
 
 	it( 'should render the warning when an AdBlocker is active and module is connected', () => {
-		const { container } = render( <AdBlockerWarning />, {
-			setupRegistry: setupAdBlockerConnectedRegistry,
-		} );
+		const { container } = render(
+			<AdBlockerWarning moduleSlug="adsense" />,
+			{
+				setupRegistry: setupAdBlockerConnectedRegistry,
+			}
+		);
 
 		expect(
-			container.querySelector( '.googlesitekit-settings-module-warning' )
+			container.querySelector( '.googlesitekit-warning-notice' )
 		).not.toEqual( null );
 
 		expect( container.textContent ).toContain( 'latest AdSense data' );
 	} );
 
 	it( 'should render nothing when no AdBlocker is active', () => {
-		const { container } = render( <AdBlockerWarning />, {
-			setupRegistry: setupNoAdBlockerRegistry,
-		} );
+		const { container } = render(
+			<AdBlockerWarning moduleSlug="adsense" />,
+			{
+				setupRegistry: setupNoAdBlockerRegistry,
+			}
+		);
 
 		expect( container.firstChild ).toEqual( null );
 	} );

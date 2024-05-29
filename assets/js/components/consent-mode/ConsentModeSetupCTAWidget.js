@@ -222,7 +222,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 					<Cell size={ 12 }>
 						<Widget
 							noPadding
-							className="googlesitekit-consent-mode-setup-cta-widget"
+							className="googlesitekit-setup-cta-banner googlesitekit-consent-mode-setup-cta-widget"
 						>
 							<Grid collapsed ref={ trackingRef }>
 								<Row>
@@ -230,15 +230,15 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 										smSize={ 6 }
 										mdSize={ 8 }
 										lgSize={ 6 }
-										className="googlesitekit-consent-mode-setup-cta-widget__primary-cell"
+										className="googlesitekit-setup-cta-banner__primary-cell"
 									>
-										<h3 className="googlesitekit-consent-mode-setup-cta-widget__title">
+										<h3 className="googlesitekit-setup-cta-banner__title">
 											{ __(
 												'Enable Consent Mode to preserve tracking for your Ads campaigns',
 												'google-site-kit'
 											) }
 										</h3>
-										<p className="googlesitekit-consent-mode-setup-cta-widget__description">
+										<p className="googlesitekit-setup-cta-banner__description">
 											{ createInterpolateElement(
 												__(
 													'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
@@ -265,7 +265,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 												message={ saveError.message }
 											/>
 										) }
-										<div className="googlesitekit-consent-mode-setup-cta-widget__actions-wrapper">
+										<div className="googlesitekit-setup-cta-banner__actions-wrapper">
 											<Fragment>
 												<SpinnerButton
 													onClick={ handleCTAClick }
@@ -297,7 +297,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 									</Cell>
 									<Cell
 										alignBottom
-										className="googlesitekit-consent-mode-setup-cta-widget__svg-wrapper"
+										className="googlesitekit-setup-cta-banner__svg-wrapper"
 										smSize={ 6 }
 										mdSize={ 8 }
 										lgSize={ 6 }
