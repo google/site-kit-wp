@@ -26,7 +26,10 @@ import { Fragment } from '@wordpress/element';
  */
 import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
+import {
+	SetupSuccessSubtleNotification,
+	PAXSetupSuccessSubtleNotification,
+} from '../../modules/ads/components/notifications/';
 import { useFeature } from '../../hooks/useFeature';
 
 export default function SubtleNotifications() {
@@ -46,6 +49,7 @@ export default function SubtleNotifications() {
 			) }
 			<GA4AdSenseLinkedNotification />
 			<SetupSuccessSubtleNotification />
+			<PAXSetupSuccessSubtleNotification />
 		</Fragment>
 	);
 }

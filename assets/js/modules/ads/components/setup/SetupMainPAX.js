@@ -42,16 +42,18 @@ import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
 import SupportLink from '../../../../components/SupportLink';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	PAX_SETUP_STEP,
+	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 const PARAM_SHOW_PAX = 'pax';
@@ -74,6 +76,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		return getPaxConversionID() && getExtCustomerID();
 	} );
+
+	const setupSuccessRedirectURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+		} )
+	);
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
@@ -144,8 +152,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 		if ( error ) {
 			return;
 		}
-		finishSetup();
-	}, [ submitChanges, finishSetup ] );
+		finishSetup( setupSuccessRedirectURL );
+	}, [ submitChanges, finishSetup, setupSuccessRedirectURL ] );
 
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
@@ -168,7 +176,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 				</h2>
 			</div>
 			<div className="googlesitekit-setup-module__step">
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="ads" />
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.FINISHED === showPaxAppStep && (

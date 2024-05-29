@@ -1,5 +1,5 @@
 /**
- * SetupSuccessSubtleNotification Component Stories.
+ * PAXSetupSuccessSubtleNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -24,28 +24,25 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
-import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
-import { WithTestRegistry } from '../../../../tests/js/utils';
+import PAXSetupSuccessSubtleNotification from './PAXSetupSuccessSubtleNotification';
+import { WithTestRegistry } from '../../../../../../tests/js/utils';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../datastore/constants';
 
 function Template( { ...args } ) {
-	return <SetupSuccessSubtleNotification { ...args } />;
+	return <PAXSetupSuccessSubtleNotification { ...args } />;
 }
 
 export const Ads = Template.bind( {} );
-Ads.storyName = 'Setup Success - Ads';
+Ads.storyName = 'PAX Setup Success';
 Ads.parameters = {
 	query: {
-		notification: 'authentication_success',
-		slug: 'ads',
+		notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 	},
-};
-Ads.scenario = {
-	label: 'Global/SetupSuccessSubtleNotification/Ads',
 };
 
 export default {
-	title: 'Components/SetupSuccessSubtleNotification',
-	component: SetupSuccessSubtleNotification,
+	title: 'Modules/Ads/Notifications/PAXSetupSuccessSubtleNotification',
+	component: PAXSetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,
 		( Story, { parameters } ) => {

@@ -30,7 +30,7 @@ import Link from '../../../../components/Link';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { isPendingAccountStatus } from '../../util/status';
-import { AdBlockerWarning } from '../common';
+import ModuleSettingsWarning from '../../../../components/notifications/ModuleSettingsWarning';
 const { useSelect } = Data;
 
 export default function SettingsSetupIncomplete() {
@@ -62,7 +62,7 @@ export default function SettingsSetupIncomplete() {
 	return (
 		<Fragment>
 			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
-				<AdBlockerWarning />
+				<ModuleSettingsWarning slug="adsense" />
 			</div>
 
 			{ createInterpolateElement(

@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
@@ -33,7 +36,7 @@ import {
 	audiences as audiencesFixture,
 	availableAudiences,
 } from './../../../datastore/__fixtures__';
-import AudienceTiles from './AudienceTiles';
+import AudienceTilesWidget from './AudienceTilesWidget';
 
 const totalPageviewsReportOptions = {
 	endDate: '2024-03-27',
@@ -76,8 +79,8 @@ const topContentPageTitlesReportOptions = {
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
-	'audienceSegmentation'
-)( AudienceTiles );
+	'analyticsAudienceTiles'
+)( AudienceTilesWidget );
 
 function Template( { args } ) {
 	return <WidgetWithComponentProps { ...args } />;
@@ -93,7 +96,7 @@ Default.args = {
 	],
 };
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles/Default',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/Default',
 };
 
 export const TwoTiles = Template.bind( {} );
@@ -105,11 +108,11 @@ TwoTiles.args = {
 	],
 };
 TwoTiles.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles/TwoTiles',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTiles',
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTiles',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
 	decorators: [
 		( Story, { args: { grantedScopes, configuredAudiences } } ) => {
 			const audiencesDimensionFilter = {
@@ -135,6 +138,13 @@ export default {
 				provideUserAuthentication( registry, {
 					grantedScopes,
 				} );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 

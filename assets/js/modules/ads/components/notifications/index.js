@@ -1,5 +1,5 @@
 /**
- * Ads Settings components.
+ * Ads Notification components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-export { default as SettingsView } from './SettingsView';
-export { default as SettingsForm } from './SettingsForm';
-export { default as SettingsEdit } from './SettingsEdit';
+export { default as PAXSetupSuccessSubtleNotification } from './PAXSetupSuccessSubtleNotification';
+export { default as SetupSuccessSubtleNotification } from './SetupSuccessSubtleNotification';

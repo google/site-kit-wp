@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupCTAWidget tests.
+ * AudienceSegmentationSetupCTAWidget component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,161 +16,372 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import fetchMock from 'fetch-mock';
 import {
+	act,
+	fireEvent,
 	render,
+} from '../../../../../../../tests/js/test-utils';
+import {
 	createTestRegistry,
 	provideModules,
-	provideModuleRegistrations,
-	provideUserInfo,
-	provideUserAuthentication,
 	provideSiteInfo,
-} from '../../../../../../../tests/js/test-utils';
-
+	provideUserAuthentication,
+	unsubscribeFromAll,
+} from '../../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { EDIT_SCOPE, MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import AudienceSegmentationSetupCTAWidget from './AudienceSegmentationSetupCTAWidget';
-import {
-	properties as propertiesFixture,
-	availableAudiences as audiencesFixture,
-} from '../../../datastore/__fixtures__';
+import { getAnalytics4MockResponse } from '../../../utils/data-mock';
+import AudienceSegmentationSetupCTAWidget, {
+	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+} from './AudienceSegmentationSetupCTAWidget';
+import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
 
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;
 
-	const { Widget } = getWidgetComponentProps(
+	const { Widget, WidgetNull } = getWidgetComponentProps(
 		'audienceSegmentationSetupCTA'
 	);
 
-	const testPropertyID = propertiesFixture[ 0 ]._id;
-
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
 			},
 		] );
-		provideSiteInfo( registry );
-		provideModuleRegistrations( registry );
-		provideUserInfo( registry );
-		provideUserAuthentication( registry, {
-			grantedScopes: [ EDIT_SCOPE ],
-		} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			availableAudiences: null,
-			// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
-			availableCustomDimensions: [ 'googlesitekit_post_type' ],
-			propertyID: testPropertyID,
-		} );
-	} );
-
-	it( 'banner is visible for no configured audiences and google analytics data loaded on the page', async () => {
-		const settings = {
-			configuredAudiences: [],
-			isAudienceSegmentationWidgetHidden: false,
-		};
-
-		// Set the data available on page load to true.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsDataAvailableOnLoad( true );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveSaveAudienceSettings( settings, settings );
+		const referenceDate = '2024-05-10';
+		const startDate = '2024-02-09'; // 91 days before `referenceDate`.
 
-		const { getByText, waitForRegistry } = render(
-			<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-			{
-				registry,
-			}
-		);
+		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 
-		// Wait for resolvers to finish to avoid an unhandled React state update.
-		await waitForRegistry();
-
-		expect(
-			getByText(
-				'Learn how different types of visitors interact with your site'
-			)
-		).toBeInTheDocument();
-
-		expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
-	} );
-
-	it( 'banner is not visible for no configured audiences and google analytics data is not loaded on the page', async () => {
-		const settings = {
-			configuredAudiences: [],
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const options = {
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate: referenceDate,
 		};
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsGatheringData( false );
-
-		// Set the data available on page load to true.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( false );
+			.receiveGetReport( getAnalytics4MockResponse( options ), {
+				options,
+			} );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveSaveAudienceSettings( settings, settings );
-
-		const { getByText, waitForRegistry } = render(
-			<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-			{
-				registry,
-			}
-		);
-
-		// Wait for resolvers to finish to avoid an unhandled React state update.
-		await waitForRegistry();
-
-		expect( () =>
-			getByText(
-				'Learn how different types of visitors interact with your site'
-			)
-		).toThrow();
+			.finishResolution( 'getReport', [ options ] );
 	} );
 
-	it( 'banner is not visible when configured audiences present and google analytics data loaded on the page', async () => {
-		const settings = {
-			configuredAudiences: [
-				audiencesFixture[ 0 ],
-				audiencesFixture[ 1 ],
-				audiencesFixture[ 2 ],
-			],
-			isAudienceSegmentationWidgetHidden: false,
-		};
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
 
-		// Set the data available on page load to true.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
+	describe( 'widget rendering', () => {
+		it( 'should render the widget when the user has not permanently dismissed the prompt', () => {
+			const { queryByText, getByRole } = render(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+				}
+			);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveSaveAudienceSettings( settings, settings );
+			expect(
+				queryByText(
+					/Learn how different types of visitors interact with your site/i
+				)
+			).toBeInTheDocument();
 
-		const { getByText, waitForRegistry } = render(
-			<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-			{
-				registry,
-			}
-		);
+			expect(
+				getByRole( 'button', { name: /Maybe later/i } )
+			).toBeInTheDocument();
 
-		// Wait for resolvers to finish to avoid an unhandled React state update.
-		await waitForRegistry();
+			expect(
+				queryByText( /Don’t show again/i )
+			).not.toBeInTheDocument();
+		} );
+	} );
 
-		expect( () =>
-			getByText(
+	describe( 'CTA actions', () => {
+		beforeEach( () => {
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismissed-prompts'
+				),
+				{
+					body: {},
+					status: 200,
+				}
+			);
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+				),
+				{
+					body: {
+						[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+							expires: 0, // Expiry of 0 permanently dismisses the prompt.
+							count: 2,
+						},
+					},
+					status: 200,
+				}
+			);
+		} );
+
+		it( 'should dismiss the CTA and open the tooltip when dismiss button is clicked', async () => {
+			const { container, getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+				}
+			);
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			expect( container ).not.toHaveTextContent(
 				'Learn how different types of visitors interact with your site'
-			)
-		).toThrow();
+			);
+
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should close the tooltip on clicking the `X` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+				}
+			);
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
+			} );
+
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should close the tooltip on clicking the `Got it` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+				}
+			);
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+			} );
+
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should show the `Don’t show again` CTA when the dismissCount is 1', () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+					expires: 1000,
+					count: 1,
+				},
+			} );
+
+			const { getByRole, queryByText } = render(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				getByRole( 'button', { name: /Don’t show again/i } )
+			).toBeInTheDocument();
+
+			expect( queryByText( /Maybe later/i ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'banner is visible for no configured audiences and google analytics data loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data available on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveSaveAudienceSettings( settings, settings );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'Learn how different types of visitors interact with your site'
+				)
+			).toBeInTheDocument();
+
+			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
+		} );
+
+		it( 'banner is not visible for no configured audiences and google analytics data is not loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			// Set the data available on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( false );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveSaveAudienceSettings( settings, settings );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect( () =>
+				getByText(
+					'Learn how different types of visitors interact with your site'
+				)
+			).toThrow();
+		} );
+
+		it( 'banner is not visible when configured audiences present and google analytics data loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [
+					audiencesFixture[ 0 ],
+					audiencesFixture[ 1 ],
+					audiencesFixture[ 2 ],
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data available on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveSaveAudienceSettings( settings, settings );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect( () =>
+				getByText(
+					'Learn how different types of visitors interact with your site'
+				)
+			).toThrow();
+		} );
 	} );
 } );
