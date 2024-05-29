@@ -32,6 +32,10 @@ export default function AudienceTileCitiesMetric( {
 	title,
 	topCities,
 } ) {
+	const validDimensionValues =
+		topCities?.dimensionValues?.filter( Boolean ) || [];
+	const hasDimensionValues = !! validDimensionValues.length;
+
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities">
 			<div className="googlesitekit-audience-segmentation-tile-metric__icon">
@@ -42,26 +46,27 @@ export default function AudienceTileCitiesMetric( {
 					{ title }
 				</div>
 				<div className="googlesitekit-audience-segmentation-tile-metric__content">
-					{ topCities === null && <AudienceTileNoData /> }
-					{ topCities?.dimensionValues.map( ( city, index ) => (
-						<div
-							key={ city.value }
-							className="googlesitekit-audience-segmentation-tile-metric__cities-metric"
-						>
-							<div className="googlesitekit-audience-segmentation-tile-metric__cities-metric-name">
-								{ city.value }
+					{ ! hasDimensionValues && <AudienceTileNoData /> }
+					{ hasDimensionValues &&
+						validDimensionValues.map( ( city, index ) => (
+							<div
+								key={ city?.value }
+								className="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+							>
+								<div className="googlesitekit-audience-segmentation-tile-metric__cities-metric-name">
+									{ city?.value }
+								</div>
+								<div className="googlesitekit-audience-segmentation-tile-metric__cities-metric-value">
+									{ numFmt(
+										topCities?.metricValues[ index ]?.value,
+										{
+											style: 'percent',
+											maximumFractionDigits: 1,
+										}
+									) }
+								</div>
 							</div>
-							<div className="googlesitekit-audience-segmentation-tile-metric__cities-metric-value">
-								{ numFmt(
-									topCities.metricValues[ index ].value,
-									{
-										style: 'percent',
-										maximumFractionDigits: 1,
-									}
-								) }
-							</div>
-						</div>
-					) ) }
+						) ) }
 				</div>
 			</div>
 		</div>

@@ -1,5 +1,5 @@
 /**
- * AudienceTiles component.
+ * AudienceTilesWidget component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -29,25 +29,26 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Tab, TabBar } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import AudienceTile from './AudienceTile';
+import whenActive from '../../../../../util/when-active';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import { Tab, TabBar } from 'googlesitekit-components';
-import InfoTooltip from '../../../../../components/InfoTooltip';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../datastore/constants';
+import AudienceTile from './AudienceTile';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
+import InfoTooltip from '../../../../../components/InfoTooltip';
 
 const { useSelect } = Data;
 
-export default function AudienceTiles( { Widget } ) {
+function AudienceTilesWidget( { Widget } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -88,6 +89,11 @@ export default function AudienceTiles( { Widget } ) {
 	const report = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
+	const reportLoaded = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			reportOptions,
+		] )
+	);
 
 	const { rows = [] } = report || {};
 
@@ -102,9 +108,16 @@ export default function AudienceTiles( { Widget } ) {
 			totalPageviewsReportOptions
 		);
 	} );
+	const totalPageviewsReportLoaded = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			totalPageviewsReportOptions,
+		] )
+	);
 
 	const totalPageviews =
-		totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value || 0;
+		Number(
+			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
+		) || 0;
 
 	const topCitiesReportOptions = {
 		startDate,
@@ -128,6 +141,16 @@ export default function AudienceTiles( { Widget } ) {
 			configuredAudiences
 		)
 	);
+	const topCitiesReportLoaded = useSelect( ( select ) =>
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topCitiesReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
+		)
+	);
 
 	const topContentReportOptions = {
 		startDate,
@@ -142,6 +165,16 @@ export default function AudienceTiles( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
 			topContentReportOptions,
 			configuredAudiences
+		)
+	);
+	const topContentReportLoaded = useSelect( ( select ) =>
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topContentReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
 		)
 	);
 
@@ -160,6 +193,23 @@ export default function AudienceTiles( { Widget } ) {
 			configuredAudiences
 		)
 	);
+	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topContentPageTitlesReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
+		)
+	);
+
+	const loading =
+		! reportLoaded ||
+		! totalPageviewsReportLoaded ||
+		! topCitiesReportLoaded ||
+		! topContentReportLoaded ||
+		! topContentPageTitlesReportLoaded;
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
@@ -280,6 +330,7 @@ export default function AudienceTiles( { Widget } ) {
 
 					return (
 						<AudienceTile
+							loaded={ ! loading }
 							key={ audienceResourceName }
 							title={ audienceName }
 							infoTooltip={
@@ -305,7 +356,9 @@ export default function AudienceTiles( { Widget } ) {
 								previousValue: prevPageviews,
 							} }
 							percentageOfTotalPageViews={
-								pageviews / totalPageviews
+								totalPageviews !== 0
+									? pageviews / totalPageviews
+									: 0
 							}
 							topCities={ {
 								dimensionValues: [
@@ -343,6 +396,7 @@ export default function AudienceTiles( { Widget } ) {
 							} }
 							topContentTitles={ topContentTitles }
 							Widget={ Widget }
+							audienceResourceName={ audienceResourceName }
 						/>
 					);
 				} ) }
@@ -351,6 +405,10 @@ export default function AudienceTiles( { Widget } ) {
 	);
 }
 
-AudienceTiles.propTypes = {
+AudienceTilesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( { moduleName: 'analytics-4' } )(
+	AudienceTilesWidget
+);

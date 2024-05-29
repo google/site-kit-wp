@@ -22,38 +22,32 @@
 		flex: 1 1 auto;
 
 		.googlesitekit-setup-module__step {
-			border-bottom: 1px solid $c-border-light;
 			margin-bottom: $grid-gap-phone;
-			padding-bottom: $grid-gap-phone - 10px; // -10px accounts for title margin.
 
 			@media (min-width: $bp-desktop) {
 				margin-bottom: $grid-gap-desktop;
-				padding-bottom: $grid-gap-desktop - 10px; // -10px accounts for title margin.
 			}
 
 			&:last-child {
-				border-bottom: none;
 				margin-bottom: 0;
-				padding-bottom: 0;
 			}
 		}
 
 		.googlesitekit-setup-module__logo {
 			display: inline-block;
-			line-height: 0;
-			margin: 0 $grid-gap-phone 8px 0;
-			vertical-align: bottom;
+			margin: 0 $grid-gap-phone 0 0;
 
 			img {
 				display: block;
 				height: auto;
-				width: 33px;
+				width: 40px;
 			}
 		}
 
 		.googlesitekit-setup-module__title {
 			display: inline-block;
 			margin: 0 0 10px;
+			vertical-align: bottom;
 		}
 
 		.googlesitekit-setup-module__text--no-margin {
