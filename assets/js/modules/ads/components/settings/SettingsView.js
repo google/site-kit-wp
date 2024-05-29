@@ -70,8 +70,7 @@ export default function SettingsView() {
 	let adBlockerWarningClassName = '';
 
 	if ( iceEnabled && isAdBlockerActive ) {
-		adBlockerWarningClassName =
-			'googlesitekit-settings-module-warning--settings';
+		adBlockerWarningClassName = 'googlesitekit-settings-module__meta-item';
 	}
 
 	return (
