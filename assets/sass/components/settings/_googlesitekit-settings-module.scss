@@ -286,7 +286,13 @@
 			}
 
 			.mdc-button {
+				color: $c-surfaces-inverse-on-surface;
 				font-weight: $fw-medium;
+			}
+
+			.mdc-button:disabled {
+				background-color: $c-interactive-disable-container;
+				color: $c-interactive-on-disable-container;
 			}
 
 			.googlesitekit-settings-module__status {
