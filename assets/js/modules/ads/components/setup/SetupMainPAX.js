@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { useCallbackOne } from 'use-memo-one';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -93,15 +92,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
-
-	useMount( () => {
-		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
-			// If the PAX query param indicates the setup is finished on page load,
-			// set the step back to the PAX launch, as values are only temporarly
-			// saved in state after PAX campaign setup signal is received.
-			setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
-		}
-	} );
 
 	// Callback to be executed when a campaign is created in PAX.
 	//
