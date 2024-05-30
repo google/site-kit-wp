@@ -71,11 +71,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const hasAdwordsScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( ADWORDS_SCOPE )
 	);
-	const hasPaxSettings = useSelect( ( select ) => {
-		const { getPaxConversionID, getExtCustomerID } = select( MODULES_ADS );
-
-		return getPaxConversionID() && getExtCustomerID();
-	} );
 
 	const oAuthURL = useSelect( ( select ) => {
 		const redirectURL = addQueryArgs( global.location.href, {
@@ -165,6 +160,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
+	const onLaunch = useCallback( ( app ) => {
+		paxAppRef.current = app;
+	}, [] );
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
 			<div className="googlesitekit-setup-module__step">
@@ -180,33 +179,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 				<AdBlockerWarning moduleSlug="ads" />
 
 				{ ! isAdBlockerActive &&
-					PAX_SETUP_STEP.FINISHED === showPaxAppStep && (
-						<div className="googlesitekit-setup-module__action">
-							<SpinnerButton
-								isSaving={ isNavigatingToOAuthURL }
-								disabled={
-									isNavigatingToOAuthURL ||
-									! paxAppRef?.current ||
-									! hasPaxSettings
-								}
-								onClick={ onCompleteSetup }
-							>
-								{ __( 'Complete setup', 'google-site-kit' ) }
-							</SpinnerButton>
-						</div>
-					) }
-				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
 					hasAdwordsScope && (
-						<Fragment>
-							<PAXEmbeddedApp
-								displayMode="setup"
-								onLaunch={ ( app ) => {
-									paxAppRef.current = app;
-								} }
-								onCampaignCreated={ onCampaignCreated }
-							/>
-						</Fragment>
+						<PAXEmbeddedApp
+							displayMode="setup"
+							onLaunch={ onLaunch }
+							onCampaignCreated={ onCampaignCreated }
+							onFinishAndCloseSignUpFlow={ onCompleteSetup }
+						/>
 					) }
 
 				{ ! isAdBlockerActive &&
