@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for handling expirables items.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Expirable_Items extends User_Setting {
 	/**
 	 * Adds one or more items to the list of expired items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param string $item               Item to set expiration for.
 	 * @param int    $expires_in_seconds TTL for the item.
@@ -45,7 +45,7 @@ class Expirable_Items extends User_Setting {
 	/**
 	 * Removes one or more items from the list of expirable items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param string $item Item to remove.
 	 */
@@ -65,7 +65,7 @@ class Expirable_Items extends User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return array Value set for the option, or default if not set.
 	 */
@@ -77,7 +77,7 @@ class Expirable_Items extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return string The type name.
 	 */
@@ -88,7 +88,7 @@ class Expirable_Items extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return array The default value.
 	 */
@@ -99,7 +99,7 @@ class Expirable_Items extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -112,7 +112,7 @@ class Expirable_Items extends User_Setting {
 	/**
 	 * Filters expirable items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param array $items Expirable items list.
 	 * @return array Filtered expirable items.

@@ -82,8 +82,7 @@ export const actions = {
 	 * @since 1.9.0
 	 * @since 1.107.0 Extended to support an optional CTA component.
 	 * @since 1.110.0 Extended to support an optional filterActiveWidgets function.
-	 * @since n.e.x.t Extended to make title optional and support an optional Footer component.
-	 * @since n.e.x.t Extended to support an optional hasNewBadge parameter.
+	 * @since 1.128.0 Extended to make title optional, support an optional Footer component, and added support for an optional `hasNewBadge` parameter.
 	 *
 	 * @param {string}      slug                           Widget Area's slug.
 	 * @param {Object}      settings                       Widget Area's settings.

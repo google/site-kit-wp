@@ -77,7 +77,7 @@ const baseActions = {
 	/**
 	 * Saves the Conversion Tracking settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -93,7 +93,7 @@ const baseActions = {
 	/**
 	 * Sets the Conversion Tracking enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {string} enabled Consent Mode enabled status.
 	 * @return {Object} Redux-style action.
@@ -125,7 +125,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Conversion Tracking settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Conversion Tracking settings, or `undefined` if not loaded.
@@ -137,7 +137,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Consent Mode enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return {boolean|undefined} Consent Mode enabled status, or `undefined` if not loaded.
 	 */
@@ -151,7 +151,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.

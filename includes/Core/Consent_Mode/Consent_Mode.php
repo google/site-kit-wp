@@ -205,7 +205,7 @@ window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_ca
 	/**
 	 * Extends base data with a static list of consent mode regions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param array $data Inline base data.
 	 * @return array Filtered $data.
