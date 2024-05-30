@@ -105,6 +105,14 @@ export function createPaxServices( registry, options = {} ) {
 				return { retryReady: true };
 			},
 		},
+		campaignService: {
+			notifyNewCampaignCreated: async () => {
+				if ( onCampaignCreated ) {
+					await onCampaignCreated();
+				}
+				return {};
+			},
+		},
 		conversionTrackingService: {
 			getSupportedConversionLabels: async () => {
 				await resolveSelect( MODULES_ADS ).getModuleData();
@@ -176,12 +184,6 @@ export function createPaxServices( registry, options = {} ) {
 			},
 		},
 	};
-
-	if ( onCampaignCreated ) {
-		services.campaignService = {
-			notifyNewCampaignCreated: onCampaignCreated,
-		};
-	}
 
 	return services;
 }

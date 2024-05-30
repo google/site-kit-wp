@@ -47,6 +47,9 @@ describe( 'PAX partner services', () => {
 					getBusinessInfo: expect.any( Function ),
 					fixBusinessInfo: expect.any( Function ),
 				},
+				campaignService: {
+					notifyNewCampaignCreated: expect.any( Function ),
+				},
 				conversionTrackingService: {
 					getSupportedConversionLabels: expect.any( Function ),
 					getPageViewConversionSetting: expect.any( Function ),
@@ -128,21 +131,20 @@ describe( 'PAX partner services', () => {
 
 		describe( 'campaignService', () => {
 			describe( 'notifyNewCampaignCreated', () => {
-				it( 'should return a callback function', async () => {
-					const mockOnCampaignCreated = jest.fn();
-					const servicesWithCampaign = createPaxServices( registry, {
-						onCampaignCreated: mockOnCampaignCreated,
+				it( 'calls the given function when provided', async () => {
+					const onCampaignCreated = jest.fn();
+					services = createPaxServices( registry, {
+						onCampaignCreated,
 					} );
+					const { notifyNewCampaignCreated } =
+						services.campaignService;
+					expect( onCampaignCreated ).not.toHaveBeenCalled();
 
-					await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
+					const notifyNewCampaignCreatedResponse =
+						await notifyNewCampaignCreated( {} );
 
-					expect( servicesWithCampaign ).toEqual(
-						expect.objectContaining( {
-							campaignService: expect.objectContaining( {
-								notifyNewCampaignCreated: mockOnCampaignCreated,
-							} ),
-						} )
-					);
+					expect( notifyNewCampaignCreatedResponse ).toEqual( {} );
+					expect( onCampaignCreated ).toHaveBeenCalledTimes( 1 );
 				} );
 			} );
 		} );
