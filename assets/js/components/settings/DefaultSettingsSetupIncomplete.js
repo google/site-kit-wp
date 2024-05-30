@@ -54,21 +54,23 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 				<ModuleSettingsWarning slug={ slug } />
 			</div>
 
-			{ createInterpolateElement(
-				__(
-					'Setup incomplete: <a>continue module setup</a>',
-					'google-site-kit'
-				),
-				{
-					a: (
-						<Link
-							className="googlesitekit-settings-module__edit-button"
-							href={ adminReauthURL }
-							disabled={ requirementsError ? true : false }
-						/>
+			<div className="googlesitekit-settings-module__fields-group-title">
+				{ createInterpolateElement(
+					__(
+						'Setup incomplete: <a>continue module setup</a>',
+						'google-site-kit'
 					),
-				}
-			) }
+					{
+						a: (
+							<Link
+								className="googlesitekit-settings-module__edit-button"
+								href={ adminReauthURL }
+								disabled={ requirementsError ? true : false }
+							/>
+						),
+					}
+				) }
+			</div>
 		</Cell>
 	);
 }

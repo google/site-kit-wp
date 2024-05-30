@@ -54,8 +54,6 @@
 		.googlesitekit-settings-module__status-icon--warning {
 			background-color: $c-white;
 			color: $c-selective-yellow;
-			height: 26px;
-			width: 26px;
 		}
 
 		.googlesitekit-settings-module__content {
@@ -286,7 +284,13 @@
 			}
 
 			.mdc-button {
+				color: $c-surfaces-inverse-on-surface;
 				font-weight: $fw-medium;
+			}
+
+			.mdc-button:disabled {
+				background-color: $c-interactive-disable-container;
+				color: $c-interactive-on-disable-container;
 			}
 
 			.googlesitekit-settings-module__status {
