@@ -54,7 +54,7 @@ import {
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useDispatch, useRegistry } = Data;
 
 const PARAM_SHOW_PAX = 'pax';
 
@@ -77,22 +77,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 		return getPaxConversionID() && getExtCustomerID();
 	} );
 
-	const setupSuccessRedirectURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			notification: PAX_SETUP_SUCCESS_NOTIFICATION,
-		} )
-	);
-
-	const redirectURL = addQueryArgs( global.location.href, {
-		[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
-	} );
-
-	const oAuthURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectURL( {
+	const oAuthURL = useSelect( ( select ) => {
+		const redirectURL = addQueryArgs( global.location.href, {
+			[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
+		} );
+		return select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ ADWORDS_SCOPE ],
 			redirectURL,
-		} )
-	);
+		} );
+	} );
+
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		if ( ! oAuthURL ) {
 			return false;
@@ -142,18 +136,25 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		setExtCustomerID( customerData.externalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
-		setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
 		/* eslint-enable sitekit/acronym-case */
+
+		// Here we save settings right away but leave final navigation to `onSetupComplete`.
+		await submitChanges();
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
-	const onCompleteSetup = useCallback( async () => {
-		const { error } = await submitChanges();
-
-		if ( error ) {
-			return;
-		}
-		finishSetup( setupSuccessRedirectURL );
-	}, [ submitChanges, finishSetup, setupSuccessRedirectURL ] );
+	const registry = useRegistry();
+	const onCompleteSetup = useCallbackOne( async () => {
+		// Encapsulate dependencies to avoid function changing after launch.
+		const { select, __experimentalResolveSelect: resolveSelect } = registry;
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+		const redirectURL = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			{
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			}
+		);
+		finishSetup( redirectURL );
+	}, [ registry, finishSetup ] );
 
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
