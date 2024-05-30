@@ -1,4 +1,6 @@
 /**
+ * PAX Embedded App styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +16,30 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-ads-conversion-id";
-@import "googlesitekit-ads-setup-module";
-@import "googlesitekit-ads-settings";
-@import "googlesitekit-ads-setup-banner";
-@import "googlesitekit-ads-pax-embedded-app";
+.googlesitekit-plugin {
+
+	.googlesitekit-widget {
+
+		.googlesitekit-pax-embedded-app {
+			.card-content {
+				padding: 0;
+			}
+
+			.mdc-card.card {
+				border-radius: $br-sm;
+				box-shadow: none;
+				margin-top: 0;
+				max-width: unset;
+				padding: $grid-gap-phone;
+
+				@media (min-width: $bp-desktop) {
+					padding: $grid-gap-desktop;
+				}
+
+				.notification {
+					margin-top: 0;
+				}
+			}
+		}
+	}
+}
