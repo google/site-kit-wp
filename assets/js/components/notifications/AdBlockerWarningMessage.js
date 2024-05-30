@@ -59,7 +59,7 @@ export default function AdBlockerWarningMessage( {
 							external
 							hideExternalIndicator
 							trailingIcon={
-								<ExternalIcon width={ 13 } height={ 14 } />
+								<ExternalIcon width={ 15 } height={ 15 } />
 							}
 						/>
 					),
