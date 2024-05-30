@@ -51,14 +51,19 @@ const restFetchWpPages = async () => {
  * @since 1.126.0
  * @since 1.128.0 Added options parameter.
  *
- * @param {Object}   registry                  Registry object to dispatch to.
- * @param {Object}   options                   Optional. Additional options.
- * @param {Function} options.onCampaignCreated Callback function that will be called when campaign is created.
- * @param {Object}   options._global           The global window object.
+ * @param {Object}   registry                           Registry object to dispatch to.
+ * @param {Object}   options                            Optional. Additional options.
+ * @param {Function} options.onCampaignCreated          Callback function that will be called when campaign is created.
+ * @param {Function} options.onFinishAndCloseSignUpFlow Callback function that will be called by the `userActionService.finishAndCloseSignUpFlow` if provided.
+ * @param {Object}   options._global                    The global window object.
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry, options = {} ) {
-	const { onCampaignCreated = null, _global = global } = options;
+	const {
+		onCampaignCreated = null,
+		onFinishAndCloseSignUpFlow = null,
+		_global = global,
+	} = options;
 
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
 	const accessToken =
@@ -160,6 +165,14 @@ export function createPaxServices( registry, options = {} ) {
 					startDate: formatPaxDate( startDate ),
 					endDate: formatPaxDate( endDate ),
 				};
+			},
+		},
+		userActionService: {
+			finishAndCloseSignUpFlow: async () => {
+				if ( onFinishAndCloseSignUpFlow ) {
+					await onFinishAndCloseSignUpFlow();
+				}
+				return {};
 			},
 		},
 	};

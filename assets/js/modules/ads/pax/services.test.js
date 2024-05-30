@@ -58,6 +58,9 @@ describe( 'PAX partner services', () => {
 				partnerDateRangeService: {
 					get: expect.any( Function ),
 				},
+				userActionService: {
+					finishAndCloseSignUpFlow: expect.any( Function ),
+				},
 			} );
 		} );
 
@@ -278,6 +281,28 @@ describe( 'PAX partner services', () => {
 
 					expect( termsAndConditionsServiceNotifyResponse ).toEqual(
 						{}
+					);
+				} );
+			} );
+		} );
+
+		describe( 'userActionService', () => {
+			describe( 'finishAndCloseSignUpFlow', () => {
+				it( 'calls the given function when provided', async () => {
+					const onFinishAndCloseSignUpFlow = jest.fn();
+					services = createPaxServices( registry, {
+						onFinishAndCloseSignUpFlow,
+					} );
+					const { finishAndCloseSignUpFlow } =
+						services.userActionService;
+					expect( onFinishAndCloseSignUpFlow ).not.toHaveBeenCalled();
+
+					const finishAndCloseSignUpFlowResponse =
+						await finishAndCloseSignUpFlow( {} );
+
+					expect( finishAndCloseSignUpFlowResponse ).toEqual( {} );
+					expect( onFinishAndCloseSignUpFlow ).toHaveBeenCalledTimes(
+						1
 					);
 				} );
 			} );
