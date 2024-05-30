@@ -342,7 +342,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.95.0
 	 * @since 1.107.0 Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
-	 * @since n.e.x.t Add optional `reportArgs` parameter to allow checking zero data for a specific report.
+	 * @since 1.128.0 Add optional `reportArgs` parameter to allow checking zero data for a specific report.
 	 *
 	 * @param {Object}           state      Data store's state.
 	 * @param {Object|undefined} reportArgs Optional. Options for generating the report.
