@@ -62,7 +62,7 @@ class Regions {
 	/**
 	 * Returns the list of regions that Google's EU user consent policy applies to.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return array<string> List of regions.
 	 */

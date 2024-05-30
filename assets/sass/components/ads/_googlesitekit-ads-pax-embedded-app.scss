@@ -1,5 +1,5 @@
 /**
- * `safelySort` utility function.
+ * PAX Embedded App styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,16 +16,30 @@
  * limitations under the License.
  */
 
-/**
- * Sorts an array without causing the mutation if the given parameter is an array.
- * If the parameter is not an array, it returns the parameter as is.
- *
- * @since 1.110.0
- * @since 1.128.0 Moved to the common utility directory from the key metrics directory.
- *
- * @param {Array|*} arr Param to be sorted.
- * @return {Array|*} 	Safely sorted array without mutation.
- */
-export const safelySort = ( arr ) => {
-	return Array.isArray( arr ) ? [ ...arr ].sort() : arr;
-};
+.googlesitekit-plugin {
+
+	.googlesitekit-widget {
+
+		.googlesitekit-pax-embedded-app {
+			.card-content {
+				padding: 0;
+			}
+
+			.mdc-card.card {
+				border-radius: $br-sm;
+				box-shadow: none;
+				margin-top: 0;
+				max-width: unset;
+				padding: $grid-gap-phone;
+
+				@media (min-width: $bp-desktop) {
+					padding: $grid-gap-desktop;
+				}
+
+				.notification {
+					margin-top: 0;
+				}
+			}
+		}
+	}
+}
