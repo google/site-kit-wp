@@ -65,18 +65,20 @@ export default function SettingsSetupIncomplete() {
 				<ModuleSettingsWarning slug="adsense" />
 			</div>
 
-			{ createInterpolateElement(
-				sprintf( statusText, `<a>${ actionText }</a>` ),
-				{
-					a: (
-						<Link
-							className="googlesitekit-settings-module__edit-button"
-							href={ adminReauthURL }
-							disabled={ requirementsError ? true : false }
-						/>
-					),
-				}
-			) }
+			<div className="googlesitekit-settings-module__fields-group-title">
+				{ createInterpolateElement(
+					sprintf( statusText, `<a>${ actionText }</a>` ),
+					{
+						a: (
+							<Link
+								className="googlesitekit-settings-module__edit-button"
+								href={ adminReauthURL }
+								disabled={ requirementsError ? true : false }
+							/>
+						),
+					}
+				) }
+			</div>
 		</Fragment>
 	);
 }
