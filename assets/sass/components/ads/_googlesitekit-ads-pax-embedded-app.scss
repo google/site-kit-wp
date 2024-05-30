@@ -18,24 +18,27 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-pax-embedded-app {
-		.card-content {
-			padding: 0;
-		}
+	.googlesitekit-widget {
 
-		.mdc-card.card {
-			border-radius: $br-sm;
-			box-shadow: none;
-			margin-top: 0;
-			max-width: unset;
-			padding: $grid-gap-phone;
-
-			@media (min-width: $bp-desktop) {
-				padding: $grid-gap-desktop;
+		.googlesitekit-pax-embedded-app {
+			.card-content {
+				padding: 0;
 			}
 
-			.notification {
+			.mdc-card.card {
+				border-radius: $br-sm;
+				box-shadow: none;
 				margin-top: 0;
+				max-width: unset;
+				padding: $grid-gap-phone;
+
+				@media (min-width: $bp-desktop) {
+					padding: $grid-gap-desktop;
+				}
+
+				.notification {
+					margin-top: 0;
+				}
 			}
 		}
 	}
