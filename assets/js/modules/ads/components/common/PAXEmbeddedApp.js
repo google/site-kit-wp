@@ -52,6 +52,7 @@ export default function PAXEmbeddedApp( {
 	displayMode = 'default',
 	onLaunch,
 	onCampaignCreated,
+	onFinishAndCloseSignUpFlow,
 } ) {
 	const [ launchGoogleAdsAvailable, setLaunchGoogleAdsAvailable ] = useState(
 		typeof global?.google?.ads?.integration?.integrator?.launchGoogleAds ===
@@ -65,8 +66,11 @@ export default function PAXEmbeddedApp( {
 	const registry = useRegistry();
 
 	const paxServices = useMemo( () => {
-		return createPaxServices( registry, { onCampaignCreated } );
-	}, [ registry, onCampaignCreated ] );
+		return createPaxServices( registry, {
+			onCampaignCreated,
+			onFinishAndCloseSignUpFlow,
+		} );
+	}, [ registry, onCampaignCreated, onFinishAndCloseSignUpFlow ] );
 
 	const paxDateRange = useSelect( ( select ) => {
 		if ( displayMode !== 'reporting' ) {
@@ -221,4 +225,6 @@ export default function PAXEmbeddedApp( {
 PAXEmbeddedApp.propTypes = {
 	displayMode: PropTypes.oneOf( [ 'default', 'reporting', 'setup' ] ),
 	onLaunch: PropTypes.func,
+	onCampaignCreated: PropTypes.func,
+	onFinishAndCloseSignUpFlow: PropTypes.func,
 };
