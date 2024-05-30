@@ -24,10 +24,17 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
+import {
+	SetupSuccessSubtleNotification,
+	PAXSetupSuccessSubtleNotification,
+} from '../../modules/ads/components/notifications/';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function SubtleNotifications() {
+	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
+
 	// Each notification component rendered here has its own logic to determine
 	// whether it should be displayed; in most cases none of these components
 	// will be displayed, but it's also (currently) possible for multiple
@@ -37,8 +44,12 @@ export default function SubtleNotifications() {
 	// Because these notifications are subtle and small, this is acceptable UX.
 	return (
 		<Fragment>
+			{ audienceSegmentationEnabled && (
+				<AudienceSegmentationSetupSuccessSubtleNotification />
+			) }
 			<GA4AdSenseLinkedNotification />
 			<SetupSuccessSubtleNotification />
+			<PAXSetupSuccessSubtleNotification />
 		</Fragment>
 	);
 }

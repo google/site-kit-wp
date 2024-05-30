@@ -25,7 +25,7 @@ import { MODULES_ADS } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import SettingsForm from './SettingsForm';
 import SettingsView from './SettingsView';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -50,7 +50,7 @@ export default function SettingsEdit() {
 
 	let viewComponent;
 	if ( isAdBlockerActive ) {
-		viewComponent = <AdBlockerWarning />;
+		viewComponent = <AdBlockerWarning moduleSlug="ads" />;
 	} else if ( paxEnabled && ( paxConversionID || extCustomerID ) ) {
 		viewComponent = <SettingsView />;
 	} else if ( isDoingSubmitChanges ) {
