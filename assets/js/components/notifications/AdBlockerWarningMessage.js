@@ -35,6 +35,7 @@ import WarningNotice from '../WarningNotice';
 import ExternalIcon from '../../../svg/icons/external-rounded.svg';
 
 export default function AdBlockerWarningMessage( {
+	className = '',
 	getHelpLink = '',
 	warningMessage = null,
 } ) {
@@ -43,7 +44,7 @@ export default function AdBlockerWarningMessage( {
 	}
 
 	return (
-		<WarningNotice>
+		<WarningNotice className={ className }>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */
@@ -69,6 +70,7 @@ export default function AdBlockerWarningMessage( {
 }
 
 AdBlockerWarningMessage.propTypes = {
+	className: PropTypes.string,
 	getHelpLink: PropTypes.string,
 	warningMessage: PropTypes.string,
 };
