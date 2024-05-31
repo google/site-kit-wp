@@ -41,19 +41,10 @@ export default function AudienceItems() {
 			select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || []
 	);
 	const availableAudiences = useSelect( ( select ) => {
-		const { getResourceDataAvailabilityDate, getReport } =
+		const { getConfigurableAudiences, getReport } =
 			select( MODULES_ANALYTICS_4 );
 
-		const audiences = select( MODULES_ANALYTICS_4 )
-			.getAvailableAudiences()
-			// Filter out "Purchasers" audience if it has no data.
-			?.filter( ( { audienceSlug, name } ) => {
-				if ( 'purchasers' !== audienceSlug ) {
-					return true;
-				}
-
-				return !! getResourceDataAvailabilityDate( name, 'audience' );
-			} );
+		const audiences = getConfigurableAudiences();
 
 		if ( undefined === audiences ) {
 			return undefined;
