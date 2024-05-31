@@ -43,12 +43,8 @@ class Conversion_TrackingTest extends TestCase {
 		$this->conversion_tracking          = new Conversion_Tracking( $context, $options );
 		$this->conversion_tracking_settings = new Conversion_Tracking_Settings( $options );
 
-		$original_conversion_tracking_settings = array(
-			'enabled' => true,
-		);
-
 		$this->conversion_tracking_settings->register();
-		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
+		$this->conversion_tracking_settings->set( array( 'enabled' => true ) );
 
 		Conversion_Tracking::$providers = array(
 			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG        => FakeConversionEventProvider::class,
@@ -60,12 +56,6 @@ class Conversion_TrackingTest extends TestCase {
 		parent::tear_down();
 
 		Conversion_Tracking::$providers = array();
-
-		$original_conversion_tracking_settings = array(
-			'enabled' => true,
-		);
-
-		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
 	}
 
 	public function test_register__not_enqueued_when_no_snippet_inserted() {
@@ -78,11 +68,7 @@ class Conversion_TrackingTest extends TestCase {
 	}
 
 	public function test_register__not_enqueued_when_tracking_disabled() {
-		$original_conversion_tracking_settings = array(
-			'enabled' => false,
-		);
-
-		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
+		$this->conversion_tracking_settings->set( array( 'enabled' => false ) );
 
 		$this->conversion_tracking->register();
 
