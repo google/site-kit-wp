@@ -19,16 +19,20 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-export default function WarningNotice( { children, className = '' } ) {
-	let warningNoticeClassName = 'googlesitekit-warning-notice';
-
-	if ( className ) {
-		warningNoticeClassName = `${ warningNoticeClassName } ${ className }`;
-	}
-
-	return <div className={ warningNoticeClassName }>{ children }</div>;
+export default function WarningNotice( { children, className } ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-warning-notice',
+				className
+			) }
+		>
+			{ children }
+		</div>
+	);
 }
 
 WarningNotice.propTypes = {
