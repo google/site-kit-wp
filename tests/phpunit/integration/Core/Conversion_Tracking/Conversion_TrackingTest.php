@@ -13,8 +13,10 @@ namespace Google\Tests\Core\Conversion_Tracking;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
 class Conversion_TrackingTest extends TestCase {
@@ -26,10 +28,26 @@ class Conversion_TrackingTest extends TestCase {
 	 */
 	private $conversion_tracking;
 
+	/**
+	 * Conversion_Tracking_Settings instance.
+	 *
+	 * @var Conversion_Tracking_Settings
+	 */
+	private $conversion_tracking_settings;
+
 	public function set_up() {
 		parent::set_up();
 
-		$this->conversion_tracking = new Conversion_Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->conversion_tracking          = new Conversion_Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$options                            = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->conversion_tracking_settings = new Conversion_Tracking_Settings( $options );
+
+		$original_conversion_tracking_settings = array(
+			'enabled' => true,
+		);
+
+		$this->conversion_tracking_settings->register();
+		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
 
 		Conversion_Tracking::$providers = array(
 			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG        => FakeConversionEventProvider::class,
@@ -41,6 +59,13 @@ class Conversion_TrackingTest extends TestCase {
 		parent::tear_down();
 
 		Conversion_Tracking::$providers = array();
+
+		$original_conversion_tracking_settings = array(
+			'enabled' => true,
+		);
+
+		$this->conversion_tracking_settings->register();
+		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
 	}
 
 	public function test_register__not_enqueued_when_no_snippet_inserted() {
@@ -50,6 +75,22 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
 		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ) );
+	}
+
+	public function test_register__not_enqueued_when_tracking_disabled() {
+		$original_conversion_tracking_settings = array(
+			'enabled' => false,
+		);
+
+		$this->conversion_tracking_settings->register();
+		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
+
+		$this->conversion_tracking->register();
+
+		do_action( 'googlesitekit_ads_init_tag' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
 	}
 
 	/**
