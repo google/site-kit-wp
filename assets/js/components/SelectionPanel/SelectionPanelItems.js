@@ -51,7 +51,7 @@ export default function SelectionPanelItems( {
 			{
 				// Split list into two sections with sub-headings for current selection and
 				// additional items if there are already saved items.
-				savedItemSlugs.length !== 0 && (
+				savedItemSlugs?.length !== 0 && (
 					<Fragment>
 						<p className="googlesitekit-selection-panel-items__subheading">
 							{ currentSelectionTitle }

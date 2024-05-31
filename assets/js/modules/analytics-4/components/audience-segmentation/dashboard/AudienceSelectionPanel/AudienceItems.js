@@ -36,8 +36,9 @@ import { SelectionPanelItems } from '../../../../../../components/SelectionPanel
 const { useSelect } = Data;
 
 export default function AudienceItems() {
-	const savedItemSlugs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+	const savedItemSlugs = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || []
 	);
 	const availableAudiences = useSelect( ( select ) => {
 		const { getResourceDataAvailabilityDate, getReport } =
