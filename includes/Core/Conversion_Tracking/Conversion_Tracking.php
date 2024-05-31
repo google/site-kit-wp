@@ -92,7 +92,7 @@ class Conversion_Tracking {
 		$this->conversion_tracking_settings->register();
 		$this->rest_conversion_tracking_controller->register();
 
-		if ( $this->conversion_tracking_settings->is_conversion_tracking_enabled() ) {
+		if ( ! $this->conversion_tracking_settings->is_conversion_tracking_enabled() ) {
 			return;
 		}
 
