@@ -64,7 +64,6 @@ class Conversion_TrackingTest extends TestCase {
 			'enabled' => true,
 		);
 
-		$this->conversion_tracking_settings->register();
 		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
 	}
 
@@ -82,7 +81,6 @@ class Conversion_TrackingTest extends TestCase {
 			'enabled' => false,
 		);
 
-		$this->conversion_tracking_settings->register();
 		$this->conversion_tracking_settings->set( $original_conversion_tracking_settings );
 
 		$this->conversion_tracking->register();
