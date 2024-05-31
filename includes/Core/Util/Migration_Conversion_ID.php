@@ -36,16 +36,6 @@ class Migration_Conversion_ID {
 	const DB_VERSION_OPTION = 'googlesitekit_db_version';
 
 	/**
-	 * Analytics options name.
-	 */
-	const ANALYTICS_OPTIONS = 'googlesitekit_analytics-4_settings';
-
-	/**
-	 * Ads options name.
-	 */
-	const ADS_OPTIONS = 'googlesitekit_ads_settings';
-
-	/**
 	 * Context instance.
 	 *
 	 * @since n.e.x.t
