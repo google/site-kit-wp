@@ -24,10 +24,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CheckFill from '../../../svg/icons/check-fill.svg';
+import CheckFill from '../../../../../svg/icons/check-fill.svg';
 import { Button } from 'googlesitekit-components';
-import { Grid, Cell, Row } from '../../material-components';
-import useQueryArg from '../../hooks/useQueryArg';
+import { Grid, Cell, Row } from '../../../../material-components';
+import useQueryArg from '../../../../hooks/useQueryArg';
 
 export default function SetupSuccessSubtleNotification() {
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
