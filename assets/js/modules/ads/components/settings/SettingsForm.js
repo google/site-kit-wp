@@ -32,7 +32,6 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 import { useFeature } from '../../../../hooks/useFeature';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -55,10 +54,6 @@ export default function SettingsForm() {
 		paxEnabled && paxConversionID ? paxConversionID : conversionID;
 
 	const isPaxView = paxEnabled && ( paxConversionID || extCustomerID );
-
-	const isAdBlockerActive = useSelect( ( select ) =>
-		select( CORE_USER ).isAdBlockerActive()
-	);
 
 	return (
 		<Fragment>
@@ -103,7 +98,7 @@ export default function SettingsForm() {
 					</div>
 				) }
 
-				{ ! isAdBlockerActive && isPaxView && (
+				{ isPaxView && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Customer ID', 'google-site-kit' ) }
