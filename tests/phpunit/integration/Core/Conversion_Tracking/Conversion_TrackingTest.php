@@ -38,8 +38,9 @@ class Conversion_TrackingTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->conversion_tracking          = new Conversion_Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$options                            = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$context                            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options                            = new Options( $context );
+		$this->conversion_tracking          = new Conversion_Tracking( $context, $options );
 		$this->conversion_tracking_settings = new Conversion_Tracking_Settings( $options );
 
 		$original_conversion_tracking_settings = array(
