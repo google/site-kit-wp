@@ -23,5 +23,4 @@ export { default as AudienceSegmentationSetupCTAWidget } from './AudienceSegment
 export { default as AudienceTilesWidget } from './AudienceTilesWidget';
 export { default as AudienceTooltipMessage } from './AudienceTooltipMessage';
 export { default as AudienceAreaFooter } from './AudienceAreaFooter';
-export { default as InfoNoticeWidget } from './InfoNoticeWidget';
-export { default as InfoNotice } from './InfoNotice';
+export { default as InfoNoticeWidget } from '../dashboard/InfoNoticeWidget';
