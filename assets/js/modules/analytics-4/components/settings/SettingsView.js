@@ -34,7 +34,9 @@ import { ProgressBar } from 'googlesitekit-components';
 import OptionalSettingsView from './OptionalSettingsView';
 import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
@@ -187,7 +189,7 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-						{ ! useSnippet && (
+						{ useSnippet === false && (
 							<span>
 								{ __(
 									'Snippet is not inserted',
@@ -195,33 +197,33 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
+						{ useSnippet === undefined && BLANK_SPACE }
 					</p>
 				</div>
 			</div>
 
 			<SettingsEnhancedMeasurementView />
 
-			<OptionalSettingsView />
-
 			{ iceEnabled && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __(
-							'Enhanced conversion tracking',
+							'Enhanced Conversion Tracking',
 							'google-site-kit'
 						) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting
-							value={
-								isConversionTrackingEnabled
-									? __( 'Enabled', 'google-site-kit' )
-									: __( 'Disabled', 'google-site-kit' )
-							}
-						/>
+						{ isConversionTrackingEnabled &&
+							__( 'Enabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === false &&
+							__( 'Disabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === undefined &&
+							BLANK_SPACE }
 					</p>
 				</div>
 			) }
+
+			<OptionalSettingsView />
 		</div>
 	);
 }
