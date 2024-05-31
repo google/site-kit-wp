@@ -148,6 +148,13 @@
 	}
 }
 
+#wpbody-content,
+#wpfooter {
+	a {
+		color: $c-authorize-application-vivid-blue;
+	}
+}
+
 #wpfooter {
 	bottom: 45px;
 }
@@ -189,8 +196,4 @@
 #footer-thankyou {
 	font-size: $fs-authorize-application-label-md;
 	line-height: $lh-authorize-application-label-md;
-
-	a {
-		color: $c-authorize-application-vivid-blue;
-	}
 }

@@ -28,6 +28,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ADS } from '../datastore/constants';
 import { formatPaxDate } from './utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { PAX_GLOBAL_CONFIG } from './constants';
 
 const restFetchWpPages = async () => {
 	try {
@@ -51,18 +52,23 @@ const restFetchWpPages = async () => {
  * @since 1.126.0
  * @since 1.128.0 Added options parameter.
  *
- * @param {Object}   registry                  Registry object to dispatch to.
- * @param {Object}   options                   Optional. Additional options.
- * @param {Function} options.onCampaignCreated Callback function that will be called when campaign is created.
- * @param {Object}   options._global           The global window object.
+ * @param {Object}   registry                           Registry object to dispatch to.
+ * @param {Object}   options                            Optional. Additional options.
+ * @param {Function} options.onCampaignCreated          Callback function that will be called when campaign is created.
+ * @param {Function} options.onFinishAndCloseSignUpFlow Callback function that will be called by the `userActionService.finishAndCloseSignUpFlow` if provided.
+ * @param {Object}   options._global                    The global window object.
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry, options = {} ) {
-	const { onCampaignCreated = null, _global = global } = options;
+	const {
+		onCampaignCreated = null,
+		onFinishAndCloseSignUpFlow = null,
+		_global = global,
+	} = options;
 
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
 	const accessToken =
-		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+		_global?.[ PAX_GLOBAL_CONFIG ]?.authAccess?.oauthTokenAccess?.token;
 
 	const services = {
 		authenticationService: {
@@ -98,6 +104,14 @@ export function createPaxServices( registry, options = {} ) {
 			// eslint-disable-next-line require-await
 			fixBusinessInfo: async () => {
 				return { retryReady: true };
+			},
+		},
+		campaignService: {
+			notifyNewCampaignCreated: async () => {
+				if ( onCampaignCreated ) {
+					await onCampaignCreated();
+				}
+				return {};
 			},
 		},
 		conversionTrackingService: {
@@ -162,13 +176,15 @@ export function createPaxServices( registry, options = {} ) {
 				};
 			},
 		},
+		userActionService: {
+			finishAndCloseSignUpFlow: async () => {
+				if ( onFinishAndCloseSignUpFlow ) {
+					await onFinishAndCloseSignUpFlow();
+				}
+				return {};
+			},
+		},
 	};
-
-	if ( onCampaignCreated ) {
-		services.campaignService = {
-			notifyNewCampaignCreated: onCampaignCreated,
-		};
-	}
 
 	return services;
 }
