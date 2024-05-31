@@ -44,22 +44,20 @@ import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import {
-	ADWORDS_SCOPE,
-	MODULES_ADS,
-	PAX_SETUP_STEP,
-	PAX_SETUP_SUCCESS_NOTIFICATION,
-} from '../../datastore/constants';
+import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import {
+	PAX_PARAM_SETUP_STEP,
+	PAX_SETUP_STEP,
+	PAX_SETUP_SUCCESS_NOTIFICATION,
+} from '../../pax/constants';
 const { useSelect, useDispatch, useRegistry } = Data;
-
-const PARAM_SHOW_PAX = 'pax';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
-		useQueryArg( PARAM_SHOW_PAX );
+		useQueryArg( PAX_PARAM_SETUP_STEP );
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
@@ -73,7 +71,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 	const oAuthURL = useSelect( ( select ) => {
 		const redirectURL = addQueryArgs( global.location.href, {
-			[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
+			[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
 		} );
 		return select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ ADWORDS_SCOPE ],
