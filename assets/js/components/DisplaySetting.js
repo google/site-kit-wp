@@ -18,8 +18,10 @@
 
 import PropTypes from 'prop-types';
 
+export const BLANK_SPACE = '\u00A0';
+
 function DisplaySetting( { value } ) {
-	return value || '\u00A0';
+	return value || BLANK_SPACE;
 }
 
 DisplaySetting.propTypes = {
