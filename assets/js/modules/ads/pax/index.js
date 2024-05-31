@@ -1,6 +1,4 @@
 /**
- * `modules/ads` data store constants.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +14,6 @@
  * limitations under the License.
  */
 
-export const MODULES_ADS = 'modules/ads';
-
-export const ADWORDS_SCOPE = 'https://www.googleapis.com/auth/adwords';
-
-// Date range offset days for Ads report requests.
-export const DATE_RANGE_OFFSET = 1;
-
-export const ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY =
-	'ads_module_setup_banner_prompt_dismissed_key';
+export * from './config';
+export * from './services';
+export * from './utils';
