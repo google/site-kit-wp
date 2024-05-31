@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -54,26 +54,24 @@ export default function Footer( { isOpen, closePanel } ) {
 	);
 
 	const selectedItemsCount = selectedItems?.length || 0;
-	let metricsLimitError;
+	let itemLimitError;
 
 	if ( selectedItemsCount < MIN_SELECTED_AUDIENCES_COUNT ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Minimum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select at least %1$d metrics (%2$d selected)',
+		itemLimitError = sprintf(
+			/* translators: 1: Minimum number of groups that can be selected. 2: Number of selected groups. */
+			_n(
+				'Select at least %1$d group (%2$d selected)',
+				'Select at least %1$d groups (%2$d selected)',
+				MIN_SELECTED_AUDIENCES_COUNT,
 				'google-site-kit'
 			),
 			MIN_SELECTED_AUDIENCES_COUNT,
 			selectedItemsCount
 		);
 	} else if ( selectedItemsCount > MAX_SELECTED_AUDIENCES_COUNT ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select up to %1$d metrics (%2$d selected)',
-				'google-site-kit'
-			),
-
+		itemLimitError = sprintf(
+			/* translators: 1: Maximum number of groups that can be selected. 2: Number of selected groups. */
+			__( 'Select up to %1$d groups (%2$d selected)', 'google-site-kit' ),
 			MAX_SELECTED_AUDIENCES_COUNT,
 			selectedItemsCount
 		);
@@ -85,7 +83,7 @@ export default function Footer( { isOpen, closePanel } ) {
 			selectedItemSlugs={ selectedItems }
 			saveSettings={ () => {} }
 			saveError={ null }
-			itemLimitError={ metricsLimitError }
+			itemLimitError={ itemLimitError }
 			minSelectedItemCount={ MIN_SELECTED_AUDIENCES_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_AUDIENCES_COUNT }
 			isBusy={ false }
