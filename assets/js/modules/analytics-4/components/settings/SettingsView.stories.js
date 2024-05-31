@@ -37,7 +37,7 @@ const measurementID =
 	// eslint-disable-next-line sitekit/acronym-case
 	webDataStreamsBatch[ propertyID ][ 0 ].webStreamData.measurementId;
 
-function Template( {} ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
@@ -58,10 +58,28 @@ function Template( {} ) {
 export const Default = Template.bind( null );
 Default.storyName = 'SettingsView';
 
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'SettingsView ICE Enabled';
+IceEnabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceEnabled.args = {
+	enhancedConversionTracking: true,
+};
+
+export const IceDisabled = Template.bind( null );
+IceDisabled.storyName = 'SettingsView ICE Disabled';
+IceDisabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceDisabled.args = {
+	enhancedConversionTracking: false,
+};
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -87,6 +105,14 @@ export default {
 						webDataStreamID,
 						true
 					);
+
+				if ( args.hasOwnProperty( 'enhancedConversionTracking' ) ) {
+					registry
+						.dispatch( CORE_SITE )
+						.setConversionTrackingEnabled(
+							args.enhancedConversionTracking
+						);
+				}
 			};
 
 			return (
@@ -97,107 +123,3 @@ export default {
 		},
 	],
 };
-
-export const IceEnabled = Template.bind( null );
-IceEnabled.title = 'Modules/Analytics4/Settings/SettingsView/IceEnabled';
-IceEnabled.storyName = 'SettingsView ICE Enabled';
-IceEnabled.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsView/ICE/Enabled',
-};
-IceEnabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
-IceEnabled.decorators = [
-	( Story, { parameters } ) => {
-		const setupRegistry = ( registry ) => {
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				accountID,
-				propertyID,
-				webDataStreamID,
-				measurementID,
-				useSnippet: true,
-				...googleTagSettings,
-			} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setEnhancedMeasurementStreamEnabled(
-					propertyID,
-					webDataStreamID,
-					true
-				);
-
-			registry.dispatch( CORE_SITE ).setConversionTrackingEnabled( true );
-		};
-
-		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
-export const IceDisabled = Template.bind( null );
-IceDisabled.title = 'Modules/Analytics4/Settings/SettingsView/IceDisabled';
-IceDisabled.storyName = 'SettingsView ICE Disabled';
-IceDisabled.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsView/ICE/Disabled',
-};
-IceDisabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
-IceDisabled.decorators = [
-	( Story, { parameters } ) => {
-		const setupRegistry = ( registry ) => {
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				accountID,
-				propertyID,
-				webDataStreamID,
-				measurementID,
-				useSnippet: true,
-				...googleTagSettings,
-			} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setEnhancedMeasurementStreamEnabled(
-					propertyID,
-					webDataStreamID,
-					true
-				);
-
-			registry
-				.dispatch( CORE_SITE )
-				.setConversionTrackingEnabled( false );
-		};
-
-		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
