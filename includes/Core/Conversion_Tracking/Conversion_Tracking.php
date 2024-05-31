@@ -92,15 +92,11 @@ class Conversion_Tracking {
 		$this->conversion_tracking_settings->register();
 		$this->rest_conversion_tracking_controller->register();
 
-		if ( ! $this->conversion_tracking_settings->is_conversion_tracking_enabled() ) {
-			return;
-		}
-
 		add_action(
 			'wp_enqueue_scripts',
 			function() {
 				// Do nothing if neither Ads nor Analytics snippet has been inserted.
-				if ( ! did_action( 'googlesitekit_ads_init_tag' ) && ! did_action( 'googlesitekit_analytics-4_init_tag' ) ) {
+				if ( ! $this->conversion_tracking_settings->is_conversion_tracking_enabled() || ( ! did_action( 'googlesitekit_ads_init_tag' ) && ! did_action( 'googlesitekit_analytics-4_init_tag' ) ) ) {
 					return;
 				}
 
