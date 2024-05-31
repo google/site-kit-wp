@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import AdBlockerWarningMessage from './AdBlockerWarningMessage';
 const { useSelect } = Data;
 
-export default function AdBlockerWarning( { moduleSlug, className = '' } ) {
+export default function AdBlockerWarning( { moduleSlug, className } ) {
 	const storeName = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
 	);

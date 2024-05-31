@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -29,7 +34,9 @@ import Data from 'googlesitekit-data';
 import { MODULES_ADS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
 const { useSelect } = Data;
@@ -67,34 +74,32 @@ export default function SettingsView() {
 		return select( CORE_SITE ).isConversionTrackingEnabled();
 	} );
 
-	let adBlockerWarningClassName = '';
-
-	if ( iceEnabled && isAdBlockerActive ) {
-		adBlockerWarningClassName = 'googlesitekit-settings-module__meta-item';
-	}
-
 	return (
 		<Fragment>
-			<AdBlockerWarning
-				moduleSlug="ads"
-				className={ adBlockerWarningClassName }
-			/>
+			<div
+				className={ classnames( {
+					'googlesitekit-settings-module__meta-item':
+						iceEnabled && isAdBlockerActive,
+				} ) }
+			>
+				<AdBlockerWarning moduleSlug="ads" />
+			</div>
+
 			{ iceEnabled && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __(
-							'Enhanced conversion tracking',
+							'Enhanced Conversion Tracking',
 							'google-site-kit'
 						) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting
-							value={
-								isConversionTrackingEnabled
-									? __( 'Enabled', 'google-site-kit' )
-									: __( 'Disabled', 'google-site-kit' )
-							}
-						/>
+						{ isConversionTrackingEnabled &&
+							__( 'Enabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === false &&
+							__( 'Disabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === undefined &&
+							BLANK_SPACE }
 					</p>
 				</div>
 			) }
