@@ -28,6 +28,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ADS } from '../datastore/constants';
 import { formatPaxDate } from './utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { PAX_GLOBAL_CONFIG } from './constants';
 
 const restFetchWpPages = async () => {
 	try {
@@ -67,7 +68,7 @@ export function createPaxServices( registry, options = {} ) {
 
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
 	const accessToken =
-		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+		_global?.[ PAX_GLOBAL_CONFIG ]?.authAccess?.oauthTokenAccess?.token;
 
 	const services = {
 		authenticationService: {
