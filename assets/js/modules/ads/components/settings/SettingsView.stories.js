@@ -48,7 +48,6 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Modules/Ads/Settings/SettingsView',
-	delay: 250,
 };
 
 export default {
@@ -82,7 +81,6 @@ export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {
 	label: 'Modules/Ads/Settings/SettingsView/PAX',
-	delay: 250,
 };
 PaxConnected.parameters = {
 	features: [ 'adsPax' ],
@@ -114,7 +112,6 @@ export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE enabled';
 IceEnabled.scenario = {
 	label: 'Modules/Ads/Settings/SettingsView/ICE/Enabled',
-	delay: 250,
 };
 IceEnabled.parameters = {
 	features: [ 'conversionInfra' ],
@@ -141,7 +138,6 @@ export const IceDisabled = Template.bind( null );
 IceDisabled.storyName = 'With ICE disabled';
 IceDisabled.scenario = {
 	label: 'Modules/Ads/Settings/SettingsView/ICE/Disabled',
-	delay: 250,
 };
 IceDisabled.parameters = {
 	features: [ 'conversionInfra' ],

@@ -103,7 +103,6 @@ IceEnabled.title = 'Modules/Analytics4/Settings/SettingsView/IceEnabled';
 IceEnabled.storyName = 'SettingsView ICE Enabled';
 IceEnabled.scenario = {
 	label: 'Modules/Analytics4/Settings/SettingsView/ICE/Enabled',
-	delay: 250,
 };
 IceEnabled.parameters = {
 	features: [ 'conversionInfra' ],
@@ -155,7 +154,6 @@ IceDisabled.title = 'Modules/Analytics4/Settings/SettingsView/IceDisabled';
 IceDisabled.storyName = 'SettingsView ICE Disabled';
 IceDisabled.scenario = {
 	label: 'Modules/Analytics4/Settings/SettingsView/ICE/Disabled',
-	delay: 250,
 };
 IceDisabled.parameters = {
 	features: [ 'conversionInfra' ],
