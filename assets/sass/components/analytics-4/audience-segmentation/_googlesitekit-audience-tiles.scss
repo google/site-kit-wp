@@ -115,4 +115,13 @@
 		margin: 14px 0;
 		padding: 4px 0;
 	}
+
+	.googlesitekit-audience-widget-change-groups-cta {
+		align-items: center;
+		display: flex;
+		font-family: $f-secondary;
+		font-weight: $fw-medium;
+		padding-left: 6px; // Tweak the padding to ensure the link is aligned in its focus state.
+		white-space: nowrap;
+	}
 }
