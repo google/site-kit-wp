@@ -1,7 +1,5 @@
 /**
- * DisplaySetting component.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +14,6 @@
  * limitations under the License.
  */
 
-import PropTypes from 'prop-types';
-
-export const BLANK_SPACE = '\u00A0';
-
-function DisplaySetting( { value } ) {
-	return value || BLANK_SPACE;
-}
-
-DisplaySetting.propTypes = {
-	value: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.bool,
-		PropTypes.number,
-	] ),
-};
-
-export default DisplaySetting;
+export * from './config';
+export * from './services';
+export * from './utils';

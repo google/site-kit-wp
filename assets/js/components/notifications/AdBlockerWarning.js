@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import AdBlockerWarningMessage from './AdBlockerWarningMessage';
 const { useSelect } = Data;
 
-export default function AdBlockerWarning( { moduleSlug } ) {
+export default function AdBlockerWarning( { moduleSlug, className } ) {
 	const storeName = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
 	);
@@ -45,6 +45,7 @@ export default function AdBlockerWarning( { moduleSlug } ) {
 
 	return (
 		<AdBlockerWarningMessage
+			className={ className }
 			getHelpLink={ getHelpLink }
 			warningMessage={ adBlockerWarningMessage }
 		/>
@@ -52,5 +53,6 @@ export default function AdBlockerWarning( { moduleSlug } ) {
 }
 
 AdBlockerWarning.propTypes = {
+	className: PropTypes.string,
 	moduleSlug: PropTypes.string.isRequired,
 };
