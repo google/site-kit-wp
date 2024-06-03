@@ -203,8 +203,7 @@ class Migration_Conversion_IDTest extends TestCase {
 			$options['adsConversionID'] = $adsConversionID;
 		}
 
-		$this->options->set(
-			Migration_Conversion_ID::ANALYTICS_OPTIONS,
+		$this->analytics_settings->set(
 			$options
 		);
 	}
@@ -219,8 +218,7 @@ class Migration_Conversion_IDTest extends TestCase {
 			$options['conversionID'] = $conversionID;
 		}
 
-		$this->options->set(
-			Migration_Conversion_ID::ADS_OPTIONS,
+		$this->ads_settings->set(
 			$options
 		);
 	}
