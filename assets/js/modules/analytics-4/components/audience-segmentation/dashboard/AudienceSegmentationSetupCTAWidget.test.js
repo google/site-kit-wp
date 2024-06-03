@@ -34,12 +34,12 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './AudienceSegmentationSetupCTAWidget';
-import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
 
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;
@@ -137,7 +137,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveSaveAudienceSettings( settings, settings );
+				.receiveGetAudienceSettings( settings );
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
@@ -168,14 +168,14 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( false );
 
-			// Set the data available on page load to true.
+			// Set the data available on page load to false.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsDataAvailableOnLoad( false );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveSaveAudienceSettings( settings, settings );
+				.receiveGetAudienceSettings( settings );
 
 			const { queryByText, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
@@ -211,7 +211,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveSaveAudienceSettings( settings, settings );
+				.receiveGetAudienceSettings( settings );
 
 			const { queryByText, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
