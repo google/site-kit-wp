@@ -1,7 +1,5 @@
 /**
- * DisplaySetting component.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +14,13 @@
  * limitations under the License.
  */
 
-import PropTypes from 'prop-types';
+export const PAX_PARAM_SETUP_STEP = 'pax';
 
-export const BLANK_SPACE = '\u00A0';
+export const PAX_GLOBAL_CONFIG = '_googlesitekitPAXConfig';
 
-function DisplaySetting( { value } ) {
-	return value || BLANK_SPACE;
-}
-
-DisplaySetting.propTypes = {
-	value: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.bool,
-		PropTypes.number,
-	] ),
+export const PAX_SETUP_STEP = {
+	LAUNCH: 1,
+	FINISHED: 2,
 };
 
-export default DisplaySetting;
+export const PAX_SETUP_SUCCESS_NOTIFICATION = 'pax_setup_success_notification';

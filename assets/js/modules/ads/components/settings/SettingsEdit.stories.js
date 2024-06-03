@@ -121,3 +121,66 @@ PaxConnected.decorators = [
 		);
 	},
 ];
+
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'With ICE Enabled';
+IceEnabled.scenario = {
+	label: 'Modules/Ads/Settings/SettingsEdit/ICE',
+	delay: 250,
+};
+IceEnabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceEnabled.decorators = [
+	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			// Unset the value set in the previous scenario.
+			registry.dispatch( MODULES_ADS ).setConversionID( null );
+
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: 'AW-54321',
+				paxConversionID: '',
+				extCustomerID: '',
+			} );
+		};
+
+		return (
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const IcePaxEnabled = Template.bind( null );
+IcePaxEnabled.storyName = 'With ICE & PAX Enabled';
+IcePaxEnabled.scenario = {
+	label: 'Modules/Ads/Settings/SettingsEdit/ICE_PAX',
+	delay: 250,
+};
+IcePaxEnabled.parameters = {
+	features: [ 'conversionInfra', 'adsPax' ],
+};
+IcePaxEnabled.decorators = [
+	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: '',
+				paxConversionID: 'AW-54321',
+				extCustomerID: 'C-23482345986',
+			} );
+		};
+
+		return (
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];

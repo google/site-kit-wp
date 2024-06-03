@@ -123,7 +123,7 @@ final class Authorize_Application {
 	 */
 	private function render_custom_footer() {
 		if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
-			echo '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>';
+			echo '<div class="googlesitekit-authorize-application__footer"><p>' . esc_html__( 'Powered by Site Kit', 'google-site-kit' ) . '</p></div>';
 		}
 	}
 }

@@ -517,6 +517,26 @@ final class Analytics_4 extends Module
 			);
 		}
 
+		// Check if the audienceSegmentation feature is enabled.
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+			// Return the SITE_KIT_AUDIENCE audiences.
+			$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
+
+			$debug_fields['analytics_4_site_kit_audiences'] = array(
+				'label' => __( 'Analytics site created audiences', 'google-site-kit' ),
+				'value' => empty( $site_kit_audiences )
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$site_kit_audiences
+					),
+				'debug' => empty( $site_kit_audiences )
+					? 'none'
+					: join( ', ', $site_kit_audiences ),
+			);
+		}
+
 		return $debug_fields;
 	}
 
@@ -2389,5 +2409,29 @@ final class Analytics_4 extends Module
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns the Site Kit-created audience display names from the passed list of audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $audiences List of audiences.
+	 *
+	 * @return array List of Site Kit-created audience display names.
+	 */
+	private function get_site_kit_audiences( $audiences ) {
+		// Ensure that audiences are available, otherwise return an empty array.
+		if ( empty( $audiences ) || ! is_array( $audiences ) ) {
+			return array();
+		}
+
+		$site_kit_audiences = array_filter( $audiences, fn( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
+
+		if ( empty( $site_kit_audiences ) ) {
+			return array();
+		}
+
+		return wp_list_pluck( $site_kit_audiences, 'displayName' );
 	}
 }

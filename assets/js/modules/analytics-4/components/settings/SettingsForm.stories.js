@@ -178,6 +178,76 @@ WithExistingTagNoMatch.decorators = [
 	},
 ];
 
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'With ICE Enabled';
+IceEnabled.scenario = {
+	label: 'Modules/Analytics4/Settings/SettingsEdit/ICE',
+	delay: 250,
+};
+IceEnabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceEnabled.decorators = [
+	( Story, { parameters } ) => {
+		const setupRegistry = ( registry ) => {
+			global._googlesitekitDashboardSharingData = {
+				settings: {},
+				roles: [],
+			};
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+					owner: { login: 'analytics_4-owner-username' },
+				},
+			] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( accountSummaries );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				accountID,
+				propertyID,
+				webDataStreamID,
+				measurementID,
+				useSnippet: true,
+				anonymizeIP: true,
+				trackingDisabled: [ 'loggedinUsers' ],
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreams( webDataStreams, {
+					propertyID,
+				} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...defaultEnhancedMeasurementSettings,
+					},
+					{
+						propertyID,
+						webDataStreamID,
+					}
+				);
+		};
+
+		return (
+			<WithRegistrySetup
+				func={ setupRegistry }
+				features={ parameters.features || [] }
+			>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [
