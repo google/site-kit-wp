@@ -34,19 +34,19 @@
 		border: none;
 		margin: 37px 0 0;
 		padding: 0;
+
+		p {
+			font-size: $fs-authorize-application-label-lg;
+			font-weight: $fw-medium;
+			line-height: $lh-authorize-application-label-lg;
+			margin: 19px 0 20px;
+		}
 	}
 
 	.title {
 		font-size: $fs-authorize-application-title-lg;
 		font-weight: $fw-medium;
 		line-height: $lh-authorize-application-title-lg;
-	}
-
-	p {
-		font-size: $fs-authorize-application-label-lg;
-		font-weight: $fw-medium;
-		line-height: $lh-authorize-application-label-lg;
-		margin: 19px 0 20px;
 	}
 
 	strong {
@@ -116,6 +116,8 @@
 				font-family: $f-primary;
 				font-size: $fs-authorize-application-footer-lg;
 				font-weight: $fw-medium;
+				line-height: $lh-authorize-application-label-lg;
+				margin: 19px 0 20px;
 			}
 		}
 
@@ -143,6 +145,13 @@
 
 	@media (min-width: $bp-wpAdminBarTablet) {
 		padding: 0 47px;
+	}
+}
+
+#wpbody-content,
+#wpfooter {
+	a {
+		color: $c-authorize-application-vivid-blue;
 	}
 }
 
@@ -187,8 +196,4 @@
 #footer-thankyou {
 	font-size: $fs-authorize-application-label-md;
 	line-height: $lh-authorize-application-label-md;
-
-	a {
-		color: $c-authorize-application-vivid-blue;
-	}
 }

@@ -10,12 +10,9 @@
 
 namespace Google\Site_Kit\Modules;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
-use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Assets\Script_Data;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -31,8 +28,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
-use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
@@ -122,17 +118,9 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 							return array();
 						}
 
-						return array(
-							'authAccess'      => array(
-								'oauthTokenAccess' => array(
-									'token' => (string) $this->authentication->get_oauth_client()->get_access_token(),
-								),
-							),
-							'locale'          => substr( $this->context->get_locale( 'user' ), 0, 2 ),
-							'debuggingConfig' => array(
-								'env' => 'PROD',
-							),
-						);
+						$config = new PAX_Config( $this->context, $this->authentication->token() );
+
+						return $config->get();
 					},
 				)
 			);
@@ -151,7 +139,8 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
 					array(
-						'src'          => 'https://www.gstatic.com/pax/latest/pax_integrator.js',
+						// When updating, mirror the fixed version for google-pax-sdk in package.json.
+						'src'          => 'https://www.gstatic.com/pax/1.0.8/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',

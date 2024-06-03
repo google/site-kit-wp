@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { useCallbackOne } from 'use-memo-one';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -42,23 +41,23 @@ import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
 import SupportLink from '../../../../components/SupportLink';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import {
-	ADWORDS_SCOPE,
-	MODULES_ADS,
-	PAX_SETUP_STEP,
-} from '../../datastore/constants';
+import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
-const { useSelect, useDispatch } = Data;
-
-const PARAM_SHOW_PAX = 'pax';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import {
+	PAX_PARAM_SETUP_STEP,
+	PAX_SETUP_STEP,
+	PAX_SETUP_SUCCESS_NOTIFICATION,
+} from '../../pax/constants';
+const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
-		useQueryArg( PARAM_SHOW_PAX );
+		useQueryArg( PAX_PARAM_SETUP_STEP );
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
@@ -69,22 +68,17 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const hasAdwordsScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( ADWORDS_SCOPE )
 	);
-	const hasPaxSettings = useSelect( ( select ) => {
-		const { getPaxConversionID, getExtCustomerID } = select( MODULES_ADS );
 
-		return getPaxConversionID() && getExtCustomerID();
-	} );
-
-	const redirectURL = addQueryArgs( global.location.href, {
-		[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
-	} );
-
-	const oAuthURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectURL( {
+	const oAuthURL = useSelect( ( select ) => {
+		const redirectURL = addQueryArgs( global.location.href, {
+			[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
+		} );
+		return select( CORE_USER ).getConnectURL( {
 			additionalScopes: [ ADWORDS_SCOPE ],
 			redirectURL,
-		} )
-	);
+		} );
+	} );
+
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		if ( ! oAuthURL ) {
 			return false;
@@ -96,15 +90,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
-
-	useMount( () => {
-		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
-			// If the PAX query param indicates the setup is finished on page load,
-			// set the step back to the PAX launch, as values are only temporarly
-			// saved in state after PAX campaign setup signal is received.
-			setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
-		}
-	} );
 
 	// Callback to be executed when a campaign is created in PAX.
 	//
@@ -134,18 +119,25 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		setExtCustomerID( customerData.externalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
-		setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
 		/* eslint-enable sitekit/acronym-case */
+
+		// Here we save settings right away but leave final navigation to `onSetupComplete`.
+		await submitChanges();
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
-	const onCompleteSetup = useCallback( async () => {
-		const { error } = await submitChanges();
-
-		if ( error ) {
-			return;
-		}
-		finishSetup();
-	}, [ submitChanges, finishSetup ] );
+	const registry = useRegistry();
+	const onCompleteSetup = useCallbackOne( async () => {
+		// Encapsulate dependencies to avoid function changing after launch.
+		const { select, __experimentalResolveSelect: resolveSelect } = registry;
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+		const redirectURL = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			{
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			}
+		);
+		finishSetup( redirectURL );
+	}, [ registry, finishSetup ] );
 
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
@@ -156,103 +148,92 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
+	const onLaunch = useCallback( ( app ) => {
+		paxAppRef.current = app;
+	}, [] );
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
 			<div className="googlesitekit-setup-module__step">
 				<div className="googlesitekit-setup-module__logo">
-					<AdsIcon width="33" height="33" />
+					<AdsIcon width="40" height="40" />
 				</div>
 
 				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
 				</h2>
 			</div>
-			<AdBlockerWarning />
+			<div className="googlesitekit-setup-module__step">
+				<AdBlockerWarning moduleSlug="ads" />
 
-			{ ! isAdBlockerActive &&
-				PAX_SETUP_STEP.FINISHED === showPaxAppStep && (
-					<div className="googlesitekit-setup-module__action">
-						<SpinnerButton
-							isSaving={ isNavigatingToOAuthURL }
-							disabled={
-								isNavigatingToOAuthURL ||
-								! paxAppRef?.current ||
-								! hasPaxSettings
-							}
-							onClick={ onCompleteSetup }
-						>
-							{ __( 'Complete setup', 'google-site-kit' ) }
-						</SpinnerButton>
-					</div>
-				) }
-			{ ! isAdBlockerActive &&
-				PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
-				hasAdwordsScope && (
-					<Fragment>
+				{ ! isAdBlockerActive &&
+					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
+					hasAdwordsScope && (
 						<PAXEmbeddedApp
 							displayMode="setup"
-							onLaunch={ ( app ) => {
-								paxAppRef.current = app;
-							} }
+							onLaunch={ onLaunch }
 							onCampaignCreated={ onCampaignCreated }
+							onFinishAndCloseSignUpFlow={ onCompleteSetup }
 						/>
-					</Fragment>
-				) }
+					) }
 
-			{ ! isAdBlockerActive &&
-				( ! showPaxAppStep || ! hasAdwordsScope ) && (
-					<Fragment>
-						<div className="googlesitekit-setup-module__description">
-							{ createInterpolateElement(
-								__(
-									'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<SupportLink
-											path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
-											external
-										/>
+				{ ! isAdBlockerActive &&
+					( ! showPaxAppStep || ! hasAdwordsScope ) && (
+						<Fragment>
+							<p>
+								{ createInterpolateElement(
+									__(
+										'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
+										'google-site-kit'
 									),
-								}
-							) }
-							<br />
-							{ __(
-								'You can always change this later in Site Kit Settings.',
-								'google-site-kit'
-							) }
-						</div>
+									{
+										a: (
+											<SupportLink
+												path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+												external
+											/>
+										),
+									}
+								) }
+								<br />
+								{ __(
+									'You can always change this later in Site Kit Settings.',
+									'google-site-kit'
+								) }
+							</p>
 
-						<SetupForm
-							finishSetup={ finishSetup }
-							isNavigatingToOAuthURL={ isNavigatingToOAuthURL }
-							createAccountCTA={
-								<Fragment>
-									<SpinnerButton
-										onClick={ createAccount }
-										disabled={ isNavigatingToOAuthURL }
-										isSaving={ isNavigatingToOAuthURL }
-										inverse
-									>
-										{ __(
-											'Create an account',
-											'google-site-kit'
-										) }
-									</SpinnerButton>
-									{ ! hasAdwordsScope && (
-										<p className="googlesitekit-setup-module__permission-notice">
+							<SetupForm
+								finishSetup={ finishSetup }
+								isNavigatingToOAuthURL={
+									isNavigatingToOAuthURL
+								}
+								createAccountCTA={
+									<Fragment>
+										<SpinnerButton
+											onClick={ createAccount }
+											disabled={ isNavigatingToOAuthURL }
+											isSaving={ isNavigatingToOAuthURL }
+											inverse
+										>
 											{ __(
-												'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
+												'Create an account',
 												'google-site-kit'
 											) }
-										</p>
-									) }
-								</Fragment>
-							}
-						/>
-					</Fragment>
-				) }
+										</SpinnerButton>
+										{ ! hasAdwordsScope && (
+											<p className="googlesitekit-setup-module__permission-notice">
+												{ __(
+													'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
+													'google-site-kit'
+												) }
+											</p>
+										) }
+									</Fragment>
+								}
+							/>
+						</Fragment>
+					) }
+			</div>
 		</div>
 	);
 }

@@ -33,13 +33,19 @@ import {
 import OptionalSettingsView from './OptionalSettingsView';
 import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
+import { useFeature } from '../../../../hooks/useFeature';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SettingsView() {
+	const iceEnabled = useFeature( 'conversionInfra' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -63,6 +69,14 @@ export default function SettingsView() {
 	const editDataStreamSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
 	);
+
+	const isConversionTrackingEnabled = useSelect( ( select ) => {
+		if ( ! iceEnabled ) {
+			return false;
+		}
+
+		return select( CORE_SITE ).isConversionTrackingEnabled();
+	} );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
@@ -167,7 +181,7 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-						{ ! useSnippet && (
+						{ useSnippet === false && (
 							<span>
 								{ __(
 									'Snippet is not inserted',
@@ -175,11 +189,31 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
+						{ useSnippet === undefined && BLANK_SPACE }
 					</p>
 				</div>
 			</div>
 
 			<SettingsEnhancedMeasurementView />
+
+			{ iceEnabled && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __(
+							'Enhanced Conversion Tracking',
+							'google-site-kit'
+						) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ isConversionTrackingEnabled &&
+							__( 'Enabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === false &&
+							__( 'Disabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === undefined &&
+							BLANK_SPACE }
+					</p>
+				</div>
+			) }
 
 			<OptionalSettingsView />
 		</div>
