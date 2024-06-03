@@ -26,7 +26,7 @@ import { withQuery } from '@storybook/addon-queryparams';
  */
 import PAXSetupSuccessSubtleNotification from './PAXSetupSuccessSubtleNotification';
 import { WithTestRegistry } from '../../../../../../tests/js/utils';
-import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../datastore/constants';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
 
 function Template( { ...args } ) {
 	return <PAXSetupSuccessSubtleNotification { ...args } />;

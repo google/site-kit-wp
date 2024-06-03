@@ -28,9 +28,9 @@ import CheckFill from '../../../../../svg/icons/check-fill.svg';
 import { Button } from 'googlesitekit-components';
 import { Grid, Cell, Row } from '../../../../material-components';
 import { getContextScrollTop } from '../../../../util/scroll';
-import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
 
 export default function PAXSetupSuccessSubtleNotification() {
 	const breakpoint = useBreakpoint();
