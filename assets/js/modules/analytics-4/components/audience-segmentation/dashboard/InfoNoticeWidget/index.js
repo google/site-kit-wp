@@ -39,6 +39,8 @@ import { WEEK_IN_SECONDS } from '../../../../../../util';
 const { useSelect, useDispatch } = Data;
 
 function InfoNoticeWidget( { Widget } ) {
+	const noticesCount = AUDIENCE_INFO_NOTICES.length;
+
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isPromptDismissed( AUDIENCE_INFO_NOTICE_SLUG )
 	);
@@ -51,7 +53,6 @@ function InfoNoticeWidget( { Widget } ) {
 
 	const onDismiss = async () => {
 		const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
-		const noticesCount = AUDIENCE_INFO_NOTICES.length;
 		const expiry = dismissCount + 1 < noticesCount ? twoWeeksInSeconds : 0;
 
 		await dismissPrompt( AUDIENCE_INFO_NOTICE_SLUG, {
@@ -60,7 +61,11 @@ function InfoNoticeWidget( { Widget } ) {
 	};
 
 	// Return null if permanently dismissed.
-	if ( isDismissed || dismissCount === undefined ) {
+	if (
+		isDismissed ||
+		dismissCount === undefined ||
+		dismissCount >= noticesCount
+	) {
 		return null;
 	}
 
