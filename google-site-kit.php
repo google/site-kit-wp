@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define most essential constants.
-define( 'GOOGLESITEKIT_VERSION', '1.127.0' );
+define( 'GOOGLESITEKIT_VERSION', '1.128.0' );
 define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
 define( 'GOOGLESITEKIT_PHP_MINIMUM', '7.4.0' );
 define( 'GOOGLESITEKIT_WP_MINIMUM', '5.2.0' );
