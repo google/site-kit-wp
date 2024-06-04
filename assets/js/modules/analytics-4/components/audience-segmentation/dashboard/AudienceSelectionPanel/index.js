@@ -52,20 +52,13 @@ export default function AudienceSelectionPanel() {
 		const configuredAudiences = getConfiguredAudiences() || [];
 		const configurableAudiences = getConfigurableAudiences() || [];
 
-		if (
-			! configurableAudiences?.length ||
-			! configuredAudiences?.length
-		) {
+		if ( ! configurableAudiences.length || ! configuredAudiences.length ) {
 			return [];
 		}
 
-		return (
-			configurableAudiences
-				?.map( ( { name } ) => name )
-				?.filter( ( audienceName ) =>
-					configuredAudiences?.includes( audienceName )
-				) || []
-		);
+		return configurableAudiences
+			.filter( ( { name } ) => configuredAudiences.includes( name ) )
+			.map( ( { name } ) => name );
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
