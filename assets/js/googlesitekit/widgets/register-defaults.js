@@ -44,6 +44,7 @@ import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import { AudienceAreaFooter } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { isFeatureEnabled } from '../../features';
+import ConnectAnalyticsCTATileWidget from '../../modules/analytics-4/components/audience-segmentation/dashboard/ConnectAnalyticsCTATileWidget';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -155,6 +156,26 @@ export function registerDefaults( widgetsAPI ) {
 				Footer: AudienceAreaFooter,
 			},
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+
+		widgetsAPI.registerWidget(
+			'audienceConnectAnalyticsCTA',
+			{
+				Component: ConnectAnalyticsCTATileWidget,
+				width: widgetsAPI.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'analytics-4' ],
+				isActive: ( select ) => {
+					const isAnalyticsConnected =
+						select( CORE_MODULES ).isModuleConnected(
+							'analytics-4'
+						);
+
+					return ! isAnalyticsConnected;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
 		);
 	}
 
