@@ -1,48 +1,48 @@
 name: Compressed Size
 
 on:
-  pull_request:
-    branches:
-      - develop
-      - main
-      - 'feature/**'
-    types:
-      - opened
-      - reopened
-      - synchronize
-    paths:
-      - '.github/workflows/compressed-size.yml'
-      - 'assets/js/**.js'
-      - '!assets/js/**.test.js'
-      - '!assets/js/**/test/**'
-      - 'assets/sass/**/*.scss'
-      - 'assets/svg/**/*.svg'
-      - './*.config.js'
-      - './package-lock.json'
+    pull_request:
+        branches:
+            - develop
+            - main
+            - 'feature/**'
+        types:
+            - opened
+            - reopened
+            - synchronize
+        paths:
+            - '.github/workflows/compressed-size.yml'
+            - 'assets/js/**.js'
+            - '!assets/js/**.test.js'
+            - '!assets/js/**/test/**'
+            - 'assets/sass/**/*.scss'
+            - 'assets/svg/**/*.svg'
+            - './*.config.js'
+            - './package-lock.json'
 
 concurrency:
-  group: compressed-size-${{ github.ref }}
-  cancel-in-progress: true
+    group: compressed-size-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  build:
-    name: Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: github.event.pull_request.draft == false
-    steps:
-      - uses: actions/checkout@v3
+    build:
+        name: Check
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        if: github.event.pull_request.draft == false
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+            - name: Setup Node.js (.nvmrc)
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
 
-      - uses: preactjs/compressed-size-action@v2
-        with:
-          repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          pattern: './dist/assets/**/*.{css,js}'
-          # The sub-match below will be replaced by asterisks.
-          # The length of 20 corresponds to webpack's `output.hashDigestLength`.
-          strip-hash: "([a-f0-9]{20})(?:\\.min)?\\.(?:css|js)$"
+            - uses: preactjs/compressed-size-action@v2
+              with:
+                  repo-token: '${{ secrets.GITHUB_TOKEN }}'
+                  pattern: './dist/assets/**/*.{css,js}'
+                  # The sub-match below will be replaced by asterisks.
+                  # The length of 20 corresponds to webpack's `output.hashDigestLength`.
+                  strip-hash: "([a-f0-9]{20})(?:\\.min)?\\.(?:css|js)$"

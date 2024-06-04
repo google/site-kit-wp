@@ -1,248 +1,248 @@
 name: Plugin Zip Files
 
 on:
-  push:
-    branches:
-      - develop
-      - main
-      - 'feature/**'
-      - 'release/**'
-    paths:
-      - '.github/workflows/zips.yml'
-      - 'bin/release'
-      - 'assets/**'
-      - '!assets/**/__tests__/**/*.js'
-      - '!assets/**/test/*.js'
-      - '!assets/**/*.test.js'
-      - 'includes/**'
-      - 'google-site-kit.php'
-      - 'scoper.inc.php'
-      - 'uninstall.php'
-      - 'composer.json'
-      - 'composer.lock'
-      - 'php-scoper/composer.lock'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'postcss.config.js'
-      - 'webpack.config.js'
-      - 'feature-flags.json'
-    tags: ['**']
-  pull_request:
-    branches:
-      - develop
-      - main
-      - 'feature/**'
-    paths:
-      - '.github/workflows/zips.yml'
-      - 'bin/release'
-      - 'assets/**'
-      - '!assets/**/__tests__/**/*.js'
-      - '!assets/**/test/*.js'
-      - '!assets/**/*.test.js'
-      - 'includes/**'
-      - 'google-site-kit.php'
-      - 'scoper.inc.php'
-      - 'uninstall.php'
-      - 'composer.json'
-      - 'composer.lock'
-      - 'php-scoper/composer.lock'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'postcss.config.js'
-      - 'webpack.config.js'
-      - 'feature-flags.json'
-    types:
-      - opened
-      - closed
-      - reopened
-      - synchronize
-      - ready_for_review
-  workflow_dispatch:
-    inputs:
-      release_version:
-        type: string
-        description: Release version
-        required: false
-        default: ''
-      dry_run:
-        type: boolean
-        description: Run the publishing process without committing.
-        required: false
-        default: false
+    push:
+        branches:
+            - develop
+            - main
+            - 'feature/**'
+            - 'release/**'
+        paths:
+            - '.github/workflows/zips.yml'
+            - 'bin/release'
+            - 'assets/**'
+            - '!assets/**/__tests__/**/*.js'
+            - '!assets/**/test/*.js'
+            - '!assets/**/*.test.js'
+            - 'includes/**'
+            - 'google-site-kit.php'
+            - 'scoper.inc.php'
+            - 'uninstall.php'
+            - 'composer.json'
+            - 'composer.lock'
+            - 'php-scoper/composer.lock'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'postcss.config.js'
+            - 'webpack.config.js'
+            - 'feature-flags.json'
+        tags: ['**']
+    pull_request:
+        branches:
+            - develop
+            - main
+            - 'feature/**'
+        paths:
+            - '.github/workflows/zips.yml'
+            - 'bin/release'
+            - 'assets/**'
+            - '!assets/**/__tests__/**/*.js'
+            - '!assets/**/test/*.js'
+            - '!assets/**/*.test.js'
+            - 'includes/**'
+            - 'google-site-kit.php'
+            - 'scoper.inc.php'
+            - 'uninstall.php'
+            - 'composer.json'
+            - 'composer.lock'
+            - 'php-scoper/composer.lock'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'postcss.config.js'
+            - 'webpack.config.js'
+            - 'feature-flags.json'
+        types:
+            - opened
+            - closed
+            - reopened
+            - synchronize
+            - ready_for_review
+    workflow_dispatch:
+        inputs:
+            release_version:
+                type: string
+                description: Release version
+                required: false
+                default: ''
+            dry_run:
+                type: boolean
+                description: Run the publishing process without committing.
+                required: false
+                default: false
 
 concurrency:
-  group: zips-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: true
+    group: zips-${{ github.event_name }}-${{ github.ref }}
+    cancel-in-progress: true
 
 env:
-  GCS_BUCKET: site-kit-github-artifacts
-  GCS_ROOT_PATH: builds
+    GCS_BUCKET: site-kit-github-artifacts
+    GCS_ROOT_PATH: builds
 
 jobs:
-  build-zips:
-    name: Build Zips
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
-    steps:
-      - uses: actions/checkout@v3
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
-          tools: composer:2.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-      - name: Composer Install
-        run: composer install --no-interaction --no-progress --no-dev
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      - name: npm install
-        run: |
-          npm ci
-      - name: Create destination directory and update file permissions
-        run: |
-          mkdir -p ${{ github.ref }}
-          sudo chown -R $(id -u):$(id -g) .
-      - name: Build develop version
-        run: |
-          npm run dev-zip
-          mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
-      - name: Build release version
-        run: |
-          npm run release-zip
-          mv *.zip ${{ github.ref }}/google-site-kit.zip
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: zip-files
-          path: ${{ github.ref }}
+    build-zips:
+        name: Build Zips
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
+        steps:
+            - uses: actions/checkout@v4
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+                  tools: composer:2.1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            - uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
+            - name: Composer Install
+              run: composer install --no-interaction --no-progress --no-dev
+            - name: Setup Node.js (.nvmrc)
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
+            - name: npm install
+              run: |
+                  npm ci
+            - name: Create destination directory and update file permissions
+              run: |
+                  mkdir -p ${{ github.ref }}
+                  sudo chown -R $(id -u):$(id -g) .
+            - name: Build develop version
+              run: |
+                  npm run dev-zip
+                  mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
+            - name: Build release version
+              run: |
+                  npm run release-zip
+                  mv *.zip ${{ github.ref }}/google-site-kit.zip
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                  name: zip-files
+                  path: ${{ github.ref }}
 
-  upload-to-cloud-storage:
-    name: Upload to GCS
-    runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch'
-    needs: build-zips
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: zip-files
-          path: ${{ github.ref }}
-      - uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - name: Upload PR files
-        uses: google-github-actions/upload-cloud-storage@v1
-        with:
-          path: ${{ github.ref }}
-          destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
-          parent: false
-          process_gcloudignore: false
+    upload-to-cloud-storage:
+        name: Upload to GCS
+        runs-on: ubuntu-latest
+        if: github.event_name != 'workflow_dispatch'
+        needs: build-zips
+        steps:
+            - uses: actions/download-artifact@v3
+              with:
+                  name: zip-files
+                  path: ${{ github.ref }}
+            - uses: google-github-actions/auth@v2
+              with:
+                  credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+            - name: Upload PR files
+              uses: google-github-actions/upload-cloud-storage@v1
+              with:
+                  path: ${{ github.ref }}
+                  destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
+                  parent: false
+                  process_gcloudignore: false
 
-  add-comment-to-pr:
-    name: Add comment to PR
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: upload-to-cloud-storage
-    steps:
-      - name: Check the comment exists
-        id: find-comment
-        uses: peter-evans/find-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: github-actions[bot]
-          body-includes: Build files for
-      - name: Get comment body
-        id: get-comment-body
-        # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
-        run: |
-          body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
-          - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
-          delimiter="${body//$'\n'/'%0A'}"
-          echo "body<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "$body" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
-      - name: Create comment on PR with links to build files
-        if: ${{ steps.find-comment.outputs.comment-id == '' }}
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: ${{ steps.get-comment-body.outputs.body }}
-      - name: Update comment on PR with links to build files
-        if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: ${{ steps.get-comment-body.outputs.body }}
+    add-comment-to-pr:
+        name: Add comment to PR
+        runs-on: ubuntu-latest
+        if: github.event_name == 'pull_request'
+        needs: upload-to-cloud-storage
+        steps:
+            - name: Check the comment exists
+              id: find-comment
+              uses: peter-evans/find-comment@v3
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  comment-author: github-actions[bot]
+                  body-includes: Build files for
+            - name: Get comment body
+              id: get-comment-body
+              # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
+              run: |
+                  body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
+                  - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
+                  - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
+                  delimiter="${body//$'\n'/'%0A'}"
+                  echo "body<<${delimiter}" >> $GITHUB_OUTPUT
+                  echo "$body" >> $GITHUB_OUTPUT
+                  echo "${delimiter}" >> $GITHUB_OUTPUT
+            - name: Create comment on PR with links to build files
+              if: ${{ steps.find-comment.outputs.comment-id == '' }}
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  body: ${{ steps.get-comment-body.outputs.body }}
+            - name: Update comment on PR with links to build files
+              if: ${{ steps.find-comment.outputs.comment-id != '' }}
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+                  comment-id: ${{ steps.find-comment.outputs.comment-id }}
+                  edit-mode: replace
+                  body: ${{ steps.get-comment-body.outputs.body }}
 
-  remove-zips:
-    name: Remove Zips
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
-    steps:
-      - uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - uses: google-github-actions/setup-gcloud@v1
-      - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/refs/pull/${{ github.event.pull_request.number }}/**
+    remove-zips:
+        name: Remove Zips
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
+        steps:
+            - uses: google-github-actions/auth@v2
+              with:
+                  credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+            - uses: google-github-actions/setup-gcloud@v1
+            - name: Prune PR files
+              run: gcloud storage rm gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/refs/pull/${{ github.event.pull_request.number }}/**
 
-  update-after-removal:
-    name: Update comment after removal
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: remove-zips
-    steps:
-      - name: Check the comment exists
-        id: find-comment
-        uses: peter-evans/find-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: github-actions[bot]
-          body-includes: Build files for
-      - name: Update comment on PR with links to plugin builds
-        if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
+    update-after-removal:
+        name: Update comment after removal
+        runs-on: ubuntu-latest
+        if: github.event_name == 'pull_request'
+        needs: remove-zips
+        steps:
+            - name: Check the comment exists
+              id: find-comment
+              uses: peter-evans/find-comment@v3
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  comment-author: github-actions[bot]
+                  body-includes: Build files for
+            - name: Update comment on PR with links to plugin builds
+              if: ${{ steps.find-comment.outputs.comment-id != '' }}
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+                  comment-id: ${{ steps.find-comment.outputs.comment-id }}
+                  edit-mode: replace
+                  body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
 
-  publish-to-wporg:
-    name: Publish to WordPress.org
-    runs-on: ubuntu-latest
-    environment: wordpress-plugin-svn
-    if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
-    needs: build-zips
-    timeout-minutes: 20
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: zip-files
-          path: /tmp
-      - name: Extract
-        run: |
-          unzip /tmp/google-site-kit.zip
-          echo .distignore > .distignore
-      - uses: 10up/action-wordpress-plugin-deploy@2.2.2
-        with:
-          dry-run: ${{ inputs.dry_run }}
-        env:
-          SLUG: google-site-kit
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          VERSION: ${{ inputs.release_version }}
+    publish-to-wporg:
+        name: Publish to WordPress.org
+        runs-on: ubuntu-latest
+        environment: wordpress-plugin-svn
+        if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
+        needs: build-zips
+        timeout-minutes: 20
+        steps:
+            - uses: actions/download-artifact@v3
+              with:
+                  name: zip-files
+                  path: /tmp
+            - name: Extract
+              run: |
+                  unzip /tmp/google-site-kit.zip
+                  echo .distignore > .distignore
+            - uses: 10up/action-wordpress-plugin-deploy@2.2.2
+              with:
+                  dry-run: ${{ inputs.dry_run }}
+              env:
+                  SLUG: google-site-kit
+                  SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+                  SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+                  VERSION: ${{ inputs.release_version }}

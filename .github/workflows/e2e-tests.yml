@@ -1,139 +1,139 @@
 name: E2E Tests
 
 on:
-  push:
-    branches:
-      - develop
-      - main
-    # Ignore Storybook-only and unit-test-only changes when checking to run
-    # E2E tests. This is useful when adding/modifying/refactoring/removing
-    # test code ONLY in a commit, but saves running the expensive E2E test
-    # suite on GitHub Actions when all that's changing are tests and not code
-    # that would affect E2E behavior.
-    paths:
-      - '.github/workflows/e2e-tests.yml'
-      - '.babelrc'
-      - 'assets/**'
-      - 'includes/**'
-      - '/*.php'
-      - 'jest-puppeteer.config.js'
-      - 'composer.json'
-      - 'composer.lock'
-      - '/php-scoper/composer.lock'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'postcss.config.js'
-      - 'webpack.config.js'
-      - 'tests/e2e/**'
-      - '!assets/**/__tests__/**/*.js'
-      - '!assets/**/test/*.js'
-      - '!assets/**/*.test.js'
-      - '!packages/**/__tests__/**/*.js'
-      - '!packages/**/test/*.js'
-      - '!packages/**/*.test.js'
-  pull_request:
-    branches:
-      - develop
-      - main
-      - 'feature/**'
-    # Ignore Storybook-only and unit-test-only changes when checking to run
-    # E2E tests. This is useful when adding/modifying/refactoring/removing
-    # test code ONLY in a commit, but saves running the expensive E2E test
-    # suite on GitHub Actions when all that's changing are tests and not code
-    # that would affect E2E behavior.
-    paths:
-      - '.github/workflows/e2e-tests.yml'
-      - '.babelrc'
-      - 'assets/**'
-      - 'includes/**'
-      - '/*.php'
-      - 'jest-puppeteer.config.js'
-      - 'composer.json'
-      - 'composer.lock'
-      - '/php-scoper/composer.lock'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'postcss.config.js'
-      - 'webpack.config.js'
-      - 'tests/e2e/**'
-      - '!assets/**/__tests__/**/*.js'
-      - '!assets/**/test/*.js'
-      - '!assets/**/*.test.js'
-      - '!packages/**/__tests__/**/*.js'
-      - '!packages/**/test/*.js'
-      - '!packages/**/*.test.js'
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
+    push:
+        branches:
+            - develop
+            - main
+        # Ignore Storybook-only and unit-test-only changes when checking to run
+        # E2E tests. This is useful when adding/modifying/refactoring/removing
+        # test code ONLY in a commit, but saves running the expensive E2E test
+        # suite on GitHub Actions when all that's changing are tests and not code
+        # that would affect E2E behavior.
+        paths:
+            - '.github/workflows/e2e-tests.yml'
+            - '.babelrc'
+            - 'assets/**'
+            - 'includes/**'
+            - '/*.php'
+            - 'jest-puppeteer.config.js'
+            - 'composer.json'
+            - 'composer.lock'
+            - '/php-scoper/composer.lock'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'postcss.config.js'
+            - 'webpack.config.js'
+            - 'tests/e2e/**'
+            - '!assets/**/__tests__/**/*.js'
+            - '!assets/**/test/*.js'
+            - '!assets/**/*.test.js'
+            - '!packages/**/__tests__/**/*.js'
+            - '!packages/**/test/*.js'
+            - '!packages/**/*.test.js'
+    pull_request:
+        branches:
+            - develop
+            - main
+            - 'feature/**'
+        # Ignore Storybook-only and unit-test-only changes when checking to run
+        # E2E tests. This is useful when adding/modifying/refactoring/removing
+        # test code ONLY in a commit, but saves running the expensive E2E test
+        # suite on GitHub Actions when all that's changing are tests and not code
+        # that would affect E2E behavior.
+        paths:
+            - '.github/workflows/e2e-tests.yml'
+            - '.babelrc'
+            - 'assets/**'
+            - 'includes/**'
+            - '/*.php'
+            - 'jest-puppeteer.config.js'
+            - 'composer.json'
+            - 'composer.lock'
+            - '/php-scoper/composer.lock'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'postcss.config.js'
+            - 'webpack.config.js'
+            - 'tests/e2e/**'
+            - '!assets/**/__tests__/**/*.js'
+            - '!assets/**/test/*.js'
+            - '!assets/**/*.test.js'
+            - '!packages/**/__tests__/**/*.js'
+            - '!packages/**/test/*.js'
+            - '!packages/**/*.test.js'
+        types:
+            - opened
+            - reopened
+            - synchronize
+            - ready_for_review
 
 concurrency:
-  group: e2e-tests-${{ github.ref }}
-  cancel-in-progress: true
+    group: e2e-tests-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  e2e-tests:
-    name: E2E (WordPress ${{ matrix.wp_version }}${{ matrix.amp_version && ', AMP ' }}${{ matrix.amp_version }})
-    strategy:
-      fail-fast: false
-      matrix:
-        amp_version: ['']
-        wp_version: ['latest', 'nightly']
-        include:
-          - amp_version: '1.5.5'
-            wp_version: '5.2.16'
-    env:
-      AMP_VERSION: ${{ matrix.amp_version }}
-      WP_VERSION: ${{ matrix.wp_version }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: github.event_name == 'push' || github.event.pull_request.draft == false
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-
-      - name: npm install
-        run: npm ci
-
-      - name: Build
-        run: npm run build:test
-
-      # E2E tests use a dedicated container, this is just for Composer.
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
-          tools: composer:2.1
+    e2e-tests:
+        name: E2E (WordPress ${{ matrix.wp_version }}${{ matrix.amp_version && ', AMP ' }}${{ matrix.amp_version }})
+        strategy:
+            fail-fast: false
+            matrix:
+                amp_version: ['']
+                wp_version: ['latest', 'nightly']
+                include:
+                    - amp_version: '1.5.5'
+                      wp_version: '5.2.16'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            AMP_VERSION: ${{ matrix.amp_version }}
+            WP_VERSION: ${{ matrix.wp_version }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        if: github.event_name == 'push' || github.event.pull_request.draft == false
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+            - name: Setup Node.js (.nvmrc)
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
 
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+            - name: npm install
+              run: npm ci
 
-      - name: Composer Install
-        run: composer install --no-interaction --no-progress --no-dev
+            - name: Build
+              run: npm run build:test
 
-      - name: Start environment
-        run: npm run env:start
+            # E2E tests use a dedicated container, this is just for Composer.
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+                  tools: composer:2.1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run the tests
-        run: npm run test:e2e
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: e2e-screenshots
-          path: tests/e2e/screenshots
+            - uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: ${{ runner.os }}-composer-
+
+            - name: Composer Install
+              run: composer install --no-interaction --no-progress --no-dev
+
+            - name: Start environment
+              run: npm run env:start
+
+            - name: Run the tests
+              run: npm run test:e2e
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v3
+              if: failure()
+              with:
+                  name: e2e-screenshots
+                  path: tests/e2e/screenshots
