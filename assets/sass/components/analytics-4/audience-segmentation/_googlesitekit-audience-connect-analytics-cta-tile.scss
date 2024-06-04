@@ -48,9 +48,11 @@
 
 			.googlesitekit-audience-connect-analytics-cta-tile__icon {
 				display: flex;
+				margin-bottom: 6px;
 
 				@media (min-width: $bp-tablet) {
 					justify-content: right;
+					margin-bottom: 0;
 				}
 			}
 
