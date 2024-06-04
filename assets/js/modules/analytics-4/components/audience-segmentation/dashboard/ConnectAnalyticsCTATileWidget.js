@@ -41,15 +41,15 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 	return (
 		<Widget>
 			<div className="googlesitekit-widget--connectAnalyticsCTATile">
-				<div className="googlesitekit-audience-connect-module-cta-tile">
+				<div className="googlesitekit-audience-connect-analytics-cta-tile">
 					{ Icon && (
-						<div className="googlesitekit-audience-connect-module-cta-tile__icon">
+						<div className="googlesitekit-audience-connect-analytics-cta-tile__icon">
 							<Icon width="32" height="32" />
 						</div>
 					) }
 
-					<div className="googlesitekit-audience-connect-module-cta-tile__content">
-						<p className="googlesitekit-audience-connect-module-cta-tile__text">
+					<div className="googlesitekit-audience-connect-analytics-cta-tile__content">
+						<p className="googlesitekit-audience-connect-analytics-cta-tile__text">
 							{ __(
 								'Google Analytics is disconnected, your audience metrics can’t be displayed',
 								'google-site-kit'

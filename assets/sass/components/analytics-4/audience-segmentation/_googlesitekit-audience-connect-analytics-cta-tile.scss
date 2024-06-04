@@ -23,7 +23,7 @@
 		display: flex;
 	}
 
-	.googlesitekit-audience-connect-module-cta-tile {
+	.googlesitekit-audience-connect-analytics-cta-tile {
 		align-items: center;
 		display: flex;
 		flex: 1;
@@ -34,12 +34,12 @@
 		}
 	}
 
-	.googlesitekit-audience-connect-module-cta-tile__icon {
+	.googlesitekit-audience-connect-analytics-cta-tile__icon {
 		display: flex;
 		justify-content: right;
 	}
 
-	.googlesitekit-audience-connect-module-cta-tile__content {
+	.googlesitekit-audience-connect-analytics-cta-tile__content {
 		flex: 1;
 		margin-left: $grid-gap-phone / 2;
 
@@ -47,7 +47,7 @@
 			margin-left: $grid-gap-desktop / 2;
 		}
 
-		.googlesitekit-audience-connect-module-cta-tile__text {
+		.googlesitekit-audience-connect-analytics-cta-tile__text {
 			margin: 0 0 4px;
 		}
 	}
