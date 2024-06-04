@@ -59,7 +59,8 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	const MODULE_SLUG = 'ads';
 
-	const SCOPE = 'https://www.googleapis.com/auth/adwords';
+	const SCOPE                 = 'https://www.googleapis.com/auth/adwords';
+	const SUPPORT_CONTENT_SCOPE = 'https://www.googleapis.com/auth/supportcontent';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -187,7 +188,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			$options        = $this->get_settings()->get();
 
 			if ( in_array( self::SCOPE, $granted_scopes, true ) || ! empty( $options['extCustomerID'] ) ) {
-				return array( self::SCOPE );
+				return array( self::SCOPE, self::SUPPORT_CONTENT_SCOPE );
 			}
 		}
 
