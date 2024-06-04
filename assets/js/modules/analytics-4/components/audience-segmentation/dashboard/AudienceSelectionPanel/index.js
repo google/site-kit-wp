@@ -45,9 +45,28 @@ export default function AudienceSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
-	const savedItemSlugs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
-	);
+	const savedItemSlugs = useSelect( ( select ) => {
+		const { getConfigurableAudiences, getConfiguredAudiences } =
+			select( MODULES_ANALYTICS_4 );
+
+		const configuredAudiences = getConfiguredAudiences() || [];
+		const configurableAudiences = getConfigurableAudiences() || [];
+
+		if (
+			! configurableAudiences?.length ||
+			! configuredAudiences?.length
+		) {
+			return [];
+		}
+
+		return (
+			configurableAudiences
+				?.map( ( { name } ) => name )
+				?.filter( ( audienceName ) =>
+					configuredAudiences?.includes( audienceName )
+				) || []
+		);
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
