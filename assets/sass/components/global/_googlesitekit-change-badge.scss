@@ -35,8 +35,8 @@
 		}
 
 		&.googlesitekit-change-badge--negative {
-			background-color: $c-red-r-50;
-			color: $c-red-r-700;
+			background-color: $c-utility-error-container;
+			color: $c-utility-on-error-container;
 		}
 
 		&.googlesitekit-change-badge--zero {
