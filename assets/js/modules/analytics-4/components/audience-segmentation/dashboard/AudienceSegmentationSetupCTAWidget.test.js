@@ -204,7 +204,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				isAudienceSegmentationWidgetHidden: false,
 			};
 
-			// Set the data available on page load to true.
+			// Set the data availability on page load to true.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsDataAvailableOnLoad( true );
