@@ -50,7 +50,7 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 
 	const content = isTablet
 		? __(
-				'Google Analytics is disconnected, your audience metrics can’t be displayed. ',
+				'Google Analytics is disconnected, your audience metrics can’t be displayed.',
 				'google-site-kit'
 		  )
 		: __(
@@ -70,7 +70,7 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 
 					<div className="googlesitekit-audience-connect-analytics-cta-tile__content">
 						<p className="googlesitekit-audience-connect-analytics-cta-tile__text">
-							{ content }
+							{ content }{ ' ' }
 						</p>
 						<Link secondary onClick={ handleConnectModule }>
 							{ __(
