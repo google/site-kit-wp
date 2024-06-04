@@ -21,34 +21,36 @@
 	.googlesitekit-widget--connectAnalyticsCTATile {
 		align-items: center;
 		display: flex;
-	}
-
-	.googlesitekit-audience-connect-analytics-cta-tile {
-		align-items: center;
-		display: flex;
 		flex: 1;
-		padding: $grid-gap-phone 0;
+		padding-inline: 36px;
 
-		@media (min-width: $bp-tablet) {
-			padding: $grid-gap-desktop 0;
-		}
-	}
+		.googlesitekit-audience-connect-analytics-cta-tile {
+			align-items: center;
+			display: flex;
+			flex: 2;
 
-	.googlesitekit-audience-connect-analytics-cta-tile__icon {
-		display: flex;
-		justify-content: right;
-	}
+			.googlesitekit-audience-connect-analytics-cta-tile__icon {
+				display: flex;
+				justify-content: right;
+			}
 
-	.googlesitekit-audience-connect-analytics-cta-tile__content {
-		flex: 1;
-		margin-left: $grid-gap-phone / 2;
+			.googlesitekit-audience-connect-analytics-cta-tile__content {
+				margin-left: $grid-gap-desktop;
 
-		@media (min-width: $bp-tablet) {
-			margin-left: $grid-gap-desktop / 2;
+				.googlesitekit-audience-connect-analytics-cta-tile__text {
+					margin: 0 0 4px;
+				}
+			}
 		}
 
-		.googlesitekit-audience-connect-analytics-cta-tile__text {
-			margin: 0 0 4px;
+		.googlesitekit-audience-connect-analytics-cta-graphic {
+			display: flex;
+			flex: 1;
+			padding-inline: $grid-gap-desktop;
+
+			svg {
+				height: 150px;
+			}
 		}
 	}
 }

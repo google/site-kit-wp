@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import Link from '../../../../../components/Link';
+import AudienceConnectAnalyticsCTAGraphic from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic.svg';
 
 const { useSelect } = Data;
 
@@ -39,7 +40,7 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 	);
 
 	return (
-		<Widget>
+		<Widget noPadding>
 			<div className="googlesitekit-widget--connectAnalyticsCTATile">
 				<div className="googlesitekit-audience-connect-analytics-cta-tile">
 					{ Icon && (
@@ -62,6 +63,9 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 							) }
 						</Link>
 					</div>
+				</div>
+				<div className="googlesitekit-audience-connect-analytics-cta-graphic">
+					<AudienceConnectAnalyticsCTAGraphic />
 				</div>
 			</div>
 		</Widget>
