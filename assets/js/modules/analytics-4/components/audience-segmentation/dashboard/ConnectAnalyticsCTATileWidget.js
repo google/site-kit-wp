@@ -25,19 +25,38 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import Link from '../../../../../components/Link';
 import AudienceConnectAnalyticsCTAGraphic from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic.svg';
+import AudienceConnectAnalyticsCTAGraphicTablet from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
+import Link from '../../../../../components/Link';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
+import {
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 
 const { useSelect } = Data;
 
 export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
+	const breakpoint = useBreakpoint();
+
+	const isTablet = breakpoint === BREAKPOINT_TABLET;
+
 	const handleConnectModule = useActivateModuleCallback( 'analytics-4' );
 
 	const Icon = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleIcon( 'analytics-4' )
 	);
+
+	const content = isTablet
+		? __(
+				'Google Analytics is disconnected, your audience metrics can’t be displayed. ',
+				'google-site-kit'
+		  )
+		: __(
+				'Google Analytics is disconnected, your audience metrics can’t be displayed',
+				'google-site-kit'
+		  );
 
 	return (
 		<Widget noPadding>
@@ -51,10 +70,7 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 
 					<div className="googlesitekit-audience-connect-analytics-cta-tile__content">
 						<p className="googlesitekit-audience-connect-analytics-cta-tile__text">
-							{ __(
-								'Google Analytics is disconnected, your audience metrics can’t be displayed',
-								'google-site-kit'
-							) }
+							{ content }
 						</p>
 						<Link secondary onClick={ handleConnectModule }>
 							{ __(
@@ -65,7 +81,11 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 					</div>
 				</div>
 				<div className="googlesitekit-audience-connect-analytics-cta-graphic">
-					<AudienceConnectAnalyticsCTAGraphic />
+					{ isTablet ? (
+						<AudienceConnectAnalyticsCTAGraphicTablet />
+					) : (
+						<AudienceConnectAnalyticsCTAGraphic />
+					) }
 				</div>
 			</div>
 		</Widget>
