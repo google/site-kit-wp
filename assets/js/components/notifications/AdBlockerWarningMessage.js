@@ -30,11 +30,12 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from './Link';
-import WarningNotice from './WarningNotice';
-import ExternalIcon from '../../svg/icons/external-rounded.svg';
+import Link from '../Link';
+import WarningNotice from '../WarningNotice';
+import ExternalIcon from '../../../svg/icons/external-rounded.svg';
 
 export default function AdBlockerWarningMessage( {
+	className = '',
 	getHelpLink = '',
 	warningMessage = null,
 } ) {
@@ -43,7 +44,7 @@ export default function AdBlockerWarningMessage( {
 	}
 
 	return (
-		<WarningNotice>
+		<WarningNotice className={ className }>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */
@@ -58,7 +59,7 @@ export default function AdBlockerWarningMessage( {
 							external
 							hideExternalIndicator
 							trailingIcon={
-								<ExternalIcon width={ 13 } height={ 14 } />
+								<ExternalIcon width={ 15 } height={ 15 } />
 							}
 						/>
 					),
@@ -69,6 +70,7 @@ export default function AdBlockerWarningMessage( {
 }
 
 AdBlockerWarningMessage.propTypes = {
+	className: PropTypes.string,
 	getHelpLink: PropTypes.string,
 	warningMessage: PropTypes.string,
 };

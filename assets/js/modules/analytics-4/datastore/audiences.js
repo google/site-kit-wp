@@ -41,7 +41,7 @@ const MAX_INITIAL_AUDIENCES = 2;
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
  * sorts them by total users, and returns the audienceResourceNames in that order.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  *
  * @param {Object} registry  Registry object.
  * @param {Array}  audiences Array of available audiences.
@@ -184,7 +184,7 @@ const baseActions = {
 	 * If no suitable audiences are available, creates the "new-visitors" and "returning-visitors" audiences.
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 */
 	*enableAudienceGroup() {
 		const registry = yield Data.commonActions.getRegistry();

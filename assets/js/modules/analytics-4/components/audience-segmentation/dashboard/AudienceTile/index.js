@@ -46,18 +46,19 @@ import AudienceMetricIconTopContent from '../../../../../../../svg/icons/audienc
 import AudienceTileMetric from './AudienceTileMetric';
 import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
+import PreviewBlock from '../../../../../../components/PreviewBlock';
 import ChangeBadge from '../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
 import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
-
 const { useSelect } = Data;
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
 // in AudienceTiles.
 export default function AudienceTile( {
+	loaded,
 	title,
 	infoTooltip,
 	visitors,
@@ -100,6 +101,11 @@ export default function AudienceTile( {
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
+
+	// TODO: Loading states will be implemented as part of https://github.com/google/site-kit-wp/issues/8145.
+	if ( ! loaded ) {
+		return <PreviewBlock width="100%" height="500px" />;
+	}
 
 	return (
 		<Widget noPadding>
@@ -223,6 +229,7 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
+	loaded: PropTypes.bool,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,

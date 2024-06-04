@@ -25,14 +25,14 @@ import { withQuery } from '@storybook/addon-queryparams';
  * Internal dependencies
  */
 import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
-import { WithTestRegistry } from '../../../../tests/js/utils';
+import { WithTestRegistry } from '../../../../../../tests/js/utils';
 
 function Template( { ...args } ) {
 	return <SetupSuccessSubtleNotification { ...args } />;
 }
 
 export const Ads = Template.bind( {} );
-Ads.storyName = 'Setup Success - Ads';
+Ads.storyName = 'Setup Success';
 Ads.parameters = {
 	query: {
 		notification: 'authentication_success',
@@ -40,11 +40,11 @@ Ads.parameters = {
 	},
 };
 Ads.scenario = {
-	label: 'Global/SetupSuccessSubtleNotification/Ads',
+	label: 'SetupSuccessSubtleNotification',
 };
 
 export default {
-	title: 'Components/SetupSuccessSubtleNotification',
+	title: 'Modules/Ads/Notifications/SetupSuccessSubtleNotification',
 	component: SetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,

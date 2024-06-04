@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Authentication\Token;
 /**
  * Class representing PAX configuration.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class PAX_Config {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 * @var Context
 	 */
 	private $context;
@@ -33,7 +33,7 @@ class PAX_Config {
 	/**
 	 * Token instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 * @var Token
 	 */
 	private $token;
@@ -41,7 +41,7 @@ class PAX_Config {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param Context $context Context instance.
 	 * @param Token   $token   Token instance.
@@ -54,7 +54,7 @@ class PAX_Config {
 	/**
 	 * Gets the configuration data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 * @return array
 	 */
 	public function get() {
@@ -76,7 +76,7 @@ class PAX_Config {
 	/**
 	 * Gets the environment configuration.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 * @return string
 	 */
 	protected function get_env() {
