@@ -262,7 +262,7 @@ describe( 'AudienceSelectionPanel', () => {
 							break;
 						case 'SITE_KIT_AUDIENCE':
 							expect( sourceInDOM ).toHaveTextContent(
-								'created by Site Kit'
+								'Created by Site Kit'
 							);
 							break;
 						case 'USER_AUDIENCE':
