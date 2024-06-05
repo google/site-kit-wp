@@ -40,7 +40,7 @@ import { SelectionPanelItems } from '../../../../../../components/SelectionPanel
 
 const { useSelect } = Data;
 
-export default function AudienceItems( { savedItemSlugs } ) {
+export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const availableAudiences = useSelect( ( select ) => {
 		const { getConfigurableAudiences, getReport } =
 			select( MODULES_ANALYTICS_4 );
@@ -75,8 +75,8 @@ export default function AudienceItems( { savedItemSlugs } ) {
 
 		const { rows = [] } = report || {};
 
-		return audiences?.map( ( audience ) => {
-			const rowIndex = rows?.findIndex(
+		return audiences.map( ( audience ) => {
+			const rowIndex = rows.findIndex(
 				( row ) => row?.dimensionValues?.[ 0 ]?.value === audience.name
 			);
 
@@ -124,11 +124,11 @@ export default function AudienceItems( { savedItemSlugs } ) {
 	};
 
 	const availableSavedItems = availableAudiences
-		?.filter( ( { name } ) => savedItemSlugs?.includes( name ) )
+		?.filter( ( { name } ) => savedItemSlugs.includes( name ) )
 		.reduce( audiencesListReducer, {} );
 
 	const availableUnsavedItems = availableAudiences
-		?.filter( ( { name } ) => ! savedItemSlugs?.includes( name ) )
+		?.filter( ( { name } ) => ! savedItemSlugs.includes( name ) )
 		.reduce( audiencesListReducer, {} );
 
 	return (
