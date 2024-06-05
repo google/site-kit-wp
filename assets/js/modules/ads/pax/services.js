@@ -48,21 +48,14 @@ const restFetchWpPages = async () => {
 };
 
 const restRefreshOAuthToken = async () => {
-	try {
-		const tokenResponse = await API.set(
-			'core',
-			'user',
-			'refresh-token',
-			null,
-			{
-				useCache: false,
-			}
-		);
+	const tokenResponse = await API.set(
+		'core',
+		'user',
+		'refresh-token',
+		null
+	);
 
-		return tokenResponse?.token;
-	} catch {
-		return '';
-	}
+	return tokenResponse;
 };
 
 /**
@@ -75,7 +68,6 @@ const restRefreshOAuthToken = async () => {
  * @param {Object}   options                            Optional. Additional options.
  * @param {Function} options.onCampaignCreated          Callback function that will be called when campaign is created.
  * @param {Function} options.onFinishAndCloseSignUpFlow Callback function that will be called by the `userActionService.finishAndCloseSignUpFlow` if provided.
- * @param {Object}   options._global                    The global window object.
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry, options = {} ) {
@@ -98,7 +90,7 @@ export function createPaxServices( registry, options = {} ) {
 			get: async () => {
 				const refreshedToken = await restRefreshOAuthToken();
 
-				return { accessToken: refreshedToken };
+				return { accessToken: refreshedToken?.token };
 			},
 			// eslint-disable-next-line require-await
 			fix: async () => {
