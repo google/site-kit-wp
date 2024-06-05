@@ -103,12 +103,12 @@
 
 		.googlesitekit-selection-box .mdc-checkbox__description {
 
-			&:has(.googlesitekit-selection-panel-item-subtitle) {
+			&:has(.googlesitekit-selection-panel-item__subtitle) {
 				padding-top: 1px;
 			}
 		}
 
-		.googlesitekit-selection-panel-item-subtitle {
+		.googlesitekit-selection-panel-item__subtitle {
 			color: $c-surfaces-on-surface;
 			display: block;
 			font-size: $fs-body-sm;
@@ -118,7 +118,7 @@
 			margin-bottom: 6px;
 		}
 
-		.googlesitekit-selection-panel-item-suffix {
+		.googlesitekit-selection-panel-item__suffix {
 			color: $c-surfaces-on-surface;
 			font-size: $fs-label-md;
 			font-weight: $fw-medium;

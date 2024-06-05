@@ -49,7 +49,7 @@ export default function SelectionPanelItem( {
 				value={ slug }
 			>
 				{ subtitle && (
-					<span className="googlesitekit-selection-panel-item-subtitle">
+					<span className="googlesitekit-selection-panel-item__subtitle">
 						{ subtitle }
 					</span>
 				) }
@@ -57,7 +57,7 @@ export default function SelectionPanelItem( {
 				{ children }
 			</SelectionBox>
 			{ suffix && (
-				<span className="googlesitekit-selection-panel-item-suffix">
+				<span className="googlesitekit-selection-panel-item__suffix">
 					{ suffix }
 				</span>
 			) }
