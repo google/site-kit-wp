@@ -28,7 +28,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ADS } from '../datastore/constants';
 import { formatPaxDate } from './utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { PAX_GLOBAL_CONFIG } from './constants';
+import API from 'googlesitekit-api';
 
 const restFetchWpPages = async () => {
 	try {
@@ -46,6 +46,25 @@ const restFetchWpPages = async () => {
 		return [];
 	}
 };
+
+const restRefreshOAuthToken = async () => {
+	try {
+		const tokenResponse = await API.set(
+			'core',
+			'user',
+			'refresh-token',
+			null,
+			{
+				useCache: false,
+			}
+		);
+
+		return tokenResponse?.token;
+	} catch {
+		return '';
+	}
+};
+
 /**
  * Returns PAX services.
  *
@@ -60,15 +79,10 @@ const restFetchWpPages = async () => {
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry, options = {} ) {
-	const {
-		onCampaignCreated = null,
-		onFinishAndCloseSignUpFlow = null,
-		_global = global,
-	} = options;
+	const { onCampaignCreated = null, onFinishAndCloseSignUpFlow = null } =
+		options;
 
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
-	const accessToken =
-		_global?.[ PAX_GLOBAL_CONFIG ]?.authAccess?.oauthTokenAccess?.token;
 
 	const services = {
 		authenticationService: {
@@ -82,7 +96,9 @@ export function createPaxServices( registry, options = {} ) {
 			//
 			// eslint-disable-next-line require-await
 			get: async () => {
-				return { accessToken };
+				const refreshedToken = await restRefreshOAuthToken();
+
+				return { accessToken: refreshedToken };
 			},
 			// eslint-disable-next-line require-await
 			fix: async () => {
