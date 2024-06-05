@@ -17,9 +17,9 @@
 /**
  * WordPress dependencies
  */
+import { addQueryArgs } from '@wordpress/url';
 import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
