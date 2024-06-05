@@ -24,6 +24,7 @@ import {
 	act,
 	fireEvent,
 	render,
+	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -33,7 +34,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4, EDIT_SCOPE } from '../../../datastore/constants';
 import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
@@ -44,6 +45,8 @@ import AudienceSegmentationSetupCTAWidget, {
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;
 
+	let enableAudienceGroupSpy;
+
 	const { Widget, WidgetNull } = getWidgetComponentProps(
 		'audienceSegmentationSetupCTA'
 	);
@@ -51,7 +54,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -59,7 +64,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				connected: true,
 			},
 		] );
-		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		registry
@@ -91,10 +95,16 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
+
+		enableAudienceGroupSpy = jest.spyOn(
+			registry.dispatch( MODULES_ANALYTICS_4 ),
+			'enableAudienceGroup'
+		);
 	} );
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+		jest.clearAllMocks();
 	} );
 
 	describe( 'widget rendering', () => {
@@ -382,6 +392,47 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 
 			expect( queryByText( /Maybe later/i ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should call the enableAudienceGroups action when `Enable groups` CTA is clicked.', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			enableAudienceGroupSpy.mockImplementation( jest.fn() );
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( settings );
+
+			const { getByRole, queryByText } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				getByRole( 'button', { name: /Enable groups/i } )
+			).toBeInTheDocument();
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
+
+			await waitFor( () =>
+				expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 )
+			);
+			expect( queryByText( 'Enabling groups' ) ).toBeInTheDocument();
 		} );
 	} );
 } );
