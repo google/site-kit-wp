@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import Link from '../../../../../components/Link';
@@ -34,16 +35,14 @@ import PencilIcon from '../../../../../../svg/icons/pencil-alt.svg';
 const { useSelect, useDispatch } = Data;
 
 export default function ChangeGroupsLink() {
-	// TODO: Change this to use `getConfiguredAudiences`.
 	const availableAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
+		select( MODULES_ANALYTICS_4 ).getConfigurableAudiences()
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	// TODO: Use appropriate UI key.
 	const openAudiencesSelectionPanel = useCallback( () => {
-		setValue( '', true );
+		setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 	}, [ setValue ] );
 
 	const renderChangeGroupsLink =
