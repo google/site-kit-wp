@@ -79,7 +79,6 @@ StepTwoAfterCTAClick.args = {
 };
 StepTwoAfterCTAClick.scenario = {
 	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
-	delay: 250,
 };
 
 export const StepTwoAfterNavigatingBack = Template.bind( {} );
@@ -97,8 +96,7 @@ StepTwoAfterNavigatingBack.args = {
 	},
 };
 StepTwoAfterNavigatingBack.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
-	delay: 250,
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step After Navigating Back',
 };
 
 export default {
