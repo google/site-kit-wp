@@ -84,9 +84,13 @@ export default function AudienceSelectionPanel() {
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />
-			<AudienceItems />
+			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
-			<Footer closePanel={ closePanel } isOpen={ isOpen } />
+			<Footer
+				closePanel={ closePanel }
+				isOpen={ isOpen }
+				savedItemSlugs={ savedItemSlugs }
+			/>
 		</SelectionPanel>
 	);
 }

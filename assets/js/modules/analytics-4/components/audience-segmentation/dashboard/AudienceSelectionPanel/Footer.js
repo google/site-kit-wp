@@ -36,16 +36,12 @@ import {
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
 
 const { useSelect } = Data;
 
-export default function Footer( { isOpen, closePanel } ) {
-	const savedItemSlugs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
-	);
+export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const selectedItems = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AUDIENCE_SELECTION_FORM,
@@ -98,4 +94,5 @@ export default function Footer( { isOpen, closePanel } ) {
 Footer.propTypes = {
 	isOpen: PropTypes.bool,
 	closePanel: PropTypes.func.isRequired,
+	savedItemSlugs: PropTypes.array,
 };

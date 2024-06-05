@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -35,11 +40,7 @@ import { SelectionPanelItems } from '../../../../../../components/SelectionPanel
 
 const { useSelect } = Data;
 
-export default function AudienceItems() {
-	const savedItemSlugs = useSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || []
-	);
+export default function AudienceItems( { savedItemSlugs } ) {
 	const availableAudiences = useSelect( ( select ) => {
 		const { getConfigurableAudiences, getReport } =
 			select( MODULES_ANALYTICS_4 );
@@ -140,3 +141,7 @@ export default function AudienceItems() {
 		/>
 	);
 }
+
+AudienceItems.propTypes = {
+	savedItemSlugs: PropTypes.array,
+};
