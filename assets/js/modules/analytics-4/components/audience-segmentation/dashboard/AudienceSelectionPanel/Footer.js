@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -37,9 +38,10 @@ import {
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const selectedItems = useSelect( ( select ) =>
@@ -48,6 +50,25 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			AUDIENCE_SELECTED
 		)
 	);
+	const audienceSettings = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+	);
+	const saveError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForAction(
+			'saveAudienceSettings',
+			[
+				{
+					...audienceSettings,
+					configuredAudiences: selectedItems,
+				},
+			]
+		)
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSavingAudienceSettings()
+	);
+
+	const { saveAudienceSettings } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const selectedItemsCount = selectedItems?.length || 0;
 	let itemLimitError;
@@ -73,18 +94,27 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		);
 	}
 
+	const saveSettings = useCallback(
+		async ( configuredAudiences ) => {
+			const { error } = await saveAudienceSettings( {
+				configuredAudiences,
+			} );
+
+			return { error };
+		},
+		[ saveAudienceSettings ]
+	);
+
 	return (
 		<SelectionPanelFooter
 			savedItemSlugs={ savedItemSlugs }
 			selectedItemSlugs={ selectedItems }
-			saveSettings={ () => {} }
-			saveError={ null }
+			saveSettings={ saveSettings }
+			saveError={ saveError }
 			itemLimitError={ itemLimitError }
 			minSelectedItemCount={ MIN_SELECTED_AUDIENCES_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_AUDIENCES_COUNT }
-			isBusy={ false }
-			onSaveSuccess={ () => {} }
-			onCancel={ () => {} }
+			isBusy={ isSavingSettings }
 			isOpen={ isOpen }
 			closePanel={ closePanel }
 		/>
