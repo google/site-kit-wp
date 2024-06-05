@@ -200,6 +200,7 @@ class AdsTest extends TestCase {
 		$required_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
 
 		$this->assertContains( Ads::SCOPE, $required_scopes );
+		$this->assertContains( Ads::SUPPORT_CONTENT_SCOPE, $required_scopes );
 	}
 
 	public function test_get_scopes__already_has_extCustomerID_setting() {
@@ -211,6 +212,7 @@ class AdsTest extends TestCase {
 		$module_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
 
 		$this->assertContains( Ads::SCOPE, $module_scopes );
+		$this->assertContains( Ads::SUPPORT_CONTENT_SCOPE, $module_scopes );
 	}
 
 	public function test_get_debug_fields() {

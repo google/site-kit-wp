@@ -19,12 +19,23 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-export default function WarningNotice( { children } ) {
-	return <div className="googlesitekit-warning-notice">{ children }</div>;
+export default function WarningNotice( { children, className } ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-warning-notice',
+				className
+			) }
+		>
+			{ children }
+		</div>
+	);
 }
 
 WarningNotice.propTypes = {
 	children: PropTypes.node.isRequired,
+	className: PropTypes.string,
 };
