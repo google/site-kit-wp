@@ -81,9 +81,9 @@ StepTwoAfterCTAClick.scenario = {
 	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
 };
 
-export const StepTwoAfterNavigatingBack = Template.bind( {} );
-StepTwoAfterNavigatingBack.storyName = 'Step 2 - After Navigating Back';
-StepTwoAfterNavigatingBack.args = {
+export const StepTwoSetupConfirmed = Template.bind( {} );
+StepTwoSetupConfirmed.storyName = 'Step 2 - Setup Confirmed';
+StepTwoSetupConfirmed.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
 			adBlockingRecoverySetupStatus:
@@ -95,8 +95,8 @@ StepTwoAfterNavigatingBack.args = {
 		} );
 	},
 };
-StepTwoAfterNavigatingBack.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step After Navigating Back',
+StepTwoSetupConfirmed.scenario = {
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Confirmed',
 };
 
 export default {
