@@ -30,7 +30,6 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
-import { ProgressBar } from 'googlesitekit-components';
 import OptionalSettingsView from './OptionalSettingsView';
 import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -40,7 +39,6 @@ import DisplaySetting, {
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
@@ -72,8 +70,6 @@ export default function SettingsView() {
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
 	);
 
-	const isMigratingAdsConversionID = useMigrateAdsConversionID();
-
 	const isConversionTrackingEnabled = useSelect( ( select ) => {
 		if ( ! iceEnabled ) {
 			return false;
@@ -84,10 +80,6 @@ export default function SettingsView() {
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
-	}
-
-	if ( isMigratingAdsConversionID ) {
-		return <ProgressBar />;
 	}
 
 	return (
