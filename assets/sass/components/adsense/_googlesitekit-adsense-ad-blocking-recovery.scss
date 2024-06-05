@@ -54,6 +54,12 @@
 		@media (min-width: $bp-desktop) {
 			padding-left: 35px;
 		}
+
+		> p {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-s;
+		}
 	}
 
 	.googlesitekit-ad-blocking-recovery__hero-graphic {
