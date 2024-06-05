@@ -50,6 +50,12 @@
 		}
 	}
 
+	.googlesitekit-ad-blocking-recovery__complete-content {
+		@media (min-width: $bp-desktop) {
+			padding-left: 35px;
+		}
+	}
+
 	.googlesitekit-ad-blocking-recovery__hero-graphic {
 		margin: 0 2rem;
 		text-align: center;
@@ -70,6 +76,12 @@
 		@media (min-width: $bp-desktop) {
 			align-items: center;
 			flex-direction: row;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__complete-actions {
+		.mdc-button {
+			margin-right: 10px;
 		}
 	}
 
