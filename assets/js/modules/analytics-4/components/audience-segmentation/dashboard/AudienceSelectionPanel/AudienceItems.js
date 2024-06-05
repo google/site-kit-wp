@@ -103,7 +103,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 				description = '';
 				break;
 			case 'SITE_KIT_AUDIENCE':
-				citation = __( 'created by Site Kit', 'google-site-kit' );
+				citation = __( 'Created by Site Kit', 'google-site-kit' );
 				break;
 			case 'USER_AUDIENCE':
 				citation = __(
