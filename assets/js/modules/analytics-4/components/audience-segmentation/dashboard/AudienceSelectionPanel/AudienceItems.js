@@ -82,7 +82,8 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 
 			return {
 				...audience,
-				userCount: rows?.[ rowIndex ]?.metricValues?.[ 0 ]?.value || 0,
+				userCount:
+					Number( rows[ rowIndex ]?.metricValues?.[ 0 ]?.value ) || 0,
 			};
 		} );
 	} );

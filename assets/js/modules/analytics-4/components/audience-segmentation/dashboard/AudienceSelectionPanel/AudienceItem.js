@@ -79,7 +79,7 @@ export default function AudienceItem( {
 			description={ description }
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
-			suffix={ !! userCount && numFmt( userCount ) }
+			suffix={ numFmt( userCount ) }
 		/>
 	);
 }
@@ -89,4 +89,5 @@ AudienceItem.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	subtitle: PropTypes.string.isRequired,
+	userCount: PropTypes.number.isRequired,
 };
