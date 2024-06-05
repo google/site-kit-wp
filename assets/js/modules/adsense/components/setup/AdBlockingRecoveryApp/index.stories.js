@@ -82,6 +82,25 @@ StepTwoAfterCTAClick.scenario = {
 	delay: 250,
 };
 
+export const StepTwoAfterNavigatingBack = Template.bind( {} );
+StepTwoAfterNavigatingBack.storyName = 'Step 2 - After Navigating Back';
+StepTwoAfterNavigatingBack.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).setSettings( {
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+		} );
+
+		registry.dispatch( CORE_UI ).setValues( {
+			[ AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED ]: true,
+		} );
+	},
+};
+StepTwoAfterNavigatingBack.scenario = {
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
+	delay: 250,
+};
+
 export default {
 	title: ' Modules/AdSense/Components/Setup/AdBlockingRecoveryApp',
 	decorators: [
