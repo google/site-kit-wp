@@ -90,7 +90,7 @@ export function createPaxServices( registry, options = {} ) {
 			get: async () => {
 				const refreshedToken = await restRefreshOAuthToken();
 
-				return { accessToken: refreshedToken?.token };
+				return { accessToken: refreshedToken.token };
 			},
 			// eslint-disable-next-line require-await
 			fix: async () => {
