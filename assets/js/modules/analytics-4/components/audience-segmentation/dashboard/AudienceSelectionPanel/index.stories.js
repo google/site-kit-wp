@@ -107,6 +107,25 @@ export default {
 				provideAnalytics4MockReport( registry, reportOptions );
 
 				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiences.reduce(
+							( acc, { audienceSlug, name } ) => {
+								if ( 'purchasers' === audienceSlug ) {
+									acc[ name ] = 0;
+								} else {
+									acc[ name ] = 20201220;
+								}
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				registry
 					.dispatch( CORE_UI )
 					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 			};
