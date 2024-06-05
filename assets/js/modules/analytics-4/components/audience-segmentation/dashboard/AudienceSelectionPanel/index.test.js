@@ -217,7 +217,7 @@ describe( 'AudienceSelectionPanel', () => {
 							?.value || 0;
 
 					const userCountInDOM = item?.querySelector(
-						'.googlesitekit-selection-panel-item-suffix'
+						'.googlesitekit-selection-panel-item__suffix'
 					);
 
 					if ( !! userCountInReport ) {
