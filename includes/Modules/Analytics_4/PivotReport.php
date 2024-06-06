@@ -72,6 +72,8 @@ class PivotReport {
 			function ( $pivot_def ) {
 				$pivot = new Google_Service_AnalyticsData_Pivot();
 
+				$pivot->setMetricAggregations( array( 'TOTAL', 'MINIMUM', 'MAXIMUM' ) );
+
 				$pivot->setFieldNames( $pivot_def['fieldNames'] );
 				$pivot->setLimit( $pivot_def['limit'] );
 
