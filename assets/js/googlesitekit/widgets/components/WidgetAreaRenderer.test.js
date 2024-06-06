@@ -79,6 +79,10 @@ function WidgetComponentEmpty( { WidgetNull } ) {
 	return <WidgetNull />;
 }
 
+function WidgetComponentErrored() {
+	throw new Error( 'Site Kit error message.' );
+}
+
 const createWidgets = ( registry, areaName, widgets ) => {
 	widgets.forEach( ( { Component, modules, slug, width } ) => {
 		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
@@ -810,5 +814,87 @@ describe( 'WidgetAreaRenderer', () => {
 				'.googlesitekit-widget-area-widgets'
 			)
 		).toMatchSnapshot();
+	} );
+
+	describe( 'Error boundary', () => {
+		// eslint-disable-next-line no-console
+		const originalConsoleError = console.error;
+
+		// Suppress console error while we are testing error boundary.
+		beforeAll( () => {
+			// eslint-disable-next-line no-console
+			console.error = () => true;
+		} );
+
+		// Restore console error.
+		afterAll( () => {
+			// eslint-disable-next-line no-console
+			console.error = originalConsoleError;
+		} );
+
+		it( 'should display the error using error boundary component within a widget', async () => {
+			createWidgets( registry, areaName, [
+				{
+					Component: WidgetComponentErrored,
+					modules: 'search-console',
+					slug: 'one',
+					width: WIDGET_WIDTHS.FULL,
+				},
+			] );
+
+			const { container, waitForRegistry } = render(
+				<WidgetAreaRenderer slug={ areaName } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( container.firstChild ).toHaveTextContent( 'Error!' );
+			expect( container.firstChild ).toHaveTextContent(
+				'Site Kit error message.'
+			);
+		} );
+
+		it( 'should display other widgets when there is error in one of the widgets', async () => {
+			createWidgets( registry, areaName, [
+				{
+					Component: WidgetComponent,
+					modules: 'search-console',
+					slug: 'one',
+					width: WIDGET_WIDTHS.FULL,
+				},
+				{
+					Component: WidgetComponentErrored,
+					modules: 'search-console',
+					slug: 'two',
+					width: WIDGET_WIDTHS.FULL,
+				},
+				{
+					Component() {
+						return <div>AdSense is here</div>;
+					},
+					modules: 'adsense',
+					slug: 'three',
+					width: WIDGET_WIDTHS.FULL,
+				},
+			] );
+
+			const { container, waitForRegistry } = render(
+				<WidgetAreaRenderer slug={ areaName } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( container.firstChild ).toHaveTextContent( 'Error!' );
+
+			expect(
+				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
+			).toHaveLength( 3 );
+
+			expect( container.firstChild ).toHaveTextContent(
+				'AdSense is here'
+			);
+		} );
 	} );
 } );
