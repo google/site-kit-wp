@@ -758,11 +758,11 @@ export function sortPivotRows( rows, metrics, pivots ) {
 		return rows;
 	}
 
-	// For each pivot orderby, sort the rows by the given sorting metic and desc value.
+	// For each pivot orderby, sort the rows by the given sorting metric and desc value.
 	return orderby.reduce( ( acc, orderbyItem ) => {
-		// Our mock metrics are returned in the rows in the order they are given in the
-		// report config so we can take the index in the report array to find the column
-		// to sort by.
+		// Our mock metrics are returned in the rows in the order the metrics are given
+		// in the report config so we can take the index in the report array to find the
+		// column to sort by.
 		const metricIndex = metrics.findIndex(
 			( metric ) => metric.name === orderbyItem.metric.metricName
 		);
@@ -850,9 +850,10 @@ export function getAnalytics4MockPivotResponse( options ) {
 		? parseDimensionArgs( args.dimensions )
 		: [];
 
-	// Generate streams (array) of pivot field names.
+	// Generate streams (array) for each pivot field names (which map 1:1 to the report dimensions).
 	args.pivots.forEach( ( { fieldNames, limit } ) => {
-		// There should only support one dimension for each pivot in our current pivot report use.
+		// We only support one dimension for each pivot in our current pivot report implementation
+		// so we can choose the first fieldNames value as our dimension.
 		const dimension = fieldNames[ 0 ];
 
 		if (
@@ -862,7 +863,7 @@ export function getAnalytics4MockPivotResponse( options ) {
 			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
 			streams.push(
 				new Observable( ( observer ) => {
-					// The limit here is the pivot limit as limits are set on the pivot level.
+					// The limit here is the pivot limit as limits are set within the pivot level, never at the root of the report.
 					for ( let i = 1; i <= limit; i++ ) {
 						const val =
 							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
@@ -893,7 +894,7 @@ export function getAnalytics4MockPivotResponse( options ) {
 		}
 	} );
 
-	// Keep our stream formatted list of dimensions to generate the pivot headers at the end.
+	// Keep our stream formatted list of dimensions to generate the pivotHeaders at the end.
 	let allLimitedDimensionValues = [];
 
 	// This is the list of operations that we apply to the combined stream (array) of dimension values.
