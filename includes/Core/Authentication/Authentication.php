@@ -1123,7 +1123,7 @@ final class Authentication {
 							$this->get_oauth_client()->refresh_token();
 							return new WP_REST_Response(
 								array(
-									'token' => $this->get_oauth_client()->get_access_token(),
+									'token' => $this->refresh_user_token(),
 								)
 							);
 						},
