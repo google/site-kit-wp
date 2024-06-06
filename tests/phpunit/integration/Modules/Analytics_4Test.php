@@ -1870,19 +1870,29 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals(
 			array(
 				array(
-					'fieldNames' => array( 'operatingSystem' ),
-					'limit'      => 3,
+					'fieldNames'         => array( 'operatingSystem' ),
+					'limit'              => 3,
+					'metricAggregations' => array(
+						'TOTAL',
+						'MINIMUM',
+						'MAXIMUM',
+					),
 				),
 				array(
-					'fieldNames' => array( 'city' ),
-					'limit'      => 2,
-					'orderBys'   => array(
+					'fieldNames'         => array( 'city' ),
+					'limit'              => 2,
+					'orderBys'           => array(
 						array(
 							'metric' => array(
 								'metricName' => 'totalUsers',
 							),
 							'desc'   => true,
 						),
+					),
+					'metricAggregations' => array(
+						'TOTAL',
+						'MINIMUM',
+						'MAXIMUM',
 					),
 				),
 			),
