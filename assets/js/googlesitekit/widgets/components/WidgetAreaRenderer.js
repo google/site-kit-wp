@@ -43,6 +43,7 @@ import {
 	BREAKPOINT_TABLET,
 	BREAKPOINT_SMALL,
 } from '../../../hooks/useBreakpoint';
+import ErrorBoundary from '../../../components/ErrorBoundary';
 import InViewProvider from '../../../components/InViewProvider';
 import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
@@ -208,18 +209,20 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 			key={ `${ widget.slug }-wrapper` }
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
-			<WidgetRenderer
-				OverrideComponent={
-					overrideComponents[ i ]
-						? () => {
-								const { Component, metadata } =
-									overrideComponents[ i ];
-								return <Component { ...metadata } />;
-						  }
-						: undefined
-				}
-				slug={ widget.slug }
-			/>
+			<ErrorBoundary>
+				<WidgetRenderer
+					OverrideComponent={
+						overrideComponents[ i ]
+							? () => {
+									const { Component, metadata } =
+										overrideComponents[ i ];
+									return <Component { ...metadata } />;
+							  }
+							: undefined
+					}
+					slug={ widget.slug }
+				/>
+			</ErrorBoundary>
 		</WidgetCellWrapper>
 	) );
 
