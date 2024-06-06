@@ -209,7 +209,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 			key={ `${ widget.slug }-wrapper` }
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
-			<ErrorBoundary>
+			<ErrorBoundary slug={ slug } Widget={ widget }>
 				<WidgetRenderer
 					OverrideComponent={
 						overrideComponents[ i ]

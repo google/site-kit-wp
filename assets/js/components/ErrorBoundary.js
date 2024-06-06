@@ -25,8 +25,14 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import { trackEvent } from '../util';
 import ViewContextContext from './Root/ViewContextContext';
+import Widget from '../googlesitekit/widgets/components/Widget';
 
 /**
  * ErrorBoundary component.
@@ -41,19 +47,6 @@ class ErrorBoundary extends Component {
 	}
 
 	/**
-	 * Updates the state when error occurs so that UI can be updated.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object|string} error Error instance.
-	 * @return {Object} Updated state object.
-	 */
-	static getDerivedStateFromError( error ) {
-		// Update state so the next render will show the fallback UI.
-		return { hasError: true, errorMessage: error?.message };
-	}
-
-	/**
 	 * Logs the error information using trackEvent.
 	 *
 	 * @since n.e.x.t
@@ -62,6 +55,11 @@ class ErrorBoundary extends Component {
 	 * @param {Object}        info  Error info object.
 	 */
 	componentDidCatch( error, info ) {
+		this.setState( {
+			error,
+			info,
+		} );
+
 		// Track the error event.
 		trackEvent(
 			'react_error',
@@ -79,9 +77,26 @@ class ErrorBoundary extends Component {
 	 * @return {JSX} Error description component.
 	 */
 	render() {
+		const slug = this.props.slug;
+
 		if ( this.state.error ) {
-			// You can render any custom fallback UI
-			return <h3>Something went wrong.</h3>;
+			return (
+				<Widget
+					nopadding
+					widgetSlug={ slug }
+					className="googlesitekit-error-handler"
+				>
+					<div className="googlesitekit-error-description">
+						<h3>{ __( 'Error!', 'google-site-kit' ) }</h3>
+						<p className="googlesitekit-error-text">
+							{ this.state.error?.message }
+						</p>
+						<p className="googlesitekit-error-component-stack">
+							{ this.state.info?.componentStack }
+						</p>
+					</div>
+				</Widget>
+			);
 		}
 
 		return this.props.children;
