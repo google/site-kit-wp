@@ -53,10 +53,10 @@ const restFetchWpPages = async () => {
 	}
 };
 
-function createMemoizedGetToken( {
-	maxAgeSeconds = 4 * 60, // 4 min in seconds
-	clearAfterSeconds = 30,
-} ) {
+function createMemoizedGetToken() {
+	const maxAgeSeconds = 4 * 60; // 4 min in seconds
+	const clearAfterSeconds = 30;
+
 	const memoizedGetToken = memize( () =>
 		API.set( 'core', 'user', 'get-token' )
 	);
