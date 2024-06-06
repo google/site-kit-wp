@@ -50,6 +50,18 @@
 		}
 	}
 
+	.googlesitekit-ad-blocking-recovery__complete-content {
+		@media (min-width: $bp-tablet) {
+			padding-left: 35px;
+		}
+
+		p {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-s;
+		}
+	}
+
 	.googlesitekit-ad-blocking-recovery__hero-graphic {
 		margin: 0 2rem;
 		text-align: center;
@@ -70,6 +82,12 @@
 		@media (min-width: $bp-desktop) {
 			align-items: center;
 			flex-direction: row;
+		}
+	}
+
+	.googlesitekit-ad-blocking-recovery__complete-actions {
+		.mdc-button {
+			margin-right: 10px;
 		}
 	}
 
