@@ -27,6 +27,10 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADS } from '../datastore/constants';
 import { createPaxServices } from './services';
 
+const getTokenEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/get-token'
+);
+
 describe( 'PAX partner services', () => {
 	describe( 'createPaxServices', () => {
 		let registry;
@@ -70,6 +74,11 @@ describe( 'PAX partner services', () => {
 		describe( 'authenticationService', () => {
 			describe( 'get', () => {
 				it( 'should contain accessToken property', async () => {
+					fetchMock.postOnce( getTokenEndpoint, {
+						body: { token: '1234567890' },
+						status: 200,
+					} );
+
 					const authAccess =
 						await services.authenticationService.get();
 
@@ -87,14 +96,25 @@ describe( 'PAX partner services', () => {
 						_global: { _googlesitekitPAXConfig },
 					} );
 
+					fetchMock.postOnce( getTokenEndpoint, {
+						body: { token: '1234567890' },
+						status: 200,
+					} );
+
 					const authAccess =
 						await services.authenticationService.get();
 
 					/* eslint-disable sitekit/acronym-case */
-					expect( authAccess.accessToken ).toEqual(
-						'test-auth-token'
-					);
+					expect( authAccess.accessToken ).toEqual( '1234567890' );
 					/* eslint-enable sitekit/acronym-case */
+				} );
+			} );
+			describe( 'fix', () => {
+				it( 'should return retryReady: true', async () => {
+					const getResponse =
+						await services.authenticationService.fix();
+
+					expect( getResponse ).toEqual( { retryReady: true } );
 				} );
 			} );
 		} );
