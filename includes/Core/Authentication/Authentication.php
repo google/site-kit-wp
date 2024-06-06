@@ -1115,7 +1115,7 @@ final class Authentication {
 				)
 			),
 			new REST_Route(
-				'core/user/data/refresh-token',
+				'core/user/data/get-token',
 				array(
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
