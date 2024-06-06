@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { debounce } from 'lodash';
+import memize from 'memize';
+
+/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -47,16 +53,34 @@ const restFetchWpPages = async () => {
 	}
 };
 
-const restRefreshOAuthToken = async () => {
-	const tokenResponse = await API.set(
-		'core',
-		'user',
-		'refresh-token',
-		null
+function createMemoizedGetToken( {
+	maxAgeSeconds = 4 * 60, // 4 min in seconds
+	clearAfterSeconds = 30,
+} ) {
+	const memoizedGetToken = memize( () =>
+		API.set( 'core', 'user', 'get-token' )
 	);
 
-	return tokenResponse;
-};
+	const debouncedClear = debounce(
+		memoizedGetToken.clear,
+		clearAfterSeconds * 1000,
+		{
+			leading: false,
+			trailing: true,
+			maxWait: maxAgeSeconds * 1000,
+		}
+	);
+	function getToken() {
+		debouncedClear();
+		return memoizedGetToken();
+	}
+	getToken.clear = () => {
+		debouncedClear.cancel();
+		memoizedGetToken.clear();
+	};
+
+	return getToken;
+}
 
 /**
  * Returns PAX services.
@@ -75,6 +99,7 @@ export function createPaxServices( registry, options = {} ) {
 		options;
 
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
+	const getToken = createMemoizedGetToken();
 
 	const services = {
 		authenticationService: {
@@ -88,12 +113,14 @@ export function createPaxServices( registry, options = {} ) {
 			//
 			// eslint-disable-next-line require-await
 			get: async () => {
-				const refreshedToken = await restRefreshOAuthToken();
+				const refreshedToken = await getToken();
 
 				return { accessToken: refreshedToken.token };
 			},
 			// eslint-disable-next-line require-await
 			fix: async () => {
+				getToken.clear();
+
 				return { retryReady: true };
 			},
 		},
