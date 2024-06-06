@@ -26,6 +26,7 @@ import { getByText } from '@testing-library/dom';
  */
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
+import * as tracking from '../../../util/tracking';
 import {
 	CORE_WIDGETS,
 	WIDGET_WIDTHS,
@@ -817,6 +818,9 @@ describe( 'WidgetAreaRenderer', () => {
 	} );
 
 	describe( 'Error boundary', () => {
+		const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+		mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 		// eslint-disable-next-line no-console
 		const originalConsoleError = console.error;
 
@@ -895,6 +899,26 @@ describe( 'WidgetAreaRenderer', () => {
 			expect( container.firstChild ).toHaveTextContent(
 				'AdSense is here'
 			);
+		} );
+
+		it( 'should call the trackEvent', async () => {
+			createWidgets( registry, areaName, [
+				{
+					Component: WidgetComponentErrored,
+					modules: 'search-console',
+					slug: 'one',
+					width: WIDGET_WIDTHS.FULL,
+				},
+			] );
+
+			const { waitForRegistry } = render(
+				<WidgetAreaRenderer slug={ areaName } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalled();
 		} );
 	} );
 } );

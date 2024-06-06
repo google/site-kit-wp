@@ -60,13 +60,15 @@ class ErrorBoundary extends Component {
 			info,
 		} );
 
-		// Track the error event.
-		trackEvent(
-			'react_error',
-			`handle_${ this.context || 'unknown' }_error`,
-			// label has a max-length of 500 bytes.
-			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
-		);
+		if ( !! error ) {
+			// Track the error event.
+			trackEvent(
+				'react_error',
+				`handle_${ this.context || 'unknown' }_error`,
+				// label has a max-length of 500 bytes.
+				`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
+			);
+		}
 	}
 
 	/**
