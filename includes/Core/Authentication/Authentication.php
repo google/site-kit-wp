@@ -1120,10 +1120,10 @@ final class Authentication {
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$this->get_oauth_client()->refresh_token();
+							$this->refresh_user_token();
 							return new WP_REST_Response(
 								array(
-									'token' => $this->refresh_user_token(),
+									'token' => $this->get_oauth_client()->get_access_token(),
 								)
 							);
 						},
