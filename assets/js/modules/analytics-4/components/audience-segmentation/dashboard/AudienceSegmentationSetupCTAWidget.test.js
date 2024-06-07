@@ -34,6 +34,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
@@ -120,6 +121,112 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			expect(
 				queryByText( /Don’t show again/i )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the widget when no audience is configured and Google Analytics data is loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( settings );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'Learn how different types of visitors interact with your site'
+				)
+			).toBeInTheDocument();
+
+			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should not render the widget when no audience is configured and Google Analytics data is not loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			// Set the data availability on page load to false.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( false );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( settings );
+
+			const { queryByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect(
+				queryByText(
+					/Learn how different types of visitors interact with your site/i
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not render the widget when configured audiences are present and Google Analytics data is loaded on the page', async () => {
+			const settings = {
+				configuredAudiences: [
+					audiencesFixture[ 0 ],
+					audiencesFixture[ 1 ],
+					audiencesFixture[ 2 ],
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( settings );
+
+			const { queryByText, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			// Wait for resolvers to finish to avoid an unhandled React state update.
+			await waitForRegistry();
+
+			expect(
+				queryByText(
+					/Learn how different types of visitors interact with your site/i
+				)
 			).not.toBeInTheDocument();
 		} );
 	} );

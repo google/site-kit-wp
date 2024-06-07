@@ -33,12 +33,9 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { WEEK_IN_SECONDS, getPreviousDate } from '../../../../../util';
+import { WEEK_IN_SECONDS } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
@@ -97,21 +94,14 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
-	const hasDataWithinPast90Days = useSelect( ( select ) => {
-		const endDate = select( CORE_USER ).getReferenceDate();
-
-		const startDate = getPreviousDate(
-			endDate,
-			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-		);
-
-		const args = {
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		// We should call isGatheringData() within this component for completeness
+		// as we do not want to rely on it being called in other components.
+		// This selector makes report requests which, if they return data, then the
+		// `data-available` transients are set. These transients are prefetched as
+		// a global on the next page load.
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
 	const { dismissPrompt } = useDispatch( CORE_USER );
@@ -153,8 +143,8 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
-		configuredAudiences !== null ||
-		! hasDataWithinPast90Days ||
+		configuredAudiences?.length ||
+		! analyticsIsDataAvailableOnLoad ||
 		isDismissed
 	) {
 		return null;
