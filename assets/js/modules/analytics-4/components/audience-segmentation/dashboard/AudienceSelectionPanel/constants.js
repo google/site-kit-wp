@@ -1,4 +1,6 @@
 /**
+ * AudienceSelectionPanel components - constants.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +16,9 @@
  * limitations under the License.
  */
 
-( ( jQuery ) => {
-	if ( ! jQuery ) {
-		return;
-	}
-
-	const body = jQuery( 'body' );
-
-	body.on( 'added_to_cart', () => {
-		global._googlesitekit?.gtagEvent?.( 'add_to_cart' );
-	} );
-
-	body.on( 'checkout_place_order_success', () => {
-		global._googlesitekit?.gtagEvent?.( 'purchase' );
-	} );
-} )( global.jQuery );
+export const AUDIENCE_SELECTION_PANEL_OPENED_KEY =
+	'googlesitekit-audience-selection-panel-opened';
+export const AUDIENCE_SELECTION_FORM = 'audience-selection-form';
+export const AUDIENCE_SELECTED = 'audience-selected';
+export const MIN_SELECTED_AUDIENCES_COUNT = 1;
+export const MAX_SELECTED_AUDIENCES_COUNT = 3;

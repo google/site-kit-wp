@@ -1,4 +1,6 @@
 /**
+ * Audience Selection Panel styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +16,25 @@
  * limitations under the License.
  */
 
-( ( jQuery ) => {
-	if ( ! jQuery ) {
-		return;
+.googlesitekit-plugin {
+
+	.googlesitekit-audience-selection-panel {
+
+		.googlesitekit-selection-box .mdc-checkbox__description {
+			padding-top: 4px;
+		}
+
+		.googlesitekit-audience-selection-panel__learn-more {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: auto;
+			padding: $grid-gap-phone + 4px $grid-gap-desktop;
+		}
+
+		.googlesitekit-selection-panel-footer {
+			margin: 0;
+		}
 	}
-
-	const body = jQuery( 'body' );
-
-	body.on( 'added_to_cart', () => {
-		global._googlesitekit?.gtagEvent?.( 'add_to_cart' );
-	} );
-
-	body.on( 'checkout_place_order_success', () => {
-		global._googlesitekit?.gtagEvent?.( 'purchase' );
-	} );
-} )( global.jQuery );
+}
