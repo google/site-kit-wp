@@ -108,24 +108,17 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const hasRequiredScope = hasAnalytics4EditScope;
-
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
 	} );
 
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
-		const scopes = [];
-
-		if ( ! hasAnalytics4EditScope ) {
-			scopes.push( EDIT_SCOPE );
-		}
 
 		// If scope not granted, trigger scope error right away. These are
 		// typically handled automatically based on API responses, but
 		// this particular case has some special handling to improve UX.
-		if ( scopes.length > 0 ) {
+		if ( ! hasAnalytics4EditScope ) {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
@@ -160,10 +153,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	// If the user ends up back on this component with the required scope granted,
 	// and already submitted the form, trigger the submit again.
 	useEffect( () => {
-		if ( hasRequiredScope && autoSubmit ) {
+		if ( hasAnalytics4EditScope && autoSubmit ) {
 			onEnableGroups();
 		}
-	}, [ hasRequiredScope, autoSubmit, onEnableGroups ] );
+	}, [ hasAnalytics4EditScope, autoSubmit, onEnableGroups ] );
 
 	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
 		// We should call isGatheringData() within this component for completeness
