@@ -20,6 +20,6 @@
 	}
 
 	jQuery( global.document.body ).on( 'wpformsAjaxSubmitSuccess', () => {
-		global._googlesitekit?.trackEvent?.( 'submit_lead_form' );
+		global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
 	} );
 } )( global.jQuery );
