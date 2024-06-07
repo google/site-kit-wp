@@ -34,7 +34,12 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4, EDIT_SCOPE } from '../../../datastore/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_ANALYTICS_4,
+	EDIT_SCOPE,
+	AUDIENCE_SEGMENTATION_SETUP_FORM,
+} from '../../../datastore/constants';
 import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
@@ -433,6 +438,46 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 )
 			);
 			expect( queryByText( 'Enabling groups' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should call the enableAudienceGroups action when `autosubmit` is set to true.', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			enableAudienceGroupSpy.mockImplementation( jest.fn() );
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( settings );
+
+			// Set autoSubmit to true.
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+					autoSubmit: true,
+				} );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', { name: /Enabling groups/i } )
+			).toBeInTheDocument();
+
+			expect( enableAudienceGroupSpy ).toHaveBeenCalled();
 		} );
 	} );
 } );
