@@ -30,7 +30,7 @@ import { PAX_GLOBAL_CONFIG } from './constants';
 /**
  * Creates PAX configuration.
  *
- * @since n.e.x.t
+ * @since 1.128.1
  *
  * @param {Object}                                                                                options                  Optional.
  * @param {string}                                                                                options.contentContainer Optional. The container selector to launch the Ads app.
