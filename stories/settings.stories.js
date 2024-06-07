@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { storiesOf } from '@storybook/react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -45,155 +50,151 @@ import WithRegistrySetup from '../tests/js/WithRegistrySetup';
 /**
  * Add components to the settings page.
  */
+storiesOf( 'Settings', module )
+	.add(
+		'Settings Tabs',
+		() => {
+			return (
+				<Layout>
+					<TabBar activeIndex={ 0 } handleActiveIndexUpdate={ null }>
+						<Tab>
+							<span className="mdc-tab__text-label">
+								{ __(
+									'Connected Services',
+									'google-site-kit'
+								) }
+							</span>
+						</Tab>
+						<Tab>
+							<span className="mdc-tab__text-label">
+								{ __(
+									'Connect More Services',
+									'google-site-kit'
+								) }
+							</span>
+						</Tab>
+						<Tab>
+							<span className="mdc-tab__text-label">
+								{ __( 'Admin Settings', 'google-site-kit' ) }
+							</span>
+						</Tab>
+					</TabBar>
+				</Layout>
+			);
+		},
+		{
+			options: {
+				delay: 3000, // Wait for tabs to animate.
+			},
+		}
+	)
+	.add(
+		'Connected Services',
+		() => {
+			const setupRegistry = ( registry ) => {
+				provideModules(
+					registry,
+					[
+						'ads',
+						'adsense',
+						'analytics-4',
+						'pagespeed-insights',
+						'search-console',
+					].map( ( slug ) => ( {
+						slug,
+						active: true,
+						connected: true,
+					} ) )
+				);
+				provideModuleRegistrations( registry );
+			};
 
-function Template() {
-	return <SettingsModules />;
-}
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<SettingsModules />
+				</WithRegistrySetup>
+			);
+		},
+		{
+			options: {
+				delay: 100, // Wait for screen to render.
+			},
+			route: '/connected-services',
+		}
+	)
+	.add(
+		'Connect More Services',
+		() => {
+			const setupRegistry = async ( registry ) => {
+				provideModules(
+					registry,
+					[
+						'ads',
+						'adsense',
+						'pagespeed-insights',
+						'search-console',
+					].map( ( slug ) => ( {
+						slug,
+						active: true,
+						connected: true,
+					} ) )
+				);
+				provideModuleRegistrations( registry );
+				registry.select( CORE_MODULES ).getModule( 'adsense' );
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			};
 
-function TabBarTemplate() {
-	return (
-		<Layout>
-			<TabBar activeIndex={ 0 } handleActiveIndexUpdate={ null }>
-				<Tab>
-					<span className="mdc-tab__text-label">
-						{ __( 'Connected Services', 'google-site-kit' ) }
-					</span>
-				</Tab>
-				<Tab>
-					<span className="mdc-tab__text-label">
-						{ __( 'Connect More Services', 'google-site-kit' ) }
-					</span>
-				</Tab>
-				<Tab>
-					<span className="mdc-tab__text-label">
-						{ __( 'Admin Settings', 'google-site-kit' ) }
-					</span>
-				</Tab>
-			</TabBar>
-		</Layout>
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<SettingsModules />
+				</WithRegistrySetup>
+			);
+		},
+		{
+			route: '/connect-more-services',
+		}
+	)
+	.add(
+		'Admin Settings',
+		() => {
+			global._googlesitekitLegacyData = settingsData;
+
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{ slug: 'ads', active: true, connected: true },
+				] );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetTracking( { enabled: false } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetAdminBarSettings( { enabled: true } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConsentModeSettings( { enabled: false } );
+				registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
+					hasConsentAPI: false,
+					wpConsentPlugin: {
+						installed: false,
+						activateURL:
+							'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
+						installURL:
+							'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
+					},
+				} );
+			};
+
+			return (
+				<WithTestRegistry callback={ setupRegistry }>
+					<Grid>
+						<SettingsAdmin />
+					</Grid>
+				</WithTestRegistry>
+			);
+		},
+		{
+			padding: 0,
+		}
 	);
-}
-
-export const SettingsTabs = TabBarTemplate.bind( {} );
-SettingsTabs.storyName = 'Settings Tabs';
-SettingsTabs.title = 'Settings/Settings Tabs';
-SettingsTabs.scenario = {
-	label: 'Settings/SettingsTabs',
-	delay: 3000, // Wait for tabs to animate.
-};
-
-export const ConnectedServices = Template.bind( {} );
-ConnectedServices.storyName = 'Connected Services';
-ConnectedServices.scenario = {
-	label: 'Settings/ConnectedServices',
-};
-
-ConnectedServices.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			provideModules(
-				registry,
-				[
-					'ads',
-					'adsense',
-					'analytics-4',
-					'pagespeed-insights',
-					'search-console',
-				].map( ( slug ) => ( {
-					slug,
-					active: true,
-					connected: true,
-				} ) )
-			);
-			provideModuleRegistrations( registry );
-		};
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
-export const ConnectMoreServices = Template.bind( {} );
-ConnectMoreServices.storyName = 'Connect More Services';
-ConnectMoreServices.scenario = {
-	label: 'Settings/ConnectMoreServices',
-};
-
-ConnectMoreServices.decorators = [
-	( Story ) => {
-		const setupRegistry = async ( registry ) => {
-			provideModules(
-				registry,
-				[
-					'ads',
-					'adsense',
-					'pagespeed-insights',
-					'search-console',
-				].map( ( slug ) => ( {
-					slug,
-					active: true,
-					connected: true,
-				} ) )
-			);
-			provideModuleRegistrations( registry );
-			registry.select( CORE_MODULES ).getModule( 'adsense' );
-			await untilResolved( registry, CORE_MODULES ).getModules();
-		};
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
-export const AdminSettings = Template.bind( {} );
-AdminSettings.storyName = 'Admin Settings';
-AdminSettings.scenario = {
-	label: 'Settings/AdminSettings',
-};
-
-AdminSettings.decorators = [
-	() => {
-		global._googlesitekitLegacyData = settingsData;
-
-		const setupRegistry = ( registry ) => {
-			provideSiteInfo( registry );
-			provideModules( registry );
-
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetTracking( { enabled: false } );
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetAdminBarSettings( { enabled: true } );
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetConsentModeSettings( { enabled: false } );
-			registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
-				hasConsentAPI: false,
-				wpConsentPlugin: {
-					installed: false,
-					activateURL:
-						'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
-					installURL:
-						'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
-				},
-			} );
-		};
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<Grid>
-					<SettingsAdmin />
-				</Grid>
-			</WithTestRegistry>
-		);
-	},
-];
-
-export default {
-	title: 'Settings',
-	component: SettingsModules,
-};
