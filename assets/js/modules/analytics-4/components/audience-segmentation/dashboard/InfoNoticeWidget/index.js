@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,8 +33,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
 import InfoNotice from '../InfoNotice';
+import { AUDIENCE_INFO_NOTICE_SLUG, AUDIENCE_INFO_NOTICES } from './constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { AUDIENCE_INFO_NOTICE_SLUG, AUDIENCE_INFO_NOTICES } from './constant';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 
 const { useSelect, useDispatch } = Data;
@@ -51,16 +52,20 @@ function InfoNoticeWidget( { Widget } ) {
 
 	const { dismissPrompt } = useDispatch( CORE_USER );
 
-	const onDismiss = async () => {
+	const onDismiss = useCallback( async () => {
+		if ( undefined === dismissCount ) {
+			return;
+		}
+
 		const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
 		const expiry = dismissCount + 1 < noticesCount ? twoWeeksInSeconds : 0;
 
 		await dismissPrompt( AUDIENCE_INFO_NOTICE_SLUG, {
 			expiresInSeconds: expiry,
 		} );
-	};
+	}, [ dismissCount, dismissPrompt, noticesCount ] );
 
-	// Return null if permanently dismissed.
+	// Return null if dismissed.
 	if (
 		isDismissed ||
 		dismissCount === undefined ||

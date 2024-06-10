@@ -20,41 +20,17 @@
  * Internal dependencies.
  */
 import InfoNoticeWidget from '.';
-import { AUDIENCE_INFO_NOTICE_SLUG, AUDIENCE_INFO_NOTICES } from './constant';
-
-import {
-	WithTestRegistry,
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideUserInfo,
-} from '../../../../../../../../tests/js/utils';
-
+import { AUDIENCE_INFO_NOTICE_SLUG } from './constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { provideModules } from '../../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'InfoNoticeWidget' )( InfoNoticeWidget );
 
-function Template( { setupRegistry = async () => {} } ) {
-	const setupRegistryCallback = async ( registry ) => {
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-		] );
-		provideModuleRegistrations( registry );
-		provideUserInfo( registry );
-		await setupRegistry( registry );
-	};
-	return (
-		<WithRegistrySetup func={ setupRegistryCallback }>
-			<WidgetWithComponentProps />
-		</WithRegistrySetup>
-	);
+function Template() {
+	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
@@ -62,18 +38,41 @@ Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/Default',
 };
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+	},
+};
 
-export const Dismissed = Template.bind( {} );
-Dismissed.storyName = 'Permanently Dismissed';
-Dismissed.scenario = {
+export const FirstDismissal = Template.bind( {} );
+FirstDismissal.storyName = 'Two weeks after first dismissal';
+FirstDismissal.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/Dismissed',
 };
-Dismissed.args = {
+FirstDismissal.args = {
 	setupRegistry: async ( registry ) => {
+		const timestamp = Math.floor( Date.now() / 1000 );
 		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-				expires: 0,
-				count: AUDIENCE_INFO_NOTICES.length,
+				expires: timestamp - 1,
+				count: 1,
+			},
+		} );
+	},
+};
+
+export const SecondDismissal = Template.bind( {} );
+SecondDismissal.storyName = 'Two weeks after second dismissal';
+SecondDismissal.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/Dismissed',
+};
+SecondDismissal.args = {
+	setupRegistry: async ( registry ) => {
+		const timestamp = Math.floor( Date.now() / 1000 );
+		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+				expires: timestamp - 1,
+				count: 2,
 			},
 		} );
 	},
@@ -82,13 +81,21 @@ Dismissed.args = {
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget',
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-
+		( Story, { args } ) => {
+			const setupRegistry = async ( registry ) => {
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: 'analytics-4',
+					},
+				] );
+				await args?.setupRegistry( registry );
+			};
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

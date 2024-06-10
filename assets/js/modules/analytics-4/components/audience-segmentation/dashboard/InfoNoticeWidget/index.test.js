@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies.
+ */
 import {
 	render,
 	provideModules,
 	createTestRegistry,
-	provideModuleRegistrations,
-	provideUserInfo,
 	fireEvent,
 } from '../../../../../../../../tests/js/test-utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { AUDIENCE_INFO_NOTICE_SLUG, AUDIENCE_INFO_NOTICES } from './constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import InfoNoticeWidget from '.';
-import { AUDIENCE_INFO_NOTICE_SLUG, AUDIENCE_INFO_NOTICES } from './constant';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
+import InfoNoticeWidget from '.';
 
 describe( 'InfoNoticeWidget', () => {
 	let registry;
@@ -44,8 +45,6 @@ describe( 'InfoNoticeWidget', () => {
 				slug: 'analytics-4',
 			},
 		] );
-		provideModuleRegistrations( registry );
-		provideUserInfo( registry );
 
 		dismissPromptSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
@@ -56,7 +55,7 @@ describe( 'InfoNoticeWidget', () => {
 	const WidgetWithComponentProps =
 		withWidgetComponentProps( 'InfoNoticeWidget' )( InfoNoticeWidget );
 
-	it( 'info notice should not render when permanently dismissed', async () => {
+	it( 'should not render when permanently dismissed', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
 				expires: 0,
@@ -80,7 +79,7 @@ describe( 'InfoNoticeWidget', () => {
 		expect( result ).not.toBeInTheDocument();
 	} );
 
-	it( 'info notice should render when expiry has passed', async () => {
+	it( 'should render when expiry has passed', async () => {
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
@@ -106,7 +105,7 @@ describe( 'InfoNoticeWidget', () => {
 		expect( result ).toBeInTheDocument();
 	} );
 
-	it( 'info notice should call the onDismiss handler when CTA is clicked', async () => {
+	it( 'should call the onDismiss handler with two weeks expiry when dismiss count is less than 6', async () => {
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
@@ -141,4 +140,69 @@ describe( 'InfoNoticeWidget', () => {
 			{ expiresInSeconds: 2 * WEEK_IN_SECONDS }
 		);
 	} );
+
+	it( 'should call the onDismiss handler to dismiss permanently when dismiss count is 6', async () => {
+		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+				expires: currentTimeInSeconds - 10,
+				count: 6,
+			},
+		} );
+
+		// We do not need to test anything for dismiss prompt handler.
+		dismissPromptSpy.mockImplementation( jest.fn() );
+
+		const { getByRole, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'button', { name: /Got it/i } )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+
+		// Ensure that dismiss prompt handler is getting called after clicking the button.
+		expect( dismissPromptSpy ).toHaveBeenCalledTimes( 1 );
+		expect( dismissPromptSpy ).toHaveBeenCalledWith(
+			AUDIENCE_INFO_NOTICE_SLUG,
+			{ expiresInSeconds: 0 }
+		);
+	} );
+
+	it.each(
+		AUDIENCE_INFO_NOTICES.map( ( notice, index ) => [ notice, index ] )
+	)(
+		'should render the "%s" notice when dismiss count is %d',
+		async ( notice, dismissCount ) => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+					expires: currentTimeInSeconds - 10,
+					count: dismissCount,
+				},
+			} );
+
+			const { queryByText, waitForRegistry } = render(
+				<WidgetWithComponentProps />,
+				{
+					registry,
+				}
+			);
+
+			const result = queryByText( notice );
+
+			await waitForRegistry();
+
+			expect( result ).toBeInTheDocument();
+		}
+	);
 } );
