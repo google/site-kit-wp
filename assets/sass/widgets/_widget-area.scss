@@ -55,4 +55,14 @@
 		display: flex;
 		justify-content: space-between;
 	}
+
+	.googlesitekit-widget-area__cta-link {
+		align-items: center;
+		display: flex;
+		font-size: $fs-label-md;
+		font-weight: $fw-medium;
+		line-height: $lh-label-md;
+		padding-left: 6px; // Tweak the padding to ensure the link is aligned in its focus state.
+		white-space: nowrap;
+	}
 }

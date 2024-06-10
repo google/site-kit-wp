@@ -57,7 +57,7 @@ export default function ChangeGroupsLink() {
 			<Link
 				secondary
 				linkButton
-				className="googlesitekit-audience-widget-change-groups-cta"
+				className="googlesitekit-widget-area__cta-link"
 				onClick={ openAudiencesSelectionPanel }
 				leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
 			>
