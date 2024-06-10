@@ -88,6 +88,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use stdClass;
 use WP_Error;
 
@@ -354,6 +355,19 @@ final class Analytics_4 extends Module
 				return ! $this->is_connected()
 					? 'analytics-step'
 					: $original_mode;
+			}
+		);
+
+		// Preload the path to avoid layout shift for audience setup CTA banner.
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function( $routes ) {
+				return array_merge(
+					$routes,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/audience-settings',
+					)
+				);
 			}
 		);
 	}

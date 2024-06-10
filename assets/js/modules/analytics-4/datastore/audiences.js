@@ -492,6 +492,45 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets the available configurable audiences.
+	 *
+	 * This selector filters out the "Purchasers" audience if it has no data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Array|undefined)} Array of configurable audiences. Undefined if available audiences are not loaded yet.
+	 */
+	getConfigurableAudiences: createRegistrySelector( ( select ) => () => {
+		const { getAvailableAudiences, getResourceDataAvailabilityDate } =
+			select( MODULES_ANALYTICS_4 );
+
+		const availableAudiences = getAvailableAudiences();
+
+		if ( availableAudiences === undefined ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( availableAudiences ) ) {
+			return [];
+		}
+
+		return (
+			availableAudiences
+				// Filter out "Purchasers" audience if it has no data.
+				.filter( ( { audienceSlug, name } ) => {
+					if ( 'purchasers' !== audienceSlug ) {
+						return true;
+					}
+
+					return !! getResourceDataAvailabilityDate(
+						name,
+						'audience'
+					);
+				} )
+		);
+	} ),
 };
 
 const store = Data.combineStores(
