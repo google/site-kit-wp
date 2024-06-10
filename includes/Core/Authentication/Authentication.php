@@ -1050,6 +1050,10 @@ final class Authentication {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
+		$can_view_authenticated_dashboard = function() {
+			return current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD );
+		};
+
 		return array(
 			new REST_Route(
 				'core/site/data/connection',
@@ -1107,6 +1111,23 @@ final class Authentication {
 							return new WP_REST_Response( true );
 						},
 						'permission_callback' => $can_disconnect,
+					),
+				)
+			),
+			new REST_Route(
+				'core/user/data/get-token',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$this->refresh_user_token();
+							return new WP_REST_Response(
+								array(
+									'token' => $this->get_oauth_client()->get_access_token(),
+								)
+							);
+						},
+						'permission_callback' => $can_view_authenticated_dashboard,
 					),
 				)
 			),
