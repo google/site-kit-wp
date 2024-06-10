@@ -208,5 +208,42 @@
 				padding: 19px 25px;
 			}
 		}
+
+		// Zero data title styles.
+		.googlesitekit-audience-segmentation-tile-zero-data__container {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			text-align: center;
+
+			.googlesitekit-audience-segmentation-tile__header {
+				border-bottom: none;
+			}
+
+			.googlesitekit-audience-segmentation-tile-zero-data__content {
+				padding: 155px 0;
+			}
+
+			.googlesitekit-audience-segmentation-tile-zero-data__image {
+				margin-bottom: 20px;
+				width: 106px;
+			}
+
+			.googlesitekit-audience-segmentation-tile-zero-data__title {
+				font-family: $f-primary;
+				font-size: $fs-title-sm;
+				font-weight: $fw-medium;
+				line-height: $lh-title-sm;
+				margin: 0;
+			}
+
+			.googlesitekit-audience-segmentation-tile-hide-cta {
+				font-family: $f-primary;
+				font-weight: $fw-medium;
+				margin: 6px 0;
+				padding: 6px 12px;
+				white-space: nowrap;
+			}
+		}
 	}
 }
