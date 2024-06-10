@@ -52,6 +52,8 @@ import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
 import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
+import AudienceTileCollectingData from './AudienceTileCollectingData';
+import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
 const { useSelect } = Data;
 
 // TODO: as part of #8484 the report props should be updated to expect
@@ -71,6 +73,10 @@ export default function AudienceTile( {
 	topContentTitles,
 	Widget,
 	audienceResourceName,
+	isZeroData,
+	isPartialData,
+	showHideable,
+	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -103,8 +109,40 @@ export default function AudienceTile( {
 	);
 
 	// TODO: Loading states will be implemented as part of https://github.com/google/site-kit-wp/issues/8145.
-	if ( ! loaded ) {
+	if ( ! loaded || isZeroData === undefined || isPartialData === undefined ) {
 		return <PreviewBlock width="100%" height="500px" />;
+	}
+
+	if ( isPartialData && isZeroData ) {
+		return (
+			<Widget noPadding>
+				<div className="googlesitekit-audience-segmentation-tile">
+					<div className="googlesitekit-audience-segmentation-tile-zero-data__container">
+						{ ! isMobileBreakpoint && (
+							<div className="googlesitekit-audience-segmentation-tile__header">
+								<div className="googlesitekit-audience-segmentation-tile__header-title">
+									{ title }
+									{ infoTooltip && (
+										<InfoTooltip
+											title={ infoTooltip }
+											tooltipClassName="googlesitekit-info-tooltip__content--audience"
+										/>
+									) }
+								</div>
+							</div>
+						) }
+						<div className="googlesitekit-audience-segmentation-tile-zero-data__content">
+							<AudienceTileCollectingData />
+							{ showHideable && (
+								<AudienceTileCollectingDataHideable
+									onHideTile={ onHideTile }
+								/>
+							) }
+						</div>
+					</div>
+				</div>
+			</Widget>
+		);
 	}
 
 	return (
