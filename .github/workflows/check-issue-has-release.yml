@@ -1,37 +1,37 @@
 name: Check for Release
 
 on:
-    pull_request:
-        branches:
-            - develop
-            - main
-        types:
-            - opened
-            - closed
-            - reopened
-            - synchronize
-    pull_request_review:
-        types: [submitted]
+  pull_request:
+    branches:
+      - develop
+      - main
+    types:
+      - opened
+      - closed
+      - reopened
+      - synchronize
+  pull_request_review:
+    types: [submitted]
 
 concurrency:
-    group: check-issue-has-release-${{ github.ref }}
-    cancel-in-progress: true
+  group: check-issue-has-release-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    check-issue-has-release:
-        name: Issue must have a ZenHub release
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
-        if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork ) && github.event.review.state == 'approved'
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
-              with:
-                  # Use modern Node for native fetch in script.
-                  node-version: '18.x'
+  check-issue-has-release:
+    name: Issue must have a ZenHub release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork ) && github.event.review.state == 'approved'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Use modern Node for native fetch in script.
+          node-version: '18.x'
 
-            - name: Check issue for release tag
-              run: ./bin/check-issue-has-release.js
-              env:
-                  PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
-                  ZENHUB_GQL_API_TOKEN: ${{ secrets.ZENHUB_GQL_API_TOKEN }}
+      - name: Check issue for release tag
+        run: ./bin/check-issue-has-release.js
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
+          ZENHUB_GQL_API_TOKEN: ${{ secrets.ZENHUB_GQL_API_TOKEN }}

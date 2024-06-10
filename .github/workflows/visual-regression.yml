@@ -1,60 +1,60 @@
 name: Visual Regression Testing
 
 on:
-    pull_request:
-        branches:
-            - main
-            - develop
-            - 'feature/**'
-        # Only run if CSS/JS/MD-related files changed.
-        paths:
-            - '.github/workflows/visual-regression.yml'
-            - 'assets/**'
-            - '!assets/**/__tests__/**/*.js'
-            - '!assets/**/test/*.js'
-            - '!assets/**/*.test.js'
-            - '**.stories.js'
-            - 'tests/backstop/**'
-            - '.storybook/**'
-            - '**.scss'
-            - '.nvmrc'
-            - '**/package.json'
-            - 'package-lock.json'
-            - 'src/tests/backstop/config.js'
-            - 'docker/backstopjs/Dockerfile'
-        types:
-            - opened
-            - reopened
-            - synchronize
-            - ready_for_review
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '.github/workflows/visual-regression.yml'
+      - 'assets/**'
+      - '!assets/**/__tests__/**/*.js'
+      - '!assets/**/test/*.js'
+      - '!assets/**/*.test.js'
+      - '**.stories.js'
+      - 'tests/backstop/**'
+      - '.storybook/**'
+      - '**.scss'
+      - '.nvmrc'
+      - '**/package.json'
+      - 'package-lock.json'
+      - 'src/tests/backstop/config.js'
+      - 'docker/backstopjs/Dockerfile'
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
 concurrency:
-    group: visual-regression-${{ github.ref }}
-    cancel-in-progress: true
+  group: visual-regression-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    visual-regression:
-        name: Run VR Tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 30
-        if: github.event.pull_request.draft == false
-        steps:
-            - uses: actions/checkout@v4
-            - name: Setup Node.js (.nvmrc)
-              uses: actions/setup-node@v4
-              with:
-                  node-version-file: '.nvmrc'
-                  cache: 'npm'
-            - name: npm install
-              run: npm ci
-            - name: Run Backstopjs
-              run: npm run test:visualtest
-            - name: Upload artifacts
-              uses: actions/upload-artifact@v3
-              if: failure()
-              with:
-                  name: vrt-report
-                  path: |
-                      tests/backstop/html_report
-                      tests/backstop/reference
-                      tests/backstop/tests
+  visual-regression:
+    name: Run VR Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: npm install
+        run: npm ci
+      - name: Run Backstopjs
+        run: npm run test:visualtest
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: vrt-report
+          path: |
+            tests/backstop/html_report
+            tests/backstop/reference
+            tests/backstop/tests
