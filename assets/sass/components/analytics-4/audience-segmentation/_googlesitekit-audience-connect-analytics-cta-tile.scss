@@ -22,7 +22,7 @@
 		display: flex;
 		flex-direction: column;
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $minWidth-desktop) {
 			align-items: center;
 			flex: 1;
 			flex-direction: row;
@@ -35,13 +35,13 @@
 			padding-block: 20px;
 			padding-inline: $grid-gap-phone;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $minWidth-tablet) {
 				align-items: center;
 				flex-direction: row;
 				padding-inline: $grid-gap-desktop;
 			}
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $minWidth-desktop) {
 				flex: 2;
 				padding: 0;
 			}
@@ -50,7 +50,7 @@
 				display: flex;
 				margin-bottom: 6px;
 
-				@media (min-width: $bp-tablet) {
+				@media (min-width: $minWidth-tablet) {
 					justify-content: right;
 					margin-bottom: 0;
 				}
@@ -58,22 +58,22 @@
 
 			.googlesitekit-audience-connect-analytics-cta-tile__content {
 
-				@media (min-width: $bp-tablet) {
+				@media (min-width: $minWidth-tablet) {
 					margin-left: 20px;
 				}
 
-				@media (min-width: $bp-desktop) {
+				@media (min-width: $minWidth-desktop) {
 					margin-left: $grid-gap-desktop;
 				}
 
 				.googlesitekit-audience-connect-analytics-cta-tile__text {
 					margin: 0 0 4px;
 
-					@media (min-width: $bp-tablet) {
+					@media (min-width: $minWidth-tablet) {
 						display: inline;
 					}
 
-					@media (min-width: $bp-desktop) {
+					@media (min-width: $minWidth-desktop) {
 						display: block;
 					}
 				}
@@ -84,13 +84,13 @@
 			display: flex;
 			justify-content: center;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $minWidth-tablet) {
 				svg {
 					height: 150px;
 				}
 			}
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $minWidth-desktop) {
 				flex: 1;
 				padding-inline: $grid-gap-desktop;
 			}

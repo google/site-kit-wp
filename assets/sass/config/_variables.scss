@@ -277,6 +277,8 @@ $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
 $bp-desktop: $width-desktop + px;
 $bp-xlarge: $width-xlarge + px;
 $bp-xxlarge: $width-xxlarge + px;
+$minWidth-tablet: $width-tablet + 1 + px;
+$minWidth-desktop: $width-desktop + 1 + px;
 
 // Specific for WP Dashboard
 $bp-wpdb1: 800px;
