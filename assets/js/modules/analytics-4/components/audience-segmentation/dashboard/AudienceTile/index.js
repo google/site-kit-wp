@@ -283,4 +283,8 @@ AudienceTile.propTypes = {
 	topContentTitles: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
+	isZeroData: PropTypes.bool,
+	isPartialData: PropTypes.bool,
+	isTileHideable: PropTypes.bool,
+	onHideTile: PropTypes.func,
 };
