@@ -176,9 +176,14 @@ export function registerDefaults( widgetsAPI ) {
 							'analytics-4'
 						);
 
-					// TODO: This widget should be shown only if the audience group is set up.
-					// This will be handled in https://github.com/google/site-kit-wp/issues/8810
-					// when the audience settings are without `analytics-4` module being connected.
+					/**
+					 * TODO: This widget should be shown only if the audience group
+					 * is set up for the current user. This should be fixed once
+					 * the audience settings become accessible without `analytics-4`
+					 * module being connected.
+					 * See: https://github.com/google/site-kit-wp/issues/8810 for
+					 * more details.
+					 */
 
 					return ! isAnalyticsConnected;
 				},
