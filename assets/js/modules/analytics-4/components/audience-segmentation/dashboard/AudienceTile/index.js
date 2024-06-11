@@ -75,7 +75,7 @@ export default function AudienceTile( {
 	audienceResourceName,
 	isZeroData,
 	isPartialData,
-	showHideable,
+	isTileHideable,
 	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
@@ -136,7 +136,7 @@ export default function AudienceTile( {
 						) }
 						<div className="googlesitekit-audience-segmentation-tile--zero-data__content">
 							<AudienceTileCollectingData />
-							{ showHideable && (
+							{ isTileHideable && (
 								<AudienceTileCollectingDataHideable
 									onHideTile={ onHideTile }
 								/>

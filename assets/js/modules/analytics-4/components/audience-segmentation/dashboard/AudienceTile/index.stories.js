@@ -286,7 +286,7 @@ ZeroDataHideable.args = {
 	audienceResourceName,
 	isZeroData: true,
 	isPartialData: true,
-	showHideable: true,
+	isTileHideable: true,
 	onHideTile: () => {},
 };
 ZeroDataHideable.scenario = {

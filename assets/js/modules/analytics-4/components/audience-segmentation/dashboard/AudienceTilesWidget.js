@@ -475,7 +475,7 @@ function AudienceTilesWidget( { Widget } ) {
 							audienceResourceName={ audienceResourceName }
 							isZeroData={ isZeroData }
 							isPartialData={ isPartialData }
-							showHideable={ visibleAudiences.length > 1 }
+							isTileHideable={ visibleAudiences.length > 1 }
 							onHideTile={ () =>
 								handleDismiss( audienceResourceName )
 							}
