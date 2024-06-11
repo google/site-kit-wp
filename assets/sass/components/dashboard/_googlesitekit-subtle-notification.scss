@@ -67,7 +67,7 @@
 		padding: 6px $grid-gap-phone;
 
 		&.mdc-button--tertiary:not(:disabled) {
-			color: $c-site-kit-sk-600;
+			color: $c-content-on-primary-container;
 		}
 
 		@media (min-width: $bp-tablet) {

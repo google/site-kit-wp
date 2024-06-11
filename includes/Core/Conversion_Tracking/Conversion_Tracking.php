@@ -118,7 +118,7 @@ class Conversion_Tracking {
 		);
 
 		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit = window._googlesitekit || {};' );
-		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit.trackEvent = (name, data) => gtag("event", name, {...data, _source: "site-kit" });' );
+		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit.gtagEvent = (name, data) => gtag("event", name, {...data, event_source: "site-kit" });' );
 	}
 
 	/**

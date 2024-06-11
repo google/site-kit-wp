@@ -42,7 +42,10 @@ import {
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
-import { AudienceAreaFooter } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
+import {
+	AudienceAreaFooter,
+	ChangeGroupsLink,
+} from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { isFeatureEnabled } from '../../features';
 import ConnectAnalyticsCTATileWidget from '../../modules/analytics-4/components/audience-segmentation/dashboard/ConnectAnalyticsCTATileWidget';
 
@@ -153,6 +156,7 @@ export function registerDefaults( widgetsAPI ) {
 				hasNewBadge: true,
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 2,
+				CTA: ChangeGroupsLink,
 				Footer: AudienceAreaFooter,
 			},
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
