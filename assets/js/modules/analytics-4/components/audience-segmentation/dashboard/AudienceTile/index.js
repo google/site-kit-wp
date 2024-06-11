@@ -115,9 +115,12 @@ export default function AudienceTile( {
 
 	if ( isPartialData && isZeroData ) {
 		return (
-			<Widget noPadding>
+			<Widget
+				noPadding
+				className="googlesitekit-audience-segmentation-tile--zero-data"
+			>
 				<div className="googlesitekit-audience-segmentation-tile">
-					<div className="googlesitekit-audience-segmentation-tile-zero-data__container">
+					<div className="googlesitekit-audience-segmentation-tile--zero-data__container">
 						{ ! isMobileBreakpoint && (
 							<div className="googlesitekit-audience-segmentation-tile__header">
 								<div className="googlesitekit-audience-segmentation-tile__header-title">
@@ -131,7 +134,7 @@ export default function AudienceTile( {
 								</div>
 							</div>
 						) }
-						<div className="googlesitekit-audience-segmentation-tile-zero-data__content">
+						<div className="googlesitekit-audience-segmentation-tile--zero-data__content">
 							<AudienceTileCollectingData />
 							{ showHideable && (
 								<AudienceTileCollectingDataHideable
