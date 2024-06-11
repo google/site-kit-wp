@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModules,
 	unsubscribeFromAll,
 	untilResolved,
@@ -398,6 +399,38 @@ describe( 'modules/analytics-4 audience settings', () => {
 					.haveConfiguredAudiencesChanged();
 
 				expect( hasChangedAfterSet ).toBe( true );
+			} );
+		} );
+
+		describe( 'isSavingAudienceSettings', () => {
+			it( 'should return false if audience settings are not being saved', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSavingAudienceSettings()
+				).toBe( false );
+			} );
+
+			it( 'should return true if audience settings are being saved', async () => {
+				muteFetch( audienceSettingsEndpoint );
+
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchSaveAudienceSettings( audienceSettingsResponse );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSavingAudienceSettings()
+				).toBe( true );
+
+				await promise;
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSavingAudienceSettings()
+				).toBe( false );
 			} );
 		} );
 	} );

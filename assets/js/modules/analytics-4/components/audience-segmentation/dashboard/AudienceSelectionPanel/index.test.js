@@ -29,7 +29,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
-import { render } from '../../../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import AudienceSelectionPanel from '.';
 
@@ -307,6 +307,59 @@ describe( 'AudienceSelectionPanel', () => {
 					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer__item-count'
 				)
 			).toHaveTextContent( '2 selected (up to 3)' );
+		} );
+
+		it( 'should prevent saving when no group is checked', async () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( AUDIENCE_SELECTION_FORM, {
+					[ AUDIENCE_SELECTED ]: [],
+				} );
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-button-icon--spinner'
+				)
+			).toBeDisabled();
+		} );
+
+		it( 'should display error message when no group is checked', async () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( AUDIENCE_SELECTION_FORM, {
+					[ AUDIENCE_SELECTED ]: [],
+				} );
+
+			const { findByLabelText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-error-text'
+				).textContent
+			).toBe( 'Select at least 1 group (0 selected)' );
+
+			// Select a group.
+			const checkbox = await findByLabelText( 'All visitors' );
+			fireEvent.click( checkbox );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-error-text'
+				)
+			).not.toBeInTheDocument();
 		} );
 	} );
 } );

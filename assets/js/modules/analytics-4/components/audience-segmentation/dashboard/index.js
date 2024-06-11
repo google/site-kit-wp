@@ -25,3 +25,5 @@ export { default as AudienceTooltipMessage } from './AudienceTooltipMessage';
 export { default as AudienceSelectionPanel } from './AudienceSelectionPanel';
 export { default as AudienceAreaFooter } from './AudienceAreaFooter';
 export { default as InfoNoticeWidget } from '../dashboard/InfoNoticeWidget';
+export { default as ChangeGroupsLink } from './ChangeGroupsLink';
+export { default as InfoNotice } from './InfoNotice';

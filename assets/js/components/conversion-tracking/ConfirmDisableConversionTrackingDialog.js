@@ -56,6 +56,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
 			handleDialog={ onCancel }
+			onClose={ onCancel }
 			provides={ provides }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
