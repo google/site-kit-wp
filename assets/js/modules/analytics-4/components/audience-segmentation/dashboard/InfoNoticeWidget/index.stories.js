@@ -20,10 +20,10 @@
  * Internal dependencies.
  */
 import InfoNoticeWidget from '.';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 
 const WidgetWithComponentProps =
@@ -47,7 +47,7 @@ Default.args = {
 export const FirstDismissal = Template.bind( {} );
 FirstDismissal.storyName = 'Two weeks after first dismissal';
 FirstDismissal.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/Dismissed',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/FirstDismissal',
 };
 FirstDismissal.args = {
 	setupRegistry: async ( registry ) => {
@@ -64,7 +64,7 @@ FirstDismissal.args = {
 export const SecondDismissal = Template.bind( {} );
 SecondDismissal.storyName = 'Two weeks after second dismissal';
 SecondDismissal.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/Dismissed',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/SecondDismissal',
 };
 SecondDismissal.args = {
 	setupRegistry: async ( registry ) => {
@@ -73,6 +73,74 @@ SecondDismissal.args = {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
 				expires: timestamp - 1,
 				count: 2,
+			},
+		} );
+	},
+};
+
+export const ThirdDismissal = Template.bind( {} );
+ThirdDismissal.storyName = 'Two weeks after third dismissal';
+ThirdDismissal.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/ThirdDismissal',
+};
+ThirdDismissal.args = {
+	setupRegistry: async ( registry ) => {
+		const timestamp = Math.floor( Date.now() / 1000 );
+		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+				expires: timestamp - 1,
+				count: 3,
+			},
+		} );
+	},
+};
+
+export const FourthDismissal = Template.bind( {} );
+FourthDismissal.storyName = 'Two weeks after fourth dismissal';
+FourthDismissal.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/FourthDismissal',
+};
+FourthDismissal.args = {
+	setupRegistry: async ( registry ) => {
+		const timestamp = Math.floor( Date.now() / 1000 );
+		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+				expires: timestamp - 1,
+				count: 4,
+			},
+		} );
+	},
+};
+
+export const FifthDismissal = Template.bind( {} );
+FifthDismissal.storyName = 'Two weeks after fifth dismissal';
+FifthDismissal.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/FifthDismissal',
+};
+FifthDismissal.args = {
+	setupRegistry: async ( registry ) => {
+		const timestamp = Math.floor( Date.now() / 1000 );
+		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+				expires: timestamp - 1,
+				count: 5,
+			},
+		} );
+	},
+};
+
+export const SixthDismissal = Template.bind( {} );
+SixthDismissal.storyName = 'Two weeks after sixth dismissal';
+SixthDismissal.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget/SixthDismissal',
+};
+SixthDismissal.args = {
+	setupRegistry: async ( registry ) => {
+		const timestamp = Math.floor( Date.now() / 1000 );
+		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+				expires: timestamp - 1,
+				count: 6,
 			},
 		} );
 	},

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 /**

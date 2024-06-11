@@ -70,9 +70,7 @@ describe( 'InfoNoticeWidget', () => {
 			}
 		);
 
-		const result = queryByText(
-			'The higher the portion of new visitors you have, the more your audience is growing. Looking at what content brings them to your site may give you insights on how to reach even more people.'
-		);
+		const result = queryByText( AUDIENCE_INFO_NOTICES[ 0 ] );
 
 		await waitForRegistry();
 
@@ -85,7 +83,7 @@ describe( 'InfoNoticeWidget', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
 				expires: currentTimeInSeconds - 10,
-				count: 2,
+				count: AUDIENCE_INFO_NOTICES.length - 1,
 			},
 		} );
 
@@ -97,7 +95,7 @@ describe( 'InfoNoticeWidget', () => {
 		);
 
 		const result = queryByText(
-			'Configure your own custom audiences in Analytics to gain deeper insights into visitor behavior, for example consider creating a “Existing customers” or “Subscribers” segment, depending on what goals you have for your site.'
+			AUDIENCE_INFO_NOTICES[ AUDIENCE_INFO_NOTICES.length - 1 ]
 		);
 
 		await waitForRegistry();
@@ -105,13 +103,13 @@ describe( 'InfoNoticeWidget', () => {
 		expect( result ).toBeInTheDocument();
 	} );
 
-	it( 'should call the onDismiss handler with two weeks expiry when dismiss count is less than 6', async () => {
+	it( 'should call the onDismiss handler with two weeks expiry until it reaches the last notice', async () => {
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
 				expires: currentTimeInSeconds - 10,
-				count: 2,
+				count: AUDIENCE_INFO_NOTICES.length - 5,
 			},
 		} );
 
@@ -141,13 +139,13 @@ describe( 'InfoNoticeWidget', () => {
 		);
 	} );
 
-	it( 'should call the onDismiss handler to dismiss permanently when dismiss count is 6', async () => {
+	it( 'should call the onDismiss handler to dismiss permanently when it reaches the last notice', async () => {
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
 				expires: currentTimeInSeconds - 10,
-				count: 6,
+				count: AUDIENCE_INFO_NOTICES.length - 1,
 			},
 		} );
 

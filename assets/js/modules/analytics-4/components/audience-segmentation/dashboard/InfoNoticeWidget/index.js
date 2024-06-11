@@ -39,7 +39,7 @@ import { WEEK_IN_SECONDS } from '../../../../../../util';
 
 const { useSelect, useDispatch } = Data;
 
-function InfoNoticeWidget( { Widget } ) {
+function InfoNoticeWidget( { Widget, WidgetNull } ) {
 	const noticesCount = AUDIENCE_INFO_NOTICES.length;
 
 	const isDismissed = useSelect( ( select ) =>
@@ -71,7 +71,7 @@ function InfoNoticeWidget( { Widget } ) {
 		dismissCount === undefined ||
 		dismissCount >= noticesCount
 	) {
-		return null;
+		return <WidgetNull />;
 	}
 
 	return (
@@ -87,6 +87,7 @@ function InfoNoticeWidget( { Widget } ) {
 
 InfoNoticeWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType,
 };
 
 export default whenActive( { moduleName: 'analytics-4' } )( InfoNoticeWidget );
