@@ -20,11 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	createInterpolateElement,
-	useCallback,
-	useEffect,
-} from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -84,16 +80,11 @@ export default function SettingsView() {
 
 	const { rollbackConversionTrackingSettings } = useDispatch( CORE_SITE );
 
-	const handleConversionTrackingSettingsRollback = useCallback(
-		() => rollbackConversionTrackingSettings(),
-		[ rollbackConversionTrackingSettings ]
-	);
-
 	useEffect( () => {
 		if ( iceEnabled ) {
-			handleConversionTrackingSettingsRollback();
+			rollbackConversionTrackingSettings();
 		}
-	}, [ iceEnabled, handleConversionTrackingSettingsRollback ] );
+	}, [ iceEnabled, rollbackConversionTrackingSettings ] );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
