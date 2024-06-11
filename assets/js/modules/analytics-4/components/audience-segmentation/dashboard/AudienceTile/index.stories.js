@@ -132,6 +132,8 @@ const readyProps = {
 		'/en/test-post-2/': 'Test Post 2',
 		'/en/test-post-3/': 'Test Post 3',
 	},
+	isZeroData: false,
+	isPartialData: false,
 };
 
 const audienceResourceName = 'properties/12345/audiences/12345';
@@ -274,6 +276,34 @@ TopContentPartialData.args = {
 };
 TopContentPartialData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/TopContentPartialData',
+};
+
+export const ZeroDataHideable = Template.bind( {} );
+ZeroDataHideable.storyName = 'ZeroDataHideable';
+ZeroDataHideable.args = {
+	...readyProps,
+	infoTooltip: 'This is a tooltip',
+	audienceResourceName,
+	isZeroData: true,
+	isPartialData: true,
+	showHideable: true,
+	onHideTile: () => {},
+};
+ZeroDataHideable.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ZeroDataHideable',
+};
+
+export const ZeroDataNonHideable = Template.bind( {} );
+ZeroDataNonHideable.storyName = 'ZeroDataNonHideable';
+ZeroDataNonHideable.args = {
+	...readyProps,
+	infoTooltip: 'This is a tooltip',
+	audienceResourceName,
+	isZeroData: true,
+	isPartialData: true,
+};
+ZeroDataNonHideable.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ZeroDataNonHideable',
 };
 
 export default {
