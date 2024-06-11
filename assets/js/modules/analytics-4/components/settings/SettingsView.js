@@ -20,7 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,7 +45,7 @@ import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsView() {
 	const iceEnabled = useFeature( 'conversionInfra' );
@@ -77,6 +81,18 @@ export default function SettingsView() {
 
 		return select( CORE_SITE ).isConversionTrackingEnabled();
 	} );
+
+	const { rollbackConversionTrackingSettings } = useDispatch( CORE_SITE );
+
+	const handleBack = useCallback( () => {
+		rollbackConversionTrackingSettings();
+	}, [ rollbackConversionTrackingSettings ] );
+
+	useEffect( () => {
+		if ( iceEnabled ) {
+			handleBack();
+		}
+	}, [ iceEnabled, handleBack ] );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
