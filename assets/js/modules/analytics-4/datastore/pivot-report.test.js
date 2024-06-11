@@ -105,7 +105,7 @@ describe( 'modules/analytics-4 pivotReport', () => {
 				expect( report ).toEqual( fixtures.pivotReport );
 			} );
 
-			it( 'does not make a network request if report for given options is already present', async () => {
+			it( 'does not make a network request if report for given options is already present', () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry
@@ -115,11 +115,6 @@ describe( 'modules/analytics-4 pivotReport', () => {
 				const report = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getPivotReport( options );
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getPivotReport( options );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.pivotReport );

@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -30,15 +24,8 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { stringifyObject } from '../../../util';
-import { isValidDateRange } from '../../../util/report-validation';
-import {
-	normalizeReportOptions,
-	isValidDimensionFilters,
-	isValidDimensions,
-	isValidMetrics,
-	isValidMetricFilters,
-	isValidPivots,
-} from '../utils';
+import { normalizeReportOptions } from '../utils';
+import { validatePivotReport } from '../utils/validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getPivotReport',
@@ -62,73 +49,7 @@ const fetchGetReportStore = createFetchStore( {
 	argsToParams: ( options ) => {
 		return { options };
 	},
-	validateParams: ( { options } = {} ) => {
-		invariant(
-			isPlainObject( options ),
-			'options for Analytics 4 report must be an object.'
-		);
-		invariant(
-			isValidDateRange( options ),
-			'Either date range or start/end dates must be provided for Analytics 4 report.'
-		);
-
-		const {
-			metrics,
-			dimensions,
-			dimensionFilters,
-			metricFilters,
-			pivots,
-			orderby,
-			limit,
-		} = normalizeReportOptions( options );
-
-		invariant(
-			metrics.length,
-			'Requests must specify at least one metric for an Analytics 4 report.'
-		);
-		invariant(
-			isValidMetrics( metrics ),
-			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property. Metric names must match the expression ^[a-zA-Z0-9_]+$.'
-		);
-		invariant(
-			isValidPivots( pivots ),
-			'pivots for an Analytics 4 report must be an array of objects. Each object must have a "fieldNames" property and a "limit".'
-		);
-
-		if ( orderby ) {
-			invariant(
-				Array.isArray( orderby ),
-				'orderby for an Analytics 4 pivot report must be passed within a pivot.'
-			);
-		}
-		if ( limit ) {
-			invariant(
-				typeof limit === 'number',
-				'limit for an Analytics 4 pivot report must be passed within a pivot.'
-			);
-		}
-
-		if ( dimensions ) {
-			invariant(
-				isValidDimensions( dimensions ),
-				'dimensions for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
-			);
-		}
-
-		if ( dimensionFilters ) {
-			invariant(
-				isValidDimensionFilters( dimensionFilters ),
-				'dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values.'
-			);
-		}
-
-		if ( metricFilters ) {
-			invariant(
-				isValidMetricFilters( metricFilters ),
-				'metricFilters for an Analytics 4 report must be a map of metric names as keys and filter value(s) as numeric fields, depending on the filterType.'
-			);
-		}
-	},
+	validateParams: ( { options } = {} ) => validatePivotReport( options ),
 } );
 
 const baseInitialState = {
