@@ -110,7 +110,7 @@ export default function AudienceTile( {
 
 	// TODO: Loading states will be implemented as part of https://github.com/google/site-kit-wp/issues/8145.
 	if ( ! loaded || isZeroData === undefined || isPartialData === undefined ) {
-		return <PreviewBlock width="100%" height="500px" />;
+		return <PreviewBlock width="100%" height="600px" />;
 	}
 
 	if ( isPartialData && isZeroData ) {
