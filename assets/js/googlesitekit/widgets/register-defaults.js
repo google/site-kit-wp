@@ -45,9 +45,9 @@ import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/Co
 import {
 	AudienceAreaFooter,
 	ChangeGroupsLink,
+	ConnectAnalyticsCTATileWidget,
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { isFeatureEnabled } from '../../features';
-import ConnectAnalyticsCTATileWidget from '../../modules/analytics-4/components/audience-segmentation/dashboard/ConnectAnalyticsCTATileWidget';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -175,6 +175,10 @@ export function registerDefaults( widgetsAPI ) {
 						select( CORE_MODULES ).isModuleConnected(
 							'analytics-4'
 						);
+
+					// TODO: This widget should be shown only if the audience group is set up.
+					// This will be handled in https://github.com/google/site-kit-wp/issues/8810
+					// when the audience settings are without `analytics-4` module being connected.
 
 					return ! isAnalyticsConnected;
 				},

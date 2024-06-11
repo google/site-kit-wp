@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
+import { provideModuleRegistrations } from '../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import ConnectAnalyticsCTATileWidget from './ConnectAnalyticsCTATileWidget';
 
@@ -47,13 +44,6 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
 				provideModuleRegistrations( registry );
 			};
 

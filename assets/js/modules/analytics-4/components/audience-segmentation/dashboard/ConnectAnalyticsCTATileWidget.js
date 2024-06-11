@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -91,3 +96,7 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 		</Widget>
 	);
 }
+
+ConnectAnalyticsCTATileWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+};
