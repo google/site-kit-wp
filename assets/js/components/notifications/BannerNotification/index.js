@@ -106,7 +106,7 @@ export default function BannerNotification( props ) {
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
 	const persistDismissal = () =>
-		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
+		setItem( cacheKeyDismissed, new Date(), { ttl: null } ); // eslint-disable-line sitekit/no-direct-date
 
 	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
@@ -221,6 +221,7 @@ export default function BannerNotification( props ) {
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);
 
+			// eslint-disable-next-line sitekit/no-direct-date
 			if ( expiration < new Date() ) {
 				await deleteItem( cacheKeyDismissed );
 			}

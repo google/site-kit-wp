@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+const globToRegExp = require( 'glob-to-regexp' );
+
 module.exports = {
 	meta: {
 		type: 'suggestion',
@@ -25,6 +30,17 @@ module.exports = {
 	},
 	create( context ) {
 		function report( node ) {
+			const filename = context.getFilename();
+			const [ options ] = context.options || [];
+			const { ignoreFiles } = options || {};
+
+			// Ignore files defined in the `ignoreFiles` option.
+			for ( const pattern of ignoreFiles || [] ) {
+				if ( globToRegExp( pattern ).test( filename ) ) {
+					return;
+				}
+			}
+
 			context.report( {
 				node,
 				message: `Avoid using '${
