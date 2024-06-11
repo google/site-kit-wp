@@ -84,15 +84,15 @@ export default function SettingsView() {
 
 	const { rollbackConversionTrackingSettings } = useDispatch( CORE_SITE );
 
-	const handleBack = useCallback( () => {
+	const handleConversionTrackingSettingsRollback = useCallback( () => {
 		rollbackConversionTrackingSettings();
 	}, [ rollbackConversionTrackingSettings ] );
 
 	useEffect( () => {
 		if ( iceEnabled ) {
-			handleBack();
+			handleConversionTrackingSettingsRollback();
 		}
-	}, [ iceEnabled, handleBack ] );
+	}, [ iceEnabled, handleConversionTrackingSettingsRollback ] );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
