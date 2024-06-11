@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Analytics_4\Report\ReportParsers_Trait;
+use Google\Site_Kit\Modules\Analytics_4\Report\ReportParsers;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Pivot as Google_Service_AnalyticsData_Pivot;
 
 /**
@@ -22,9 +22,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Pivot as Google_Se
  * @access private
  * @ignore
  */
-class PivotReport {
-
-	use ReportParsers_Trait;
+class PivotReport extends ReportParsers {
 
 	/**
 	 * Plugin context.

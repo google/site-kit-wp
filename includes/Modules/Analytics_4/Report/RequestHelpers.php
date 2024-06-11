@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics_4\Report\SharedCreateRequest
+ * Class Google\Site_Kit\Modules\Analytics_4\Report\SharedRequestHelpers
  *
  * @package   Google\Site_Kit\Modules\Analytics_4\Report
  * @copyright 2024 Google LLC
@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Report;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
@@ -25,6 +26,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest a
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunPivotReportRequest as Google_Service_AnalyticsData_RunPivotReportRequest;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use WP_Error;
+
 /**
  * A class containing shared methods for creating AnalyticsData Report and PivotReport requests.
  *
@@ -32,7 +34,24 @@ use WP_Error;
  * @access private
  * @ignore
  */
-trait CreateRequest_Trait {
+class RequestHelpers {
+
+	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t
+	 * @var Context
+	 */
+	private $context;
+
+	/**
+	 * Constructs a new instance of the class.
+	 *
+	 * @param Context $context Plugin context.
+	 */
+	public function __construct( $context ) {
+		$this->context = $context;
+	}
 
 	/**
 	 * Builds a Analytics Data Report or Pivot Report request's shared properties.
@@ -44,7 +63,7 @@ trait CreateRequest_Trait {
 	 * @param bool                                                                                             $is_shared_request Determines whether the current request is shared or not.
 	 * @return Google_Service_AnalyticsData_RunPivotReportRequest|Google_Service_AnalyticsData_RunReportRequest The report request object.
 	 */
-	protected function shared_create_request( Data_Request $data, $request, $is_shared_request = false ) {
+	public function shared_create_request( Data_Request $data, $request, $is_shared_request = false ) {
 		$request->setKeepEmptyRows( true );
 
 		$dimension_filters = $this->parse_dimension_filters( $data );
@@ -55,7 +74,8 @@ trait CreateRequest_Trait {
 			$request->setMetricFilter( $metric_filters );
 		}
 
-		$date_ranges = $this->parse_dateranges( $data );
+		$report_parsers = new ReportParsers();
+		$date_ranges    = $report_parsers->parse_dateranges( $data );
 		$request->setDateRanges( $date_ranges );
 
 		$metrics = $data['metrics'];
@@ -122,7 +142,7 @@ trait CreateRequest_Trait {
 	 * Metrics must have valid names, matching the regular expression ^[a-zA-Z0-9_]+$ in keeping with the GA4 API.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -173,7 +193,7 @@ trait CreateRequest_Trait {
 	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -239,12 +259,12 @@ trait CreateRequest_Trait {
 	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
-	protected function validate_shared_dimensions( $dimensions ) {
+	public function validate_shared_dimensions( $dimensions ) {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
@@ -304,7 +324,7 @@ trait CreateRequest_Trait {
 	 * Parses dimension filters and returns a filter expression that should be added to the report request.
 	 *
 	 * @since 1.106.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression to use with the report request.
@@ -340,7 +360,7 @@ trait CreateRequest_Trait {
 	 * Parses and returns a single dimension filter.
 	 *
 	 * @since 1.106.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param string $dimension_name The dimension name.
 	 * @param mixed  $dimension_value The dimension fileter settings.
@@ -387,7 +407,7 @@ trait CreateRequest_Trait {
 	 * Parses metric filters and returns a filter expression that should be added to the report request.
 	 *
 	 * @since 1.111.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression to use with the report request.
@@ -418,7 +438,7 @@ trait CreateRequest_Trait {
 	 * Parses and returns a single metric filter.
 	 *
 	 * @since 1.111.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param string $metric_name The metric name.
 	 * @param mixed  $metric_value The metric filter settings.
@@ -472,7 +492,7 @@ trait CreateRequest_Trait {
 	 * Returns correct filter expression instance based on the metric filter instance.
 	 *
 	 * @since 1.111.0
-	 * @since n.e.x.t Moved into CreateRequest_Trait for shared use between Report and PivotReport.
+	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Numeric_Filter|Between_Filter $filter The metric filter instance.
 	 * @param string                        $metric_name The metric name.

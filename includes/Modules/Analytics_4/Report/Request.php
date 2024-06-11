@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Report;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Modules\Analytics_4\Report;
-use Google\Site_Kit\Modules\Analytics_4\Report\CreateRequest_Trait;
+use Google\Site_Kit\Modules\Analytics_4\Report\RequestHelpers;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
 use WP_Error;
 
@@ -26,8 +26,6 @@ use WP_Error;
  */
 class Request extends Report {
 
-	use CreateRequest_Trait;
-
 	/**
 	 * Creates and executes a new Analytics 4 report request.
 	 *
@@ -38,6 +36,8 @@ class Request extends Report {
 	 * @return RequestInterface|WP_Error Request object on success, or WP_Error on failure.
 	 */
 	public function create_request( Data_Request $data, $is_shared_request ) {
+		$request_helpers = new RequestHelpers( $this->context );
+
 		$request = new Google_Service_AnalyticsData_RunReportRequest();
 		$request->setMetricAggregations( array( 'TOTAL', 'MINIMUM', 'MAXIMUM' ) );
 
@@ -49,7 +49,7 @@ class Request extends Report {
 		if ( ! empty( $dimensions ) ) {
 			if ( $is_shared_request ) {
 				try {
-					$this->validate_shared_dimensions( $dimensions );
+					$request_helpers->validate_shared_dimensions( $dimensions );
 				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
 					return new WP_Error(
 						'invalid_analytics_4_report_dimensions',
@@ -61,7 +61,7 @@ class Request extends Report {
 			$request->setDimensions( (array) $dimensions );
 		}
 
-		$request = $this->shared_create_request( $data, $request, $is_shared_request );
+		$request = $request_helpers->shared_create_request( $data, $request, $is_shared_request );
 
 		$orderby = $this->parse_orderby( $data );
 		if ( ! empty( $orderby ) ) {

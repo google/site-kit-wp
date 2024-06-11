@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics_4\Report\ReportParsers_Trait
+ * Class Google\Site_Kit\Modules\Analytics_4\Report\ReportParsers
  *
  * @package   Google\Site_Kit\Modules\Analytics_4\Report
  * @copyright 2024 Google LLC
@@ -19,19 +19,19 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricOrderBy as G
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_Service_AnalyticsData_OrderBy;
 
 /**
- * A trait that adds a helper method to create report rows.
+ * A class with helper methods to parse report properties
  *
- * @since 1.99.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-trait ReportParsers_Trait {
+class ReportParsers {
 
 	/**
 	 * Parses report dimensions received in the request params.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into ReportParsers_Trait for shared used between Report and PivotReport.
+	 * @since n.e.x.t Moved into ReportParsers for shared used between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_Dimension[] An array of AnalyticsData Dimension objects.
@@ -75,12 +75,12 @@ trait ReportParsers_Trait {
 	 * Parses report date ranges received in the request params.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into ReportParsers_Trait for shared used between Report and PivotReport.
+	 * @since n.e.x.t Moved into ReportParsers for shared used between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
 	 */
-	protected function parse_dateranges( Data_Request $data ) {
+	public function parse_dateranges( Data_Request $data ) {
 		$date_ranges = array();
 		$start_date  = $data['startDate'];
 		$end_date    = $data['endDate'];
@@ -119,7 +119,7 @@ trait ReportParsers_Trait {
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into ReportParsers_Trait for shared used between Report and PivotReport.
+	 * @since n.e.x.t Moved into ReportParsers for shared used between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.

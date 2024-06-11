@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Modules\Analytics_4\Report\ReportParsers_Trait;
+use Google\Site_Kit\Modules\Analytics_4\Report\ReportParsers;
 
 /**
  * The base class for Analytics 4 reports.
@@ -20,9 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4\Report\ReportParsers_Trait;
  * @access private
  * @ignore
  */
-class Report {
-
-	use ReportParsers_Trait;
+class Report extends ReportParsers {
 
 	/**
 	 * Plugin context.
@@ -44,7 +42,7 @@ class Report {
 	}
 
 	// NOTE: The majority of this classes logic has been abstracted to
-	// ReportParsers_Trait which contains the shared methods for both
+	// ReportParsers which contains the shared methods for both
 	// Report and PivotReport classes.
 
 }
