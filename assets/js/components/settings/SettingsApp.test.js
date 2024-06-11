@@ -136,8 +136,8 @@ describe( 'SettingsApp', () => {
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
-	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', () => {
-		const { getAllByRole } = render( <SettingsApp />, {
+	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', async () => {
+		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
 			history,
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
@@ -146,6 +146,9 @@ describe( 'SettingsApp', () => {
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'connect-more-services' ) ]
 		);
+
+		await waitForRegistry();
+
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
 

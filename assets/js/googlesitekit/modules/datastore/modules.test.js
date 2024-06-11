@@ -1655,19 +1655,27 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns features when modules are loaded', () => {
-				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+				provideModules( registry );
+				provideModuleRegistrations( registry, [
+					{
+						slug: 'analytics-4',
+						features: [ 'feature one', 'feature two' ],
+					},
+				] );
 
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
 					.getModuleFeatures( 'analytics-4' );
 
-				expect( featuresLoaded ).toMatchObject(
-					fixturesKeyValue[ 'analytics-4' ].features
-				);
+				expect( featuresLoaded ).toStrictEqual( [
+					'feature one',
+					'feature two',
+				] );
 			} );
 
 			it( 'returns an empty object when requesting features for a non-existent module', () => {
-				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+				provideModules( registry );
+				provideModuleRegistrations( registry );
 
 				const featuresLoaded = registry
 					.select( CORE_MODULES )

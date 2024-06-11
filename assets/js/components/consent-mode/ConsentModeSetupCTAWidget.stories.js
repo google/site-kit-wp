@@ -56,6 +56,11 @@ export default {
 						active: true,
 						connected: true,
 					},
+					{
+						slug: 'ads',
+						active: true,
+						connected: true,
+					},
 				] );
 
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
