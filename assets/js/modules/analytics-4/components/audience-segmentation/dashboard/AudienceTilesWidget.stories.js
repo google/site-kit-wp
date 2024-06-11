@@ -25,8 +25,12 @@ import {
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../datastore/constants';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { getPreviousDate } from '../../../../../util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -99,6 +103,41 @@ Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/Default',
 };
 
+export const DefaultWithZeroTile = Template.bind( {} );
+DefaultWithZeroTile.storyName = 'DefaultWithZeroTile';
+DefaultWithZeroTile.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+
+	setupRegistry: ( registry ) => {
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const audienceDate = Number( startDate.replace( /-/g, '' ) );
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/1': audienceDate,
+					'properties/12345/audiences/3': audienceDate,
+					'properties/12345/audiences/4': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+	},
+};
+DefaultWithZeroTile.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/DefaultWithZeroTile',
+};
+
 export const TwoTiles = Template.bind( {} );
 TwoTiles.storyName = 'Two Tiles';
 TwoTiles.args = {
@@ -111,10 +150,82 @@ TwoTiles.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTiles',
 };
 
+export const TwoTilesWithZeroTile = Template.bind( {} );
+TwoTilesWithZeroTile.storyName = 'TwoTilesWithZeroTile';
+TwoTilesWithZeroTile.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/4', // Returning visitors
+	],
+
+	setupRegistry: ( registry ) => {
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const audienceDate = Number( startDate.replace( /-/g, '' ) );
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/1': audienceDate,
+					'properties/12345/audiences/4': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+	},
+};
+TwoTilesWithZeroTile.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTilesWithZeroTile',
+};
+
+export const SingleZeroTile = Template.bind( {} );
+SingleZeroTile.storyName = 'SingleZeroTile';
+SingleZeroTile.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/4', // Returning visitors
+	],
+
+	setupRegistry: ( registry ) => {
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/4': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+	},
+};
+SingleZeroTile.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/SingleZeroTile',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
 	decorators: [
-		( Story, { args: { grantedScopes, configuredAudiences } } ) => {
+		(
+			Story,
+			{
+				args: {
+					grantedScopes,
+					configuredAudiences,
+					setupRegistry: setupRegistryFn,
+				},
+			}
+		) => {
 			const audiencesDimensionFilter = {
 				audienceResourceName: configuredAudiences,
 			};
@@ -145,6 +256,7 @@ export default {
 						connected: true,
 					},
 				] );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
@@ -199,6 +311,32 @@ export default {
 							},
 						} );
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				const { startDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+
+				const audienceDate = Number( startDate.replace( /-/g, '' ) );
+
+				const audienceResourceData = {};
+				audiencesFixture.forEach( ( audience ) => {
+					audienceResourceData[ audience.name ] = audienceDate;
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: audienceResourceData,
+						customDimension: {},
+						property: {},
+					} );
+
+				setupRegistryFn?.( registry );
 			};
 
 			return (
