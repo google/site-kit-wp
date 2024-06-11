@@ -42,6 +42,17 @@ import {
 } from './../../../datastore/__fixtures__';
 import AudienceTilesWidget from './AudienceTilesWidget';
 
+function excludeAudienceFromReport( report, audienceResourceName ) {
+	const newRows = report.rows.filter(
+		( row ) => row.dimensionValues[ 0 ].value !== audienceResourceName
+	);
+
+	return {
+		...report,
+		rows: newRows,
+	};
+}
+
 const totalPageviewsReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
@@ -113,6 +124,37 @@ DefaultWithZeroTile.args = {
 	],
 
 	setupRegistry: ( registry ) => {
+		const audienceResourceNames = [
+			'properties/12345/audiences/1', // All Users
+			'properties/12345/audiences/3', // New visitors
+			'properties/12345/audiences/4', // Returning visitors
+		];
+		const reportOptions = {
+			compareEndDate: '2024-02-28',
+			compareStartDate: '2024-02-01',
+			endDate: '2024-03-27',
+			startDate: '2024-02-29',
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: audienceResourceNames,
+			},
+			metrics: [
+				{ name: 'totalUsers' },
+				{ name: 'sessionsPerUser' },
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
+			],
+		};
+
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport = excludeAudienceFromReport(
+			report,
+			audienceResourceNames[ 2 ]
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -159,6 +201,36 @@ TwoTilesWithZeroTile.args = {
 	],
 
 	setupRegistry: ( registry ) => {
+		const audienceResourceNames = [
+			'properties/12345/audiences/1', // All Users
+			'properties/12345/audiences/4', // Returning visitors
+		];
+		const reportOptions = {
+			compareEndDate: '2024-02-28',
+			compareStartDate: '2024-02-01',
+			endDate: '2024-03-27',
+			startDate: '2024-02-29',
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: audienceResourceNames,
+			},
+			metrics: [
+				{ name: 'totalUsers' },
+				{ name: 'sessionsPerUser' },
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
+			],
+		};
+
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport = excludeAudienceFromReport(
+			report,
+			audienceResourceNames[ 1 ]
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -191,6 +263,35 @@ SingleZeroTile.args = {
 	],
 
 	setupRegistry: ( registry ) => {
+		const audienceResourceNames = [
+			'properties/12345/audiences/4', // Returning visitors
+		];
+		const reportOptions = {
+			compareEndDate: '2024-02-28',
+			compareStartDate: '2024-02-01',
+			endDate: '2024-03-27',
+			startDate: '2024-02-29',
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: audienceResourceNames,
+			},
+			metrics: [
+				{ name: 'totalUsers' },
+				{ name: 'sessionsPerUser' },
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
+			],
+		};
+
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport = excludeAudienceFromReport(
+			report,
+			audienceResourceNames[ 0 ]
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
