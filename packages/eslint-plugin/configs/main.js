@@ -29,7 +29,14 @@ module.exports = {
 		'sitekit/no-yield-dispatch': [ 'error' ],
 		'sitekit/no-direct-date': [
 			'error',
-			{ ignoreFiles: [ '*/webpack/*', '*.stories.js', '*.test.js' ] },
+			{
+				ignoreFiles: [
+					'*/webpack/*',
+					'*/__factories__/*',
+					'*.stories.js',
+					'*.test.js',
+				],
+			},
 		],
 	},
 };

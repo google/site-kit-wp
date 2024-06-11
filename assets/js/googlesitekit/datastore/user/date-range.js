@@ -35,7 +35,7 @@ import {
 
 export const initialState = {
 	dateRange: 'last-28-days',
-	referenceDate: getDateString( new Date() ),
+	referenceDate: getDateString( new Date() ), // eslint-disable-line sitekit/no-direct-date
 };
 
 /**

@@ -640,7 +640,7 @@ const baseActions = {
 
 		if (
 			!! googleTagLastSyncedAtMs &&
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
+			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
 		) {
 			return;
 		}
@@ -683,7 +683,7 @@ const baseActions = {
 
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			googleTagContainerDestinationIDs,
-			googleTagLastSyncedAtMs: Date.now(),
+			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
 		} );
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();

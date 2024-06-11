@@ -35,7 +35,7 @@ const MAX_SECONDS_FOR_SURVEY = 5;
 function CoreSiteBannerNotifications() {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
-	const startTime = useRef( Date.now() );
+	const startTime = useRef( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 	const surveys = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy() &&
@@ -62,7 +62,7 @@ function CoreSiteBannerNotifications() {
 
 	useEffect( () => {
 		const secondsElapsed = Math.floor(
-			( Date.now() - startTime.current ) / 1000
+			( Date.now() - startTime.current ) / 1000 // eslint-disable-line sitekit/no-direct-date
 		);
 		// Surveys that were received in time prevent the render, surveys loaded
 		// after a set amount of time do not prevent notifications from rendering.

@@ -128,7 +128,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+		const currentTimeInSeconds = Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		return Object.entries( state.dismissedPrompts ).reduce(
 			( acc, [ slug, { expires } ] ) => {
 				if ( expires === 0 || expires > currentTimeInSeconds ) {

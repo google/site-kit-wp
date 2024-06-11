@@ -165,7 +165,7 @@ const baseSelectors = {
 				return false;
 			}
 
-			return expiresInSeconds > Math.floor( Date.now() / 1000 );
+			return expiresInSeconds > Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		}
 	),
 };

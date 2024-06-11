@@ -136,7 +136,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		);
 
 	if ( isZeroChart ) {
-		options.hAxis.ticks = [ new Date() ];
+		options.hAxis.ticks = [ new Date() ]; // eslint-disable-line sitekit/no-direct-date
 	}
 
 	return (

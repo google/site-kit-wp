@@ -92,7 +92,7 @@ export default function useMigrateAdsConversionID() {
 			await submitChanges();
 
 			await setLegacyAdsConversionID( '' );
-			await setAdsConversionIDMigratedAtMs( Date.now() );
+			await setAdsConversionIDMigratedAtMs( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 			await submitAnalyticsChanges();
 
 			// Activate the module after the migration so that it appears

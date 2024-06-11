@@ -56,7 +56,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			? userRoles.join( ',' )
 			: '';
 
-		dataLayerPush( 'js', new Date() );
+		dataLayerPush( 'js', new Date() ); // eslint-disable-line sitekit/no-direct-date
 		dataLayerPush( 'config', config.trackingID, {
 			groups: 'site_kit',
 			send_page_view: config.isSiteKitScreen,

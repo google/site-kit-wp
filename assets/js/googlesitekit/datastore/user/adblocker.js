@@ -72,7 +72,7 @@ export const controls = {
 				// Note: this value must not be URL-encoded.
 				'google-site-kit=/adsense/pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
 				// Add a timestamp for cache-busting.
-				`timestamp=${ Date.now() }`,
+				`timestamp=${ Date.now() }`, // eslint-disable-line sitekit/no-direct-date
 			];
 			await fetch( `/favicon.ico?${ params.join( '&' ) }`, {
 				credentials: 'omit',

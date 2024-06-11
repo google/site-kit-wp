@@ -113,7 +113,7 @@ const baseActions = {
 			};
 
 			// Save the timestamp to allow the cooldown
-			yield actions.setLastDismissedAt( Date.now() );
+			yield actions.setLastDismissedAt( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 			// Dispatch a request to persist and receive updated dismissed tours.
 			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
@@ -487,7 +487,7 @@ const baseSelectors = {
 		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
 		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMilliseconds;
 
-		return Date.now() < coolDownExpiresAt;
+		return Date.now() < coolDownExpiresAt; // eslint-disable-line sitekit/no-direct-date
 	} ),
 };
 

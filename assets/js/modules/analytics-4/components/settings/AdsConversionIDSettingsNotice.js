@@ -56,10 +56,14 @@ export default function AdsConversionIDSettingsNotice() {
 			ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY
 		)
 	);
+	const now = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
+
 	const shouldShowNotice =
 		false === isNoticeDismissed && // User has not dismissed the notice.
 		adsConversionIDMigratedAtMs && // Data migration has happened.
-		Date.now() - adsConversionIDMigratedAtMs <= 28 * DAY_IN_SECONDS * 1000; // If it has been <= 28 days since the migration.
+		now - adsConversionIDMigratedAtMs <= 28 * DAY_IN_SECONDS * 1000; // If it has been <= 28 days since the migration.
 	const viewContext = useViewContext();
 	const trackDismissNotificationEvent = () => {
 		trackEvent(
