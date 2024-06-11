@@ -46,6 +46,7 @@ function ModalDialog( {
 	className = '',
 	dialogActive = false,
 	handleDialog = null,
+	onClose = null,
 	title = null,
 	provides,
 	handleConfirm,
@@ -64,6 +65,7 @@ function ModalDialog( {
 	return (
 		<Dialog
 			open={ dialogActive }
+			onClose={ onClose }
 			aria-describedby={ hasProvides ? describedByID : undefined }
 			tabIndex="-1"
 			className={ classnames( className, {

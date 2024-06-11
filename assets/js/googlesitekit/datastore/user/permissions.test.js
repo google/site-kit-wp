@@ -356,7 +356,6 @@ describe( 'core/user authentication', () => {
 
 				expect( viewableModules ).toEqual( [
 					'search-console',
-					'analytics-4',
 					'pagespeed-insights',
 				] );
 			} );
