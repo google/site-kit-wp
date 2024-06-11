@@ -241,7 +241,7 @@ function AudienceTilesWidget( { Widget } ) {
 		.slice()
 		.reverse()
 		.filter( ( audienceResourceName ) => {
-			const isDismissed = dismissedItems.includes(
+			const isDismissed = dismissedItems?.includes(
 				`audience-tile-${ audienceResourceName }`
 			);
 			const isZeroData = hasZeroDataForAudience(
