@@ -22,10 +22,11 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( {} ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
@@ -45,15 +46,30 @@ function Template( {} ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Settings/SettingsView',
-	delay: 250,
+Default.scenario = {};
+
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'With ICE enabled';
+IceEnabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceEnabled.args = {
+	enhancedConversionTracking: true,
+};
+
+export const IceDisabled = Template.bind( null );
+IceDisabled.storyName = 'With ICE disabled';
+IceDisabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceDisabled.args = {
+	enhancedConversionTracking: false,
 };
 
 export default {
 	title: 'Modules/Ads/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -66,6 +82,14 @@ export default {
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 					conversionID: 'AW-123456789',
 				} );
+
+				if ( args.hasOwnProperty( 'enhancedConversionTracking' ) ) {
+					registry
+						.dispatch( CORE_SITE )
+						.setConversionTrackingEnabled(
+							args.enhancedConversionTracking
+						);
+				}
 			};
 
 			return (
@@ -81,13 +105,12 @@ export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {
 	label: 'Modules/Ads/Settings/SettingsView/PAX',
-	delay: 250,
 };
 PaxConnected.parameters = {
 	features: [ 'adsPax' ],
 };
 PaxConnected.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// Unset the value set in the prrevious scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
@@ -99,10 +122,7 @@ PaxConnected.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);

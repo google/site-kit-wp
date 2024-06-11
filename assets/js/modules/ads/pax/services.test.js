@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -27,6 +32,10 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADS } from '../datastore/constants';
 import { createPaxServices } from './services';
 
+const getTokenEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/get-token'
+);
+
 describe( 'PAX partner services', () => {
 	describe( 'createPaxServices', () => {
 		let registry;
@@ -35,6 +44,10 @@ describe( 'PAX partner services', () => {
 		beforeEach( () => {
 			registry = createTestRegistry();
 			services = createPaxServices( registry );
+		} );
+
+		afterEach( () => {
+			jest.useRealTimers();
 		} );
 
 		it( 'should return object with correct services', () => {
@@ -47,6 +60,9 @@ describe( 'PAX partner services', () => {
 					getBusinessInfo: expect.any( Function ),
 					fixBusinessInfo: expect.any( Function ),
 				},
+				campaignService: {
+					notifyNewCampaignCreated: expect.any( Function ),
+				},
 				conversionTrackingService: {
 					getSupportedConversionLabels: expect.any( Function ),
 					getPageViewConversionSetting: expect.any( Function ),
@@ -58,37 +74,96 @@ describe( 'PAX partner services', () => {
 				partnerDateRangeService: {
 					get: expect.any( Function ),
 				},
+				userActionService: {
+					finishAndCloseSignUpFlow: expect.any( Function ),
+				},
 			} );
 		} );
 
 		describe( 'authenticationService', () => {
 			describe( 'get', () => {
 				it( 'should contain accessToken property', async () => {
-					const authAccess =
-						await services.authenticationService.get();
-
-					expect( authAccess ).toHaveProperty( 'accessToken' );
-				} );
-				it( 'should contain correct accessToken', async () => {
-					const _googlesitekitPAXConfig = {
-						authAccess: {
-							oauthTokenAccess: {
-								token: 'test-auth-token',
-							},
-						},
-					};
-					services = createPaxServices( registry, {
-						_global: { _googlesitekitPAXConfig },
+					fetchMock.postOnce( getTokenEndpoint, {
+						body: { token: '1234567890' },
 					} );
 
 					const authAccess =
 						await services.authenticationService.get();
 
-					/* eslint-disable sitekit/acronym-case */
-					expect( authAccess.accessToken ).toEqual(
-						'test-auth-token'
-					);
-					/* eslint-enable sitekit/acronym-case */
+					expect( authAccess ).toHaveProperty( 'accessToken' );
+				} );
+
+				it( 'should return correct accessToken', async () => {
+					fetchMock.postOnce( getTokenEndpoint, {
+						body: { token: '1234567890' },
+					} );
+
+					const authAccess =
+						await services.authenticationService.get();
+
+					expect( authAccess.accessToken ).toEqual( '1234567890' );
+				} );
+
+				it( 'should fetch once when called multiple times', async () => {
+					fetchMock.post( getTokenEndpoint, {
+						body: { token: '1234567890' },
+					} );
+
+					const responses = await Promise.all( [
+						services.authenticationService.get(),
+						services.authenticationService.get(),
+						services.authenticationService.get(),
+					] );
+
+					expect( responses ).toEqual( [
+						{ accessToken: '1234567890' },
+						{ accessToken: '1234567890' },
+						{ accessToken: '1234567890' },
+					] );
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+				} );
+
+				it( 'should fetch again if called again after 30 seconds', async () => {
+					// see https://github.com/jestjs/jest/issues/3465#issuecomment-623393230
+					jest.useFakeTimers( 'modern' );
+					fetchMock.post( getTokenEndpoint, {
+						body: { token: '1234567890' },
+					} );
+
+					await services.authenticationService.get();
+
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+					jest.advanceTimersByTime( 31_000 );
+
+					await services.authenticationService.get();
+
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
+				} );
+			} );
+
+			describe( 'fix', () => {
+				it( 'should return retryReady: true', async () => {
+					const getResponse =
+						await services.authenticationService.fix();
+
+					expect( getResponse ).toEqual( { retryReady: true } );
+				} );
+
+				it( 'should allow get to fetch again after calling', async () => {
+					fetchMock.post( getTokenEndpoint, {
+						body: { token: '1234567890' },
+					} );
+
+					await services.authenticationService.get();
+
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+					await services.authenticationService.fix();
+
+					await services.authenticationService.get();
+
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 			} );
 		} );
@@ -125,21 +200,20 @@ describe( 'PAX partner services', () => {
 
 		describe( 'campaignService', () => {
 			describe( 'notifyNewCampaignCreated', () => {
-				it( 'should return a callback function', async () => {
-					const mockOnCampaignCreated = jest.fn();
-					const servicesWithCampaign = createPaxServices( registry, {
-						onCampaignCreated: mockOnCampaignCreated,
+				it( 'calls the given function when provided', async () => {
+					const onCampaignCreated = jest.fn();
+					services = createPaxServices( registry, {
+						onCampaignCreated,
 					} );
+					const { notifyNewCampaignCreated } =
+						services.campaignService;
+					expect( onCampaignCreated ).not.toHaveBeenCalled();
 
-					await servicesWithCampaign.campaignService.notifyNewCampaignCreated();
+					const notifyNewCampaignCreatedResponse =
+						await notifyNewCampaignCreated( {} );
 
-					expect( servicesWithCampaign ).toEqual(
-						expect.objectContaining( {
-							campaignService: expect.objectContaining( {
-								notifyNewCampaignCreated: mockOnCampaignCreated,
-							} ),
-						} )
-					);
+					expect( notifyNewCampaignCreatedResponse ).toEqual( {} );
+					expect( onCampaignCreated ).toHaveBeenCalledTimes( 1 );
 				} );
 			} );
 		} );
@@ -278,6 +352,28 @@ describe( 'PAX partner services', () => {
 
 					expect( termsAndConditionsServiceNotifyResponse ).toEqual(
 						{}
+					);
+				} );
+			} );
+		} );
+
+		describe( 'userActionService', () => {
+			describe( 'finishAndCloseSignUpFlow', () => {
+				it( 'calls the given function when provided', async () => {
+					const onFinishAndCloseSignUpFlow = jest.fn();
+					services = createPaxServices( registry, {
+						onFinishAndCloseSignUpFlow,
+					} );
+					const { finishAndCloseSignUpFlow } =
+						services.userActionService;
+					expect( onFinishAndCloseSignUpFlow ).not.toHaveBeenCalled();
+
+					const finishAndCloseSignUpFlowResponse =
+						await finishAndCloseSignUpFlow( {} );
+
+					expect( finishAndCloseSignUpFlowResponse ).toEqual( {} );
+					expect( onFinishAndCloseSignUpFlow ).toHaveBeenCalledTimes(
+						1
 					);
 				} );
 			} );

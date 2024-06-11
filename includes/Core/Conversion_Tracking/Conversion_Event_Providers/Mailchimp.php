@@ -58,7 +58,7 @@ class Mailchimp extends Conversion_Events_Provider {
 			'gsk-cep-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
 				'src'          => $this->context->url( 'dist/assets/js/mailchimp.js' ),
-				'execution'    => 'async',
+				'execution'    => 'defer',
 				'dependencies' => array( 'mc4wp-forms-api' ),
 			)
 		);

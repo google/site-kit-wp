@@ -114,7 +114,7 @@ const baseSelectors = {
 	/**
 	 * Returns the expirable items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} Items if exists, `undefined` if not resolved yet.
@@ -126,7 +126,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the item exists in expirable items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.
@@ -145,7 +145,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the item is active and not expired.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.

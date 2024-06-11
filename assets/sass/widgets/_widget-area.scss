@@ -35,13 +35,13 @@
 	}
 
 	.googlesitekit-widget-area-header__title {
-		color: $c-neutral-n-900;
+		color: $c-surfaces-on-background;
 		font-weight: $fw-medium;
 		margin: 0 0 0.125rem;
 	}
 
 	.googlesitekit-widget-area-header__subtitle {
-		color: $c-neutral-n-900;
+		color: $c-surfaces-on-background;
 		font-family: $f-primary;
 		font-size: $fs-body-md;
 		font-weight: $fw-normal;
@@ -54,5 +54,15 @@
 		align-items: flex-start;
 		display: flex;
 		justify-content: space-between;
+	}
+
+	.googlesitekit-widget-area__cta-link {
+		align-items: center;
+		display: flex;
+		font-size: $fs-label-md;
+		font-weight: $fw-medium;
+		line-height: $lh-label-md;
+		padding-left: 6px; // Tweak the padding to ensure the link is aligned in its focus state.
+		white-space: nowrap;
 	}
 }

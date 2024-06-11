@@ -57,12 +57,8 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		endDate: '2020-09-07',
 		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		filter: {
-			fieldName: 'adSourceName',
-			stringFilter: {
-				matchType: 'EXACT',
-				value: `Google AdSense account (${ adSenseAccountID })`,
-			},
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
 		},
 		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 1,
@@ -107,11 +103,13 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 				slug: 'adsense',
 				active: true,
 				connected: true,
+				shareable: true,
 			},
 			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
+				shareable: true,
 			},
 		] );
 		provideUserAuthentication( registry );

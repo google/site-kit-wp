@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import whenActive from '../../../../util/when-active';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
@@ -41,7 +41,7 @@ function AdBlockerWarningWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget noPadding>
-			<AdBlockerWarning />
+			<AdBlockerWarning moduleSlug="adsense" />
 		</Widget>
 	);
 }
