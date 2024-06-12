@@ -82,7 +82,7 @@ export const createSettingsStore = (
 		storeName = undefined,
 		settingSlugs = [],
 		initialSettings = undefined,
-		validateHaveSettingsChanged = null,
+		validateHaveSettingsChanged = makeDefaultHaveSettingsChanged(),
 	} = {}
 ) => {
 	invariant( type, 'type is required.' );
