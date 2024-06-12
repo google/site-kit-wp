@@ -1,5 +1,16 @@
 == Changelog ==
 
+= 1.128.1 =
+
+**Enhanced**
+
+* Add new OAuth scope to Ads module. See [#8792](https://github.com/google/site-kit-wp/issues/8792).
+* Improve Partner Ads Experience onboarding flow. See [#8771](https://github.com/google/site-kit-wp/issues/8771).
+
+**Fixed**
+
+* Update PAX integration to avoid intermittent authentication errors. See [#8802](https://github.com/google/site-kit-wp/issues/8802).
+
 = 1.128.0 =
 
 **Enhanced**
