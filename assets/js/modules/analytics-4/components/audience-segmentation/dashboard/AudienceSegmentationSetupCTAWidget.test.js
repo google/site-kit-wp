@@ -440,7 +440,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			expect( queryByText( 'Enabling groups' ) ).toBeInTheDocument();
 		} );
 
-		it( 'should call the enableAudienceGroups action when `autosubmit` is set to true.', async () => {
+		it( 'should call the enableAudienceGroups action when `autoSubmit` is set to true.', async () => {
 			const settings = {
 				configuredAudiences: [],
 				isAudienceSegmentationWidgetHidden: false,
