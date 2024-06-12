@@ -77,7 +77,6 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 	);
 
 	if ( error ) {
-		// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
 		return { error };
 	}
 
@@ -185,6 +184,8 @@ const baseActions = {
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
 	 * @since 1.128.0
+	 *
+	 * @return {Object} Object with `response` and `error`.
 	 */
 	*enableAudienceGroup() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -197,8 +198,7 @@ const baseActions = {
 			);
 
 		if ( syncError ) {
-			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
-			return;
+			return { error: syncError };
 		}
 
 		const userAudiences = availableAudiences.filter(
@@ -228,12 +228,13 @@ const baseActions = {
 					)
 				);
 
-			if ( ! error ) {
-				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
-				configuredAudiences.push(
-					...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
-				);
+			if ( error ) {
+				return { error };
 			}
+
+			configuredAudiences.push(
+				...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
+			);
 		}
 
 		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
@@ -284,16 +285,18 @@ const baseActions = {
 					] )
 				);
 
-			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
-			if ( ! newVisitorsResult.error ) {
-				configuredAudiences.push( newVisitorsResult.response.name );
+			if ( newVisitorsResult.error ) {
+				return { error: newVisitorsResult.error };
 			}
 
-			if ( ! returningVisitorsResult.error ) {
-				configuredAudiences.push(
-					returningVisitorsResult.response.name
-				);
+			if ( returningVisitorsResult.error ) {
+				return { error: returningVisitorsResult.error };
 			}
+
+			configuredAudiences.push(
+				newVisitorsResult.response.name,
+				returningVisitorsResult.response.name
+			);
 
 			// Resync available audiences to ensure the newly created audiences are available.
 			yield Data.commonActions.await(
@@ -323,24 +326,24 @@ const baseActions = {
 			);
 
 			if ( error ) {
-				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
-			} else {
-				// If the custom dimension was created successfully, mark it as gathering
-				// data immediately so that it doesn't cause unnecessary report requests.
+				return { error };
+			}
+
+			// If the custom dimension was created successfully, mark it as gathering
+			// data immediately so that it doesn't cause unnecessary report requests.
+			dispatch(
+				MODULES_ANALYTICS_4
+			).receiveIsCustomDimensionGatheringData(
+				'googlesitekit_post_type',
+				true
+			);
+
+			// Resync available custom dimensions to ensure the newly created custom dimension is available.
+			yield Data.commonActions.await(
 				dispatch(
 					MODULES_ANALYTICS_4
-				).receiveIsCustomDimensionGatheringData(
-					'googlesitekit_post_type',
-					true
-				);
-
-				// Resync available custom dimensions to ensure the newly created custom dimension is available.
-				yield Data.commonActions.await(
-					dispatch(
-						MODULES_ANALYTICS_4
-					).fetchSyncAvailableCustomDimensions()
-				);
-			}
+				).fetchSyncAvailableCustomDimensions()
+			);
 		}
 
 		dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
@@ -352,7 +355,7 @@ const baseActions = {
 		);
 
 		if ( error ) {
-			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+			return { error };
 		}
 	},
 };
