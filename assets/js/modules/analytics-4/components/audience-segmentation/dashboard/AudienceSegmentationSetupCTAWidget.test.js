@@ -32,6 +32,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	unsubscribeFromAll,
+	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -523,11 +524,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				}
 			);
 
-			await waitForRegistry();
+			await act( waitForRegistry );
 
 			expect(
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
+
+			await act( waitForDefaultTimeouts );
 		} );
 	} );
 } );
