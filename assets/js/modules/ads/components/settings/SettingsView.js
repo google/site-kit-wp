@@ -25,7 +25,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,7 +39,7 @@ import DisplaySetting, {
 } from '../../../../components/DisplaySetting';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
@@ -73,14 +73,6 @@ export default function SettingsView() {
 
 		return select( CORE_SITE ).isConversionTrackingEnabled();
 	} );
-
-	const { rollbackConversionTrackingSettings } = useDispatch( CORE_SITE );
-
-	useEffect( () => {
-		if ( iceEnabled ) {
-			rollbackConversionTrackingSettings();
-		}
-	}, [ iceEnabled, rollbackConversionTrackingSettings ] );
 
 	return (
 		<Fragment>
