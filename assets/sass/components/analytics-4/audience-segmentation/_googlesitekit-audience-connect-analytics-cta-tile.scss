@@ -84,10 +84,18 @@
 		.googlesitekit-audience-connect-analytics-cta-graphic {
 			display: flex;
 			justify-content: center;
+			padding-inline: $grid-gap-desktop;
+
+			svg {
+				max-height: 128px;
+			}
 
 			@media (min-width: $minWidth-tablet) {
+				padding-inline: 0;
+
 				svg {
 					height: 150px;
+					max-height: unset;
 				}
 			}
 
