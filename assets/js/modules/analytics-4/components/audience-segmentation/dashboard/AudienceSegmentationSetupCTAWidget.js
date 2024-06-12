@@ -33,6 +33,11 @@ import { Fragment, useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
+import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
+import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import whenActive from '../../../../../util/when-active';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -40,25 +45,20 @@ import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { WEEK_IN_SECONDS } from '../../../../../util';
-import whenActive from '../../../../../util/when-active';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
-import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
-import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
 	useTooltipState,
 } from '../../../../../components/AdminMenuTooltip';
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { WEEK_IN_SECONDS } from '../../../../../util';
 
 const { useSelect, useDispatch } = Data;
 
