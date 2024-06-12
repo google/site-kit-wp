@@ -72,6 +72,7 @@ export function createModuleStore( slug, args = {} ) {
 		requiresSetup = true,
 		submitChanges,
 		rollbackChanges,
+		haveSettingsChanged = null,
 		validateCanSubmitChanges,
 		validateIsSetupBlocked = undefined,
 	} = args;
@@ -118,6 +119,7 @@ export function createModuleStore( slug, args = {} ) {
 				storeName,
 				settingSlugs,
 				initialSettings,
+				haveSettingsChanged,
 			}
 		);
 
