@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -78,5 +79,30 @@ export function validateCanSubmitChanges( select ) {
 	invariant(
 		isValidConversionID( getConversionID() ),
 		INVARIANT_INVALID_CONVERSION_ID
+	);
+}
+
+export function rollbackChanges( { select, dispatch } ) {
+	if ( select( MODULES_ADS ).haveSettingsChanged() ) {
+		dispatch( MODULES_ADS ).rollbackSettings();
+		dispatch( CORE_SITE ).resetConversionTrackingSettings();
+	}
+}
+
+export function haveSettingsChangedSelector( { state, keys, select } ) {
+	const { settings, savedSettings } = state;
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+
+	if ( keys ) {
+		return (
+			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
+			haveConversionTrackingSettingsChanged
+		);
+	}
+
+	return (
+		! isEqual( settings, savedSettings ) ||
+		haveConversionTrackingSettingsChanged
 	);
 }
