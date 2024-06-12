@@ -416,7 +416,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			expect( queryByText( /Maybe later/i ) ).not.toBeInTheDocument();
 		} );
 
-		it( 'should call the enableAudienceGroups action when `Enable groups` CTA is clicked.', async () => {
+		it( 'should initialise the list of configured audiences when CTA is clicked.', async () => {
 			const settings = {
 				configuredAudiences: null,
 				isAudienceSegmentationWidgetHidden: false,
@@ -431,7 +431,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetAudienceSettings( settings );
 
-			const { getByRole, queryByText } = render(
+			const { getByRole } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
@@ -469,10 +469,12 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 
-			expect( queryByText( 'Enabling groups' ) ).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: /Enabling groups/i } )
+			).toBeInTheDocument();
 		} );
 
-		it( 'should call the enableAudienceGroups action when autoSubmit is set to true.', async () => {
+		it( 'should initialise the list of configured audiences when autoSubmit is set to true.', async () => {
 			const settings = {
 				configuredAudiences: [],
 				isAudienceSegmentationWidgetHidden: false,
