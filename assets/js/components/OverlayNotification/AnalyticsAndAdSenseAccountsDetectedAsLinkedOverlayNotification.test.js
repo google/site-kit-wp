@@ -103,11 +103,13 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 				slug: 'adsense',
 				active: true,
 				connected: true,
+				shareable: true,
 			},
 			{
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
+				shareable: true,
 			},
 		] );
 		provideUserAuthentication( registry );

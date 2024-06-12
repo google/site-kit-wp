@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { useCallbackOne } from 'use-memo-one';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -48,19 +47,21 @@ import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/cons
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
-	PAX_SETUP_STEP,
-	PAX_SETUP_SUCCESS_NOTIFICATION,
+	SUPPORT_CONTENT_SCOPE,
 } from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect, useDispatch } = Data;
-
-const PARAM_SHOW_PAX = 'pax';
+import {
+	PAX_PARAM_SETUP_STEP,
+	PAX_SETUP_STEP,
+	PAX_SETUP_SUCCESS_NOTIFICATION,
+} from '../../pax/constants';
+const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
-		useQueryArg( PARAM_SHOW_PAX );
+		useQueryArg( PAX_PARAM_SETUP_STEP );
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
@@ -71,28 +72,17 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const hasAdwordsScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( ADWORDS_SCOPE )
 	);
-	const hasPaxSettings = useSelect( ( select ) => {
-		const { getPaxConversionID, getExtCustomerID } = select( MODULES_ADS );
 
-		return getPaxConversionID() && getExtCustomerID();
-	} );
-
-	const setupSuccessRedirectURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			notification: PAX_SETUP_SUCCESS_NOTIFICATION,
-		} )
-	);
-
-	const redirectURL = addQueryArgs( global.location.href, {
-		[ PARAM_SHOW_PAX ]: PAX_SETUP_STEP.LAUNCH,
-	} );
-
-	const oAuthURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectURL( {
-			additionalScopes: [ ADWORDS_SCOPE ],
+	const oAuthURL = useSelect( ( select ) => {
+		const redirectURL = addQueryArgs( global.location.href, {
+			[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
+		} );
+		return select( CORE_USER ).getConnectURL( {
+			additionalScopes: [ ADWORDS_SCOPE, SUPPORT_CONTENT_SCOPE ],
 			redirectURL,
-		} )
-	);
+		} );
+	} );
+
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		if ( ! oAuthURL ) {
 			return false;
@@ -104,15 +94,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
-
-	useMount( () => {
-		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
-			// If the PAX query param indicates the setup is finished on page load,
-			// set the step back to the PAX launch, as values are only temporarly
-			// saved in state after PAX campaign setup signal is received.
-			setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
-		}
-	} );
 
 	// Callback to be executed when a campaign is created in PAX.
 	//
@@ -142,18 +123,25 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		setExtCustomerID( customerData.externalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
-		setShowPaxAppQueryParam( PAX_SETUP_STEP.FINISHED );
 		/* eslint-enable sitekit/acronym-case */
+
+		// Here we save settings right away but leave final navigation to `onSetupComplete`.
+		await submitChanges();
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
-	const onCompleteSetup = useCallback( async () => {
-		const { error } = await submitChanges();
-
-		if ( error ) {
-			return;
-		}
-		finishSetup( setupSuccessRedirectURL );
-	}, [ submitChanges, finishSetup, setupSuccessRedirectURL ] );
+	const registry = useRegistry();
+	const onCompleteSetup = useCallbackOne( async () => {
+		// Encapsulate dependencies to avoid function changing after launch.
+		const { select, __experimentalResolveSelect: resolveSelect } = registry;
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+		const redirectURL = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			{
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			}
+		);
+		finishSetup( redirectURL );
+	}, [ registry, finishSetup ] );
 
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
@@ -163,6 +151,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
+
+	const onLaunch = useCallback( ( app ) => {
+		paxAppRef.current = app;
+	}, [] );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
@@ -179,33 +171,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 				<AdBlockerWarning moduleSlug="ads" />
 
 				{ ! isAdBlockerActive &&
-					PAX_SETUP_STEP.FINISHED === showPaxAppStep && (
-						<div className="googlesitekit-setup-module__action">
-							<SpinnerButton
-								isSaving={ isNavigatingToOAuthURL }
-								disabled={
-									isNavigatingToOAuthURL ||
-									! paxAppRef?.current ||
-									! hasPaxSettings
-								}
-								onClick={ onCompleteSetup }
-							>
-								{ __( 'Complete setup', 'google-site-kit' ) }
-							</SpinnerButton>
-						</div>
-					) }
-				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
 					hasAdwordsScope && (
-						<Fragment>
-							<PAXEmbeddedApp
-								displayMode="setup"
-								onLaunch={ ( app ) => {
-									paxAppRef.current = app;
-								} }
-								onCampaignCreated={ onCampaignCreated }
-							/>
-						</Fragment>
+						<PAXEmbeddedApp
+							displayMode="setup"
+							onLaunch={ onLaunch }
+							onCampaignCreated={ onCampaignCreated }
+							onFinishAndCloseSignUpFlow={ onCompleteSetup }
+						/>
 					) }
 
 				{ ! isAdBlockerActive &&

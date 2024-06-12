@@ -127,6 +127,16 @@
 	}
 }
 
+html[dir="rtl"] .googlesitekit-authorize-application__footer {
+	left: auto;
+	margin-right: 36px;
+	right: 0;
+
+	@media (min-width: $width-desktop + 1 + px) {
+		margin-right: 160px;
+	}
+}
+
 #wpbody-content {
 	padding-bottom: 100px;
 }
@@ -145,6 +155,13 @@
 
 	@media (min-width: $bp-wpAdminBarTablet) {
 		padding: 0 47px;
+	}
+}
+
+#wpbody-content,
+#wpfooter {
+	a {
+		color: $c-authorize-application-vivid-blue;
 	}
 }
 
@@ -189,8 +206,4 @@
 #footer-thankyou {
 	font-size: $fs-authorize-application-label-md;
 	line-height: $lh-authorize-application-label-md;
-
-	a {
-		color: $c-authorize-application-vivid-blue;
-	}
 }

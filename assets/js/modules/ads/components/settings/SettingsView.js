@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -27,14 +32,18 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
+	const iceEnabled = useFeature( 'conversionInfra' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -57,9 +66,44 @@ export default function SettingsView() {
 
 	const isPaxView = paxEnabled && ( paxConversionID || extCustomerID );
 
+	const isConversionTrackingEnabled = useSelect( ( select ) => {
+		if ( ! iceEnabled ) {
+			return false;
+		}
+
+		return select( CORE_SITE ).isConversionTrackingEnabled();
+	} );
+
 	return (
 		<Fragment>
-			<AdBlockerWarning moduleSlug="ads" />
+			<div
+				className={ classnames( {
+					'googlesitekit-settings-module__meta-item':
+						iceEnabled && isAdBlockerActive,
+				} ) }
+			>
+				<AdBlockerWarning moduleSlug="ads" />
+			</div>
+
+			{ iceEnabled && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __(
+							'Enhanced Conversion Tracking',
+							'google-site-kit'
+						) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ isConversionTrackingEnabled &&
+							__( 'Enabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === false &&
+							__( 'Disabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === undefined &&
+							BLANK_SPACE }
+					</p>
+				</div>
+			) }
+
 			{ ! isAdBlockerActive && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">

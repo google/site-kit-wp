@@ -64,11 +64,11 @@ export default function ChangeMetricsLink() {
 			<Link
 				secondary
 				linkButton
-				className="googlesitekit-km-change-metrics-cta"
+				className="googlesitekit-widget-area__cta-link"
 				onClick={ openMetricsSelectionPanel }
 				leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
 			>
-				{ __( 'Change Metrics', 'google-site-kit' ) }
+				{ __( 'Change metrics', 'google-site-kit' ) }
 			</Link>
 			<SetupCompletedSurveyTrigger />
 		</Fragment>

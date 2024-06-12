@@ -19,13 +19,8 @@
 export const MODULES_ADS = 'modules/ads';
 
 export const ADWORDS_SCOPE = 'https://www.googleapis.com/auth/adwords';
-
-export const PAX_SETUP_STEP = {
-	LAUNCH: 1,
-	FINISHED: 2,
-};
-
-export const PAX_SETUP_SUCCESS_NOTIFICATION = 'pax_setup_success_notification';
+export const SUPPORT_CONTENT_SCOPE =
+	'https://www.googleapis.com/auth/supportcontent';
 
 // Date range offset days for Ads report requests.
 export const DATE_RANGE_OFFSET = 1;
