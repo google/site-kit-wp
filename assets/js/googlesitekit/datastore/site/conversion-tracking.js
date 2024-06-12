@@ -33,8 +33,7 @@ const { createRegistrySelector } = Data;
 const { getRegistry } = Data.commonActions;
 
 const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
-const ROLLBACK_CONVERSION_TRACKING_SETTINGS =
-	'ROLLBACK_CONVERSION_TRACKING_SETTINGS';
+const RESET_CONVERSION_TRACKING_SETTINGS = 'RESET_CONVERSION_TRACKING_SETTINGS';
 
 const settingsReducerCallback = createReducer( ( state, settings ) => {
 	state.conversionTracking.settings = settings;
@@ -115,10 +114,10 @@ const baseActions = {
 	 *
 	 * @return {Object} Redux-style action.
 	 */
-	rollbackConversionTrackingSettings() {
+	resetConversionTrackingSettings() {
 		return {
 			payload: {},
-			type: ROLLBACK_CONVERSION_TRACKING_SETTINGS,
+			type: RESET_CONVERSION_TRACKING_SETTINGS,
 		};
 	},
 };
@@ -133,7 +132,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			state.conversionTracking.settings.enabled = !! payload.enabled;
 			break;
 
-		case ROLLBACK_CONVERSION_TRACKING_SETTINGS:
+		case RESET_CONVERSION_TRACKING_SETTINGS:
 			state.conversionTracking.settings =
 				state.conversionTracking.savedSettings;
 			break;
