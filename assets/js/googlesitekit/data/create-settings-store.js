@@ -277,6 +277,7 @@ export const createSettingsStore = (
 		getSettings( state ) {
 			return state.settings;
 		},
+
 		/**
 		 * Indicates whether the current settings have changed from what is saved.
 		 *
