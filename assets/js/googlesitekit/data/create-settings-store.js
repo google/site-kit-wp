@@ -61,15 +61,15 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  * @since n.e.x.t Added haveSettingsChanged optional paramter.
  * @private
  *
- * @param {string}        type                          The data to access. One of 'core' or 'modules'.
- * @param {string}        identifier                    The data identifier, eg. a module slug like 'search-console'.
- * @param {string}        datapoint                     The endpoint to request data from, e.g. 'settings'.
- * @param {Object}        options                       Optional. Options to consider for the store.
- * @param {Array}         [options.ownedSettingsSlugs]  Optional. List of "owned settings" for this module, if they exist.
- * @param {number}        [options.storeName]           Store name to use. Default is '{type}/{identifier}'.
- * @param {Array}         [options.settingSlugs]        List of the slugs that are part of the settings object handled by the respective API endpoint.
- * @param {Object}        [options.initialSettings]     Optional. An initial set of settings as key-value pairs.
- * @param {Function|null} [options.haveSettingsChanged] Optional. Custom callback to determine if settings have changed.
+ * @param {string}        type                                  The data to access. One of 'core' or 'modules'.
+ * @param {string}        identifier                            The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}        datapoint                             The endpoint to request data from, e.g. 'settings'.
+ * @param {Object}        options                               Optional. Options to consider for the store.
+ * @param {Array}         [options.ownedSettingsSlugs]          Optional. List of "owned settings" for this module, if they exist.
+ * @param {number}        [options.storeName]                   Store name to use. Default is '{type}/{identifier}'.
+ * @param {Array}         [options.settingSlugs]                List of the slugs that are part of the settings object handled by the respective API endpoint.
+ * @param {Object}        [options.initialSettings]             Optional. An initial set of settings as key-value pairs.
+ * @param {Function|null} [options.validateHaveSettingsChanged] Optional. Custom callback to determine if settings have changed.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
@@ -82,7 +82,7 @@ export const createSettingsStore = (
 		storeName = undefined,
 		settingSlugs = [],
 		initialSettings = undefined,
-		haveSettingsChanged = null,
+		validateHaveSettingsChanged = null,
 	} = {}
 ) => {
 	invariant( type, 'type is required.' );
@@ -283,24 +283,16 @@ export const createSettingsStore = (
 		 *
 		 * @since 1.6.0
 		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
-		 * @since n.e.x.t Added makeDefaultHaveSettingsChanged for default selector and added haveSettingsChanged custom callback as an optional parameter.
+		 * @since n.e.x.t Changed the approach to use validateHaveSettingsChanged callback.
 		 *
 		 * @param {Object}     state Data store's state.
 		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
 		 * @return {boolean} True if the settings have changed, false otherwise.
 		 */
 		haveSettingsChanged: createRegistrySelector(
-			( select ) => ( state, keys ) => {
-				if ( haveSettingsChanged ) {
-					return haveSettingsChanged( { state, keys, select } );
-				}
-
-				return makeDefaultHaveSettingsChanged( {
-					state,
-					keys,
-					select,
-				} );
-			}
+			( select ) =>
+				( state, ...args ) =>
+					validateHaveSettingsChanged( select, state, ...args )
 		),
 
 		/**
@@ -510,19 +502,19 @@ export function makeDefaultCanSubmitChanges( storeName ) {
  *
  * @since n.e.x.t
  *
- * @param {Object}     params        Parameters to consider for the selector.
- * @param {Object}     params.state  Data store's state.
- * @param {Array|null} params.keys   Settings keys to check; if not provided, all settings are checked.
- * @param {Function}   params.select Data store 'select' function.
  * @return {boolean} True if the settings have changed, false otherwise.
  */
-function makeDefaultHaveSettingsChanged( params ) {
-	const { state, keys } = params;
-	const { settings, savedSettings } = state;
+export function makeDefaultHaveSettingsChanged() {
+	return ( select, state, keys ) => {
+		const { settings, savedSettings } = state;
 
-	if ( keys ) {
-		return ! isEqual( pick( settings, keys ), pick( savedSettings, keys ) );
-	}
+		if ( keys ) {
+			return ! isEqual(
+				pick( settings, keys ),
+				pick( savedSettings, keys )
+			);
+		}
 
-	return ! isEqual( settings, savedSettings );
+		return ! isEqual( settings, savedSettings );
+	};
 }

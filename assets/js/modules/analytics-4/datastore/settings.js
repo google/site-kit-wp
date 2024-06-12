@@ -301,7 +301,7 @@ export function validateCanSubmitChanges( select ) {
 	}
 }
 
-export function haveSettingsChangedSelector( { state, keys, select } ) {
+export function validateHaveSettingsChanged( select, state, keys ) {
 	const { settings, savedSettings } = state;
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();

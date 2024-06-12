@@ -31,6 +31,7 @@ import {
 	makeDefaultSubmitChanges,
 	makeDefaultCanSubmitChanges,
 	makeDefaultRollbackChanges,
+	makeDefaultHaveSettingsChanged,
 } from '../data/create-settings-store';
 import { createErrorStore } from '../data/create-error-store';
 import { createInfoStore } from './create-info-store';
@@ -72,7 +73,7 @@ export function createModuleStore( slug, args = {} ) {
 		requiresSetup = true,
 		submitChanges,
 		rollbackChanges,
-		haveSettingsChanged = null,
+		validateHaveSettingsChanged = null,
 		validateCanSubmitChanges,
 		validateIsSetupBlocked = undefined,
 	} = args;
@@ -119,7 +120,9 @@ export function createModuleStore( slug, args = {} ) {
 				storeName,
 				settingSlugs,
 				initialSettings,
-				haveSettingsChanged,
+				validateHaveSettingsChanged:
+					validateHaveSettingsChanged ||
+					makeDefaultHaveSettingsChanged(),
 			}
 		);
 

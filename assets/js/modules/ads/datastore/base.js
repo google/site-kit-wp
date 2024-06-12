@@ -25,7 +25,7 @@ import {
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
-	haveSettingsChangedSelector,
+	validateHaveSettingsChanged,
 } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'ads', {
@@ -41,7 +41,7 @@ const baseModuleStore = Modules.createModuleStore( 'ads', {
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
-	haveSettingsChanged: haveSettingsChangedSelector,
+	validateHaveSettingsChanged,
 } );
 
 export default baseModuleStore;
