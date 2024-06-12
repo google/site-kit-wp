@@ -42,7 +42,8 @@
 			}
 
 			@media (min-width: $minWidth-desktop) {
-				flex: 2;
+				flex: 0 1 auto;
+				margin-right: $grid-gap-desktop;
 				padding: 0;
 			}
 
@@ -91,8 +92,7 @@
 			}
 
 			@media (min-width: $minWidth-desktop) {
-				flex: 1;
-				padding-inline: $grid-gap-desktop;
+				flex: 1 1 auto;
 			}
 		}
 	}

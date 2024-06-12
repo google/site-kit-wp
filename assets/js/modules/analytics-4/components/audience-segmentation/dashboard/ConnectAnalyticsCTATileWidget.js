@@ -45,7 +45,7 @@ const { useSelect } = Data;
 export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 	const breakpoint = useBreakpoint();
 
-	const isTablet = breakpoint === BREAKPOINT_TABLET;
+	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
 	const handleConnectModule = useActivateModuleCallback( 'analytics-4' );
 
@@ -53,7 +53,7 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 		select( CORE_MODULES ).getModuleIcon( 'analytics-4' )
 	);
 
-	const content = isTablet
+	const content = isTabletBreakpoint
 		? __(
 				'Google Analytics is disconnected, your audience metrics can’t be displayed.',
 				'google-site-kit'
@@ -86,7 +86,7 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 					</div>
 				</div>
 				<div className="googlesitekit-audience-connect-analytics-cta-graphic">
-					{ isTablet ? (
+					{ isTabletBreakpoint ? (
 						<AudienceConnectAnalyticsCTAGraphicTablet />
 					) : (
 						<AudienceConnectAnalyticsCTAGraphic />
