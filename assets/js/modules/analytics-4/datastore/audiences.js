@@ -184,10 +184,13 @@ const baseActions = {
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
 	 * @since 1.128.0
+	 * @since n.e.x.t Added `failedSiteKitAudienceResourceNames` parameter to retry failed Site Kit audience creation.
 	 *
+	 * @param {Object} args                                    Arguments for enabling audience group.
+	 * @param {Array}  args.failedSiteKitAudienceResourceNames List of failed Site Kit audience resource names to retry.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*enableAudienceGroup() {
+	*enableAudienceGroup( { failedSiteKitAudienceResourceNames } ) {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
@@ -207,65 +210,70 @@ const baseActions = {
 
 		const configuredAudiences = [];
 
-		if ( userAudiences.length > 0 ) {
-			// If there are user audiences, filter and sort them by total users over the last 90 days,
-			// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
+		if ( ! failedSiteKitAudienceResourceNames ) {
+			if ( userAudiences.length > 0 ) {
+				// If there are user audiences, filter and sort them by total users over the last 90 days,
+				// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
 
-			const endDate = select( CORE_USER ).getReferenceDate();
+				const endDate = select( CORE_USER ).getReferenceDate();
 
-			const startDate = getPreviousDate(
-				endDate,
-				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-			);
-
-			const { audienceResourceNames, error } =
-				yield Data.commonActions.await(
-					getNonZeroDataAudiencesSortedByTotalUsers(
-						registry,
-						userAudiences,
-						startDate,
-						endDate
-					)
+				const startDate = getPreviousDate(
+					endDate,
+					90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
 				);
 
-			if ( error ) {
-				return { error };
+				const { audienceResourceNames, error } =
+					yield Data.commonActions.await(
+						getNonZeroDataAudiencesSortedByTotalUsers(
+							registry,
+							userAudiences,
+							startDate,
+							endDate
+						)
+					);
+
+				if ( error ) {
+					return { error };
+				}
+
+				configuredAudiences.push(
+					...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
+				);
 			}
 
-			configuredAudiences.push(
-				...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
-			);
-		}
+			if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+				// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
+				// up to the limit of two.
 
-		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
-			// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
-			// up to the limit of two.
+				const siteKitAudiences = availableAudiences.filter(
+					( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+				);
 
-			const siteKitAudiences = availableAudiences.filter(
-				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
-			);
+				// Audience slugs to sort by:
+				const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
 
-			// Audience slugs to sort by:
-			const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
+				const sortedSiteKitAudiences = siteKitAudiences.sort(
+					( audienceA, audienceB ) => {
+						const indexA = sortedSlugs.indexOf(
+							audienceA.audienceSlug
+						);
+						const indexB = sortedSlugs.indexOf(
+							audienceB.audienceSlug
+						);
 
-			const sortedSiteKitAudiences = siteKitAudiences.sort(
-				( audienceA, audienceB ) => {
-					const indexA = sortedSlugs.indexOf(
-						audienceA.audienceSlug
-					);
-					const indexB = sortedSlugs.indexOf(
-						audienceB.audienceSlug
-					);
+						return indexA - indexB;
+					}
+				);
 
-					return indexA - indexB;
-				}
-			);
+				const audienceResourceNames = sortedSiteKitAudiences
+					.slice(
+						0,
+						MAX_INITIAL_AUDIENCES - configuredAudiences.length
+					)
+					.map( ( { name } ) => name );
 
-			const audienceResourceNames = sortedSiteKitAudiences
-				.slice( 0, MAX_INITIAL_AUDIENCES - configuredAudiences.length )
-				.map( ( { name } ) => name );
-
-			configuredAudiences.push( ...audienceResourceNames );
+				configuredAudiences.push( ...audienceResourceNames );
+			}
 		}
 
 		if ( configuredAudiences.length === 0 ) {
