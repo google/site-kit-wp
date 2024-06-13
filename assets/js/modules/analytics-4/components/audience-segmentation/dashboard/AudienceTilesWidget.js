@@ -237,28 +237,33 @@ function AudienceTilesWidget( { Widget } ) {
 	);
 
 	const audiencesToClearDismissal = [];
-	const visibleAudiences = configuredAudiences
-		.slice()
-		.reverse()
-		.filter( ( audienceResourceName ) => {
-			const isDismissed = dismissedItems?.includes(
-				`audience-tile-${ audienceResourceName }`
-			);
-			const isZeroData = hasZeroDataForAudience(
-				report,
-				audienceResourceName
-			);
+	const visibleAudiences = [];
+	const tempAudiences = configuredAudiences.slice();
 
-			if ( isDismissed && isZeroData && configuredAudiences.length > 1 ) {
-				return false;
-			}
-			if ( isDismissed && ! isZeroData ) {
-				// Collect audiences to re-dismiss if they have data again.
-				audiencesToClearDismissal.push( audienceResourceName );
-			}
-			return true;
-		} )
-		.reverse();
+	while ( tempAudiences.length > 0 ) {
+		const audienceResourceName = tempAudiences.shift();
+
+		const isDismissed = dismissedItems?.includes(
+			`audience-tile-${ audienceResourceName }`
+		);
+		const isZeroData = hasZeroDataForAudience(
+			report,
+			audienceResourceName
+		);
+
+		// Skip rendering the tile if it is dismissed, has zero data, and has more audiences to render.
+		if ( isDismissed && isZeroData && tempAudiences.length > 0 ) {
+			continue;
+		}
+
+		// Collect audiences to re-dismiss if they have data again.
+		if ( isDismissed && ! isZeroData ) {
+			audiencesToClearDismissal.push( audienceResourceName );
+		}
+
+		// Add audience to visibleAudiences
+		visibleAudiences.push( audienceResourceName );
+	}
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
