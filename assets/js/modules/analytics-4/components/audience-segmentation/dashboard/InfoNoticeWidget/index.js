@@ -87,7 +87,7 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 
 InfoNoticeWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType,
+	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( { moduleName: 'analytics-4' } )( InfoNoticeWidget );

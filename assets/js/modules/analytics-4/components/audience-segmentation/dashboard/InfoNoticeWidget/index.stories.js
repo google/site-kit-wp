@@ -33,6 +33,8 @@ function Template() {
 	return <WidgetWithComponentProps />;
 }
 
+const expires = Math.floor( Date.now() / 1000 ) - 1;
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
@@ -51,10 +53,9 @@ FirstDismissal.scenario = {
 };
 FirstDismissal.args = {
 	setupRegistry: async ( registry ) => {
-		const timestamp = Math.floor( Date.now() / 1000 );
 		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-				expires: timestamp - 1,
+				expires,
 				count: 1,
 			},
 		} );
@@ -68,10 +69,9 @@ SecondDismissal.scenario = {
 };
 SecondDismissal.args = {
 	setupRegistry: async ( registry ) => {
-		const timestamp = Math.floor( Date.now() / 1000 );
 		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-				expires: timestamp - 1,
+				expires,
 				count: 2,
 			},
 		} );
@@ -85,10 +85,9 @@ ThirdDismissal.scenario = {
 };
 ThirdDismissal.args = {
 	setupRegistry: async ( registry ) => {
-		const timestamp = Math.floor( Date.now() / 1000 );
 		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-				expires: timestamp - 1,
+				expires,
 				count: 3,
 			},
 		} );
@@ -102,10 +101,9 @@ FourthDismissal.scenario = {
 };
 FourthDismissal.args = {
 	setupRegistry: async ( registry ) => {
-		const timestamp = Math.floor( Date.now() / 1000 );
 		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-				expires: timestamp - 1,
+				expires,
 				count: 4,
 			},
 		} );
@@ -119,10 +117,9 @@ FifthDismissal.scenario = {
 };
 FifthDismissal.args = {
 	setupRegistry: async ( registry ) => {
-		const timestamp = Math.floor( Date.now() / 1000 );
 		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-				expires: timestamp - 1,
+				expires,
 				count: 5,
 			},
 		} );
@@ -136,10 +133,9 @@ SixthDismissal.scenario = {
 };
 SixthDismissal.args = {
 	setupRegistry: async ( registry ) => {
-		const timestamp = Math.floor( Date.now() / 1000 );
 		await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-				expires: timestamp - 1,
+				expires,
 				count: 6,
 			},
 		} );
