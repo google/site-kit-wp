@@ -70,14 +70,19 @@ export async function submitChanges( { select, dispatch } ) {
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const { isDoingSubmitChanges, haveSettingsChanged, getConversionID } =
-		strictSelect( MODULES_ADS );
+	const {
+		isDoingSubmitChanges,
+		haveSettingsChanged,
+		getConversionID,
+		getPaxConversionID,
+	} = strictSelect( MODULES_ADS );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	invariant(
-		isValidConversionID( getConversionID() ),
+		isValidConversionID( getConversionID() ) ||
+			isValidConversionID( getPaxConversionID() ),
 		INVARIANT_INVALID_CONVERSION_ID
 	);
 }
