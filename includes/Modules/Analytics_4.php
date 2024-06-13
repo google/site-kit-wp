@@ -2428,7 +2428,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Returns the Site Kit-created audience display names from the passed list of audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 *
 	 * @param array $audiences List of audiences.
 	 *

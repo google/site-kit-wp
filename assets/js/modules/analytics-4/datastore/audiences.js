@@ -498,7 +498,7 @@ const baseSelectors = {
 	 *
 	 * This selector filters out the "Purchasers" audience if it has no data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 *
 	 * @return {(Array|undefined)} Array of configurable audiences. Undefined if available audiences are not loaded yet.
 	 */
