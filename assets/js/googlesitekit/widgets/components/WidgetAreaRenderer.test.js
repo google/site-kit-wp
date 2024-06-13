@@ -853,7 +853,9 @@ describe( 'WidgetAreaRenderer', () => {
 
 			await waitForRegistry();
 
-			expect( container.firstChild ).toHaveTextContent( 'Error!' );
+			expect( container.firstChild ).toHaveTextContent(
+				'Site Kit encountered an error'
+			);
 			expect( container.firstChild ).toHaveTextContent(
 				'Site Kit error message.'
 			);
@@ -890,11 +892,13 @@ describe( 'WidgetAreaRenderer', () => {
 
 			await waitForRegistry();
 
-			expect( container.firstChild ).toHaveTextContent( 'Error!' );
+			expect( container.firstChild ).toHaveTextContent(
+				'Site Kit encountered an error'
+			);
 
 			expect(
 				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
-			).toHaveLength( 3 );
+			).toHaveLength( 2 );
 
 			expect( container.firstChild ).toHaveTextContent(
 				'AdSense is here'
