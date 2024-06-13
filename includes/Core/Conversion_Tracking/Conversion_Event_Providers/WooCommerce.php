@@ -72,7 +72,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Adds a hook for a purchase event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 */
 	public function register_hooks() {
 		$is_active = $this->is_active();

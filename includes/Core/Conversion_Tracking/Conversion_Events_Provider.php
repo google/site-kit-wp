@@ -65,7 +65,7 @@ abstract class Conversion_Events_Provider {
 	/**
 	 * Registers any actions/hooks for this provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 */
 	public function register_hooks() {
 		// No-op by default, but left here so subclasses can implement
