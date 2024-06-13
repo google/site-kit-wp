@@ -817,26 +817,11 @@ describe( 'WidgetAreaRenderer', () => {
 		).toMatchSnapshot();
 	} );
 
-	describe( 'Error boundary', () => {
+	describe( 'Error handling', () => {
 		const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 		mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-		// eslint-disable-next-line no-console
-		const originalConsoleError = console.error;
-
-		// Suppress console error while we are testing error boundary.
-		beforeAll( () => {
-			// eslint-disable-next-line no-console
-			console.error = () => true;
-		} );
-
-		// Restore console error.
-		afterAll( () => {
-			// eslint-disable-next-line no-console
-			console.error = originalConsoleError;
-		} );
-
-		it( 'should display the error using error boundary component within a widget', async () => {
+		it( 'should display the error using `ErrorHandler` component within a widget', async () => {
 			createWidgets( registry, areaName, [
 				{
 					Component: WidgetComponentErrored,
@@ -859,6 +844,8 @@ describe( 'WidgetAreaRenderer', () => {
 			expect( container.firstChild ).toHaveTextContent(
 				'Site Kit error message.'
 			);
+
+			expect( console ).toHaveErrored();
 		} );
 
 		it( 'should display other widgets when there is error in one of the widgets', async () => {
@@ -903,9 +890,11 @@ describe( 'WidgetAreaRenderer', () => {
 			expect( container.firstChild ).toHaveTextContent(
 				'AdSense is here'
 			);
+
+			expect( console ).toHaveErrored();
 		} );
 
-		it( 'should call the trackEvent', async () => {
+		it( 'should track the error event', async () => {
 			createWidgets( registry, areaName, [
 				{
 					Component: WidgetComponentErrored,
@@ -923,6 +912,8 @@ describe( 'WidgetAreaRenderer', () => {
 			await waitForRegistry();
 
 			expect( mockTrackEvent ).toHaveBeenCalled();
+
+			expect( console ).toHaveErrored();
 		} );
 	} );
 } );
