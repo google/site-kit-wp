@@ -122,85 +122,111 @@ function AudienceTilesWidget( { Widget } ) {
 	const topCitiesReportOptions = {
 		startDate,
 		endDate,
-		dimensions: [ 'city' ],
+		dimensions: [ { name: 'city' }, { name: 'audienceResourceName' } ],
+		dimensionFilters: {
+			audienceResourceName: configuredAudiences,
+		},
 		metrics: [ { name: 'totalUsers' } ],
-		orderby: [
+		pivots: [
 			{
-				metric: {
-					metricName: 'totalUsers',
-				},
-				desc: true,
+				fieldNames: [ 'city' ],
+				orderby: [
+					{ metric: { metricName: 'totalUsers' }, desc: true },
+				],
+				limit: 3,
+			},
+			{
+				fieldNames: [ 'audienceResourceName' ],
+				limit: configuredAudiences.length,
 			},
 		],
-		limit: 3,
 	};
 
 	const topCitiesReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-			topCitiesReportOptions,
-			configuredAudiences
-		)
+		select( MODULES_ANALYTICS_4 ).getPivotReport( topCitiesReportOptions )
 	);
 	const topCitiesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topCitiesReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
+		configuredAudiences.every( () =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getPivotReport',
+				[ topCitiesReportOptions ]
+			)
 		)
 	);
 
 	const topContentReportOptions = {
 		startDate,
 		endDate,
-		dimensions: [ 'pagePath' ],
+		dimensions: [ { name: 'pagePath' }, { name: 'audienceResourceName' } ],
+		dimensionFilters: {
+			audienceResourceName: configuredAudiences,
+		},
 		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-		limit: 3,
+		pivots: [
+			{
+				fieldNames: [ 'pagePath' ],
+				orderby: [
+					{ metric: { metricName: 'screenPageViews' }, desc: true },
+				],
+				limit: 3,
+			},
+			{
+				fieldNames: [ 'audienceResourceName' ],
+				limit: configuredAudiences.length,
+			},
+		],
 	};
 
 	const topContentReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-			topContentReportOptions,
-			configuredAudiences
-		)
+		select( MODULES_ANALYTICS_4 ).getPivotReport( topContentReportOptions )
 	);
 	const topContentReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topContentReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
+		configuredAudiences.every( () =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getPivotReport',
+				[ topContentReportOptions ]
+			)
 		)
 	);
 
 	const topContentPageTitlesReportOptions = {
 		startDate,
 		endDate,
-		dimensions: [ 'pagePath', 'pageTitle' ],
+		dimensions: [
+			{ name: 'pagePath' },
+			{ name: 'pageTitle' },
+			{ name: 'audienceResourceName' },
+		],
+		dimensionFilters: {
+			audienceResourceName: configuredAudiences,
+		},
 		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-		limit: 15,
+		pivots: [
+			{
+				fieldNames: [ 'pagePath', 'pageTitle' ],
+				orderby: [
+					{ metric: { metricName: 'screenPageViews' }, desc: true },
+				],
+				limit: 15,
+			},
+			{
+				fieldNames: [ 'audienceResourceName' ],
+				limit: configuredAudiences.length,
+			},
+		],
 	};
 
 	const topContentPageTitlesReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-			topContentPageTitlesReportOptions,
-			configuredAudiences
+		select( MODULES_ANALYTICS_4 ).getPivotReport(
+			topContentPageTitlesReportOptions
 		)
 	);
 	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topContentPageTitlesReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
+		configuredAudiences.every( () =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getPivotReport',
+				[ topContentPageTitlesReportOptions ]
+			)
 		)
 	);
 
