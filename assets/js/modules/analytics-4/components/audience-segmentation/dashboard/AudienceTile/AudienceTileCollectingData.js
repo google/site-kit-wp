@@ -30,8 +30,8 @@ import AudienceTileCollectingDataImage from '../../../../../../../svg/graphics/a
 export default function AudienceTileCollectingData() {
 	return (
 		<Fragment>
-			<AudienceTileCollectingDataImage className="googlesitekit-audience-segmentation-tile--zero-data__image" />
-			<p className="googlesitekit-audience-segmentation-tile__description--zero-data">
+			<AudienceTileCollectingDataImage className="googlesitekit-audience-segmentation-tile__zero-data-image" />
+			<p className="googlesitekit-audience-segmentation-tile__zero-data-description">
 				{ __(
 					'Site Kit is collecting data for this group.',
 					'google-site-kit'

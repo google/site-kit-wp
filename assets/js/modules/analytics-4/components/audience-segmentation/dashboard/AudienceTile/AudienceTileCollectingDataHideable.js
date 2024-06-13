@@ -36,7 +36,7 @@ import VisibilityIcon from '../../../../../../../svg/icons/visibility.svg';
 export default function AudienceTileCollectingDataHideable( { onHideTile } ) {
 	return (
 		<Fragment>
-			<p className="googlesitekit-audience-segmentation-tile__description--zero-data">
+			<p className="googlesitekit-audience-segmentation-tile__zero-data-description">
 				{ __(
 					'You can hide this group until data is available.',
 					'google-site-kit'
