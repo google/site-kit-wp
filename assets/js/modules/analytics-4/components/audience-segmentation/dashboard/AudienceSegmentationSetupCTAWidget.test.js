@@ -27,14 +27,24 @@ import {
 } from '../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	unsubscribeFromAll,
+	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { availableAudiences as audiencesFixture } from '../../../datastore/__fixtures__';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_ANALYTICS_4,
+	EDIT_SCOPE,
+	AUDIENCE_SEGMENTATION_SETUP_FORM,
+} from '../../../datastore/constants';
+import {
+	availableAudiences as audiencesFixture,
+	properties as propertiesFixture,
+} from '../../../datastore/__fixtures__';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
@@ -48,10 +58,26 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		'audienceSegmentationSetupCTA'
 	);
 
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	);
+
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	const syncAvailableAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
+
+	const testPropertyID = propertiesFixture[ 0 ]._id;
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -59,7 +85,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				connected: true,
 			},
 		] );
-		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		registry
@@ -91,10 +116,18 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableAudiences: null,
+			// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
+			availableCustomDimensions: [ 'googlesitekit_post_type' ],
+			propertyID: testPropertyID,
+		} );
 	} );
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+		jest.clearAllMocks();
 	} );
 
 	describe( 'widget rendering', () => {
@@ -382,6 +415,122 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 
 			expect( queryByText( /Maybe later/i ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should initialise the list of configured audiences when CTA is clicked.', async () => {
+			const settings = {
+				configuredAudiences: null,
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( settings );
+
+			const { getByRole } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				getByRole( 'button', { name: /Enable groups/i } )
+			).toBeInTheDocument();
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: audiencesFixture,
+			} );
+
+			const settingsBody = {
+				configuredAudiences: [
+					audiencesFixture[ 2 ].name,
+					audiencesFixture[ 3 ].name,
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			fetchMock.post( audienceSettingsEndpoint, {
+				status: 200,
+				body: settingsBody,
+			} );
+
+			muteFetch( reportEndpoint );
+
+			expect(
+				getByRole( 'button', { name: /Enabling groups/i } )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should initialise the list of configured audiences when autoSubmit is set to true.', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( settings );
+
+			// Set autoSubmit to true.
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+					autoSubmit: true,
+				} );
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: audiencesFixture,
+			} );
+
+			const settingsBody = {
+				configuredAudiences: [
+					audiencesFixture[ 2 ].name,
+					audiencesFixture[ 3 ].name,
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			fetchMock.post( audienceSettingsEndpoint, {
+				status: 200,
+				body: settingsBody,
+			} );
+
+			muteFetch( reportEndpoint );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			await act( waitForRegistry );
+
+			expect(
+				getByRole( 'button', { name: /Enabling groups/i } )
+			).toBeInTheDocument();
+
+			await act( waitForDefaultTimeouts );
 		} );
 	} );
 } );

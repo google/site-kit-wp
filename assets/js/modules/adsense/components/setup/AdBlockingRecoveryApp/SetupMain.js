@@ -247,7 +247,7 @@ export default function SetupMain() {
 								external
 								hideExternalIndicator
 							>
-								{ __( 'Create my message', 'google-site-kit' ) }
+								{ __( 'Create message', 'google-site-kit' ) }
 							</Link>
 						</div>
 					) : (
