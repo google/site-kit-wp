@@ -260,6 +260,8 @@ function AudienceTilesWidget( { Widget } ) {
 		} )
 		.reverse();
 
+	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
+	// This ensures that the tile will reappear when it is populated with data again.
 	useEffectOnce( () => {
 		if ( audiencesToClearDismissal.length > 0 ) {
 			audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
