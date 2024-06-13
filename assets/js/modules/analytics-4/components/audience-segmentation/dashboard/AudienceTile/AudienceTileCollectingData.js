@@ -31,7 +31,7 @@ export default function AudienceTileCollectingData() {
 	return (
 		<Fragment>
 			<AudienceTileCollectingDataImage className="googlesitekit-audience-segmentation-tile--zero-data__image" />
-			<p className="googlesitekit-audience-segmentation-tile--zero-data__description">
+			<p className="googlesitekit-audience-segmentation-tile__description--zero-data">
 				{ __(
 					'Site Kit is collecting data for this group.',
 					'google-site-kit'
