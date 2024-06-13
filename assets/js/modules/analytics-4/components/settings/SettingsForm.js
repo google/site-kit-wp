@@ -52,12 +52,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 		<Fragment>
 			<SettingsControls hasModuleAccess={ hasModuleAccess } />
 
-			{ isValidAccountID( accountID ) && (
-				<Fragment>
-					<TrackingExclusionSwitches />
-					<AdsConversionIDSettingsNotice />
-				</Fragment>
-			) }
+			{ isValidAccountID( accountID ) && <TrackingExclusionSwitches /> }
 
 			{ hasModuleAccess && (
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
@@ -70,6 +65,10 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						'google-site-kit'
 					) }
 				</ConversionTrackingToggle>
+			) }
+
+			{ isValidAccountID( accountID ) && (
+				<AdsConversionIDSettingsNotice />
 			) }
 		</Fragment>
 	);
