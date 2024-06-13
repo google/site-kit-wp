@@ -48,7 +48,8 @@
 			padding-left: 28px;
 		}
 
-		body.googlesitekit-showing-feature-tour & {
+		body.googlesitekit-showing-feature-tour &,
+		body.googlesitekit-showing-tooltip & {
 			position: static;
 		}
 
