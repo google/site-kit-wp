@@ -188,7 +188,7 @@ const baseActions = {
 	 *
 	 * @param {Object} args                                    Arguments for enabling audience group.
 	 * @param {Array}  args.failedSiteKitAudienceResourceNames List of failed Site Kit audience resource names to retry.
-	 * @return {Object} Object with `response` and `error`.
+	 * @return {Object} Object with `failedSiteKitAudienceResourceNames` and `error`.
 	 */
 	*enableAudienceGroup( { failedSiteKitAudienceResourceNames } ) {
 		const registry = yield Data.commonActions.getRegistry();
@@ -277,34 +277,47 @@ const baseActions = {
 		}
 
 		if ( configuredAudiences.length === 0 ) {
+			const audiencesToCreate = failedSiteKitAudienceResourceNames || [
+				'new-visitors',
+				'returning-visitors',
+			];
+
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
 			const [ newVisitorsResult, returningVisitorsResult ] =
 				yield Data.commonActions.await(
-					Promise.all( [
-						dispatch( MODULES_ANALYTICS_4 ).createAudience(
-							SITE_KIT_AUDIENCE_DEFINITIONS[ 'new-visitors' ]
-						),
-						dispatch( MODULES_ANALYTICS_4 ).createAudience(
-							SITE_KIT_AUDIENCE_DEFINITIONS[
-								'returning-visitors'
-							]
-						),
-					] )
+					Promise.all(
+						audiencesToCreate.map( ( audienceSlug ) => {
+							return dispatch(
+								MODULES_ANALYTICS_4
+							).createAudience(
+								SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
+							);
+						} )
+					)
 				);
 
+			const failedAudiencesToRetry = [];
+
 			if ( newVisitorsResult.error ) {
-				return { error: newVisitorsResult.error };
+				failedAudiencesToRetry.push( 'new-visitors' );
+			} else {
+				configuredAudiences.push( newVisitorsResult.response.name );
 			}
 
 			if ( returningVisitorsResult.error ) {
-				return { error: returningVisitorsResult.error };
+				failedAudiencesToRetry.push( 'returning-visitors' );
+			} else {
+				configuredAudiences.push(
+					returningVisitorsResult.response.name
+				);
 			}
 
-			configuredAudiences.push(
-				newVisitorsResult.response.name,
-				returningVisitorsResult.response.name
-			);
+			if ( failedAudiencesToRetry.length > 0 ) {
+				return {
+					failedSiteKitAudienceResourceNames: failedAudiencesToRetry,
+				};
+			}
 
 			// Resync available audiences to ensure the newly created audiences are available.
 			yield Data.commonActions.await(
