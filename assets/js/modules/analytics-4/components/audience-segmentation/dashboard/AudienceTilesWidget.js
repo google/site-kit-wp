@@ -255,7 +255,6 @@ function AudienceTilesWidget( { Widget } ) {
 			if ( isDismissed && ! isZeroData ) {
 				// Collect audiences to re-dismiss if they have data again.
 				audiencesToReDismiss.push( audienceResourceName );
-				return true;
 			}
 			return true;
 		} )
