@@ -236,7 +236,7 @@ function AudienceTilesWidget( { Widget } ) {
 		}, {} )
 	);
 
-	const audiencesToReDismiss = [];
+	const audiencesToClearDismissal = [];
 	const visibleAudiences = configuredAudiences
 		.slice()
 		.reverse()
@@ -254,15 +254,15 @@ function AudienceTilesWidget( { Widget } ) {
 			}
 			if ( isDismissed && ! isZeroData ) {
 				// Collect audiences to re-dismiss if they have data again.
-				audiencesToReDismiss.push( audienceResourceName );
+				audiencesToClearDismissal.push( audienceResourceName );
 			}
 			return true;
 		} )
 		.reverse();
 
 	useEffectOnce( () => {
-		if ( audiencesToReDismiss.length > 0 ) {
-			audiencesToReDismiss.forEach( ( audienceResourceName ) => {
+		if ( audiencesToClearDismissal.length > 0 ) {
+			audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
 				dismissItem( `audience-tile-${ audienceResourceName }`, {
 					expiresInSeconds: 1,
 				} );
