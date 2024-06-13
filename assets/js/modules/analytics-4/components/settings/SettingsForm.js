@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -62,7 +63,14 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
 			) }
 
-			{ iceEnabled && <ConversionTrackingToggle /> }
+			{ iceEnabled && (
+				<ConversionTrackingToggle>
+					{ __(
+						'Conversion tracking is used for tracking additional conversion-related events via Analytics',
+						'google-site-kit'
+					) }
+				</ConversionTrackingToggle>
+			) }
 		</Fragment>
 	);
 }
