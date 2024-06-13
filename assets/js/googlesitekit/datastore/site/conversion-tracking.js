@@ -109,7 +109,7 @@ const baseActions = {
 	/**
 	 * Returns the current settings back to the current saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 * @private
 	 *
 	 * @return {Object} Redux-style action.
