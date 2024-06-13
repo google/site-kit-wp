@@ -263,13 +263,11 @@ function AudienceTilesWidget( { Widget } ) {
 
 	useEffectOnce( () => {
 		if ( audiencesToReDismiss.length > 0 ) {
-			Promise.all(
-				audiencesToReDismiss.map( ( audienceResourceName ) =>
-					dismissItem( `audience-tile-${ audienceResourceName }`, {
-						expiresInSeconds: 1,
-					} )
-				)
-			);
+			audiencesToReDismiss.forEach( ( audienceResourceName ) => {
+				dismissItem( `audience-tile-${ audienceResourceName }`, {
+					expiresInSeconds: 1,
+				} );
+			} );
 		}
 	} );
 
