@@ -140,7 +140,7 @@ class Migration_Conversion_ID {
 		$this->ads_settings->set( $ads_settings );
 
 		unset( $analytics_settings['adsConversionID'] );
-		$analytics_settings['adsConversionIDMigratedAtMs'] = time();
+		$analytics_settings['adsConversionIDMigratedAtMs'] = time() * 1000;
 
 		$this->analytics_settings->set( $analytics_settings );
 	}
