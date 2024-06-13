@@ -201,12 +201,15 @@ export const selectors = {
 	 * Returns the current reference date, typically today.
 	 *
 	 * @since 1.22.0
+	 * @since n.e.x.t Added options to allow getting the reference date as a Date instance.
 	 *
-	 * @param {Object} state The current data store's state.
+	 * @param {Object} state            The current data store's state.
+	 * @param {Object} [options]        Options parameter. Default is: {}.
+	 * @param {number} [options.parsed] Number of days to offset. Default is: 0.
 	 * @return {string} The current reference date as YYYY-MM-DD.
 	 */
-	getReferenceDate( state ) {
-		return state.referenceDate;
+	getReferenceDate( state, { parsed = false } = {} ) {
+		return parsed ? new Date( state.referenceDate ) : state.referenceDate;
 	},
 };
 

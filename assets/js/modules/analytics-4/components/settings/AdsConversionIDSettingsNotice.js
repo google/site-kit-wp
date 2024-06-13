@@ -57,7 +57,7 @@ export default function AdsConversionIDSettingsNotice() {
 		)
 	);
 	const now = useSelect( ( select ) =>
-		select( CORE_USER ).getReferenceDate()
+		select( CORE_USER ).getReferenceDate( { parsed: true } )
 	);
 
 	const shouldShowNotice =

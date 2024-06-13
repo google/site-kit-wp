@@ -399,7 +399,7 @@ describe( 'modules/analytics-4 report', () => {
 
 					// Create a timestamp that is three days ago.
 					const createTime = new Date(
-						Date.now() - DAY_IN_SECONDS * 3 * 1000
+						Date.now() - DAY_IN_SECONDS * 4 * 1000
 					).toISOString();
 
 					const property = {
