@@ -93,6 +93,15 @@ class Conversion_Tracking {
 		$this->rest_conversion_tracking_controller->register();
 
 		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
+
+		$active_providers = $this->get_active_providers();
+
+		array_walk(
+			$active_providers,
+			function( Conversion_Events_Provider $active_provider ) {
+				$active_provider->register_hooks();
+			}
+		);
 	}
 
 	/**

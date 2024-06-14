@@ -66,24 +66,20 @@ class WooCommerce extends Conversion_Events_Provider {
 
 		$script->register( $this->context );
 
-		$this->add_purchase_event_hook();
-
 		return $script;
 	}
 
 	/**
 	 * Adds a hook for a purchase event.
+	 *
+	 * @since 1.129.0
 	 */
-	public function add_purchase_event_hook() {
+	public function register_hooks() {
+		$input = $this->context->input();
+
 		add_action(
 			'woocommerce_thankyou',
-			function ( $order_id ) {
-				// Don't output this script tag if conversion tracking is
-				// disabled.
-				if ( ! $this->is_active() ) {
-					return;
-				}
-
+			function ( $order_id ) use ( $input ) {
 				$order = wc_get_order( $order_id );
 
 				// If there isn't a valid order for this ID, or if this order
@@ -95,7 +91,6 @@ class WooCommerce extends Conversion_Events_Provider {
 
 				// Ensure the order key in the query param is valid for this
 				// order.
-				$input     = $this->context->input();
 				$order_key = $input->filter( INPUT_GET, 'key' );
 
 				// Don't output the script tag if the order key is invalid.
@@ -115,5 +110,4 @@ class WooCommerce extends Conversion_Events_Provider {
 			1
 		);
 	}
-
 }
