@@ -28,14 +28,10 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import {
-	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-	STRATEGY_ZIP,
+	provideAnalytics4MockPivotReport,
 } from '../../../utils/data-mock';
-import {
-	audiences as audiencesFixture,
-	availableAudiences,
-} from './../../../datastore/__fixtures__';
+import { availableAudiences } from './../../../datastore/__fixtures__';
 import AudienceTilesWidget from './AudienceTilesWidget';
 
 const totalPageviewsReportOptions = {
@@ -47,35 +43,51 @@ const totalPageviewsReportOptions = {
 const topCitiesReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
-	dimensions: [ 'city' ],
+	dimensions: [ { name: 'city' }, { name: 'audienceResourceName' } ],
 	metrics: [ { name: 'totalUsers' } ],
-	orderby: [
+	pivots: [
 		{
-			metric: {
-				metricName: 'totalUsers',
-			},
-			desc: true,
+			fieldNames: [ 'city' ],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
+			limit: 3,
 		},
 	],
-	limit: 3,
 };
 
 const topContentReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
-	dimensions: [ 'pagePath' ],
+	dimensions: [ { name: 'pagePath' }, { name: 'audienceResourceName' } ],
 	metrics: [ { name: 'screenPageViews' } ],
-	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-	limit: 3,
+	pivots: [
+		{
+			fieldNames: [ 'pagePath' ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 3,
+		},
+	],
 };
 
 const topContentPageTitlesReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
-	dimensions: [ 'pagePath', 'pageTitle' ],
+	dimensions: [
+		{ name: 'pagePath' },
+		{ name: 'pageTitle' },
+		{ name: 'audienceResourceName' },
+	],
 	metrics: [ { name: 'screenPageViews' } ],
-	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-	limit: 15,
+	pivots: [
+		{
+			fieldNames: [ 'pagePath', 'pageTitle' ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 15,
+		},
+	],
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -162,42 +174,46 @@ export default {
 					totalPageviewsReportOptions
 				);
 
-				audiencesFixture.forEach( ( audience ) => {
-					provideAnalytics4MockReport( registry, {
-						...topCitiesReportOptions,
-						dimensionFilters: {
-							audienceResourceName: audience.name,
+				provideAnalytics4MockPivotReport( registry, {
+					...topCitiesReportOptions,
+					dimensionFilters: {
+						audienceResourceName: configuredAudiences,
+					},
+					pivots: [
+						...topCitiesReportOptions.pivots,
+						{
+							fieldNames: [ 'audienceResourceName' ],
+							limit: configuredAudiences?.length,
 						},
-					} );
+					],
 				} );
 
-				audiencesFixture.forEach( ( audience ) => {
-					provideAnalytics4MockReport( registry, {
-						...topContentReportOptions,
-						dimensionFilters: {
-							audienceResourceName: audience.name,
+				provideAnalytics4MockPivotReport( registry, {
+					...topContentReportOptions,
+					dimensionFilters: {
+						audienceResourceName: configuredAudiences,
+					},
+					pivots: [
+						...topContentReportOptions.pivots,
+						{
+							fieldNames: [ 'audienceResourceName' ],
+							limit: configuredAudiences?.length,
 						},
-					} );
+					],
 				} );
 
-				audiencesFixture.forEach( ( audience ) => {
-					const pageTitlesReport = getAnalytics4MockResponse(
-						topContentPageTitlesReportOptions,
-						// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
-						// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
-						// page paths to page titles.
-						{ dimensionCombinationStrategy: STRATEGY_ZIP }
-					);
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetReport( pageTitlesReport, {
-							options: {
-								...topContentPageTitlesReportOptions,
-								dimensionFilters: {
-									audienceResourceName: audience.name,
-								},
-							},
-						} );
+				provideAnalytics4MockPivotReport( registry, {
+					...topContentPageTitlesReportOptions,
+					dimensionFilters: {
+						audienceResourceName: configuredAudiences,
+					},
+					pivots: [
+						...topContentPageTitlesReportOptions.pivots,
+						{
+							fieldNames: [ 'audienceResourceName' ],
+							limit: configuredAudiences?.length,
+						},
+					],
 				} );
 			};
 

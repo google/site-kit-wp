@@ -856,7 +856,10 @@ export function getAnalytics4MockPivotResponse( options ) {
 		// so we can choose the first fieldNames value as our dimension.
 		const dimension = fieldNames[ 0 ];
 
-		if (
+		// Pass `audienceResourceName` as is because those are getting referenced inside components to get relevant rows.
+		if ( 'audienceResourceName' === dimension ) {
+			streams.push( from( args.dimensionFilters.audienceResourceName ) );
+		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
 		) {
@@ -1006,7 +1009,7 @@ export function getAnalytics4MockPivotResponse( options ) {
 export function provideAnalytics4MockPivotReport( registry, options ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( getAnalytics4MockPivotResponse( options ), {
+		.receiveGetPivotReport( getAnalytics4MockPivotResponse( options ), {
 			options,
 		} );
 }

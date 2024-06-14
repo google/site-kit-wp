@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { filter } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -230,6 +231,31 @@ function AudienceTilesWidget( { Widget } ) {
 		)
 	);
 
+	/**
+	 * Collects the rows of interest for the relevant audience from report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} audienceResourceName Audience resource name.
+	 * @param {Array}  reportRows           Report rows.
+	 * @param {number} index                Index at which audience resource name is available in dimension value.
+	 * @return {Array} Filtered array.
+	 */
+	const collectAudiencesRows = (
+		audienceResourceName,
+		reportRows,
+		index = 1
+	) => {
+		if ( ! reportRows ) {
+			return [];
+		}
+		return filter( reportRows, ( row ) => {
+			return (
+				audienceResourceName === row?.dimensionValues?.[ index ]?.value
+			);
+		} );
+	};
+
 	const loading =
 		! reportLoaded ||
 		! totalPageviewsReportLoaded ||
@@ -341,18 +367,26 @@ function AudienceTilesWidget( { Widget } ) {
 								?.value
 						) || 0;
 
-					const topCities = topCitiesReport?.[ index ];
+					const topCities = collectAudiencesRows(
+						audienceResourceName,
+						topCitiesReport?.rows
+					);
 
-					const topContent = topContentReport?.[ index ];
+					const topContent = collectAudiencesRows(
+						audienceResourceName,
+						topContentReport?.rows
+					);
 
 					const topContentTitles = {};
 
-					topContentPageTitlesReport?.[ index ]?.rows?.forEach(
-						( row ) => {
-							topContentTitles[ row.dimensionValues[ 0 ].value ] =
-								row.dimensionValues[ 1 ].value;
-						}
-					);
+					collectAudiencesRows(
+						audienceResourceName,
+						topContentPageTitlesReport?.rows,
+						2
+					)?.forEach( ( row ) => {
+						topContentTitles[ row.dimensionValues[ 0 ].value ] =
+							row.dimensionValues[ 1 ].value;
+					} );
 
 					return (
 						<AudienceTile
@@ -388,36 +422,39 @@ function AudienceTilesWidget( { Widget } ) {
 							}
 							topCities={ {
 								dimensionValues: [
-									topCities?.rows?.[ 0 ]
-										?.dimensionValues?.[ 0 ],
-									topCities?.rows?.[ 1 ]
-										?.dimensionValues?.[ 0 ],
-									topCities?.rows?.[ 2 ]
-										?.dimensionValues?.[ 0 ],
+									topCities?.[ 0 ]?.dimensionValues?.[ 0 ]
+										?.value,
+									topCities?.[ 1 ]?.dimensionValues?.[ 0 ]
+										?.value,
+									topCities?.[ 2 ]?.dimensionValues?.[ 0 ]
+										?.value,
 								],
 								metricValues: [
-									topCities?.rows?.[ 0 ]?.metricValues?.[ 0 ],
-									topCities?.rows?.[ 1 ]?.metricValues?.[ 0 ],
-									topCities?.rows?.[ 2 ]?.metricValues?.[ 0 ],
+									topCities?.[ 0 ]?.metricValues?.[ 0 ]
+										?.value,
+									topCities?.[ 1 ]?.metricValues?.[ 0 ]
+										?.value,
+									topCities?.[ 2 ]?.metricValues?.[ 0 ]
+										?.value,
 								],
 								total: visitors,
 							} }
 							topContent={ {
 								dimensionValues: [
-									topContent?.rows?.[ 0 ]
-										?.dimensionValues?.[ 0 ],
-									topContent?.rows?.[ 1 ]
-										?.dimensionValues?.[ 0 ],
-									topContent?.rows?.[ 2 ]
-										?.dimensionValues?.[ 0 ],
+									topContent?.[ 0 ]?.dimensionValues?.[ 0 ]
+										?.value,
+									topContent?.[ 1 ]?.dimensionValues?.[ 0 ]
+										?.value,
+									topContent?.[ 2 ]?.dimensionValues?.[ 0 ]
+										?.value,
 								],
 								metricValues: [
-									topContent?.rows?.[ 0 ]
-										?.metricValues?.[ 0 ],
-									topContent?.rows?.[ 1 ]
-										?.metricValues?.[ 0 ],
-									topContent?.rows?.[ 2 ]
-										?.metricValues?.[ 0 ],
+									topContent?.[ 0 ]?.metricValues?.[ 0 ]
+										?.value,
+									topContent?.[ 1 ]?.metricValues?.[ 0 ]
+										?.value,
+									topContent?.[ 2 ]?.metricValues?.[ 0 ]
+										?.value,
 								],
 							} }
 							topContentTitles={ topContentTitles }
