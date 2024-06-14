@@ -82,6 +82,8 @@ class Conversion_TrackingTest extends TestCase {
 	 * @dataProvider data_modules
 	 */
 	public function test_register__enqueued_when_snippet_inserted( $module_slug ) {
+		$this->assertFalse( has_action( 'fake_provider_action' ) );
+
 		$this->conversion_tracking->register();
 
 		do_action( "googlesitekit_{$module_slug}_init_tag" );
@@ -89,6 +91,8 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertTrue( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
 		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ) );
+
+		$this->assertTrue( has_action( 'fake_provider_action' ) );
 	}
 
 	public function data_modules() {
