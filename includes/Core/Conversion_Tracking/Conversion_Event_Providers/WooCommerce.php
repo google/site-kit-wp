@@ -75,18 +75,11 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @since 1.129.0
 	 */
 	public function register_hooks() {
-		$is_active = $this->is_active();
-		$input     = $this->context->input();
+		$input = $this->context->input();
 
 		add_action(
 			'woocommerce_thankyou',
-			function ( $order_id ) use ( $input, $is_active ) {
-				// Don't output this script tag if conversion tracking is
-				// disabled.
-				if ( ! $is_active ) {
-					return;
-				}
-
+			function ( $order_id ) use ( $input ) {
 				$order = wc_get_order( $order_id );
 
 				// If there isn't a valid order for this ID, or if this order
