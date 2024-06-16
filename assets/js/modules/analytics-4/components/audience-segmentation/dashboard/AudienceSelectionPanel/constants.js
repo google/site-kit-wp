@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+export const AUDIENCE_ADD_GROUP_NOTICE_SLUG =
+	'audience-segmentation-add-group-notice';
 export const AUDIENCE_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-audience-selection-panel-opened';
 export const AUDIENCE_SELECTION_FORM = 'audience-selection-form';

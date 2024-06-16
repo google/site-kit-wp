@@ -33,6 +33,7 @@ import {
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import AddGroupNotice from './AddGroupNotice';
 import AudienceItems from './AudienceItems';
 import Footer from './Footer';
 import Header from './Header';
@@ -85,6 +86,7 @@ export default function AudienceSelectionPanel() {
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
+			<AddGroupNotice />
 			<LearnMoreLink />
 			<Footer
 				closePanel={ closePanel }
