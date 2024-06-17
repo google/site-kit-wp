@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isBoolean } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -168,6 +169,35 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 	},
 } );
 
+const fetchSetGoogleTagIDMismatch = createFetchStore( {
+	baseName: 'setGoogleTagIDMismatch',
+	controlCallback( { hasMismatchedTag } ) {
+		return API.set(
+			'modules',
+			'analytics-4',
+			'set-google-tag-id-mismatch',
+			{
+				hasMismatchedTag,
+			}
+		);
+	},
+	reducerCallback( state, hasMismatchedTag ) {
+		return {
+			...state,
+			hasMismatchedTag,
+		};
+	},
+	argsToParams( hasMismatchedTag ) {
+		return { hasMismatchedTag };
+	},
+	validateParams( { hasMismatchedTag } = {} ) {
+		invariant(
+			isBoolean( hasMismatchedTag ),
+			'hasMismatchedTag must be boolean.'
+		);
+	},
+} );
+
 // Actions
 const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
@@ -177,7 +207,7 @@ const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
-	hasMismatchedTag: false,
+	hasMismatchedTag: undefined,
 	isMatchingAccountProperty: false,
 	isWebDataStreamAvailable: true,
 };
@@ -563,14 +593,28 @@ const baseActions = {
 	 * Sets if GA4 has mismatched Google Tag ID.
 	 *
 	 * @since 1.96.0
+	 * @since n.e.x.t Updated to send value to the endpoint.
+	 *
+	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
+	 */
+	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+		yield fetchSetGoogleTagIDMismatch.actions.fetchSetGoogleTagIDMismatch(
+			hasMismatchedTag
+		);
+	},
+
+	/**
+	 * Sets if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
 	 * @return {Object} Redux-style action.
 	 */
-	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+	*receiveHasMismatchGoogleTagID( hasMismatchedTag ) {
 		return {
 			type: SET_HAS_MISMATCHED_TAG,
-			payload: { hasMismatchedTag },
+			payload: { hasMismatchedTag: !! hasMismatchedTag },
 		};
 	},
 
@@ -804,6 +848,28 @@ const baseResolvers = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( property.createTime );
 	},
+	*hasMismatchedGoogleTagID() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const hasMismatchedTag = registry
+			.select( MODULES_ANALYTICS_4 )
+			.hasMismatchedGoogleTagID();
+
+		if ( hasMismatchedTag === undefined ) {
+			if ( ! global._googlesitekitModulesData ) {
+				global.console.error(
+					'Could not load modules/analytics-4 data.'
+				);
+				return;
+			}
+
+			const tagIDMismatch =
+				global._googlesitekitModulesData?.[ 'analytics-4' ]
+					?.tagIDMismatch;
+
+			yield actions.receiveHasMismatchGoogleTagID( tagIDMismatch );
+		}
+	},
 };
 
 const baseSelectors = {
@@ -922,6 +988,7 @@ const store = Data.combineStores(
 	fetchGetPropertiesStore,
 	fetchGetPropertyStore,
 	fetchGetGoogleTagSettingsStore,
+	fetchSetGoogleTagIDMismatch,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
