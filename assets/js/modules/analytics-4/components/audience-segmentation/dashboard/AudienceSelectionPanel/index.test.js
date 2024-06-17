@@ -238,123 +238,140 @@ describe( 'AudienceSelectionPanel', () => {
 				} );
 		} );
 
-		it( 'should use the `newVsReturning` dimension when retrieving user counts for Site Kit-created audiences which are in the partial data state', async () => {
-			const newVisitorsAudience = availableAudiences[ 2 ];
-			const returningVisitorsAudience = availableAudiences[ 3 ];
+		it.each( [
+			[ [ 'new-visitors' ] ],
+			[ [ 'returning-visitors' ] ],
+			[ [ 'new-visitors', 'returning-visitors' ] ],
+		] )(
+			'should use the `newVsReturning` dimension when retrieving user counts for Site Kit-created audiences when the following audiences are in the partial data state: %s',
+			async ( siteKitAudienceSlugs ) => {
+				const newVisitorsAudience = availableAudiences[ 2 ];
+				const returningVisitorsAudience = availableAudiences[ 3 ];
 
-			const otherAudiences = availableAudiences.filter(
-				( { name } ) =>
-					! [
-						newVisitorsAudience.name,
-						returningVisitorsAudience.name,
-					].includes( name )
-			);
-
-			const referenceDate = registry
-				.select( CORE_USER )
-				.getReferenceDate();
-
-			// Simulate partial data state for the new visitors audience.
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setResourceDataAvailabilityDate(
-					newVisitorsAudience.name,
-					'audience',
-					Number( referenceDate.replace( /-/g, '' ) )
+				const otherAudiences = availableAudiences.filter(
+					( { name } ) =>
+						! [
+							newVisitorsAudience.name,
+							returningVisitorsAudience.name,
+						].includes( name )
 				);
 
-			const newVsReturningReportOptions = {
-				...baseReportOptions,
-				dimensions: [ { name: 'newVsReturning' } ],
-			};
+				const referenceDate = registry
+					.select( CORE_USER )
+					.getReferenceDate();
 
-			const audienceResourceNameReportOptions = {
-				...baseReportOptions,
-				dimensions: [ { name: 'audienceResourceName' } ],
-				dimensionFilters: {
-					audienceResourceName: otherAudiences.map(
-						( { name } ) => name
-					),
-				},
-			};
-
-			provideAnalytics4MockReport(
-				registry,
-				newVsReturningReportOptions
-			);
-
-			provideAnalytics4MockReport(
-				registry,
-				audienceResourceNameReportOptions
-			);
-
-			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
-				registry,
-			} );
-
-			await waitForRegistry();
-
-			const newVsReturningReport = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getReport( newVsReturningReportOptions );
-
-			const audienceResourceNameReport = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getReport( audienceResourceNameReportOptions );
-
-			function findAudienceRow( rows, dimensionValue ) {
-				return rows.find(
-					( row ) =>
-						row?.dimensionValues?.[ 0 ]?.value === dimensionValue
-				);
-			}
-
-			document
-				.querySelectorAll(
-					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
-				)
-				?.forEach( ( item ) => {
-					const audienceName = item?.querySelector(
-						'input[type="checkbox"]'
-					)?.value;
-
-					let audienceRow;
-
-					if ( audienceName === newVisitorsAudience.name ) {
-						audienceRow = findAudienceRow(
-							newVsReturningReport.rows,
-							'new'
-						);
-					} else if (
-						audienceName === returningVisitorsAudience.name
-					) {
-						audienceRow = findAudienceRow(
-							newVsReturningReport.rows,
-							'returning'
-						);
-					} else {
-						audienceRow = findAudienceRow(
-							audienceResourceNameReport.rows,
-							audienceName
-						);
-					}
-
-					const userCountInReport =
-						audienceRow?.metricValues?.[ 0 ]?.value || 0;
-
-					const userCountInDOM = item?.querySelector(
-						'.googlesitekit-selection-panel-item__suffix'
+				// Simulate partial data state for the given audiences.
+				siteKitAudienceSlugs.forEach( ( slug ) => {
+					const audience = availableAudiences.find(
+						( { audienceSlug } ) => audienceSlug === slug
 					);
 
-					if ( !! userCountInReport ) {
-						expect( userCountInDOM ).toHaveTextContent(
-							userCountInReport
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setResourceDataAvailabilityDate(
+							audience.name,
+							'audience',
+							Number( referenceDate.replace( /-/g, '' ) )
 						);
-					} else {
-						expect( userCountInDOM ).not.toBeInTheDocument();
-					}
 				} );
-		} );
+
+				const newVsReturningReportOptions = {
+					...baseReportOptions,
+					dimensions: [ { name: 'newVsReturning' } ],
+				};
+
+				const audienceResourceNameReportOptions = {
+					...baseReportOptions,
+					dimensions: [ { name: 'audienceResourceName' } ],
+					dimensionFilters: {
+						audienceResourceName: otherAudiences.map(
+							( { name } ) => name
+						),
+					},
+				};
+
+				provideAnalytics4MockReport(
+					registry,
+					newVsReturningReportOptions
+				);
+
+				provideAnalytics4MockReport(
+					registry,
+					audienceResourceNameReportOptions
+				);
+
+				const { waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				const newVsReturningReport = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( newVsReturningReportOptions );
+
+				const audienceResourceNameReport = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( audienceResourceNameReportOptions );
+
+				function findAudienceRow( rows, dimensionValue ) {
+					return rows.find(
+						( row ) =>
+							row?.dimensionValues?.[ 0 ]?.value ===
+							dimensionValue
+					);
+				}
+
+				document
+					.querySelectorAll(
+						'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+					)
+					?.forEach( ( item ) => {
+						const audienceName = item?.querySelector(
+							'input[type="checkbox"]'
+						)?.value;
+
+						let audienceRow;
+
+						if ( audienceName === newVisitorsAudience.name ) {
+							audienceRow = findAudienceRow(
+								newVsReturningReport.rows,
+								'new'
+							);
+						} else if (
+							audienceName === returningVisitorsAudience.name
+						) {
+							audienceRow = findAudienceRow(
+								newVsReturningReport.rows,
+								'returning'
+							);
+						} else {
+							audienceRow = findAudienceRow(
+								audienceResourceNameReport.rows,
+								audienceName
+							);
+						}
+
+						const userCountInReport =
+							audienceRow?.metricValues?.[ 0 ]?.value || 0;
+
+						const userCountInDOM = item?.querySelector(
+							'.googlesitekit-selection-panel-item__suffix'
+						);
+
+						if ( !! userCountInReport ) {
+							expect( userCountInDOM ).toHaveTextContent(
+								userCountInReport
+							);
+						} else {
+							expect( userCountInDOM ).not.toBeInTheDocument();
+						}
+					} );
+			}
+		);
 
 		it( 'should include audience source for each audience', async () => {
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
