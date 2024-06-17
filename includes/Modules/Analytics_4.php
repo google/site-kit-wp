@@ -149,6 +149,14 @@ final class Analytics_4 extends Module
 	protected $audience_settings;
 
 	/**
+	 * AdSense_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var AdSense_Settings
+	 */
+	protected $adsense_settings;
+
+	/**
 	 * Resource_Data_Availability_Date instance.
 	 *
 	 * @since 1.127.0
@@ -178,6 +186,7 @@ final class Analytics_4 extends Module
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->audience_settings                = new Audience_Settings( $this->user_options );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
+		$this->adsense_settings                 = new AdSense_Settings( $this->options );
 	}
 
 	/**
@@ -278,6 +287,20 @@ final class Analytics_4 extends Module
 							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
+				}
+			}
+		);
+
+		$this->adsense_settings->on_change(
+			function( $old_value, $new_value ) use ( $synchronize_adsense_linked ) {
+				// When AdSense gets connected, account status will update after account ID is already set
+				// so at this point we only need to confirm that new value for account ID is not empty
+				// and account status just transitioned to `ready`. Since we can't change account through
+				// the settings later, checking if account changed is not needed.
+				if ( $new_value['accountID'] && 'ready' === $new_value['accountStatus'] ) {
+					if ( $this->is_adsense_connected() ) {
+						$synchronize_adsense_linked->maybe_run_synchronize_adsense_linked();
+					}
 				}
 			}
 		);
@@ -442,7 +465,7 @@ final class Analytics_4 extends Module
 	 * @return bool True if AdSense is connected, false otherwise.
 	 */
 	private function is_adsense_connected() {
-		$adsense_settings = ( new AdSense_Settings( $this->options ) )->get();
+		$adsense_settings = $this->adsense_settings->get();
 
 		if ( empty( $adsense_settings['accountSetupComplete'] ) || empty( $adsense_settings['siteSetupComplete'] ) ) {
 			return false;
