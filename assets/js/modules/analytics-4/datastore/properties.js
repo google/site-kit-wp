@@ -184,7 +184,7 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	reducerCallback( state, hasMismatchedTag ) {
 		return {
 			...state,
-			hasMismatchedTag,
+			hasMismatchedTag: !! hasMismatchedTag,
 		};
 	},
 	argsToParams( hasMismatchedTag ) {
