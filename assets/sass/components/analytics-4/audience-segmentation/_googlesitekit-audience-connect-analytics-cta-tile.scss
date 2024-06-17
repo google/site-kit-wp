@@ -22,7 +22,7 @@
 		display: flex;
 		flex-direction: column;
 
-		@media (min-width: $minWidth-desktop) {
+		@media (min-width: $bp-nonTablet) {
 			align-items: center;
 			flex: 1;
 			flex-direction: row;
@@ -35,13 +35,13 @@
 			padding-block: 20px;
 			padding-inline: $grid-gap-phone;
 
-			@media (min-width: $minWidth-tablet) {
+			@media (min-width: $bp-nonMobile) {
 				align-items: center;
 				flex-direction: row;
 				padding-inline: $grid-gap-desktop;
 			}
 
-			@media (min-width: $minWidth-desktop) {
+			@media (min-width: $bp-nonTablet) {
 				flex: 0 1 auto;
 				margin-right: $grid-gap-desktop;
 				padding: 0;
@@ -51,7 +51,7 @@
 				display: flex;
 				margin-bottom: 6px;
 
-				@media (min-width: $minWidth-tablet) {
+				@media (min-width: $bp-nonMobile) {
 					justify-content: right;
 					margin-bottom: 0;
 				}
@@ -59,22 +59,22 @@
 
 			.googlesitekit-audience-connect-analytics-cta-tile__content {
 
-				@media (min-width: $minWidth-tablet) {
+				@media (min-width: $bp-nonMobile) {
 					margin-left: 20px;
 				}
 
-				@media (min-width: $minWidth-desktop) {
+				@media (min-width: $bp-nonTablet) {
 					margin-left: $grid-gap-desktop;
 				}
 
 				.googlesitekit-audience-connect-analytics-cta-tile__text {
 					margin: 0 0 4px;
 
-					@media (min-width: $minWidth-tablet) {
+					@media (min-width: $bp-nonMobile) {
 						display: inline;
 					}
 
-					@media (min-width: $minWidth-desktop) {
+					@media (min-width: $bp-nonTablet) {
 						display: block;
 					}
 				}
@@ -90,7 +90,7 @@
 				max-height: 128px;
 			}
 
-			@media (min-width: $minWidth-tablet) {
+			@media (min-width: $bp-nonMobile) {
 				padding-inline: 0;
 
 				svg {
@@ -99,7 +99,7 @@
 				}
 			}
 
-			@media (min-width: $minWidth-desktop) {
+			@media (min-width: $bp-nonTablet) {
 				flex: 1 1 auto;
 			}
 		}

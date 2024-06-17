@@ -273,12 +273,11 @@ $bp-xsmallOnly: $width-xsmall - 1 + px;
 $bp-mobileOnly: $width-tablet - 1 + px;
 $bp-tablet: $width-tablet + px;
 $bp-nonMobile: $width-tablet + 1 + px;
+$bp-nonTablet: $width-desktop + 1 + px;
 $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
 $bp-desktop: $width-desktop + px;
 $bp-xlarge: $width-xlarge + px;
 $bp-xxlarge: $width-xxlarge + px;
-$minWidth-tablet: $width-tablet + 1 + px;
-$minWidth-desktop: $width-desktop + 1 + px;
 
 // Specific for WP Dashboard
 $bp-wpdb1: 800px;
