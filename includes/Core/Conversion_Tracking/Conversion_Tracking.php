@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Easy_Digital_Downloads;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMaker;
@@ -61,6 +62,7 @@ class Conversion_Tracking {
 	 */
 	public static $providers = array(
 		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
+		Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG => Easy_Digital_Downloads::class,
 		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG      => Mailchimp::class,
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
 		PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG     => PopupMaker::class,
