@@ -25,7 +25,8 @@ use Google\Site_Kit\Modules\AdSense\Settings as Adsense_Settings;
  * @ignore
  */
 class Synchronize_AdSenseLinked {
-	const CRON_SYNCHRONIZE_ADSENSE_LINKED = 'googlesitekit_cron_synchronize_adsense_linked_data';
+	const CRON_SYNCHRONIZE_ADSENSE_LINKED         = 'googlesitekit_cron_synchronize_adsense_linked_data';
+	const CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED = 'googlesitekit_cron_initial_synchronize_adsense_linked';
 
 	/**
 	 * Analytics_4 instance.
@@ -78,6 +79,13 @@ class Synchronize_AdSenseLinked {
 				$this->synchronize_adsense_linked_data();
 			}
 		);
+
+		add_action(
+			self::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED,
+			function() {
+				$this->synchronize_adsense_linked_data();
+			}
+		);
 	}
 
 	/**
@@ -111,6 +119,25 @@ class Synchronize_AdSenseLinked {
 				// Schedule the task to run in 24 hours.
 				time() + ( DAY_IN_SECONDS ),
 				self::CRON_SYNCHRONIZE_ADSENSE_LINKED
+			);
+		}
+	}
+
+	/**
+	 * Runs immediately a single cron which will synchronize the adSenseLinked status.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function maybe_run_synchronize_adsense_linked() {
+		$analytics_4_connected  = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
+		$adsense_connected      = apply_filters( 'googlesitekit_is_module_connected', false, AdSense::MODULE_SLUG );
+		$cron_already_scheduled = wp_next_scheduled( self::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED );
+
+		if ( $analytics_4_connected && $adsense_connected && ! $cron_already_scheduled ) {
+			wp_schedule_single_event(
+				// Schedule the task to run immediatelly.
+				time(),
+				self::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED
 			);
 		}
 	}
