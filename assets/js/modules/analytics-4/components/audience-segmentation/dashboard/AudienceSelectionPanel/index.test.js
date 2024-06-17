@@ -74,6 +74,10 @@ describe( 'AudienceSelectionPanel', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
