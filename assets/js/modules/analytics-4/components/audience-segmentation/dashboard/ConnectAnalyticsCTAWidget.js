@@ -65,16 +65,16 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-widget--connectAnalyticsCTATile">
-				<div className="googlesitekit-audience-connect-analytics-cta-tile">
+			<div className="googlesitekit-widget--connectAnalyticsCTA">
+				<div className="googlesitekit-audience-connect-analytics-cta">
 					{ Icon && (
-						<div className="googlesitekit-audience-connect-analytics-cta-tile__icon">
+						<div className="googlesitekit-audience-connect-analytics-cta__icon">
 							<Icon width="32" height="32" />
 						</div>
 					) }
 
-					<div className="googlesitekit-audience-connect-analytics-cta-tile__content">
-						<p className="googlesitekit-audience-connect-analytics-cta-tile__text">
+					<div className="googlesitekit-audience-connect-analytics-cta__content">
+						<p className="googlesitekit-audience-connect-analytics-cta__text">
 							{ content }{ ' ' }
 						</p>
 						<Link secondary onClick={ handleConnectModule }>
