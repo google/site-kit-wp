@@ -36,7 +36,6 @@ export const Default = Template.bind( {} );
 Default.storyName = 'ConnectAnalyticsCTAWidget';
 Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTAWidget',
-	delay: 250,
 };
 
 export default {
