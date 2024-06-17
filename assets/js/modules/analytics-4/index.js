@@ -84,7 +84,7 @@ import {
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
 	AudienceTilesWidget,
-	ConnectAnalyticsCTATileWidget,
+	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
 } from './components/audience-segmentation/dashboard';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -143,7 +143,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'audienceConnectAnalyticsCTA',
 		{
-			Component: ConnectAnalyticsCTATileWidget,
+			Component: ConnectAnalyticsCTAWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,

@@ -1,5 +1,5 @@
 /**
- * ConnectAnalyticsCTATileWidget Component Stories.
+ * ConnectAnalyticsCTAWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -22,25 +22,25 @@
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { provideModuleRegistrations } from '../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import ConnectAnalyticsCTATileWidget from './ConnectAnalyticsCTATileWidget';
+import ConnectAnalyticsCTAWidget from './ConnectAnalyticsCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'audienceSegmentationConnectAnalytics'
-)( ConnectAnalyticsCTATileWidget );
+)( ConnectAnalyticsCTAWidget );
 
 function Template() {
 	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'ConnectAnalyticsCTATileWidget';
+Default.storyName = 'ConnectAnalyticsCTAWidget';
 Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTATileWidget',
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTAWidget',
 	delay: 250,
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTATileWidget',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTAWidget',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

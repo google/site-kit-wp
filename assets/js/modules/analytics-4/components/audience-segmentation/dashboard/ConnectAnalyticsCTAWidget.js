@@ -1,5 +1,5 @@
 /**
- * ConnectAnalyticsCTATileWidget component.
+ * ConnectAnalyticsCTAWidget component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -42,7 +42,7 @@ import {
 
 const { useSelect } = Data;
 
-export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
+export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	const breakpoint = useBreakpoint();
 
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
@@ -97,6 +97,6 @@ export default function ConnectAnalyticsCTATileWidget( { Widget } ) {
 	);
 }
 
-ConnectAnalyticsCTATileWidget.propTypes = {
+ConnectAnalyticsCTAWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
