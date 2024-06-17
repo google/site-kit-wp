@@ -108,6 +108,10 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveResourceDataAvailabilityDates( {
 						audience: availableAudiences.reduce(
 							( acc, { audienceSlug, name } ) => {
