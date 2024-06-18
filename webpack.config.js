@@ -25,6 +25,7 @@ const basicModulesConfig = require( './webpack/basicModules.config' );
 const conversionEventProviders = require( './webpack/conversionEventProviders.config' );
 const modulesConfig = require( './webpack/modules.config' );
 const testBundleConfig = require( './webpack/testBundle.config' );
+const consentModeConfig = require( './webpack/consentMode.config' );
 
 function* webpackConfig( env, argv ) {
 	const { mode } = argv;
@@ -44,6 +45,9 @@ function* webpackConfig( env, argv ) {
 
 	// Build conversion event provider files.
 	yield conversionEventProviders( mode );
+
+	// Build consent mode frontend script.
+	yield consentModeConfig( mode );
 
 	// Build the main plugin admin css.
 	yield adminCssConfig( mode );
