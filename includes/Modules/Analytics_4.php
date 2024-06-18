@@ -278,6 +278,10 @@ final class Analytics_4 extends Module
 							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
+
+					if ( ! empty( $new_value['propertyID'] ) ) {
+						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+					}
 				}
 			}
 		);
