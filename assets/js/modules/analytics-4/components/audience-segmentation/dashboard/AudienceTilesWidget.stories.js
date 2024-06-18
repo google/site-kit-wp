@@ -28,6 +28,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import {
+	getAnalytics4MockPivotResponse,
 	provideAnalytics4MockReport,
 	provideAnalytics4MockPivotReport,
 } from '../../../utils/data-mock';
@@ -202,7 +203,7 @@ export default {
 					],
 				} );
 
-				provideAnalytics4MockPivotReport( registry, {
+				const titleReportOptions = {
 					...topContentPageTitlesReportOptions,
 					dimensionFilters: {
 						audienceResourceName: configuredAudiences,
@@ -214,7 +215,18 @@ export default {
 							limit: configuredAudiences?.length,
 						},
 					],
-				} );
+				};
+
+				const topTitleReport = getAnalytics4MockPivotResponse(
+					titleReportOptions,
+					true
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetPivotReport( topTitleReport, {
+						options: titleReportOptions,
+					} );
 			};
 
 			return (
