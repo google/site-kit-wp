@@ -128,24 +128,16 @@ class Analytics_4Test extends TestCase {
 	 */
 	private $request_handler_calls;
 
-	/**
-	 * AdSense_Settings object.
-	 *
-	 * @var AdSense_Settings
-	 */
-	private $adsense_settings;
-
 	public function set_up() {
 		parent::set_up();
 		$this->request_handler_calls = array();
 
-		$this->context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options          = new Options( $this->context );
-		$this->user             = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options     = new User_Options( $this->context, $this->user->ID );
-		$this->authentication   = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->analytics        = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
-		$this->adsense_settings = new AdSense_Settings( $this->options );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $this->context );
+		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_options   = new User_Options( $this->context, $this->user->ID );
+		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag() )->register();
@@ -345,29 +337,23 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
 	}
 
-	public function test_register__when_adsense_is_connected_run_cron() {
-		remove_all_actions( Synchronize_AdSenseLinked::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED );
+	public function test_register__if_analytics_is_active_sync_adsense_link_settings() {
+		remove_all_actions( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
 
-		$this->force_connect_modules( Analytics_4::MODULE_SLUG, AdSense::MODULE_SLUG );
+		$this->force_connect_modules( AdSense::MODULE_SLUG );
 
 		$this->analytics->register();
 
-		$this->assertFalse(
-			(bool) wp_next_scheduled( Synchronize_AdSenseLinked::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED )
-		);
-
 		// Set the needed option values so checks can pass.
-		$this->adsense_settings->merge(
+		$this->analytics->get_settings()->merge(
 			array(
-				'accountID'            => '12345678',
-				'accountSetupComplete' => true,
-				'siteSetupComplete'    => true,
-				'accountStatus'        => 'ready',
+				'propertyID' => '123456',
 			)
 		);
 
-		$this->assertTrue(
-			(bool) wp_next_scheduled( Synchronize_AdSenseLinked::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED )
+		$this->assertEquals(
+			did_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ),
+			1
 		);
 	}
 
