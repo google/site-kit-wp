@@ -63,6 +63,7 @@ use Google\Site_Kit\Core\Tags\Guards\WP_Query_404_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use WP_Error;
 use WP_REST_Response;
 
@@ -155,6 +156,9 @@ final class AdSense extends Module
 			function( $old_value, $new_value ) {
 				if ( $old_value['accountID'] !== $new_value['accountID'] ) {
 					$this->reset_analytics_adsense_linked_settings();
+				}
+				if ( ! empty( $new_value['accountSetupComplete'] ) && ! empty( $new_value['siteSetupComplete'] ) ) {
+					do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
 				}
 			}
 		);
