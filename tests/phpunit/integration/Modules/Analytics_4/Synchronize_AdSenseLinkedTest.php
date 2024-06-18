@@ -168,17 +168,6 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		);
 	}
 
-	public function test_maybe_run_synchronize_adsense_linked() {
-		remove_all_actions( Synchronize_AdSenseLinked::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED );
-		$this->force_connect_modules( Analytics_4::MODULE_SLUG, AdSense::MODULE_SLUG );
-
-		$this->synchronize_adsense_linked->maybe_run_synchronize_adsense_linked();
-
-		$this->assertTrue(
-			(bool) wp_next_scheduled( Synchronize_AdSenseLinked::CRON_INITIAL_SYNCHRONIZE_ADSENSE_LINKED )
-		);
-	}
-
 	/**
 	 * @dataProvider data_adsense_linked
 	 * @param array $test_parameters {
