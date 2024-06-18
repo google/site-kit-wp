@@ -110,6 +110,7 @@ describe( 'modules/ads settings', () => {
 		it( 'should throw if the given conversion ID is invalid', () => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: '12345',
+				paxConversionID: '',
 			} );
 
 			registry.dispatch( MODULES_ADS ).setConversionID( 'invalid' );

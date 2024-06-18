@@ -278,6 +278,10 @@ final class Analytics_4 extends Module
 							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
+
+					if ( ! empty( $new_value['propertyID'] ) ) {
+						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+					}
 				}
 			}
 		);
@@ -2428,7 +2432,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Returns the Site Kit-created audience display names from the passed list of audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 *
 	 * @param array $audiences List of audiences.
 	 *

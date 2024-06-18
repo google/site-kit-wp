@@ -58,7 +58,7 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  * while the fourth defines the names of the sub-settings to support.
  *
  * @since 1.6.0
- * @since n.e.x.t Added haveSettingsChanged optional paramter.
+ * @since 1.129.0 Added haveSettingsChanged optional paramter.
  * @private
  *
  * @param {string}        type                                  The data to access. One of 'core' or 'modules'.
@@ -283,7 +283,7 @@ export const createSettingsStore = (
 		 *
 		 * @since 1.6.0
 		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
-		 * @since n.e.x.t Changed the approach to use validateHaveSettingsChanged callback.
+		 * @since 1.129.0 Changed the approach to use validateHaveSettingsChanged callback.
 		 *
 		 * @param {Object}     state Data store's state.
 		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
@@ -500,7 +500,7 @@ export function makeDefaultCanSubmitChanges( storeName ) {
 /**
  * Creates Default haveSettingsChanged.
  *
- * @since n.e.x.t
+ * @since 1.129.0
  *
  * @return {boolean} True if the settings have changed, false otherwise.
  */

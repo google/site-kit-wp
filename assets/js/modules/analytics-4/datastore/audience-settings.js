@@ -298,7 +298,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the audience settings are being saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the audience settings are being saved, otherwise FALSE.
