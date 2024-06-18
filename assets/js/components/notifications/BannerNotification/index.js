@@ -103,8 +103,10 @@ export default function BannerNotification( props ) {
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( false );
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
+
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
+	// Don't use the getReferenceDate selector here since there is no need in it.
 	const persistDismissal = () =>
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } ); // eslint-disable-line sitekit/no-direct-date
 

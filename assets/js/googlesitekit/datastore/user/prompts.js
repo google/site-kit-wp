@@ -128,6 +128,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		// Don't use the getReferenceDate selector here since there is no need in it.
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		return Object.entries( state.dismissedPrompts ).reduce(
 			( acc, [ slug, { expires } ] ) => {

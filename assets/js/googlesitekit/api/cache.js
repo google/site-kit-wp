@@ -191,6 +191,7 @@ export const getItem = async ( key ) => {
 			if (
 				timestamp &&
 				( ! ttl || // Ensure the cached data isn't too old.
+					// Don't use the getReferenceDate selector here since there is no need in it.
 					Math.round( Date.now() / 1000 ) - timestamp < ttl ) // eslint-disable-line sitekit/no-direct-date
 			) {
 				return {
@@ -229,6 +230,7 @@ export const setItem = async (
 	value,
 	{
 		ttl = HOUR_IN_SECONDS,
+		// Don't use the getReferenceDate selector here since there is no need in it.
 		timestamp = Math.round( Date.now() / 1000 ), // eslint-disable-line sitekit/no-direct-date
 		isError = false,
 	} = {}

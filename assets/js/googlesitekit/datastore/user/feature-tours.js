@@ -112,7 +112,8 @@ const baseActions = {
 				payload: { slug },
 			};
 
-			// Save the timestamp to allow the cooldown
+			// Save the timestamp to allow the cooldown.
+			// Don't use the getReferenceDate selector here since there is no need in it.
 			yield actions.setLastDismissedAt( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 			// Dispatch a request to persist and receive updated dismissed tours.
@@ -487,6 +488,7 @@ const baseSelectors = {
 		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
 		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMilliseconds;
 
+		// Don't use the getReferenceDate selector here since there is no need in it.
 		return Date.now() < coolDownExpiresAt; // eslint-disable-line sitekit/no-direct-date
 	} ),
 };

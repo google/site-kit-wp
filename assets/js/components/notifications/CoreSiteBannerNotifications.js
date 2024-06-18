@@ -35,6 +35,10 @@ const MAX_SECONDS_FOR_SURVEY = 5;
 function CoreSiteBannerNotifications() {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
+
+	// Disabled the sitekit/no-direct-date rule in this file because there is no need
+	// to use the getReferenceDate selector here. We don't rely on the date itself,
+	// we just need to track the elapsed time since this component is rendered.
 	const startTime = useRef( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 	const surveys = useSelect( ( select ) =>

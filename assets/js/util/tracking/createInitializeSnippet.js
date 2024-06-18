@@ -56,6 +56,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			? userRoles.join( ',' )
 			: '';
 
+		// Don't use the getReferenceDate selector here since there is no need in it.
 		dataLayerPush( 'js', new Date() ); // eslint-disable-line sitekit/no-direct-date
 		dataLayerPush( 'config', config.trackingID, {
 			groups: 'site_kit',

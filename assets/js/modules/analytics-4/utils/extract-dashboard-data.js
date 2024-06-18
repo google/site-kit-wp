@@ -106,6 +106,7 @@ export function extractAnalytics4DashboardData(
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( days * 2 > rowLength ) {
+		// Don't use the getReferenceDate selector here since there is no need in it.
 		const date = new Date(); // eslint-disable-line sitekit/no-direct-date
 		for ( let i = 0; days > i; i++ ) {
 			const month = ( date.getMonth() + 1 ).toString();

@@ -165,6 +165,7 @@ const baseSelectors = {
 				return false;
 			}
 
+			// Don't use the getReferenceDate selector here since there is no need in it.
 			return expiresInSeconds > Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		}
 	),

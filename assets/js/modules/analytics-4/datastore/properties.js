@@ -640,6 +640,7 @@ const baseActions = {
 
 		if (
 			!! googleTagLastSyncedAtMs &&
+			// Don't use the getReferenceDate selector here since there is no need in it.
 			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
 		) {
 			return;
@@ -683,6 +684,7 @@ const baseActions = {
 
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			googleTagContainerDestinationIDs,
+			// Don't use the getReferenceDate selector here since there is no need in it.
 			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
 		} );
 
