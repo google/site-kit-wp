@@ -33,7 +33,7 @@ import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { isValidDateString, stringifyObject } from '../../../util';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 import { isValidDimensionFilters } from './report-validation';
-import { isValidPivots } from './report-pivots-validation';
+import { isValidPivotsObject } from './report-pivots-validation';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';
@@ -825,13 +825,19 @@ export function sortPivotRows( rows, metrics, pivots ) {
 			( metric ) => metric.name === orderbyItem.metric.metricName
 		);
 
-		return acc.sort( ( rowA, rowB ) =>
-			orderbyItem.desc
-				? rowB.metricValues[ metricIndex ].value -
-				  rowA.metricValues[ metricIndex ].value
-				: rowA.metricValues[ metricIndex ].value -
-				  rowB.metricValues[ metricIndex ].value
-		);
+		return acc.sort( ( rowA, rowB ) => {
+			if ( orderbyItem.desc ) {
+				return (
+					rowB.metricValues[ metricIndex ].value -
+					rowA.metricValues[ metricIndex ].value
+				);
+			}
+
+			return (
+				rowA.metricValues[ metricIndex ].value -
+				rowB.metricValues[ metricIndex ].value
+			);
+		} );
 	}, rows );
 }
 
@@ -861,7 +867,7 @@ export function getAnalytics4MockPivotResponse(
 		'a valid endDate is required.'
 	);
 	invariant(
-		isValidPivots( options.pivots ),
+		isValidPivotsObject( options.pivots ),
 		'pivots must be an array of objects with valid keys and values.'
 	);
 
@@ -937,10 +943,10 @@ export function getAnalytics4MockPivotResponse(
 					new Observable( ( observer ) => {
 						// The limit here is the pivot limit as limits are set within the pivot level, never at the root of the report.
 						for ( let i = 1; i <= limit; i++ ) {
-							const val =
+							const dimensionValue =
 								ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
-							if ( val ) {
-								observer.next( val );
+							if ( dimensionValue ) {
+								observer.next( dimensionValue );
 							} else {
 								break;
 							}

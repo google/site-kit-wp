@@ -40,7 +40,7 @@ import {
 	isValidMetrics,
 	isValidOrders,
 } from './report-validation';
-import { isValidPivots } from './report-pivots-validation';
+import { isValidPivotsObject } from './report-pivots-validation';
 
 /**
  * Checks if the given value is a valid selection for an Account.
@@ -287,7 +287,7 @@ export function validatePivotReport( options ) {
 		'metrics for an Analytics 4 pivot report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property. Metric names must match the expression ^[a-zA-Z0-9_]+$.'
 	);
 	invariant(
-		isValidPivots( pivots ),
+		isValidPivotsObject( pivots ),
 		'pivots for an Analytics 4 pivot report must be an array of objects. Each object must have a "fieldNames" property and a "limit".'
 	);
 

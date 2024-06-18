@@ -34,10 +34,10 @@ import { isValidOrders } from './report-validation';
  *
  * @since n.e.x.t
  *
- * @param {Object[]} pivots The pivots to check.
+ * @param {Object[]} pivots The pivots object to check.
  * @return {boolean} TRUE if pivot definitions are valid, otherwise FALSE.
  */
-export function isValidPivots( pivots ) {
+export function isValidPivotsObject( pivots ) {
 	if ( ! Array.isArray( pivots ) ) {
 		return false;
 	}
