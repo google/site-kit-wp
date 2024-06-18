@@ -920,9 +920,13 @@ export function getAnalytics4MockPivotResponse(
 
 		fieldNames.forEach( ( dimension ) => {
 			// Pass `audienceResourceName` as is because those are getting referenced inside components to get relevant rows.
-			if ( 'audienceResourceName' === dimension ) {
+			if (
+				dimension &&
+				'audienceResourceName' === dimension &&
+				args?.dimensionFilters?.audienceResourceName
+			) {
 				streams.push(
-					from( args.dimensionFilters.audienceResourceName )
+					from( args?.dimensionFilters?.audienceResourceName )
 				);
 			} else if (
 				dimension &&

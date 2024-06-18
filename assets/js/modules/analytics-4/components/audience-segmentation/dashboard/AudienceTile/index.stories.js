@@ -77,53 +77,17 @@ const readyProps = {
 	},
 	percentageOfTotalPageViews: 0.333,
 	topCities: {
-		dimensionValues: [
-			{
-				value: 'Dublin',
-			},
-			{
-				value: 'London',
-			},
-			{
-				value: 'New York',
-			},
-		],
-		metricValues: [
-			{
-				value: 0.388,
-			},
-			{
-				value: 0.126,
-			},
-			{
-				value: 0.094,
-			},
-		],
+		dimensionValues: [ 'Dublin', 'London', 'New York' ],
+		metricValues: [ 0.388, 0.126, 0.094 ],
 		total: 0.608,
 	},
 	topContent: {
 		dimensionValues: [
-			{
-				value: '/en/test-post-1/',
-			},
-			{
-				value: '/en/test-post-2/',
-			},
-			{
-				value: '/en/test-post-3/',
-			},
+			'/en/test-post-1/',
+			'/en/test-post-2/',
+			'/en/test-post-3/',
 		],
-		metricValues: [
-			{
-				value: 847,
-			},
-			{
-				value: 596,
-			},
-			{
-				value: 325,
-			},
-		],
+		metricValues: [ 847, 596, 325 ],
 		total: 1768,
 	},
 	topContentTitles: {
@@ -169,27 +133,11 @@ ReadyLongCityNames.args = {
 	...readyProps,
 	topCities: {
 		dimensionValues: [
-			{
-				value: 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch',
-			},
-			{
-				value: 'Lake Chaubunagungamaug',
-			},
-			{
-				value: 'Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokaiwhenuakitanatahu',
-			},
+			'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch',
+			'Lake Chaubunagungamaug',
+			'Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokaiwhenuakitanatahu',
 		],
-		metricValues: [
-			{
-				value: 0.388,
-			},
-			{
-				value: 0.126,
-			},
-			{
-				value: 0.094,
-			},
-		],
+		metricValues: [ 0.388, 0.126, 0.094 ],
 		total: 0.608,
 	},
 };
