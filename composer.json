@@ -23,6 +23,7 @@
     "google/apiclient": "^2.14.0",
     "google/apiclient-services": "^0.343.0",
     "google/apiclient-services-adsenselinks": "^0.1.0",
+    "google/apiclient-services-subscribewithgoogle": "^0.1.0",
     "guzzlehttp/guzzle": "^6.5.8",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
@@ -57,6 +58,13 @@
     {
       "type": "path",
       "url": "packages/apiclient-services-adsenselinks",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-subscribewithgoogle",
       "options": {
         "symlink": false
       }
