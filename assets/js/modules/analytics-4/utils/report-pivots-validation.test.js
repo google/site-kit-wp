@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { isValidPivots } from './report-pivots-validation';
+import { isValidPivotsObject } from './report-pivots-validation';
 
 describe( 'Analytics 4 Pivot Report API validation', () => {
-	describe( 'isValidPivots', () => {
+	describe( 'isValidPivotsObject', () => {
 		it.each( [
 			[
 				true,
@@ -150,7 +150,7 @@ describe( 'Analytics 4 Pivot Report API validation', () => {
 		] )(
 			'should return %s if %s',
 			( expectedResult, testDescription, pivots ) => {
-				expect( isValidPivots( pivots ) ).toBe( expectedResult );
+				expect( isValidPivotsObject( pivots ) ).toBe( expectedResult );
 			}
 		);
 	} );

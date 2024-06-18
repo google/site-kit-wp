@@ -37,7 +37,6 @@ class ReportParsers {
 	 * @return Google_Service_AnalyticsData_Dimension[] An array of AnalyticsData Dimension objects.
 	 */
 	protected function parse_dimensions( Data_Request $data ) {
-
 		$dimensions = $data['dimensions'];
 		if ( empty( $dimensions ) || ( ! is_string( $dimensions ) && ! is_array( $dimensions ) ) ) {
 			return array();
