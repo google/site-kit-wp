@@ -66,6 +66,9 @@ function CoreSiteBannerNotifications() {
 
 	useEffect( () => {
 		const secondsElapsed = Math.floor(
+			// See comment above; this is just about tracking elapsed
+			// seconds since this component first rendered, so we
+			// shouldn't use the reference date.
 			( Date.now() - startTime.current ) / 1000 // eslint-disable-line sitekit/no-direct-date
 		);
 		// Surveys that were received in time prevent the render, surveys loaded
