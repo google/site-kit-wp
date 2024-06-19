@@ -36,9 +36,9 @@ function CoreSiteBannerNotifications() {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
 
-	// Disabled the sitekit/no-direct-date rule in this file because there is no need
-	// to use the getReferenceDate selector here. We don't rely on the date itself,
-	// we just need to track the elapsed time since this component is rendered.
+	// This check doesn't rely on an actual date; we only need to track the elapsed
+	// number of seconds since this component was rendered to see when
+	// to cause a survey to appear after page load.
 	const startTime = useRef( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 	const surveys = useSelect( ( select ) =>
