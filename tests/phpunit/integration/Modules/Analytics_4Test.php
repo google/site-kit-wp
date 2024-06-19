@@ -1228,6 +1228,7 @@ class Analytics_4Test extends TestCase {
 				'create-custom-dimension',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
+				'set-google-tag-id-mismatch',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -1258,6 +1259,7 @@ class Analytics_4Test extends TestCase {
 				'create-custom-dimension',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
+				'set-google-tag-id-mismatch',
 				'create-audience',
 				'audience-settings',
 				'sync-audiences',
@@ -3315,16 +3317,16 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => false,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => false,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 	}
 
@@ -3415,16 +3417,16 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => true,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => true,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 	}
 
@@ -3460,16 +3462,16 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => true,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => true,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 
 		$this->analytics->get_settings()->merge(
@@ -3480,16 +3482,15 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => false,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => false,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 	}
 
@@ -3548,6 +3549,53 @@ class Analytics_4Test extends TestCase {
 			),
 			$custom_dimensions_data_available->get_data_availability()
 		);
+	}
+
+	public function test_inline_tag_id_mismatch() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+	}
+
+	public function test_inline_tag_id_mismatch__source_correct_value_from_transient() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+
+		$transients = new Transients( $this->context );
+		$transients->set( 'googlesitekit_inline_tag_id_mismatch', true );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'] );
 	}
 
 	public function test_get_data__adsense_links() {
