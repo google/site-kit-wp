@@ -16,10 +16,12 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
@@ -50,6 +52,35 @@ class ModulesTest extends TestCase {
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
 				'tagmanager'         => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+			),
+			$available
+		);
+	}
+
+	public function test_get_available_modules_with_rrm_module_feature_flag_enabled() {
+		// Enable the `rrmModule` feature flag.
+		$this->enable_feature( 'rrmModule' );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$available = array_map(
+			function ( $instance ) {
+				return get_class( $instance );
+			},
+			$modules->get_available_modules()
+		);
+
+		// Reader Revenue Manager module should be available when the feature flag is enabled.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'ads'                    => 'Google\\Site_Kit\\Modules\\Ads',
+				'adsense'                => 'Google\\Site_Kit\\Modules\\AdSense',
+				'analytics-4'            => 'Google\\Site_Kit\\Modules\\Analytics_4',
+				'pagespeed-insights'     => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'search-console'         => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'      => 'Google\\Site_Kit\\Modules\\Site_Verification',
+				'tagmanager'             => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+				'reader-revenue-manager' => 'Google\\Site_Kit\\Modules\\Reader_Revenue_Manager',
 			),
 			$available
 		);
@@ -467,10 +498,31 @@ class ModulesTest extends TestCase {
 		$default_modules = array(
 			Site_Verification::MODULE_SLUG,
 			Search_Console::MODULE_SLUG,
+			Ads::MODULE_SLUG,
 			AdSense::MODULE_SLUG,
 			Analytics_4::MODULE_SLUG,
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
+		);
+
+		yield 'should include the `reader-revenue-manager` module when enabled' => array(
+			// Module feature flag.
+			'rrmModule',
+			// Module enabled or disabled
+			true,
+			Reader_Revenue_Manager::MODULE_SLUG,
+			// Expected
+			array_merge( $default_modules, array( Reader_Revenue_Manager::MODULE_SLUG ) ),
+		);
+
+		yield 'should not include the `reader-revenue-manager` module when disabled' => array(
+			// Module feature flag.
+			'rrmModule',
+			// Module enabled or disabled
+			false,
+			Reader_Revenue_Manager::MODULE_SLUG,
+			// Expected
+			$default_modules,
 		);
 	}
 
