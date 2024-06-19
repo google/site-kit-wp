@@ -39,7 +39,6 @@ export function isZeroReport( report ) {
 	if (
 		! report?.rows ||
 		! report?.totals ||
-		typeof report?.totals !== 'object' ||
 		report?.totals?.every?.( isEmpty )
 	) {
 		return true;
