@@ -855,7 +855,7 @@ class Entity_FactoryTest extends TestCase {
 		$arabic_test = 'امتحان';
 
 		return array(
-			'basic post'               => array(
+			'basic post'                      => array(
 				fn () => $this->factory()->post->create_and_get(
 					array(
 						'post_name'  => 'test',
@@ -865,7 +865,7 @@ class Entity_FactoryTest extends TestCase {
 				'http://example.org/blog/test/',
 				'Test',
 			),
-			'basic post with page num' => array(
+			'basic post with page num'        => array(
 				fn () => $this->factory()->post->create_and_get(
 					array(
 						'post_name'  => 'test',
@@ -876,7 +876,7 @@ class Entity_FactoryTest extends TestCase {
 				'Test',
 				3,
 			),
-			'with utf8 slug'           => array(
+			'with utf8 slug'                  => array(
 				fn () => $this->factory()->post->create_and_get(
 					array(
 						'post_name'  => $arabic_test,
@@ -886,16 +886,27 @@ class Entity_FactoryTest extends TestCase {
 				"http://example.org/blog/$arabic_test/",
 				$arabic_test,
 			),
-			// TODO: this doesn't work as expected because permalink structure changes for some reason.
-		//          'with utf8 slug and page' => array(
-		//              fn () => $this->factory()->post->create_and_get([
-		//                  'post_name' => $arabic_test . '-1',
-		//                  'post_title' => $arabic_test,
-		//              ]),
-		//              "http://example.org/blog/3/$arabic_test-1/",
-		//              $arabic_test,
-		//              3
-		//          ),
+			'with utf8 slug and page'         => array(
+				fn () => $this->factory()->post->create_and_get(
+					array(
+						'post_name'  => $arabic_test . '-1',
+						'post_title' => $arabic_test,
+					)
+				),
+				"http://example.org/blog/$arabic_test-1/3/",
+				$arabic_test,
+				3,
+			),
+			'with special characters in slug' => array(
+				fn () => $this->factory()->post->create_and_get(
+					array(
+						'post_name'  => 'test-!@#$%^&*()',
+						'post_title' => 'Test',
+					)
+				),
+				'http://example.org/blog/test/',
+				'Test',
+			),
 		);
 	}
 
