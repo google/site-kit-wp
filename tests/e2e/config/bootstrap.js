@@ -235,7 +235,7 @@ function observeConsoleLogging() {
 		}
 
 		// WordPress 6.6 logs when loading the block editor which causes console error.
-		if ( text.startsWith( 'You are importing createRoot from' ) ) {
+		if ( text.startsWith( 'Warning: You are importing createRoot from' ) ) {
 			return;
 		}
 
