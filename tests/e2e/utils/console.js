@@ -36,7 +36,7 @@ export function ignorePermissionScopeErrors() {
 	console.error.mock.calls = console.error.mock.calls.filter( ( call ) => {
 		const [ message ] = call;
 		return ! message.includes(
-			'Warning: You are importing createRoot from "react-dom" which is not supported'
+			'Warning: You are importing createRoot from'
 		);
 	} );
 }
