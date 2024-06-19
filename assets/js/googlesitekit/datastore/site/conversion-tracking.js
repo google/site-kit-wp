@@ -33,6 +33,7 @@ const { createRegistrySelector } = Data;
 const { getRegistry } = Data.commonActions;
 
 const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
+const RESET_CONVERSION_TRACKING_SETTINGS = 'RESET_CONVERSION_TRACKING_SETTINGS';
 
 const settingsReducerCallback = createReducer( ( state, settings ) => {
 	state.conversionTracking.settings = settings;
@@ -77,7 +78,7 @@ const baseActions = {
 	/**
 	 * Saves the Conversion Tracking settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -93,7 +94,7 @@ const baseActions = {
 	/**
 	 * Sets the Conversion Tracking enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {string} enabled Consent Mode enabled status.
 	 * @return {Object} Redux-style action.
@@ -102,6 +103,21 @@ const baseActions = {
 		return {
 			type: SET_CONVERSION_TRACKING_ENABLED,
 			payload: { enabled },
+		};
+	},
+
+	/**
+	 * Returns the current settings back to the current saved values.
+	 *
+	 * @since 1.129.0
+	 * @private
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetConversionTrackingSettings() {
+		return {
+			payload: {},
+			type: RESET_CONVERSION_TRACKING_SETTINGS,
 		};
 	},
 };
@@ -116,6 +132,11 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			state.conversionTracking.settings.enabled = !! payload.enabled;
 			break;
 
+		case RESET_CONVERSION_TRACKING_SETTINGS:
+			state.conversionTracking.settings =
+				state.conversionTracking.savedSettings;
+			break;
+
 		default:
 			break;
 	}
@@ -125,7 +146,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Conversion Tracking settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Conversion Tracking settings, or `undefined` if not loaded.
@@ -137,7 +158,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Consent Mode enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return {boolean|undefined} Consent Mode enabled status, or `undefined` if not loaded.
 	 */
@@ -151,7 +172,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.

@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { debounce } from 'lodash';
+import memize from 'memize';
+
+/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -28,6 +34,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ADS } from '../datastore/constants';
 import { formatPaxDate } from './utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import API from 'googlesitekit-api';
 
 const restFetchWpPages = async () => {
 	try {
@@ -45,24 +52,54 @@ const restFetchWpPages = async () => {
 		return [];
 	}
 };
+
+function createMemoizedGetToken() {
+	const maxAgeSeconds = 4 * 60; // 4 min in seconds
+	const clearAfterSeconds = 30;
+
+	const memoizedGetToken = memize( () =>
+		API.set( 'core', 'user', 'get-token' )
+	);
+
+	const debouncedClear = debounce(
+		memoizedGetToken.clear,
+		clearAfterSeconds * 1000,
+		{
+			leading: false,
+			trailing: true,
+			maxWait: maxAgeSeconds * 1000,
+		}
+	);
+	function getToken() {
+		debouncedClear();
+		return memoizedGetToken();
+	}
+	getToken.clear = () => {
+		debouncedClear.cancel();
+		memoizedGetToken.clear();
+	};
+
+	return getToken;
+}
+
 /**
  * Returns PAX services.
  *
  * @since 1.126.0
- * @since n.e.x.t Added options parameter.
+ * @since 1.128.0 Added options parameter.
  *
- * @param {Object}   registry                  Registry object to dispatch to.
- * @param {Object}   options                   Optional. Additional options.
- * @param {Function} options.onCampaignCreated Callback function that will be called when campaign is created.
- * @param {Object}   options._global           The global window object.
+ * @param {Object}   registry                           Registry object to dispatch to.
+ * @param {Object}   options                            Optional. Additional options.
+ * @param {Function} options.onCampaignCreated          Callback function that will be called when campaign is created.
+ * @param {Function} options.onFinishAndCloseSignUpFlow Callback function that will be called by the `userActionService.finishAndCloseSignUpFlow` if provided.
  * @return {Object} An object containing various service interfaces.
  */
 export function createPaxServices( registry, options = {} ) {
-	const { onCampaignCreated = null, _global = global } = options;
+	const { onCampaignCreated = null, onFinishAndCloseSignUpFlow = null } =
+		options;
 
 	const { select, __experimentalResolveSelect: resolveSelect } = registry;
-	const accessToken =
-		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
+	const getToken = createMemoizedGetToken();
 
 	const services = {
 		authenticationService: {
@@ -76,10 +113,14 @@ export function createPaxServices( registry, options = {} ) {
 			//
 			// eslint-disable-next-line require-await
 			get: async () => {
-				return { accessToken };
+				const refreshedToken = await getToken();
+
+				return { accessToken: refreshedToken.token };
 			},
 			// eslint-disable-next-line require-await
 			fix: async () => {
+				getToken.clear();
+
 				return { retryReady: true };
 			},
 		},
@@ -98,6 +139,14 @@ export function createPaxServices( registry, options = {} ) {
 			// eslint-disable-next-line require-await
 			fixBusinessInfo: async () => {
 				return { retryReady: true };
+			},
+		},
+		campaignService: {
+			notifyNewCampaignCreated: async () => {
+				if ( onCampaignCreated ) {
+					await onCampaignCreated();
+				}
+				return {};
 			},
 		},
 		conversionTrackingService: {
@@ -162,13 +211,15 @@ export function createPaxServices( registry, options = {} ) {
 				};
 			},
 		},
+		userActionService: {
+			finishAndCloseSignUpFlow: async () => {
+				if ( onFinishAndCloseSignUpFlow ) {
+					await onFinishAndCloseSignUpFlow();
+				}
+				return {};
+			},
+		},
 	};
-
-	if ( onCampaignCreated ) {
-		services.campaignService = {
-			notifyNewCampaignCreated: onCampaignCreated,
-		};
-	}
 
 	return services;
 }

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -58,7 +59,7 @@ class WooCommerce extends Conversion_Events_Provider {
 			'gsk-cep-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
 				'src'          => $this->context->url( 'dist/assets/js/woocommerce.js' ),
-				'execution'    => 'async',
+				'execution'    => 'defer',
 				'dependencies' => array( 'woocommerce' ),
 			)
 		);
@@ -68,4 +69,45 @@ class WooCommerce extends Conversion_Events_Provider {
 		return $script;
 	}
 
+	/**
+	 * Adds a hook for a purchase event.
+	 *
+	 * @since 1.129.0
+	 */
+	public function register_hooks() {
+		$input = $this->context->input();
+
+		add_action(
+			'woocommerce_thankyou',
+			function ( $order_id ) use ( $input ) {
+				$order = wc_get_order( $order_id );
+
+				// If there isn't a valid order for this ID, or if this order
+				// already has a purchase event tracked for it, return early
+				// and don't output the script tag to track the purchase event.
+				if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
+					return;
+				}
+
+				// Ensure the order key in the query param is valid for this
+				// order.
+				$order_key = $input->filter( INPUT_GET, 'key' );
+
+				// Don't output the script tag if the order key is invalid.
+				if ( ! $order->key_is_valid( $order_key ) ) {
+					return;
+				}
+
+				// Mark the order as tracked by Site Kit.
+				$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
+				$order->save();
+
+				// Output the script tag to track the purchase event in
+				// Analytics.
+				BC_Functions::wp_print_inline_script_tag( "window?._googlesitekit?.gtagEvent?.( 'purchase' );" );
+			},
+			10,
+			1
+		);
+	}
 }

@@ -104,3 +104,110 @@ export const AUDIENCE_FILTER_SCOPE_ENUM = {
 	AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS:
 		'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
 };
+
+export const SITE_KIT_AUDIENCE_DEFINITIONS = {
+	'new-visitors': {
+		description: 'People who visited the site for the first time',
+		displayName: 'New visitors',
+		membershipDurationDays: -1, // The longest duration, 540 days.
+		filterClauses: [
+			{
+				clauseType: 'INCLUDE',
+				simpleFilter: {
+					scope: 'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
+					filterExpression: {
+						andGroup: {
+							filterExpressions: [
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												dimensionOrMetricFilter: {
+													fieldName: 'newVsReturning',
+													stringFilter: {
+														matchType: 'EXACT',
+														value: 'new',
+													},
+												},
+											},
+										],
+									},
+								},
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												notExpression: {
+													dimensionOrMetricFilter: {
+														fieldName: 'groupId',
+														stringFilter: {
+															matchType: 'EXACT',
+															value: 'created_by_googlesitekit:new_visitors',
+														},
+													},
+												},
+											},
+										],
+									},
+								},
+							],
+						},
+					},
+				},
+			},
+		],
+	},
+	'returning-visitors': {
+		description: 'People who have visited your site at least once before',
+		displayName: 'Returning visitors',
+		membershipDurationDays: -1, // The longest duration, 540 days.
+		filterClauses: [
+			{
+				clauseType: 'INCLUDE',
+				simpleFilter: {
+					scope: 'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
+					filterExpression: {
+						andGroup: {
+							filterExpressions: [
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												dimensionOrMetricFilter: {
+													fieldName: 'newVsReturning',
+													stringFilter: {
+														matchType: 'EXACT',
+														value: 'returning',
+													},
+												},
+											},
+										],
+									},
+								},
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												notExpression: {
+													dimensionOrMetricFilter: {
+														fieldName: 'groupId',
+														stringFilter: {
+															matchType: 'EXACT',
+															value: 'created_by_googlesitekit:returning_visitors',
+														},
+													},
+												},
+											},
+										],
+									},
+								},
+							],
+						},
+					},
+				},
+			},
+		],
+	},
+};
+
+export const AUDIENCE_SEGMENTATION_SETUP_FORM = 'audiencePermissionsSetup';

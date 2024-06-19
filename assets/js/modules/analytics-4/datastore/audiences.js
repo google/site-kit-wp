@@ -21,12 +21,83 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	MODULES_ANALYTICS_4,
+	CUSTOM_DIMENSION_DEFINITIONS,
+	DATE_RANGE_OFFSET,
+	SITE_KIT_AUDIENCE_DEFINITIONS,
+} from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { getPreviousDate } from '../../../util';
 import { validateAudience } from '../utils/validation';
 
 const { createRegistrySelector } = Data;
+
+const MAX_INITIAL_AUDIENCES = 2;
+
+/**
+ * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
+ * sorts them by total users, and returns the audienceResourceNames in that order.
+ *
+ * @since 1.128.0
+ *
+ * @param {Object} registry  Registry object.
+ * @param {Array}  audiences Array of available audiences.
+ * @param {string} startDate Start date for the report.
+ * @param {string} endDate   End date for the report.
+ * @return {Object} Object with audienceResourceNames array and error if any.
+ */
+async function getNonZeroDataAudiencesSortedByTotalUsers(
+	registry,
+	audiences,
+	startDate,
+	endDate
+) {
+	const { select, __experimentalResolveSelect } = registry;
+
+	const reportOptions = {
+		metrics: [ { name: 'totalUsers' } ],
+		dimensions: [ 'audienceResourceName' ],
+		dimensionFilters: {
+			audienceResourceName: audiences.map( ( { name } ) => name ),
+		},
+		startDate,
+		endDate,
+	};
+
+	const report = await __experimentalResolveSelect(
+		MODULES_ANALYTICS_4
+	).getReport( reportOptions );
+
+	const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+		'getReport',
+		[ reportOptions ]
+	);
+
+	if ( error ) {
+		// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+		return { error };
+	}
+
+	const sortedRows = [ ...( report.rows || [] ) ].sort(
+		( rowA, rowB ) =>
+			( rowB.metricValues?.[ 0 ]?.value || 0 ) - // `value` is `totalUsers`.
+			( rowA.metricValues?.[ 0 ]?.value || 0 )
+	);
+
+	// Rows without data shouldn't actually be returned in the report, but to be safe, filter them out if present.
+	const rowsWithData = sortedRows.filter(
+		( { metricValues } ) => metricValues?.[ 0 ]?.value > 0
+	);
+
+	return {
+		audienceResourceNames: rowsWithData.map(
+			( { dimensionValues } ) => dimensionValues?.[ 0 ]?.value // `value` is `audienceResourceName`.
+		),
+	};
+}
 
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
@@ -105,6 +176,185 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Populates the configured audiences with the top two user audiences and/or the Site Kit-created audiences,
+	 * depending on their availability and suitability (data over the last 90 days is required for user audiences).
+	 *
+	 * If no suitable audiences are available, creates the "new-visitors" and "returning-visitors" audiences.
+	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
+	 *
+	 * @since 1.128.0
+	 */
+	*enableAudienceGroup() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const { dispatch, select, __experimentalResolveSelect } = registry;
+
+		const { response: availableAudiences, error: syncError } =
+			yield Data.commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
+
+		if ( syncError ) {
+			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+			return;
+		}
+
+		const userAudiences = availableAudiences.filter(
+			( { audienceType } ) => audienceType === 'USER_AUDIENCE'
+		);
+
+		const configuredAudiences = [];
+
+		if ( userAudiences.length > 0 ) {
+			// If there are user audiences, filter and sort them by total users over the last 90 days,
+			// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
+
+			const endDate = select( CORE_USER ).getReferenceDate();
+
+			const startDate = getPreviousDate(
+				endDate,
+				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
+			);
+
+			const { audienceResourceNames, error } =
+				yield Data.commonActions.await(
+					getNonZeroDataAudiencesSortedByTotalUsers(
+						registry,
+						userAudiences,
+						startDate,
+						endDate
+					)
+				);
+
+			if ( ! error ) {
+				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+				configuredAudiences.push(
+					...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
+				);
+			}
+		}
+
+		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+			// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
+			// up to the limit of two.
+
+			const siteKitAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+			);
+
+			// Audience slugs to sort by:
+			const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
+
+			const sortedSiteKitAudiences = siteKitAudiences.sort(
+				( audienceA, audienceB ) => {
+					const indexA = sortedSlugs.indexOf(
+						audienceA.audienceSlug
+					);
+					const indexB = sortedSlugs.indexOf(
+						audienceB.audienceSlug
+					);
+
+					return indexA - indexB;
+				}
+			);
+
+			const audienceResourceNames = sortedSiteKitAudiences
+				.slice( 0, MAX_INITIAL_AUDIENCES - configuredAudiences.length )
+				.map( ( { name } ) => name );
+
+			configuredAudiences.push( ...audienceResourceNames );
+		}
+
+		if ( configuredAudiences.length === 0 ) {
+			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
+			// and add them to the configured audiences.
+			const [ newVisitorsResult, returningVisitorsResult ] =
+				yield Data.commonActions.await(
+					Promise.all( [
+						dispatch( MODULES_ANALYTICS_4 ).createAudience(
+							SITE_KIT_AUDIENCE_DEFINITIONS[ 'new-visitors' ]
+						),
+						dispatch( MODULES_ANALYTICS_4 ).createAudience(
+							SITE_KIT_AUDIENCE_DEFINITIONS[
+								'returning-visitors'
+							]
+						),
+					] )
+				);
+
+			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+			if ( ! newVisitorsResult.error ) {
+				configuredAudiences.push( newVisitorsResult.response.name );
+			}
+
+			if ( ! returningVisitorsResult.error ) {
+				configuredAudiences.push(
+					returningVisitorsResult.response.name
+				);
+			}
+
+			// Resync available audiences to ensure the newly created audiences are available.
+			yield Data.commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
+		}
+
+		// Create custom dimension if it doesn't exist.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect(
+				MODULES_ANALYTICS_4
+			).getAvailableCustomDimensions()
+		);
+
+		if (
+			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				'googlesitekit_post_type'
+			)
+		) {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			const { error } = yield Data.commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).fetchCreateCustomDimension(
+					propertyID,
+					CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
+				)
+			);
+
+			if ( error ) {
+				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+			} else {
+				// If the custom dimension was created successfully, mark it as gathering
+				// data immediately so that it doesn't cause unnecessary report requests.
+				dispatch(
+					MODULES_ANALYTICS_4
+				).receiveIsCustomDimensionGatheringData(
+					'googlesitekit_post_type',
+					true
+				);
+
+				// Resync available custom dimensions to ensure the newly created custom dimension is available.
+				yield Data.commonActions.await(
+					dispatch(
+						MODULES_ANALYTICS_4
+					).fetchSyncAvailableCustomDimensions()
+				);
+			}
+		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
+			configuredAudiences
+		);
+
+		const { error } = yield Data.commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings()
+		);
+
+		if ( error ) {
+			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+		}
+	},
 };
 
 const baseReducer = ( state, { type } ) => {
@@ -127,8 +377,6 @@ const baseResolvers = {
 		if ( audiences === null ) {
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
-
-		return registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	},
 };
 
@@ -244,6 +492,45 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets the available configurable audiences.
+	 *
+	 * This selector filters out the "Purchasers" audience if it has no data.
+	 *
+	 * @since 1.129.0
+	 *
+	 * @return {(Array|undefined)} Array of configurable audiences. Undefined if available audiences are not loaded yet.
+	 */
+	getConfigurableAudiences: createRegistrySelector( ( select ) => () => {
+		const { getAvailableAudiences, getResourceDataAvailabilityDate } =
+			select( MODULES_ANALYTICS_4 );
+
+		const availableAudiences = getAvailableAudiences();
+
+		if ( availableAudiences === undefined ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( availableAudiences ) ) {
+			return [];
+		}
+
+		return (
+			availableAudiences
+				// Filter out "Purchasers" audience if it has no data.
+				.filter( ( { audienceSlug, name } ) => {
+					if ( 'purchasers' !== audienceSlug ) {
+						return true;
+					}
+
+					return !! getResourceDataAvailabilityDate(
+						name,
+						'audience'
+					);
+				} )
+		);
+	} ),
 };
 
 const store = Data.combineStores(

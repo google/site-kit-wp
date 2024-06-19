@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.5
 Requires PHP:      7.4
-Stable tag:        1.127.0
+Stable tag:        1.129.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,41 +109,36 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.127.0 =
+= 1.129.0 =
+
+**Added**
+
+* Update conversion tracking JS to be controlled by new setting. See [#8777](https://github.com/google/site-kit-wp/issues/8777).
 
 **Enhanced**
 
-* Update PAX conversion tracking service code to improve compatibility with the new PAX version 1 API. See [#8693](https://github.com/google/site-kit-wp/issues/8693).
-* Add the partner authentication service to the PAX app. See [#8686](https://github.com/google/site-kit-wp/issues/8686).
-* Add support for the Partner Ads Experience `reportingStyle` config. See [#8637](https://github.com/google/site-kit-wp/issues/8637).
-* Add `ConversionTrackingService` to PAX resolver/selectors. See [#8620](https://github.com/google/site-kit-wp/issues/8620).
-* Add support for `supportedConversionEvents` in Ads datastore. See [#8619](https://github.com/google/site-kit-wp/issues/8619).
-* Add REST API routes to the Conversion Tracking class. See [#8613](https://github.com/google/site-kit-wp/issues/8613).
-* Add settings infrastructure for conversion tracking. See [#8612](https://github.com/google/site-kit-wp/issues/8612).
-* Add conversion infrastructure for Contact Form 7. See [#8574](https://github.com/google/site-kit-wp/issues/8574).
-* Add conversion infrastructure for WPForms. See [#8572](https://github.com/google/site-kit-wp/issues/8572).
-* Add conversion infrastructure for Mailchimp. See [#8571](https://github.com/google/site-kit-wp/issues/8571).
-* Add conversion infrastructure for Popup Maker. See [#8570](https://github.com/google/site-kit-wp/issues/8570).
-* Update Ads settings edit view with PAX-specific alternate when connected via PAX. See [#8564](https://github.com/google/site-kit-wp/issues/8564).
-* Provide conversion tracking service to PAX. See [#8561](https://github.com/google/site-kit-wp/issues/8561).
-* Create Ads placeholder reporting widget. See [#8559](https://github.com/google/site-kit-wp/issues/8559).
-* Introduce initial setup experience for Ads via PAX. See [#8558](https://github.com/google/site-kit-wp/issues/8558).
-* Implement the PAX component to display the embedded app. See [#8557](https://github.com/google/site-kit-wp/issues/8557).
-* Add conversion infrastructure for OptinMonster. See [#8554](https://github.com/google/site-kit-wp/issues/8554).
-* Add support for Analytics events when WooCommerce is connected. See [#8553](https://github.com/google/site-kit-wp/issues/8553).
-* Remove the `adsModule` feature flag. See [#8541](https://github.com/google/site-kit-wp/issues/8541).
-* Add conversion event providers information to the site debug data. See [#8530](https://github.com/google/site-kit-wp/issues/8530).
-* Update the settings view for Ads to display "None" in conversion tracking and external customer ID only when those settings are actually empty. See [#8516](https://github.com/google/site-kit-wp/issues/8516).
-* Update the CTA link color in the post Ads module setup success banner. See [#8514](https://github.com/google/site-kit-wp/issues/8514).
-* Fix typo in the "Visitor groups" admin setting. See [#8496](https://github.com/google/site-kit-wp/issues/8496).
-* Add partial data states infrastructure for Analytics resources. See [#8141](https://github.com/google/site-kit-wp/issues/8141).
-* Add datastore API for determining audience type. See [#8129](https://github.com/google/site-kit-wp/issues/8129).
-* Add date range support to PAX app. See [#8687](https://github.com/google/site-kit-wp/issues/8687).
+* Update conversion event sources to be tracked as `event_source` instead of `__source`. See [#8815](https://github.com/google/site-kit-wp/issues/8815).
+* Fix layout shift that appears when the audience groups setup CTA banner is displayed. See [#8707](https://github.com/google/site-kit-wp/issues/8707).
+* Ensure the "Powered by Site Kit" footer text on the Authorize Application screen is correctly aligned for RTL languages. See [#8664](https://github.com/google/site-kit-wp/issues/8664).
+* Add a conversion tracking toggle to the Ads' module's settings page. See [#8618](https://github.com/google/site-kit-wp/issues/8618).
+* Add "Enhanced Conversion Tracking" to settings views for Ads and GA4. See [#8617](https://github.com/google/site-kit-wp/issues/8617).
+* Improve link color consistency in the Authorize Application screen. See [#8585](https://github.com/google/site-kit-wp/issues/8585).
+* Add a Site Health section which lists the Site Kit-created audiences. See [#8181](https://github.com/google/site-kit-wp/issues/8181).
+* Introduce Audience selection panel in Site Kit dashboard. See [#8158](https://github.com/google/site-kit-wp/issues/8158).
+* Add the Audience Selection Panel as a component which is primarily visible in Storybook pending full integration. See [#8157](https://github.com/google/site-kit-wp/issues/8157).
+* Update the Ad Blocking Recovery setup to let users confirm setup if they have already done it. See [#7289](https://github.com/google/site-kit-wp/issues/7289).
+
+**Changed**
+
+* Update PAX integration library to latest version. See [#8852](https://github.com/google/site-kit-wp/issues/8852).
 
 **Fixed**
 
-* Fix the GTM edit screen stuck issue when the user doesn't have access to the connected property. See [#8596](https://github.com/google/site-kit-wp/issues/8596).
-* Fix bug that caused "00%" to appear instead of "0%" when there was no change in data in Analytics widget. See [#8416](https://github.com/google/site-kit-wp/issues/8416).
-* Ensure the "Most popular products" Key Metric widget supports the case where the required custom dimension does not exist. See [#8402](https://github.com/google/site-kit-wp/issues/8402).
+* Fix the toggle issue that happened when the user closed the popup dialog for enhanced conversion tracking by clicking somewhere outside of the popup. See [#8818](https://github.com/google/site-kit-wp/issues/8818).
+* Update conversion event providers to use the defer approach to load their scripts. See [#8817](https://github.com/google/site-kit-wp/issues/8817).
+* Update copy for the Enhanced Conversion Tracking toggle to be different for the Analytics module. See [#8816](https://github.com/google/site-kit-wp/issues/8816).
+* Add the `purchase` event tracking for the WooCommerce provider. See [#8814](https://github.com/google/site-kit-wp/issues/8814).
+* Update the conversion tracking migration to happen on the backend side. See [#8455](https://github.com/google/site-kit-wp/issues/8455).
+* Improve Ad Blocking Recovery Setup screen when visited after completing Ad Blocking Recovery. See [#7338](https://github.com/google/site-kit-wp/issues/7338).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

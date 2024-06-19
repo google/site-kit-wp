@@ -22,15 +22,22 @@
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
+	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
+	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
+	properties as propertiesFixture,
 	audiences as audiencesFixture,
 	availableAudiences as availableAudiencesFixture,
 } from './__fixtures__';
@@ -177,11 +184,6 @@ describe( 'modules/analytics-4 audiences', () => {
 			];
 
 			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );
@@ -298,6 +300,694 @@ describe( 'modules/analytics-4 audiences', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
 				).toEqual( availableAudiences );
+			} );
+		} );
+
+		describe( 'enableAudienceGroup', () => {
+			function createAvailableUserAudience( audienceID ) {
+				return {
+					name: `properties/12345/audiences/${ audienceID }`,
+					description: `Description ${ audienceID }`,
+					displayName: `Test Audience ${ audienceID }`,
+					audienceType: 'USER_AUDIENCE',
+					audienceSlug: '',
+				};
+			}
+
+			function getAudiencesTotalUsersReportOptions( audiences ) {
+				return {
+					metrics: [ { name: 'totalUsers' } ],
+					dimensions: [ 'audienceResourceName' ],
+					dimensionFilters: {
+						audienceResourceName: audiences.map(
+							( { name } ) => name
+						),
+					},
+					startDate,
+					endDate: referenceDate,
+				};
+			}
+
+			function createAudiencesTotalUsersMockReport(
+				totalUsersByAudience
+			) {
+				return {
+					kind: 'analyticsData#runReport',
+					rowCount: 3,
+					dimensionHeaders: [
+						{
+							name: 'audienceResourceName',
+						},
+					],
+					metricHeaders: [
+						{
+							name: 'totalUsers',
+							type: 'TYPE_INTEGER',
+						},
+					],
+					rows: Object.entries( totalUsersByAudience ).map(
+						( [ audienceResourceName, totalUsers ] ) => ( {
+							dimensionValues: [
+								{
+									value: audienceResourceName,
+								},
+							],
+							metricValues: [
+								{
+									value: totalUsers,
+								},
+							],
+						} )
+					),
+					totals: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_TOTAL',
+								},
+							],
+							metricValues: [
+								{
+									value: Object.values( totalUsersByAudience )
+										.reduce(
+											( acc, totalUsers ) =>
+												acc + totalUsers,
+											0
+										)
+										.toString(),
+								},
+							],
+						},
+					],
+					maximums: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_MAX',
+								},
+							],
+							metricValues: [
+								{
+									value: Math.max(
+										...Object.values( totalUsersByAudience )
+									).toString(),
+								},
+							],
+						},
+					],
+					minimums: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_MIN',
+								},
+							],
+							metricValues: [
+								{
+									value: Math.min(
+										...Object.values( totalUsersByAudience )
+									).toString(),
+								},
+							],
+						},
+					],
+					metadata: {
+						currencyCode: 'USD',
+						dataLossFromOtherRow: null,
+						emptyReason: null,
+						subjectToThresholding: null,
+						timeZone: 'Etc/UTC',
+					},
+				};
+			}
+
+			const audienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			);
+
+			const testPropertyID = propertiesFixture[ 0 ]._id;
+
+			const referenceDate = '2024-05-10';
+			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+
+			const availableNewVisitorsAudienceFixture =
+				availableAudiencesFixture[ 2 ];
+			const availableReturningVisitorsAudienceFixture =
+				availableAudiencesFixture[ 3 ];
+			const availableUserAudienceFixture = availableAudiencesFixture[ 4 ];
+
+			// The fixture only contains one user audience. Create another two so we can test the filtering and sorting.
+			const availableUserAudiences = [
+				availableUserAudienceFixture,
+				createAvailableUserAudience( 6 ),
+				createAvailableUserAudience( 7 ),
+			];
+
+			const isAudienceSegmentationWidgetHidden = false;
+
+			beforeEach( () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableAudiences: null,
+					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
+					availableCustomDimensions: [ 'googlesitekit_post_type' ],
+					propertyID: testPropertyID,
+				} );
+
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( referenceDate );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						configuredAudiences: null,
+						isAudienceSegmentationWidgetHidden,
+					} );
+			} );
+
+			it( 'syncs `availableAudiences`', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: [],
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				const options = getAudiencesTotalUsersReportOptions( [
+					availableUserAudienceFixture,
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( {}, { options } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					syncAvailableAudiencesEndpoint
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( availableAudiencesFixture );
+			} );
+
+			it.each( [
+				[
+					'the top 1 from 1 of 3 candidate user audiences with data over the past 90 days', // Test description differentiator.
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 0,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+						],
+					},
+				],
+				[
+					'the top 2 from 2 of 3 candidate user audiences with data over the past 90 days',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 10,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+							availableUserAudiences[ 0 ].name,
+						],
+					},
+				],
+				[
+					'the top 2 from 3 of 3 candidate user audiences with data over the past 90 days',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 20,
+							[ availableUserAudiences[ 1 ].name ]: 10,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+							availableUserAudiences[ 0 ].name,
+						],
+					},
+				],
+			] )(
+				'adds %s to `configuredAudiences`, sorted by user count',
+				async (
+					_,
+					{ totalUsersByAudience, expectedConfiguredAudiences }
+				) => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableUserAudiences,
+						status: 200,
+					} );
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: expectedConfiguredAudiences,
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					const options = getAudiencesTotalUsersReportOptions(
+						availableUserAudiences
+					);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport(
+							createAudiencesTotalUsersMockReport(
+								totalUsersByAudience
+							),
+							{ options }
+						);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.finishResolution( 'getReport', [ options ] );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						audienceSettingsEndpoint,
+						{
+							body: {
+								data: {
+									settings: {
+										configuredAudiences:
+											expectedConfiguredAudiences,
+										isAudienceSegmentationWidgetHidden,
+									},
+								},
+							},
+						}
+					);
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getConfiguredAudiences()
+					).toEqual( expectedConfiguredAudiences );
+				}
+			);
+
+			it.each( [
+				[
+					'"new visitors" audience',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 0,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+							availableNewVisitorsAudienceFixture.name,
+						],
+					},
+				],
+				[
+					'"new visitors" and "returning visitors" audiences',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 0,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 0,
+						},
+						expectedConfiguredAudiences: [
+							availableNewVisitorsAudienceFixture.name,
+							availableReturningVisitorsAudienceFixture.name,
+						],
+					},
+				],
+			] )(
+				'fills available space in `configuredAudiences` with pre-existing %s',
+				async (
+					_,
+					{ totalUsersByAudience, expectedConfiguredAudiences }
+				) => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: [
+							...availableAudiencesFixture,
+							...availableUserAudiences.slice( 1 ),
+						],
+						status: 200,
+					} );
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: expectedConfiguredAudiences,
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					const options = getAudiencesTotalUsersReportOptions(
+						availableUserAudiences
+					);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport(
+							createAudiencesTotalUsersMockReport(
+								totalUsersByAudience
+							),
+							{ options }
+						);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.finishResolution( 'getReport', [ options ] );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						audienceSettingsEndpoint,
+						{
+							body: {
+								data: {
+									settings: {
+										configuredAudiences:
+											expectedConfiguredAudiences,
+										isAudienceSegmentationWidgetHidden,
+									},
+								},
+							},
+						}
+					);
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getConfiguredAudiences()
+					).toEqual( expectedConfiguredAudiences );
+				}
+			);
+
+			it( 'creates the "new visitors" and "returning visitors" audiences, and adds them to `configuredAudiences` if they do not exist and no suitable pre-existing audiences are present to populate `configuredAudiences`', async () => {
+				const createdNewVisitorsAudienceName =
+					'properties/12345/audiences/888';
+				const createdReturningVisitorsAudienceName =
+					'properties/12345/audiences/999';
+
+				const finalAvailableAudiences = [
+					[
+						...availableUserAudiences,
+						{
+							...availableNewVisitorsAudienceFixture,
+							name: createdNewVisitorsAudienceName,
+						},
+						{
+							...availableReturningVisitorsAudienceFixture,
+							name: createdReturningVisitorsAudienceName,
+						},
+					],
+				];
+
+				fetchMock.post(
+					{
+						url: syncAvailableAudiencesEndpoint,
+						repeat: 2,
+					},
+					() => {
+						const callCount = fetchMock.calls(
+							syncAvailableAudiencesEndpoint
+						).length;
+
+						return {
+							body:
+								callCount === 1
+									? availableUserAudiences
+									: finalAvailableAudiences,
+							status: 200,
+						};
+					}
+				);
+
+				const expectedConfiguredAudiences = [
+					createdNewVisitorsAudienceName,
+					createdReturningVisitorsAudienceName,
+				];
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: expectedConfiguredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				fetchMock.post(
+					{ url: createAudienceEndpoint, repeat: 2 },
+					( url, opts ) => {
+						return {
+							body: opts.body.includes( 'new_visitors' )
+								? {
+										...SITE_KIT_AUDIENCE_DEFINITIONS[
+											'new-visitors'
+										],
+										name: createdNewVisitorsAudienceName,
+								  }
+								: {
+										...SITE_KIT_AUDIENCE_DEFINITIONS[
+											'returning-visitors'
+										],
+										name: createdReturningVisitorsAudienceName,
+								  },
+							status: 200,
+						};
+					}
+				);
+
+				const options = getAudiencesTotalUsersReportOptions(
+					availableUserAudiences
+				);
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+					createAudiencesTotalUsersMockReport( {
+						[ availableUserAudiences[ 0 ].name ]: 0,
+						[ availableUserAudiences[ 1 ].name ]: 0,
+						[ availableUserAudiences[ 2 ].name ]: 0,
+					} ),
+					{ options }
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					2,
+					syncAvailableAudiencesEndpoint
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( finalAvailableAudiences );
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					createAudienceEndpoint,
+					{
+						body: {
+							data: {
+								audience:
+									SITE_KIT_AUDIENCE_DEFINITIONS[
+										'new-visitors'
+									],
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					createAudienceEndpoint,
+					{
+						body: {
+							data: {
+								audience:
+									SITE_KIT_AUDIENCE_DEFINITIONS[
+										'returning-visitors'
+									],
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					audienceSettingsEndpoint,
+					{
+						body: {
+							data: {
+								settings: {
+									configuredAudiences:
+										expectedConfiguredAudiences,
+									isAudienceSegmentationWidgetHidden,
+								},
+							},
+						},
+					}
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual( expectedConfiguredAudiences );
+			} );
+
+			describe( 'custom dimension handling', () => {
+				const createCustomDimensionEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+				);
+				const syncAvailableCustomDimensionsEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				);
+
+				beforeEach( () => {
+					provideUserAuthentication( registry );
+					provideUserCapabilities( registry );
+
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						availableAudiences: null,
+						availableCustomDimensions: null,
+						propertyID: testPropertyID,
+					} );
+				} );
+
+				it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", async () => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableAudiencesFixture,
+						status: 200,
+					} );
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: [],
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					fetchMock.post(
+						{
+							url: syncAvailableCustomDimensionsEndpoint,
+							repeat: 2,
+						},
+						() => {
+							const callCount = fetchMock.calls(
+								syncAvailableCustomDimensionsEndpoint
+							).length;
+
+							return {
+								body:
+									callCount === 1
+										? []
+										: [
+												CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+										  ],
+								status: 200,
+							};
+						}
+					);
+
+					fetchMock.postOnce( createCustomDimensionEndpoint, {
+						body: CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+						status: 200,
+					} );
+
+					const options = getAudiencesTotalUsersReportOptions( [
+						availableUserAudienceFixture,
+					] );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport( {}, { options } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.finishResolution( 'getReport', [ options ] );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						createCustomDimensionEndpoint,
+						{
+							body: {
+								data: {
+									propertyID: testPropertyID,
+									customDimension:
+										CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+								},
+							},
+						}
+					);
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						2,
+						syncAvailableCustomDimensionsEndpoint
+					);
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getAvailableCustomDimensions()
+					).toEqual( [
+						CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+					] );
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isCustomDimensionGatheringData(
+								'googlesitekit_post_type'
+							)
+					).toBe( true );
+				} );
 			} );
 		} );
 	} );
@@ -538,6 +1228,102 @@ describe( 'modules/analytics-4 audiences', () => {
 							'properties/12345/audiences/54321',
 						] )
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getConfigurableAudiences', () => {
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toBeUndefined();
+			} );
+
+			it( 'should return empty array if loaded `availableAudiences` is not an array', async () => {
+				freezeFetch( syncAvailableAudiencesEndpoint );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { availableAudiences: null } );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toEqual( [] );
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should not include "Purchasers" if it has no data', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				// Simulate no data available state for "Purchasers".
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiencesFixture.reduce(
+							( acc, { audienceSlug, name } ) => {
+								if ( 'purchasers' === audienceSlug ) {
+									acc[ name ] = 0;
+								} else {
+									acc[ name ] = 20201220;
+								}
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toEqual(
+					availableAudiencesFixture.filter(
+						( { audienceSlug } ) => 'purchasers' !== audienceSlug
+					)
+				);
+			} );
+
+			it( 'should include "Purchasers" if it has data', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				// Simulate data available state for all available audiences.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiencesFixture.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toEqual(
+					availableAudiencesFixture
+				);
 			} );
 		} );
 	} );

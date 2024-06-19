@@ -26,6 +26,7 @@ import { getByText } from '@testing-library/dom';
  */
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
+import * as tracking from '../../../util/tracking';
 import {
 	CORE_WIDGETS,
 	WIDGET_WIDTHS,
@@ -38,6 +39,7 @@ import {
 	provideModules,
 	provideUserCapabilities,
 	unsubscribeFromAll,
+	muteFetch,
 } from '../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -78,6 +80,10 @@ function WidgetComponentEmpty( { WidgetNull } ) {
 	return <WidgetNull />;
 }
 
+function WidgetComponentErrored() {
+	throw new Error( 'Site Kit error message.' );
+}
+
 const createWidgets = ( registry, areaName, widgets ) => {
 	widgets.forEach( ( { Component, modules, slug, width } ) => {
 		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
@@ -100,6 +106,11 @@ describe( 'WidgetAreaRenderer', () => {
 
 		const connection = { connected: true };
 		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
+
+		const fetchGetExpiredItems = new RegExp(
+			'^/google-site-kit/v1/core/user/data/expirable-items'
+		);
+		muteFetch( fetchGetExpiredItems );
 	} );
 
 	afterEach( () => {
@@ -804,5 +815,105 @@ describe( 'WidgetAreaRenderer', () => {
 				'.googlesitekit-widget-area-widgets'
 			)
 		).toMatchSnapshot();
+	} );
+
+	describe( 'Error handling', () => {
+		const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+		mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+		it( 'should display the error using `ErrorHandler` component within a widget', async () => {
+			createWidgets( registry, areaName, [
+				{
+					Component: WidgetComponentErrored,
+					modules: 'search-console',
+					slug: 'one',
+					width: WIDGET_WIDTHS.FULL,
+				},
+			] );
+
+			const { container, waitForRegistry } = render(
+				<WidgetAreaRenderer slug={ areaName } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( container.firstChild ).toHaveTextContent(
+				'Site Kit encountered an error'
+			);
+			expect( container.firstChild ).toHaveTextContent(
+				'Site Kit error message.'
+			);
+
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should display other widgets when there is error in one of the widgets', async () => {
+			createWidgets( registry, areaName, [
+				{
+					Component: WidgetComponent,
+					modules: 'search-console',
+					slug: 'one',
+					width: WIDGET_WIDTHS.FULL,
+				},
+				{
+					Component: WidgetComponentErrored,
+					modules: 'search-console',
+					slug: 'two',
+					width: WIDGET_WIDTHS.FULL,
+				},
+				{
+					Component() {
+						return <div>AdSense is here</div>;
+					},
+					modules: 'adsense',
+					slug: 'three',
+					width: WIDGET_WIDTHS.FULL,
+				},
+			] );
+
+			const { container, waitForRegistry } = render(
+				<WidgetAreaRenderer slug={ areaName } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( container.firstChild ).toHaveTextContent(
+				'Site Kit encountered an error'
+			);
+
+			expect(
+				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
+			).toHaveLength( 2 );
+
+			expect( container.firstChild ).toHaveTextContent(
+				'AdSense is here'
+			);
+
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should track the error event', async () => {
+			createWidgets( registry, areaName, [
+				{
+					Component: WidgetComponentErrored,
+					modules: 'search-console',
+					slug: 'one',
+					width: WIDGET_WIDTHS.FULL,
+				},
+			] );
+
+			const { waitForRegistry } = render(
+				<WidgetAreaRenderer slug={ areaName } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalled();
+
+			expect( console ).toHaveErrored();
+		} );
 	} );
 } );

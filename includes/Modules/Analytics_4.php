@@ -88,6 +88,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use stdClass;
 use WP_Error;
 
@@ -356,6 +357,19 @@ final class Analytics_4 extends Module
 					: $original_mode;
 			}
 		);
+
+		// Preload the path to avoid layout shift for audience setup CTA banner.
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function( $routes ) {
+				return array_merge(
+					$routes,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/audience-settings',
+					)
+				);
+			}
+		);
 	}
 
 	/**
@@ -514,6 +528,26 @@ final class Analytics_4 extends Module
 				'label' => __( 'Analytics AdSense Linked Last Synced At', 'google-site-kit' ),
 				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
+			);
+		}
+
+		// Check if the audienceSegmentation feature is enabled.
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+			// Return the SITE_KIT_AUDIENCE audiences.
+			$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
+
+			$debug_fields['analytics_4_site_kit_audiences'] = array(
+				'label' => __( 'Analytics site created audiences', 'google-site-kit' ),
+				'value' => empty( $site_kit_audiences )
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$site_kit_audiences
+					),
+				'debug' => empty( $site_kit_audiences )
+					? 'none'
+					: join( ', ', $site_kit_audiences ),
 			);
 		}
 
@@ -2389,5 +2423,29 @@ final class Analytics_4 extends Module
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns the Site Kit-created audience display names from the passed list of audiences.
+	 *
+	 * @since 1.129.0
+	 *
+	 * @param array $audiences List of audiences.
+	 *
+	 * @return array List of Site Kit-created audience display names.
+	 */
+	private function get_site_kit_audiences( $audiences ) {
+		// Ensure that audiences are available, otherwise return an empty array.
+		if ( empty( $audiences ) || ! is_array( $audiences ) ) {
+			return array();
+		}
+
+		$site_kit_audiences = array_filter( $audiences, fn( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
+
+		if ( empty( $site_kit_audiences ) ) {
+			return array();
+		}
+
+		return wp_list_pluck( $site_kit_audiences, 'displayName' );
 	}
 }
