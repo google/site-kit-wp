@@ -233,7 +233,9 @@ export const setItem = async (
 	value,
 	{
 		ttl = HOUR_IN_SECONDS,
-		// Don't use the getReferenceDate selector here since there is no need in it.
+		// Cached times should rely on real times, not the reference date,
+		// so the cache timeouts are consistent even when changing
+		// the reference dates when developing/testing.
 		timestamp = Math.round( Date.now() / 1000 ), // eslint-disable-line sitekit/no-direct-date
 		isError = false,
 	} = {}
