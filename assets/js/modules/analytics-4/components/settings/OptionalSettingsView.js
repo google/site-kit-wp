@@ -26,14 +26,20 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
+import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
+	const iceEnabled = useFeature( 'conversionInfra' );
+
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
@@ -46,6 +52,14 @@ export default function OptionalSettingsView() {
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
+
+	const isConversionTrackingEnabled = useSelect( ( select ) => {
+		if ( ! iceEnabled ) {
+			return false;
+		}
+
+		return select( CORE_SITE ).isConversionTrackingEnabled();
+	} );
 
 	return (
 		<Fragment>
@@ -76,6 +90,25 @@ export default function OptionalSettingsView() {
 					</p>
 				</div>
 			</div>
+
+			{ iceEnabled && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __(
+							'Enhanced Conversion Tracking',
+							'google-site-kit'
+						) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ isConversionTrackingEnabled &&
+							__( 'Enabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === false &&
+							__( 'Disabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === undefined &&
+							BLANK_SPACE }
+					</p>
+				</div>
+			) }
 
 			{ /* Prevent the Ads Conversion ID setting displaying after this field has been
 				 migrated to the Ads module, even after resetting the Analytics module. */ }

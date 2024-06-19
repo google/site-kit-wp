@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Ninja_Forms;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMaker;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
@@ -57,11 +58,13 @@ class Conversion_Tracking {
 	 * Supported conversion event providers.
 	 *
 	 * @since 1.126.0
+	 * @since n.e.x.t Added Ninja Forms class.
 	 * @var array
 	 */
 	public static $providers = array(
 		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
 		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG      => Mailchimp::class,
+		Ninja_Forms::CONVERSION_EVENT_PROVIDER_SLUG    => Ninja_Forms::class,
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
 		PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG     => PopupMaker::class,
 		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG    => WooCommerce::class,
