@@ -191,7 +191,10 @@ export const getItem = async ( key ) => {
 			if (
 				timestamp &&
 				( ! ttl || // Ensure the cached data isn't too old.
-					// Don't use the getReferenceDate selector here since there is no need in it.
+					// The cache dates shouldn't rely on reference
+					// dates for cache expiration. This is a case
+					// where we actually want to rely on
+					// the _actual_ date/time the data was set.
 					Math.round( Date.now() / 1000 ) - timestamp < ttl ) // eslint-disable-line sitekit/no-direct-date
 			) {
 				return {
