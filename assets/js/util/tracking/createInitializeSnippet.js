@@ -56,7 +56,8 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			? userRoles.join( ',' )
 			: '';
 
-		// Don't use the getReferenceDate selector here since there is no need in it.
+		// We should use the real time, and not the reference date, when
+		// measuring when we initialized tracking.
 		dataLayerPush( 'js', new Date() ); // eslint-disable-line sitekit/no-direct-date
 		dataLayerPush( 'config', config.trackingID, {
 			groups: 'site_kit',
