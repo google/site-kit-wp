@@ -31,12 +31,4 @@ export function ignorePermissionScopeErrors() {
 		const [ message ] = call;
 		return ! message.includes( 'need to grant Site Kit permission' );
 	} );
-
-	// eslint-disable-next-line no-console
-	console.error.mock.calls = console.error.mock.calls.filter( ( call ) => {
-		const [ message ] = call;
-		return ! message.includes(
-			'Warning: You are importing createRoot from'
-		);
-	} );
 }
