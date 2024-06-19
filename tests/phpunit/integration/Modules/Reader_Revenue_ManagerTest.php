@@ -19,7 +19,7 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Reader_Revenue_Manager
  */
 class Reader_Revenue_ManagerTest extends TestCase {
-    /**
+	/**
 	 * Context instance.
 	 *
 	 * @var Context
@@ -33,10 +33,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	 */
 	private $reader_revenue_manager;
 
-    public function set_up() {
+	public function set_up() {
 		parent::set_up();
 
-		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context );
 	}
 
@@ -44,7 +44,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug );
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name );
 		$this->assertEquals( 'https://readerrevenue.withgoogle.com/', $this->reader_revenue_manager->homepage );
-        $this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description );
+		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description );
 		$this->assertEquals( 5, $this->reader_revenue_manager->order );
 	}
 
