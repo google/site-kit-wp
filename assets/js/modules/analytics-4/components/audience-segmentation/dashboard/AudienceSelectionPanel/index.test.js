@@ -22,6 +22,7 @@
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
@@ -281,18 +282,10 @@ describe( 'AudienceSelectionPanel', () => {
 	} );
 
 	describe( 'AddGroupNotice', () => {
-		beforeEach( () => {
+		it( 'should display notice when there is a saved selection of one group', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setConfiguredAudiences( [] );
-		} );
-
-		it( 'should display notice when one group is selected', async () => {
-			registry
-				.dispatch( CORE_FORMS )
-				.setValues( AUDIENCE_SELECTION_FORM, {
-					[ AUDIENCE_SELECTED ]: [ 'properties/12345/audiences/3' ],
-				} );
+				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -310,11 +303,37 @@ describe( 'AudienceSelectionPanel', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should not display notice when less than or more than one group is selected', async () => {
+		it( 'should not display notice when there is a saved selection of less than or more than one group', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( configuredAudiences );
+
+			const { queryByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				queryByText(
+					/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not display notice when the selection changes', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
+
 			registry
 				.dispatch( CORE_FORMS )
 				.setValues( AUDIENCE_SELECTION_FORM, {
 					[ AUDIENCE_SELECTED ]: configuredAudiences,
+					[ AUDIENCE_SELECTION_CHANGED ]: true,
 				} );
 
 			const { queryByText, waitForRegistry } = render(
@@ -335,10 +354,8 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should not display notice when dismissed', async () => {
 			registry
-				.dispatch( CORE_FORMS )
-				.setValues( AUDIENCE_SELECTION_FORM, {
-					[ AUDIENCE_SELECTED ]: [ 'properties/12345/audiences/3' ],
-				} );
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
 
 			registry
 				.dispatch( CORE_USER )

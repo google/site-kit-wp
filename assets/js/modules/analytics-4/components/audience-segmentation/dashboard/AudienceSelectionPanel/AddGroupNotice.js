@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -28,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
-	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
@@ -38,16 +43,16 @@ import InfoNotice from '../InfoNotice';
 
 const { useDispatch, useSelect } = Data;
 
-export default function AddGroupNotice() {
+export default function AddGroupNotice( { savedItemSlugs = [] } ) {
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( AUDIENCE_ADD_GROUP_NOTICE_SLUG )
 	);
-	const selectedGroups = useSelect(
+	const selectionChanged = useSelect(
 		( select ) =>
 			select( CORE_FORMS ).getValue(
 				AUDIENCE_SELECTION_FORM,
-				AUDIENCE_SELECTED
-			) || []
+				AUDIENCE_SELECTION_CHANGED
+			) || false
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -56,7 +61,7 @@ export default function AddGroupNotice() {
 		await dismissItem( AUDIENCE_ADD_GROUP_NOTICE_SLUG );
 	}, [ dismissItem ] );
 
-	if ( isDismissed || selectedGroups.length !== 1 ) {
+	if ( isDismissed || savedItemSlugs.length !== 1 || selectionChanged ) {
 		return null;
 	}
 
@@ -73,3 +78,7 @@ export default function AddGroupNotice() {
 		/>
 	);
 }
+
+AddGroupNotice.propTypes = {
+	savedItemSlugs: PropTypes.array,
+};
