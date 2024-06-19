@@ -40,7 +40,7 @@ import {
 import AudienceSegmentationErrorSVG from '../../../../../../svg/graphics/audience-segmentation-error-full-width.svg';
 import { isInsufficientPermissionsError } from '../../../../../util/errors';
 import ReportErrorActions from '../../../../../components/ReportErrorActions';
-import GetHelpLink from './AudienceTile/GetHelpLink';
+import GetHelpLink from './GetHelpLink';
 
 function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 	const breakpoint = useBreakpoint();

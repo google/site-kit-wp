@@ -16,12 +16,10 @@
  * limitations under the License.
  */
 
-export { default as AudienceTile } from './AudienceTile';
 export { default as AudienceSegmentationErrorWidget } from './AudienceSegmentationErrorWidget';
 export { default as AudienceSegmentationIntroductoryOverlayNotification } from './AudienceSegmentationIntroductoryOverlayNotification';
 export { default as AudienceSegmentationSetupCTAWidget } from './AudienceSegmentationSetupCTAWidget';
 export { default as AudienceTilesWidget } from './AudienceTilesWidget';
-export { default as AudienceTooltipMessage } from './AudienceTooltipMessage';
 export { default as AudienceSelectionPanel } from './AudienceSelectionPanel';
 export { default as AudienceAreaFooter } from './AudienceAreaFooter';
 export { default as ChangeGroupsLink } from './ChangeGroupsLink';

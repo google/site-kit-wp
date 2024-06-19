@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../../../../../../util';
+import { numFmt } from '../../../../../../../util';
 import AudienceTileNoData from './AudienceTileNoData';
 
 export default function AudienceTileCitiesMetric( {

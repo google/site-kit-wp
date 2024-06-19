@@ -32,20 +32,19 @@ import { useState, useCallback } from '@wordpress/element';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import whenActive from '../../../../../util/when-active';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+} from '../../../../../../hooks/useBreakpoint';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
+} from '../../../../datastore/constants';
 import AudienceTile from './AudienceTile';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
-import InfoTooltip from '../../../../../components/InfoTooltip';
+import InfoTooltip from '../../../../../../components/InfoTooltip';
 
 const { useSelect, useDispatch } = Data;
 
@@ -57,7 +56,7 @@ const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 	return totalUsers === 0;
 };
 
-function AudienceTilesWidget( { Widget } ) {
+export default function AudienceTiles( { Widget } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -67,12 +66,13 @@ function AudienceTilesWidget( { Widget } ) {
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
-	const audiencesDimensionFilter = {
-		audienceResourceName: configuredAudiences,
-	};
 	const audiences = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	} );
+
+	const audiencesDimensionFilter = {
+		audienceResourceName: configuredAudiences,
+	};
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -491,10 +491,6 @@ function AudienceTilesWidget( { Widget } ) {
 	);
 }
 
-AudienceTilesWidget.propTypes = {
+AudienceTiles.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
-
-export default whenActive( { moduleName: 'analytics-4' } )(
-	AudienceTilesWidget
-);
