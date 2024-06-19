@@ -303,26 +303,32 @@ describe( 'AudienceSelectionPanel', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should not display notice when there is a saved selection of less than or more than one group', async () => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setConfiguredAudiences( configuredAudiences );
+		it.each( [
+			[ 'less', [] ],
+			[ 'more', configuredAudiences ],
+		] )(
+			'should not display notice when there is a saved selection of %s than one group',
+			async ( _, audiences ) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setConfiguredAudiences( audiences );
 
-			const { queryByText, waitForRegistry } = render(
-				<AudienceSelectionPanel />,
-				{
-					registry,
-				}
-			);
+				const { queryByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
 
-			await waitForRegistry();
+				await waitForRegistry();
 
-			expect(
-				queryByText(
-					/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
-				)
-			).not.toBeInTheDocument();
-		} );
+				expect(
+					queryByText(
+						/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
+					)
+				).not.toBeInTheDocument();
+			}
+		);
 
 		it( 'should not display notice when the selection changes', async () => {
 			registry
