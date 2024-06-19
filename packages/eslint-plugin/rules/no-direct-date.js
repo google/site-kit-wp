@@ -45,7 +45,7 @@ module.exports = {
 				node,
 				message: `Avoid using '${
 					node.type === 'NewExpression' ? 'new Date()' : 'Date.now()'
-				}'. Use select( CORE_USER ).getReferenceDate() where appropriate, or add a comment explaining why it is necessary.`,
+				}'. Use select( CORE_USER ).getReferenceDate() or add a comment explaining why the reference date should not be used here.`,
 			} );
 		}
 

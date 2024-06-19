@@ -44,7 +44,7 @@ ruleTester.run( 'no-direct-date', rule, {
 			errors: [
 				{
 					message:
-						"Avoid using 'new Date()'. Use select( CORE_USER ).getReferenceDate() where appropriate, or add a comment explaining why it is necessary.",
+						"Avoid using 'new Date()'. Use select( CORE_USER ).getReferenceDate() or add a comment explaining why the reference date should not be used here.",
 				},
 			],
 		},
@@ -53,7 +53,7 @@ ruleTester.run( 'no-direct-date', rule, {
 			errors: [
 				{
 					message:
-						"Avoid using 'Date.now()'. Use select( CORE_USER ).getReferenceDate() where appropriate, or add a comment explaining why it is necessary.",
+						"Avoid using 'Date.now()'. Use select( CORE_USER ).getReferenceDate() or add a comment explaining why the reference date should not be used here.",
 				},
 			],
 		},
