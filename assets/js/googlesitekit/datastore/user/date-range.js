@@ -35,7 +35,10 @@ import {
 
 export const initialState = {
 	dateRange: 'last-28-days',
-	// Don't use the getReferenceDate selector here since there is no need in it.
+	// This is where we actually _set_ the reference date (which should
+	// have a default value of the current date).
+	//
+	// Using `new Date()` here is appropriate.
 	referenceDate: getDateString( new Date() ), // eslint-disable-line sitekit/no-direct-date
 };
 

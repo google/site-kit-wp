@@ -488,7 +488,10 @@ const baseSelectors = {
 		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
 		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMilliseconds;
 
-		// Don't use the getReferenceDate selector here since there is no need in it.
+		// When using feature tour cooldowns, we should compare the actual
+		// time with the cooldown time. Comparing the reference date with
+		// the cooldown time expiration would not be accurate (and somewhat
+		// confusing during testing).
 		return Date.now() < coolDownExpiresAt; // eslint-disable-line sitekit/no-direct-date
 	} ),
 };

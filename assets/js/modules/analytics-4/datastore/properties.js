@@ -640,7 +640,8 @@ const baseActions = {
 
 		if (
 			!! googleTagLastSyncedAtMs &&
-			// Don't use the getReferenceDate selector here since there is no need in it.
+			// The "last synced" value should reflect the real time this action
+			// was performed, so we don't use the reference date here.
 			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
 		) {
 			return;
