@@ -1,6 +1,6 @@
 <?php
 /**
- * SubscribewithGoogle Test.
+ * Reader Revenue Manager Test.
  *
  * @package   Google\Site_Kit\Tests\Modules
  * @copyright 2024 Google LLC
