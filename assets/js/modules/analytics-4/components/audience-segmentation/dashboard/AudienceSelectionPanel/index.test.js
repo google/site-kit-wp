@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { AUDIENCE_SELECTED, AUDIENCE_SELECTION_FORM } from './constants';
+import {
+	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
+	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
+	AUDIENCE_SELECTION_FORM,
+} from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
@@ -59,6 +64,7 @@ describe( 'AudienceSelectionPanel', () => {
 		provideUserAuthentication( registry );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -272,6 +278,109 @@ describe( 'AudienceSelectionPanel', () => {
 							break;
 					}
 				} );
+		} );
+	} );
+
+	describe( 'AddGroupNotice', () => {
+		it( 'should display notice when there is a saved selection of one group', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
+				)
+			).toBeInTheDocument();
+		} );
+
+		it.each( [
+			[ 'less', [] ],
+			[ 'more', configuredAudiences ],
+		] )(
+			'should not display notice when there is a saved selection of %s than one group',
+			async ( _, audiences ) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setConfiguredAudiences( audiences );
+
+				const { queryByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					queryByText(
+						/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
+					)
+				).not.toBeInTheDocument();
+			}
+		);
+
+		it( 'should not display notice when the selection changes', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( AUDIENCE_SELECTION_FORM, {
+					[ AUDIENCE_SELECTED ]: configuredAudiences,
+					[ AUDIENCE_SELECTION_CHANGED ]: true,
+				} );
+
+			const { queryByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				queryByText(
+					/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not display notice when dismissed', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [ AUDIENCE_ADD_GROUP_NOTICE_SLUG ] );
+
+			const { queryByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				queryByText(
+					/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
+				)
+			).not.toBeInTheDocument();
 		} );
 	} );
 
