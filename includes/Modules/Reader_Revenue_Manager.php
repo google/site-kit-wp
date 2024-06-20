@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 
 /**
  * Class representing the Reader Revenue Manager module.
@@ -21,6 +22,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
  * @ignore
  */
 final class Reader_Revenue_Manager extends Module implements Module_With_Scopes {
+	use Module_With_Scopes_Trait;
+
 	/**
 	 * Module slug name.
 	 */
@@ -32,7 +35,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes 
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		// TODO: Implement the register() method here in the future.
+		$this->register_scopes_hook();
 	}
 
 	/**
