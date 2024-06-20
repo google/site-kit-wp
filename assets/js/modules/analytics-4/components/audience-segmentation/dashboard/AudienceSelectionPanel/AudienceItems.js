@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * External dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -37,8 +37,6 @@ import {
 } from '../../../../datastore/constants';
 import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
-
-const { useSelect } = Data;
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const availableAudiences = useSelect( ( select ) => {
