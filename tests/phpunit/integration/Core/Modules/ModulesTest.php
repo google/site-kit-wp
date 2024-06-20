@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics_4;
