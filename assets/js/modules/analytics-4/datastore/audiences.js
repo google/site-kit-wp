@@ -57,15 +57,9 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 ) {
 	const { select, __experimentalResolveSelect } = registry;
 
-	const reportOptions = {
-		metrics: [ { name: 'totalUsers' } ],
-		dimensions: [ 'audienceResourceName' ],
-		dimensionFilters: {
-			audienceResourceName: audiences.map( ( { name } ) => name ),
-		},
-		startDate,
-		endDate,
-	};
+	const reportOptions = select(
+		MODULES_ANALYTICS_4
+	).getAudiencesUserCountReportOptions( audiences, { startDate, endDate } );
 
 	const report = await __experimentalResolveSelect(
 		MODULES_ANALYTICS_4
@@ -531,6 +525,43 @@ const baseSelectors = {
 				} )
 		);
 	} ),
+
+	/**
+	 * Gets the options for the audiences user count report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {Array}  audiences         Array of available audiences.
+	 * @param {Object} options           Optional. Options to pass to the selector.
+	 * @param {string} options.startDate Start date for the report.
+	 * @param {string} options.endDate   End date for the report.
+	 * @return {Object|undefined} Returns the report options for the audiences user count report.
+	 */
+	getAudiencesUserCountReportOptions: createRegistrySelector(
+		( select ) =>
+			( state, audiences, { startDate, endDate } = {} ) => {
+				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
+
+				return {
+					startDate: startDate || dateRangeDates.startDate,
+					endDate: endDate || dateRangeDates.endDate,
+					metrics: [
+						{
+							name: 'totalUsers',
+						},
+					],
+					dimensions: [ { name: 'audienceResourceName' } ],
+					dimensionFilters: {
+						audienceResourceName: ( audiences || [] ).map(
+							( { name } ) => name
+						),
+					},
+				};
+			}
+	),
 };
 
 const store = Data.combineStores(

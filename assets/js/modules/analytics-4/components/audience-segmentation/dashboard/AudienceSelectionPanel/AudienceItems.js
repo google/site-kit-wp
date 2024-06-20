@@ -30,11 +30,7 @@ import { __ } from '@wordpress/i18n';
  * External dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
 
@@ -42,8 +38,11 @@ const { useSelect } = Data;
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const availableAudiences = useSelect( ( select ) => {
-		const { getConfigurableAudiences, getReport } =
-			select( MODULES_ANALYTICS_4 );
+		const {
+			getConfigurableAudiences,
+			getReport,
+			getAudiencesUserCountReportOptions,
+		} = select( MODULES_ANALYTICS_4 );
 
 		const audiences = getConfigurableAudiences();
 
@@ -55,23 +54,10 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			return [];
 		}
 
-		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
 		// Get the user count for the available audiences.
-		const report = getReport( {
-			...dateRangeDates,
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-			dimensions: [ { name: 'audienceResourceName' } ],
-			dimensionFilters: {
-				audienceResourceName: audiences.map( ( { name } ) => name ),
-			},
-		} );
+		const report = getReport(
+			getAudiencesUserCountReportOptions( audiences )
+		);
 
 		const { rows = [] } = report || {};
 

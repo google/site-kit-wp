@@ -32,6 +32,7 @@ import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
 	CUSTOM_DIMENSION_DEFINITIONS,
+	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
@@ -314,20 +315,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				};
 			}
 
-			function getAudiencesTotalUsersReportOptions( audiences ) {
-				return {
-					metrics: [ { name: 'totalUsers' } ],
-					dimensions: [ 'audienceResourceName' ],
-					dimensionFilters: {
-						audienceResourceName: audiences.map(
-							( { name } ) => name
-						),
-					},
-					startDate,
-					endDate: referenceDate,
-				};
-			}
-
 			function createAudiencesTotalUsersMockReport(
 				totalUsersByAudience
 			) {
@@ -487,9 +474,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				const options = getAudiencesTotalUsersReportOptions( [
-					availableUserAudienceFixture,
-				] );
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						[ availableUserAudienceFixture ],
+						{ startDate, endDate: referenceDate }
+					);
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -576,9 +566,12 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					const options = getAudiencesTotalUsersReportOptions(
-						availableUserAudiences
-					);
+					const options = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudiencesUserCountReportOptions(
+							availableUserAudiences,
+							{ startDate, endDate: referenceDate }
+						);
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -672,9 +665,12 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					const options = getAudiencesTotalUsersReportOptions(
-						availableUserAudiences
-					);
+					const options = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudiencesUserCountReportOptions(
+							availableUserAudiences,
+							{ startDate, endDate: referenceDate }
+						);
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -792,9 +788,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					}
 				);
 
-				const options = getAudiencesTotalUsersReportOptions(
-					availableUserAudiences
-				);
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						availableUserAudiences,
+						{ startDate, endDate: referenceDate }
+					);
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 					createAudiencesTotalUsersMockReport( {
@@ -937,9 +936,12 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					const options = getAudiencesTotalUsersReportOptions( [
-						availableUserAudienceFixture,
-					] );
+					const options = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudiencesUserCountReportOptions(
+							[ availableUserAudienceFixture ],
+							{ startDate, endDate: referenceDate }
+						);
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -1324,6 +1326,57 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( configurableAudiences ).toEqual(
 					availableAudiencesFixture
 				);
+			} );
+		} );
+
+		describe( 'getAudiencesUserCountReportOptions', () => {
+			const expectedReportOptions = {
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				dimensions: [ { name: 'audienceResourceName' } ],
+				dimensionFilters: {
+					audienceResourceName: availableAudiencesFixture.map(
+						( { name } ) => name
+					),
+				},
+			};
+
+			it( 'should return report options to get user count for passed audiences', () => {
+				const reportOptions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						availableAudiencesFixture,
+						{ startDate: '2024-02-09', endDate: '2024-05-12' }
+					);
+
+				expect( reportOptions ).toEqual( {
+					...expectedReportOptions,
+					startDate: '2024-02-09',
+					endDate: '2024-05-12',
+				} );
+			} );
+
+			it( 'should use the current date range if dates are not specified', () => {
+				const reportOptions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						availableAudiencesFixture
+					);
+
+				const { startDate, endDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+
+				expect( reportOptions ).toEqual( {
+					...expectedReportOptions,
+					startDate,
+					endDate,
+				} );
 			} );
 		} );
 	} );
