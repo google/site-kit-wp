@@ -34,6 +34,7 @@ import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/cons
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceItems from './AudienceItems';
+import ErrorNotice from './ErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
@@ -86,6 +87,7 @@ export default function AudienceSelectionPanel() {
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
+			<ErrorNotice />
 			<Footer
 				closePanel={ closePanel }
 				isOpen={ isOpen }
