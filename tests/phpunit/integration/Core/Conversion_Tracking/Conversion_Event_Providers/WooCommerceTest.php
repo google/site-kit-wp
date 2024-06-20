@@ -49,4 +49,10 @@ class WooCommerceTest extends TestCase {
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
 
+	public function test_register_hooks() {
+		$this->assertFalse( has_action( 'woocommerce_thankyou' ) );
+		$this->woocommerce->register_hooks();
+		$this->assertTrue( has_action( 'woocommerce_thankyou' ) );
+	}
+
 }

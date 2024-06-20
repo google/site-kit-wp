@@ -95,6 +95,7 @@ storiesOf( 'Settings', module )
 				provideModules(
 					registry,
 					[
+						'ads',
 						'adsense',
 						'analytics-4',
 						'pagespeed-insights',
@@ -127,13 +128,16 @@ storiesOf( 'Settings', module )
 			const setupRegistry = async ( registry ) => {
 				provideModules(
 					registry,
-					[ 'adsense', 'pagespeed-insights', 'search-console' ].map(
-						( slug ) => ( {
-							slug,
-							active: true,
-							connected: true,
-						} )
-					)
+					[
+						'ads',
+						'adsense',
+						'pagespeed-insights',
+						'search-console',
+					].map( ( slug ) => ( {
+						slug,
+						active: true,
+						connected: true,
+					} ) )
 				);
 				provideModuleRegistrations( registry );
 				registry.select( CORE_MODULES ).getModule( 'adsense' );
@@ -157,7 +161,9 @@ storiesOf( 'Settings', module )
 
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
-				provideModules( registry );
+				provideModules( registry, [
+					{ slug: 'ads', active: true, connected: true },
+				] );
 
 				registry
 					.dispatch( CORE_USER )

@@ -44,7 +44,11 @@ import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
+import {
+	ADWORDS_SCOPE,
+	MODULES_ADS,
+	SUPPORT_CONTENT_SCOPE,
+} from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -74,7 +78,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
 		} );
 		return select( CORE_USER ).getConnectURL( {
-			additionalScopes: [ ADWORDS_SCOPE ],
+			additionalScopes: [ ADWORDS_SCOPE, SUPPORT_CONTENT_SCOPE ],
 			redirectURL,
 		} );
 	} );

@@ -21,11 +21,12 @@
  */
 import PropTypes from 'prop-types';
 import { filter } from 'lodash';
+import { useEffectOnce } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -47,7 +48,15 @@ import AudienceTile from './AudienceTile';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import InfoTooltip from '../../../../../components/InfoTooltip';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
+
+const hasZeroDataForAudience = ( report, audienceResourceName ) => {
+	const audienceData = report?.rows?.find(
+		( row ) => row.dimensionValues?.[ 0 ]?.value === audienceResourceName
+	);
+	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
+	return totalUsers === 0;
+};
 
 function AudienceTilesWidget( { Widget } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
@@ -231,6 +240,70 @@ function AudienceTilesWidget( { Widget } ) {
 		)
 	);
 
+	const dismissedItems = useSelect( ( select ) =>
+		select( CORE_USER ).getDismissedItems()
+	);
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const handleDismiss = useCallback(
+		( audienceResourceName ) => {
+			dismissItem( `audience-tile-${ audienceResourceName }` );
+		},
+		[ dismissItem ]
+	);
+
+	const partialDataStates = useSelect( ( select ) =>
+		configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+			acc[ audienceResourceName ] =
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audienceResourceName
+				);
+			return acc;
+		}, {} )
+	);
+
+	const audiencesToClearDismissal = [];
+	const visibleAudiences = [];
+	const tempAudiences = configuredAudiences.slice();
+
+	while ( tempAudiences.length > 0 ) {
+		const audienceResourceName = tempAudiences.shift();
+
+		const isDismissed = dismissedItems?.includes(
+			`audience-tile-${ audienceResourceName }`
+		);
+		const isZeroData = hasZeroDataForAudience(
+			report,
+			audienceResourceName
+		);
+
+		// Skip rendering the tile if it is dismissed, has zero data, and has more audiences to render.
+		if ( isDismissed && isZeroData && tempAudiences.length > 0 ) {
+			continue;
+		}
+
+		// Collect audiences to re-dismiss if they have data again.
+		if ( isDismissed && ! isZeroData ) {
+			audiencesToClearDismissal.push( audienceResourceName );
+		}
+
+		// Add audience to visibleAudiences
+		visibleAudiences.push( audienceResourceName );
+	}
+
+	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
+	// This ensures that the tile will reappear when it is populated with data again.
+	useEffectOnce( () => {
+		if ( audiencesToClearDismissal.length > 0 ) {
+			audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
+				dismissItem( `audience-tile-${ audienceResourceName }`, {
+					expiresInSeconds: 1,
+				} );
+			} );
+		}
+	} );
+
 	/**
 	 * Collects the rows of interest for the relevant audience from report.
 	 *
@@ -273,7 +346,7 @@ function AudienceTilesWidget( { Widget } ) {
 						setActiveTile( index )
 					}
 				>
-					{ configuredAudiences.map( ( audienceResourceName ) => {
+					{ visibleAudiences.map( ( audienceResourceName ) => {
 						const audienceName =
 							audiences?.filter(
 								( { name } ) => name === audienceResourceName
@@ -307,7 +380,7 @@ function AudienceTilesWidget( { Widget } ) {
 				</TabBar>
 			) }
 			<div className="googlesitekit-widget-audience-tiles__body">
-				{ configuredAudiences.map( ( audienceResourceName, index ) => {
+				{ visibleAudiences.map( ( audienceResourceName, index ) => {
 					// Conditionally render only the selected audience tile on mobile.
 					if ( isTabbedBreakpoint && index !== activeTile ) {
 						return null;
@@ -388,6 +461,13 @@ function AudienceTilesWidget( { Widget } ) {
 							row.dimensionValues[ 1 ].value;
 					} );
 
+					const isPartialData =
+						partialDataStates[ audienceResourceName ];
+					const isZeroData = hasZeroDataForAudience(
+						report,
+						audienceResourceName
+					);
+
 					return (
 						<AudienceTile
 							loaded={ ! loading }
@@ -460,6 +540,12 @@ function AudienceTilesWidget( { Widget } ) {
 							topContentTitles={ topContentTitles }
 							Widget={ Widget }
 							audienceResourceName={ audienceResourceName }
+							isZeroData={ isZeroData }
+							isPartialData={ isPartialData }
+							isTileHideable={ visibleAudiences.length > 1 }
+							onHideTile={ () =>
+								handleDismiss( audienceResourceName )
+							}
 						/>
 					);
 				} ) }

@@ -89,6 +89,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use stdClass;
 use WP_Error;
 
@@ -278,6 +279,10 @@ final class Analytics_4 extends Module
 							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
+
+					if ( ! empty( $new_value['propertyID'] ) ) {
+						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+					}
 				}
 			}
 		);
@@ -300,7 +305,9 @@ final class Analytics_4 extends Module
 			2
 		);
 
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ), 10 );
+
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
@@ -355,6 +362,19 @@ final class Analytics_4 extends Module
 				return ! $this->is_connected()
 					? 'analytics-step'
 					: $original_mode;
+			}
+		);
+
+		// Preload the path to avoid layout shift for audience setup CTA banner.
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function( $routes ) {
+				return array_merge(
+					$routes,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/audience-settings',
+					)
+				);
 			}
 		);
 	}
@@ -618,6 +638,9 @@ final class Analytics_4 extends Module
 				'service' => 'analyticsadmin',
 			),
 			'POST:custom-dimension-data-available' => array(
+				'service' => '',
+			),
+			'POST:set-google-tag-id-mismatch'      => array(
 				'service' => '',
 			),
 		);
@@ -1610,6 +1633,20 @@ final class Analytics_4 extends Module
 				return $analyticsadmin
 					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->listPropertiesConversionEvents( $property_id );
+			case 'POST:set-google-tag-id-mismatch':
+				if ( ! isset( $data['hasMismatchedTag'] ) ) {
+					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
+				}
+
+				if ( false === $data['hasMismatchedTag'] ) {
+					return function() {
+						return $this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+					};
+				}
+
+				return function() use ( $data ) {
+					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+				};
 		}
 
 		return parent::create_data_request( $data );
@@ -2277,6 +2314,27 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Populates tag ID mismatch value to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	protected function inline_tag_id_mismatch( $modules_data ) {
+		if ( $this->is_connected() ) {
+			$tag_id_mismatch = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
+
+			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
+			// No need to check if `analytics-4` key is present, as this hook is added with higher
+			// priority than inline_custom_dimensions_data where this key is set.
+			$modules_data['analytics-4']['tagIDMismatch'] = $tag_id_mismatch;
+		}
+
+		return $modules_data;
+	}
+
+	/**
 	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.127.0
@@ -2460,7 +2518,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Returns the Site Kit-created audience display names from the passed list of audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.129.0
 	 *
 	 * @param array $audiences List of audiences.
 	 *

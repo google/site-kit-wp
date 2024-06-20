@@ -749,6 +749,7 @@ describe( 'core/user key metrics', () => {
 						slug: 'analytics-4',
 						active: true,
 						connected: true,
+						shareable: true,
 					},
 				] );
 

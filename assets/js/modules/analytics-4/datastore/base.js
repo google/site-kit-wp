@@ -25,6 +25,7 @@ import {
 	submitChanges,
 	validateCanSubmitChanges,
 	rollbackChanges,
+	validateHaveSettingsChanged,
 } from './settings';
 import { convertDateStringToUNIXTimestamp } from '../../../util';
 
@@ -66,6 +67,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
+	validateHaveSettingsChanged,
 } );
 
 const originalSetPropertyCreateTime =

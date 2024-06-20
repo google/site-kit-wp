@@ -25,7 +25,11 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import fetchMock from 'fetch-mock';
 
 function Template() {
-	return <ConversionTrackingToggle />;
+	return (
+		<ConversionTrackingToggle>
+			Example text for enhanced conversion tracking
+		</ConversionTrackingToggle>
+	);
 }
 
 export const Enabled = Template.bind( {} );

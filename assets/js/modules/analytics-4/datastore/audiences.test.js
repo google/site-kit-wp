@@ -1230,5 +1230,101 @@ describe( 'modules/analytics-4 audiences', () => {
 				).toBe( false );
 			} );
 		} );
+
+		describe( 'getConfigurableAudiences', () => {
+			it( 'should return `undefined` if the available audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toBeUndefined();
+			} );
+
+			it( 'should return empty array if loaded `availableAudiences` is not an array', async () => {
+				freezeFetch( syncAvailableAudiencesEndpoint );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { availableAudiences: null } );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toEqual( [] );
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should not include "Purchasers" if it has no data', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				// Simulate no data available state for "Purchasers".
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiencesFixture.reduce(
+							( acc, { audienceSlug, name } ) => {
+								if ( 'purchasers' === audienceSlug ) {
+									acc[ name ] = 0;
+								} else {
+									acc[ name ] = 20201220;
+								}
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toEqual(
+					availableAudiencesFixture.filter(
+						( { audienceSlug } ) => 'purchasers' !== audienceSlug
+					)
+				);
+			} );
+
+			it( 'should include "Purchasers" if it has data', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				// Simulate data available state for all available audiences.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiencesFixture.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				const configurableAudiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConfigurableAudiences();
+
+				expect( configurableAudiences ).toEqual(
+					availableAudiencesFixture
+				);
+			} );
+		} );
 	} );
 } );

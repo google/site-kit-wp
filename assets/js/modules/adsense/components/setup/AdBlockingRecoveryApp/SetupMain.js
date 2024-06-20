@@ -17,6 +17,7 @@
 /**
  * WordPress dependencies
  */
+import { addQueryArgs } from '@wordpress/url';
 import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -24,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { SpinnerButton } from 'googlesitekit-components';
 import Link from '../../../../../components/Link';
 import PageHeader from '../../../../../components/PageHeader';
 import Stepper from '../../../../../components/Stepper';
@@ -83,6 +85,18 @@ export default function SetupMain() {
 			ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.PLACE_TAGS
 		);
 	} );
+
+	const setupSuccessURL = addQueryArgs( dashboardURL, {
+		notification: 'ad_blocking_recovery_setup_success',
+	} );
+	const adsenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+	const privacyMessagingURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceURL( {
+			path: `/${ adsenseAccountID }/privacymessaging/ad_blocking`,
+		} )
+	);
 
 	const {
 		saveSettings,
@@ -198,13 +212,49 @@ export default function SetupMain() {
 						<CreateMessageStep />
 					</Step>
 				</Stepper>
+				{ ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE ===
+					activeStep && (
+					<div className="googlesitekit-ad-blocking-recovery__complete-content">
+						<p>
+							{ __(
+								'Create and publish an ad blocking recovery message in AdSense',
+								'google-site-kit'
+							) }
+						</p>
+						<p>
+							{ __(
+								'Site visitors will be given the option to allow ads on your site. You can also present them with other options to fund your site (optional)',
+								'google-site-kit'
+							) }
+						</p>
+					</div>
+				) }
 			</Content>
 
 			<div className="googlesitekit-ad-blocking-recovery__footer googlesitekit-ad-blocking-recovery__buttons">
 				<div className="googlesitekit-ad-blocking-recovery__footer-cancel">
-					<Link onClick={ onCancel }>
-						{ __( 'Cancel', 'google-site-kit' ) }
-					</Link>
+					{ ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE ===
+					activeStep ? (
+						<div className="googlesitekit-ad-blocking-recovery__complete-actions">
+							<SpinnerButton href={ setupSuccessURL }>
+								{ __(
+									'My message is ready',
+									'google-site-kit'
+								) }
+							</SpinnerButton>
+							<Link
+								href={ privacyMessagingURL }
+								external
+								hideExternalIndicator
+							>
+								{ __( 'Create message', 'google-site-kit' ) }
+							</Link>
+						</div>
+					) : (
+						<Link onClick={ onCancel }>
+							{ __( 'Cancel', 'google-site-kit' ) }
+						</Link>
+					) }
 				</div>
 			</div>
 		</Layout>

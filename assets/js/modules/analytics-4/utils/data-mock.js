@@ -105,6 +105,8 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'properties/12345/audiences/1',
 		'properties/12345/audiences/2',
 		'properties/12345/audiences/3',
+		'properties/12345/audiences/4',
+		'properties/12345/audiences/5',
 	],
 };
 
