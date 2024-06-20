@@ -43,7 +43,7 @@ const MAX_INITIAL_AUDIENCES = 2;
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
  * sorts them by total users, and returns the audienceResourceNames in that order.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  *
  * @param {Object} registry  Registry object.
  * @param {Array}  audiences Array of available audiences.
@@ -186,7 +186,7 @@ const baseActions = {
 	 * If no suitable audiences are available, creates the "new-visitors" and "returning-visitors" audiences.
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 */
 	*enableAudienceGroup() {
 		const registry = yield commonActions.getRegistry();
@@ -493,6 +493,45 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets the available configurable audiences.
+	 *
+	 * This selector filters out the "Purchasers" audience if it has no data.
+	 *
+	 * @since 1.129.0
+	 *
+	 * @return {(Array|undefined)} Array of configurable audiences. Undefined if available audiences are not loaded yet.
+	 */
+	getConfigurableAudiences: createRegistrySelector( ( select ) => () => {
+		const { getAvailableAudiences, getResourceDataAvailabilityDate } =
+			select( MODULES_ANALYTICS_4 );
+
+		const availableAudiences = getAvailableAudiences();
+
+		if ( availableAudiences === undefined ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( availableAudiences ) ) {
+			return [];
+		}
+
+		return (
+			availableAudiences
+				// Filter out "Purchasers" audience if it has no data.
+				.filter( ( { audienceSlug, name } ) => {
+					if ( 'purchasers' !== audienceSlug ) {
+						return true;
+					}
+
+					return !! getResourceDataAvailabilityDate(
+						name,
+						'audience'
+					);
+				} )
+		);
+	} ),
 };
 
 const store = combineStores(

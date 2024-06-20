@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "773530e7a39f0275e3e4e9a360ed82f4",
+    "content-hash": "ccc7c043fb20118aca9b3849794f404e",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -195,6 +195,25 @@
             "autoload": {
                 "classmap": [
                     "AdSenseLinks.php"
+                ]
+            },
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
+        },
+        {
+            "name": "google/apiclient-services-subscribewithgoogle",
+            "version": "v0.1",
+            "dist": {
+                "type": "path",
+                "url": "packages/apiclient-services-subscribewithgoogle",
+                "reference": "8a5c316d95600fea61fed271b64e90b4858f88c4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "SubscribewithGoogle.php"
                 ]
             },
             "transport-options": {
@@ -4386,5 +4405,5 @@
     "platform-overrides": {
         "php": "7.4.33"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

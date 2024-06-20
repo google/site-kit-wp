@@ -854,7 +854,7 @@ export const selectors = {
 	/**
 	 * Get the static list of consent mode regions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return {Array<string>} Array of consent mode regions.
 	 */

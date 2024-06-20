@@ -21,11 +21,10 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../googlesitekit/datastore/user/constants';
 import WarningNotice from '../WarningNotice';
+import AdBlockerWarning from './AdBlockerWarning';
 
-/*
- * A single module. Keeps track of its own active state and settings.
- */
 export default function ModuleSettingsWarning( { slug } ) {
 	const error = useSelect( ( select ) =>
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
@@ -33,6 +32,12 @@ export default function ModuleSettingsWarning( { slug } ) {
 
 	if ( ! error ) {
 		return null;
+	}
+
+	// The AdBlockerWarning component also renders the "Get help"
+	// documentation URL in addition to the error message.
+	if ( ERROR_CODE_ADBLOCKER_ACTIVE === error.code ) {
+		return <AdBlockerWarning moduleSlug={ slug } />;
 	}
 
 	return <WarningNotice>{ error.message }</WarningNotice>;

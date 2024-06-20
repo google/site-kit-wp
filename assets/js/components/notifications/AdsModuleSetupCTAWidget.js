@@ -56,6 +56,11 @@ function AdsModuleSetupCTAWidget( { WidgetNull, Widget } ) {
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isPromptDismissed(
+			ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY
+		)
+	);
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY
@@ -77,7 +82,7 @@ function AdsModuleSetupCTAWidget( { WidgetNull, Widget } ) {
 		}
 	}, [ dismissCount, dismissPrompt ] );
 
-	if ( dismissCount > 1 ) {
+	if ( dismissCount > 1 || isDismissed || isDismissed === undefined ) {
 		return <WidgetNull />;
 	}
 

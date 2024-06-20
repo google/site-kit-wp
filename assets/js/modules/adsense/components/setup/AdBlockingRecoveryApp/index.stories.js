@@ -79,7 +79,24 @@ StepTwoAfterCTAClick.args = {
 };
 StepTwoAfterCTAClick.scenario = {
 	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
-	delay: 250,
+};
+
+export const StepTwoSetupConfirmed = Template.bind( {} );
+StepTwoSetupConfirmed.storyName = 'Step 2 - Setup Confirmed';
+StepTwoSetupConfirmed.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).setSettings( {
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+		} );
+
+		registry.dispatch( CORE_UI ).setValues( {
+			[ AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED ]: true,
+		} );
+	},
+};
+StepTwoSetupConfirmed.scenario = {
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Confirmed',
 };
 
 export default {

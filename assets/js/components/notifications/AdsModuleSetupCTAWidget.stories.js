@@ -53,7 +53,7 @@ AfterOneDismissal.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY ]: {
-				expires: 0,
+				expires: Date.now() / 1000 - WEEK_IN_SECONDS, // Set date to the past so banner is shown again.
 				count: 1,
 			},
 		} );

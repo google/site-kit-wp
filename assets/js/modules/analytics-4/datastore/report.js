@@ -24,7 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * External dependencies
  */
-import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
@@ -40,18 +39,10 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { DAY_IN_SECONDS, stringifyObject } from '../../../util';
-import { isValidDateRange } from '../../../util/report-validation';
-import {
-	normalizeReportOptions,
-	isValidDimensionFilters,
-	isValidDimensions,
-	isValidMetrics,
-	isValidMetricFilters,
-	isValidOrders,
-	isZeroReport,
-} from '../utils';
+import { normalizeReportOptions, isZeroReport } from '../utils';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 import { getSampleReportArgs } from '../utils/report-args';
+import { validateReport } from '../utils/validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -75,61 +66,7 @@ const fetchGetReportStore = createFetchStore( {
 	argsToParams: ( options ) => {
 		return { options };
 	},
-	validateParams: ( { options } = {} ) => {
-		invariant(
-			isPlainObject( options ),
-			'options for Analytics 4 report must be an object.'
-		);
-		invariant(
-			isValidDateRange( options ),
-			'Either date range or start/end dates must be provided for Analytics 4 report.'
-		);
-
-		const {
-			metrics,
-			dimensions,
-			dimensionFilters,
-			metricFilters,
-			orderby,
-		} = normalizeReportOptions( options );
-
-		invariant(
-			metrics.length,
-			'Requests must specify at least one metric for an Analytics 4 report.'
-		);
-		invariant(
-			isValidMetrics( metrics ),
-			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property. Metric names must match the expression ^[a-zA-Z0-9_]+$.'
-		);
-
-		if ( dimensions ) {
-			invariant(
-				isValidDimensions( dimensions ),
-				'dimensions for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
-			);
-		}
-
-		if ( dimensionFilters ) {
-			invariant(
-				isValidDimensionFilters( dimensionFilters ),
-				'dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values.'
-			);
-		}
-
-		if ( metricFilters ) {
-			invariant(
-				isValidMetricFilters( metricFilters ),
-				'metricFilters for an Analytics 4 report must be a map of metric names as keys and filter value(s) as numeric fields, depending on the filterType.'
-			);
-		}
-
-		if ( orderby ) {
-			invariant(
-				isValidOrders( orderby ),
-				'orderby for an Analytics 4 report must be an array of OrderBy objects where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
-			);
-		}
-	},
+	validateParams: ( { options } = {} ) => validateReport( options ),
 } );
 
 const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
@@ -345,7 +282,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.95.0
 	 * @since 1.107.0 Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
-	 * @since n.e.x.t Add optional `reportArgs` parameter to allow checking zero data for a specific report.
+	 * @since 1.128.0 Add optional `reportArgs` parameter to allow checking zero data for a specific report.
 	 *
 	 * @param {Object}           state      Data store's state.
 	 * @param {Object|undefined} reportArgs Optional. Options for generating the report.

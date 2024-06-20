@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { useMount } from 'react-use';
+import { useCallbackOne } from 'use-memo-one';
 
 /**
  * WordPress dependencies
@@ -31,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -48,18 +49,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
-	const args = {
-		notification: 'authentication_success',
-	};
-
-	if ( moduleSlug ) {
-		args.slug = moduleSlug;
-	}
-
-	const adminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args )
-	);
-
+	const registry = useRegistry();
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 *
@@ -68,7 +58,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 *
 	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */
-	const finishSetup = useCallback(
+	const finishSetup = useCallbackOne(
 		async ( redirectURL ) => {
 			await trackEvent(
 				'moduleSetup',
@@ -76,9 +66,24 @@ export default function ModuleSetup( { moduleSlug } ) {
 				moduleSlug
 			);
 
-			navigateTo( redirectURL || adminURL );
+			if ( redirectURL ) {
+				navigateTo( redirectURL );
+				return;
+			}
+
+			const { select, __experimentalResolveSelect: resolveSelect } =
+				registry;
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+			const adminURL = select( CORE_SITE ).getAdminURL(
+				'googlesitekit-dashboard',
+				{
+					notification: 'authentication_success',
+					slug: moduleSlug,
+				}
+			);
+			navigateTo( adminURL );
 		},
-		[ adminURL, navigateTo, moduleSlug ]
+		[ registry, navigateTo, moduleSlug ]
 	);
 
 	const onCancelButtonClick = useCallback( async () => {

@@ -1,7 +1,7 @@
 /**
  * AudienceSegmentationSetupCTAWidget Component Stories.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,9 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
-import AudienceSegmentationSetupCTAWidget from './AudienceSegmentationSetupCTAWidget';
+import AudienceSegmentationSetupCTAWidget, {
+	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+} from './AudienceSegmentationSetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'audienceSegmentationSetupCTA'
@@ -40,15 +42,37 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+	},
+};
 Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/Default',
+	delay: 250,
+};
+
+export const DismissedOnce = Template.bind( {} );
+DismissedOnce.storyName = 'Dismissed Once';
+DismissedOnce.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+				expires: 1000,
+				count: 1,
+			},
+		} );
+	},
+};
+DismissedOnce.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/DismissedOnce',
 	delay: 250,
 };
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupCTATile',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				global._googlesitekitUserData.isUserInputCompleted = false;
 
@@ -94,6 +118,8 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getReport', [ options ] );
+
+				args?.setupRegistry( registry );
 			};
 
 			return (

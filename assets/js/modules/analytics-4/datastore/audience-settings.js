@@ -297,6 +297,23 @@ const baseSelectors = {
 			savedSettings?.configuredAudiences
 		);
 	},
+
+	/**
+	 * Determines whether the audience settings are being saved.
+	 *
+	 * @since 1.129.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the audience settings are being saved, otherwise FALSE.
+	 */
+	isSavingAudienceSettings( state ) {
+		// Since `isFetchingSaveAudienceSettings` holds information based on specific
+		// values but we only need generic information here, we need to check
+		// whether ANY such request is in progress.
+		return Object.values( state.isFetchingSaveAudienceSettings ).some(
+			Boolean
+		);
+	},
 };
 
 const store = combineStores(

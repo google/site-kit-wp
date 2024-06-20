@@ -34,7 +34,7 @@ import { useSelect } from 'googlesitekit-data';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
 import SupportLink from '../../../../components/SupportLink';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 export default function SetupMain( { finishSetup } ) {
@@ -54,7 +54,7 @@ export default function SetupMain( { finishSetup } ) {
 				</h2>
 			</div>
 			<div className="googlesitekit-setup-module__step">
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="ads" />
 
 				{ ! isAdBlockerActive && (
 					<Fragment>

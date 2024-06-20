@@ -38,7 +38,8 @@ import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../util';
-import { AdBlockerWarning, ErrorNotices } from '../common';
+import { ErrorNotices } from '../common';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import {
 	BACKGROUND_SUBMIT_SUSPENDED,
 	MODULES_ADSENSE,
@@ -280,7 +281,7 @@ export default function SetupMain( { finishSetup } ) {
 			</div>
 
 			<div className="googlesitekit-setup-module__step">
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="adsense" />
 
 				{ ! isAdBlockerActive && viewComponent }
 			</div>

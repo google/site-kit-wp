@@ -30,15 +30,15 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
-import { ProgressBar } from 'googlesitekit-components';
 import OptionalSettingsView from './OptionalSettingsView';
 import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -65,14 +65,8 @@ export default function SettingsView() {
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
 	);
 
-	const isMigratingAdsConversionID = useMigrateAdsConversionID();
-
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
-	}
-
-	if ( isMigratingAdsConversionID ) {
-		return <ProgressBar />;
 	}
 
 	return (
@@ -174,7 +168,7 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-						{ ! useSnippet && (
+						{ useSnippet === false && (
 							<span>
 								{ __(
 									'Snippet is not inserted',
@@ -182,6 +176,7 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
+						{ useSnippet === undefined && BLANK_SPACE }
 					</p>
 				</div>
 			</div>

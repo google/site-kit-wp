@@ -128,7 +128,6 @@ export default function AdBlockingRecoverySetupCTANotice() {
 						<SupportLink
 							path="/adsense/answer/11576589"
 							external
-							hideExternalIndicator
 							onClick={ handleLearnMoreClick }
 						/>
 					),

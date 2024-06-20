@@ -62,16 +62,18 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  * while the fourth defines the names of the sub-settings to support.
  *
  * @since 1.6.0
+ * @since 1.129.0 Added haveSettingsChanged optional paramter.
  * @private
  *
- * @param {string} type                         The data to access. One of 'core' or 'modules'.
- * @param {string} identifier                   The data identifier, eg. a module slug like 'search-console'.
- * @param {string} datapoint                    The endpoint to request data from, e.g. 'settings'.
- * @param {Object} options                      Optional. Options to consider for the store.
- * @param {Array}  [options.ownedSettingsSlugs] Optional. List of "owned settings" for this module, if they exist.
- * @param {number} [options.storeName]          Store name to use. Default is '{type}/{identifier}'.
- * @param {Array}  [options.settingSlugs]       List of the slugs that are part of the settings object handled by the respective API endpoint.
- * @param {Object} [options.initialSettings]    Optional. An initial set of settings as key-value pairs.
+ * @param {string}        type                                  The data to access. One of 'core' or 'modules'.
+ * @param {string}        identifier                            The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}        datapoint                             The endpoint to request data from, e.g. 'settings'.
+ * @param {Object}        options                               Optional. Options to consider for the store.
+ * @param {Array}         [options.ownedSettingsSlugs]          Optional. List of "owned settings" for this module, if they exist.
+ * @param {number}        [options.storeName]                   Store name to use. Default is '{type}/{identifier}'.
+ * @param {Array}         [options.settingSlugs]                List of the slugs that are part of the settings object handled by the respective API endpoint.
+ * @param {Object}        [options.initialSettings]             Optional. An initial set of settings as key-value pairs.
+ * @param {Function|null} [options.validateHaveSettingsChanged] Optional. Custom callback to determine if settings have changed.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
@@ -84,6 +86,7 @@ export const createSettingsStore = (
 		storeName = undefined,
 		settingSlugs = [],
 		initialSettings = undefined,
+		validateHaveSettingsChanged = makeDefaultHaveSettingsChanged(),
 	} = {}
 ) => {
 	invariant( type, 'type is required.' );
@@ -284,23 +287,17 @@ export const createSettingsStore = (
 		 *
 		 * @since 1.6.0
 		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
+		 * @since 1.129.0 Changed the approach to use validateHaveSettingsChanged callback.
 		 *
 		 * @param {Object}     state Data store's state.
 		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
 		 * @return {boolean} True if the settings have changed, false otherwise.
 		 */
-		haveSettingsChanged( state, keys = null ) {
-			const { settings, savedSettings } = state;
-
-			if ( keys ) {
-				return ! isEqual(
-					pick( settings, keys ),
-					pick( savedSettings, keys )
-				);
-			}
-
-			return ! isEqual( settings, savedSettings );
-		},
+		haveSettingsChanged: createRegistrySelector(
+			( select ) =>
+				( state, ...args ) =>
+					validateHaveSettingsChanged( select, state, ...args )
+		),
 
 		/**
 		 * Indicates whether the provided setting has changed from what is saved.
@@ -501,5 +498,27 @@ export function makeDefaultCanSubmitChanges( storeName ) {
 
 		invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 		invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	};
+}
+
+/**
+ * Creates Default haveSettingsChanged.
+ *
+ * @since 1.129.0
+ *
+ * @return {boolean} True if the settings have changed, false otherwise.
+ */
+export function makeDefaultHaveSettingsChanged() {
+	return ( select, state, keys ) => {
+		const { settings, savedSettings } = state;
+
+		if ( keys ) {
+			return ! isEqual(
+				pick( settings, keys ),
+				pick( savedSettings, keys )
+			);
+		}
+
+		return ! isEqual( settings, savedSettings );
 	};
 }

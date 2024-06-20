@@ -51,7 +51,8 @@ import PreviewTable from '../../../../components/PreviewTable';
 import ReportTable from '../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import { ZeroDataMessage } from '../../../analytics-4/components/common';
-import { AdSenseLinkCTA, AdBlockerWarning } from '../common';
+import { AdSenseLinkCTA } from '../common';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 
 function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,
@@ -79,12 +80,8 @@ function DashboardTopEarningPagesWidgetGA4( {
 		endDate,
 		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		filter: {
-			fieldName: 'adSourceName',
-			stringFilter: {
-				matchType: 'EXACT',
-				value: `Google AdSense account (${ adSenseAccountID })`,
-			},
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
 		},
 		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 5,
@@ -198,7 +195,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	if ( isAdblockerActive ) {
 		return (
 			<Widget Footer={ Footer }>
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="adsense" />
 			</Widget>
 		);
 	}
