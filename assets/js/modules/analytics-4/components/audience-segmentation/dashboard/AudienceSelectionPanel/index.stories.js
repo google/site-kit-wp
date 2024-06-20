@@ -118,7 +118,7 @@ UserCountError.storyName = 'User count retrieval error';
 UserCountError.args = {
 	setupRegistry: ( registry ) => {
 		const { getConfigurableAudiences, getAudiencesUserCountReportOptions } =
-			registry.select( 'modules/analytics-4' );
+			registry.select( MODULES_ANALYTICS_4 );
 
 		const error = {
 			code: 'test_error',
@@ -133,7 +133,7 @@ UserCountError.args = {
 		);
 
 		registry
-			.dispatch( 'modules/analytics-4' )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveError( error, 'getReport', [ reportOptions ] );
 	},
 };
