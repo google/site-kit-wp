@@ -22,11 +22,15 @@
 import { AUDIENCE_SELECTED, AUDIENCE_SELECTION_FORM } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../../googlesitekit/constants';
 import {
 	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
 	provideUserAuthentication,
+	provideUserInfo,
 } from '../../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
 import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
@@ -230,6 +234,38 @@ describe( 'AudienceSelectionPanel', () => {
 				} );
 		} );
 
+		it( 'should display "dash" instead of user count if retrieving it fails', async () => {
+			const error = {
+				code: 'test_error',
+				message: 'Error message.',
+				data: {},
+			};
+
+			provideModules( registry );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveError( error, 'getReport', [ reportOptions ] );
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const userCountInDOM = item?.querySelector(
+						'.googlesitekit-selection-panel-item__suffix'
+					);
+
+					expect( userCountInDOM ).toHaveTextContent( '-' );
+				} );
+		} );
+
 		it( 'should include audience source for each audience', async () => {
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
 				registry,
@@ -273,6 +309,109 @@ describe( 'AudienceSelectionPanel', () => {
 					}
 				} );
 		} );
+	} );
+
+	describe( 'ErrorNotice', () => {
+		it( 'should not display an error notice when there are no errors', async () => {
+			const { container, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).not.toHaveTextContent( 'Data loading failed' );
+			expect( container ).not.toHaveTextContent(
+				'Insufficient permissions, contact your administrator.'
+			);
+		} );
+
+		it.each( [
+			[ 'resyncing available audiences', 'syncAvailableAudiences', [] ],
+			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
+		] )(
+			'should display an error notice when there is an insufficient permissions error while %s',
+			async ( _, fn, args ) => {
+				const error = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
+
+				provideUserInfo( registry, {
+					id: 1,
+					email: 'admin@example.com',
+					name: 'admin',
+					picture: 'https://path/to/image',
+				} );
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error, fn, args );
+
+				const { getByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByText(
+						/Insufficient permissions, contact your administrator/i
+					)
+				).toBeInTheDocument();
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
+				expect( getByText( /request access/i ) ).toBeInTheDocument();
+			}
+		);
+
+		it.each( [
+			[ 'resyncing available audiences', 'syncAvailableAudiences', [] ],
+			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
+		] )(
+			'should display an error notice when %s fails',
+			async ( _, fn, args ) => {
+				const error = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: {},
+				};
+
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error, fn, args );
+
+				const { getByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByText( /Data loading failed/i )
+				).toBeInTheDocument();
+				expect( getByText( /retry/i ) ).toBeInTheDocument();
+			}
+		);
 	} );
 
 	describe( 'LearnMoreLink', () => {
