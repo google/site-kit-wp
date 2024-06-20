@@ -15,10 +15,10 @@ use Google\Site_Kit\Tests\TestCase;
 /**
  * @group Modules
  */
-class Subscribe_With_Google extends TestCase {
+class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_service_classes_exist() {
 		$this->assertTrue(
-			class_exists( 'Google\Service\SubscribewithGoogle' )
+			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle' )
 		);
 	}
 }
