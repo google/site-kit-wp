@@ -57,7 +57,7 @@ class ModulesTest extends TestCase {
 		);
 	}
 
-	public function test_get_available_modules_with_rrm_module_feature_flag_enabled() {
+	public function test_get_available_modules__with_rrm_module_feature_flag_enabled() {
 		// Enable the `rrmModule` feature flag.
 		$this->enable_feature( 'rrmModule' );
 
