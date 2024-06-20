@@ -27,7 +27,7 @@ import { isEqual, isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, AUDIENCE_TYPE_SORT_ORDER } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -121,13 +121,34 @@ const baseActions = {
 					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 					.getAudienceSettings()
 			);
+			const finalSettings = {
+				...audienceSettings,
+				...settings,
+			};
+
+			const availableAudiences = yield Data.commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences()
+			);
+
+			finalSettings.configuredAudiences?.sort( ( a, b ) => {
+				const aAudienceType = availableAudiences.find(
+					( audience ) => audience.name === a
+				)?.audienceType;
+				const bAudienceType = availableAudiences.find(
+					( audience ) => audience.name === b
+				)?.audienceType;
+
+				const aWeight = AUDIENCE_TYPE_SORT_ORDER[ aAudienceType ] || 0;
+				const bWeight = AUDIENCE_TYPE_SORT_ORDER[ bAudienceType ] || 0;
+
+				return aWeight - bWeight;
+			} );
 
 			const { response, error } =
 				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
-					{
-						...audienceSettings,
-						...settings,
-					}
+					finalSettings
 				);
 
 			if ( error ) {
