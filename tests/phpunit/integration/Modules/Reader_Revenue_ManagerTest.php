@@ -2,7 +2,7 @@
 /**
  * Reader_Revenue_ManagerTest
  *
- * @package   Google\Site_Kit
+ * @package   Google\Site_Kit\Tests\Modules
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -54,6 +54,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly',
 			),
 			$this->reader_revenue_manager->get_scopes()
+		);
+	}
+
+	public function test_service_classes_exist() {
+		$this->assertTrue(
+			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle' )
 		);
 	}
 }

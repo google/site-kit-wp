@@ -1218,6 +1218,7 @@ class Analytics_4Test extends TestCase {
 				'conversion-events',
 				'create-property',
 				'create-webdatastream',
+				'pivot-report',
 				'properties',
 				'property',
 				'report',
@@ -1228,6 +1229,7 @@ class Analytics_4Test extends TestCase {
 				'create-custom-dimension',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
+				'set-google-tag-id-mismatch',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -1248,6 +1250,7 @@ class Analytics_4Test extends TestCase {
 				'conversion-events',
 				'create-property',
 				'create-webdatastream',
+				'pivot-report',
 				'properties',
 				'property',
 				'report',
@@ -1258,6 +1261,7 @@ class Analytics_4Test extends TestCase {
 				'create-custom-dimension',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
+				'set-google-tag-id-mismatch',
 				'create-audience',
 				'audience-settings',
 				'sync-audiences',
@@ -1707,6 +1711,215 @@ class Analytics_4Test extends TestCase {
 				),
 			),
 			$request_params['orderBys']
+		);
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_pivot_report( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+
+		$this->analytics->register();
+
+		// Fetch a pivot report with all input parameters.
+		$data = $this->analytics->get_data(
+			'pivot-report',
+			array(
+				'startDate'        => '2022-11-02',
+				'endDate'          => '2022-11-04',
+				'metrics'          => array(
+					array(
+						'name' => 'totalUsers',
+					),
+				),
+				'dimensions'       => array(
+					'city',
+					'operatingSystem',
+				),
+				'dimensionFilters' => array(
+					'operatingSystem' => array(
+						'city',
+						'operatingSystem',
+					),
+				),
+				'pivots'           => array(
+					array(
+						'fieldNames' => array( 'operatingSystem' ),
+						'limit'      => 3,
+					),
+					array(
+						'fieldNames' => array( 'city' ),
+						'limit'      => 2,
+						'orderby'    => array(
+							array(
+								'metric' => array(
+									'metricName' => 'totalUsers',
+								),
+								'desc'   => true,
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertNotWPError( $data );
+
+		// Verify the reports are returned by checking a metric value.
+		$this->assertEquals( 'some-value', $data['modelData'][0]['rows'][0]['metricValues'][0]['value'] );
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'] );
+		$this->assertEquals( '/v1beta/properties/123456789:runPivotReport', $request_url['path'] );
+
+		$request_params = $this->request_handler_calls[0]['params'];
+
+		// Verify the request params that are set by default.
+		$this->assertEquals(
+			'properties/123456789',
+			$request_params['property']
+		);
+
+		$this->assertEquals(
+			1,
+			$request_params['keepEmptyRows']
+		);
+
+		// Verify the request params that are derived from the input parameters.
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'totalUsers',
+				),
+			),
+			$request_params['metrics']
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'startDate' => '2022-11-02',
+					'endDate'   => '2022-11-04',
+				),
+			),
+			$request_params['dateRanges']
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'city',
+				),
+				array(
+					'name' => 'operatingSystem',
+				),
+				// The hostName dimension will be auto added to every request because
+				// we add a dimension filter in Analytics_4/Report/Request to
+				// the data to the WordPress site URL.
+				array(
+					'name' => 'hostName',
+				),
+			),
+			$request_params['dimensions']
+		);
+
+		$this->assertEquals(
+			array(
+				'andGroup' => array(
+					'expressions' => array(
+						// Site URLs are added as dimension filters as above because
+						// we add a dimension filter in Analytics_4/Report/Request to
+						// the data to the WordPress site URL.
+								array(
+
+									'filter' =>
+									array(
+										'fieldName'    => 'hostName',
+										'inListFilter' =>
+										array(
+											'values' =>
+											array(
+												'example.org',
+												'www.example.org',
+											),
+										),
+
+									),
+								),
+						array(
+							'filter' => array(
+								'fieldName'    => 'operatingSystem',
+								'inListFilter' => array(
+									'values' => array(
+										'city',
+										'operatingSystem',
+									),
+								),
+							),
+						),
+					),
+				),
+			),
+			$request_params['dimensionFilter']
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'fieldNames'         => array( 'operatingSystem' ),
+					'limit'              => 3,
+					'metricAggregations' => array(
+						'TOTAL',
+						'MINIMUM',
+						'MAXIMUM',
+					),
+				),
+				array(
+					'fieldNames'         => array( 'city' ),
+					'limit'              => 2,
+					'orderBys'           => array(
+						array(
+							'metric' => array(
+								'metricName' => 'totalUsers',
+							),
+							'desc'   => true,
+						),
+					),
+					'metricAggregations' => array(
+						'TOTAL',
+						'MINIMUM',
+						'MAXIMUM',
+					),
+				),
+			),
+			$request_params['pivots']
 		);
 	}
 
@@ -2793,6 +3006,29 @@ class Analytics_4Test extends TestCase {
 						)
 					);
 
+				case "/v1beta/properties/$property_id:runPivotReport":
+					// Return a mock pivot report.
+					return new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'kind' => 'analyticsData#runPivotReport',
+								array(
+									'rows' => array(
+										array(
+											'metricValues' => array(
+												array(
+													'value' => 'some-value',
+												),
+											),
+										),
+									),
+								),
+							)
+						)
+					);
+
 				case "/v1beta/properties/$property_id/conversionEvents":
 					$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
 					$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
@@ -3315,16 +3551,16 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => false,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => false,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 	}
 
@@ -3415,16 +3651,16 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => true,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => true,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 	}
 
@@ -3460,16 +3696,16 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => true,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => true,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 
 		$this->analytics->get_settings()->merge(
@@ -3480,16 +3716,15 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
 		$this->assertEquals(
 			array(
-				'customDimensionsDataAvailable' => array(
-					'googlesitekit_post_author'     => false,
-					'googlesitekit_post_type'       => false,
-					'googlesitekit_post_date'       => false,
-					'googlesitekit_post_categories' => false,
-				),
+				'googlesitekit_post_author'     => false,
+				'googlesitekit_post_type'       => false,
+				'googlesitekit_post_date'       => false,
+				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
 		);
 	}
 
@@ -3548,6 +3783,53 @@ class Analytics_4Test extends TestCase {
 			),
 			$custom_dimensions_data_available->get_data_availability()
 		);
+	}
+
+	public function test_inline_tag_id_mismatch() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+	}
+
+	public function test_inline_tag_id_mismatch__source_correct_value_from_transient() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+
+		$transients = new Transients( $this->context );
+		$transients->set( 'googlesitekit_inline_tag_id_mismatch', true );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'] );
 	}
 
 	public function test_get_data__adsense_links() {
