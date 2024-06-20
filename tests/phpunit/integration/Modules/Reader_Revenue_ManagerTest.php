@@ -40,6 +40,17 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context );
 	}
 
+	public function test_register() {
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+
+		$this->reader_revenue_manager->register();
+
+		$this->assertEquals(
+			$this->reader_revenue_manager->get_scopes(),
+			apply_filters( 'googlesitekit_auth_scopes', array() )
+		);
+	}
+
 	public function test_magic_methods() {
 		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug );
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name );
