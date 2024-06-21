@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -27,10 +28,21 @@ import PropTypes from 'prop-types';
 import { Button } from 'googlesitekit-components';
 import LightbulbIcon from '../../../../../../svg/icons/lightbulb.svg';
 
-export default function InfoNotice( { content, dismissLabel, onDismiss } ) {
+export default function InfoNotice( {
+	className,
+	content,
+	dismissLabel,
+	Icon = LightbulbIcon,
+	onDismiss,
+} ) {
 	return (
-		<div className="googlesitekit-audience-segmentation-info-notice">
-			<LightbulbIcon width="20" height="20" />
+		<div
+			className={ classnames(
+				'googlesitekit-audience-segmentation-info-notice',
+				className
+			) }
+		>
+			<Icon width="20" height="20" />
 			<div className="googlesitekit-audience-segmentation-info-notice__body">
 				<p>{ content }</p>
 
@@ -49,7 +61,9 @@ export default function InfoNotice( { content, dismissLabel, onDismiss } ) {
 }
 
 InfoNotice.propTypes = {
+	className: PropTypes.string,
 	content: PropTypes.string.isRequired,
 	dismissLabel: PropTypes.string,
+	Icon: PropTypes.elementType,
 	onDismiss: PropTypes.func,
 };

@@ -88,6 +88,11 @@ return array(
 			->name( '#^autoload.php$#' )
 			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services' ),
+		// Temporary SwG client.
+		Finder::create()
+		->files()
+		->name( '#\.php$#' )
+		->in( 'vendor/google/apiclient-services-subscribewithgoogle' ),
 
 		// Temporary support for `GoogleAnalyticsAdminV1alphaAdSenseLink` as it doesn't exist in the API client yet.
 		Finder::create()
