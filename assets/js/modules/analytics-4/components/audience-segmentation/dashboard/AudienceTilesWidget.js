@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { filter } from 'lodash';
 import { useEffectOnce } from 'react-use';
 
 /**
@@ -156,12 +155,9 @@ function AudienceTilesWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getPivotReport( topCitiesReportOptions )
 	);
 	const topCitiesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( () =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getPivotReport',
-				[ topCitiesReportOptions ]
-			)
-		)
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getPivotReport', [
+			topCitiesReportOptions,
+		] )
 	);
 
 	const topContentReportOptions = {
@@ -232,12 +228,9 @@ function AudienceTilesWidget( { Widget } ) {
 		)
 	);
 	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( () =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getPivotReport',
-				[ topContentPageTitlesReportOptions ]
-			)
-		)
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getPivotReport', [
+			topContentPageTitlesReportOptions,
+		] )
 	);
 
 	const dismissedItems = useSelect( ( select ) =>
@@ -304,17 +297,7 @@ function AudienceTilesWidget( { Widget } ) {
 		}
 	} );
 
-	/**
-	 * Collects the rows of interest for the relevant audience from report.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} audienceResourceName Audience resource name.
-	 * @param {Array}  reportRows           Report rows.
-	 * @param {number} index                Index at which audience resource name is available in dimension value.
-	 * @return {Array} Filtered array.
-	 */
-	const collectAudiencesRows = (
+	const collectAudienceRows = (
 		audienceResourceName,
 		reportRows,
 		index = 1
@@ -322,7 +305,7 @@ function AudienceTilesWidget( { Widget } ) {
 		if ( ! reportRows ) {
 			return [];
 		}
-		return filter( reportRows, ( row ) => {
+		return reportRows.filter( ( row ) => {
 			return (
 				audienceResourceName === row?.dimensionValues?.[ index ]?.value
 			);
@@ -440,23 +423,23 @@ function AudienceTilesWidget( { Widget } ) {
 								?.value
 						) || 0;
 
-					const topCities = collectAudiencesRows(
+					const topCities = collectAudienceRows(
 						audienceResourceName,
 						topCitiesReport?.rows
 					);
 
-					const topContent = collectAudiencesRows(
+					const topContent = collectAudienceRows(
 						audienceResourceName,
 						topContentReport?.rows
 					);
 
 					const topContentTitles = {};
 
-					collectAudiencesRows(
+					collectAudienceRows(
 						audienceResourceName,
 						topContentPageTitlesReport?.rows,
 						2
-					)?.forEach( ( row ) => {
+					).forEach( ( row ) => {
 						topContentTitles[ row.dimensionValues[ 0 ].value ] =
 							row.dimensionValues[ 1 ].value;
 					} );

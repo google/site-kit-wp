@@ -434,10 +434,8 @@ export default {
 					],
 				};
 
-				const topTitleReport = getAnalytics4MockPivotResponse(
-					titleReportOptions,
-					true
-				);
+				const topTitleReport =
+					getAnalytics4MockPivotResponse( titleReportOptions );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

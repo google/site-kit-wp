@@ -22,7 +22,7 @@
 import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
-import { castArray, cloneDeep, concat, isPlainObject, zip } from 'lodash';
+import { castArray, cloneDeep, isPlainObject, zip } from 'lodash';
 import { Observable, merge, from } from 'rxjs';
 import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
 
@@ -717,25 +717,6 @@ export function provideAnalytics4MockReport( registry, options ) {
 }
 
 /**
- * Creates all combinations of pivot dimension values that we expect in a pivot report response.
- *
- * @since n.e.x.t
- *
- * @param {Array.<string>} dimensionValues An array of valid dimension names.
- * @return {Array.<Array>} An array of all possible combinations of dimension values.
- */
-function createPivotDimensionCombinations( dimensionValues ) {
-	// Find every combination of each array of dimensionValues.
-	return dimensionValues.reduce(
-		( acc, dimensionValue ) =>
-			acc.flatMap( ( combination ) =>
-				dimensionValue.map( ( value ) => [ ...combination, value ] )
-			),
-		[ [] ]
-	);
-}
-
-/**
  * Creates all combinations of pivot multi-dimension values that we expect in a pivot report response.
  *
  * @since n.e.x.t
@@ -752,9 +733,9 @@ function createPivotMultiDimensionCombinations( dimensionValues ) {
 			const currentLength = value.length;
 			chunks[ key ] = [];
 
-			dimensionValues.forEach( ( val, index ) => {
-				if ( val.length === currentLength ) {
-					chunks[ key ].push( val );
+			dimensionValues.forEach( ( innerValue, index ) => {
+				if ( innerValue.length === currentLength ) {
+					chunks[ key ].push( innerValue );
 					checkedIndexes.push( index );
 				}
 			} );
@@ -771,26 +752,11 @@ function createPivotMultiDimensionCombinations( dimensionValues ) {
 		( chunkVal ) => chunkVal && chunkVal.length
 	);
 
-	const combinations = dimensionValues.reduce(
-		( acc, dimensionValue ) =>
-			acc.flatMap( ( combination ) =>
-				dimensionValue.map( ( value ) => [ ...combination, value ] )
-			),
-		[ [] ]
+	const combinations = cartesianProduct(
+		chunks.filter( ( chunkVal ) => chunkVal?.length )
 	);
 
-	return combinations.map( ( element ) =>
-		element.reduce( ( val, elementValue ) => {
-			if ( Array.isArray( elementValue ) ) {
-				val = val.length ? concat( val, elementValue ) : elementValue;
-			} else {
-				val = val.length
-					? concat( val, [ elementValue ] )
-					: [ elementValue ];
-			}
-			return val;
-		}, [] )
-	);
+	return combinations.map( ( combination ) => combination.flat() );
 }
 
 /**
@@ -848,14 +814,10 @@ export function sortPivotRows( rows, metrics, pivots ) {
  *
  * @since n.e.x.t
  *
- * @param {Object}  options            Report options.
- * @param {boolean} hasMultiDimensions Whether to follow zip strategy.
+ * @param {Object} options Report options.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalytics4MockPivotResponse(
-	options,
-	hasMultiDimensions = false
-) {
+export function getAnalytics4MockPivotResponse( options ) {
 	invariant(
 		isPlainObject( options ),
 		'report options are required to generate a mock response.'
@@ -876,6 +838,9 @@ export function getAnalytics4MockPivotResponse(
 	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
 	const args = cloneDeep( options );
 
+	const hasMultiDimensions = options.pivots.some(
+		( pivot ) => pivot.fieldNames.length > 1
+	);
 	const originalSeedValue = faker.seedValue;
 	const argsURL = args.url || 'http://example.com';
 
@@ -924,7 +889,6 @@ export function getAnalytics4MockPivotResponse(
 	args.pivots.forEach( ( { fieldNames, limit } ) => {
 		// We only support one dimension for each pivot in our current pivot report implementation
 		// so we can choose the first fieldNames value as our dimension.
-		// const dimension = fieldNames[ 0 ];
 
 		fieldNames.forEach( ( dimension ) => {
 			// Pass `audienceResourceName` as is because those are getting referenced inside components to get relevant rows.
@@ -934,7 +898,7 @@ export function getAnalytics4MockPivotResponse(
 				args?.dimensionFilters?.audienceResourceName
 			) {
 				streams.push(
-					from( args?.dimensionFilters?.audienceResourceName )
+					from( args.dimensionFilters.audienceResourceName )
 				);
 			} else if (
 				dimension &&
@@ -988,7 +952,7 @@ export function getAnalytics4MockPivotResponse(
 
 			const pivotDimensionCombinations = hasMultiDimensions
 				? createPivotMultiDimensionCombinations( dimensionValue )
-				: createPivotDimensionCombinations( dimensionValue );
+				: cartesianProduct( dimensionValue );
 
 			return pivotDimensionCombinations.map(
 				( pivotDimensionCombination ) => {
