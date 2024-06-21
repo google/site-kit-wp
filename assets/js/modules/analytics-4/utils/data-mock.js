@@ -718,11 +718,27 @@ export function provideAnalytics4MockReport( registry, options ) {
 
 /**
  * Creates all combinations of pivot multi-dimension values that we expect in a pivot report response.
+ * This is different from `cartesianProduct` function in regard that it considers multi-dimension as a single entity
+ * and another dimension as a different one.
+ *
+ * For example consider the pivots with these dimensions
+ * [
+ *     {
+ *         fieldNames: [ 'pagePath', 'pageTitle' ], // having 10 rows
+ *         limit: 15,
+ *      },
+ *      {
+ *          fieldNames: [ 'pagePath', 'pageTitle' ], // having 3 rows
+ *          limit: 3,
+ *      },
+ * ]
+ *
+ * in this case this function will generate 30 (10 x 3) combinations.
  *
  * @since n.e.x.t
  *
  * @param {Array.<string>} dimensionValues An array of valid dimension names.
- * @return {Array.<Array>} An array of all possible combinations of dimension values.
+ * @return {Array.<Array>} Creates necessary combinations of dimension values.
  */
 function createPivotMultiDimensionCombinations( dimensionValues ) {
 	const chunks = [];
@@ -891,15 +907,14 @@ export function getAnalytics4MockPivotResponse( options ) {
 		// so we can choose the first fieldNames value as our dimension.
 
 		fieldNames.forEach( ( dimension ) => {
-			// Pass `audienceResourceName` as is because those are getting referenced inside components to get relevant rows.
+			// If an array of filter values is provided for the dimension, use that to generate the stream.
 			if (
 				dimension &&
-				'audienceResourceName' === dimension &&
-				args?.dimensionFilters?.audienceResourceName
+				args?.dimensionFilters?.[ dimension ]?.some(
+					( dimensionValue ) => typeof dimensionValue === 'string'
+				)
 			) {
-				streams.push(
-					from( args.dimensionFilters.audienceResourceName )
-				);
+				streams.push( from( args.dimensionFilters[ dimension ] ) );
 			} else if (
 				dimension &&
 				typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
