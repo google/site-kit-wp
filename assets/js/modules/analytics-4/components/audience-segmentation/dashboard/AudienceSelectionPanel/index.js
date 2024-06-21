@@ -27,12 +27,14 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import AddGroupNotice from './AddGroupNotice';
 import AudienceItems from './AudienceItems';
 import Footer from './Footer';
 import Header from './Header';
@@ -67,6 +69,7 @@ export default function AudienceSelectionPanel() {
 	const onSideSheetOpen = useCallback( () => {
 		setValues( AUDIENCE_SELECTION_FORM, {
 			[ AUDIENCE_SELECTED ]: savedItemSlugs,
+			[ AUDIENCE_SELECTION_CHANGED ]: false,
 		} );
 	}, [ savedItemSlugs, setValues ] );
 
@@ -85,6 +88,7 @@ export default function AudienceSelectionPanel() {
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
+			<AddGroupNotice savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
 			<Footer
 				closePanel={ closePanel }

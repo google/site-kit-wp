@@ -45,7 +45,7 @@ export const AUDIENCE_INFO_NOTICES = [
 		'google-site-kit'
 	),
 	__(
-		'Configure your own custom audiences in Analytics to gain deeper insights into visitor behavior, for example consider creating a “Existing customers” or “Subscribers” segment, depending on what goals you have for your site.',
+		'Configure your own custom audiences in Analytics to gain deeper insights into visitor behavior, for example consider creating an “Existing customers” or “Subscribers” segment, depending on what goals you have for your site.',
 		'google-site-kit'
 	),
 	__(

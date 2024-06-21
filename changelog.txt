@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 1.129.1 =
+
+**Fixed**
+
+* Remove Ads module setup CTA banner from SK dashboard. See [#8902](https://github.com/google/site-kit-wp/issues/8902).
+
 = 1.129.0 =
 
 **Added**

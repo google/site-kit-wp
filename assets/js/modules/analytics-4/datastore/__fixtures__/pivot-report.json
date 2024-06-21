@@ -1,0 +1,163 @@
+{
+	"kind": "analyticsData#runPivotReport",
+	"pivotHeaders": [
+		{
+			"rowCount": 2,
+			"pivotDimensionHeaders": [
+				{
+					"dimensionValues": [
+						{
+							"value": "Windows"
+						}
+					]
+				},
+				{
+					"dimensionValues": [
+						{
+							"value": "Macintosh"
+						}
+					]
+				}
+			]
+		},
+		{
+			"rowCount": 358,
+			"pivotDimensionHeaders": [
+				{
+					"dimensionValues": [
+						{
+							"value": "Dublin"
+						}
+					]
+				},
+				{
+					"dimensionValues": [
+						{
+							"value": "(not set)"
+						}
+					]
+				},
+				{
+					"dimensionValues": [
+						{
+							"value": "Sao Paulo"
+						}
+					]
+				}
+			]
+		}
+	],
+	"dimensionHeaders": [
+		{
+			"name": "operatingSystem"
+		},
+		{
+			"name": "city"
+		}
+	],
+	"metricHeaders": [
+		{
+			"name": "totalUsers",
+			"type": "TYPE_INTEGER"
+		}
+	],
+	"rows": [
+		{
+			"dimensionValues": [
+				{
+					"value": "Windows"
+				},
+				{
+					"value": "Dublin"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "97"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "Windows"
+				},
+				{
+					"value": "(not set)"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "69"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "Macintosh"
+				},
+				{
+					"value": "Dublin"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "40"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "Windows"
+				},
+				{
+					"value": "Sao Paulo"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "37"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "Macintosh"
+				},
+				{
+					"value": "(not set)"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "29"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "Macintosh"
+				},
+				{
+					"value": "Sao Paulo"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "6"
+				}
+			]
+		}
+	],
+	"metadata": {
+		"currencyCode": "USD",
+		"dataLossFromOtherRow": null,
+		"emptyReason": null,
+		"subjectToThresholding": null,
+		"timeZone": "America/Los_Angeles"
+	}
+}
