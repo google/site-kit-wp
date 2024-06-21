@@ -26,3 +26,4 @@ export { default as ChangeGroupsLink } from './ChangeGroupsLink';
 export { default as ConnectAnalyticsCTAWidget } from './ConnectAnalyticsCTAWidget';
 export { default as InfoNoticeWidget } from './InfoNoticeWidget';
 export { default as InfoNotice } from './InfoNotice';
+export { default as NoAudienceBannerWidget } from './NoAudienceBannerWidget';
