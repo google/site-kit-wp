@@ -33,6 +33,7 @@ import enhancedMeasurement from './enhanced-measurement';
 import partialData from './partial-data';
 import properties from './properties';
 import report from './report';
+import pivotReport from './pivot-report';
 import service from './service';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
@@ -52,6 +53,7 @@ const store = Data.combineStores(
 	partialData,
 	properties,
 	report,
+	pivotReport,
 	service,
 	tags,
 	webdatastreams
