@@ -165,7 +165,9 @@ const baseSelectors = {
 				return false;
 			}
 
-			// Don't use the getReferenceDate selector here since there is no need in it.
+			// We shouldn't use the getReferenceDate selector here because it returns
+			// date only whilst we need the current time as well to properly determine
+			// whether the expiration time passed or not.
 			return expiresInSeconds > Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		}
 	),
