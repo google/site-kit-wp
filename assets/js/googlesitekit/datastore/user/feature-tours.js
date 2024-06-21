@@ -113,7 +113,8 @@ const baseActions = {
 			};
 
 			// Save the timestamp to allow the cooldown.
-			// Don't use the getReferenceDate selector here since there is no need in it.
+			// The timestamp used here should reflect the actual time the
+			// user interacted with this feature tour, not the reference date.
 			yield actions.setLastDismissedAt( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 			// Dispatch a request to persist and receive updated dismissed tours.
