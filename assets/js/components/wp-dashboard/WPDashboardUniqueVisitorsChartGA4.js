@@ -113,6 +113,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		data,
 		0,
 		dateRangeLength,
+		refDate,
 		[ __( 'Unique Visitors', 'google-site-kit' ) ],
 		[ ( x ) => parseFloat( x ).toLocaleString() ]
 	);
