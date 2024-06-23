@@ -132,11 +132,11 @@ const baseActions = {
 					.getAvailableAudiences()
 			);
 
-			finalSettings.configuredAudiences?.sort( ( a, b ) => {
-				const aAudienceType = availableAudiences.find(
+			[ ...finalSettings.configuredAudiences ].sort( ( a, b ) => {
+				const aAudienceType = availableAudiences?.find(
 					( audience ) => audience.name === a
 				)?.audienceType;
-				const bAudienceType = availableAudiences.find(
+				const bAudienceType = availableAudiences?.find(
 					( audience ) => audience.name === b
 				)?.audienceType;
 
