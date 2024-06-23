@@ -18,6 +18,7 @@
 
 export { default as accountSummaries } from './account-summaries.json';
 export { default as audiences } from './audiences.json';
+export { default as availableAudiencesSorted } from './available-audiences-sorted.json';
 export { default as availableAudiences } from './available-audiences.json';
 export { default as container } from './container.json';
 export { default as containerE2E } from './container-e2e.json';
