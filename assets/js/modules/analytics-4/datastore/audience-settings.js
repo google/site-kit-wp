@@ -132,7 +132,9 @@ const baseActions = {
 					.getAvailableAudiences()
 			);
 
-			[ ...finalSettings.configuredAudiences ].sort( ( a, b ) => {
+			const sortedConfiguredAudiences = [
+				...finalSettings.configuredAudiences,
+			].sort( ( a, b ) => {
 				const aAudienceType = availableAudiences?.find(
 					( audience ) => audience.name === a
 				)?.audienceType;
@@ -145,6 +147,8 @@ const baseActions = {
 
 				return aWeight - bWeight;
 			} );
+
+			finalSettings.configuredAudiences = sortedConfiguredAudiences;
 
 			const { response, error } =
 				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
