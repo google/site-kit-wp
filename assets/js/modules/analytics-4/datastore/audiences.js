@@ -562,6 +562,36 @@ const baseSelectors = {
 				};
 			}
 	),
+
+	/**
+	 * Gets the error for the audiences user count report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+	 */
+	getAudiencesUserCountReportError: createRegistrySelector(
+		( select ) => () => {
+			const {
+				getAudiencesUserCountReportOptions,
+				getConfigurableAudiences,
+				getErrorForSelector,
+			} = select( MODULES_ANALYTICS_4 );
+
+			const configurableAudiences = getConfigurableAudiences();
+
+			if ( configurableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audiencesUserCountReportOptions =
+				getAudiencesUserCountReportOptions( configurableAudiences );
+
+			return getErrorForSelector( 'getReport', [
+				audiencesUserCountReportOptions,
+			] );
+		}
+	),
 };
 
 const store = Data.combineStores(

@@ -1379,5 +1379,79 @@ describe( 'modules/analytics-4 audiences', () => {
 				} );
 			} );
 		} );
+
+		describe( 'getAudiencesUserCountReportError', () => {
+			const error = {
+				code: 'test_error',
+				message: 'Error message.',
+				data: {},
+			};
+
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiencesFixture.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+			} );
+
+			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				const userCountReportError = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportError();
+
+				expect( userCountReportError ).toBeUndefined();
+			} );
+
+			it( 'should return `undefined` if there is no user count report error', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				const userCountReportError = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportError();
+
+				expect( userCountReportError ).toBeUndefined();
+			} );
+
+			it( 'should return error object if there is a user count report error', () => {
+				const { receiveError, receiveGetSettings } =
+					registry.dispatch( MODULES_ANALYTICS_4 );
+
+				const {
+					getAudiencesUserCountReportOptions,
+					getConfigurableAudiences,
+					getAudiencesUserCountReportError,
+				} = registry.select( MODULES_ANALYTICS_4 );
+
+				receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				receiveError( error, 'getReport', [
+					getAudiencesUserCountReportOptions(
+						getConfigurableAudiences()
+					),
+				] );
+
+				const userCountReportError = getAudiencesUserCountReportError();
+
+				expect( userCountReportError ).toEqual( error );
+			} );
+		} );
 	} );
 } );

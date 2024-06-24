@@ -42,21 +42,9 @@ export default function ErrorNotice() {
 			'syncAvailableAudiences'
 		)
 	);
-	const userCountReportError = useSelect( ( select ) => {
-		const {
-			getAudiencesUserCountReportOptions,
-			getConfigurableAudiences,
-			getErrorForSelector,
-		} = select( MODULES_ANALYTICS_4 );
-
-		const configurableAudiences = getConfigurableAudiences();
-		const audiencesUserCountReportOptions =
-			getAudiencesUserCountReportOptions( configurableAudiences );
-
-		return getErrorForSelector( 'getReport', [
-			audiencesUserCountReportOptions,
-		] );
-	} );
+	const userCountReportError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudiencesUserCountReportError()
+	);
 	const helpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
 			code: 'analytics-4_insufficient_permissions',

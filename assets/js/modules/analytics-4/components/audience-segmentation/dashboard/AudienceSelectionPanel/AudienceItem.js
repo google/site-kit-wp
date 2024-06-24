@@ -55,21 +55,9 @@ export default function AudienceItem( {
 			AUDIENCE_SELECTED
 		)
 	);
-	const userCountReportError = useSelect( ( select ) => {
-		const {
-			getAudiencesUserCountReportOptions,
-			getConfigurableAudiences,
-			getErrorForSelector,
-		} = select( MODULES_ANALYTICS_4 );
-
-		const configurableAudiences = getConfigurableAudiences();
-		const audiencesUserCountReportOptions =
-			getAudiencesUserCountReportOptions( configurableAudiences );
-
-		return getErrorForSelector( 'getReport', [
-			audiencesUserCountReportOptions,
-		] );
-	} );
+	const userCountReportError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudiencesUserCountReportError()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
