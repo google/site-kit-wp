@@ -24,7 +24,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
@@ -40,8 +40,6 @@ import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
-
-const { useSelect, useDispatch } = Data;
 
 export default function AudienceSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>

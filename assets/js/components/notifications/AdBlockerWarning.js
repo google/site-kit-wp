@@ -24,11 +24,10 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import AdBlockerWarningMessage from './AdBlockerWarningMessage';
-const { useSelect } = Data;
 
 export default function AdBlockerWarning( { moduleSlug, className } ) {
 	const storeName = useSelect( ( select ) =>

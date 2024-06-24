@@ -25,7 +25,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
@@ -34,8 +34,6 @@ import DisplaySetting, {
 } from '../../../../components/DisplaySetting';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { useFeature } from '../../../../hooks/useFeature';
-
-const { useSelect } = Data;
 
 export default function OptionalSettingsView() {
 	const iceEnabled = useFeature( 'conversionInfra' );

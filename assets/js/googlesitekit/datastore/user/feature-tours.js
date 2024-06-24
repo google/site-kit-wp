@@ -27,7 +27,12 @@ import { isPlainObject, isNull } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from './constants';
@@ -35,8 +40,7 @@ import featureTours from '../../../feature-tours';
 import { getItem } from '../../../googlesitekit/api/cache';
 import { createValidatedAction } from '../../data/utils';
 
-const { createRegistrySelector, createRegistryControl } = Data;
-const { getRegistry } = Data.commonActions;
+const { getRegistry } = commonActions;
 
 // Feature tour cooldown period is 2 hours
 export const FEATURE_TOUR_COOLDOWN_SECONDS = 60 * 60 * 2;
@@ -202,7 +206,7 @@ const baseActions = {
 	*triggerTourForView( viewContext ) {
 		const { select, __experimentalResolveSelect } = yield getRegistry();
 
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			__experimentalResolveSelect( CORE_USER ).getLastDismissedAt()
 		);
 
@@ -367,7 +371,7 @@ const baseResolvers = {
 	},
 
 	*getLastDismissedAt() {
-		const { value: lastDismissedAt } = yield Data.commonActions.await(
+		const { value: lastDismissedAt } = yield commonActions.await(
 			getItem( FEATURE_TOUR_LAST_DISMISSED_AT )
 		);
 
@@ -504,7 +508,7 @@ export const {
 	reducer,
 	resolvers,
 	selectors,
-} = Data.combineStores(
+} = combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

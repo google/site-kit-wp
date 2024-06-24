@@ -25,7 +25,7 @@ import { detectAnyAdblocker } from 'just-detect-adblock';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 
 // Actions
@@ -110,7 +110,7 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*isAdBlockerActive() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const isAdBlockerActive = registry
 			.select( CORE_USER )
 			.isAdBlockerActive();

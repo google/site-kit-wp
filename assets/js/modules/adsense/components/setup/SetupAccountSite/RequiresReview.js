@@ -25,12 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../util';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import SetupAccountSiteUI from './SetupAccountSiteUI';
-const { useSelect } = Data;
 
 export default function RequiresReview() {
 	const viewContext = useContext( ViewContextContext );

@@ -30,7 +30,11 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
@@ -39,7 +43,6 @@ import { normalizeReportOptions, isZeroReport } from '../utils';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 import { getSampleReportArgs } from '../utils/report-args';
 import { validateReport } from '../utils/validation';
-const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -135,7 +138,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getReport( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getReport( options );
@@ -340,7 +343,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
+const store = combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

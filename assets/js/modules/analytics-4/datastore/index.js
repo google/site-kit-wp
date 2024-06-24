@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import accounts from './accounts';
 import audiences from './audiences';
@@ -39,7 +39,7 @@ import tags from './tags';
 import webdatastreams from './webdatastreams';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 
-const store = Data.combineStores(
+const store = combineStores(
 	accounts,
 	audiences,
 	audienceSettings,

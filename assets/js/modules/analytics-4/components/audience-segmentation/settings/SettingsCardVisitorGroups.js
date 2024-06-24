@@ -25,12 +25,11 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import Layout from '../../../../../components/layout/Layout';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-const { useDispatch, useSelect } = Data;
 
 export default function SettingsCardVisitorGroups() {
 	const audienceSegmentationWidgetHidden = useSelect( ( select ) =>

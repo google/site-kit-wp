@@ -37,7 +37,7 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
 import ModalDialog from '../ModalDialog';
 import { trackEvent } from '../../util';
@@ -52,7 +52,6 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
 	const proxyPermissionsURL = useSelect( ( select ) =>

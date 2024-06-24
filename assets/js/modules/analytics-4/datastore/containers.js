@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -109,7 +109,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getGoogleTagContainer( measurementID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const container = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getGoogleTagContainer( measurementID );
@@ -122,7 +122,7 @@ const baseResolvers = {
 	},
 
 	*getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const containerDestinations = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID );
@@ -165,7 +165,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetGoogleTagContainerStore,
 	fetchGetGoogleTagContainerDestinationsStore,
 	{

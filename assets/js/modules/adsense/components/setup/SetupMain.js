@@ -31,7 +31,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
 import SetupAccount from './SetupAccount';
@@ -54,7 +54,6 @@ import {
 import useViewContext from '../../../../hooks/useViewContext';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();

@@ -19,9 +19,8 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
 
 /**
  * Higher-Order Component to render wrapped components when specified scopes

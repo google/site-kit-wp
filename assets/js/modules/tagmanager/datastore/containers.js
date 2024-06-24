@@ -25,7 +25,12 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	createRegistryControl,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
 	isValidAccountID,
@@ -34,7 +39,6 @@ import {
 	isValidUsageContext,
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-const { createRegistrySelector, createRegistryControl } = Data;
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
@@ -177,7 +181,7 @@ const baseActions = {
 			);
 		},
 		function* ( containerID ) {
-			const { select, dispatch } = yield Data.commonActions.getRegistry();
+			const { select, dispatch } = yield commonActions.getRegistry();
 			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
 			if ( ! isValidAccountID( accountID ) ) {
@@ -276,7 +280,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( ! select( MODULES_TAGMANAGER ).getContainers( accountID ) ) {
 			yield fetchGetContainersStore.actions.fetchGetContainers(
@@ -425,7 +429,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetContainersStore,
 	fetchCreateContainerStore,
 	{

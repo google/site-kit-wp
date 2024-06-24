@@ -20,11 +20,13 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-
-const { createRegistrySelector } = Data;
 
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
@@ -47,7 +49,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getConnection() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingConnection = registry.select( CORE_SITE ).getConnection();
 
@@ -187,7 +189,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetConnectionStore, {
+const store = combineStores( fetchGetConnectionStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

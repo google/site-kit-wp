@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import DataBlock from '../DataBlock';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -35,7 +35,6 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-const { useSelect } = Data;
 
 function AdminBarUniqueVisitorsGA4( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>

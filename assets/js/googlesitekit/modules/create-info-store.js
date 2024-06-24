@@ -29,11 +29,12 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
-
-const { createRegistryControl, createRegistrySelector } = Data;
 
 // Actions
 const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';

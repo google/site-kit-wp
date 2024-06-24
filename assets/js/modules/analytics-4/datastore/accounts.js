@@ -26,7 +26,11 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	ACCOUNT_CREATE,
@@ -40,7 +44,6 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../utils/validation';
 
-const { createRegistrySelector } = Data;
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
@@ -106,7 +109,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetAccountSummaries() {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
 			payload: {},
@@ -126,7 +129,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createAccount() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const { getValue } = registry.select( CORE_FORMS );
 		const data = {
@@ -168,7 +171,7 @@ const baseActions = {
 			);
 		},
 		function* ( accountID ) {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 			const finishSelectingAccountAction = {
 				type: FINISH_SELECTING_ACCOUNT,
 				payload: {},
@@ -192,7 +195,7 @@ const baseActions = {
 				return;
 			}
 
-			yield Data.commonActions.await(
+			yield commonActions.await(
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchAndSelectProperty( accountID, PROPERTY_CREATE )
@@ -210,8 +213,8 @@ const baseActions = {
 	 * @return {Object|null} Matching account summary on success, otherwise NULL.
 	 */
 	*findMatchedAccount() {
-		const registry = yield Data.commonActions.getRegistry();
-		const matchedProperty = yield Data.commonActions.await(
+		const registry = yield commonActions.getRegistry();
+		const matchedProperty = yield commonActions.await(
 			registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
 		);
 
@@ -273,7 +276,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAccountSummaries() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const summaries = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAccountSummaries();
@@ -390,7 +393,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetAccountSummariesStore,
 	fetchCreateAccountStore,
 	{

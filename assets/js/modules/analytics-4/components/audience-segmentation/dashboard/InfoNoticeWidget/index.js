@@ -30,14 +30,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
 import InfoNotice from '../InfoNotice';
 import { AUDIENCE_INFO_NOTICE_SLUG, AUDIENCE_INFO_NOTICES } from './constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
-
-const { useSelect, useDispatch } = Data;
 
 function InfoNoticeWidget( { Widget, WidgetNull } ) {
 	const noticesCount = AUDIENCE_INFO_NOTICES.length;

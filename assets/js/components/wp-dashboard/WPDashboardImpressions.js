@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
@@ -41,7 +41,6 @@ import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { calculateChange } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-const { useSelect, useInViewSelect } = Data;
 
 function WPDashboardImpressions( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>

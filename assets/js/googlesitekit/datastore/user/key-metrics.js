@@ -24,7 +24,11 @@ import { isEmpty, isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+} from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -48,7 +52,6 @@ import { actions as errorStoreActions } from '../../data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
 const { receiveError, clearError } = errorStoreActions;
-const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 
@@ -122,7 +125,7 @@ const baseActions = {
 
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
@@ -173,7 +176,7 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getKeyMetricsSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
@@ -476,7 +479,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetKeyMetricsSettingsStore,
 	fetchSaveKeyMetricsSettingsStore,
 	{

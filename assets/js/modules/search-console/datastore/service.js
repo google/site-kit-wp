@@ -24,13 +24,11 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { untrailingslashit } from '../../../util';
-
-const { createRegistrySelector } = Data;
 
 export const selectors = {
 	/**

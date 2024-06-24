@@ -40,12 +40,11 @@ import ViewIcon from '../../../svg/icons/view.svg';
 import Description from './Description';
 import SharedServices from './SharedServices';
 import Tracking from './Tracking';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
 
 export default function ViewOnlyMenu() {
 	const [ menuOpen, setMenuOpen ] = useState( false );

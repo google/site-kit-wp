@@ -30,7 +30,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
 import { getStickyHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
@@ -52,8 +52,6 @@ import { CORE_USER } from '../../datastore/user/constants';
 import useLatestIntersection from '../../../hooks/useLatestIntersection';
 import NewBadge from '../../../components/NewBadge';
 import { WEEK_IN_SECONDS } from '../../../util';
-import { useDispatch } from '@wordpress/data';
-const { useSelect } = Data;
 
 /**
  * Gets root margin value for the intersection hook.

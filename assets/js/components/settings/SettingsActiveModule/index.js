@@ -26,7 +26,7 @@ import { useParams } from 'react-router-dom';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
@@ -35,7 +35,6 @@ import SettingsRenderer from '../SettingsRenderer';
 import Header from './Header';
 import Footer from './Footer';
 import ConfirmDisconnect from './ConfirmDisconnect';
-const { useSelect } = Data;
 
 export default function SettingsActiveModule( props ) {
 	const { slug } = props;

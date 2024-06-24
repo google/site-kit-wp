@@ -35,7 +35,7 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
@@ -64,7 +64,6 @@ import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();

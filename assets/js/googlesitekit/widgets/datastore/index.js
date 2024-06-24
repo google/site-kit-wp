@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import areas from './areas';
 import widgets from './widgets';
 import contexts from './contexts';
 import { createErrorStore } from '../../data/create-error-store';
 import { CORE_WIDGETS } from './constants';
 
-const store = Data.combineStores(
-	Data.commonStore,
+const store = combineStores(
+	commonStore,
 	areas,
 	widgets,
 	contexts,

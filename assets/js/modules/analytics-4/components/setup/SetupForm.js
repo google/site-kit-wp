@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import {
 	FORM_SETUP,
@@ -48,7 +48,6 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>

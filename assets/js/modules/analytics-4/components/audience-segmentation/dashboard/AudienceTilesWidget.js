@@ -36,7 +36,7 @@ import {
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../util/when-active';
 import {
 	BREAKPOINT_SMALL,
@@ -51,8 +51,6 @@ import {
 import AudienceTile from './AudienceTile';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import InfoTooltip from '../../../../../components/InfoTooltip';
-
-const { useSelect, useDispatch } = Data;
 
 const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 	const audienceData = report?.rows?.find(

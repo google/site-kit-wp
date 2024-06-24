@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../material-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
@@ -38,7 +38,6 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { getDateString } from '../../../../util';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
 
 export default function AnalyticsStats( props ) {
 	const {
