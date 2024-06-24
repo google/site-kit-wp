@@ -134,18 +134,18 @@ const baseActions = {
 
 			const sortedConfiguredAudiences = [
 				...finalSettings.configuredAudiences,
-			].sort( ( a, b ) => {
-				const aAudienceType = availableAudiences?.find(
-					( audience ) => audience.name === a
+			].sort( ( audienceNameA, audienceNameB ) => {
+				const audienceTypeA = availableAudiences?.find(
+					( audience ) => audience.name === audienceNameA
 				)?.audienceType;
-				const bAudienceType = availableAudiences?.find(
-					( audience ) => audience.name === b
+				const audienceTypeB = availableAudiences?.find(
+					( audience ) => audience.name === audienceNameB
 				)?.audienceType;
 
-				const aWeight = AUDIENCE_TYPE_SORT_ORDER[ aAudienceType ] || 0;
-				const bWeight = AUDIENCE_TYPE_SORT_ORDER[ bAudienceType ] || 0;
+				const weightA = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeA ] || 0;
+				const weightB = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeB ] || 0;
 
-				return aWeight - bWeight;
+				return weightA - weightB;
 			} );
 
 			finalSettings.configuredAudiences = sortedConfiguredAudiences;
