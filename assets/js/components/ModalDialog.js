@@ -57,6 +57,7 @@ function ModalDialog( {
 	inProgress = false,
 	small = false,
 	medium = false,
+	buttonLink = null,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
@@ -130,6 +131,8 @@ function ModalDialog( {
 					danger={ danger }
 					disabled={ inProgress }
 					isSaving={ inProgress }
+					href={ buttonLink || undefined }
+					target={ buttonLink ? '_blank' : undefined }
 				>
 					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
 				</SpinnerButton>
@@ -150,6 +153,7 @@ ModalDialog.propTypes = {
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
+	buttonLink: PropTypes.string,
 };
 
 export default ModalDialog;
