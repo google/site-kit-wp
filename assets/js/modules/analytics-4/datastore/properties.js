@@ -684,7 +684,9 @@ const baseActions = {
 
 		if (
 			!! googleTagLastSyncedAtMs &&
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
+			// The "last synced" value should reflect the real time this action
+			// was performed, so we don't use the reference date here.
+			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
 		) {
 			return;
 		}
@@ -727,7 +729,9 @@ const baseActions = {
 
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			googleTagContainerDestinationIDs,
-			googleTagLastSyncedAtMs: Date.now(),
+			// The "last synced" value should reflect the real time this action
+			// was performed, so we don't use the reference date here.
+			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
 		} );
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();

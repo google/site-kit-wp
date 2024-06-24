@@ -52,6 +52,27 @@ describe( 'SettingsCardVisitorGroups', () => {
 			'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 		);
 
+		const availableAudiences = [
+			{
+				name: 'audienceA',
+				description: 'Audience A',
+				displayName: 'Audience A',
+				audienceType: 'DEFAULT_AUDIENCE',
+				audienceSlug: 'audience-a',
+			},
+			{
+				name: 'audienceB',
+				description: 'Audience B',
+				displayName: 'Audience B',
+				audienceType: 'SITE_KIT_AUDIENCE',
+				audienceSlug: 'audience-b',
+			},
+		];
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: true,
@@ -85,7 +106,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 				body: {
 					data: {
 						settings: {
-							configuredAudiences: [ 'audienceA', 'audienceB' ],
+							configuredAudiences: [ 'audienceB', 'audienceA' ],
 							isAudienceSegmentationWidgetHidden: false,
 						},
 					},

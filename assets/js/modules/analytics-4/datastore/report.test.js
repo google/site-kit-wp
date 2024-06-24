@@ -397,9 +397,9 @@ describe( 'modules/analytics-4 report', () => {
 
 					muteFetch( dataAvailableRegexp );
 
-					// Create a timestamp that is three days ago.
+					// Create a timestamp that is four days ago.
 					const createTime = new Date(
-						Date.now() - DAY_IN_SECONDS * 3 * 1000
+						Date.now() - DAY_IN_SECONDS * 4 * 1000
 					).toISOString();
 
 					const property = {
