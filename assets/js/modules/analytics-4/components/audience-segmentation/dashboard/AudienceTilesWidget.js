@@ -20,12 +20,11 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useEffectOnce } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -236,46 +235,68 @@ function AudienceTilesWidget( { Widget } ) {
 		}, {} )
 	);
 
-	const audiencesToClearDismissal = [];
-	const visibleAudiences = [];
-	const tempAudiences = configuredAudiences.slice();
+	const [ audiencesToClearDismissal, setAudiencesToClearDismissal ] =
+		useState( [] );
+	const [ visibleAudiences, setVisibleAudiences ] = useState( [] );
+	// useRef to track if the dismissal logic has already been executed.
+	const hasDismissed = useRef( false );
 
-	while ( tempAudiences.length > 0 ) {
-		const audienceResourceName = tempAudiences.shift();
-
-		const isDismissed = dismissedItems?.includes(
-			`audience-tile-${ audienceResourceName }`
-		);
-		const isZeroData = hasZeroDataForAudience(
-			report,
-			audienceResourceName
-		);
-
-		// Skip rendering the tile if it is dismissed, has zero data, and has more audiences to render.
-		if ( isDismissed && isZeroData && tempAudiences.length > 0 ) {
-			continue;
+	useEffect( () => {
+		if ( ! reportLoaded ) {
+			return;
 		}
 
-		// Collect audiences to re-dismiss if they have data again.
-		if ( isDismissed && ! isZeroData ) {
-			audiencesToClearDismissal.push( audienceResourceName );
+		const audiencesToClearDismissalTemp = [];
+		const visibleAudiencesTemp = [];
+		const tempAudiences = configuredAudiences.slice();
+
+		while ( tempAudiences.length > 0 ) {
+			const audienceResourceName = tempAudiences.shift();
+
+			const isDismissed = dismissedItems?.includes(
+				`audience-tile-${ audienceResourceName }`
+			);
+			const isZeroData = hasZeroDataForAudience(
+				report,
+				audienceResourceName
+			);
+
+			// Check if there are more audiences remaining to be processed.
+			const remainingAudiences =
+				tempAudiences.length + visibleAudiencesTemp.length > 0;
+
+			// Skip rendering the tile if it is dismissed, has zero data, and there are still more audiences to render.
+			if ( isDismissed && isZeroData && remainingAudiences ) {
+				continue;
+			}
+
+			// Collect audiences to re-dismiss if they have data again.
+			if ( isDismissed && ! isZeroData ) {
+				audiencesToClearDismissalTemp.push( audienceResourceName );
+			}
+
+			// Add audience to visibleAudiences
+			visibleAudiencesTemp.push( audienceResourceName );
 		}
 
-		// Add audience to visibleAudiences
-		visibleAudiences.push( audienceResourceName );
-	}
+		// Update state for audiences to clear dismissal and visible audiences.
+		setAudiencesToClearDismissal( audiencesToClearDismissalTemp );
+		setVisibleAudiences( visibleAudiencesTemp );
+	}, [ configuredAudiences, dismissedItems, report, reportLoaded ] );
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
-	useEffectOnce( () => {
-		if ( audiencesToClearDismissal.length > 0 ) {
+	useEffect( () => {
+		if ( ! hasDismissed.current && audiencesToClearDismissal.length > 0 ) {
 			audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
 				dismissItem( `audience-tile-${ audienceResourceName }`, {
 					expiresInSeconds: 1,
 				} );
 			} );
+			// Set the ref to true to prevent re-execution of the dismissal logic.
+			hasDismissed.current = true;
 		}
-	} );
+	}, [ audiencesToClearDismissal, dismissItem ] );
 
 	const loading =
 		! reportLoaded ||
