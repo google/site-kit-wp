@@ -385,6 +385,31 @@ describe( 'createSettingsStore store', () => {
 			} );
 		} );
 
+		test.each( [
+			[ 'haveSettingsChanged' ],
+			[ '__dangerousHaveSettingsChanged' ],
+		] )( 'should have %s selector', ( selector ) => {
+			const selectors = storeDefinition.selectors;
+			expect( typeof selectors[ selector ] ).toBe( 'function' );
+		} );
+
+		describe.each( [
+			[ 'haveSettingsChanged' ],
+			[ '__dangerousHaveSettingsChanged' ],
+		] )( '%s', ( selector ) => {
+			it( 'should use provided validateHaveSettingsChanged function', () => {
+				const validateHaveSettingsChanged = jest.fn();
+				storeDefinition = createSettingsStore( ...STORE_ARGS, {
+					settingSlugs: [ 'isSkyBlue' ],
+					validateHaveSettingsChanged,
+					registry,
+				} );
+
+				storeDefinition.selectors[ selector ]();
+				expect( validateHaveSettingsChanged ).toHaveBeenCalled();
+			} );
+		} );
+
 		describe( 'haveSettingsChanged', () => {
 			it( 'informs whether client-side settings differ from server-side ones', async () => {
 				// Initially false.
