@@ -57,7 +57,7 @@ const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 };
 
 function AudienceTilesWidget( { Widget } ) {
-	const [ activeTile, setActiveTile ] = useState( 0 );
+	const [ activeTile, setActiveTile ] = useState( null );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
@@ -298,6 +298,15 @@ function AudienceTilesWidget( { Widget } ) {
 		}
 	}, [ audiencesToClearDismissal, dismissItem ] );
 
+	useEffect( () => {
+		// Set the initial active tab to the first tab (index 0) when `visibleAudiences` is populated.
+		// This ensures that a tab is selected by default when the component loads on smaller screens.
+		// 'null' is used as the initial state to indicate no selection.
+		if ( visibleAudiences.length > 0 ) {
+			setActiveTile( 0 );
+		}
+	}, [ visibleAudiences ] );
+
 	const loading =
 		! reportLoaded ||
 		! totalPageviewsReportLoaded ||
@@ -307,7 +316,7 @@ function AudienceTilesWidget( { Widget } ) {
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
-			{ isTabbedBreakpoint && (
+			{ isTabbedBreakpoint && activeTile !== null && (
 				<TabBar
 					className="googlesitekit-widget-audience-tiles__tabs"
 					activeIndex={ activeTile }
