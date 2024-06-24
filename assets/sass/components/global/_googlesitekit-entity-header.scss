@@ -55,7 +55,8 @@
 			}
 		}
 
-		body.googlesitekit-showing-feature-tour & {
+		body.googlesitekit-showing-feature-tour &,
+		body.googlesitekit-showing-tooltip & {
 			position: static;
 		}
 	}
