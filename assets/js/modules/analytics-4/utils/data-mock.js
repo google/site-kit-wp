@@ -498,6 +498,14 @@ export function getAnalytics4MockResponse(
 		) {
 			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
+		} else if (
+			dimension &&
+			Array.isArray( args?.dimensionFilters?.[ dimension ] ) &&
+			args.dimensionFilters[ dimension ].every(
+				( dimensionValue ) => typeof dimensionValue === 'string'
+			)
+		) {
+			streams.push( from( args.dimensionFilters[ dimension ] ) );
 		} else {
 			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
 			streams.push( from( [ null ] ) );
@@ -910,7 +918,8 @@ export function getAnalytics4MockPivotResponse( options ) {
 			// If an array of filter values is provided for the dimension, use that to generate the stream.
 			if (
 				dimension &&
-				args?.dimensionFilters?.[ dimension ]?.every(
+				Array.isArray( args?.dimensionFilters?.[ dimension ] ) &&
+				args.dimensionFilters[ dimension ].every(
 					( dimensionValue ) => typeof dimensionValue === 'string'
 				)
 			) {
