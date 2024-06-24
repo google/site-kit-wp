@@ -27,7 +27,7 @@ import { isPlainObject, isEqual, pick } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { createStrictSelect } from './utils';
+import { createStrictSelect, createValidationSelector } from './utils';
 import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
@@ -263,7 +263,15 @@ export const createSettingsStore = (
 		},
 	};
 
+	const {
+		safeSelector: haveSettingsChanged,
+		dangerousSelector: __dangerousHaveSettingsChanged,
+	} = createValidationSelector( validateHaveSettingsChanged );
+
 	const selectors = {
+		haveSettingsChanged,
+		__dangerousHaveSettingsChanged,
+
 		/**
 		 * Gets the current settings.
 		 *
@@ -277,23 +285,6 @@ export const createSettingsStore = (
 		getSettings( state ) {
 			return state.settings;
 		},
-
-		/**
-		 * Indicates whether the current settings have changed from what is saved.
-		 *
-		 * @since 1.6.0
-		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
-		 * @since 1.129.0 Changed the approach to use validateHaveSettingsChanged callback.
-		 *
-		 * @param {Object}     state Data store's state.
-		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
-		 * @return {boolean} True if the settings have changed, false otherwise.
-		 */
-		haveSettingsChanged: createRegistrySelector(
-			( select ) =>
-				( state, ...args ) =>
-					validateHaveSettingsChanged( select, state, ...args )
-		),
 
 		/**
 		 * Indicates whether the provided setting has changed from what is saved.
@@ -509,12 +500,18 @@ export function makeDefaultHaveSettingsChanged() {
 		const { settings, savedSettings } = state;
 
 		if ( keys ) {
-			return ! isEqual(
-				pick( settings, keys ),
-				pick( savedSettings, keys )
+			invariant(
+				! isEqual(
+					pick( settings, keys ),
+					pick( savedSettings, keys )
+				),
+				INVARIANT_SETTINGS_NOT_CHANGED
 			);
 		}
 
-		return ! isEqual( settings, savedSettings );
+		invariant(
+			! isEqual( settings, savedSettings ),
+			INVARIANT_SETTINGS_NOT_CHANGED
+		);
 	};
 }
