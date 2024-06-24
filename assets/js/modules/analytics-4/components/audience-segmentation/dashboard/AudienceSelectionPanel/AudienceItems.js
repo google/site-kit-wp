@@ -30,7 +30,11 @@ import { __ } from '@wordpress/i18n';
  * External dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
 
@@ -54,22 +58,93 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			return [];
 		}
 
-		// Get the user count for the available audiences.
-		const report = getReport(
-			getAudiencesUserCountReportOptions( audiences )
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return -- We might return before `otherAudiences` is used.
+		const [ siteKitAudiences, otherAudiences ] = audiences.reduce(
+			( [ siteKit, other ], audience ) => {
+				if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
+					siteKit.push( audience );
+				} else {
+					other.push( audience );
+				}
+				return [ siteKit, other ];
+			},
+			[ [], [] ] // Initial values.
 		);
 
-		const { rows = [] } = report || {};
+		const siteKitAudiencesPartialData = siteKitAudiences.map(
+			( audience ) =>
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audience.name
+				)
+		);
+
+		// If any of the Site Kit audiences' partial data state is still loading, return undefined.
+		if ( siteKitAudiencesPartialData.includes( undefined ) ) {
+			return undefined;
+		}
+
+		const isSiteKitAudiencePartialData =
+			siteKitAudiencesPartialData.includes( true );
+
+		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		// Get the user count for the available Site Kit audiences using the `newVsReturning` dimension
+		// to avoid the partial data state for these audiences.
+		const newVsReturningReport =
+			isSiteKitAudiencePartialData &&
+			getReport( {
+				...dateRangeDates,
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				dimensions: [ { name: 'newVsReturning' } ],
+			} );
+
+		// Get the user count for the available audiences using the `audienceResourceName` dimension.
+		const audienceResourceNameReport = getReport(
+			getAudiencesUserCountReportOptions(
+				isSiteKitAudiencePartialData ? otherAudiences : audiences
+			)
+		);
+
+		const { rows: newVsReturningRows = [] } = newVsReturningReport || {};
+		const { rows: audienceResourceNameRows = [] } =
+			audienceResourceNameReport || {};
+
+		function findAudienceRow( rows, dimensionValue ) {
+			return rows.find(
+				( row ) => row?.dimensionValues?.[ 0 ]?.value === dimensionValue
+			);
+		}
 
 		return audiences.map( ( audience ) => {
-			const rowIndex = rows.findIndex(
-				( row ) => row?.dimensionValues?.[ 0 ]?.value === audience.name
-			);
+			let audienceRow;
+
+			if (
+				audience.audienceType === 'SITE_KIT_AUDIENCE' &&
+				isSiteKitAudiencePartialData
+			) {
+				audienceRow = findAudienceRow(
+					newVsReturningRows,
+					audience.audienceSlug === 'new-visitors'
+						? 'new'
+						: 'returning'
+				);
+			} else {
+				audienceRow = findAudienceRow(
+					audienceResourceNameRows,
+					audience.name
+				);
+			}
 
 			return {
 				...audience,
 				userCount:
-					Number( rows[ rowIndex ]?.metricValues?.[ 0 ]?.value ) || 0,
+					Number( audienceRow?.metricValues?.[ 0 ]?.value ) || 0,
 			};
 		} );
 	} );

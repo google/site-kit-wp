@@ -68,5 +68,37 @@
 				}
 			}
 		}
+
+		.googlesitekit-audience-selection-panel__add-group-notice {
+			background-color: $c-surfaces-background;
+			margin: 5px $grid-gap-desktop;
+			padding: $grid-gap-phone 20px;
+
+			@media (max-width: $bp-xsmallOnly) {
+				padding: $grid-gap-phone;
+			}
+
+			.googlesitekit-audience-segmentation-info-notice__body {
+				flex-wrap: nowrap;
+				grid-gap: 0 30px;
+
+				@media (max-width: $bp-xsmallOnly) {
+					flex-wrap: wrap;
+				}
+
+				p {
+					margin: 0;
+				}
+			}
+
+			svg {
+				height: 22px;
+				width: 22px;
+			}
+
+			.googlesitekit-audience-segmentation-info-notice__dismiss {
+				color: $c-surfaces-on-surface;
+			}
+		}
 	}
 }

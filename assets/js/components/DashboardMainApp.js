@@ -51,7 +51,6 @@ import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import AdsModuleSetupCTAWidget from './notifications/AdsModuleSetupCTAWidget';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
@@ -263,7 +262,6 @@ export default function DashboardMainApp() {
 						<AudienceSegmentationSetupCTAWidget />
 					) }
 					<ConsentModeSetupCTAWidget />
-					<AdsModuleSetupCTAWidget />
 				</Fragment>
 			) }
 

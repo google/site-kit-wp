@@ -64,7 +64,7 @@ ViewOnlyUser.scenario = {
 };
 
 export const WithSavedItems = Template.bind( {} );
-WithSavedItems.storyName = 'WithSavedItems';
+WithSavedItems.storyName = 'With saved items';
 WithSavedItems.args = {
 	configuredAudiences: [
 		'properties/12345/audiences/3',
@@ -73,6 +73,15 @@ WithSavedItems.args = {
 };
 WithSavedItems.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithSavedItems',
+};
+
+export const WithOneGroup = Template.bind( {} );
+WithOneGroup.storyName = 'With one group selected';
+WithOneGroup.args = {
+	configuredAudiences: [ 'properties/12345/audiences/3' ],
+};
+WithOneGroup.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithOneGroup',
 };
 
 export const WithInsufficientPermissionsError = Template.bind( {} );
@@ -186,6 +195,10 @@ export default {
 					.setConfiguredAudiences( args?.configuredAudiences || [] );
 
 				provideAnalytics4MockReport( registry, reportOptions );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
