@@ -112,8 +112,10 @@ const baseActions = {
 				payload: { slug },
 			};
 
-			// Save the timestamp to allow the cooldown
-			yield actions.setLastDismissedAt( Date.now() );
+			// Save the timestamp to allow the cooldown.
+			// The timestamp used here should reflect the actual time the
+			// user interacted with this feature tour, not the reference date.
+			yield actions.setLastDismissedAt( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 			// Dispatch a request to persist and receive updated dismissed tours.
 			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
@@ -487,7 +489,11 @@ const baseSelectors = {
 		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
 		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMilliseconds;
 
-		return Date.now() < coolDownExpiresAt;
+		// When using feature tour cooldowns, we should compare the actual
+		// time with the cooldown time. Comparing the reference date with
+		// the cooldown time expiration would not be accurate (and somewhat
+		// confusing during testing).
+		return Date.now() < coolDownExpiresAt; // eslint-disable-line sitekit/no-direct-date
 	} ),
 };
 
