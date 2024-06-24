@@ -85,7 +85,7 @@ export const selectors = {
 			utm_medium: 'wordpress_signup',
 		};
 		if ( undefined !== siteURL ) {
-			query.url = siteURL;
+			query.url = parseDomain( siteURL );
 		}
 
 		return addQueryArgs( 'https://www.google.com/adsense/signup', query );

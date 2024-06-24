@@ -37,6 +37,7 @@ import GoogleChart from '../../../../components/GoogleChart';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { getDateString } from '../../../../util';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 export default function AnalyticsStats( props ) {
 	const {
@@ -58,6 +59,9 @@ export default function AnalyticsStats( props ) {
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
+	);
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate( { parsed: true } )
 	);
 
 	const propertyCreateTime = useSelect( ( select ) => {
@@ -90,6 +94,7 @@ export default function AnalyticsStats( props ) {
 		data,
 		selectedStats,
 		dateRangeLength,
+		referenceDate,
 		dataLabels,
 		tooltipDataFormats,
 		chartDataFormats

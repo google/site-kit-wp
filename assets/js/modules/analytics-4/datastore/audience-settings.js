@@ -31,7 +31,7 @@ import {
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { AUDIENCE_TYPE_SORT_ORDER, MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -124,13 +124,38 @@ const baseActions = {
 					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 					.getAudienceSettings()
 			);
+			const finalSettings = {
+				...audienceSettings,
+				...settings,
+			};
+
+			const availableAudiences = yield commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences()
+			);
+
+			const sortedConfiguredAudiences = [
+				...finalSettings.configuredAudiences,
+			].sort( ( audienceNameA, audienceNameB ) => {
+				const audienceTypeA = availableAudiences?.find(
+					( audience ) => audience.name === audienceNameA
+				)?.audienceType;
+				const audienceTypeB = availableAudiences?.find(
+					( audience ) => audience.name === audienceNameB
+				)?.audienceType;
+
+				const weightA = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeA ] || 0;
+				const weightB = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeB ] || 0;
+
+				return weightA - weightB;
+			} );
+
+			finalSettings.configuredAudiences = sortedConfiguredAudiences;
 
 			const { response, error } =
 				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
-					{
-						...audienceSettings,
-						...settings,
-					}
+					finalSettings
 				);
 
 			if ( error ) {

@@ -191,7 +191,11 @@ export const getItem = async ( key ) => {
 			if (
 				timestamp &&
 				( ! ttl || // Ensure the cached data isn't too old.
-					Math.round( Date.now() / 1000 ) - timestamp < ttl )
+					// The cache dates shouldn't rely on reference
+					// dates for cache expiration. This is a case
+					// where we actually want to rely on
+					// the _actual_ date/time the data was set.
+					Math.round( Date.now() / 1000 ) - timestamp < ttl ) // eslint-disable-line sitekit/no-direct-date
 			) {
 				return {
 					cacheHit: true,
@@ -229,7 +233,10 @@ export const setItem = async (
 	value,
 	{
 		ttl = HOUR_IN_SECONDS,
-		timestamp = Math.round( Date.now() / 1000 ),
+		// Cached times should rely on real times, not the reference date,
+		// so the cache timeouts are consistent even when changing
+		// the reference dates when developing/testing.
+		timestamp = Math.round( Date.now() / 1000 ), // eslint-disable-line sitekit/no-direct-date
 		isError = false,
 	} = {}
 ) => {

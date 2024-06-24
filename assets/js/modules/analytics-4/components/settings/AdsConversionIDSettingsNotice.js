@@ -46,18 +46,29 @@ export default function AdsConversionIDSettingsNotice() {
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
-	);
-	const isNoticeDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
+
+	const shouldShowNotice = useSelect( ( select ) => {
+		const isDismissed = select( CORE_USER ).isItemDismissed(
 			ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY
-		)
-	);
-	const shouldShowNotice =
-		false === isNoticeDismissed && // User has not dismissed the notice.
-		adsConversionIDMigratedAtMs && // Data migration has happened.
-		Date.now() - adsConversionIDMigratedAtMs <= 28 * DAY_IN_SECONDS * 1000; // If it has been <= 28 days since the migration.
+		);
+		if ( isDismissed ) {
+			return false;
+		}
+
+		const adsConversionIDMigratedAtMs =
+			select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs();
+		if ( ! adsConversionIDMigratedAtMs ) {
+			return false;
+		}
+
+		const now = select( CORE_USER ).getReferenceDate( { parsed: true } );
+		return (
+			// If it has been <= 28 days since the migration.
+			now.getTime() - adsConversionIDMigratedAtMs <=
+			28 * DAY_IN_SECONDS * 1000
+		);
+	} );
+
 	const viewContext = useViewContext();
 	const trackDismissNotificationEvent = () => {
 		trackEvent(

@@ -441,14 +441,14 @@ const baseSelectors = {
 	 *
 	 * @since 1.127.0
 	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {string} audienceSlug Audience slug.
+	 * @param {Object} state                Data store's state.
+	 * @param {string} audienceResourceName Audience resource name.
 	 * @return {boolean} Returns TRUE if partial data, otherwise FALSE or undefined while loading.
 	 */
 	isAudiencePartialData: createRegistrySelector(
-		( select ) => ( state, audienceSlug ) =>
+		( select ) => ( state, audienceResourceName ) =>
 			select( MODULES_ANALYTICS_4 ).isResourcePartialData(
-				audienceSlug,
+				audienceResourceName,
 				RESOURCE_TYPE_AUDIENCE
 			)
 	),

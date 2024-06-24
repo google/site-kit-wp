@@ -30,9 +30,12 @@ import ErrorText from '../../components/ErrorText';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
 import { useFeature } from '../../hooks/useFeature';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
+	const viewContext = useViewContext();
 	const iceEnabled = useFeature( 'conversionInfra' );
 	const [ saveError ] = useState( null );
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
@@ -65,8 +68,12 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 						// If Conversion Tracking is currently enabled, show a confirmation
 						// dialog warning users about the impact of disabling it.
 						if ( isConversionTrackingEnabled ) {
+							trackEvent( `${ viewContext }`, 'ect_disable' );
+
 							setShowConfirmDialog( true );
 						} else {
+							trackEvent( `${ viewContext }`, 'ect_enable' );
+
 							// Conversion Tracking is not currently enabled, so this toggle
 							// enables it.
 							setConversionTrackingEnabled( true );
@@ -93,10 +100,14 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 			{ showConfirmDialog && (
 				<ConfirmDisableConversionTrackingDialog
 					onConfirm={ () => {
+						trackEvent( `${ viewContext }`, 'ect_confirm_disable' );
+
 						setConversionTrackingEnabled( false );
 						setShowConfirmDialog( false );
 					} }
 					onCancel={ () => {
+						trackEvent( `${ viewContext }`, 'ect_cancel_disable' );
+
 						setShowConfirmDialog( false );
 					} }
 				/>

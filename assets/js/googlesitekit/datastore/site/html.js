@@ -55,7 +55,10 @@ const fetchHTMLForURLStore = createFetchStore( {
 			// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
 			tagverify: 1,
 			// Add a timestamp for cache-busting.
-			timestamp: Date.now(),
+			//
+			// This value is used for cache-busting, so we don't want to rely on
+			// the reference date. We should always use the current time.
+			timestamp: Date.now(), // eslint-disable-line sitekit/no-direct-date
 		};
 		const response = await fetch(
 			addQueryArgs( url, fetchHTMLQueryArgs ),

@@ -38,14 +38,17 @@ import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
 
-export default function WPDashboardUniqueVisitorsChartGA4( {
-	WPDashboardReportError,
-} ) {
+export default function WPDashboardUniqueVisitorsChartGA4( props ) {
+	const { WPDashboardReportError } = props;
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
+	);
+	const refDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate( { parsed: true } )
 	);
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
@@ -109,6 +112,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		data,
 		0,
 		dateRangeLength,
+		refDate,
 		[ __( 'Unique Visitors', 'google-site-kit' ) ],
 		[ ( x ) => parseFloat( x ).toLocaleString() ]
 	);
@@ -135,7 +139,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		);
 
 	if ( isZeroChart ) {
-		options.hAxis.ticks = [ new Date() ];
+		options.hAxis.ticks = [ refDate ];
 	}
 
 	return (

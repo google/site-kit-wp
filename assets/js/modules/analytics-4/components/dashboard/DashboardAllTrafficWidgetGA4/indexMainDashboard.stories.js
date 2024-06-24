@@ -209,10 +209,14 @@ MainDashboardDataUnavailable.args = {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( {}, { options } );
 
+			const now = registry
+				.select( CORE_USER )
+				.getReferenceDate( { parsed: true } );
+
 			// Set the property creation timestamp to one and a half days ago, so that
 			// the property is considered to be in the gathering data state.
 			const createTime = new Date(
-				Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+				now.getTime() - DAY_IN_SECONDS * 1.5 * 1000
 			).toISOString();
 
 			const property = {
@@ -252,10 +256,14 @@ MainDashboardZeroData.args = {
 				);
 		} );
 
+		const now = registry
+			.select( CORE_USER )
+			.getReferenceDate( { parsed: true } );
+
 		// Set the property creation timestamp to two days ago, so that
 		// the property is not considered to be in the gathering data state.
 		const createTime = new Date(
-			Date.now() - DAY_IN_SECONDS * 3 * 1000
+			now.getTime() - DAY_IN_SECONDS * 3 * 1000
 		).toISOString();
 
 		const property = {
@@ -263,6 +271,10 @@ MainDashboardZeroData.args = {
 			createTime,
 		};
 		const propertyID = property._id;
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyCreateTime: createTime } );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
