@@ -369,8 +369,6 @@ function AudienceTilesWidget( { Widget } ) {
 						return null;
 					}
 
-					// TODO: as part of #8484, this data manipulation should be removed and the relevant
-					// pivot report rows should be passed directly to the AudienceTile component.
 					const metricIndexBase = index * 2;
 
 					const audienceName =
@@ -383,66 +381,24 @@ function AudienceTilesWidget( { Widget } ) {
 							( { name } ) => name === audienceResourceName
 						)?.[ 0 ]?.audienceSlug || '';
 
-					const visitors =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 0 ]?.value
-						) || 0;
-					const prevVisitors =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 0 ]
-								?.value
-						) || 0;
+					const reportRow = rows[ metricIndexBase ];
+					const previousReportRow = rows[ metricIndexBase + 1 ];
 
-					const visitsPerVisitors =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 1 ]?.value
-						) || 0;
-					const prevVisitsPerVisitors =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 1 ]
-								?.value
-						) || 0;
-
-					const pagesPerVisit =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 2 ]?.value
-						) || 0;
-					const prevPagesPerVisit =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 2 ]
-								?.value
-						) || 0;
-
-					const pageviews =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 3 ]?.value
-						) || 0;
-					const prevPageviews =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 3 ]
-								?.value
-						) || 0;
-
-					const topCities = collectAudienceRows(
+					const topCitiesReportRows = collectAudienceRows(
 						audienceResourceName,
 						topCitiesReport?.rows
 					);
 
-					const topContent = collectAudienceRows(
+					const topContentReportRows = collectAudienceRows(
 						audienceResourceName,
 						topContentReport?.rows
 					);
 
-					const topContentTitles = {};
-
-					collectAudienceRows(
+					const topContentTitlesReportRows = collectAudienceRows(
 						audienceResourceName,
 						topContentPageTitlesReport?.rows,
 						2
-					).forEach( ( row ) => {
-						topContentTitles[ row.dimensionValues[ 0 ].value ] =
-							row.dimensionValues[ 1 ].value;
-					} );
+					);
 
 					const isPartialData =
 						partialDataStates[ audienceResourceName ];
@@ -462,65 +418,14 @@ function AudienceTilesWidget( { Widget } ) {
 									audienceSlug={ audienceSlug }
 								/>
 							}
-							visitors={ {
-								currentValue: visitors,
-								previousValue: prevVisitors,
-							} }
-							visitsPerVisitor={ {
-								currentValue: visitsPerVisitors,
-								previousValue: prevVisitsPerVisitors,
-							} }
-							pagesPerVisit={ {
-								currentValue: pagesPerVisit,
-								previousValue: prevPagesPerVisit,
-							} }
-							pageviews={ {
-								currentValue: pageviews,
-								previousValue: prevPageviews,
-							} }
-							percentageOfTotalPageViews={
-								totalPageviews !== 0
-									? pageviews / totalPageviews
-									: 0
+							reportRow={ reportRow }
+							previousReportRow={ previousReportRow }
+							topCitiesReportRows={ topCitiesReportRows }
+							topContentReportRows={ topContentReportRows }
+							topContentTitlesReportRows={
+								topContentTitlesReportRows
 							}
-							topCities={ {
-								dimensionValues: [
-									topCities?.[ 0 ]?.dimensionValues?.[ 0 ]
-										?.value,
-									topCities?.[ 1 ]?.dimensionValues?.[ 0 ]
-										?.value,
-									topCities?.[ 2 ]?.dimensionValues?.[ 0 ]
-										?.value,
-								],
-								metricValues: [
-									topCities?.[ 0 ]?.metricValues?.[ 0 ]
-										?.value,
-									topCities?.[ 1 ]?.metricValues?.[ 0 ]
-										?.value,
-									topCities?.[ 2 ]?.metricValues?.[ 0 ]
-										?.value,
-								],
-								total: visitors,
-							} }
-							topContent={ {
-								dimensionValues: [
-									topContent?.[ 0 ]?.dimensionValues?.[ 0 ]
-										?.value,
-									topContent?.[ 1 ]?.dimensionValues?.[ 0 ]
-										?.value,
-									topContent?.[ 2 ]?.dimensionValues?.[ 0 ]
-										?.value,
-								],
-								metricValues: [
-									topContent?.[ 0 ]?.metricValues?.[ 0 ]
-										?.value,
-									topContent?.[ 1 ]?.metricValues?.[ 0 ]
-										?.value,
-									topContent?.[ 2 ]?.metricValues?.[ 0 ]
-										?.value,
-								],
-							} }
-							topContentTitles={ topContentTitles }
+							totalPageViews={ totalPageviews }
 							Widget={ Widget }
 							audienceResourceName={ audienceResourceName }
 							isZeroData={ isZeroData }
