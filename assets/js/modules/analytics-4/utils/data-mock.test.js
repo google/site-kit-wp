@@ -37,6 +37,7 @@ import mockedReportOrderByDimensionDescendingResponse from './__fixtures__/mocke
 import mockedReportOrderByMetricsAndDimensionsResponse from './__fixtures__/mocked-report-order-by-metrics-and-dimensions.json';
 import mockedPivotReportResponse from './__fixtures__/mocked-pivot-report.json';
 import mockedPivotReportResponse3Dimensions from './__fixtures__/mocked-pivot-report-3-dimensions.json';
+import mockedPivotReportMultiDimensionFieldNames from './__fixtures__/mocked-pivot-report-multi-dimension-fieldnames.json';
 
 describe( 'data-mock', () => {
 	describe( 'getAnalytics4MockResponse', () => {
@@ -555,6 +556,55 @@ describe( 'data-mock', () => {
 
 			// Verify the aggregate should have 3 * the number of dimensions as each dimension has a total, max and min.
 			expect( report.aggregates ).toHaveLength( 3 * 3 );
+		} );
+
+		it( 'generates pivot reports with the correct number of report rows with multiple fieldNames in pivot', () => {
+			const report = getAnalytics4MockPivotResponse( {
+				startDate: '2024-04-18',
+				endDate: '2024-05-15',
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+					{
+						name: 'activeUsers',
+					},
+				],
+				dimensions: [ 'city', 'audienceResourceName', 'country' ],
+				pivots: [
+					{
+						fieldNames: [ 'audienceResourceName' ],
+						limit: 2,
+					},
+					{
+						fieldNames: [ 'city', 'country' ],
+						limit: 3,
+						orderby: [
+							{
+								metric: {
+									metricName: 'totalUsers',
+								},
+								desc: true,
+							},
+						],
+					},
+					{
+						fieldNames: [ 'country' ],
+						limit: 3,
+					},
+				],
+			} );
+
+			expect( report ).toEqual(
+				mockedPivotReportMultiDimensionFieldNames
+			);
+
+			// Verify the correct number of rows for the pivot, there should be the product pivot[ 0 ].limit * pivot[ 1 ].limit
+			expect( report.rows ).toHaveLength( 2 * 3 );
+
+			// Verify a row has just a dimensionValue and metricValue key.
+			expect( report.rows[ 0 ] ).toHaveProperty( 'dimensionValues' );
+			expect( report.rows[ 0 ] ).toHaveProperty( 'metricValues' );
 		} );
 	} );
 } );
