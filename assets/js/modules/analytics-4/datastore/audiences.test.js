@@ -40,7 +40,6 @@ import {
 	properties as propertiesFixture,
 	audiences as audiencesFixture,
 	availableAudiences as availableAudiencesFixture,
-	availableAudiencesSorted as availableAudiencesSortedFixture,
 } from './__fixtures__';
 import fetchMock from 'fetch-mock';
 
@@ -513,7 +512,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
-				).toEqual( availableAudiencesSortedFixture );
+				).toEqual( availableAudiencesFixture );
 			} );
 
 			it.each( [
