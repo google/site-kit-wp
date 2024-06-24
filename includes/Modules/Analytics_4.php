@@ -134,6 +134,16 @@ final class Analytics_4 extends Module
 	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
 
 	/**
+	 * Weights for audience types when sorting audiences in the selection panel
+	 * and within the dashboard widget.
+	 */
+	const AUDIENCE_TYPE_SORT_ORDER = array(
+		'USER_AUDIENCE'     => 0,
+		'SITE_KIT_AUDIENCE' => 1,
+		'DEFAULT_AUDIENCE'  => 2,
+	);
+
+	/**
 	 * Custom_Dimensions_Data_Available instance.
 	 *
 	 * @since 1.113.0
@@ -2407,6 +2417,16 @@ final class Analytics_4 extends Module
 				return $audience_item;
 			},
 			$audiences
+		);
+
+		usort(
+			$available_audiences,
+			function ( $a, $b ) {
+				$a_weight = self::AUDIENCE_TYPE_SORT_ORDER[ $a['audienceType'] ];
+				$b_weight = self::AUDIENCE_TYPE_SORT_ORDER[ $b['audienceType'] ];
+
+				return $a_weight - $b_weight;
+			}
 		);
 
 		$this->get_settings()->merge(
