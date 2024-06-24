@@ -20,12 +20,17 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useEffectOnce } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import {
+	useState,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -217,6 +222,7 @@ function AudienceTilesWidget( { Widget } ) {
 		select( CORE_USER ).getDismissedItems()
 	);
 
+	const { isDismissingItem } = useSelect( ( select ) => select( CORE_USER ) );
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const handleDismiss = useCallback(
@@ -236,46 +242,64 @@ function AudienceTilesWidget( { Widget } ) {
 		}, {} )
 	);
 
-	const audiencesToClearDismissal = [];
-	const visibleAudiences = [];
-	const tempAudiences = configuredAudiences.slice();
+	// useRef to track if the dismissal logic has already been executed.
+	const hasDismissed = useRef( {} );
 
-	while ( tempAudiences.length > 0 ) {
-		const audienceResourceName = tempAudiences.shift();
+	const [ audiencesToClearDismissal, visibleAudiences ] = useMemo( () => {
+		const toClear = [];
+		const visible = [];
+		const tempAudiences = configuredAudiences.slice();
 
-		const isDismissed = dismissedItems?.includes(
-			`audience-tile-${ audienceResourceName }`
-		);
-		const isZeroData = hasZeroDataForAudience(
-			report,
-			audienceResourceName
-		);
+		while ( reportLoaded && tempAudiences.length > 0 ) {
+			const audienceResourceName = tempAudiences.shift();
 
-		// Skip rendering the tile if it is dismissed, has zero data, and has more audiences to render.
-		if ( isDismissed && isZeroData && tempAudiences.length > 0 ) {
-			continue;
+			const isDismissed = dismissedItems?.includes(
+				`audience-tile-${ audienceResourceName }`
+			);
+			const isZeroData = hasZeroDataForAudience(
+				report,
+				audienceResourceName
+			);
+
+			// Check if there are more audiences remaining to be processed.
+			const remainingAudiences =
+				tempAudiences.length + visible.length > 0;
+
+			// Skip rendering the tile if it is dismissed, has zero data, and there are still more audiences to render.
+			if ( isDismissed && isZeroData && remainingAudiences ) {
+				continue;
+			}
+
+			// Collect audiences to re-dismiss if they have data again.
+			if ( isDismissed && ! isZeroData ) {
+				toClear.push( audienceResourceName );
+			}
+
+			// Add audience to visibleAudiences
+			visible.push( audienceResourceName );
 		}
 
-		// Collect audiences to re-dismiss if they have data again.
-		if ( isDismissed && ! isZeroData ) {
-			audiencesToClearDismissal.push( audienceResourceName );
-		}
-
-		// Add audience to visibleAudiences
-		visibleAudiences.push( audienceResourceName );
-	}
+		return [ toClear, visible ];
+	}, [ configuredAudiences, dismissedItems, reportLoaded, report ] );
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
-	useEffectOnce( () => {
-		if ( audiencesToClearDismissal.length > 0 ) {
-			audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
-				dismissItem( `audience-tile-${ audienceResourceName }`, {
-					expiresInSeconds: 1,
-				} );
+	useEffect( () => {
+		audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
+			const itemSlug = `audience-tile-${ audienceResourceName }`;
+
+			if ( hasDismissed.current[ itemSlug ] ) {
+				return;
+			}
+
+			dismissItem( itemSlug, {
+				expiresInSeconds: 1,
 			} );
-		}
-	} );
+
+			// Mark as dismissed to prevent re-dismissing.
+			hasDismissed.current[ itemSlug ] = true;
+		} );
+	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
 
 	const loading =
 		! reportLoaded ||
@@ -286,7 +310,7 @@ function AudienceTilesWidget( { Widget } ) {
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
-			{ isTabbedBreakpoint && (
+			{ isTabbedBreakpoint && visibleAudiences.length > 0 && (
 				<TabBar
 					className="googlesitekit-widget-audience-tiles__tabs"
 					activeIndex={ activeTile }
