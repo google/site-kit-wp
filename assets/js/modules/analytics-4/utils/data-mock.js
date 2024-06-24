@@ -910,7 +910,7 @@ export function getAnalytics4MockPivotResponse( options ) {
 			// If an array of filter values is provided for the dimension, use that to generate the stream.
 			if (
 				dimension &&
-				args?.dimensionFilters?.[ dimension ]?.some(
+				args?.dimensionFilters?.[ dimension ]?.every(
 					( dimensionValue ) => typeof dimensionValue === 'string'
 				)
 			) {
