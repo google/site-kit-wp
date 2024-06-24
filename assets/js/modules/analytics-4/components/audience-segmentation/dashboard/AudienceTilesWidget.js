@@ -216,7 +216,7 @@ function AudienceTilesWidget( { Widget } ) {
 		select( CORE_USER ).getDismissedItems()
 	);
 
-	const { isDismissingItem } = useSelect( CORE_USER );
+	const { isDismissingItem } = useSelect( ( select ) => select( CORE_USER ) );
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const handleDismiss = useCallback(
