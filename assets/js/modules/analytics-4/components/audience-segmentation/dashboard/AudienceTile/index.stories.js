@@ -33,6 +33,134 @@ import {
 import AudienceTile from '.';
 import { getPreviousDate } from '../../../../../../util';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { availableAudiences as audiencesList } from '../../../../datastore/__fixtures__';
+import {
+	getAnalytics4MockResponse,
+	getAnalytics4MockPivotResponse,
+} from '../../../../utils/data-mock';
+
+const availableAudiences = audiencesList.filter(
+	( audience ) => audience.audienceSlug === 'new-visitors'
+);
+
+const audienceResourceName = availableAudiences[ 0 ].name;
+const configuredAudiences = [ audienceResourceName ];
+
+const dimensionFilters = {
+	audienceResourceName: configuredAudiences,
+};
+
+const reportOptions = {
+	compareEndDate: '2024-02-28',
+	compareStartDate: '2024-02-01',
+	endDate: '2024-03-27',
+	startDate: '2024-02-29',
+	dimensions: [ { name: 'audienceResourceName' } ],
+	dimensionFilters,
+	metrics: [
+		{ name: 'totalUsers' },
+		{ name: 'sessionsPerUser' },
+		{ name: 'screenPageViewsPerSession' },
+		{ name: 'screenPageViews' },
+	],
+};
+
+const report = getAnalytics4MockResponse( reportOptions );
+const reportRow = report?.rows?.[ 0 ];
+const previousReportRow = report?.rows?.[ 1 ];
+
+const topContentPageTitlesReportOptions = {
+	endDate: '2024-03-27',
+	startDate: '2024-02-29',
+	dimensions: [
+		{ name: 'pagePath' },
+		{ name: 'pageTitle' },
+		{ name: 'audienceResourceName' },
+	],
+	metrics: [ { name: 'screenPageViews' } ],
+	pivots: [
+		{
+			fieldNames: [ 'pagePath', 'pageTitle' ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 15,
+		},
+	],
+};
+
+const titleReportOptions = {
+	...topContentPageTitlesReportOptions,
+	dimensionFilters,
+	pivots: [
+		...topContentPageTitlesReportOptions.pivots,
+		{
+			fieldNames: [ 'audienceResourceName' ],
+			limit: configuredAudiences?.length,
+		},
+	],
+};
+
+const topContentTitlesReport =
+	getAnalytics4MockPivotResponse( titleReportOptions );
+
+const topCitiesReportOptions = {
+	endDate: '2024-03-27',
+	startDate: '2024-02-29',
+	dimensions: [ { name: 'city' }, { name: 'audienceResourceName' } ],
+	metrics: [ { name: 'totalUsers' } ],
+	dimensionFilters,
+	pivots: [
+		{
+			fieldNames: [ 'city' ],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
+			limit: 3,
+		},
+		{
+			fieldNames: [ 'audienceResourceName' ],
+			limit: configuredAudiences?.length,
+		},
+	],
+};
+
+const topCitiesReport = getAnalytics4MockPivotResponse(
+	topCitiesReportOptions
+);
+
+const totalPageviewsReportOptions = {
+	endDate: '2024-03-27',
+	startDate: '2024-02-29',
+	metrics: [ { name: 'screenPageViews' } ],
+};
+
+const totalPageviewsReport = getAnalytics4MockResponse(
+	totalPageviewsReportOptions
+);
+
+const topContentReportOptions = {
+	endDate: '2024-03-27',
+	startDate: '2024-02-29',
+	dimensions: [ { name: 'pagePath' }, { name: 'audienceResourceName' } ],
+	metrics: [ { name: 'screenPageViews' } ],
+	dimensionFilters,
+	pivots: [
+		{
+			fieldNames: [ 'pagePath' ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 3,
+		},
+		{
+			fieldNames: [ 'audienceResourceName' ],
+			limit: configuredAudiences?.length,
+		},
+	],
+};
+
+const topContentReport = getAnalytics4MockPivotResponse(
+	topContentReportOptions
+);
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
@@ -49,58 +177,20 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	);
 }
 
-// TODO: As part of #8484, update these stories to use the data-mock
-// functions to provide report data rather than hardcoding props.
 const readyProps = {
-	title: 'New visitors',
+	title: availableAudiences[ 0 ].displayName,
 	toolTip: 'This is a tooltip',
 	loaded: true,
-	visitors: {
-		metricValue: 24200,
-		currentValue: 24200,
-		previousValue: 20424,
-	},
-	visitsPerVisitor: {
-		metricValue: 3,
-		currentValue: 3,
-		previousValue: 2,
-	},
-	pagesPerVisit: {
-		metricValue: 2,
-		currentValue: 2,
-		previousValue: 3,
-	},
-	pageviews: {
-		metricValue: 1565,
-		currentValue: 1565,
-		previousValue: 1504,
-	},
-	percentageOfTotalPageViews: 0.333,
-	topCities: {
-		dimensionValues: [ 'Dublin', 'London', 'New York' ],
-		metricValues: [ 0.388, 0.126, 0.094 ],
-		total: 0.608,
-	},
-	topContent: {
-		dimensionValues: [
-			'/en/test-post-1/',
-			'/en/test-post-2/',
-			'/en/test-post-3/',
-		],
-		metricValues: [ 847, 596, 325 ],
-		total: 1768,
-	},
-	topContentTitles: {
-		'/en/test-post-1/':
-			'Test Post 1 - This is a very long title to test the audience segmentation tile that it wraps up and doesn not extend to the next line. It should show ellipsis instead. It must also have some gap at the right side so that the post title does not collide with the user count being shown next to it.',
-		'/en/test-post-2/': 'Test Post 2',
-		'/en/test-post-3/': 'Test Post 3',
-	},
 	isZeroData: false,
 	isPartialData: false,
+	reportRow,
+	previousReportRow,
+	audienceResourceName,
+	topContentTitlesReport,
+	topCitiesReport,
+	totalPageviewsReport,
+	topContentReport,
 };
-
-const audienceResourceName = 'properties/12345/audiences/12345';
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -133,14 +223,27 @@ export const ReadyLongCityNames = Template.bind( {} );
 ReadyLongCityNames.storyName = 'ReadyLongCityNames';
 ReadyLongCityNames.args = {
 	...readyProps,
-	topCities: {
-		dimensionValues: [
-			'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch',
-			'Lake Chaubunagungamaug',
-			'Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokaiwhenuakitanatahu',
-		],
-		metricValues: [ 0.388, 0.126, 0.094 ],
-		total: 0.608,
+	topCitiesReport: {
+		...topCitiesReport,
+		rows: ( () => {
+			const longCityNames = [
+				'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch',
+				'Lake Chaubunagungamaug',
+				'Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokaiwhenuakitanatahu',
+			];
+
+			return topCitiesReport.rows.map( ( row, index ) => {
+				const { dimensionValues, metricValues } = row;
+
+				return {
+					dimensionValues: [
+						{ value: longCityNames[ index ] },
+						dimensionValues[ 1 ],
+					],
+					metricValues,
+				};
+			} );
+		} )(),
 	},
 };
 ReadyLongCityNames.scenario = {
@@ -151,8 +254,12 @@ export const NoData = Template.bind( {} );
 NoData.storyName = 'NoData';
 NoData.args = {
 	...readyProps,
-	topCities: null,
-	topContent: null,
+	reportRow: {},
+	previousReportRow: {},
+	topContentTitlesReport: {},
+	topCitiesReport: {},
+	totalPageviewsReport: {},
+	topContentReport: {},
 };
 NoData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/NoData',

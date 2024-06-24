@@ -143,16 +143,25 @@ function getDataFromRows( {
 	};
 }
 
+const collectAudienceRows = ( audienceResourceName, reportRows, index = 1 ) => {
+	if ( ! reportRows ) {
+		return [];
+	}
+	return reportRows.filter( ( row ) => {
+		return audienceResourceName === row?.dimensionValues?.[ index ]?.value;
+	} );
+};
+
 export default function AudienceTile( {
 	loaded,
 	title,
 	infoTooltip,
 	reportRow,
 	previousReportRow,
-	topCitiesReportRows,
-	topContentReportRows,
-	topContentTitlesReportRows,
-	totalPageViews,
+	topCitiesReport,
+	topContentReport,
+	topContentTitlesReport,
+	totalPageviewsReport,
 	Widget,
 	audienceResourceName,
 	isZeroData,
@@ -161,6 +170,27 @@ export default function AudienceTile( {
 	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
+
+	const topCitiesReportRows = collectAudienceRows(
+		audienceResourceName,
+		topCitiesReport?.rows
+	);
+
+	const topContentReportRows = collectAudienceRows(
+		audienceResourceName,
+		topContentReport?.rows
+	);
+
+	const topContentTitlesReportRows = collectAudienceRows(
+		audienceResourceName,
+		topContentTitlesReport?.rows,
+		2
+	);
+
+	const totalPageViews =
+		Number(
+			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
+		) || 0;
 
 	const {
 		visitors,
@@ -378,6 +408,7 @@ AudienceTile.propTypes = {
 	topCities: PropTypes.object,
 	topContent: PropTypes.object,
 	topContentTitles: PropTypes.object,
+	totalPageviewsReport: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
 	isZeroData: PropTypes.bool,

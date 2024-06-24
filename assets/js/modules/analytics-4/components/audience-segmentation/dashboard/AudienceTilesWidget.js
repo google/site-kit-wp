@@ -123,11 +123,6 @@ function AudienceTilesWidget( { Widget } ) {
 		] )
 	);
 
-	const totalPageviews =
-		Number(
-			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
-		) || 0;
-
 	const topCitiesReportOptions = {
 		startDate,
 		endDate,
@@ -297,21 +292,6 @@ function AudienceTilesWidget( { Widget } ) {
 		}
 	} );
 
-	const collectAudienceRows = (
-		audienceResourceName,
-		reportRows,
-		index = 1
-	) => {
-		if ( ! reportRows ) {
-			return [];
-		}
-		return reportRows.filter( ( row ) => {
-			return (
-				audienceResourceName === row?.dimensionValues?.[ index ]?.value
-			);
-		} );
-	};
-
 	const loading =
 		! reportLoaded ||
 		! totalPageviewsReportLoaded ||
@@ -384,22 +364,6 @@ function AudienceTilesWidget( { Widget } ) {
 					const reportRow = rows[ metricIndexBase ];
 					const previousReportRow = rows[ metricIndexBase + 1 ];
 
-					const topCitiesReportRows = collectAudienceRows(
-						audienceResourceName,
-						topCitiesReport?.rows
-					);
-
-					const topContentReportRows = collectAudienceRows(
-						audienceResourceName,
-						topContentReport?.rows
-					);
-
-					const topContentTitlesReportRows = collectAudienceRows(
-						audienceResourceName,
-						topContentPageTitlesReport?.rows,
-						2
-					);
-
 					const isPartialData =
 						partialDataStates[ audienceResourceName ];
 					const isZeroData = hasZeroDataForAudience(
@@ -420,12 +384,12 @@ function AudienceTilesWidget( { Widget } ) {
 							}
 							reportRow={ reportRow }
 							previousReportRow={ previousReportRow }
-							topCitiesReportRows={ topCitiesReportRows }
-							topContentReportRows={ topContentReportRows }
-							topContentTitlesReportRows={
-								topContentTitlesReportRows
+							topCitiesReport={ topCitiesReport }
+							topContentReport={ topContentReport }
+							topContentTitlesReport={
+								topContentPageTitlesReport
 							}
-							totalPageViews={ totalPageviews }
+							totalPageViewsReport={ totalPageviewsReport }
 							Widget={ Widget }
 							audienceResourceName={ audienceResourceName }
 							isZeroData={ isZeroData }
