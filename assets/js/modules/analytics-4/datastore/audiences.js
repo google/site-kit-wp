@@ -26,7 +26,6 @@ import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
-	AUDIENCE_TYPE_SORT_ORDER,
 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -119,12 +118,6 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	controlCallback: () =>
 		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
 	reducerCallback: ( state, audiences ) => {
-		audiences.sort( ( a, b ) => {
-			const aWeight = AUDIENCE_TYPE_SORT_ORDER[ a.audienceType ] || 0;
-			const bWeight = AUDIENCE_TYPE_SORT_ORDER[ b.audienceType ] || 0;
-
-			return aWeight - bWeight;
-		} );
 		return {
 			...state,
 			settings: {
