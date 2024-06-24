@@ -31,7 +31,7 @@ export default function LeanCTABanner( { children, Icon, SVGGraphic } ) {
 					</div>
 				) }
 				{
-					<div className="googlesitekit-googlesitekit-lean-cta-banner--body__content">
+					<div className="googlesitekit-lean-cta-banner--body__content">
 						{ children }
 					</div>
 				}

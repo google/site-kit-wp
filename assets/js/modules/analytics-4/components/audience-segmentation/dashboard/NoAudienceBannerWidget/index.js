@@ -41,17 +41,23 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 
 	const hasNoMatchingAudience = configuredAudiences?.every(
 		( audience ) =>
-			availableAudiences && ! availableAudiences?.includes( audience )
+			Array.isArray( availableAudiences ) &&
+			! availableAudiences?.includes( audience )
 	);
 
-	const hasConfigurableAudiences =
-		availableAudiences?.length > configuredAudiences?.length;
+	const configurableAudiences = availableAudiences?.filter(
+		( element ) =>
+			Array.isArray( configuredAudiences ) &&
+			! configuredAudiences.includes( element )
+	);
 
 	if ( hasNoMatchingAudience ) {
 		return (
 			<Widget noPadding>
 				<NoAudienceBanner
-					hasConfigurableAudiences={ hasConfigurableAudiences }
+					hasConfigurableAudiences={
+						!! configurableAudiences?.length
+					}
 				/>
 			</Widget>
 		);

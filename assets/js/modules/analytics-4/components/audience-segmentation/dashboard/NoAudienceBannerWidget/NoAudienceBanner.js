@@ -59,7 +59,7 @@ export default function NoAudienceBanner( { hasConfigurableAudiences } ) {
 
 	return (
 		<LeanCTABanner Icon={ Icon } SVGGraphic={ NoAudienceBannerGraphic }>
-			<p className="googlesitekit-audience-connect-analytics-cta__text">
+			<p className="googlesitekit-lean-cta-banner--body__text">
 				{ hasConfigurableAudiences &&
 					createInterpolateElement(
 						__(
@@ -98,7 +98,7 @@ export default function NoAudienceBanner( { hasConfigurableAudiences } ) {
 						}
 					) }
 			</p>
-			<p className="googlesitekit-audience-connect-analytics-cta__text">
+			<p className="googlesitekit-lean-cta-banner--body__text">
 				{ createInterpolateElement(
 					__(
 						'You can deactivate this widget in <a>Settings</a>.',
