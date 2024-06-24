@@ -24,7 +24,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, useEffect, useMemo } from '@wordpress/element';
+import {
+	useState,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -236,6 +242,9 @@ function AudienceTilesWidget( { Widget } ) {
 		}, {} )
 	);
 
+	// useRef to track if the dismissal logic has already been executed.
+	const hasDismissed = useRef( {} );
+
 	const [ audiencesToClearDismissal, visibleAudiences ] = useMemo( () => {
 		const toClear = [];
 		const visible = [];
@@ -279,13 +288,16 @@ function AudienceTilesWidget( { Widget } ) {
 		audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
 			const itemSlug = `audience-tile-${ audienceResourceName }`;
 
-			if ( isDismissingItem( itemSlug ) ) {
+			if ( hasDismissed.current[ itemSlug ] ) {
 				return;
 			}
 
 			dismissItem( itemSlug, {
 				expiresInSeconds: 1,
 			} );
+
+			// Mark as dismissed to prevent re-dismissing.
+			hasDismissed.current[ itemSlug ] = true;
 		} );
 	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
 
