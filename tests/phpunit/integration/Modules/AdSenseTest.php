@@ -25,12 +25,14 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\AdBlockingRecoveryTag;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\ListAlertsResponse;
@@ -47,6 +49,7 @@ class AdSenseTest extends TestCase {
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use ModulesHelperTrait;
 
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -177,6 +180,31 @@ class AdSenseTest extends TestCase {
 
 		$this->assertFalse( $analytics_settings['adSenseLinked'] );
 		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0 );
+	}
+
+	public function test_register__if_analytics_is_active_sync_adsense_link_settings() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$adsense = new AdSense( $context );
+
+		remove_all_actions( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+
+		$this->force_connect_modules( Analytics_4::MODULE_SLUG );
+
+		$adsense->register();
+
+		// Set the needed option values so checks can pass.
+		$adsense->get_settings()->merge(
+			array(
+				'accountID'            => 'pub-0987654321',
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		$this->assertEquals(
+			did_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ),
+			1
+		);
 	}
 
 	/**

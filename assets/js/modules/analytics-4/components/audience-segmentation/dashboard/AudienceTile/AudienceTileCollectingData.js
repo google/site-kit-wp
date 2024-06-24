@@ -1,5 +1,5 @@
 /**
- * InfoNoticeWidget component.
+ * AudienceTileCollectingData component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,38 +17,26 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import whenActive from '../../../../../util/when-active';
-import InfoNotice from './InfoNotice';
+import AudienceTileCollectingDataImage from '../../../../../../../svg/graphics/audience-segmentation-collecting-data.svg';
 
-function InfoNoticeWidget( { Widget } ) {
+export default function AudienceTileCollectingData() {
 	return (
-		<Widget noPadding>
-			<InfoNotice
-				content={ __(
-					'The higher the portion of new visitors you have, the more your audience is growing. Looking at what content brings them to your site may give you insights on how to reach even more people.',
+		<Fragment>
+			<AudienceTileCollectingDataImage className="googlesitekit-audience-segmentation-tile__zero-data-image" />
+			<p className="googlesitekit-audience-segmentation-tile__zero-data-description">
+				{ __(
+					'Site Kit is collecting data for this group.',
 					'google-site-kit'
 				) }
-				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				onDismiss={ () => {} }
-			/>
-		</Widget>
+			</p>
+		</Fragment>
 	);
 }
-
-InfoNoticeWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-};
-
-export default whenActive( { moduleName: 'analytics-4' } )( InfoNoticeWidget );

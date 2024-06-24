@@ -63,6 +63,16 @@ abstract class Conversion_Events_Provider {
 	abstract public function get_event_names();
 
 	/**
+	 * Registers any actions/hooks for this provider.
+	 *
+	 * @since 1.129.0
+	 */
+	public function register_hooks() {
+		// No-op by default, but left here so subclasses can implement
+		// their own `add_action`/hook calls.
+	}
+
+	/**
 	 * Registers the script for the provider.
 	 *
 	 * @since 1.125.0
