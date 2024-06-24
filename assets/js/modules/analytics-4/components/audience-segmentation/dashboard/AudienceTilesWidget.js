@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, useEffect, useRef } from '@wordpress/element';
+import { useState, useCallback, useEffect, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -57,7 +57,7 @@ const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 };
 
 function AudienceTilesWidget( { Widget } ) {
-	const [ activeTile, setActiveTile ] = useState( null );
+	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
@@ -216,6 +216,7 @@ function AudienceTilesWidget( { Widget } ) {
 		select( CORE_USER ).getDismissedItems()
 	);
 
+	const { isDismissingItem } = useSelect( CORE_USER );
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const handleDismiss = useCallback(
@@ -235,22 +236,12 @@ function AudienceTilesWidget( { Widget } ) {
 		}, {} )
 	);
 
-	const [ audiencesToClearDismissal, setAudiencesToClearDismissal ] =
-		useState( [] );
-	const [ visibleAudiences, setVisibleAudiences ] = useState( [] );
-	// useRef to track if the dismissal logic has already been executed.
-	const hasDismissed = useRef( false );
-
-	useEffect( () => {
-		if ( ! reportLoaded ) {
-			return;
-		}
-
-		const audiencesToClearDismissalTemp = [];
-		const visibleAudiencesTemp = [];
+	const [ audiencesToClearDismissal, visibleAudiences ] = useMemo( () => {
+		const toClear = [];
+		const visible = [];
 		const tempAudiences = configuredAudiences.slice();
 
-		while ( tempAudiences.length > 0 ) {
+		while ( reportLoaded && tempAudiences.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
 
 			const isDismissed = dismissedItems?.includes(
@@ -263,7 +254,7 @@ function AudienceTilesWidget( { Widget } ) {
 
 			// Check if there are more audiences remaining to be processed.
 			const remainingAudiences =
-				tempAudiences.length + visibleAudiencesTemp.length > 0;
+				tempAudiences.length + visible.length > 0;
 
 			// Skip rendering the tile if it is dismissed, has zero data, and there are still more audiences to render.
 			if ( isDismissed && isZeroData && remainingAudiences ) {
@@ -272,40 +263,31 @@ function AudienceTilesWidget( { Widget } ) {
 
 			// Collect audiences to re-dismiss if they have data again.
 			if ( isDismissed && ! isZeroData ) {
-				audiencesToClearDismissalTemp.push( audienceResourceName );
+				toClear.push( audienceResourceName );
 			}
 
 			// Add audience to visibleAudiences
-			visibleAudiencesTemp.push( audienceResourceName );
+			visible.push( audienceResourceName );
 		}
 
-		// Update state for audiences to clear dismissal and visible audiences.
-		setAudiencesToClearDismissal( audiencesToClearDismissalTemp );
-		setVisibleAudiences( visibleAudiencesTemp );
-	}, [ configuredAudiences, dismissedItems, report, reportLoaded ] );
+		return [ toClear, visible ];
+	}, [ configuredAudiences, dismissedItems, reportLoaded, report ] );
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
 	useEffect( () => {
-		if ( ! hasDismissed.current && audiencesToClearDismissal.length > 0 ) {
-			audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
-				dismissItem( `audience-tile-${ audienceResourceName }`, {
-					expiresInSeconds: 1,
-				} );
-			} );
-			// Set the ref to true to prevent re-execution of the dismissal logic.
-			hasDismissed.current = true;
-		}
-	}, [ audiencesToClearDismissal, dismissItem ] );
+		audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
+			const itemSlug = `audience-tile-${ audienceResourceName }`;
 
-	useEffect( () => {
-		// Set the initial active tab to the first tab (index 0) when `visibleAudiences` is populated.
-		// This ensures that a tab is selected by default when the component loads on smaller screens.
-		// 'null' is used as the initial state to indicate no selection.
-		if ( visibleAudiences.length > 0 ) {
-			setActiveTile( 0 );
-		}
-	}, [ visibleAudiences ] );
+			if ( isDismissingItem( itemSlug ) ) {
+				return;
+			}
+
+			dismissItem( itemSlug, {
+				expiresInSeconds: 1,
+			} );
+		} );
+	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
 
 	const loading =
 		! reportLoaded ||
@@ -316,7 +298,7 @@ function AudienceTilesWidget( { Widget } ) {
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
-			{ isTabbedBreakpoint && activeTile !== null && (
+			{ isTabbedBreakpoint && visibleAudiences.length > 0 && (
 				<TabBar
 					className="googlesitekit-widget-audience-tiles__tabs"
 					activeIndex={ activeTile }
