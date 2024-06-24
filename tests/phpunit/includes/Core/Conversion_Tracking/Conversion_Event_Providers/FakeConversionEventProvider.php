@@ -50,4 +50,14 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 		return $script_asset;
 	}
 
+	/**
+	 * Registers any actions/hooks for this provider.
+	 *
+	 * @since 1.129.0
+	 */
+	public function register_hooks() {
+		// Register a fake action.
+		add_action( 'fake_provider_action', '__return_true' );
+	}
+
 }

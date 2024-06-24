@@ -24,5 +24,7 @@ export { default as AudienceTilesWidget } from './AudienceTilesWidget';
 export { default as AudienceTooltipMessage } from './AudienceTooltipMessage';
 export { default as AudienceSelectionPanel } from './AudienceSelectionPanel';
 export { default as AudienceAreaFooter } from './AudienceAreaFooter';
+export { default as ChangeGroupsLink } from './ChangeGroupsLink';
+export { default as ConnectAnalyticsCTAWidget } from './ConnectAnalyticsCTAWidget';
 export { default as InfoNoticeWidget } from './InfoNoticeWidget';
 export { default as InfoNotice } from './InfoNotice';
