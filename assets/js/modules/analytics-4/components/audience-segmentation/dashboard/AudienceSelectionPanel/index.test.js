@@ -383,7 +383,7 @@ describe( 'AudienceSelectionPanel', () => {
 			}
 		);
 
-		it( 'should display "dash" instead of user count if retrieving it fails', async () => {
+		it( 'should display a "dash" instead of the user count if retrieval fails', async () => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -611,12 +611,7 @@ describe( 'AudienceSelectionPanel', () => {
 					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 				};
 
-				provideUserInfo( registry, {
-					id: 1,
-					email: 'admin@example.com',
-					name: 'admin',
-					picture: 'https://path/to/image',
-				} );
+				provideUserInfo( registry );
 				provideModules( registry );
 				provideModuleRegistrations( registry );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {

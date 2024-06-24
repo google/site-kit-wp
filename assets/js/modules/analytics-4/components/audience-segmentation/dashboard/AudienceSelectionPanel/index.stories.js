@@ -34,9 +34,9 @@ import {
 	provideModuleRegistrations,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
-import AudienceSelectionPanel from '.';
 import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import AudienceSelectionPanel from '.';
 
 function Template( { viewContext } ) {
 	return (
@@ -170,21 +170,19 @@ export default {
 				metrics: [ { name: 'totalUsers' } ],
 			};
 
-			const setupRegistry = async ( registry ) => {
+			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
 				provideModuleRegistrations( registry );
 
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {
-						accountID: '12345',
-						propertyID: '34567',
-						measurementID: '56789',
-						webDataStreamID: '78901',
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -223,7 +221,7 @@ export default {
 					.dispatch( CORE_UI )
 					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 
-				await args?.setupRegistry?.( registry );
+				args?.setupRegistry?.( registry );
 			};
 
 			return (

@@ -536,7 +536,7 @@ const baseSelectors = {
 	 * @param {Object} options           Optional. Options to pass to the selector.
 	 * @param {string} options.startDate Start date for the report.
 	 * @param {string} options.endDate   End date for the report.
-	 * @return {Object|undefined} Returns the report options for the audiences user count report.
+	 * @return {Object} Returns the report options for the audiences user count report.
 	 */
 	getAudiencesUserCountReportOptions: createRegistrySelector(
 		( select ) =>

@@ -109,7 +109,7 @@ export default function ErrorNotice() {
 					  )
 					: __( 'Data loading failed', 'google-site-kit' ) }
 			</p>
-			<div className="googlesitekit-audience-selection-panel__error-notice__actions">
+			<div className="googlesitekit-audience-selection-panel__error-notice-actions">
 				{ hasInsufficientPermissionsError || userCountReportError ? (
 					<ReportErrorActions
 						moduleSlug="analytics-4"
