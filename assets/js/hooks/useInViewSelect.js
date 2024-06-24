@@ -40,15 +40,17 @@ import { useInView } from './useInView';
 export const useInViewSelect = ( mapSelect, deps = [] ) => {
 	const isInView = useInView( { sticky: true } );
 	const latestSelectorResult = useRef();
+	const notInViewCallback = () => {
+		return undefined;
+	};
 
-	const mapSelectCallback = useCallback( mapSelect, [ ...deps, mapSelect ] );
+	// These are "pass-through" dependencies from the parent hook,
+	// and the parent should catch any hook rule violations.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const mapSelectCallback = useCallback( mapSelect, deps );
 
 	const selectorResult = useSelect(
-		isInView
-			? mapSelectCallback
-			: () => {
-					return undefined;
-			  }
+		isInView ? mapSelectCallback : notInViewCallback
 	);
 
 	if ( isInView ) {
