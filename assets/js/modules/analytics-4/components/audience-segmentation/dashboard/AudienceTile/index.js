@@ -51,106 +51,11 @@ import ChangeBadge from '../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
 import PartialDataNotice from '../PartialDataNotice';
+import { getDataFromRows, collectAudienceRows } from '../utils';
 import { numFmt } from '../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
 const { useSelect } = Data;
-
-function getDataFromRows( {
-	reportRow,
-	previousReportRow,
-	topCitiesReportRows,
-	topContentReportRows,
-	topContentTitlesReportRows,
-	totalPageViews,
-} ) {
-	const visitors = Number( reportRow?.metricValues?.[ 0 ]?.value ) || 0;
-	const prevVisitors =
-		Number( previousReportRow?.metricValues?.[ 0 ]?.value ) || 0;
-
-	const visitsPerVisitors =
-		Number( reportRow?.metricValues?.[ 1 ]?.value ) || 0;
-	const prevVisitsPerVisitors =
-		Number( previousReportRow?.metricValues?.[ 1 ]?.value ) || 0;
-
-	const pagesPerVisit = Number( reportRow?.metricValues?.[ 2 ]?.value ) || 0;
-	const prevPagesPerVisit =
-		Number( previousReportRow?.metricValues?.[ 2 ]?.value ) || 0;
-
-	const pageviews = Number( reportRow?.metricValues?.[ 3 ]?.value ) || 0;
-	const prevPageviews =
-		Number( previousReportRow?.metricValues?.[ 3 ]?.value ) || 0;
-
-	const percentageOfTotalPageViews =
-		totalPageViews !== 0 ? pageviews / totalPageViews : 0;
-
-	const topCities = {
-		dimensionValues: [
-			topCitiesReportRows?.[ 0 ]?.dimensionValues?.[ 0 ]?.value,
-			topCitiesReportRows?.[ 1 ]?.dimensionValues?.[ 0 ]?.value,
-			topCitiesReportRows?.[ 2 ]?.dimensionValues?.[ 0 ]?.value,
-		],
-		metricValues: [
-			topCitiesReportRows?.[ 0 ]?.metricValues?.[ 0 ]?.value,
-			topCitiesReportRows?.[ 1 ]?.metricValues?.[ 0 ]?.value,
-			topCitiesReportRows?.[ 2 ]?.metricValues?.[ 0 ]?.value,
-		],
-		total: visitors,
-	};
-
-	const topContent = {
-		dimensionValues: [
-			topContentReportRows?.[ 0 ]?.dimensionValues?.[ 0 ]?.value,
-			topContentReportRows?.[ 1 ]?.dimensionValues?.[ 0 ]?.value,
-			topContentReportRows?.[ 2 ]?.dimensionValues?.[ 0 ]?.value,
-		],
-		metricValues: [
-			topContentReportRows?.[ 0 ]?.metricValues?.[ 0 ]?.value,
-			topContentReportRows?.[ 1 ]?.metricValues?.[ 0 ]?.value,
-			topContentReportRows?.[ 2 ]?.metricValues?.[ 0 ]?.value,
-		],
-	};
-
-	const topContentTitles = topContentTitlesReportRows?.reduce(
-		( acc, row ) => ( {
-			...acc,
-			[ row.dimensionValues[ 0 ].value ]: row.dimensionValues[ 1 ].value,
-		} ),
-		{}
-	);
-
-	return {
-		visitors: {
-			currentValue: visitors,
-			previousValue: prevVisitors,
-		},
-		visitsPerVisitor: {
-			currentValue: visitsPerVisitors,
-			previousValue: prevVisitsPerVisitors,
-		},
-		pagesPerVisit: {
-			currentValue: pagesPerVisit,
-			previousValue: prevPagesPerVisit,
-		},
-		pageviews: {
-			currentValue: pageviews,
-			previousValue: prevPageviews,
-		},
-		percentageOfTotalPageViews,
-		topCities,
-		topContent,
-		topContentTitles,
-	};
-}
-
-const collectAudienceRows = ( audienceResourceName, reportRows, index = 1 ) => {
-	if ( ! reportRows ) {
-		return [];
-	}
-	return reportRows.filter( ( row ) => {
-		return audienceResourceName === row?.dimensionValues?.[ index ]?.value;
-	} );
-};
 
 export default function AudienceTile( {
 	loaded,
