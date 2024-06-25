@@ -604,7 +604,7 @@ describe( 'AudienceSelectionPanel', () => {
 			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
 		] )(
 			'should display an error notice when there is an insufficient permissions error while %s',
-			async ( _, fn, args ) => {
+			async ( _, storeFunctionName, args ) => {
 				const error = {
 					code: 'test_error',
 					message: 'Error message.',
@@ -623,7 +623,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, fn, args );
+					.receiveError( error, storeFunctionName, args );
 
 				const { getByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
@@ -649,7 +649,7 @@ describe( 'AudienceSelectionPanel', () => {
 			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
 		] )(
 			'should display an error notice when %s fails',
-			async ( _, fn, args ) => {
+			async ( _, storeFunctionName, args ) => {
 				const error = {
 					code: 'test_error',
 					message: 'Error message.',
@@ -661,7 +661,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, fn, args );
+					.receiveError( error, storeFunctionName, args );
 
 				const { getByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,

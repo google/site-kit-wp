@@ -109,7 +109,7 @@ describe( 'ErrorNotice', () => {
 
 	it.each( errorCases )(
 		'should display an error notice when there is an insufficient permissions error while %s',
-		async ( _, fn, args ) => {
+		async ( _, storeFunctionName, args ) => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -118,7 +118,7 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, fn, args );
+				.receiveError( error, storeFunctionName, args );
 
 			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
 				registry,
@@ -136,7 +136,7 @@ describe( 'ErrorNotice', () => {
 
 	it.each( errorCases )(
 		'should render a "Get help" link when there is an insufficient permissions error while %s',
-		async ( _, fn, args ) => {
+		async ( _, storeFunctionName, args ) => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -145,7 +145,7 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, fn, args );
+				.receiveError( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<ErrorNotice />,
@@ -170,7 +170,7 @@ describe( 'ErrorNotice', () => {
 
 	it.each( errorCases )(
 		'should render a "Request access" link when there is an insufficient permissions error while %s',
-		async ( _, fn, args ) => {
+		async ( _, storeFunctionName, args ) => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -179,7 +179,7 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, fn, args );
+				.receiveError( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<ErrorNotice />,
@@ -204,7 +204,7 @@ describe( 'ErrorNotice', () => {
 
 	it.each( errorCases )(
 		'should display an error notice when %s fails',
-		async ( _, fn, args ) => {
+		async ( _, storeFunctionName, args ) => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -213,7 +213,7 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, fn, args );
+				.receiveError( error, storeFunctionName, args );
 
 			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
 				registry,
@@ -227,7 +227,7 @@ describe( 'ErrorNotice', () => {
 
 	it.each( errorCases )(
 		'should render a "Retry" button when %s fails',
-		async ( _, fn, args ) => {
+		async ( _, storeFunctionName, args ) => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -236,7 +236,7 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, fn, args );
+				.receiveError( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<ErrorNotice />,
@@ -249,7 +249,7 @@ describe( 'ErrorNotice', () => {
 
 			expect( getByText( /retry/i ) ).toBeInTheDocument();
 
-			if ( 'syncAvailableAudiences' === fn ) {
+			if ( 'syncAvailableAudiences' === storeFunctionName ) {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -259,7 +259,7 @@ describe( 'ErrorNotice', () => {
 
 			fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
-			if ( 'syncAvailableAudiences' === fn ) {
+			if ( 'syncAvailableAudiences' === storeFunctionName ) {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
