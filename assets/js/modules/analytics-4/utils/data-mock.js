@@ -909,6 +909,11 @@ export function getAnalytics4MockPivotResponse( options ) {
 		? parseDimensionArgs( args.dimensions )
 		: [];
 
+	const allDimensionValues = dimensions.reduce( ( acc, dimension ) => {
+		acc[ dimension ] = [];
+		return acc;
+	}, {} );
+
 	// Generate streams (array) for each pivot field names (which map 1:1 to the report dimensions).
 	args.pivots.forEach( ( { fieldNames, limit } ) => {
 		// We only support one dimension for each pivot in our current pivot report implementation
@@ -929,36 +934,30 @@ export function getAnalytics4MockPivotResponse( options ) {
 				typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
 			) {
 				// Generates a stream (an array) of dimension values using a function associated with the current dimension.
-				streams.push(
-					new Observable( ( observer ) => {
-						// The limit here is the pivot limit as limits are set within the pivot level, never at the root of the report.
-						for ( let i = 1; i <= limit; i++ ) {
-							const dimensionValue =
-								ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
-							if ( dimensionValue ) {
-								observer.next( dimensionValue );
-							} else {
-								break;
-							}
-						}
+				// The limit here is the pivot limit as limits are set within the pivot level, never at the root of the report.
 
-						observer.complete();
-					} )
-				);
+				for ( let i = 1; i <= limit; i++ ) {
+					const dimensionValue =
+						ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
+					if ( dimensionValue ) {
+						allDimensionValues[ dimension ].push( dimensionValue );
+					} else {
+						break;
+					}
+				}
+
+				streams.push( from( args.dimensionFilters[ dimension ] ) );
 			} else if (
 				dimension &&
 				Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
 			) {
+				// Slice here applies the limit for the pivot.
+				allDimensionValues[ dimension ] = ANALYTICS_4_DIMENSION_OPTIONS[
+					dimension
+				].slice( 0, limit );
+
 				// Uses predefined array of dimension values to create a stream (an array) from.
-				streams.push(
-					from(
-						// Slice here applies the limit for the pivot.
-						ANALYTICS_4_DIMENSION_OPTIONS[ dimension ].slice(
-							0,
-							limit
-						)
-					)
-				);
+				streams.push( from( allDimensionValues[ dimension ] ) );
 			} else {
 				// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
 				streams.push( from( [ null ] ) );
@@ -1013,19 +1012,29 @@ export function getAnalytics4MockPivotResponse( options ) {
 				'RESERVED_MAX',
 				'RESERVED_TOTAL',
 			].reduce( ( acc, aggregate ) => {
-				dimensions.forEach( ( dimension ) => {
-					acc.push( {
-						dimensionValues: [
-							{
-								value: aggregate,
-							},
-							{
-								value: dimension,
-							},
-						],
-						metricValues: generateMetricValues( validMetrics ),
+				options.pivots.forEach( ( { fieldNames } ) => {
+					const pivotDimensionValueSets = fieldNames.map(
+						( dimension ) => allDimensionValues[ dimension ]
+					);
+
+					zip( ...pivotDimensionValueSets ).forEach( ( values ) => {
+						acc.push( {
+							dimensionValues: dimensions.map( ( dimension ) => {
+								const fieldNameIndex =
+									fieldNames.indexOf( dimension );
+
+								return {
+									value:
+										fieldNameIndex === -1
+											? aggregate
+											: values[ fieldNameIndex ],
+								};
+							} ),
+							metricValues: generateMetricValues( validMetrics ),
+						} );
 					} );
 				} );
+
 				return acc;
 			}, [] );
 
