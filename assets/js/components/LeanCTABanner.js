@@ -19,11 +19,22 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-export default function LeanCTABanner( { children, Icon, SVGGraphic } ) {
+export default function LeanCTABanner( {
+	className,
+	children,
+	Icon,
+	SVGGraphic,
+} ) {
 	return (
-		<div className="googlesitekit-lean-cta-banner">
+		<div
+			className={ classnames(
+				'googlesitekit-lean-cta-banner',
+				className
+			) }
+		>
 			<div className="googlesitekit-lean-cta-banner--body">
 				{ Icon && (
 					<div className="googlesitekit-lean-cta-banner--body__icon">
@@ -46,6 +57,7 @@ export default function LeanCTABanner( { children, Icon, SVGGraphic } ) {
 }
 
 LeanCTABanner.propTypes = {
+	className: PropTypes.string,
 	children: PropTypes.node.isRequired,
 	Icon: PropTypes.elementType,
 	SVGGraphic: PropTypes.elementType,
