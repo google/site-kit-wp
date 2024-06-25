@@ -24,7 +24,7 @@ import { getByText } from '@testing-library/dom';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
 import * as tracking from '../../../util/tracking';
 import {
@@ -49,8 +49,6 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_VIEW_DASHBOARD,
 } from '../../datastore/user/constants';
-
-const { useSelect } = Data;
 
 const createTestRegistryWithArea = (
 	areaName,

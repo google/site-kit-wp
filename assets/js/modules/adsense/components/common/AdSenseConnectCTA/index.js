@@ -37,7 +37,7 @@ import {
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
@@ -48,7 +48,6 @@ import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
 import SupportLink from '../../../../../components/SupportLink';
 import useViewContext from '../../../../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA( { onDismissModule } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );

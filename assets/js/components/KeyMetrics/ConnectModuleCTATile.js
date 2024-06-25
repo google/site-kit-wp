@@ -29,14 +29,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
 import Link from '../Link';
 import GhostCardGreenSVG from './GhostCardGreenSVG';
 import GhostCardRedSVG from './GhostCardRedSVG';
-
-const { useSelect } = Data;
 
 export default function ConnectModuleCTATile( { moduleSlug } ) {
 	const handleConnectModule = useActivateModuleCallback( moduleSlug );

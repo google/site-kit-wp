@@ -26,11 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import CreateAccountField from './CreateAccountField';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-
-const { useSelect, useDispatch } = Data;
 
 export default function PropertyField() {
 	const value = useSelect( ( select ) =>

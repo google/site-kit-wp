@@ -30,12 +30,10 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
 import { negateDefined } from '../../../util/negate';
-
-const { createRegistrySelector } = Data;
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -238,7 +236,7 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_SITE ).getSiteInfo() ) {
 			return;

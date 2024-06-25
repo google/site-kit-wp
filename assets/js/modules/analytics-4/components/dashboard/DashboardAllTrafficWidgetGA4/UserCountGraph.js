@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
@@ -43,7 +43,6 @@ import ReportError from '../../../../../components/ReportError';
 import { createZeroDataRow } from './utils';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { getDateString, stringToDate } from '../../../../../util';
-const { useSelect } = Data;
 
 export default function UserCountGraph( props ) {
 	const { loaded, error, report, gatheringData } = props;

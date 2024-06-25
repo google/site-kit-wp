@@ -26,7 +26,7 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../../util';
 import useQueryArg from '../../../hooks/useQueryArg';
@@ -42,8 +42,6 @@ import {
 	DISMISSED_ITEM_KEY,
 	NOTIFICATION_ID,
 } from './constants';
-
-const { useSelect, useDispatch } = Data;
 
 function EnableAutoUpdateBannerNotification() {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>

@@ -31,14 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../hooks/useDebounce';
-const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics-4' );

@@ -24,12 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import ErrorNotice from './ErrorNotice';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { isInsufficientPermissionsError } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
-const { useSelect } = Data;
 
 export default function StoreErrorNotices( { moduleSlug, storeName } ) {
 	const errors = useSelect( ( select ) => select( storeName ).getErrors() );

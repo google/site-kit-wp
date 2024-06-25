@@ -25,7 +25,7 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import ShareIcon from '../../../svg/icons/share.svg';
 import useViewContext from '../../hooks/useViewContext';
@@ -34,7 +34,6 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { SETTINGS_DIALOG } from './DashboardSharingSettings/constants';
 import DashboardSharingDialog from './DashboardSharingDialog';
-const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingSettingsButton() {
 	const viewContext = useViewContext();

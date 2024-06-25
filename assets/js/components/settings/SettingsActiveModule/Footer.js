@@ -33,7 +33,7 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
@@ -44,7 +44,6 @@ import { clearCache } from '../../../googlesitekit/api/cache';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
-const { useDispatch, useSelect } = Data;
 
 export default function Footer( props ) {
 	const { slug } = props;

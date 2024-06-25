@@ -29,11 +29,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { isValidPropertyID } from '../../utils/validation';
 import ErrorText from '../../../../components/ErrorText';
-const { useSelect } = Data;
 
 export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	const { hasModuleAccess, isDisabled } = props;

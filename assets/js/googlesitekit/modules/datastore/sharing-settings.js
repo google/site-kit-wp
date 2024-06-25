@@ -26,12 +26,14 @@ import { isEqual, isEmpty, pick } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_MODULES } from './constants';
 import { createStrictSelect, createValidationSelector } from '../../data/utils';
-
-const { createRegistrySelector } = Data;
 
 // Actions
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
@@ -167,7 +169,7 @@ const baseActions = {
 	 * @return {Object} Object with `{response, error}`.
 	 */
 	*saveSharingSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		yield {
 			type: START_SUBMIT_SHARING_CHANGES,
@@ -401,7 +403,7 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getSharingSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_MODULES ).getSharingSettings() ) {
 			return;
@@ -419,7 +421,7 @@ const baseResolvers = {
 	},
 
 	*getShareableRoles() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_MODULES ).getShareableRoles() ) {
 			return;
@@ -437,7 +439,7 @@ const baseResolvers = {
 	},
 
 	*getDefaultSharedOwnershipModuleSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if (
 			registry
@@ -734,7 +736,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchSaveSharingSettingsStore,
 	fetchResetSharingSettingsStore,
 	{

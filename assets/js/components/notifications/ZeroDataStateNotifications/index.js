@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import useViewOnly from '../../../hooks/useViewOnly';
@@ -32,7 +32,6 @@ import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/cons
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import GatheringDataNotification from './GatheringDataNotification';
 import ZeroDataNotification from './ZeroDataNotification';
-const { useSelect, useInViewSelect } = Data;
 
 export default function ZeroDataStateNotifications() {
 	const viewOnly = useViewOnly();

@@ -25,12 +25,15 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 
-const { createRegistrySelector, commonActions } = Data;
 const { getRegistry } = commonActions;
 
 function reducerCallback( state, dismissedItems ) {
@@ -158,7 +161,7 @@ export const {
 	reducer,
 	resolvers,
 	selectors,
-} = Data.combineStores(
+} = combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

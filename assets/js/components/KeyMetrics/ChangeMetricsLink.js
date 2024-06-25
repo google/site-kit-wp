@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
@@ -35,7 +35,6 @@ import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
-const { useSelect, useDispatch } = Data;
 
 export default function ChangeMetricsLink() {
 	const keyMetrics = useSelect( ( select ) =>

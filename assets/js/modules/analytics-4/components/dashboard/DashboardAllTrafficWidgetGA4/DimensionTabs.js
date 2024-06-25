@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select, Tab, TabBar } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	UI_DIMENSION_COLOR,
@@ -42,7 +42,6 @@ import {
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
-const { useDispatch } = Data;
 
 const tabs = [
 	{
