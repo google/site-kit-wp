@@ -59,12 +59,15 @@ export default function ErrorNotice() {
 		syncAvailableAudiences();
 	}, [ clearError, syncAvailableAudiences ] );
 
-	const errors = [
-		...( syncAvailableAudiencesError
-			? [ syncAvailableAudiencesError ]
-			: [] ),
-		...( userCountReportError ? [ userCountReportError ] : [] ),
-	];
+	const errors = [];
+
+	if ( syncAvailableAudiencesError ) {
+		errors.push( syncAvailableAudiencesError );
+	}
+
+	if ( userCountReportError ) {
+		errors.push( userCountReportError );
+	}
 
 	if ( ! errors.length ) {
 		return null;
