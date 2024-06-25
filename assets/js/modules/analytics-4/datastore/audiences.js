@@ -241,150 +241,141 @@ const baseActions = {
 				configuredAudiences.push(
 					...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
 				);
-
-				if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
-					// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
-					// up to the limit of two.
-
-					const siteKitAudiences = availableAudiences.filter(
-						( { audienceType } ) =>
-							audienceType === 'SITE_KIT_AUDIENCE'
-					);
-
-					// Audience slugs to sort by:
-					const sortedSlugs = [
-						'new-visitors',
-						'returning-visitors',
-					];
-
-					const sortedSiteKitAudiences = siteKitAudiences.sort(
-						( audienceA, audienceB ) => {
-							const indexA = sortedSlugs.indexOf(
-								audienceA.audienceSlug
-							);
-							const indexB = sortedSlugs.indexOf(
-								audienceB.audienceSlug
-							);
-
-							return indexA - indexB;
-						}
-					);
-
-					const sortedAudienceResourceNames = sortedSiteKitAudiences
-						.slice(
-							0,
-							MAX_INITIAL_AUDIENCES - configuredAudiences.length
-						)
-						.map( ( { name } ) => name );
-
-					configuredAudiences.push( ...sortedAudienceResourceNames );
-				}
 			}
 
-			if ( configuredAudiences.length === 0 ) {
-				const audiencesToCreate =
-					failedSiteKitAudienceResourceNames || [
-						'new-visitors',
-						'returning-visitors',
-					];
+			if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+				// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
+				// up to the limit of two.
 
-				// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
-				// and add them to the configured audiences.
-				const [ newVisitorsResult, returningVisitorsResult ] =
-					yield commonActions.await(
-						Promise.all(
-							audiencesToCreate.map( ( audienceSlug ) => {
-								return dispatch(
-									MODULES_ANALYTICS_4
-								).createAudience(
-									SITE_KIT_AUDIENCE_DEFINITIONS[
-										audienceSlug
-									]
-								);
-							} )
-						)
-					);
-
-				const failedAudiencesToRetry = [];
-
-				if ( newVisitorsResult.error ) {
-					failedAudiencesToRetry.push( 'new-visitors' );
-				} else {
-					configuredAudiences.push( newVisitorsResult.response.name );
-				}
-
-				if ( returningVisitorsResult.error ) {
-					failedAudiencesToRetry.push( 'returning-visitors' );
-				} else {
-					configuredAudiences.push(
-						returningVisitorsResult.response.name
-					);
-				}
-
-				if ( failedAudiencesToRetry.length > 0 ) {
-					return {
-						failedSiteKitAudienceResourceNames:
-							failedAudiencesToRetry,
-					};
-				}
-
-				// Resync available audiences to ensure the newly created audiences are available.
-				yield commonActions.await(
-					dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+				const siteKitAudiences = availableAudiences.filter(
+					( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
 				);
+
+				// Audience slugs to sort by:
+				const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
+
+				const sortedSiteKitAudiences = siteKitAudiences.sort(
+					( audienceA, audienceB ) => {
+						const indexA = sortedSlugs.indexOf(
+							audienceA.audienceSlug
+						);
+						const indexB = sortedSlugs.indexOf(
+							audienceB.audienceSlug
+						);
+
+						return indexA - indexB;
+					}
+				);
+
+				const audienceResourceNames = sortedSiteKitAudiences
+					.slice(
+						0,
+						MAX_INITIAL_AUDIENCES - configuredAudiences.length
+					)
+					.map( ( { name } ) => name );
+
+				configuredAudiences.push( ...audienceResourceNames );
 			}
+		}
 
-			// Create custom dimension if it doesn't exist.
-			yield commonActions.await(
-				__experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getAvailableCustomDimensions()
-			);
+		if ( configuredAudiences.length === 0 ) {
+			const audiencesToCreate = failedSiteKitAudienceResourceNames || [
+				'new-visitors',
+				'returning-visitors',
+			];
 
-			if (
-				! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-					'googlesitekit_post_type'
-				)
-			) {
-				const propertyID =
-					select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-				const { error } = yield commonActions.await(
-					dispatch( MODULES_ANALYTICS_4 ).fetchCreateCustomDimension(
-						propertyID,
-						CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
+			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
+			// and add them to the configured audiences.
+			const [ newVisitorsResult, returningVisitorsResult ] =
+				yield commonActions.await(
+					Promise.all(
+						audiencesToCreate.map( ( audienceSlug ) => {
+							return dispatch(
+								MODULES_ANALYTICS_4
+							).createAudience(
+								SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
+							);
+						} )
 					)
 				);
 
-				if ( error ) {
-					return { error };
-				}
+			const failedAudiencesToRetry = [];
 
-				// If the custom dimension was created successfully, mark it as gathering
-				// data immediately so that it doesn't cause unnecessary report requests.
+			if ( newVisitorsResult.error ) {
+				failedAudiencesToRetry.push( 'new-visitors' );
+			} else {
+				configuredAudiences.push( newVisitorsResult.response.name );
+			}
+
+			if ( returningVisitorsResult.error ) {
+				failedAudiencesToRetry.push( 'returning-visitors' );
+			} else {
+				configuredAudiences.push(
+					returningVisitorsResult.response.name
+				);
+			}
+
+			if ( failedAudiencesToRetry.length > 0 ) {
+				return {
+					failedSiteKitAudienceResourceNames: failedAudiencesToRetry,
+				};
+			}
+
+			// Resync available audiences to ensure the newly created audiences are available.
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
+		}
+
+		// Create custom dimension if it doesn't exist.
+		yield commonActions.await(
+			__experimentalResolveSelect(
+				MODULES_ANALYTICS_4
+			).getAvailableCustomDimensions()
+		);
+
+		if (
+			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				'googlesitekit_post_type'
+			)
+		) {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			const { error } = yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).fetchCreateCustomDimension(
+					propertyID,
+					CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
+				)
+			);
+
+			if ( error ) {
+				return { error };
+			}
+
+			// If the custom dimension was created successfully, mark it as gathering
+			// data immediately so that it doesn't cause unnecessary report requests.
+			dispatch(
+				MODULES_ANALYTICS_4
+			).receiveIsCustomDimensionGatheringData(
+				'googlesitekit_post_type',
+				true
+			);
+
+			yield commonActions.await(
 				dispatch(
 					MODULES_ANALYTICS_4
 				).receiveIsCustomDimensionGatheringData(
 					'googlesitekit_post_type',
 					true
-				);
+				)
+			);
 
-				yield commonActions.await(
-					dispatch(
-						MODULES_ANALYTICS_4
-					).receiveIsCustomDimensionGatheringData(
-						'googlesitekit_post_type',
-						true
-					)
-				);
-
-				// Resync available custom dimensions to ensure the newly created custom dimension is available.
-				yield commonActions.await(
-					dispatch(
-						MODULES_ANALYTICS_4
-					).fetchSyncAvailableCustomDimensions()
-				);
-			}
+			// Resync available custom dimensions to ensure the newly created custom dimension is available.
+			yield commonActions.await(
+				dispatch(
+					MODULES_ANALYTICS_4
+				).fetchSyncAvailableCustomDimensions()
+			);
 		}
 
 		dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
