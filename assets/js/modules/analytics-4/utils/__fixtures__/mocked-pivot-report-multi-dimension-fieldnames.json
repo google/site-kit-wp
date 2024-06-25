@@ -1,437 +1,933 @@
 {
-    "dimensionHeaders": [
-      {
-        "name": "city"
-      },
-      {
-        "name": "audienceResourceName"
-      },
-      {
-        "name": "country"
-      }
-    ],
-    "metricHeaders": [
-      {
-        "name": "totalUsers",
-        "type": "TYPE_INTEGER"
-      },
-      {
-        "name": "activeUsers",
-        "type": "TYPE_INTEGER"
-      }
-    ],
-    "pivotHeaders": [
-      {
-        "pivotDimensionHeaders": [
-          {
-            "dimensionValues": [
-              {
-                "value": "properties/12345/audiences/1"
-              }
-            ]
-          },
-          {
-            "dimensionValues": [
-              {
-                "value": "properties/12345/audiences/2"
-              }
-            ]
-          }
-        ],
-        "rowCount": 2
-      },
-      {
-        "pivotDimensionHeaders": [
-          {
-            "dimensionValues": [
-              {
-                "value": "Dublin"
-              }
-            ]
-          },
-          {
-            "dimensionValues": [
-              {
-                "value": "(not set)"
-              }
-            ]
-          },
-          {
-            "dimensionValues": [
-              {
-                "value": "Cork"
-              }
-            ]
-          }
-        ],
-        "rowCount": 3
-      },
-      {
-        "pivotDimensionHeaders": [
-          {
-            "dimensionValues": [
-              {
-                "value": "United States"
-              }
-            ]
-          },
-          {
-            "dimensionValues": [
-              {
-                "value": "United Kingdom"
-              }
-            ]
-          },
-          {
-            "dimensionValues": [
-              {
-                "value": "India"
-              }
-            ]
-          }
-        ],
-        "rowCount": 3
-      },
-      {
-        "pivotDimensionHeaders": [
-          {
-            "dimensionValues": [
-              {
-                "value": "United States"
-              }
-            ]
-          },
-          {
-            "dimensionValues": [
-              {
-                "value": "United Kingdom"
-              }
-            ]
-          },
-          {
-            "dimensionValues": [
-              {
-                "value": "India"
-              }
-            ]
-          }
-        ],
-        "rowCount": 3
-      }
-    ],
-    "aggregates": [
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_MIN"
-          },
-          {
-            "value": "city"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "27"
-          },
-          {
-            "value": "91"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_MIN"
-          },
-          {
-            "value": "audienceResourceName"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "86"
-          },
-          {
-            "value": "53"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_MIN"
-          },
-          {
-            "value": "country"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "38"
-          },
-          {
-            "value": "71"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_MAX"
-          },
-          {
-            "value": "city"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "21"
-          },
-          {
-            "value": "74"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_MAX"
-          },
-          {
-            "value": "audienceResourceName"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "66"
-          },
-          {
-            "value": "80"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_MAX"
-          },
-          {
-            "value": "country"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "16"
-          },
-          {
-            "value": "22"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_TOTAL"
-          },
-          {
-            "value": "city"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "45"
-          },
-          {
-            "value": "34"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_TOTAL"
-          },
-          {
-            "value": "audienceResourceName"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "23"
-          },
-          {
-            "value": "91"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "RESERVED_TOTAL"
-          },
-          {
-            "value": "country"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "38"
-          },
-          {
-            "value": "66"
-          }
-        ]
-      }
-    ],
-    "rows": [
-      {
-        "dimensionValues": [
-          {
-            "value": "properties/12345/audiences/2"
-          },
-          {
-            "value": "Cork"
-          },
-          {
-            "value": "India"
-          },
-          {
-            "value": "India"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "98"
-          },
-          {
-            "value": "7"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "properties/12345/audiences/2"
-          },
-          {
-            "value": "(not set)"
-          },
-          {
-            "value": "United Kingdom"
-          },
-          {
-            "value": "United Kingdom"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "89"
-          },
-          {
-            "value": "62"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "properties/12345/audiences/1"
-          },
-          {
-            "value": "Dublin"
-          },
-          {
-            "value": "United States"
-          },
-          {
-            "value": "United States"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "55"
-          },
-          {
-            "value": "14"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "properties/12345/audiences/1"
-          },
-          {
-            "value": "Cork"
-          },
-          {
-            "value": "India"
-          },
-          {
-            "value": "India"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "17"
-          },
-          {
-            "value": "39"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "properties/12345/audiences/2"
-          },
-          {
-            "value": "Dublin"
-          },
-          {
-            "value": "United States"
-          },
-          {
-            "value": "United States"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "10"
-          },
-          {
-            "value": "73"
-          }
-        ]
-      },
-      {
-        "dimensionValues": [
-          {
-            "value": "properties/12345/audiences/1"
-          },
-          {
-            "value": "(not set)"
-          },
-          {
-            "value": "United Kingdom"
-          },
-          {
-            "value": "United Kingdom"
-          }
-        ],
-        "metricValues": [
-          {
-            "value": "3"
-          },
-          {
-            "value": "13"
-          }
-        ]
-      }
-    ],
-    "metadata": {
-      "currencyCode": "USD",
-      "timeZone": "America/Los_Angeles"
+  "dimensionHeaders": [
+    {
+      "name": "city"
     },
-    "kind": "analyticsData#runPivotReport"
-  }
+    {
+      "name": "audienceResourceName"
+    },
+    {
+      "name": "country"
+    },
+    {
+      "name": "sessionDefaultChannelGrouping"
+    }
+  ],
+  "metricHeaders": [
+    {
+      "name": "totalUsers",
+      "type": "TYPE_INTEGER"
+    },
+    {
+      "name": "activeUsers",
+      "type": "TYPE_INTEGER"
+    }
+  ],
+  "pivotHeaders": [
+    {
+      "pivotDimensionHeaders": [
+        {
+          "dimensionValues": [
+            {
+              "value": "properties/12345/audiences/1"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "properties/12345/audiences/2"
+            }
+          ]
+        }
+      ],
+      "rowCount": 2
+    },
+    {
+      "pivotDimensionHeaders": [
+        {
+          "dimensionValues": [
+            {
+              "value": "Dublin"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "(not set)"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "Cork"
+            }
+          ]
+        }
+      ],
+      "rowCount": 3
+    },
+    {
+      "pivotDimensionHeaders": [
+        {
+          "dimensionValues": [
+            {
+              "value": "United States"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "United Kingdom"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "India"
+            }
+          ]
+        }
+      ],
+      "rowCount": 3
+    },
+    {
+      "pivotDimensionHeaders": [
+        {
+          "dimensionValues": [
+            {
+              "value": "Direct"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "Organic Search"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "Paid Social"
+            }
+          ]
+        },
+        {
+          "dimensionValues": [
+            {
+              "value": "(other)"
+            }
+          ]
+        }
+      ],
+      "rowCount": 4
+    }
+  ],
+  "aggregates": [
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "city"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "56"
+        },
+        {
+          "value": "69"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "audienceResourceName"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "49"
+        },
+        {
+          "value": "82"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "country"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "80"
+        },
+        {
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "sessionDefaultChannelGrouping"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "64"
+        },
+        {
+          "value": "54"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "city"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "2"
+        },
+        {
+          "value": "34"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "audienceResourceName"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "23"
+        },
+        {
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "country"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "59"
+        },
+        {
+          "value": "96"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "sessionDefaultChannelGrouping"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "22"
+        },
+        {
+          "value": "66"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "city"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "4"
+        },
+        {
+          "value": "21"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "audienceResourceName"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "46"
+        },
+        {
+          "value": "68"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "country"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "40"
+        },
+        {
+          "value": "96"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "sessionDefaultChannelGrouping"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "96"
+        },
+        {
+          "value": "71"
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "98"
+        },
+        {
+          "value": "7"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "95"
+        },
+        {
+          "value": "90"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "93"
+        },
+        {
+          "value": "59"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "89"
+        },
+        {
+          "value": "62"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "86"
+        },
+        {
+          "value": "53"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "83"
+        },
+        {
+          "value": "14"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "79"
+        },
+        {
+          "value": "56"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "74"
+        },
+        {
+          "value": "47"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "72"
+        },
+        {
+          "value": "57"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "66"
+        },
+        {
+          "value": "80"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "55"
+        },
+        {
+          "value": "14"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "53"
+        },
+        {
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "53"
+        },
+        {
+          "value": "58"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "45"
+        },
+        {
+          "value": "34"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "38"
+        },
+        {
+          "value": "71"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "38"
+        },
+        {
+          "value": "66"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "27"
+        },
+        {
+          "value": "91"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "23"
+        },
+        {
+          "value": "91"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "21"
+        },
+        {
+          "value": "74"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "19"
+        },
+        {
+          "value": "75"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "17"
+        },
+        {
+          "value": "39"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "16"
+        },
+        {
+          "value": "22"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "10"
+        },
+        {
+          "value": "73"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "3"
+        },
+        {
+          "value": "13"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "currencyCode": "USD",
+    "timeZone": "America/Los_Angeles"
+  },
+  "kind": "analyticsData#runPivotReport"
+}

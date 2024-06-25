@@ -734,11 +734,11 @@ export function provideAnalytics4MockReport( registry, options ) {
  *     {
  *         fieldNames: [ 'pagePath', 'pageTitle' ], // having 10 rows
  *         limit: 15,
- *      },
- *      {
- *          fieldNames: [ 'pagePath', 'pageTitle' ], // having 3 rows
- *          limit: 3,
- *      },
+ *     },
+ *     {
+ *         fieldNames: [ 'audienceResourceName' ], // having 3 rows
+ *         limit: 3,
+ *     },
  * ]
  *
  * in this case this function will generate 30 (10 x 3) combinations.

@@ -570,7 +570,12 @@ describe( 'data-mock', () => {
 						name: 'activeUsers',
 					},
 				],
-				dimensions: [ 'city', 'audienceResourceName', 'country' ],
+				dimensions: [
+					'city',
+					'audienceResourceName',
+					'country',
+					'sessionDefaultChannelGrouping',
+				],
 				pivots: [
 					{
 						fieldNames: [ 'audienceResourceName' ],
@@ -589,8 +594,8 @@ describe( 'data-mock', () => {
 						],
 					},
 					{
-						fieldNames: [ 'country' ],
-						limit: 3,
+						fieldNames: [ 'sessionDefaultChannelGrouping' ],
+						limit: 4,
 					},
 				],
 			} );
@@ -600,7 +605,7 @@ describe( 'data-mock', () => {
 			);
 
 			// Verify the correct number of rows for the pivot, there should be the product pivot[ 0 ].limit * pivot[ 1 ].limit
-			expect( report.rows ).toHaveLength( 2 * 3 );
+			expect( report.rows ).toHaveLength( 2 * 3 * 4 );
 
 			// Verify a row has just a dimensionValue and metricValue key.
 			expect( report.rows[ 0 ] ).toHaveProperty( 'dimensionValues' );
