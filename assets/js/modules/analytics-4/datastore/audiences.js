@@ -361,15 +361,6 @@ const baseActions = {
 				true
 			);
 
-			yield commonActions.await(
-				dispatch(
-					MODULES_ANALYTICS_4
-				).receiveIsCustomDimensionGatheringData(
-					'googlesitekit_post_type',
-					true
-				)
-			);
-
 			// Resync available custom dimensions to ensure the newly created custom dimension is available.
 			yield commonActions.await(
 				dispatch(
