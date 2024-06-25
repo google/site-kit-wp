@@ -126,16 +126,25 @@ function ModalDialog( {
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Button>
-				<SpinnerButton
-					onClick={ handleConfirm }
-					danger={ danger }
-					disabled={ inProgress }
-					isSaving={ inProgress }
-					href={ buttonLink || undefined }
-					target={ buttonLink ? '_blank' : undefined }
-				>
-					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
-				</SpinnerButton>
+				{ buttonLink ? (
+					<Button
+						href={ buttonLink }
+						target="_blank"
+						danger={ danger }
+					>
+						{ confirmButton }
+					</Button>
+				) : (
+					<SpinnerButton
+						onClick={ handleConfirm }
+						danger={ danger }
+						disabled={ inProgress }
+						isSaving={ inProgress }
+					>
+						{ confirmButton ||
+							__( 'Disconnect', 'google-site-kit' ) }
+					</SpinnerButton>
+				) }
 			</DialogFooter>
 		</Dialog>
 	);
