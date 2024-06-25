@@ -27,6 +27,10 @@ import { useCallback, useRef } from '@wordpress/element';
  */
 import { useInView } from './useInView';
 
+const notInViewCallback = () => {
+	return undefined;
+};
+
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
  *
@@ -40,9 +44,6 @@ import { useInView } from './useInView';
 export const useInViewSelect = ( mapSelect, deps = [] ) => {
 	const isInView = useInView( { sticky: true } );
 	const latestSelectorResult = useRef();
-	const notInViewCallback = () => {
-		return undefined;
-	};
 
 	// These are "pass-through" dependencies from the parent hook,
 	// and the parent should catch any hook rule violations.
