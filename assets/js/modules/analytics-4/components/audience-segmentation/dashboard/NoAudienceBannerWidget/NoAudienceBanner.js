@@ -57,7 +57,11 @@ export default function NoAudienceBanner( { hasConfigurableAudiences } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	return (
-		<LeanCTABanner Icon={ Icon } SVGGraphic={ NoAudienceBannerGraphic }>
+		<LeanCTABanner
+			className="googlesitekit-no-audience-banner"
+			Icon={ Icon }
+			SVGGraphic={ NoAudienceBannerGraphic }
+		>
 			<p className="googlesitekit-lean-cta-banner--body__text">
 				{ hasConfigurableAudiences &&
 					createInterpolateElement(

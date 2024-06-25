@@ -21,7 +21,10 @@
  */
 import NoAudienceBannerWidget from '.';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { provideModules } from '../../../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 
@@ -79,6 +82,7 @@ export default {
 						slug: 'analytics-4',
 					},
 				] );
+				provideModuleRegistrations( registry );
 
 				const audienceSettings = {
 					configuredAudiences: [
