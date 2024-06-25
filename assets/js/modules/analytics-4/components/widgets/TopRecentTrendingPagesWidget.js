@@ -148,8 +148,9 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 	const dates = useSelect( getDateRange );
 	const reportOptions = useSelect( getReportOptions );
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -158,13 +159,15 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error && report
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error && report
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect(

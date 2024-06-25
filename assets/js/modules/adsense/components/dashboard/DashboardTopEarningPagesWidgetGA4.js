@@ -89,8 +89,9 @@ function DashboardTopEarningPagesWidgetGA4( {
 		limit: 5,
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -99,10 +100,12 @@ function DashboardTopEarningPagesWidgetGA4( {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles( data, args )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles( data, args )
+				: undefined,
+		[ data, args ]
 	);
 
 	const loading = useSelect(

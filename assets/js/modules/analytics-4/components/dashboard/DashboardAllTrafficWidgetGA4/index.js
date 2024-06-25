@@ -160,12 +160,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			pieArgs,
 		] )
 	);
-	const pieChartReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
-		);
-	} );
+	const pieChartReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, pieArgs ]
+	);
 
 	const userCountGraphLoaded = useSelect(
 		( select ) =>
@@ -179,12 +182,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			graphArgs,
 		] )
 	);
-	const userCountGraphReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
-		);
-	} );
+	const userCountGraphReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, graphArgs ]
+	);
 
 	const totalUsersLoaded = useSelect(
 		( select ) =>
@@ -198,12 +204,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			totalsArgs,
 		] )
 	);
-	const totalUsersReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
-		);
-	} );
+	const totalUsersReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, totalsArgs ]
+	);
 
 	const reportArgs = {
 		dates: {

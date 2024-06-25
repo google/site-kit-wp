@@ -96,17 +96,23 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( currentRangeArgs )
+	const currentRangeData = useInViewSelect(
+		( select ) => select( MODULES_ADSENSE ).getReport( currentRangeArgs ),
+		[ currentRangeArgs ]
 	);
-	const previousRangeData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( previousRangeArgs )
+	const previousRangeData = useInViewSelect(
+		( select ) => select( MODULES_ADSENSE ).getReport( previousRangeArgs ),
+		[ previousRangeArgs ]
 	);
-	const currentRangeChartData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( currentRangeChartArgs )
+	const currentRangeChartData = useInViewSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).getReport( currentRangeChartArgs ),
+		[ currentRangeChartArgs ]
 	);
-	const previousRangeChartData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( previousRangeChartArgs )
+	const previousRangeChartData = useInViewSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).getReport( previousRangeChartArgs ),
+		[ previousRangeChartArgs ]
 	);
 
 	const loading = useSelect(

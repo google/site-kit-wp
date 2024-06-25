@@ -59,8 +59,9 @@ function VisitLengthWidget( { Widget } ) {
 		metrics: [ { name: 'averageSessionDuration' }, { name: 'sessions' } ],
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>

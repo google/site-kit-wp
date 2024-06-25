@@ -70,8 +70,9 @@ export default function DashboardPopularKeywordsWidget( props ) {
 		reportArgs.url = url;
 	}
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 	const error = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [

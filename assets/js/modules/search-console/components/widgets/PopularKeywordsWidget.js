@@ -65,14 +65,18 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		limit: 100,
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) =>
+			select( MODULES_SEARCH_CONSOLE ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
-	const error = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
-			reportOptions,
-		] )
+	const error = useSelect(
+		( select ) =>
+			select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
+				reportOptions,
+			] ),
+		[ reportOptions ]
 	);
 
 	const loading = useSelect(

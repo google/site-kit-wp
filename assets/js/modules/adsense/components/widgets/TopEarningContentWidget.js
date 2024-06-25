@@ -79,9 +79,12 @@ function TopEarningContentWidget( { Widget } ) {
 		limit: 3,
 	};
 
-	const report = useInViewSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+	const report = useInViewSelect(
+		( select ) => {
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[ reportOptions ]
+	);
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
@@ -89,13 +92,15 @@ function TopEarningContentWidget( { Widget } ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ report, reportOptions ]
 	);
 
 	const loading = useSelect(

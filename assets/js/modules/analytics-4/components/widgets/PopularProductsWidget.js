@@ -137,10 +137,12 @@ function PopularProductsWidget( props ) {
 
 	const showWidget = isPopularProductsWidgetActive || productPostType;
 
-	const report = useInViewSelect( ( select ) =>
-		showWidget
-			? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-			: undefined
+	const report = useInViewSelect(
+		( select ) =>
+			showWidget
+				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+				: undefined,
+		[ showWidget, reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -149,13 +151,15 @@ function PopularProductsWidget( props ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error && report
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error && report
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect( ( select ) =>

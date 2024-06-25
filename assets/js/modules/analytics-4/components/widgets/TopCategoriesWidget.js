@@ -90,8 +90,12 @@ function getReportOptions( select ) {
 function TopCategoriesWidget( { Widget } ) {
 	const topCategoriesReportOptions = useSelect( getReportOptions );
 
-	const topCategoriesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topCategoriesReportOptions )
+	const topCategoriesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport(
+				topCategoriesReportOptions
+			),
+		[ topCategoriesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>

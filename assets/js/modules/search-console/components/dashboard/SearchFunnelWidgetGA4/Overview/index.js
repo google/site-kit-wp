@@ -110,10 +110,12 @@ export default function Overview( props ) {
 	const ga4ModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
-	const isGA4GatheringData = useInViewSelect( ( select ) =>
-		ga4ModuleConnected
-			? select( MODULES_ANALYTICS_4 ).isGatheringData()
-			: false
+	const isGA4GatheringData = useInViewSelect(
+		( select ) =>
+			ga4ModuleConnected
+				? select( MODULES_ANALYTICS_4 ).isGatheringData()
+				: false,
+		[ ga4ModuleConnected ]
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()

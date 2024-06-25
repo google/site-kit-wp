@@ -68,8 +68,10 @@ function LeastEngagingPagesWidget( props ) {
 		],
 	};
 
-	const pageViewsReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions )
+	const pageViewsReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions ),
+		[ pageViewsReportOptions ]
 	);
 
 	const medianIndex = parseInt( pageViewsReport?.rowCount / 2, 10 );
@@ -114,15 +116,18 @@ function LeastEngagingPagesWidget( props ) {
 		] )
 	);
 
-	const report = useInViewSelect( ( select ) => {
-		if ( ! loadedPageViewsReport ) {
-			return undefined;
-		}
-		if ( pageViewsReportError ) {
-			return null;
-		}
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+	const report = useInViewSelect(
+		( select ) => {
+			if ( ! loadedPageViewsReport ) {
+				return undefined;
+			}
+			if ( pageViewsReportError ) {
+				return null;
+			}
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[ loadedPageViewsReport, pageViewsReportError, reportOptions ]
+	);
 
 	const error = useSelect( ( select ) => {
 		const reportError = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
@@ -137,13 +142,15 @@ function LeastEngagingPagesWidget( props ) {
 		return pageViewsReportError || reportError || undefined;
 	} );
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ report, reportOptions ]
 	);
 
 	const loading = useSelect(

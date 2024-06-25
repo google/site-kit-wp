@@ -76,12 +76,15 @@ export default function WPDashboardPopularPagesGA4( {
 		limit: 5,
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPageTitles( report, reportArgs )
+	const titles = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getPageTitles( report, reportArgs ),
+		[ report, reportArgs ]
 	);
 
 	const error = useSelect( ( select ) =>
