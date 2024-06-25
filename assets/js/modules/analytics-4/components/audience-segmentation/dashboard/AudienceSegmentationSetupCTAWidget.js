@@ -59,6 +59,8 @@ import {
 } from '../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../util';
+import AudienceErrorModal from './AudienceErrorModal';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -110,43 +112,66 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		notification: 'audience_segmentation',
 	} );
 
-	const onEnableGroups = useCallback( async () => {
-		setIsSaving( true );
+	const [ apiErrors, setApiErrors ] = useState( [] );
+	const [ failedAudiences, setFailedAudiences ] = useState( [] );
+	const onEnableGroups = useCallback(
+		async ( retryFailedAudiences ) => {
+			setIsSaving( true );
 
-		// If scope not granted, trigger scope error right away. These are
-		// typically handled automatically based on API responses, but
-		// this particular case has some special handling to improve UX.
-		if ( ! hasAnalytics4EditScope ) {
+			// If scope not granted, trigger scope error right away. These are
+			// typically handled automatically based on API responses, but
+			// this particular case has some special handling to improve UX.
+			if ( ! hasAnalytics4EditScope ) {
+				setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+					autoSubmit: true,
+				} );
+
+				setPermissionScopeError( {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: __(
+						'Additional permissions are required to create new audiences in Analytics.',
+						'google-site-kit'
+					),
+					data: {
+						status: 403,
+						scopes: [ EDIT_SCOPE ],
+						skipModal: true,
+						skipDefaultErrorNotifications: true,
+						redirectURL,
+					},
+				} );
+
+				setIsSaving( false );
+				return;
+			}
+
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-				autoSubmit: true,
+				autoSubmit: false,
 			} );
 
-			setPermissionScopeError( {
-				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-				message: __(
-					'Additional permissions are required to create new audiences in Analytics.',
-					'google-site-kit'
-				),
-				data: {
-					status: 403,
-					scopes: [ EDIT_SCOPE ],
-					skipModal: true,
-					redirectURL,
-				},
-			} );
+			const { error, failedSiteKitAudienceResourceNames } =
+				await enableAudienceGroup( {
+					failedSiteKitAudienceResourceNames: retryFailedAudiences,
+				} );
 
-			return;
-		}
+			if ( error ) {
+				setApiErrors( [ error ] );
+			}
 
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
-		await enableAudienceGroup();
-	}, [
-		enableAudienceGroup,
-		hasAnalytics4EditScope,
-		setPermissionScopeError,
-		redirectURL,
-		setValues,
-	] );
+			if ( failedSiteKitAudienceResourceNames ) {
+				setFailedAudiences( failedSiteKitAudienceResourceNames );
+			}
+
+			setIsSaving( false );
+		},
+		[
+			enableAudienceGroup,
+			hasAnalytics4EditScope,
+			setPermissionScopeError,
+			redirectURL,
+			setValues,
+		]
+	);
 
 	// If the user ends up back on this component with the required scope granted,
 	// and already submitted the form, trigger the submit again.
@@ -182,6 +207,12 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	};
 
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const hasOAuthError = autoSubmit && setupErrorCode;
+
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
@@ -211,6 +242,36 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		isDismissed
 	) {
 		return null;
+	}
+
+	if ( hasOAuthError ) {
+		return (
+			<AudienceErrorModal
+				hasOAuthError
+				onRetry={ onEnableGroups }
+				inProgress={ isSaving }
+			/>
+		);
+	}
+
+	if ( apiErrors.length ) {
+		return (
+			<AudienceErrorModal
+				apiErrors={ apiErrors }
+				onRetry={ onEnableGroups }
+				inProgress={ isSaving }
+			/>
+		);
+	}
+
+	if ( failedAudiences.length ) {
+		return (
+			<AudienceErrorModal
+				apiErrors={ apiErrors }
+				onRetry={ () => onEnableGroups( failedAudiences ) }
+				inProgress={ isSaving }
+			/>
+		);
 	}
 
 	// TODO: We need to refactor this and the ConsentModeSetupCTAWidget to avoid this duplicate inlining of the widget context and area structure,
