@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
@@ -42,7 +42,6 @@ import TableOverflowContainer from '../TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPagesGA4( {
 	WPDashboardReportError,

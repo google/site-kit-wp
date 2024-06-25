@@ -33,7 +33,7 @@ import { ESCAPE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { extractAnalyticsDataForPieChart, isSingleSlice } from '../../../utils';
@@ -58,7 +58,6 @@ import GatheringDataNotice, {
 } from '../../../../../components/GatheringDataNotice';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { getTooltipHelp } from './utils';
-const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
 	const { dimensionName, dimensionValue, gatheringData, loaded, report } =

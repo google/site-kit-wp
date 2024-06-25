@@ -33,14 +33,13 @@ import { useDebounce } from '../hooks/useDebounce';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ModalDialog from './ModalDialog';
 import { clearCache } from '../googlesitekit/api/cache';
 import Portal from './Portal';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-const { useSelect, useDispatch } = Data;
 import { trackEvent } from '../util/tracking';
 import useViewContext from '../hooks/useViewContext';
 

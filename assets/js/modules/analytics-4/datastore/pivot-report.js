@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { stringifyObject } from '../../../util';
@@ -58,7 +58,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getPivotReport( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getPivotReport( options );
@@ -98,7 +98,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = combineStores( fetchGetReportStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

@@ -25,7 +25,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
@@ -34,7 +34,6 @@ import {
 import Accordion from '../../../../components/Accordion';
 import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function Recommendation( props ) {
 	const { auditID, title, referenceURL, strategy } = props;

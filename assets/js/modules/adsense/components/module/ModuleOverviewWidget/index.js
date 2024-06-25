@@ -42,10 +42,9 @@ import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
 import Stats from './Stats';
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import StatusMigration from './StatusMigration';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-const { useSelect, useInViewSelect } = Data;
 
 function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const viewOnlyDashboard = useViewOnly();

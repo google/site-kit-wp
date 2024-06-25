@@ -29,3 +29,5 @@ global.googlesitekit.data = Data;
 
 // This is only exported for Jest and is not used in production.
 export default Data;
+
+export * from './googlesitekit/data';

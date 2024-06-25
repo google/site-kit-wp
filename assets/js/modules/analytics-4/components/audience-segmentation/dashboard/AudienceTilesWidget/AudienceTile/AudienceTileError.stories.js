@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import AudienceTileError from './AudienceTileError';
 import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
 import {
@@ -30,8 +30,6 @@ import {
 } from '../../../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../../../tests/js/WithRegistrySetup';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../util/errors';
-
-const { useSelect } = Data;
 
 function AudienceTileErrorWrapper( { ...args } ) {
 	const errors = useSelect( ( select ) =>

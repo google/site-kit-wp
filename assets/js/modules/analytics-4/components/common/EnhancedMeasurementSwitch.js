@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar, Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
@@ -43,7 +43,6 @@ import {
 import SupportLink from '../../../../components/SupportLink';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function EnhancedMeasurementSwitch( {
 	onClick,

@@ -26,7 +26,7 @@ import { removeQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import SuccessSVG from '../../../svg/graphics/ad-blocking-recovery-success.svg';
 import useViewContext from '../../hooks/useViewContext';
 import {
@@ -39,8 +39,6 @@ import Link from '../Link';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-
-const { useDispatch, useSelect } = Data;
 
 export default function AdBlockingRecoverySetupSuccessBannerNotification() {
 	const viewContext = useViewContext();

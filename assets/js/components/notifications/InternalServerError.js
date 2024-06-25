@@ -19,10 +19,9 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
 
 export default function InternalServerError() {
 	const error = useSelect( ( select ) =>

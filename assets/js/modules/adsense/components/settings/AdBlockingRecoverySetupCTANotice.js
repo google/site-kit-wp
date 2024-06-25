@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import Badge from '../../../../components/Badge';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import SupportLink from '../../../../components/SupportLink';
@@ -42,8 +42,6 @@ import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
-
-const { useDispatch, useSelect } = Data;
 
 export default function AdBlockingRecoverySetupCTANotice() {
 	const inView = useInView();

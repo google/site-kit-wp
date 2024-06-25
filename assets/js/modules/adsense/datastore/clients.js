@@ -25,13 +25,15 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-
-const { createRegistrySelector } = Data;
 
 // Actions
 const RESET_CLIENTS = 'RESET_CLIENTS';
@@ -76,7 +78,7 @@ const baseInitialState = {
 
 const baseActions = {
 	*resetClients() {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
 			payload: {},
@@ -127,7 +129,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingClients = registry
 			.select( MODULES_ADSENSE )
 			.getClients( accountID );
@@ -197,7 +199,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchGetClientsStore, {
+const store = combineStores( fetchGetClientsStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	reducer: baseReducer,

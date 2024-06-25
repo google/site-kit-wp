@@ -30,11 +30,9 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Link from '../../../../../../components/Link';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-
-const { useSelect } = Data;
 
 export default function AudienceTooltipMessage( {
 	audienceSlug,

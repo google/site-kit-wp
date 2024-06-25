@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
@@ -39,34 +39,32 @@ export const selectors = {
 	 *                                   `null` if an ad blocker isn't detected,
 	 *                                   `undefined` if ad blocker detection has not completed yet.
 	 */
-	getAdBlockerWarningMessage: Data.createRegistrySelector(
-		( select ) => () => {
-			const isAdBlockerActive = select( CORE_USER ).isAdBlockerActive();
+	getAdBlockerWarningMessage: createRegistrySelector( ( select ) => () => {
+		const isAdBlockerActive = select( CORE_USER ).isAdBlockerActive();
 
-			if ( undefined === isAdBlockerActive ) {
-				return undefined;
-			}
+		if ( undefined === isAdBlockerActive ) {
+			return undefined;
+		}
 
-			if ( ! isAdBlockerActive ) {
-				return null;
-			}
+		if ( ! isAdBlockerActive ) {
+			return null;
+		}
 
-			const isModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'adsense' );
+		const isModuleConnected =
+			select( CORE_MODULES ).isModuleConnected( 'adsense' );
 
-			if ( isModuleConnected ) {
-				return __(
-					'Ad blocker detected; please disable it to get the latest AdSense data',
-					'google-site-kit'
-				);
-			}
-
+		if ( isModuleConnected ) {
 			return __(
-				'Ad blocker detected; please disable it to set up AdSense',
+				'Ad blocker detected; please disable it to get the latest AdSense data',
 				'google-site-kit'
 			);
 		}
-	),
+
+		return __(
+			'Ad blocker detected; please disable it to set up AdSense',
+			'google-site-kit'
+		);
+	} ),
 };
 
 export default {

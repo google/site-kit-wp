@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
 	AUDIENCE_SELECTION_CHANGED,
@@ -40,8 +40,6 @@ import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/cons
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import InfoIcon from '../../../../../../../svg/icons/info-circle.svg';
 import InfoNotice from '../InfoNotice';
-
-const { useDispatch, useSelect } = Data;
 
 export default function AddGroupNotice( { savedItemSlugs = [] } ) {
 	const isDismissed = useSelect( ( select ) =>

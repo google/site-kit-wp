@@ -4123,18 +4123,11 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_settings()->get()['availableAudiences'],
 			array(
 				array(
-					'name'         => 'properties/12345/audiences/1',
-					'displayName'  => 'All visitors',
-					'description'  => 'All users',
-					'audienceType' => 'DEFAULT_AUDIENCE',
-					'audienceSlug' => 'all-users',
-				),
-				array(
-					'name'         => 'properties/12345/audiences/2',
-					'displayName'  => 'Purchasers',
-					'description'  => 'Users who have made a purchase',
-					'audienceType' => 'DEFAULT_AUDIENCE',
-					'audienceSlug' => 'purchasers',
+					'name'         => 'properties/12345/audiences/5',
+					'displayName'  => 'Test Audience',
+					'description'  => 'Description',
+					'audienceType' => 'USER_AUDIENCE',
+					'audienceSlug' => '',
 				),
 				array(
 					'name'         => 'properties/12345/audiences/3',
@@ -4151,11 +4144,18 @@ class Analytics_4Test extends TestCase {
 					'audienceSlug' => 'returning-visitors',
 				),
 				array(
-					'name'         => 'properties/12345/audiences/5',
-					'displayName'  => 'Test Audience',
-					'description'  => 'Description',
-					'audienceType' => 'USER_AUDIENCE',
-					'audienceSlug' => '',
+					'name'         => 'properties/12345/audiences/1',
+					'displayName'  => 'All visitors',
+					'description'  => 'All users',
+					'audienceType' => 'DEFAULT_AUDIENCE',
+					'audienceSlug' => 'all-users',
+				),
+				array(
+					'name'         => 'properties/12345/audiences/2',
+					'displayName'  => 'Purchasers',
+					'description'  => 'Users who have made a purchase',
+					'audienceType' => 'DEFAULT_AUDIENCE',
+					'audienceSlug' => 'purchasers',
 				),
 			)
 		);

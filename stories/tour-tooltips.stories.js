@@ -30,14 +30,13 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import Link from '../assets/js/components/Link';
 import TourTooltips from '../assets/js/components/TourTooltips';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 import { CORE_UI } from '../assets/js/googlesitekit/datastore/ui/constants';
-const { useDispatch } = Data;
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
 function MockWPDashboard() {

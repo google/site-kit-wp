@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
@@ -43,7 +43,6 @@ import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
-const { useSelect, useInViewSelect } = Data;
 
 function LeastEngagingPagesWidget( props ) {
 	const { Widget } = props;

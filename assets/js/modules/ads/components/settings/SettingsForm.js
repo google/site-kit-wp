@@ -25,7 +25,7 @@ import { Fragment, createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ADS } from '../../datastore/constants';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -34,7 +34,6 @@ import { useFeature } from '../../../../hooks/useFeature';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
-const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const iceEnabled = useFeature( 'conversionInfra' );

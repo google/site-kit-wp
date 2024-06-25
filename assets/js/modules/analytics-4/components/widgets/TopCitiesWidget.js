@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES,
@@ -41,7 +41,6 @@ import {
 } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-const { useSelect, useInViewSelect } = Data;
 
 function TopCitiesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>

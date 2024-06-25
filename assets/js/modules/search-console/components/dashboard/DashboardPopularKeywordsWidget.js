@@ -24,7 +24,7 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
@@ -40,7 +40,6 @@ import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
 import useViewOnly from '../../../../hooks/useViewOnly';
-const { useSelect, useInViewSelect } = Data;
 
 export default function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportError } = props;

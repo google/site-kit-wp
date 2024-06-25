@@ -24,7 +24,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -40,7 +40,6 @@ import MetricItems from './MetricItems';
 import SelectionPanel from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
 	const viewContext = useViewContext();

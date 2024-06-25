@@ -19,12 +19,11 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import SettingsForm from './SettingsForm';
-const { useSelect } = Data;
 
 export default function SettingsEdit() {
 	// We need this useSelect hook to trigger starting getMatchedProperties resolution which is needed to properly

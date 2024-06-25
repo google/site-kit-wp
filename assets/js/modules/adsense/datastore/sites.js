@@ -25,15 +25,17 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { determineSiteFromDomain } from '../util/site';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-
-const { createRegistrySelector } = Data;
 
 // Actions
 const RESET_SITES = 'RESET_SITES';
@@ -87,7 +89,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetSites() {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
 			payload: {},
@@ -138,7 +140,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingSites = registry
 			.select( MODULES_ADSENSE )
 			.getSites( accountID );
@@ -210,7 +212,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchGetSitesStore, {
+const store = combineStores( fetchGetSitesStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	reducer: baseReducer,

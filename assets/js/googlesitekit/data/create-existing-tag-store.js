@@ -24,11 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistryControl,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
-
-const { createRegistryControl, createRegistrySelector } = Data;
 
 // Actions
 const FETCH_GET_EXISTING_TAG = 'FETCH_GET_EXISTING_TAG';
@@ -161,7 +163,7 @@ export const createExistingTagStore = ( {
 
 	const resolvers = {
 		*getExistingTag() {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
 			if (
 				registry.select( STORE_NAME ).getExistingTag() === undefined

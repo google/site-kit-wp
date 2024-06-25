@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import SupportLink from '../../../../components/SupportLink';
 import { trackEvent } from '../../../../util';
@@ -38,7 +38,6 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function SetupCreateAccount() {
 	const viewContext = useViewContext();

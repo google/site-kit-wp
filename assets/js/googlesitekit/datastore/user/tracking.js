@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -103,7 +103,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*isTrackingEnabled() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 		if ( select( CORE_USER ).isTrackingEnabled() === undefined ) {
 			yield fetchGetTrackingStore.actions.fetchGetTracking();
 		}
@@ -137,17 +137,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetTrackingStore,
-	fetchSaveTrackingStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchGetTrackingStore, fetchSaveTrackingStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

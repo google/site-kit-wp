@@ -30,15 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import Link from '../../../../../../components/Link';
 import { SelectionPanelHeader } from '../../../../../../components/SelectionPanel';
-
-const { useSelect, useDispatch } = Data;
 
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();

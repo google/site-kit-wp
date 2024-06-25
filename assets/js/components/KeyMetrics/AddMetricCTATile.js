@@ -32,14 +32,12 @@ import { ENTER, SPACE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import PlusIcon from '../../../svg/icons/plus.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useDispatch } = Data;
 
 export default function AddMetricCTATile( { Widget } ) {
 	const trackingRef = useRef();

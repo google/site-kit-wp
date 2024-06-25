@@ -25,13 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function SetupAccountCreateSite() {
 	const viewContext = useViewContext();

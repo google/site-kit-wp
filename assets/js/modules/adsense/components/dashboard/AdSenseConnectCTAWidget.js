@@ -30,7 +30,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import AdSenseConnectCTA from '../common/AdSenseConnectCTA';
 import {
 	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
@@ -46,8 +46,6 @@ import {
 	useTooltipState,
 	AdminMenuTooltip,
 } from '../../../../components/AdminMenuTooltip';
-
-const { useDispatch, useSelect } = Data;
 
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );

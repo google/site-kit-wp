@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -40,8 +40,6 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useDashboardType from '../../hooks/useDashboardType';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
-
-const { useSelect, useDispatch } = Data;
 
 export const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'ga4_adsense_linked_notification';

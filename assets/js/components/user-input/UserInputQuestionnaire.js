@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
@@ -44,7 +44,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
