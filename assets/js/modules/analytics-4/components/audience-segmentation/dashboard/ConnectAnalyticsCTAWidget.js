@@ -39,6 +39,8 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
+import LeanCTABanner from '../../../../../components/LeanCTABanner';
 
 export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	const breakpoint = useBreakpoint();
@@ -51,46 +53,44 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 		select( CORE_MODULES ).getModuleIcon( 'analytics-4' )
 	);
 
-	const content = isTabletBreakpoint
-		? __(
-				'Google Analytics is disconnected, your audience metrics can’t be displayed.',
-				'google-site-kit'
-		  )
-		: __(
-				'Google Analytics is disconnected, your audience metrics can’t be displayed',
-				'google-site-kit'
-		  );
+	const content = isTabletBreakpoint ? (
+		<p className="googlesitekit-lean-cta-banner--body__text">
+			{ createInterpolateElement(
+				__(
+					'Google Analytics is disconnected, your audience metrics can’t be displayed. <a>Connect Google Analytics</a>',
+					'google-site-kit'
+				),
+				{
+					a: <Link secondary onClick={ handleConnectModule } />,
+				}
+			) }
+		</p>
+	) : (
+		<Fragment>
+			<p className="googlesitekit-lean-cta-banner--body__text">
+				{ __(
+					'Google Analytics is disconnected, your audience metrics can’t be displayed',
+					'google-site-kit'
+				) }
+			</p>
+			<Link secondary onClick={ handleConnectModule }>
+				{ __( 'Connect Google Analytics', 'google-site-kit' ) }
+			</Link>
+		</Fragment>
+	);
 
 	return (
 		<Widget noPadding>
-			<div className="googlesitekit-widget--connectAnalyticsCTA">
-				<div className="googlesitekit-audience-connect-analytics-cta">
-					{ Icon && (
-						<div className="googlesitekit-audience-connect-analytics-cta__icon">
-							<Icon width="32" height="32" />
-						</div>
-					) }
-
-					<div className="googlesitekit-audience-connect-analytics-cta__content">
-						<p className="googlesitekit-audience-connect-analytics-cta__text">
-							{ content }{ ' ' }
-						</p>
-						<Link secondary onClick={ handleConnectModule }>
-							{ __(
-								'Connect Google Analytics',
-								'google-site-kit'
-							) }
-						</Link>
-					</div>
-				</div>
-				<div className="googlesitekit-audience-connect-analytics-cta-graphic">
-					{ isTabletBreakpoint ? (
-						<AudienceConnectAnalyticsCTAGraphicTablet />
-					) : (
-						<AudienceConnectAnalyticsCTAGraphic />
-					) }
-				</div>
-			</div>
+			<LeanCTABanner
+				Icon={ Icon }
+				SVGGraphic={
+					isTabletBreakpoint
+						? AudienceConnectAnalyticsCTAGraphicTablet
+						: AudienceConnectAnalyticsCTAGraphic
+				}
+			>
+				{ content }
+			</LeanCTABanner>
 		</Widget>
 	);
 }
