@@ -27,9 +27,9 @@ import { useCallback, useRef } from '@wordpress/element';
  */
 import { useInView } from './useInView';
 
-const notInViewCallback = () => {
+function notInViewCallback() {
 	return undefined;
-};
+}
 
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
