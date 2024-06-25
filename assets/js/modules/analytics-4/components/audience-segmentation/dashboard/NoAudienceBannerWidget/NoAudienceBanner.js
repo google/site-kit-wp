@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import NoAudienceBannerGraphic from '../../../../../../../svg/graphics/no-audience-banner-graphic.svg';
 import Link from '../../../../../../components/Link';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
@@ -39,7 +39,6 @@ import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/locatio
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
-const { useDispatch, useSelect } = Data;
 
 export default function NoAudienceBanner( { hasConfigurableAudiences } ) {
 	const Icon = useSelect( ( select ) =>

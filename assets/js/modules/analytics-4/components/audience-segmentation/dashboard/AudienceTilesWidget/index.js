@@ -25,11 +25,9 @@ import whenActive from '../../../../../../util/when-active';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceTiles from './AudienceTiles';
-
-const { useSelect } = Data;
 
 function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {

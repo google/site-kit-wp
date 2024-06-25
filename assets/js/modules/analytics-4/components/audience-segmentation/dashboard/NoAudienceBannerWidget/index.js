@@ -25,11 +25,9 @@ import whenActive from '../../../../../../util/when-active';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import NoAudienceBanner from './NoAudienceBanner';
-
-const { useSelect } = Data;
 
 function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
