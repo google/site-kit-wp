@@ -18,7 +18,11 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -27,8 +31,7 @@ import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/cons
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
-const { createRegistrySelector } = Data;
-const { getRegistry } = Data.commonActions;
+const { getRegistry } = commonActions;
 
 const SET_CONSENT_MODE_ENABLED = 'SET_CONSENT_MODE_ENABLED';
 
@@ -240,7 +243,7 @@ const baseResolvers = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetConsentModeSettingsStore,
 	fetchSaveConsentModeSettingsStore,
 	fetchGetConsentAPIInfoStore,

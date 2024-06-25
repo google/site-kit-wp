@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '../../data/create-error-store';
 import { createSnapshotStore } from '../../data/create-snapshot-store';
 import forms from './forms';
 import { CORE_FORMS } from './constants';
 
-const store = Data.combineStores(
-	Data.commonStore,
+const store = combineStores(
+	commonStore,
 	forms,
 	createSnapshotStore( CORE_FORMS ),
 	createErrorStore( CORE_FORMS )

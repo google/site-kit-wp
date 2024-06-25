@@ -24,7 +24,7 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -33,7 +33,6 @@ import {
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-const { useSelect } = Data;
 
 export default function AudienceAreaFooter() {
 	const viewOnlyDashboard = useViewOnly();

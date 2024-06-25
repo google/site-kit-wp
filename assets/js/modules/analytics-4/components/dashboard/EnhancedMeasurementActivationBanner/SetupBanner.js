@@ -31,7 +31,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
@@ -49,8 +49,6 @@ import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.sv
 import ErrorNotice from '../../../../../components/ErrorNotice';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 import useViewContext from '../../../../../hooks/useViewContext';
-
-const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( props ) {
 	const {

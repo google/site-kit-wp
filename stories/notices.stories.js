@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import SettingsNotice, {
 	TYPE_WARNING,
 	TYPE_INFO,
@@ -33,7 +33,6 @@ import SettingsNotice, {
 import WarningIcon from '../assets/svg/icons/warning-icon.svg';
 import Link from '../assets/js/components/Link';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
 
 function LearnMore() {
 	const documentationURL = useSelect( ( select ) => {

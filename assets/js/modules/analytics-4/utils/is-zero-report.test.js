@@ -158,6 +158,17 @@ describe( 'isZeroReport', () => {
 				],
 			},
 		],
+		// RE: bug report #8442 where GA4 occasionally returns zero keyed empty object for totals.
+		[
+			true,
+			'a report that has a zero keyed empty object for totals',
+			{
+				rows: [ {}, {}, {} ],
+				totals: {
+					0: {},
+				},
+			},
+		],
 	] )( 'returns %s when %s is passed', ( expectedValue, _, report ) => {
 		expect( isZeroReport( report ) ).toBe( expectedValue );
 	} );

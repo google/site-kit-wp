@@ -26,11 +26,14 @@ import { isPlainObject, isEqual, pick } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
-const { commonActions, createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
 function fetchStoreReducerCallback( state, inputSettings ) {
@@ -97,7 +100,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveUserInputSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
 		const trim = ( value ) => value.trim();
@@ -343,7 +346,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetUserInputSettingsStore,
 	fetchSaveUserInputSettingsStore,
 	{

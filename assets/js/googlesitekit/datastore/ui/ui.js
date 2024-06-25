@@ -25,7 +25,7 @@ import { isPlainObject, isBoolean } from 'lodash';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions } from 'googlesitekit-data';
 import { CORE_UI } from './constants';
 import { CORE_USER } from '../user/constants';
 
@@ -47,7 +47,7 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetInViewHook() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const useInViewResetCount = registry
 			.select( CORE_UI )
@@ -86,7 +86,7 @@ export const actions = {
 	*setOverlayNotificationToShow( overlayNotification ) {
 		invariant( overlayNotification, 'overlayNotification is required.' );
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const activeOverlayNotification = registry
 			.select( CORE_UI )
@@ -116,13 +116,13 @@ export const actions = {
 	*dismissOverlayNotification( overlayNotification ) {
 		invariant( overlayNotification, 'overlayNotification is required.' );
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const activeOverlayNotification = registry
 			.select( CORE_UI )
 			.getValue( 'activeOverlayNotification' );
 
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			registry.dispatch( CORE_USER ).dismissItem( overlayNotification )
 		);
 

@@ -30,13 +30,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell } from '../../material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
-const { useSelect } = Data;
 
 export default function UserInputQuestionInfo( {
 	slug,

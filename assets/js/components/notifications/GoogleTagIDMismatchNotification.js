@@ -25,7 +25,7 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { isValidMeasurementID } from '../../modules/analytics-4/utils/validation';
 import { Button, SpinnerButton, ProgressBar } from 'googlesitekit-components';
@@ -33,8 +33,6 @@ import BannerNotification from './BannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import { getBestTagID } from '../../modules/analytics-4/utils/google-tag';
-
-const { useSelect, useDispatch } = Data;
 
 export default function GoogleTagIDMismatchNotification() {
 	const currentAnalyticsConfig = useSelect( ( select ) =>

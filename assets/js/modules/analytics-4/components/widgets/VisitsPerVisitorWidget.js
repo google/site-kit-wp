@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
@@ -43,8 +43,6 @@ import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import { numFmt } from '../../../../util';
-
-const { useSelect, useInViewSelect } = Data;
 
 function VisitsPerVisitorWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>

@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
@@ -40,7 +40,6 @@ import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../../hooks/useBreakpoint';
-const { useSelect } = Data;
 
 export default function OptionalCells( {
 	canViewSharedAnalytics4,

@@ -24,7 +24,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import { createErrorStore, generateErrorKey } from './create-error-store';
 
 const TEST_STORE = 'test/some-data';
@@ -338,7 +338,7 @@ describe( 'createErrorStore store', () => {
 			beforeEach( () => {
 				registry = createRegistry();
 
-				storeDefinition = Data.combineStores(
+				storeDefinition = combineStores(
 					{
 						selectors: {
 							getFoo: () => 'some-data',

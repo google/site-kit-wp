@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
@@ -43,8 +43,6 @@ import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-
-const { useSelect } = Data;
 
 function TopConvertingTrafficSourceWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>

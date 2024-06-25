@@ -23,7 +23,7 @@ import { useMount } from 'react-use';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
@@ -41,7 +41,6 @@ import {
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupEnhancedMeasurementSwitch() {
 	const accountID = useSelect( ( select ) =>

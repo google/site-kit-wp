@@ -29,13 +29,15 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { AUDIENCE_SELECTED, AUDIENCE_SELECTION_FORM } from './constants';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import {
+	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
+	AUDIENCE_SELECTION_FORM,
+} from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { numFmt } from '../../../../../../util';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
-
-const { useSelect, useDispatch } = Data;
 
 export default function AudienceItem( {
 	slug,
@@ -61,6 +63,7 @@ export default function AudienceItem( {
 					: selectedItems.filter(
 							( selectedItem ) => selectedItem !== slug
 					  ),
+				[ AUDIENCE_SELECTION_CHANGED ]: true,
 			} );
 		},
 		[ selectedItems, setValues, slug ]

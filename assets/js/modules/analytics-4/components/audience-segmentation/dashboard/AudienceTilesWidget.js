@@ -24,13 +24,19 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import {
+	useState,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../util/when-active';
 import {
 	BREAKPOINT_SMALL,
@@ -46,7 +52,13 @@ import AudienceTile from './AudienceTile';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import InfoTooltip from '../../../../../components/InfoTooltip';
 
-const { useSelect } = Data;
+const hasZeroDataForAudience = ( report, audienceResourceName ) => {
+	const audienceData = report?.rows?.find(
+		( row ) => row.dimensionValues?.[ 0 ]?.value === audienceResourceName
+	);
+	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
+	return totalUsers === 0;
+};
 
 function AudienceTilesWidget( { Widget } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
@@ -204,6 +216,89 @@ function AudienceTilesWidget( { Widget } ) {
 		)
 	);
 
+	const dismissedItems = useSelect( ( select ) =>
+		select( CORE_USER ).getDismissedItems()
+	);
+
+	const { isDismissingItem } = useSelect( ( select ) => select( CORE_USER ) );
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const handleDismiss = useCallback(
+		( audienceResourceName ) => {
+			dismissItem( `audience-tile-${ audienceResourceName }` );
+		},
+		[ dismissItem ]
+	);
+
+	const partialDataStates = useSelect( ( select ) =>
+		configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+			acc[ audienceResourceName ] =
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audienceResourceName
+				);
+			return acc;
+		}, {} )
+	);
+
+	// useRef to track if the dismissal logic has already been executed.
+	const hasDismissed = useRef( {} );
+
+	const [ audiencesToClearDismissal, visibleAudiences ] = useMemo( () => {
+		const toClear = [];
+		const visible = [];
+		const tempAudiences = configuredAudiences.slice();
+
+		while ( reportLoaded && tempAudiences.length > 0 ) {
+			const audienceResourceName = tempAudiences.shift();
+
+			const isDismissed = dismissedItems?.includes(
+				`audience-tile-${ audienceResourceName }`
+			);
+			const isZeroData = hasZeroDataForAudience(
+				report,
+				audienceResourceName
+			);
+
+			// Check if there are more audiences remaining to be processed.
+			const remainingAudiences =
+				tempAudiences.length + visible.length > 0;
+
+			// Skip rendering the tile if it is dismissed, has zero data, and there are still more audiences to render.
+			if ( isDismissed && isZeroData && remainingAudiences ) {
+				continue;
+			}
+
+			// Collect audiences to re-dismiss if they have data again.
+			if ( isDismissed && ! isZeroData ) {
+				toClear.push( audienceResourceName );
+			}
+
+			// Add audience to visibleAudiences
+			visible.push( audienceResourceName );
+		}
+
+		return [ toClear, visible ];
+	}, [ configuredAudiences, dismissedItems, reportLoaded, report ] );
+
+	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
+	// This ensures that the tile will reappear when it is populated with data again.
+	useEffect( () => {
+		audiencesToClearDismissal.forEach( ( audienceResourceName ) => {
+			const itemSlug = `audience-tile-${ audienceResourceName }`;
+
+			if ( hasDismissed.current[ itemSlug ] ) {
+				return;
+			}
+
+			dismissItem( itemSlug, {
+				expiresInSeconds: 1,
+			} );
+
+			// Mark as dismissed to prevent re-dismissing.
+			hasDismissed.current[ itemSlug ] = true;
+		} );
+	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
+
 	const loading =
 		! reportLoaded ||
 		! totalPageviewsReportLoaded ||
@@ -213,7 +308,7 @@ function AudienceTilesWidget( { Widget } ) {
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
-			{ isTabbedBreakpoint && (
+			{ isTabbedBreakpoint && visibleAudiences.length > 0 && (
 				<TabBar
 					className="googlesitekit-widget-audience-tiles__tabs"
 					activeIndex={ activeTile }
@@ -221,7 +316,7 @@ function AudienceTilesWidget( { Widget } ) {
 						setActiveTile( index )
 					}
 				>
-					{ configuredAudiences.map( ( audienceResourceName ) => {
+					{ visibleAudiences.map( ( audienceResourceName ) => {
 						const audienceName =
 							audiences?.filter(
 								( { name } ) => name === audienceResourceName
@@ -255,7 +350,7 @@ function AudienceTilesWidget( { Widget } ) {
 				</TabBar>
 			) }
 			<div className="googlesitekit-widget-audience-tiles__body">
-				{ configuredAudiences.map( ( audienceResourceName, index ) => {
+				{ visibleAudiences.map( ( audienceResourceName, index ) => {
 					// Conditionally render only the selected audience tile on mobile.
 					if ( isTabbedBreakpoint && index !== activeTile ) {
 						return null;
@@ -328,6 +423,13 @@ function AudienceTilesWidget( { Widget } ) {
 						}
 					);
 
+					const isPartialData =
+						partialDataStates[ audienceResourceName ];
+					const isZeroData = hasZeroDataForAudience(
+						report,
+						audienceResourceName
+					);
+
 					return (
 						<AudienceTile
 							loaded={ ! loading }
@@ -397,6 +499,12 @@ function AudienceTilesWidget( { Widget } ) {
 							topContentTitles={ topContentTitles }
 							Widget={ Widget }
 							audienceResourceName={ audienceResourceName }
+							isZeroData={ isZeroData }
+							isPartialData={ isPartialData }
+							isTileHideable={ visibleAudiences.length > 1 }
+							onHideTile={ () =>
+								handleDismiss( audienceResourceName )
+							}
 						/>
 					);
 				} ) }

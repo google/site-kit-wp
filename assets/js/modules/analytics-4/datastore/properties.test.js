@@ -68,6 +68,9 @@ describe( 'modules/analytics-4 properties', () => {
 	const containerDestinationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/container-destinations'
 	);
+	const setGoogleTagIDMismatchEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
+	);
 
 	const containerDestinationsMock =
 		fixtures.containerDestinations[ 6065484567 ][ 98369876 ];
@@ -703,11 +706,19 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'setHasMismatchedGoogleTagID', () => {
 			it( 'sets the value of hasMismatchedGoogleTagID', async () => {
+				fetchMock.post( setGoogleTagIDMismatchEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveHasMismatchGoogleTagID( false );
+
 				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				// It is false by default.
 				expect( hasMismatchedGoogleTagID ).toBe( false );
 
 				await registry
@@ -975,6 +986,12 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+				global._googlesitekitModulesData = {
+					'analytics-4': {
+						tagIDMismatch: false,
+					},
+				};
+
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 				} );
@@ -1059,11 +1076,25 @@ describe( 'modules/analytics-4 properties', () => {
 						.isWebDataStreamAvailable()
 				).toBe( false );
 
+				// Initially undefined.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).hasMismatchedGoogleTagID();
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.hasMismatchedGoogleTagID()
 				).toBe( false );
+
+				delete global._googlesitekitModulesData;
 			} );
 
 			it( 'should check for mismatched Google Tag ID if Google Tag settings already exist', async () => {
@@ -1119,6 +1150,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( setGoogleTagIDMismatchEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncGoogleTagSettings();
@@ -1127,7 +1163,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1212,6 +1248,11 @@ describe( 'modules/analytics-4 properties', () => {
 						...ga4Settings,
 						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
 					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( setGoogleTagIDMismatchEndpoint, {
+					body: true,
 					status: 200,
 				} );
 
@@ -1625,23 +1666,43 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'hasMismatchedGoogleTagID', () => {
-			it( 'returns a specific key in state', () => {
+			it( 'should use a resolver to source value from global', async () => {
+				global._googlesitekitModulesData = {
+					'analytics-4': {
+						tagIDMismatch: false,
+					},
+				};
+
+				const initialHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( initialHasMismatchedGoogleTagID ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).hasMismatchedGoogleTagID();
+
 				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				// It is false by default.
-				expect( hasMismatchedGoogleTagID ).toBe( false );
+				expect( hasMismatchedGoogleTagID ).toEqual( false );
 
+				delete global._googlesitekitModulesData;
+			} );
+
+			it( 'should not source data from global if the value is already present', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setHasMismatchedGoogleTagID( true );
+					.receiveHasMismatchGoogleTagID( true );
 
-				const updatedHasMismatchedGoogleTagID = registry
+				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+				expect( hasMismatchedGoogleTagID ).toBe( true );
 			} );
 		} );
 

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -28,7 +28,6 @@ import {
 import SetupUsingProxyWithSignIn from '../setup/SetupUsingProxyWithSignIn';
 import SetupUsingProxyViewOnly from '../setup/SetupUsingProxyViewOnly';
 import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
-const { useSelect } = Data;
 
 export default function DashboardSplashApp() {
 	const usingProxy = useSelect( ( select ) =>

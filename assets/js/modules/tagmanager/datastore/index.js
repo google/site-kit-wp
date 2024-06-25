@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 import { MODULES_TAGMANAGER } from './constants';
 import baseModuleStore from './base';
@@ -29,7 +29,7 @@ import tags from './tags';
 import versions from './versions';
 import service from './service';
 
-const store = Data.combineStores(
+const store = combineStores(
 	baseModuleStore,
 	accounts,
 	containers,

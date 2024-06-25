@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import {
@@ -40,7 +40,6 @@ import {
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
 const scopeIDToSlug = {

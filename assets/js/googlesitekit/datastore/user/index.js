@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '../../data/create-error-store';
 import adblocker from './adblocker';
 import authentication from './authentication';
@@ -39,8 +39,8 @@ import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
 
-const store = Data.combineStores(
-	Data.commonStore,
+const store = combineStores(
+	commonStore,
 	createErrorStore( CORE_USER ),
 	adblocker,
 	authentication,

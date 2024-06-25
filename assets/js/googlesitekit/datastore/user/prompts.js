@@ -25,12 +25,15 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 
-const { createRegistrySelector, commonActions } = Data;
 const { getRegistry } = commonActions;
 
 function reducerCallback( state, dismissedPrompts ) {
@@ -128,7 +131,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+		// We shouldn't use the getReferenceDate selector here because it returns date only
+		// while we need the current time as well to properly determine whether the prompt is
+		// expired or not.
+		const currentTimeInSeconds = Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		return Object.entries( state.dismissedPrompts ).reduce(
 			( acc, [ slug, { expires } ] ) => {
 				if ( expires === 0 || expires > currentTimeInSeconds ) {
@@ -195,7 +201,7 @@ export const {
 	reducer,
 	resolvers,
 	selectors,
-} = Data.combineStores(
+} = combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
