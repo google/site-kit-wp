@@ -51,7 +51,7 @@ import ChangeBadge from '../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
 import PartialDataNotice from '../PartialDataNotice';
-import { getDataFromRows, collectAudienceRows } from '../utils';
+import { getDataFromRows, collectAudienceRows } from './utils';
 import { numFmt } from '../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';

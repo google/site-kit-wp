@@ -46,30 +46,37 @@
     {
       "pivotDimensionHeaders": [
         {
-          "value": "Dublin"
+          "dimensionValues": [
+            {
+              "value": "Dublin"
+            },
+            {
+              "value": "United States"
+            }
+          ]
         },
         {
-          "value": "(not set)"
+          "dimensionValues": [
+            {
+              "value": "(not set)"
+            },
+            {
+              "value": "United Kingdom"
+            }
+          ]
         },
         {
-          "value": "Cork"
+          "dimensionValues": [
+            {
+              "value": "Cork"
+            },
+            {
+              "value": "India"
+            }
+          ]
         }
       ],
-      "rowCount": 3
-    },
-    {
-      "pivotDimensionHeaders": [
-        {
-          "value": "United States"
-        },
-        {
-          "value": "United Kingdom"
-        },
-        {
-          "value": "India"
-        }
-      ],
-      "rowCount": 3
+      "rowCount": 6
     },
     {
       "pivotDimensionHeaders": [

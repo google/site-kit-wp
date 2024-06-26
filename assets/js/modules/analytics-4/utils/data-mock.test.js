@@ -497,8 +497,8 @@ describe( 'data-mock', () => {
 				expect( pivotHeader ).toHaveProperty( 'rowCount' );
 			} );
 
-			// Verify the aggregate should have 3 * the number of dimensions as each dimension has a total, max and min.
-			expect( report.aggregates ).toHaveLength( 18 );
+			// Verify the aggregate should have 3 * the number of dimension combinations for each pivot as each dimension has a total, max and min.
+			expect( report.aggregates ).toHaveLength( 3 * 3 + 3 * 3 );
 		} );
 
 		it( 'generates pivot reports with the correct number of columns with three dimensions', () => {
@@ -554,7 +554,7 @@ describe( 'data-mock', () => {
 				expect( pivotHeader ).toHaveProperty( 'rowCount' );
 			} );
 
-			// Verify the aggregate should have 3 * the number of dimensions as each dimension has a total, max and min.
+			// Verify the aggregate should have 3 * the number of dimension combinations for each pivot as each dimension has a total, max and min.
 			expect( report.aggregates ).toHaveLength( 2 * 3 + 3 * 3 + 3 * 3 );
 		} );
 
@@ -604,7 +604,7 @@ describe( 'data-mock', () => {
 				mockedPivotReportMultiDimensionFieldNames
 			);
 
-			// Verify the correct number of rows for the pivot, there should be the product pivot[ 0 ].limit * pivot[ 1 ].limit
+			// Verify the correct number of rows for the pivot, it should be the product of pivot[ 0 ].limit * pivot[ 1 ].limit * pivot[ 2 ].limit.
 			expect( report.rows ).toHaveLength( 2 * 3 * 4 );
 
 			// Verify a row has just a dimensionValue and metricValue key.
