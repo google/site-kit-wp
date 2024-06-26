@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { ProgressBar } from 'googlesitekit-components';
@@ -32,7 +32,6 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
 } from '../../utils/validation';
-const { useSelect } = Data;
 
 export default function SettingsEnhancedMeasurementView() {
 	const ga4PropertyID = useSelect( ( select ) =>

@@ -26,7 +26,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	FORM_ACCOUNT_CREATE,
@@ -50,8 +50,6 @@ import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
-
-const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );

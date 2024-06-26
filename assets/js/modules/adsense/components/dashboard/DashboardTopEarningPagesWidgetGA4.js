@@ -32,7 +32,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
@@ -53,8 +53,6 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import { ZeroDataMessage } from '../../../analytics-4/components/common';
 import { AdSenseLinkCTA } from '../common';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-
-const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,

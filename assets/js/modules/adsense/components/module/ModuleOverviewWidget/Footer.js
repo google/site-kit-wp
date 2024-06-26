@@ -31,9 +31,8 @@ import {
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import SourceLink from '../../../../../components/SourceLink';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-const { useSelect } = Data;
 
 function Footer() {
 	const viewOnlyDashboard = useViewOnly();

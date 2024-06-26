@@ -25,7 +25,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Link from '../Link';
 import { Cell, Grid, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -33,7 +33,6 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
 import AdminBarWidgets from './AdminBarWidgets';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function AdminBarApp() {
 	const viewContext = useViewContext();

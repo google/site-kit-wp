@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
@@ -40,7 +40,6 @@ import {
 } from './utils';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-const { useSelect } = Data;
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>

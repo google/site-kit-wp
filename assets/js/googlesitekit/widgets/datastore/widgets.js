@@ -26,12 +26,10 @@ import { original } from 'immer';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { isInactiveWidgetState, normalizeWidgetModules } from '../util';
 import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
-
-const { createRegistrySelector } = Data;
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';

@@ -30,14 +30,13 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import PreviewGraph from '../../../../../components/PreviewGraph';
 import ConversionsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
 
 export default function CreateConversionCTA() {
 	const viewContext = useViewContext();

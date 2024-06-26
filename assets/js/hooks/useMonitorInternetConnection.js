@@ -30,10 +30,8 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-
-const { useDispatch, useSelect } = Data;
 
 /**
  * Monitors the user's internet connection status.

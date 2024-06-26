@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -49,7 +49,7 @@ const baseInitialState = {
 
 const baseActions = {
 	*resetAccounts() {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
 			payload: {},
@@ -98,7 +98,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingAccounts = registry
 			.select( MODULES_ADSENSE )
 			.getAccounts();
@@ -129,7 +129,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetAccountsStore, {
+const store = combineStores( fetchGetAccountsStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	reducer: baseReducer,

@@ -26,8 +26,7 @@ import { sprintf, _n } from '@wordpress/i18n';
  */
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+import { useSelect } from 'googlesitekit-data';
 
 function Header() {
 	const currentDayCount = useSelect( ( select ) =>

@@ -31,7 +31,7 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -44,8 +44,6 @@ import { trackEvent } from '../../../../util';
 import Link from '../../../Link';
 import Notice from './Notice';
 import ErrorText from '../../../ErrorText';
-
-const { useSelect, useDispatch } = Data;
 
 export default function Footer( { closeDialog, openResetDialog } ) {
 	const viewContext = useViewContext();

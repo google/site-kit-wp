@@ -26,7 +26,7 @@ import { removeQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
@@ -42,7 +42,6 @@ import { getContextScrollTop } from '../../util/scroll';
 import useViewContext from '../../hooks/useViewContext';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import Link from '../Link';
-const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const [ slug ] = useQueryArg( 'slug' );

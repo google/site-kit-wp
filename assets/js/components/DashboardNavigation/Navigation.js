@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import NavKeyMetricsIcon from '../../../svg/icons/nav-key-metrics-icon.svg';
 import NavTrafficIcon from '../../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../../svg/icons/nav-content-icon.svg';
@@ -71,7 +71,6 @@ import { getContextScrollTop } from '../../util/scroll';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
-const { useSelect, useDispatch } = Data;
 
 export default function Navigation() {
 	const dashboardType = useDashboardType();

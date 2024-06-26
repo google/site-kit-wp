@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
@@ -44,8 +44,6 @@ import {
 } from '../util/errors';
 import useViewOnly from '../hooks/useViewOnly';
 import Link from './Link';
-
-const { useSelect, useDispatch } = Data;
 
 export default function ReportErrorActions( props ) {
 	const {

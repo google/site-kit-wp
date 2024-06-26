@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Header from './Header';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
@@ -64,7 +64,6 @@ import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
-const { useSelect } = Data;
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();

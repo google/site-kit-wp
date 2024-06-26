@@ -29,7 +29,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CATEGORIES,
@@ -47,7 +47,6 @@ import {
 import whenActive from '../../../../util/when-active';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-const { useSelect, useInViewSelect } = Data;
 
 /**
  * Gets the report options for the Top Categories widget.

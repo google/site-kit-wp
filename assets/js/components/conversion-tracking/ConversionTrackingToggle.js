@@ -23,8 +23,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import ErrorText from '../../components/ErrorText';
 import LoadingWrapper from '../LoadingWrapper';
@@ -33,8 +33,6 @@ import { useFeature } from '../../hooks/useFeature';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
-
-const { useDispatch, useSelect } = Data;
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();

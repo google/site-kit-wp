@@ -25,13 +25,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { isPendingAccountStatus } from '../../util/status';
 import ModuleSettingsWarning from '../../../../components/notifications/ModuleSettingsWarning';
-const { useSelect } = Data;
 
 export default function SettingsSetupIncomplete() {
 	const accountStatus = useSelect( ( select ) =>

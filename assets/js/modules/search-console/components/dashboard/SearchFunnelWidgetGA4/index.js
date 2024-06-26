@@ -32,7 +32,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
@@ -57,7 +57,6 @@ import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics-4/datastore/constants';
-const { useSelect, useInViewSelect } = Data;
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );

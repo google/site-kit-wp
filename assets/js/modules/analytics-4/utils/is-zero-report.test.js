@@ -158,13 +158,15 @@ describe( 'isZeroReport', () => {
 				],
 			},
 		],
-		// RE: bug report #8442 where GA4 appears to occasionally return boolean for totals rows.
+		// RE: bug report #8442 where GA4 occasionally returns zero keyed empty object for totals.
 		[
 			true,
-			'a report that has a boolean value for totals',
+			'a report that has a zero keyed empty object for totals',
 			{
 				rows: [ {}, {}, {} ],
-				totals: true,
+				totals: {
+					0: {},
+				},
 			},
 		],
 	] )( 'returns %s when %s is passed', ( expectedValue, _, report ) => {

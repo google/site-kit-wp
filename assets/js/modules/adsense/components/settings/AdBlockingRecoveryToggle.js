@@ -31,7 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Switch } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
@@ -43,7 +43,6 @@ import {
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { parseAccountIDFromExistingTag } from '../../util';
-const { useSelect, useDispatch } = Data;
 
 export default function AdBlockingRecoveryToggle() {
 	const viewContext = useViewContext();

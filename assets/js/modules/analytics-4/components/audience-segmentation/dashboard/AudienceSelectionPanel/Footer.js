@@ -30,7 +30,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_FORM,
@@ -40,8 +40,6 @@ import {
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
-
-const { useSelect, useDispatch } = Data;
 
 export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const selectedItems = useSelect( ( select ) =>

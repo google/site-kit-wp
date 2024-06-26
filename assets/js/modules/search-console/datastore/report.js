@@ -26,7 +26,11 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
@@ -38,7 +42,6 @@ import {
 } from '../../../util/report-validation';
 import { isZeroReport } from '../util';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
-const { createRegistrySelector } = Data;
 
 /**
  * Returns report args for a sample report.
@@ -153,7 +156,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getReport( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingReport = registry
 			.select( MODULES_SEARCH_CONSOLE )
 			.getReport( options );
@@ -231,7 +234,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
+const store = combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

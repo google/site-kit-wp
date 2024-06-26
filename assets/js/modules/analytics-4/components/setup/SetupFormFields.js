@@ -25,7 +25,7 @@ import { Fragment, useCallback, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -41,7 +41,6 @@ import {
 } from '../common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupFormFields() {
 	const accounts =
