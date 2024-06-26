@@ -205,7 +205,7 @@ export const selectors = {
 	 * Returns the current reference date, typically today.
 	 *
 	 * @since 1.22.0
-	 * @since n.e.x.t Added options to allow getting the reference date as a Date instance.
+	 * @since 1.130.0 Added options to allow getting the reference date as a Date instance.
 	 *
 	 * @param {Object} state            The current data store's state.
 	 * @param {Object} [options]        Options parameter. Default is: {}.

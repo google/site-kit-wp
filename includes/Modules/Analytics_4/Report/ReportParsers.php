@@ -21,7 +21,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_
 /**
  * A class with helper methods to parse report properties
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class ReportParsers {
 	 * Parses report dimensions received in the request params.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into ReportParsers for shared used between Report and PivotReport.
+	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_Dimension[] An array of AnalyticsData Dimension objects.
@@ -74,7 +74,7 @@ class ReportParsers {
 	 * Parses report date ranges received in the request params.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into ReportParsers for shared used between Report and PivotReport.
+	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
@@ -118,7 +118,7 @@ class ReportParsers {
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into ReportParsers for shared used between Report and PivotReport.
+	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.
