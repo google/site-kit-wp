@@ -34,13 +34,11 @@ export function isZeroReport( report ) {
 		return undefined;
 	}
 
-	// If there is no rows array, no totals array, the totals row is zero keyed
-	// object (RE: #8442), or totals is an array of empty objects, this is an
-	// empty report.
+	// If there is no rows array, no totals array, or totals is an array of empty objects, this is an empty report.
 	if (
 		! report?.rows ||
 		! report?.totals ||
-		Object.values( report?.totals )?.every?.( isEmpty )
+		report?.totals?.every( isEmpty )
 	) {
 		return true;
 	}
