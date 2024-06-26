@@ -273,6 +273,18 @@ export const createSettingsStore = (
 	} = createValidationSelector( validateHaveSettingsChanged );
 
 	const selectors = {
+		/**
+		 * Indicates whether the current settings have changed from what is saved.
+		 *
+		 * @since 1.6.0
+		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
+		 * @since 1.129.0 Changed the approach to use validateHaveSettingsChanged callback.
+		 * @since n.e.x.t Updated implementation to use safeSelector and dangerousSelector returned from createValidationSelector.
+		 *
+		 * @param {Object}     state Data store's state.
+		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
+		 * @return {boolean} True if the settings have changed, false otherwise.
+		 */
 		haveSettingsChanged,
 		__dangerousHaveSettingsChanged,
 
