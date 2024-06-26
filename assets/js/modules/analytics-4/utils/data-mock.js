@@ -922,7 +922,9 @@ export function getAnalytics4MockPivotResponse( options ) {
 					( dimensionValue ) => typeof dimensionValue === 'string'
 				)
 			) {
-				streams.push( from( args.dimensionFilters[ dimension ] ) );
+				allDimensionValues[ dimension ] =
+					args.dimensionFilters[ dimension ];
+				streams.push( from( allDimensionValues[ dimension ] ) );
 			} else if (
 				dimension &&
 				typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
@@ -939,7 +941,7 @@ export function getAnalytics4MockPivotResponse( options ) {
 					}
 				}
 
-				streams.push( from( args.dimensionFilters[ dimension ] ) );
+				streams.push( from( allDimensionValues[ dimension ] ) );
 			} else if (
 				dimension &&
 				Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
