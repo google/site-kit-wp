@@ -746,35 +746,27 @@ export function provideAnalytics4MockReport( registry, options ) {
  * @since n.e.x.t
  *
  * @param {Array.<string>} dimensionValues An array of valid dimension names.
+ * @param {Array.<string>} pivotFieldNames An array of pivot field names.
  * @return {Array.<Array>} Creates necessary combinations of dimension values.
  */
-function createPivotMultiDimensionCombinations( dimensionValues ) {
+function createPivotMultiDimensionCombinations(
+	dimensionValues,
+	pivotFieldNames
+) {
+	let indexSum = 0;
 	const chunks = [];
-	const checkedIndexes = [];
 
-	dimensionValues.forEach( ( value, key ) => {
-		if ( ! checkedIndexes.includes( key ) ) {
-			const currentLength = value.length;
-			chunks[ key ] = [];
+	pivotFieldNames.forEach( ( dimensions ) => {
+		const count = dimensions.length;
+		const slicedDimensions = dimensionValues.slice(
+			indexSum,
+			indexSum + count
+		);
 
-			dimensionValues.forEach( ( innerValue, index ) => {
-				if ( innerValue.length === currentLength ) {
-					chunks[ key ].push( innerValue );
-					checkedIndexes.push( index );
-				}
-			} );
+		chunks.push( zip( ...slicedDimensions ) );
 
-			if ( chunks[ key ].length > 1 ) {
-				chunks[ key ] = zip( ...chunks[ key ] );
-			} else if ( chunks[ key ].length ) {
-				chunks[ key ] = chunks[ key ][ 0 ];
-			}
-		}
+		indexSum += count;
 	} );
-
-	dimensionValues = chunks.filter(
-		( chunkVal ) => chunkVal && chunkVal.length
-	);
 
 	const combinations = cartesianProduct(
 		chunks.filter( ( chunkVal ) => chunkVal?.length )
@@ -909,6 +901,8 @@ export function getAnalytics4MockPivotResponse( options ) {
 		? parseDimensionArgs( args.dimensions )
 		: [];
 
+	const pivotFieldNames = args.pivots.map( ( pivot ) => pivot.fieldNames );
+
 	// Generate streams (array) for each pivot field names (which map 1:1 to the report dimensions).
 	args.pivots.forEach( ( { fieldNames, limit } ) => {
 		// We only support one dimension for each pivot in our current pivot report implementation
@@ -975,7 +969,10 @@ export function getAnalytics4MockPivotResponse( options ) {
 			allLimitedDimensionValues = dimensionValue;
 
 			const pivotDimensionCombinations = hasMultiDimensions
-				? createPivotMultiDimensionCombinations( dimensionValue )
+				? createPivotMultiDimensionCombinations(
+						dimensionValue,
+						pivotFieldNames
+				  )
 				: cartesianProduct( dimensionValue );
 
 			return pivotDimensionCombinations.map(
