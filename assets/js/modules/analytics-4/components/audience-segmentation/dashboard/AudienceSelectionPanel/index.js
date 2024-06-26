@@ -36,6 +36,7 @@ import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants'
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AddGroupNotice from './AddGroupNotice';
 import AudienceItems from './AudienceItems';
+import ErrorNotice from './ErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
@@ -88,6 +89,7 @@ export default function AudienceSelectionPanel() {
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<AddGroupNotice savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
+			<ErrorNotice />
 			<Footer
 				closePanel={ closePanel }
 				isOpen={ isOpen }

@@ -37,6 +37,38 @@
 			margin: 0;
 		}
 
+		.googlesitekit-audience-selection-panel__error-notice {
+			align-items: center;
+			background-color: $c-utility-error-container;
+			display: flex;
+			justify-content: space-between;
+			padding: $grid-gap-phone - 2 $grid-gap-desktop;
+
+			p {
+				color: $c-utility-on-error-container;
+				flex-basis: 65%;
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+				margin: 0;
+
+				a {
+					color: $c-utility-on-error-container;
+					text-decoration: underline;
+				}
+			}
+
+			.googlesitekit-audience-selection-panel__error-notice-actions {
+
+				.googlesitekit-cta-link {
+					color: $c-utility-on-error-container;
+					font-size: $fs-label-md;
+					font-weight: $fw-medium;
+					line-height: $lh-label-md;
+				}
+			}
+		}
+
 		.googlesitekit-audience-selection-panel__add-group-notice {
 			background-color: $c-surfaces-background;
 			margin: 5px $grid-gap-desktop;
