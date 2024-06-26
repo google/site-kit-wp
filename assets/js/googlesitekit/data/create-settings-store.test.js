@@ -32,6 +32,7 @@ import {
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
+import { CORE_SITE } from '../datastore/site/constants';
 
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
 
@@ -410,6 +411,24 @@ describe( 'createSettingsStore store', () => {
 			} );
 		} );
 
+		describe( '__dangerousHaveSettingsChanged', () => {
+			it( 'should throw an exception when invalid  function is supplied for validateHaveSettingsChanged', () => {
+				const validateHaveSettingsChanged = null;
+
+				createSettingsStore( ...STORE_ARGS, {
+					settingSlugs: [ 'isSkyBlue' ],
+					validateHaveSettingsChanged,
+					registry,
+				} );
+
+				expect( () =>
+					registry
+						.select( CORE_SITE )
+						.__dangerousHaveSettingsChanged()
+				).toThrow();
+			} );
+		} );
+
 		describe( 'haveSettingsChanged', () => {
 			it( 'informs whether client-side settings differ from server-side ones', async () => {
 				// Initially false.
@@ -513,6 +532,21 @@ describe( 'createSettingsStore store', () => {
 				// Checking no values should be possible, and should not be treated as
 				// an `undefined` keys array.
 				expect( select.haveSettingsChanged( [] ) ).toEqual( false );
+			} );
+
+			it( 'should not throw an exception when invalid function is supplied for validateHaveSettingsChanged', () => {
+				const validateHaveSettingsChanged = null;
+
+				createSettingsStore( ...STORE_ARGS, {
+					settingSlugs: [ 'isSkyBlue' ],
+					validateHaveSettingsChanged,
+					registry,
+				} );
+
+				// Since selector is invalid, it should return false as exception would be caught by the safeSelector.
+				expect(
+					registry.select( CORE_SITE ).haveSettingsChanged()
+				).toBe( false );
 			} );
 		} );
 
