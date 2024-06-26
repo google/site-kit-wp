@@ -150,7 +150,7 @@ function LeastEngagingPagesWidget( props ) {
 						reportOptions
 				  )
 				: undefined,
-		[ report, reportOptions ]
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect(
