@@ -412,7 +412,7 @@ describe( 'createSettingsStore store', () => {
 		} );
 
 		describe( '__dangerousHaveSettingsChanged', () => {
-			it( 'should throw an exception when invalid  function is supplied for validateHaveSettingsChanged', () => {
+			it( 'should throw an exception from validateHaveSettingsChanged when error occurs', () => {
 				const validateHaveSettingsChanged = null;
 
 				createSettingsStore( ...STORE_ARGS, {
@@ -534,7 +534,7 @@ describe( 'createSettingsStore store', () => {
 				expect( select.haveSettingsChanged( [] ) ).toEqual( false );
 			} );
 
-			it( 'should not throw an exception when invalid function is supplied for validateHaveSettingsChanged', () => {
+			it( 'should not throw an exception', () => {
 				const validateHaveSettingsChanged = null;
 
 				createSettingsStore( ...STORE_ARGS, {
