@@ -498,7 +498,7 @@ describe( 'data-mock', () => {
 			} );
 
 			// Verify the aggregate should have 3 * the number of dimensions as each dimension has a total, max and min.
-			expect( report.aggregates ).toHaveLength( 3 * 2 );
+			expect( report.aggregates ).toHaveLength( 18 );
 		} );
 
 		it( 'generates pivot reports with the correct number of columns with three dimensions', () => {
@@ -555,7 +555,7 @@ describe( 'data-mock', () => {
 			} );
 
 			// Verify the aggregate should have 3 * the number of dimensions as each dimension has a total, max and min.
-			expect( report.aggregates ).toHaveLength( 3 * 3 );
+			expect( report.aggregates ).toHaveLength( 2 * 3 + 3 * 3 + 3 * 3 );
 		} );
 
 		it( 'generates pivot reports with the correct number of report rows with multiple fieldNames in pivot', () => {
@@ -610,6 +610,8 @@ describe( 'data-mock', () => {
 			// Verify a row has just a dimensionValue and metricValue key.
 			expect( report.rows[ 0 ] ).toHaveProperty( 'dimensionValues' );
 			expect( report.rows[ 0 ] ).toHaveProperty( 'metricValues' );
+
+			expect( report.aggregates ).toHaveLength( 2 * 3 + 3 * 3 + 4 * 3 );
 		} );
 	} );
 } );

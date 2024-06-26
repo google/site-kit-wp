@@ -112,7 +112,13 @@
           "value": "RESERVED_MIN"
         },
         {
-          "value": "city"
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "RESERVED_MIN"
         }
       ],
       "metricValues": [
@@ -130,7 +136,13 @@
           "value": "RESERVED_MIN"
         },
         {
-          "value": "audienceResourceName"
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "RESERVED_MIN"
         }
       ],
       "metricValues": [
@@ -145,10 +157,16 @@
     {
       "dimensionValues": [
         {
+          "value": "Dublin"
+        },
+        {
           "value": "RESERVED_MIN"
         },
         {
-          "value": "country"
+          "value": "United States"
+        },
+        {
+          "value": "RESERVED_MIN"
         }
       ],
       "metricValues": [
@@ -163,10 +181,16 @@
     {
       "dimensionValues": [
         {
+          "value": "(not set)"
+        },
+        {
           "value": "RESERVED_MIN"
         },
         {
-          "value": "sessionDefaultChannelGrouping"
+          "value": "United Kingdom"
+        },
+        {
+          "value": "RESERVED_MIN"
         }
       ],
       "metricValues": [
@@ -181,10 +205,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_MAX"
+          "value": "Cork"
         },
         {
-          "value": "city"
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "RESERVED_MIN"
         }
       ],
       "metricValues": [
@@ -199,10 +229,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_MAX"
+          "value": "RESERVED_MIN"
         },
         {
-          "value": "audienceResourceName"
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "Direct"
         }
       ],
       "metricValues": [
@@ -217,10 +253,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_MAX"
+          "value": "RESERVED_MIN"
         },
         {
-          "value": "country"
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "Organic Search"
         }
       ],
       "metricValues": [
@@ -235,10 +277,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_MAX"
+          "value": "RESERVED_MIN"
         },
         {
-          "value": "sessionDefaultChannelGrouping"
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "Paid Social"
         }
       ],
       "metricValues": [
@@ -253,10 +301,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_TOTAL"
+          "value": "RESERVED_MIN"
         },
         {
-          "value": "city"
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "RESERVED_MIN"
+        },
+        {
+          "value": "(other)"
         }
       ],
       "metricValues": [
@@ -271,10 +325,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_TOTAL"
+          "value": "RESERVED_MAX"
         },
         {
-          "value": "audienceResourceName"
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
         }
       ],
       "metricValues": [
@@ -289,10 +349,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_TOTAL"
+          "value": "RESERVED_MAX"
         },
         {
-          "value": "country"
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
         }
       ],
       "metricValues": [
@@ -307,10 +373,16 @@
     {
       "dimensionValues": [
         {
-          "value": "RESERVED_TOTAL"
+          "value": "Dublin"
         },
         {
-          "value": "sessionDefaultChannelGrouping"
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "RESERVED_MAX"
         }
       ],
       "metricValues": [
@@ -319,6 +391,366 @@
         },
         {
           "value": "71"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "RESERVED_MAX"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "84"
+        },
+        {
+          "value": "40"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "RESERVED_MAX"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "83"
+        },
+        {
+          "value": "52"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "9"
+        },
+        {
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "85"
+        },
+        {
+          "value": "58"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "67"
+        },
+        {
+          "value": "100"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "RESERVED_MAX"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "9"
+        },
+        {
+          "value": "83"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "properties/12345/audiences/1"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "28"
+        },
+        {
+          "value": "82"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "properties/12345/audiences/2"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "50"
+        },
+        {
+          "value": "85"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "Dublin"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "United States"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "74"
+        },
+        {
+          "value": "25"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "(not set)"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "United Kingdom"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "86"
+        },
+        {
+          "value": "29"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "Cork"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "India"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "3"
+        },
+        {
+          "value": "75"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "Direct"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "89"
+        },
+        {
+          "value": "80"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "Organic Search"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "53"
+        },
+        {
+          "value": "47"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "Paid Social"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "77"
+        },
+        {
+          "value": "30"
+        }
+      ]
+    },
+    {
+      "dimensionValues": [
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "RESERVED_TOTAL"
+        },
+        {
+          "value": "(other)"
+        }
+      ],
+      "metricValues": [
+        {
+          "value": "72"
+        },
+        {
+          "value": "2"
         }
       ]
     }
