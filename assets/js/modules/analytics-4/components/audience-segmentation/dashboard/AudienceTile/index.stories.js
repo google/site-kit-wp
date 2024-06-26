@@ -250,6 +250,35 @@ ReadyLongCityNames.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyLongCityNames',
 };
 
+export const ReadyLongPostTitles = Template.bind( {} );
+ReadyLongPostTitles.storyName = 'ReadyLongPostTitles';
+ReadyLongPostTitles.args = {
+	...readyProps,
+	topContentTitlesReport: {
+		...topContentTitlesReport,
+		rows: ( () => {
+			const longPostTitles =
+				'This is a very long title to test the audience segmentation tile that it wraps up and doesn not extend to the next line. It should show ellipsis instead. It must also have some gap at the right side so that the post title does not collide with the user count being shown next to it.';
+
+			return topContentTitlesReport.rows.map( ( row, index ) => {
+				const { dimensionValues, metricValues } = row;
+
+				return {
+					dimensionValues: [
+						dimensionValues[ 0 ],
+						{ value: `Test post ${ index } - ${ longPostTitles }` },
+						dimensionValues[ 2 ],
+					],
+					metricValues,
+				};
+			} );
+		} )(),
+	},
+};
+ReadyLongPostTitles.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyLongPostTitles',
+};
+
 export const NoData = Template.bind( {} );
 NoData.storyName = 'NoData';
 NoData.args = {
