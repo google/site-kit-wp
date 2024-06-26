@@ -1,5 +1,5 @@
 /**
- * NoAudienceBannerWidget component tests.
+ * AudienceTilesWidget component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import NoAudienceBannerWidget from '.';
+import AudienceTilesWidget from '.';
 import { render } from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -29,14 +29,14 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../../../../tests/js/utils';
 import { getWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 
-describe( 'NoAudienceBannerWidget', () => {
+describe( 'AudienceTilesWidget', () => {
 	let registry;
 
 	const { Widget, WidgetNull } = getWidgetComponentProps(
-		'analyticsNoAudienceBanner'
+		'analyticsAudienceTiles'
 	);
 
 	const auduenceSettingsRegExp = new RegExp(
@@ -65,10 +65,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		muteFetch( auduenceSettingsRegExp );
 
 		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{
 				registry,
 			}
@@ -84,10 +81,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		} );
 
 		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{
 				registry,
 			}
@@ -104,10 +98,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.setAvailableAudiences( availableAudiences );
 
 		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{
 				registry,
 			}
@@ -116,7 +107,45 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when configured audience is matching available audiences', () => {
+	it( 'should not render when there is no matching audience', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/9' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { container } = render(
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render when there is no available audience', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/9' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { container } = render(
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render render when configured audience is matching available audiences', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -126,20 +155,19 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+		const { container, waitForRegistry } = render(
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{
 				registry,
 			}
 		);
 
-		expect( container ).toBeEmptyDOMElement();
+		await waitForRegistry();
+
+		expect( container ).not.toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when all configured audiences are matching available audiences', () => {
+	it( 'should render when all configured audiences are matching available audiences', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -152,20 +180,19 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+		const { container, waitForRegistry } = render(
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{
 				registry,
 			}
 		);
 
-		expect( container ).toBeEmptyDOMElement();
+		await waitForRegistry();
+
+		expect( container ).not.toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when some configured audiences are matching available audiences', () => {
+	it( 'should render when some configured audiences are matching available audiences', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -178,74 +205,15 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+		const { container, waitForRegistry } = render(
+			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{
 				registry,
 			}
 		);
 
-		expect( container ).toBeEmptyDOMElement();
-	} );
+		await waitForRegistry();
 
-	it( 'should render with correct message when there are additional configurable audiences available', () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, getByText } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
-
-		expect(
-			container.querySelector( '.googlesitekit-no-audience-banner' )
-		).toBeInTheDocument();
-
-		expect( getByText( /Select other groups/i ) ).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render with correct message when there is no additional configurable audience available', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, getByText } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
-
-		expect(
-			container.querySelector( '.googlesitekit-no-audience-banner' )
-		).toBeInTheDocument();
-
-		expect(
-			getByText( /Learn more about how to group site visitors in/i )
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
+		expect( container ).not.toBeEmptyDOMElement();
 	} );
 } );
