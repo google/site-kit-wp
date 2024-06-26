@@ -196,7 +196,7 @@ export function isValidGoogleTagContainerID( googleTagContainerID ) {
 /**
  * Checks whether a given report options object is valid.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  *
  * @param {Object} options The options for the report.
  */
@@ -254,7 +254,7 @@ export function validateReport( options ) {
 /**
  * Checks whether a given pivot report options object is valid.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  *
  * @param {Object} options The options for the pivot report.
  */

@@ -719,7 +719,7 @@ export function provideAnalytics4MockReport( registry, options ) {
 /**
  * Creates all combinations of pivot dimension values that we expect in a pivot report response.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  *
  * @param {Array.<string>} dimensionValues An array of valid dimension names.
  * @return {Array.<Array>} An array of all possible combinations of dimension values.
@@ -738,7 +738,7 @@ function createPivotDimensionCombinations( dimensionValues ) {
 /**
  * Sorts pivot report rows and returns them.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  *
  * @param {Array.<Object>} rows    Array of rows to sort.
  * @param {Array.<Object>} metrics Array of report metrics.
@@ -788,7 +788,7 @@ export function sortPivotRows( rows, metrics, pivots ) {
 /**
  * Generates mock data for Analytics 4 pivot reports.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  *
  * @param {Object} options Report options.
  * @return {Array.<Object>} An array with generated report.
@@ -1006,7 +1006,7 @@ export function getAnalytics4MockPivotResponse( options ) {
 /**
  * Generates mock response for Analytics 4 pivot reports.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Pivot report options.

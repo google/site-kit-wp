@@ -77,7 +77,7 @@ const baseSelectors = {
 	/**
 	 * Gets an Analytics pivot report for the given options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.

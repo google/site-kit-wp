@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Pivot as Google_Se
 /**
  * The base class for Analytics 4 pivot reports.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class PivotReport extends ReportParsers {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 * @var Context
 	 */
 	protected $context;
@@ -35,7 +35,7 @@ class PivotReport extends ReportParsers {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -46,7 +46,7 @@ class PivotReport extends ReportParsers {
 	/**
 	 * Parses the pivots value of the data request into an array of AnalyticsData Pivot object instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_Pivot[] An array of AnalyticsData Pivot objects.

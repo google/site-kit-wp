@@ -2326,7 +2326,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Populates tag ID mismatch value to pass to JS via _googlesitekitModulesData.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
