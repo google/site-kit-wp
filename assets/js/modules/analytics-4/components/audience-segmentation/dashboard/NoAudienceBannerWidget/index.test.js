@@ -116,6 +116,52 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
+	it( 'should not render when configuredAudiences is null (not set)', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { container } = render(
+			<NoAudienceBannerWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render when there is no configured audience.', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { container } = render(
+			<NoAudienceBannerWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( 'should not render when configured audience is matching available audiences', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
