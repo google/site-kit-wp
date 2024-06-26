@@ -31,7 +31,8 @@ import AudienceTiles from './AudienceTiles';
 
 function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		return audiences?.map( ( audience ) => audience.name );
 	} );
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()

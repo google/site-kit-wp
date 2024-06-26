@@ -31,7 +31,8 @@ import NoAudienceBanner from './NoAudienceBanner';
 
 function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		return audiences?.map( ( audience ) => audience.name );
 	} );
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
@@ -40,7 +41,7 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 	const hasNoMatchingAudience = configuredAudiences?.every(
 		( audience ) =>
 			Array.isArray( availableAudiences ) &&
-			! availableAudiences?.includes( audience )
+			! availableAudiences.includes( audience )
 	);
 
 	const configurableAudiences = availableAudiences?.filter(
