@@ -97,14 +97,17 @@ function ModulePopularPagesWidgetGA4( props ) {
 		] )
 	);
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
+				: undefined,
+		[ error, report, args ]
 	);
 
 	const loaded = useSelect( ( select ) => {
