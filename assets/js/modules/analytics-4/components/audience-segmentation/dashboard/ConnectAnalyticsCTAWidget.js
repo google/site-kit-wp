@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,7 +40,6 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import { Fragment, createInterpolateElement } from '@wordpress/element';
 import LeanCTABanner from '../../../../../components/LeanCTABanner';
 
 export default function ConnectAnalyticsCTAWidget( { Widget } ) {
