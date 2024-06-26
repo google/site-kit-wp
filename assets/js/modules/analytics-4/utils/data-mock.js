@@ -1026,18 +1026,28 @@ export function getAnalytics4MockPivotResponse( options ) {
 				return acc;
 			}, [] );
 
+			const lookup = pivotFieldNames
+				.map( ( field ) => {
+					return new Array( field.length ).fill( field.length > 1 );
+				} )
+				.flatMap( ( val ) => val );
+
 			// Generate the pivot headers with a row count and pivotDimensionHeaders for each column.
 			data.pivotHeaders = allLimitedDimensionValues.reduce(
-				( acc, dimensionValues ) => {
+				( acc, dimensionValues, index ) => {
 					acc.push( {
 						pivotDimensionHeaders: dimensionValues.map(
-							( value ) => ( {
-								dimensionValues: [
-									{
-										value,
-									},
-								],
-							} )
+							( value ) => {
+								return lookup[ index ] === true
+									? { value }
+									: {
+											dimensionValues: [
+												{
+													value,
+												},
+											],
+									  };
+							}
 						),
 						rowCount: dimensionValues.length,
 					} );
