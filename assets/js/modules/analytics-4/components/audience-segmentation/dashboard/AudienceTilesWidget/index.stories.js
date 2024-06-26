@@ -40,7 +40,7 @@ import {
 	audiences as audiencesFixture,
 	availableAudiences,
 } from '../../../../datastore/__fixtures__';
-import AudienceTilesWidget from './AudienceTiles';
+import AudienceTilesWidget from './';
 
 function excludeAudienceFromReport( report, audienceResourceName ) {
 	const newRows = report.rows.filter(
