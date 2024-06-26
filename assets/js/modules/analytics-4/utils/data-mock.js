@@ -958,15 +958,11 @@ export function getAnalytics4MockPivotResponse( options ) {
 			}
 		} );
 	} );
-	// Keep our stream formatted list of dimensions to generate the pivotHeaders at the end.
-	let allLimitedDimensionValues = [];
 
 	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
 		// Create a row object, with generate metric values, for each combination of dimensions to generate the pivot columns.
 		map( ( dimensionValue ) => {
-			allLimitedDimensionValues = dimensionValue;
-
 			const pivotDimensionCombinations = hasMultiDimensions
 				? createPivotMultiDimensionCombinations(
 						dimensionValue,
@@ -1034,35 +1030,22 @@ export function getAnalytics4MockPivotResponse( options ) {
 				return acc;
 			}, [] );
 
-			const lookup = pivotFieldNames
-				.map( ( field ) => {
-					return new Array( field.length ).fill( field.length > 1 );
-				} )
-				.flatMap( ( val ) => val );
+			data.pivotHeaders = options.pivots.map( ( { fieldNames } ) => {
+				const pivotDimensionValueSets = fieldNames.map(
+					( dimension ) => allDimensionValues[ dimension ]
+				);
 
-			// Generate the pivot headers with a row count and pivotDimensionHeaders for each column.
-			data.pivotHeaders = allLimitedDimensionValues.reduce(
-				( acc, dimensionValues, index ) => {
-					acc.push( {
-						pivotDimensionHeaders: dimensionValues.map(
-							( value ) => {
-								return lookup[ index ] === true
-									? { value }
-									: {
-											dimensionValues: [
-												{
-													value,
-												},
-											],
-									  };
-							}
-						),
-						rowCount: dimensionValues.length,
-					} );
-					return acc;
-				},
-				[]
-			);
+				return {
+					pivotDimensionHeaders: zip(
+						...pivotDimensionValueSets
+					).map( ( values ) => ( {
+						dimensionValues: values.map( ( value ) => ( {
+							value,
+						} ) ),
+					} ) ),
+					rowCount: pivotDimensionValueSets.flat().length,
+				};
+			} );
 		} );
 
 	// Set the original seed value for the faker.
