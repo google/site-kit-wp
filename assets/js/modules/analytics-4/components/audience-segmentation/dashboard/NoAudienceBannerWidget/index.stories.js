@@ -76,7 +76,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				const audienceSettings = {
-					configuredAudiences: [ 'properties/12345/audiences/1' ],
+					configuredAudiences: [ 'properties/12345/audiences/9' ],
 					isAudienceSegmentationWidgetHidden: false,
 				};
 
