@@ -27,6 +27,7 @@ import {
 } from '../../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { availableAudiences } from '../../../../datastore/__fixtures__';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsNoAudienceBanner'
@@ -43,16 +44,6 @@ HasConfigurableAudiences.scenario = {
 };
 HasConfigurableAudiences.args = {
 	setupRegistry: ( registry ) => {
-		const availableAudiences = [
-			{
-				name: 'properties/123456789/audiences/0987654321',
-				displayName: 'All visitors',
-				description: 'All users',
-				audienceType: 'DEFAULT_AUDIENCE',
-				audienceSlug: 'all-users',
-			},
-		];
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -85,9 +76,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				const audienceSettings = {
-					configuredAudiences: [
-						'properties/123456789/audiences/0987654323',
-					],
+					configuredAudiences: [ 'properties/12345/audiences/1' ],
 					isAudienceSegmentationWidgetHidden: false,
 				};
 
