@@ -24,9 +24,8 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useRegistry } from 'googlesitekit-data';
 import { restoreAllSnapshots } from '../../googlesitekit/data/create-snapshot-store';
-const { useRegistry } = Data;
 
 function RestoreSnapshots( { children } ) {
 	const registry = useRegistry();

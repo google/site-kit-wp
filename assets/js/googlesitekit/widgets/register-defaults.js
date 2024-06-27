@@ -40,8 +40,13 @@ import {
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
-import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
+import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
+import {
+	AudienceAreaFooter,
+	ChangeGroupsLink,
+} from '../../modules/analytics-4/components/audience-segmentation/dashboard';
+import { isFeatureEnabled } from '../../features';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -74,6 +79,7 @@ export function registerDefaults( widgetsAPI ) {
 		// Main dashboard
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
@@ -137,6 +143,24 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
+
+	if ( isFeatureEnabled( 'audienceSegmentation' ) ) {
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+			{
+				subtitle: __(
+					'Understand how different visitor groups interact with your site',
+					'google-site-kit'
+				),
+				hasNewBadge: true,
+				style: WIDGET_AREA_STYLES.BOXES,
+				priority: 2,
+				CTA: ChangeGroupsLink,
+				Footer: AudienceAreaFooter,
+			},
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+	}
 
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,

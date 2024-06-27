@@ -27,6 +27,33 @@
 			}
 		}
 
+		.googlesitekit-setup-cta-banner__title {
+			font-family: $f-secondary;
+
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-headline-sm;
+				line-height: $lh-headline-sm;
+			}
+
+			@media (min-width: $width-xlarge + px) {
+				font-size: $fs-headline-md;
+				line-height: $lh-headline-md;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__description {
+
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-body-md;
+				line-height: $lh-body-md;
+			}
+
+			@media (min-width: $width-xlarge + 1 + px) {
+				font-size: $fs-body-lg;
+				line-height: $lh-body-lg;
+			}
+		}
+
 		.googlesitekit-setup-cta-banner__actions-wrapper {
 			gap: 4px;
 			margin-bottom: 27px;
@@ -49,9 +76,16 @@
 
 				@media (min-width: $width-desktop + 1 + px) {
 					max-height: 272px;
+					right: 70px;
+					scale: 1.6;
+					top: 10px;
+					width: 65%;
+				}
+
+				@media (min-width: $width-xlarge + px) {
 					right: 50px;
 					scale: 1.1;
-					top: 10px;
+					width: unset;
 				}
 			}
 		}

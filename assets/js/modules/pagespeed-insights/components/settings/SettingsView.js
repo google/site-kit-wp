@@ -24,10 +24,9 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../../util';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
-const { useSelect } = Data;
 
 export default function SettingsView() {
 	const dashboardPermalink = useSelect( ( select ) =>

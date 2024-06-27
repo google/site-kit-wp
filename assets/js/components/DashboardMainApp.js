@@ -30,7 +30,7 @@ import { useMount } from 'react-use';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
@@ -42,13 +42,15 @@ import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
-import { AudienceSegmentationSetupCTAWidget } from '../modules/analytics-4/components/audience-segmentation/dashboard';
+import {
+	AudienceSegmentationSetupCTAWidget,
+	AudienceSelectionPanel,
+} from '../modules/analytics-4/components/audience-segmentation/dashboard';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import AdsModuleSetupCTAWidget from './notifications/AdsModuleSetupCTAWidget';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
@@ -78,7 +80,6 @@ import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import { useFeature } from '../hooks/useFeature';
-const { useSelect, useDispatch } = Data;
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -260,7 +261,6 @@ export default function DashboardMainApp() {
 						<AudienceSegmentationSetupCTAWidget />
 					) }
 					<ConsentModeSetupCTAWidget />
-					<AdsModuleSetupCTAWidget />
 				</Fragment>
 			) }
 
@@ -317,6 +317,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			<MetricsSelectionPanel />
+
+			{ audienceSegmentationEnabled && <AudienceSelectionPanel /> }
 
 			<OfflineNotification />
 		</Fragment>

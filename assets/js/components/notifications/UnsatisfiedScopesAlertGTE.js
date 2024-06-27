@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -33,7 +33,6 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-const { useSelect } = Data;
 
 export default function UnsatisfiedScopesAlertGTE() {
 	const temporaryPersistedPermissionsError = useSelect( ( select ) =>

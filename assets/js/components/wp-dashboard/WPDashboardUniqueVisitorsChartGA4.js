@@ -27,7 +27,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
@@ -37,16 +37,18 @@ import {
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
-const { useSelect, useInViewSelect } = Data;
 
-export default function WPDashboardUniqueVisitorsChartGA4( {
-	WPDashboardReportError,
-} ) {
+export default function WPDashboardUniqueVisitorsChartGA4( props ) {
+	const { WPDashboardReportError } = props;
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
+	);
+	const refDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate( { parsed: true } )
 	);
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
@@ -77,8 +79,9 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		],
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 
 	const loading = useSelect(
@@ -110,6 +113,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		data,
 		0,
 		dateRangeLength,
+		refDate,
 		[ __( 'Unique Visitors', 'google-site-kit' ) ],
 		[ ( x ) => parseFloat( x ).toLocaleString() ]
 	);
@@ -136,7 +140,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( {
 		);
 
 	if ( isZeroChart ) {
-		options.hAxis.ticks = [ new Date() ];
+		options.hAxis.ticks = [ refDate ];
 	}
 
 	return (

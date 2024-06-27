@@ -30,13 +30,12 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import BannerNotification from '../BannerNotification';
 import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function GatheringDataNotification( {
 	title,

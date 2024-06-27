@@ -26,7 +26,12 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	createRegistryControl,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
@@ -36,8 +41,6 @@ import {
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-
-const { createRegistrySelector, createRegistryControl } = Data;
 
 const customDimensionFields = [
 	'parameterName',
@@ -110,10 +113,10 @@ const baseActions = {
 	 * @since 1.113.0
 	 */
 	*createCustomDimensions() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		// Wait for the necessary settings to be loaded before checking.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			Promise.all( [
 				registry
 					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
@@ -288,10 +291,10 @@ export const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getAvailableCustomDimensions() {
 		const { select, __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
+			yield commonActions.getRegistry();
 		const { isAuthenticated, hasCapability } = select( CORE_USER );
 
-		const isGA4Connected = yield Data.commonActions.await(
+		const isGA4Connected = yield commonActions.await(
 			__experimentalResolveSelect( CORE_MODULES ).isModuleConnected(
 				'analytics-4'
 			)
@@ -302,7 +305,7 @@ const baseResolvers = {
 		}
 
 		// Wait for settings to be loaded before proceeding.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
@@ -314,7 +317,7 @@ const baseResolvers = {
 		}
 
 		// Wait for permissions to be loaded before checking if the user can manage options.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			__experimentalResolveSelect( CORE_USER ).getCapabilities()
 		);
 
@@ -427,7 +430,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchCreateCustomDimensionStore,
 	fetchSyncAvailableCustomDimensionsStore,
 	{

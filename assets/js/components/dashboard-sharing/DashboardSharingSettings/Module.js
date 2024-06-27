@@ -39,7 +39,7 @@ import {
  * Internal dependencies
  */
 import { Select, Tooltip } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ModuleIcon from '../../ModuleIcon';
 import UserRoleSelect from '../UserRoleSelect';
 import useViewContext from '../../../hooks/useViewContext';
@@ -53,7 +53,6 @@ import {
 	PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
 	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
-const { useSelect, useDispatch } = Data;
 
 const viewAccessOptions = [
 	{

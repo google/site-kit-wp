@@ -20,20 +20,22 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import {
+	combineStores,
+	createRegistrySelector,
+	commonActions,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate } from '../../../util';
 import { validateAudience } from '../utils/validation';
-
-const { createRegistrySelector } = Data;
 
 const MAX_INITIAL_AUDIENCES = 2;
 
@@ -41,7 +43,7 @@ const MAX_INITIAL_AUDIENCES = 2;
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
  * sorts them by total users, and returns the audienceResourceNames in that order.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  *
  * @param {Object} registry  Registry object.
  * @param {Array}  audiences Array of available audiences.
@@ -57,15 +59,9 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 ) {
 	const { select, __experimentalResolveSelect } = registry;
 
-	const reportOptions = {
-		metrics: [ { name: 'totalUsers' } ],
-		dimensions: [ 'audienceResourceName' ],
-		dimensionFilters: {
-			audienceResourceName: audiences.map( ( { name } ) => name ),
-		},
-		startDate,
-		endDate,
-	};
+	const reportOptions = select(
+		MODULES_ANALYTICS_4
+	).getAudiencesUserCountReportOptions( audiences, { startDate, endDate } );
 
 	const report = await __experimentalResolveSelect(
 		MODULES_ANALYTICS_4
@@ -184,15 +180,15 @@ const baseActions = {
 	 * If no suitable audiences are available, creates the "new-visitors" and "returning-visitors" audiences.
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 */
 	*enableAudienceGroup() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
-			yield Data.commonActions.await(
+			yield commonActions.await(
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 			);
 
@@ -218,15 +214,14 @@ const baseActions = {
 				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
 			);
 
-			const { audienceResourceNames, error } =
-				yield Data.commonActions.await(
-					getNonZeroDataAudiencesSortedByTotalUsers(
-						registry,
-						userAudiences,
-						startDate,
-						endDate
-					)
-				);
+			const { audienceResourceNames, error } = yield commonActions.await(
+				getNonZeroDataAudiencesSortedByTotalUsers(
+					registry,
+					userAudiences,
+					startDate,
+					endDate
+				)
+			);
 
 			if ( ! error ) {
 				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
@@ -271,7 +266,7 @@ const baseActions = {
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
 			const [ newVisitorsResult, returningVisitorsResult ] =
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					Promise.all( [
 						dispatch( MODULES_ANALYTICS_4 ).createAudience(
 							SITE_KIT_AUDIENCE_DEFINITIONS[ 'new-visitors' ]
@@ -296,13 +291,13 @@ const baseActions = {
 			}
 
 			// Resync available audiences to ensure the newly created audiences are available.
-			yield Data.commonActions.await(
+			yield commonActions.await(
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 			);
 		}
 
 		// Create custom dimension if it doesn't exist.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			__experimentalResolveSelect(
 				MODULES_ANALYTICS_4
 			).getAvailableCustomDimensions()
@@ -315,7 +310,7 @@ const baseActions = {
 		) {
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
-			const { error } = yield Data.commonActions.await(
+			const { error } = yield commonActions.await(
 				dispatch( MODULES_ANALYTICS_4 ).fetchCreateCustomDimension(
 					propertyID,
 					CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
@@ -335,7 +330,7 @@ const baseActions = {
 				);
 
 				// Resync available custom dimensions to ensure the newly created custom dimension is available.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch(
 						MODULES_ANALYTICS_4
 					).fetchSyncAvailableCustomDimensions()
@@ -347,7 +342,7 @@ const baseActions = {
 			configuredAudiences
 		);
 
-		const { error } = yield Data.commonActions.await(
+		const { error } = yield commonActions.await(
 			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings()
 		);
 
@@ -367,7 +362,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAvailableAudiences() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const audiences = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -492,9 +487,115 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets the available configurable audiences.
+	 *
+	 * This selector filters out the "Purchasers" audience if it has no data.
+	 *
+	 * @since 1.129.0
+	 *
+	 * @return {(Array|undefined)} Array of configurable audiences. Undefined if available audiences are not loaded yet.
+	 */
+	getConfigurableAudiences: createRegistrySelector( ( select ) => () => {
+		const { getAvailableAudiences, getResourceDataAvailabilityDate } =
+			select( MODULES_ANALYTICS_4 );
+
+		const availableAudiences = getAvailableAudiences();
+
+		if ( availableAudiences === undefined ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( availableAudiences ) ) {
+			return [];
+		}
+
+		return (
+			availableAudiences
+				// Filter out "Purchasers" audience if it has no data.
+				.filter( ( { audienceSlug, name } ) => {
+					if ( 'purchasers' !== audienceSlug ) {
+						return true;
+					}
+
+					return !! getResourceDataAvailabilityDate(
+						name,
+						'audience'
+					);
+				} )
+		);
+	} ),
+
+	/**
+	 * Gets the options for the audiences user count report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {Array}  audiences         Array of available audiences.
+	 * @param {Object} options           Optional. Options to pass to the selector.
+	 * @param {string} options.startDate Start date for the report.
+	 * @param {string} options.endDate   End date for the report.
+	 * @return {Object} Returns the report options for the audiences user count report.
+	 */
+	getAudiencesUserCountReportOptions: createRegistrySelector(
+		( select ) =>
+			( state, audiences, { startDate, endDate } = {} ) => {
+				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
+
+				return {
+					startDate: startDate || dateRangeDates.startDate,
+					endDate: endDate || dateRangeDates.endDate,
+					metrics: [
+						{
+							name: 'totalUsers',
+						},
+					],
+					dimensions: [ { name: 'audienceResourceName' } ],
+					dimensionFilters: {
+						audienceResourceName: ( audiences || [] ).map(
+							( { name } ) => name
+						),
+					},
+				};
+			}
+	),
+
+	/**
+	 * Gets the error for the audiences user count report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+	 */
+	getAudiencesUserCountReportError: createRegistrySelector(
+		( select ) => () => {
+			const {
+				getAudiencesUserCountReportOptions,
+				getConfigurableAudiences,
+				getErrorForSelector,
+			} = select( MODULES_ANALYTICS_4 );
+
+			const configurableAudiences = getConfigurableAudiences();
+
+			if ( configurableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audiencesUserCountReportOptions =
+				getAudiencesUserCountReportOptions( configurableAudiences );
+
+			return getErrorForSelector( 'getReport', [
+				audiencesUserCountReportOptions,
+			] );
+		}
+	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchCreateAudienceStore,
 	fetchSyncAvailableAudiencesStore,
 	{

@@ -26,4 +26,5 @@ module.exports = {
 	'jsdoc-tag-order': require( './jsdoc-tag-order' ),
 	'jsdoc-third-person': require( './jsdoc-third-person' ),
 	'no-yield-dispatch': require( './no-yield-dispatch' ),
+	'no-direct-date': require( './no-direct-date' ),
 };

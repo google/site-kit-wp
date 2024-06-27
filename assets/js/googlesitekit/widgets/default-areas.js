@@ -21,6 +21,8 @@ export const AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY =
 	'mainDashboardKeyMetricsPrimary';
 export const AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY =
 	'mainDashboardTrafficPrimary';
+export const AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION =
+	'mainDashboardTrafficAudienceSegmentation';
 export const AREA_MAIN_DASHBOARD_CONTENT_PRIMARY =
 	'mainDashboardContentPrimary';
 export const AREA_MAIN_DASHBOARD_SPEED_PRIMARY = 'mainDashboardSpeedPrimary';

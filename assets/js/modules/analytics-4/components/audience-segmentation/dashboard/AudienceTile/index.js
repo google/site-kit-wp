@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -46,18 +46,20 @@ import AudienceMetricIconTopContent from '../../../../../../../svg/icons/audienc
 import AudienceTileMetric from './AudienceTileMetric';
 import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
+import PreviewBlock from '../../../../../../components/PreviewBlock';
 import ChangeBadge from '../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
 import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
-
-const { useSelect } = Data;
+import AudienceTileCollectingData from './AudienceTileCollectingData';
+import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
 // in AudienceTiles.
 export default function AudienceTile( {
+	loaded,
 	title,
 	infoTooltip,
 	visitors,
@@ -70,6 +72,10 @@ export default function AudienceTile( {
 	topContentTitles,
 	Widget,
 	audienceResourceName,
+	isZeroData,
+	isPartialData,
+	isTileHideable,
+	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -100,6 +106,43 @@ export default function AudienceTile( {
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
+
+	// TODO: Loading states will be implemented as part of https://github.com/google/site-kit-wp/issues/8145.
+	if ( ! loaded || isZeroData === undefined || isPartialData === undefined ) {
+		return <PreviewBlock width="100%" height="600px" />;
+	}
+
+	if ( isPartialData && isZeroData ) {
+		return (
+			<Widget noPadding>
+				<div className="googlesitekit-audience-segmentation-tile">
+					<div className="googlesitekit-audience-segmentation-tile__zero-data-container">
+						{ ! isMobileBreakpoint && (
+							<div className="googlesitekit-audience-segmentation-tile__header">
+								<div className="googlesitekit-audience-segmentation-tile__header-title">
+									{ title }
+									{ infoTooltip && (
+										<InfoTooltip
+											title={ infoTooltip }
+											tooltipClassName="googlesitekit-info-tooltip__content--audience"
+										/>
+									) }
+								</div>
+							</div>
+						) }
+						<div className="googlesitekit-audience-segmentation-tile__zero-data-content">
+							<AudienceTileCollectingData />
+							{ isTileHideable && (
+								<AudienceTileCollectingDataHideable
+									onHideTile={ onHideTile }
+								/>
+							) }
+						</div>
+					</div>
+				</div>
+			</Widget>
+		);
+	}
 
 	return (
 		<Widget noPadding>
@@ -223,6 +266,7 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
+	loaded: PropTypes.bool,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
@@ -235,4 +279,8 @@ AudienceTile.propTypes = {
 	topContentTitles: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
+	isZeroData: PropTypes.bool,
+	isPartialData: PropTypes.bool,
+	isTileHideable: PropTypes.bool,
+	onHideTile: PropTypes.func,
 };

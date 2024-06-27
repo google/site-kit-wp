@@ -25,70 +25,191 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
+import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
+import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
+import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import whenActive from '../../../../../util/when-active';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
+	EDIT_SCOPE,
+	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { getPreviousDate } from '../../../../../util';
-import whenActive from '../../../../../util/when-active';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
-import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
-import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
+import {
+	AdminMenuTooltip,
+	useShowTooltip,
+	useTooltipState,
+} from '../../../../../components/AdminMenuTooltip';
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { WEEK_IN_SECONDS } from '../../../../../util';
 
-const { useSelect, useDispatch } = Data;
+export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
+	'audience_segmentation_setup_cta-notification';
 
-function AudienceSegmentationSetupCTAWidget( { Widget } ) {
+function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const showTooltip = useShowTooltip(
+		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+	);
+	const { isTooltipVisible } = useTooltipState(
+		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+	);
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isPromptDismissed(
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		)
+	);
+	const dismissCount = useSelect( ( select ) =>
+		select( CORE_USER ).getPromptDismissCount(
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		)
+	);
+
 	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
-
-	const onEnableGroups = useCallback( async () => {
-		setIsSaving( true );
-
-		await enableAudienceGroup();
-	}, [ enableAudienceGroup ] );
 
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
-	const hasDataWithinPast90Days = useSelect( ( select ) => {
-		const endDate = select( CORE_USER ).getReferenceDate();
+	const hasAnalytics4EditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
 
-		const startDate = getPreviousDate(
-			endDate,
-			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-		);
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_SEGMENTATION_SETUP_FORM,
+			'autoSubmit'
+		)
+	);
 
-		const args = {
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'audience_segmentation',
 	} );
 
-	if ( configuredAudiences !== null || ! hasDataWithinPast90Days ) {
+	const onEnableGroups = useCallback( async () => {
+		setIsSaving( true );
+
+		// If scope not granted, trigger scope error right away. These are
+		// typically handled automatically based on API responses, but
+		// this particular case has some special handling to improve UX.
+		if ( ! hasAnalytics4EditScope ) {
+			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+				autoSubmit: true,
+			} );
+
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create new audiences in Analytics.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes: [ EDIT_SCOPE ],
+					skipModal: true,
+					redirectURL,
+				},
+			} );
+
+			return;
+		}
+
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
+		await enableAudienceGroup();
+	}, [
+		enableAudienceGroup,
+		hasAnalytics4EditScope,
+		setPermissionScopeError,
+		redirectURL,
+		setValues,
+	] );
+
+	// If the user ends up back on this component with the required scope granted,
+	// and already submitted the form, trigger the submit again.
+	useEffect( () => {
+		if ( hasAnalytics4EditScope && autoSubmit ) {
+			onEnableGroups();
+		}
+	}, [ hasAnalytics4EditScope, autoSubmit, onEnableGroups ] );
+
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		// We should call isGatheringData() within this component for completeness
+		// as we do not want to rely on it being called in other components.
+		// This selector makes report requests which, if they return data, then the
+		// `data-available` transients are set. These transients are prefetched as
+		// a global on the next page load.
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
+	} );
+
+	const { dismissPrompt } = useDispatch( CORE_USER );
+	const handleDismissClick = async () => {
+		showTooltip();
+
+		// For the first dismissal, we show the notification again in two weeks.
+		if ( dismissCount < 1 ) {
+			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
+			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION, {
+				expiresInSeconds: twoWeeksInSeconds,
+			} );
+		} else {
+			// For the second dismissal, dismiss the notification permanently.
+			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION );
+		}
+	};
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<WidgetNull />
+				<AdminMenuTooltip
+					title={ __(
+						'You can always enable groups from Settings later',
+						'google-site-kit'
+					) }
+					content={ __(
+						'The visitors group section will be added to your dashboard once you set it up.',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					tooltipStateKey={
+						AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+					}
+				/>
+			</Fragment>
+		);
+	}
+
+	if (
+		configuredAudiences === undefined ||
+		configuredAudiences?.length ||
+		! analyticsIsDataAvailableOnLoad ||
+		isDismissed
+	) {
 		return null;
 	}
 
@@ -144,14 +265,19 @@ function AudienceSegmentationSetupCTAWidget( { Widget } ) {
 												</SpinnerButton>
 												<Button
 													tertiary
-													onClick={ () => {
-														return false; // @todo update when logic ready.
-													} }
+													onClick={
+														handleDismissClick
+													}
 												>
-													{ __(
-														'Maybe later',
-														'google-site-kit'
-													) }
+													{ dismissCount < 1
+														? __(
+																'Maybe later',
+																'google-site-kit'
+														  )
+														: __(
+																'Don’t show again',
+																'google-site-kit'
+														  ) }
 												</Button>
 											</Fragment>
 										</div>

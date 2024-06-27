@@ -29,11 +29,9 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { escapeURI } from '../../../util/escape-uri';
-
-const { createRegistrySelector } = Data;
 
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
@@ -198,7 +196,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getConnectURL() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( select( CORE_USER ).getConnectURL() ) {
 			return;
@@ -214,7 +212,7 @@ export const resolvers = {
 	},
 
 	*getUser() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( select( CORE_USER ).getUser() !== undefined ) {
 			return;
@@ -229,7 +227,7 @@ export const resolvers = {
 	},
 
 	*getInitialSiteKitVersion() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( select( CORE_USER ).getInitialSiteKitVersion() !== undefined ) {
 			return;
@@ -247,7 +245,7 @@ export const resolvers = {
 	},
 
 	*isVerified() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( select( CORE_USER ).isVerified() !== undefined ) {
 			return;
@@ -262,7 +260,7 @@ export const resolvers = {
 	},
 
 	*isUserInputCompleted() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( undefined !== select( CORE_USER ).isUserInputCompleted() ) {
 			return;

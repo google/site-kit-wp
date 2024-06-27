@@ -2,12 +2,10 @@ import { useCallback } from '@wordpress/element';
 
 import PropTypes from 'prop-types';
 
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import JoyrideTooltip from '../JoyrideTooltip';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { useTooltipState } from './useTooltipState';
-
-const { useDispatch } = Data;
 
 export function AdminMenuTooltip( { onDismiss, tooltipStateKey, ...props } ) {
 	const { setValue } = useDispatch( CORE_UI );

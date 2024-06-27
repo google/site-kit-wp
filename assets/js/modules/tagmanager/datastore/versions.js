@@ -25,7 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from './constants';
 import {
 	isValidAccountID,
@@ -33,7 +37,6 @@ import {
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidGoogleTagID } from '../../analytics-4/utils/validation';
-const { createRegistrySelector } = Data;
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {
 	baseName: 'getLiveContainerVersion',
@@ -104,7 +107,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if (
 			undefined ===
@@ -309,7 +312,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchGetLiveContainerVersionStore, {
+const store = combineStores( fetchGetLiveContainerVersionStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

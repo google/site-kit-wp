@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling expirables.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Expirables {
 	/**
 	 * Expirable_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 * @var Expirable_Items
 	 */
 	protected $expirable_items;
@@ -35,7 +35,7 @@ class Expirables {
 	/**
 	 * REST_Expirable_Items_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 * @var REST_Expirable_Items_Controller
 	 */
 	protected $rest_controller;
@@ -43,7 +43,7 @@ class Expirables {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -56,7 +56,7 @@ class Expirables {
 	/**
 	 * Gets the reference to the Expirable_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return Expirable_Items An instance of the Expirable_Items class.
 	 */
@@ -67,7 +67,7 @@ class Expirables {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 */
 	public function register() {
 		$this->expirable_items->register();

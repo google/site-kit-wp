@@ -29,7 +29,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -48,7 +48,6 @@ import useViewOnly from '../../../../hooks/useViewOnly';
 import { AdSenseLinkCTA } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
-const { useSelect, useInViewSelect } = Data;
 
 function TopEarningContentWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
@@ -67,12 +66,8 @@ function TopEarningContentWidget( { Widget } ) {
 		...dates,
 		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		filter: {
-			fieldName: 'adSourceName',
-			stringFilter: {
-				matchType: 'EXACT',
-				value: `Google AdSense account (${ adSenseAccountID })`,
-			},
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
 		},
 		orderby: [
 			{
@@ -83,9 +78,12 @@ function TopEarningContentWidget( { Widget } ) {
 		limit: 3,
 	};
 
-	const report = useInViewSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+	const report = useInViewSelect(
+		( select ) => {
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[ reportOptions ]
+	);
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
@@ -93,13 +91,15 @@ function TopEarningContentWidget( { Widget } ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ report, reportOptions ]
 	);
 
 	const loading = useSelect(

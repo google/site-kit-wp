@@ -29,7 +29,7 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_ADSENSE,
@@ -49,7 +49,6 @@ import SetupAccountSite from './SetupAccountSite';
 import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountCreateSite from './SetupAccountCreateSite';
 import SetupAccountPendingTasks from './SetupAccountPendingTasks';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupAccount( { account, finishSetup } ) {
 	const { _id: accountID, state: accountState } = account;

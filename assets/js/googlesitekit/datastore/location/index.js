@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import { CORE_LOCATION } from './constants';
 import navigation from './navigation';
 
-const store = Data.combineStores( Data.commonStore, navigation );
+const store = combineStores( commonStore, navigation );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

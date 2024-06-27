@@ -77,17 +77,4 @@
 			letter-spacing: $ls-s;
 		}
 	}
-
-	.googlesitekit-settings-connect-module--disabled {
-		color: $c-disabled;
-
-		.googlesitekit-settings-connect-module__logo {
-			filter: saturate(0);
-			opacity: 0.5;
-		}
-
-		.googlesitekit-settings-connect-module__title {
-			color: $c-disabled;
-		}
-	}
 }

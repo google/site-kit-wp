@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -47,8 +47,6 @@ import PartialDataNotice from '../PartialDataNotice';
 import { numFmt } from '../../../../../../util';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 
-const { useSelect } = Data;
-
 export default function AudienceTilePagesMetric( {
 	TileIcon,
 	title,
@@ -65,9 +63,13 @@ export default function AudienceTilePagesMetric( {
 		} )
 	);
 
+	const validDimensionValues =
+		topContent?.dimensionValues?.filter( Boolean ) || [];
+	const hasDimensionValues = !! validDimensionValues.length;
+
 	function ContentLinkComponent( { content } ) {
-		const pageTitle = topContentTitles[ content.value ];
-		const url = content.value;
+		const pageTitle = topContentTitles[ content?.value ];
+		const url = content?.value;
 
 		const serviceURL = useSelect( ( select ) => {
 			return ! viewOnlyDashboard
@@ -124,22 +126,24 @@ export default function AudienceTilePagesMetric( {
 					) }
 				</div>
 				<div className="googlesitekit-audience-segmentation-tile-metric__content">
-					{ topContent === null && <AudienceTileNoData /> }
-					{ topContent?.dimensionValues.map( ( content, index ) => {
-						return (
-							<div
-								key={ content.value }
-								className="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
-							>
-								<ContentLinkComponent content={ content } />
-								<div className="googlesitekit-audience-segmentation-tile-metric__page-metric-value">
-									{ numFmt(
-										topContent.metricValues[ index ].value
-									) }
+					{ ! hasDimensionValues && <AudienceTileNoData /> }
+					{ hasDimensionValues &&
+						validDimensionValues.map( ( content, index ) => {
+							return (
+								<div
+									key={ content?.value }
+									className="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+								>
+									<ContentLinkComponent content={ content } />
+									<div className="googlesitekit-audience-segmentation-tile-metric__page-metric-value">
+										{ numFmt(
+											topContent?.metricValues[ index ]
+												?.value
+										) }
+									</div>
 								</div>
-							</div>
-						);
-					} ) }
+							);
+						} ) }
 					{ isMobileBreakpoint && isTopContentPartialData && (
 						<PartialDataNotice
 							content={ __(

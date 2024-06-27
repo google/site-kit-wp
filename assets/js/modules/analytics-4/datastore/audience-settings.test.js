@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModules,
 	unsubscribeFromAll,
 	untilResolved,
@@ -42,6 +43,28 @@ describe( 'modules/analytics-4 audience settings', () => {
 		configuredAudiences: [ 'audienceA', 'audienceB' ],
 		isAudienceSegmentationWidgetHidden: false,
 	};
+
+	const audienceSettingsSortedResponse = {
+		configuredAudiences: [ 'audienceB', 'audienceA' ],
+		isAudienceSegmentationWidgetHidden: false,
+	};
+
+	const availableAudiences = [
+		{
+			name: 'audienceA',
+			description: 'Audience A',
+			displayName: 'Audience A',
+			audienceType: 'DEFAULT_AUDIENCE',
+			audienceSlug: 'audience-a',
+		},
+		{
+			name: 'audienceB',
+			description: 'Audience B',
+			displayName: 'Audience B',
+			audienceType: 'SITE_KIT_AUDIENCE',
+			audienceSlug: 'audience-b',
+		},
+	];
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -114,6 +137,9 @@ describe( 'modules/analytics-4 audience settings', () => {
 			beforeEach( () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setConfiguredAudiences(
 						audienceSettingsResponse.configuredAudiences
 					);
@@ -138,7 +164,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
 					body: {
 						data: {
-							settings: audienceSettingsResponse,
+							settings: audienceSettingsSortedResponse,
 						},
 					},
 				} );
@@ -178,7 +204,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 			it( 'optionally saves additional settings besides whatever is stored', async () => {
 				const audienceSettings = {
-					...audienceSettingsResponse,
+					...audienceSettingsSortedResponse,
 					isAudienceSegmentationWidgetHidden: true,
 				};
 
@@ -398,6 +424,38 @@ describe( 'modules/analytics-4 audience settings', () => {
 					.haveConfiguredAudiencesChanged();
 
 				expect( hasChangedAfterSet ).toBe( true );
+			} );
+		} );
+
+		describe( 'isSavingAudienceSettings', () => {
+			it( 'should return false if audience settings are not being saved', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSavingAudienceSettings()
+				).toBe( false );
+			} );
+
+			it( 'should return true if audience settings are being saved', async () => {
+				muteFetch( audienceSettingsEndpoint );
+
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchSaveAudienceSettings( audienceSettingsResponse );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSavingAudienceSettings()
+				).toBe( true );
+
+				await promise;
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSavingAudienceSettings()
+				).toBe( false );
 			} );
 		} );
 	} );

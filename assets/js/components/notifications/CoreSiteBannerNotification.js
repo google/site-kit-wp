@@ -30,13 +30,11 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useDispatch } = Data;
 
 function CoreSiteBannerNotification( {
 	content,

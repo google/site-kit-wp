@@ -20,7 +20,12 @@
  * Internal dependencies
  */
 import MetricsSelectionPanel from '.';
-import { act, fireEvent, render } from '../../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	waitForDefaultTimeouts,
+} from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -129,6 +134,7 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 
 			await waitForRegistry();
+			await act( waitForDefaultTimeouts );
 
 			expect(
 				getByText(
@@ -440,6 +446,9 @@ describe( 'MetricsSelectionPanel', () => {
 					slug: 'analytics-4',
 					active: true,
 					connected: true,
+					// Module is shareable after connected, but by default in fixtures it is false.
+					// This updates on the backend, but here value is pulled from fixtures.
+					shareable: true,
 				},
 			] );
 

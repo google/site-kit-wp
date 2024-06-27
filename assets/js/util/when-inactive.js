@@ -19,15 +19,14 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { hyphenCaseToPascalCase } from '../googlesitekit/data/transform-case';
-const { useSelect } = Data;
 
 /**
  * Higher-Order Component to render wrapped components when selected module is not active.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  *
  * @param {Object}      options                   Options for enhancing function.
  * @param {string}      options.moduleName        Name of a module to check.

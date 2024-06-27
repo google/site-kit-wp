@@ -26,14 +26,17 @@ import { isEqual, isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
+import { AUDIENCE_TYPE_SORT_ORDER, MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
-const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
 const validateAudienceSettings = ( settings ) => {
@@ -115,19 +118,44 @@ const baseActions = {
 		function* ( settings = {} ) {
 			yield clearError( 'saveAudienceSettings', [] );
 
-			const registry = yield Data.commonActions.getRegistry();
-			const audienceSettings = yield Data.commonActions.await(
+			const registry = yield commonActions.getRegistry();
+			const audienceSettings = yield commonActions.await(
 				registry
 					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 					.getAudienceSettings()
 			);
+			const finalSettings = {
+				...audienceSettings,
+				...settings,
+			};
+
+			const availableAudiences = yield commonActions.await(
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences()
+			);
+
+			const sortedConfiguredAudiences = [
+				...finalSettings.configuredAudiences,
+			].sort( ( audienceNameA, audienceNameB ) => {
+				const audienceTypeA = availableAudiences?.find(
+					( audience ) => audience.name === audienceNameA
+				)?.audienceType;
+				const audienceTypeB = availableAudiences?.find(
+					( audience ) => audience.name === audienceNameB
+				)?.audienceType;
+
+				const weightA = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeA ] || 0;
+				const weightB = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeB ] || 0;
+
+				return weightA - weightB;
+			} );
+
+			finalSettings.configuredAudiences = sortedConfiguredAudiences;
 
 			const { response, error } =
 				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
-					{
-						...audienceSettings,
-						...settings,
-					}
+					finalSettings
 				);
 
 			if ( error ) {
@@ -221,7 +249,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getAudienceSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const audienceSettings = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -294,9 +322,26 @@ const baseSelectors = {
 			savedSettings?.configuredAudiences
 		);
 	},
+
+	/**
+	 * Determines whether the audience settings are being saved.
+	 *
+	 * @since 1.129.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the audience settings are being saved, otherwise FALSE.
+	 */
+	isSavingAudienceSettings( state ) {
+		// Since `isFetchingSaveAudienceSettings` holds information based on specific
+		// values but we only need generic information here, we need to check
+		// whether ANY such request is in progress.
+		return Object.values( state.isFetchingSaveAudienceSettings ).some(
+			Boolean
+		);
+	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetAudienceSettingsStore,
 	fetchSaveAudienceSettingsStore,
 	{

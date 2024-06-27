@@ -26,7 +26,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -45,7 +45,6 @@ import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/Widg
 import useViewOnly from '../../../../hooks/useViewOnly';
 import useViewContext from '../../../../hooks/useViewContext';
 import NewBadge from '../../../../components/NewBadge';
-const { useSelect, useInViewSelect } = Data;
 
 function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -130,8 +129,9 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	} );
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
 	const currentDayCount = useSelect( ( select ) =>

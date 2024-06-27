@@ -59,7 +59,8 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	const MODULE_SLUG = 'ads';
 
-	const SCOPE = 'https://www.googleapis.com/auth/adwords';
+	const SCOPE                 = 'https://www.googleapis.com/auth/adwords';
+	const SUPPORT_CONTENT_SCOPE = 'https://www.googleapis.com/auth/supportcontent';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -139,7 +140,8 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
 					array(
-						'src'          => 'https://www.gstatic.com/pax/latest/pax_integrator.js',
+						// When updating, mirror the fixed version for google-pax-sdk in package.json.
+						'src'          => 'https://www.gstatic.com/pax/1.0.9/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -186,7 +188,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			$options        = $this->get_settings()->get();
 
 			if ( in_array( self::SCOPE, $granted_scopes, true ) || ! empty( $options['extCustomerID'] ) ) {
-				return array( self::SCOPE );
+				return array( self::SCOPE, self::SUPPORT_CONTENT_SCOPE );
 			}
 		}
 

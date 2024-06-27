@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../../util';
 import { calculateChange, trackEvent } from '../../../../../../util';
@@ -51,7 +51,6 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
 import ga4ReportingTour from '../../../../../../feature-tours/ga4-reporting';
-const { useSelect, useDispatch, useInViewSelect } = Data;
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	return {
@@ -110,10 +109,12 @@ export default function Overview( props ) {
 	const ga4ModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
-	const isGA4GatheringData = useInViewSelect( ( select ) =>
-		ga4ModuleConnected
-			? select( MODULES_ANALYTICS_4 ).isGatheringData()
-			: false
+	const isGA4GatheringData = useInViewSelect(
+		( select ) =>
+			ga4ModuleConnected
+				? select( MODULES_ANALYTICS_4 ).isGatheringData()
+				: false,
+		[ ga4ModuleConnected ]
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()

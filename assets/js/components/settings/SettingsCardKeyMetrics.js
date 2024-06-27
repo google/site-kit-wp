@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { WEEK_IN_SECONDS, trackEvent } from '../../util';
@@ -39,8 +39,6 @@ import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 import PreviewBlock from '../PreviewBlock';
-
-const { useSelect } = Data;
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();

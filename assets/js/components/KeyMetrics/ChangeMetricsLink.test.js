@@ -80,7 +80,7 @@ describe( 'ChangeMetricsLink', () => {
 
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveTextContent( 'Change Metrics' );
+		expect( button ).toHaveTextContent( 'Change metrics' );
 	} );
 
 	it( 'should set UI store key correctly when button is clicked', () => {

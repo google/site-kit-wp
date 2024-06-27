@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -69,14 +70,44 @@ export async function submitChanges( { select, dispatch } ) {
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const { isDoingSubmitChanges, haveSettingsChanged, getConversionID } =
-		strictSelect( MODULES_ADS );
+	const {
+		isDoingSubmitChanges,
+		haveSettingsChanged,
+		getConversionID,
+		getPaxConversionID,
+	} = strictSelect( MODULES_ADS );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	invariant(
-		isValidConversionID( getConversionID() ),
+		isValidConversionID( getConversionID() ) ||
+			isValidConversionID( getPaxConversionID() ),
 		INVARIANT_INVALID_CONVERSION_ID
+	);
+}
+
+export function rollbackChanges( { select, dispatch } ) {
+	if ( select( MODULES_ADS ).haveSettingsChanged() ) {
+		dispatch( MODULES_ADS ).rollbackSettings();
+		dispatch( CORE_SITE ).resetConversionTrackingSettings();
+	}
+}
+
+export function validateHaveSettingsChanged( select, state, keys ) {
+	const { settings, savedSettings } = state;
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+
+	if ( keys ) {
+		return (
+			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
+			haveConversionTrackingSettingsChanged
+		);
+	}
+
+	return (
+		! isEqual( settings, savedSettings ) ||
+		haveConversionTrackingSettingsChanged
 	);
 }

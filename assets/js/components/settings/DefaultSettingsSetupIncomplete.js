@@ -30,12 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Link from '../Link';
 import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
 import { Cell } from '../../material-components/layout';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
 
 export default function DefaultSettingsSetupIncomplete( { slug } ) {
 	const storeName = useSelect( ( select ) =>
@@ -44,21 +43,33 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 	const adminReauthURL = useSelect( ( select ) =>
 		select( storeName )?.getAdminReauthURL?.()
 	);
+	const requirementsError = useSelect( ( select ) =>
+		select( CORE_MODULES )?.getCheckRequirementsError( slug )
+	);
 
 	return (
 		<Cell size={ 12 }>
 			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
 				<ModuleSettingsWarning slug={ slug } />
 			</div>
-			{ createInterpolateElement(
-				__(
-					'Setup incomplete: <a>continue module setup</a>',
-					'google-site-kit'
-				),
-				{
-					a: <Link href={ adminReauthURL } />,
-				}
-			) }
+
+			<div className="googlesitekit-settings-module__fields-group-title">
+				{ createInterpolateElement(
+					__(
+						'Setup incomplete: <a>continue module setup</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								className="googlesitekit-settings-module__edit-button"
+								href={ adminReauthURL }
+								disabled={ requirementsError ? true : false }
+							/>
+						),
+					}
+				) }
+			</div>
 		</Cell>
 	);
 }

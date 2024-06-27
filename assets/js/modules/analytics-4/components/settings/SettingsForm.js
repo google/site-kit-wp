@@ -25,37 +25,49 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { TrackingExclusionSwitches } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsControls from './SettingsControls';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
-const { useSelect } = Data;
+import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
+import { useFeature } from '../../../../hooks/useFeature';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 
+	const iceEnabled = useFeature( 'conversionInfra' );
+
 	return (
 		<Fragment>
 			<SettingsControls hasModuleAccess={ hasModuleAccess } />
 
-			{ isValidAccountID( accountID ) && (
-				<Fragment>
-					<TrackingExclusionSwitches />
-					<AdsConversionIDSettingsNotice />
-				</Fragment>
-			) }
+			{ isValidAccountID( accountID ) && <TrackingExclusionSwitches /> }
 
 			{ hasModuleAccess && (
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
+			) }
+
+			{ iceEnabled && (
+				<ConversionTrackingToggle>
+					{ __(
+						'Conversion tracking is used for tracking additional conversion-related events via Analytics',
+						'google-site-kit'
+					) }
+				</ConversionTrackingToggle>
+			) }
+
+			{ isValidAccountID( accountID ) && (
+				<AdsConversionIDSettingsNotice />
 			) }
 		</Fragment>
 	);

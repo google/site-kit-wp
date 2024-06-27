@@ -24,10 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
 
 export default function AuthError() {
 	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );

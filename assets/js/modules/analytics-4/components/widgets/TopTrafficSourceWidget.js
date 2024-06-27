@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 import {
 	CORE_USER,
@@ -43,8 +43,6 @@ import { numFmt } from '../../../../util';
 import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-
-const { useSelect, useInViewSelect } = Data;
 
 function TopTrafficSourceWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -75,12 +73,18 @@ function TopTrafficSourceWidget( { Widget } ) {
 		orderBy: 'totalUsers',
 	};
 
-	const totalUsersReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
+	const totalUsersReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions ),
+		[ totalUsersReportOptions ]
 	);
 
-	const trafficSourceReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
+	const trafficSourceReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport(
+				trafficSourceReportOptions
+			),
+		[ trafficSourceReportOptions ]
 	);
 
 	const error = useSelect( ( select ) => {

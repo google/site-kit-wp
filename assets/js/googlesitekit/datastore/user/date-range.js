@@ -35,7 +35,11 @@ import {
 
 export const initialState = {
 	dateRange: 'last-28-days',
-	referenceDate: getDateString( new Date() ),
+	// This is where we actually _set_ the reference date (which should
+	// have a default value of the current date).
+	//
+	// Using `new Date()` here is appropriate.
+	referenceDate: getDateString( new Date() ), // eslint-disable-line sitekit/no-direct-date
 };
 
 /**
@@ -201,12 +205,15 @@ export const selectors = {
 	 * Returns the current reference date, typically today.
 	 *
 	 * @since 1.22.0
+	 * @since 1.130.0 Added options to allow getting the reference date as a Date instance.
 	 *
-	 * @param {Object} state The current data store's state.
+	 * @param {Object} state            The current data store's state.
+	 * @param {Object} [options]        Options parameter. Default is: {}.
+	 * @param {number} [options.parsed] Number of days to offset. Default is: 0.
 	 * @return {string} The current reference date as YYYY-MM-DD.
 	 */
-	getReferenceDate( state ) {
-		return state.referenceDate;
+	getReferenceDate( state, { parsed = false } = {} ) {
+		return parsed ? new Date( state.referenceDate ) : state.referenceDate;
 	},
 };
 

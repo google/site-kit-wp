@@ -31,7 +31,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { withSelect } from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { Button } from 'googlesitekit-components';
 import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
@@ -48,7 +48,6 @@ import { clearCache } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
-const { withSelect } = Data;
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {

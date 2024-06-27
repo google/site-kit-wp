@@ -19,10 +19,9 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createRegistryControl } from 'googlesitekit-data';
 import { createValidationSelector } from '../data/utils';
 import { actions as errorStoreActions } from '../data/create-error-store';
-const { createRegistryControl } = Data;
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,

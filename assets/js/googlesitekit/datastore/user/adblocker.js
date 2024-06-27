@@ -25,7 +25,7 @@ import { detectAnyAdblocker } from 'just-detect-adblock';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 
 // Actions
@@ -72,7 +72,11 @@ export const controls = {
 				// Note: this value must not be URL-encoded.
 				'google-site-kit=/adsense/pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
 				// Add a timestamp for cache-busting.
-				`timestamp=${ Date.now() }`,
+				//
+				// This value is used for cache-busting, so we don't want
+				// to rely on the reference date. We should always use
+				// the current time.
+				`timestamp=${ Date.now() }`, // eslint-disable-line sitekit/no-direct-date
 			];
 			await fetch( `/favicon.ico?${ params.join( '&' ) }`, {
 				credentials: 'omit',
@@ -106,7 +110,7 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*isAdBlockerActive() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const isAdBlockerActive = registry
 			.select( CORE_USER )
 			.isAdBlockerActive();

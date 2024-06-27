@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import AdsenseAdBlockingRecoverySVG from '../../../../../svg/graphics/adsense-ad-blocking-recovery.svg';
 import {
 	AdminMenuTooltip,
@@ -69,8 +69,6 @@ import {
 } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
-
-const { useSelect, useDispatch } = Data;
 
 function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const breakpoint = useBreakpoint();

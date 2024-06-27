@@ -25,13 +25,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { isPendingAccountStatus } from '../../util/status';
-import { AdBlockerWarning } from '../common';
-const { useSelect } = Data;
+import ModuleSettingsWarning from '../../../../components/notifications/ModuleSettingsWarning';
 
 export default function SettingsSetupIncomplete() {
 	const accountStatus = useSelect( ( select ) =>
@@ -62,21 +61,23 @@ export default function SettingsSetupIncomplete() {
 	return (
 		<Fragment>
 			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
-				<AdBlockerWarning />
+				<ModuleSettingsWarning slug="adsense" />
 			</div>
 
-			{ createInterpolateElement(
-				sprintf( statusText, `<a>${ actionText }</a>` ),
-				{
-					a: (
-						<Link
-							className="googlesitekit-settings-module__edit-button"
-							href={ adminReauthURL }
-							disabled={ requirementsError ? true : false }
-						/>
-					),
-				}
-			) }
+			<div className="googlesitekit-settings-module__fields-group-title">
+				{ createInterpolateElement(
+					sprintf( statusText, `<a>${ actionText }</a>` ),
+					{
+						a: (
+							<Link
+								className="googlesitekit-settings-module__edit-button"
+								href={ adminReauthURL }
+								disabled={ requirementsError ? true : false }
+							/>
+						),
+					}
+				) }
+			</div>
 		</Fragment>
 	);
 }

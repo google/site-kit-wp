@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -41,7 +41,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getConversionEvents() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingConversionEvents = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getConversionEvents();
@@ -71,7 +71,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetConversionEventsStore, {
+const store = combineStores( fetchGetConversionEventsStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

@@ -24,8 +24,7 @@ import { useEffect, useState, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotification from './CoreSiteBannerNotification';
@@ -35,7 +34,11 @@ const MAX_SECONDS_FOR_SURVEY = 5;
 function CoreSiteBannerNotifications() {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
-	const startTime = useRef( Date.now() );
+
+	// This check doesn't rely on an actual date; we only need to track the elapsed
+	// number of seconds since this component was rendered to see when
+	// to cause a survey to appear after page load.
+	const startTime = useRef( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 	const surveys = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy() &&
@@ -62,7 +65,10 @@ function CoreSiteBannerNotifications() {
 
 	useEffect( () => {
 		const secondsElapsed = Math.floor(
-			( Date.now() - startTime.current ) / 1000
+			// See comment above; this is just about tracking elapsed
+			// seconds since this component first rendered, so we
+			// shouldn't use the reference date.
+			( Date.now() - startTime.current ) / 1000 // eslint-disable-line sitekit/no-direct-date
 		);
 		// Surveys that were received in time prevent the render, surveys loaded
 		// after a set amount of time do not prevent notifications from rendering.

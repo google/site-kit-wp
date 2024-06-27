@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Easy_Digital_Downloads;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Ninja_Forms;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMaker;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
@@ -57,11 +59,14 @@ class Conversion_Tracking {
 	 * Supported conversion event providers.
 	 *
 	 * @since 1.126.0
+	 * @since 1.130.0 Added Ninja Forms class.
 	 * @var array
 	 */
 	public static $providers = array(
 		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
+		Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG => Easy_Digital_Downloads::class,
 		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG      => Mailchimp::class,
+		Ninja_Forms::CONVERSION_EVENT_PROVIDER_SLUG    => Ninja_Forms::class,
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
 		PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG     => PopupMaker::class,
 		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG    => WooCommerce::class,
@@ -92,29 +97,42 @@ class Conversion_Tracking {
 		$this->conversion_tracking_settings->register();
 		$this->rest_conversion_tracking_controller->register();
 
-		add_action(
-			'wp_enqueue_scripts',
-			function() {
-				// Do nothing if neither Ads nor Analytics snippet has been inserted.
-				if ( ! did_action( 'googlesitekit_ads_init_tag' ) && ! did_action( 'googlesitekit_analytics-4_init_tag' ) ) {
-					return;
-				}
+		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
 
-				$active_providers = $this->get_active_providers();
+		$active_providers = $this->get_active_providers();
 
-				array_walk(
-					$active_providers,
-					function( Conversion_Events_Provider $active_provider ) {
-						$script_asset = $active_provider->register_script();
-						$script_asset->enqueue();
-					}
-				);
-
-				wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit = window._googlesitekit || {};' );
-				wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit.trackEvent = (name, data) => gtag("event", name, {...data, _source: "site-kit" });' );
-			},
-			30
+		array_walk(
+			$active_providers,
+			function( Conversion_Events_Provider $active_provider ) {
+				$active_provider->register_hooks();
+			}
 		);
+	}
+
+	/**
+	 * Enqueues conversion tracking scripts if conditions are satisfied.
+	 */
+	protected function maybe_enqueue_scripts() {
+		if (
+			// Do nothing if neither Ads nor Analytics *web* snippet has been inserted.
+			! ( did_action( 'googlesitekit_ads_init_tag' ) || did_action( 'googlesitekit_analytics-4_init_tag' ) )
+			|| ! $this->conversion_tracking_settings->is_conversion_tracking_enabled()
+		) {
+			return;
+		}
+
+		$active_providers = $this->get_active_providers();
+
+		array_walk(
+			$active_providers,
+			function( Conversion_Events_Provider $active_provider ) {
+				$script_asset = $active_provider->register_script();
+				$script_asset->enqueue();
+			}
+		);
+
+		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit = window._googlesitekit || {};' );
+		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit.gtagEvent = (name, data) => gtag("event", name, {...data, event_source: "site-kit" });' );
 	}
 
 	/**

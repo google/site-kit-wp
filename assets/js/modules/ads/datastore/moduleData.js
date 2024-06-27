@@ -24,10 +24,9 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ADS } from './constants';
 import { controls } from '../../../googlesitekit/datastore/site/info';
-const { createRegistrySelector } = Data;
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

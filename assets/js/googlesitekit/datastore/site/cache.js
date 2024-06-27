@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import { setItem } from '../../../googlesitekit/api/cache';
 
 // Actions.
@@ -71,7 +71,7 @@ export const baseControls = {
 	},
 };
 
-const store = Data.combineStores( {
+const store = combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,

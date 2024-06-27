@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import AnalyticsAdsenseLinkedGraphicDesktop from '../../../svg/graphics/analytics-adsense-linked-desktop.svg';
 import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics-adsense-linked-mobile.svg';
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
@@ -47,8 +47,6 @@ import OverlayNotification from './OverlayNotification';
 import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useSelect, useDispatch } = Data;
 
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
@@ -127,12 +125,8 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		endDate,
 		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		filter: {
-			fieldName: 'adSourceName',
-			stringFilter: {
-				matchType: 'EXACT',
-				value: `Google AdSense account (${ adSenseAccountID })`,
-			},
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
 		},
 		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 1,

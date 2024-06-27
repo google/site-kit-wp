@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_COUNTRIES,
@@ -39,7 +39,6 @@ import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
-const { useSelect, useInViewSelect } = Data;
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
@@ -65,8 +64,12 @@ function TopCountriesWidget( { Widget } ) {
 		limit: 3,
 	};
 
-	const topCountriesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topCountriesReportOptions )
+	const topCountriesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport(
+				topCountriesReportOptions
+			),
+		[ topCountriesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
