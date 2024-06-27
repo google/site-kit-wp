@@ -24,6 +24,8 @@ import {
 	act,
 	fireEvent,
 	render,
+	screen,
+	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -37,6 +39,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
@@ -585,6 +588,80 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 
 			await act( waitForDefaultTimeouts );
+		} );
+
+		describe( 'AudienceErrorModal', () => {
+			it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
+				provideSiteInfo( registry, {
+					setupErrorCode: 'access_denied',
+				} );
+
+				provideUserAuthentication( registry, {
+					grantedScopes: [],
+				} );
+
+				const settings = {
+					configuredAudiences: [],
+					isAudienceSegmentationWidgetHidden: false,
+				};
+
+				// Set the data availability on page load to true.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsDataAvailableOnLoad( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( settings );
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					render(
+						<AudienceSegmentationSetupCTAWidget
+							Widget={ Widget }
+						/>,
+						{
+							registry,
+						}
+					);
+				} );
+
+				expect(
+					screen.getByRole( 'button', { name: /Enable groups/i } )
+				).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click(
+						screen.getByRole( 'button', { name: /Enable groups/i } )
+					);
+				} );
+
+				// Verify the error is an OAuth error.
+				await waitFor( () => {
+					expect(
+						screen.getByText( /Analytics update failed/i )
+					).toBeInTheDocument();
+
+					expect(
+						screen.getByText( /get help/i )
+					).toBeInTheDocument();
+
+					expect(
+						screen.getByRole( 'link', { name: /get help/i } )
+					).toHaveAttribute(
+						'href',
+						registry
+							.select( CORE_SITE )
+							.getErrorTroubleshootingLinkURL( {
+								code: 'access_denied',
+							} )
+					);
+
+					expect( screen.getByText( /retry/i ) ).toBeInTheDocument();
+				} );
+
+				await act( waitForDefaultTimeouts );
+			} );
 		} );
 	} );
 } );
