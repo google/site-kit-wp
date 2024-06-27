@@ -71,8 +71,8 @@ export default function ModuleSetup( { moduleSlug } ) {
 				return;
 			}
 
-			const { select, __experimentalResolveSelect } = registry;
-			await __experimentalResolveSelect( CORE_SITE ).getSiteInfo();
+			const { select, resolveSelect } = registry;
+			await resolveSelect( CORE_SITE ).getSiteInfo();
 			const adminURL = select( CORE_SITE ).getAdminURL(
 				'googlesitekit-dashboard',
 				{

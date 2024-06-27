@@ -98,7 +98,7 @@ export function createPaxServices( registry, options = {} ) {
 	const { onCampaignCreated = null, onFinishAndCloseSignUpFlow = null } =
 		options;
 
-	const { select, __experimentalResolveSelect } = registry;
+	const { select, resolveSelect } = registry;
 	const getToken = createMemoizedGetToken();
 
 	const services = {
@@ -126,7 +126,7 @@ export function createPaxServices( registry, options = {} ) {
 		},
 		businessService: {
 			getBusinessInfo: async () => {
-				await __experimentalResolveSelect( CORE_SITE ).getSiteInfo();
+				await resolveSelect( CORE_SITE ).getSiteInfo();
 
 				/* eslint-disable sitekit/acronym-case */
 				// Disabling rule because businessName and businessUrl are expected by PAX API.
@@ -151,9 +151,7 @@ export function createPaxServices( registry, options = {} ) {
 		},
 		conversionTrackingService: {
 			getSupportedConversionLabels: async () => {
-				await __experimentalResolveSelect(
-					MODULES_ADS
-				).getModuleData();
+				await resolveSelect( MODULES_ADS ).getModuleData();
 				const conversionEvents =
 					select( MODULES_ADS ).getSupportedConversionEvents() || [];
 
