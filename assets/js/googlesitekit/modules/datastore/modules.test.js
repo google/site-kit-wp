@@ -856,6 +856,25 @@ describe( 'core/modules modules', () => {
 						.SettingsEditComponent
 				).toEqual( SettingsEditComponent );
 			} );
+
+			it( 'accepts MainRootComponent and EntityRootComponent components for the module', () => {
+				const MainRootComponent = () => 'main';
+				const EntityRootComponent = () => 'entity';
+
+				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
+					MainRootComponent,
+					EntityRootComponent,
+				} );
+
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.MainRootComponent
+				).toEqual( MainRootComponent );
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.EntityRootComponent
+				).toEqual( EntityRootComponent );
+			} );
 		} );
 
 		describe( 'fetchGetModules', () => {
@@ -1193,6 +1212,20 @@ describe( 'core/modules modules', () => {
 
 				expect( module.SettingsViewComponent ).toEqual( null );
 				expect( module.SettingsEditComponent ).toEqual( null );
+			} );
+
+			it( 'defaults MainRootComponent and EntityRootComponent components to `null` if not provided', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+				registry
+					.dispatch( CORE_MODULES )
+					.registerModule( 'test-module' );
+
+				const module = registry
+					.select( CORE_MODULES )
+					.getModule( 'test-module' );
+
+				expect( module.MainRootComponent ).toEqual( null );
+				expect( module.EntityRootComponent ).toEqual( null );
 			} );
 		} );
 
