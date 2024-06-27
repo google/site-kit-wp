@@ -81,6 +81,8 @@ const moduleDefaults = {
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
 	checkRequirements: () => true,
+	MainRootComponent: null,
+	EntityRootComponent: null,
 };
 
 const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
@@ -341,6 +343,8 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {WPComponent}    [settings.MainRootComponent]                Optional. React component to render the effects on main dashboard. Default none.
+	 * @param {WPComponent}    [settings.EntityRootComponent]              Optional. React component to render the effects on entity dashboard. Default none.
 	 */
 	registerModule: createValidatedAction(
 		( slug ) => {
@@ -361,6 +365,8 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				MainRootComponent,
+				EntityRootComponent,
 			} = {}
 		) {
 			const settings = {
@@ -376,6 +382,8 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				MainRootComponent,
+				EntityRootComponent,
 			};
 
 			yield {
