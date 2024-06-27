@@ -46,9 +46,6 @@ export default function AudienceErrorModal( {
 	onRetry = () => {},
 } ) {
 	const errors = Array.isArray( apiErrors ) ? apiErrors : [ apiErrors ];
-	const hasInsufficientPermissionsError = errors.some( ( error ) =>
-		isInsufficientPermissionsError( error )
-	);
 
 	const helpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
@@ -58,6 +55,20 @@ export default function AudienceErrorModal( {
 
 	const requestAccessURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
+	);
+
+	const errorTroubleshootingLinkURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+			code: 'access_denied',
+		} )
+	);
+
+	if ( ! errors.length && ! hasOAuthError ) {
+		return null;
+	}
+
+	const hasInsufficientPermissionsError = errors.some( ( error ) =>
+		isInsufficientPermissionsError( error )
 	);
 
 	let title, description, confirmButton, buttonLink;
@@ -71,7 +82,11 @@ export default function AudienceErrorModal( {
 			),
 			{
 				HelpLink: (
-					<Link href={ helpLink } external hideExternalIndicator>
+					<Link
+						href={ errorTroubleshootingLinkURL }
+						external
+						hideExternalIndicator
+					>
 						{ __( 'Get help', 'google-site-kit' ) }
 					</Link>
 				),
