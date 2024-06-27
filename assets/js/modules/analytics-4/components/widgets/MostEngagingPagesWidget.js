@@ -62,8 +62,10 @@ function MostEngagingPagesWidget( props ) {
 		limit: 1,
 	};
 
-	const pageViewsReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions )
+	const pageViewsReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions ),
+		[ pageViewsReportOptions ]
 	);
 
 	const averagePageViews =
@@ -120,24 +122,33 @@ function MostEngagingPagesWidget( props ) {
 		] )
 	);
 
-	const report = useInViewSelect( ( select ) => {
-		if ( ! hasFinishedResolvingPageViewReport ) {
-			return undefined;
-		}
-		if ( pageViewsReportErrors ) {
-			return null;
-		}
+	const report = useInViewSelect(
+		( select ) => {
+			if ( ! hasFinishedResolvingPageViewReport ) {
+				return undefined;
+			}
+			if ( pageViewsReportErrors ) {
+				return null;
+			}
 
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[
+			hasFinishedResolvingPageViewReport,
+			pageViewsReportErrors,
+			reportOptions,
+		]
+	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect(

@@ -30,7 +30,7 @@ use WP_Error;
 /**
  * A class containing shared methods for creating AnalyticsData Report and PivotReport requests.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @access private
  * @ignore
  */
@@ -39,7 +39,7 @@ class RequestHelpers {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 * @var Context
 	 */
 	private $context;
@@ -56,7 +56,7 @@ class RequestHelpers {
 	/**
 	 * Builds a Analytics Data Report or Pivot Report request's shared properties.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @param Data_Request                                                                                     $data Data request object.
 	 * @param Google_Service_AnalyticsData_RunPivotReportRequest|Google_Service_AnalyticsData_RunReportRequest $request The report request object.
@@ -142,7 +142,7 @@ class RequestHelpers {
 	 * Metrics must have valid names, matching the regular expression ^[a-zA-Z0-9_]+$ in keeping with the GA4 API.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -193,7 +193,7 @@ class RequestHelpers {
 	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -259,7 +259,7 @@ class RequestHelpers {
 	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
@@ -324,7 +324,7 @@ class RequestHelpers {
 	 * Parses dimension filters and returns a filter expression that should be added to the report request.
 	 *
 	 * @since 1.106.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression to use with the report request.
@@ -360,7 +360,7 @@ class RequestHelpers {
 	 * Parses and returns a single dimension filter.
 	 *
 	 * @since 1.106.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param string $dimension_name The dimension name.
 	 * @param mixed  $dimension_value The dimension fileter settings.
@@ -407,7 +407,7 @@ class RequestHelpers {
 	 * Parses metric filters and returns a filter expression that should be added to the report request.
 	 *
 	 * @since 1.111.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression to use with the report request.
@@ -438,7 +438,7 @@ class RequestHelpers {
 	 * Parses and returns a single metric filter.
 	 *
 	 * @since 1.111.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param string $metric_name The metric name.
 	 * @param mixed  $metric_value The metric filter settings.
@@ -492,7 +492,7 @@ class RequestHelpers {
 	 * Returns correct filter expression instance based on the metric filter instance.
 	 *
 	 * @since 1.111.0
-	 * @since n.e.x.t Moved into RequestHelpers for shared use between Report and PivotReport.
+	 * @since 1.130.0 Moved into RequestHelpers for shared use between Report and PivotReport.
 	 *
 	 * @param Numeric_Filter|Between_Filter $filter The metric filter instance.
 	 * @param string                        $metric_name The metric name.

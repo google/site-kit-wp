@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 /**
  * Class for handling Ninja Forms conversion events.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Ninja_Forms extends Conversion_Events_Provider {
 	/**
 	 * Checks if the Ninja Forms plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @return bool True if Ninja Forms is active, false otherwise.
 	 */
@@ -38,7 +38,7 @@ class Ninja_Forms extends Conversion_Events_Provider {
 	/**
 	 * Gets the conversion event names that are tracked by this provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -49,7 +49,7 @@ class Ninja_Forms extends Conversion_Events_Provider {
 	/**
 	 * Registers the script for the provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @return Script Script instance.
 	 */

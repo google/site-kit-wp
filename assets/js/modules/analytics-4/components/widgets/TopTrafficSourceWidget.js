@@ -73,12 +73,18 @@ function TopTrafficSourceWidget( { Widget } ) {
 		orderBy: 'totalUsers',
 	};
 
-	const totalUsersReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions )
+	const totalUsersReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( totalUsersReportOptions ),
+		[ totalUsersReportOptions ]
 	);
 
-	const trafficSourceReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( trafficSourceReportOptions )
+	const trafficSourceReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport(
+				trafficSourceReportOptions
+			),
+		[ trafficSourceReportOptions ]
 	);
 
 	const error = useSelect( ( select ) => {

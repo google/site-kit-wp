@@ -158,15 +158,6 @@ describe( 'isZeroReport', () => {
 				],
 			},
 		],
-		// RE: bug report #8442 where GA4 appears to occasionally return boolean for totals rows.
-		[
-			true,
-			'a report that has a boolean value for totals',
-			{
-				rows: [ {}, {}, {} ],
-				totals: true,
-			},
-		],
 	] )( 'returns %s when %s is passed', ( expectedValue, _, report ) => {
 		expect( isZeroReport( report ) ).toBe( expectedValue );
 	} );

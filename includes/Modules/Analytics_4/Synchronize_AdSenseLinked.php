@@ -84,7 +84,7 @@ class Synchronize_AdSenseLinked {
 	 * Cron callback for synchronizing the adsense linked data.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Added check for property ID, so it can return early if property ID is not set.
+	 * @since 1.130.0 Added check for property ID, so it can return early if property ID is not set.
 	 */
 	protected function synchronize_adsense_linked_data() {
 		$owner_id     = $this->analytics_4->get_owner_id();

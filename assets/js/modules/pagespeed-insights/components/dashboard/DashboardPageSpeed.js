@@ -102,18 +102,22 @@ export default function DashboardPageSpeed() {
 			};
 		} );
 
-	const reportMobile = useInViewSelect( ( select ) =>
-		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
-			referenceURL,
-			STRATEGY_MOBILE
-		)
+	const reportMobile = useInViewSelect(
+		( select ) =>
+			select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+				referenceURL,
+				STRATEGY_MOBILE
+			),
+		[ referenceURL ]
 	);
 
-	const reportDesktop = useInViewSelect( ( select ) =>
-		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
-			referenceURL,
-			STRATEGY_DESKTOP
-		)
+	const reportDesktop = useInViewSelect(
+		( select ) =>
+			select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+				referenceURL,
+				STRATEGY_DESKTOP
+			),
+		[ referenceURL ]
 	);
 
 	const { setValues } = useDispatch( CORE_UI );

@@ -596,7 +596,7 @@ const baseActions = {
 	 * Sets if GA4 has mismatched Google Tag ID.
 	 *
 	 * @since 1.96.0
-	 * @since n.e.x.t Updated to send value to the endpoint.
+	 * @since 1.130.0 Updated to send value to the endpoint.
 	 *
 	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
 	 */
@@ -609,7 +609,7 @@ const baseActions = {
 	/**
 	 * Sets if GA4 has mismatched Google Tag ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
 	 * @return {Object} Redux-style action.
