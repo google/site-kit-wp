@@ -31,17 +31,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import ModalDialog from '../../../../../components/ModalDialog';
-import { isInsufficientPermissionsError } from '../../../../../util/errors';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../../components/Link';
+import ModalDialog from '../../../../../components/ModalDialog';
+import Portal from '../../../../../components/Portal';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { isInsufficientPermissionsError } from '../../../../../util/errors';
 
 export default function AudienceErrorModal( {
-	hasOAuthError,
 	apiErrors,
-	onRetry = () => {},
+	hasOAuthError,
 	inProgress,
+	onCancel = () => {},
+	onRetry = () => {},
 } ) {
 	const errors = Array.isArray( apiErrors ) ? apiErrors : [ apiErrors ];
 	const hasInsufficientPermissionsError = errors.some( ( error ) =>
@@ -103,25 +105,29 @@ export default function AudienceErrorModal( {
 	}
 
 	return (
-		<ModalDialog
-			dialogActive
-			buttonLink={ buttonLink }
-			title={ title }
-			subtitle={ description }
-			handleConfirm={ onRetry }
-			confirmButton={ confirmButton }
-			danger
-			inProgress={ inProgress }
-		/>
+		<Portal>
+			<ModalDialog
+				dialogActive
+				buttonLink={ buttonLink }
+				title={ title }
+				subtitle={ description }
+				handleConfirm={ onRetry }
+				confirmButton={ confirmButton }
+				handleDialog={ onCancel }
+				danger
+				inProgress={ inProgress }
+			/>
+		</Portal>
 	);
 }
 
 AudienceErrorModal.propTypes = {
-	hasOAuthError: PropTypes.bool,
 	apiErrors: PropTypes.oneOfType( [
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ),
-	onRetry: PropTypes.func,
+	hasOAuthError: PropTypes.bool,
 	inProgress: PropTypes.bool,
+	onCancel: PropTypes.func,
+	onRetry: PropTypes.func,
 };
