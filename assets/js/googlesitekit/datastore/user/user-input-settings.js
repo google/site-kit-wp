@@ -162,10 +162,11 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*maybeTriggerUserInputSurvey() {
-		const { resolveSelect, dispatch } = yield commonActions.getRegistry();
+		const { __experimentalResolveSelect, dispatch } =
+			yield commonActions.getRegistry();
 
 		const settings = yield commonActions.await(
-			resolveSelect( CORE_USER ).getUserInputSettings()
+			__experimentalResolveSelect( CORE_USER ).getUserInputSettings()
 		);
 
 		const settingsAnsweredOther = Object.keys( settings ).filter( ( key ) =>

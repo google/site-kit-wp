@@ -203,7 +203,7 @@ const baseResolvers = {
 	},
 
 	*getResourceDataAvailabilityDate( resourceSlug, resourceType ) {
-		const { select, resolveSelect } =
+		const { select, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 
 		if (
@@ -216,7 +216,7 @@ const baseResolvers = {
 		}
 
 		const resourceAvailabilityDates = yield Data.commonActions.await(
-			resolveSelect(
+			__experimentalResolveSelect(
 				MODULES_ANALYTICS_4
 			).getResourceDataAvailabilityDates()
 		);
@@ -227,14 +227,14 @@ const baseResolvers = {
 		) {
 			// Ensure the settings are loaded.
 			yield Data.commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+				__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 			);
 
 			// Validate if the resourceSlug is a valid resource.
 			switch ( resourceType ) {
 				case RESOURCE_TYPE_AUDIENCE:
 					yield Data.commonActions.await(
-						resolveSelect(
+						__experimentalResolveSelect(
 							MODULES_ANALYTICS_4
 						).getAvailableAudiences()
 					);
@@ -272,7 +272,7 @@ const baseResolvers = {
 			}
 
 			yield Data.commonActions.await(
-				resolveSelect( CORE_USER ).getAuthentication()
+				__experimentalResolveSelect( CORE_USER ).getAuthentication()
 			);
 
 			// Return early if user is not authenticated.
@@ -286,7 +286,7 @@ const baseResolvers = {
 			}
 
 			const reportArgs = yield Data.commonActions.await(
-				resolveSelect(
+				__experimentalResolveSelect(
 					MODULES_ANALYTICS_4
 				).getPartialDataReportOptions( resourceSlug, resourceType )
 			);
@@ -297,7 +297,9 @@ const baseResolvers = {
 			}
 
 			const report = yield Data.commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+				__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
+					reportArgs
+				)
 			);
 
 			const hasReportError = !! select(
@@ -335,10 +337,13 @@ const baseResolvers = {
 	},
 
 	*getPartialDataReportOptions() {
-		const { resolveSelect } = yield Data.commonActions.getRegistry();
+		const { __experimentalResolveSelect } =
+			yield Data.commonActions.getRegistry();
 
 		yield Data.commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getPropertyCreateTime()
+			__experimentalResolveSelect(
+				MODULES_ANALYTICS_4
+			).getPropertyCreateTime()
 		);
 	},
 };

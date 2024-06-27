@@ -247,7 +247,7 @@ describe( 'SettingsModule', () => {
 		// Hack to avoid act error due to state change during render.
 		await act( () =>
 			registry
-				.resolveSelect( CORE_MODULES )
+				.__experimentalResolveSelect( CORE_MODULES )
 				.canActivateModule( 'tagmanager' )
 		);
 

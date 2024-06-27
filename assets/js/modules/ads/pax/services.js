@@ -60,7 +60,8 @@ const restFetchWpPages = async () => {
 export function createPaxServices( registry, options = {} ) {
 	const { onCampaignCreated = null, _global = global } = options;
 
-	const { select, resolveSelect: resolveSelect } = registry;
+	const { select, __experimentalResolveSelect: __experimentalResolveSelect } =
+		registry;
 	const accessToken =
 		_global?._googlesitekitPAXConfig?.authAccess?.oauthTokenAccess?.token;
 
@@ -85,7 +86,7 @@ export function createPaxServices( registry, options = {} ) {
 		},
 		businessService: {
 			getBusinessInfo: async () => {
-				await resolveSelect( CORE_SITE ).getSiteInfo();
+				await __experimentalResolveSelect( CORE_SITE ).getSiteInfo();
 
 				/* eslint-disable sitekit/acronym-case */
 				// Disabling rule because businessName and businessUrl are expected by PAX API.
@@ -102,7 +103,9 @@ export function createPaxServices( registry, options = {} ) {
 		},
 		conversionTrackingService: {
 			getSupportedConversionLabels: async () => {
-				await resolveSelect( MODULES_ADS ).getModuleData();
+				await __experimentalResolveSelect(
+					MODULES_ADS
+				).getModuleData();
 				const conversionEvents =
 					select( MODULES_ADS ).getSupportedConversionEvents() || [];
 

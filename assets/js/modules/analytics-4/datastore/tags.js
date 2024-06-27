@@ -47,7 +47,7 @@ existingTagStore.resolvers.getExistingTag = function* () {
 	if ( existingTag !== null ) {
 		const container = yield Data.commonActions.await(
 			registry
-				.resolveSelect( MODULES_ANALYTICS_4 )
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 				.getGoogleTagContainer( existingTag )
 		);
 

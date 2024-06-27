@@ -61,10 +61,11 @@ export const createInfoStore = (
 	const controls = {
 		[ WAIT_FOR_REAUTH_RESOLVERS ]: createRegistryControl(
 			( registry ) => async () => {
-				const { resolveSelect } = registry;
+				const { __experimentalResolveSelect } = registry;
 				const { getAuthentication, getConnectURL } =
-					resolveSelect( CORE_USER );
-				const { getSiteInfo } = resolveSelect( CORE_SITE );
+					__experimentalResolveSelect( CORE_USER );
+				const { getSiteInfo } =
+					__experimentalResolveSelect( CORE_SITE );
 
 				await Promise.all( [
 					// Authentication is needed for checking `needsReauthentication`.

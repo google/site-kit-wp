@@ -254,7 +254,7 @@ const baseActions = {
 			if ( propertyID ) {
 				const property = yield Data.commonActions.await(
 					registry
-						.resolveSelect( MODULES_ANALYTICS_4 )
+						.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 						.getProperty( propertyID )
 				);
 
@@ -302,7 +302,9 @@ const baseActions = {
 	*findMatchedProperty() {
 		const registry = yield commonActions.getRegistry();
 		const accounts = yield Data.commonActions.await(
-			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getAccountSummaries()
 		);
 
 		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
@@ -406,7 +408,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -422,7 +424,9 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.resolveSelect( MODULES_ANALYTICS_4 )
+									.__experimentalResolveSelect(
+										MODULES_ANALYTICS_4
+									)
 									.getProperty( propertyID )
 							);
 						}
@@ -460,7 +464,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -473,7 +477,9 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.resolveSelect( MODULES_ANALYTICS_4 )
+									.__experimentalResolveSelect(
+										MODULES_ANALYTICS_4
+									)
 									.getProperty( propertyID )
 							);
 						}
@@ -505,7 +511,7 @@ const baseActions = {
 	 * @param {string} measurementID Measurement ID.
 	 */
 	*updateSettingsForMeasurementID( measurementID ) {
-		const { select, dispatch, resolveSelect } =
+		const { select, dispatch, __experimentalResolveSelect } =
 			yield commonActions.getRegistry();
 
 		if ( ! measurementID ) {
@@ -522,7 +528,7 @@ const baseActions = {
 
 		// Wait for authentication to be resolved to check scopes.
 		yield commonActions.await(
-			resolveSelect( CORE_USER ).getAuthentication()
+			__experimentalResolveSelect( CORE_USER ).getAuthentication()
 		);
 		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
 			return;
@@ -589,7 +595,7 @@ const baseActions = {
 	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
-		const { select, dispatch, resolveSelect } =
+		const { select, dispatch, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 
 		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
@@ -602,7 +608,7 @@ const baseActions = {
 
 		// Wait for modules to be available before selecting.
 		yield Data.commonActions.await(
-			resolveSelect( CORE_MODULES ).getModules()
+			__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
 		const { isModuleConnected } = select( CORE_MODULES );
@@ -613,7 +619,7 @@ const baseActions = {
 
 		// Wait for module settings to be available before selecting.
 		yield Data.commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		const {
@@ -643,9 +649,9 @@ const baseActions = {
 
 		if ( !! googleTagID ) {
 			const googleTagContainer = yield Data.commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagContainer(
-					measurementID
-				)
+				__experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getGoogleTagContainer( measurementID )
 			);
 
 			if ( ! googleTagContainer ) {
@@ -661,7 +667,7 @@ const baseActions = {
 		const googleTagContainerID = getGoogleTagContainerID();
 
 		const googleTagContainerDestinations = yield Data.commonActions.await(
-			resolveSelect(
+			__experimentalResolveSelect(
 				MODULES_ANALYTICS_4
 			).getGoogleTagContainerDestinations(
 				googleTagAccountID,
@@ -686,9 +692,9 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_PROPERTY_SUMMARIES ]: createRegistryControl(
-		( { resolveSelect } ) => {
+		( { __experimentalResolveSelect } ) => {
 			return async () => {
-				await resolveSelect(
+				await __experimentalResolveSelect(
 					MODULES_ANALYTICS_4
 				).getAccountSummaries();
 			};
@@ -745,7 +751,9 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		// Ensure settings are available to select.
 		yield Data.commonActions.await(
-			registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getSettings()
 		);
 
 		const propertyID = registry
@@ -776,7 +784,7 @@ const baseResolvers = {
 
 		const property = yield Data.commonActions.await(
 			registry
-				.resolveSelect( MODULES_ANALYTICS_4 )
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 				.getProperty( propertyID )
 		);
 

@@ -240,7 +240,7 @@ describe( 'core/modules sharing-settings', () => {
 					);
 
 					await registry
-						.resolveSelect( CORE_MODULES )
+						.__experimentalResolveSelect( CORE_MODULES )
 						.getSharingSettings();
 
 					await registry
@@ -368,7 +368,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				const sharingSettingsObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				expect( console ).toHaveErrored();
@@ -381,7 +381,7 @@ describe( 'core/modules sharing-settings', () => {
 				};
 
 				const sharingSettingsObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				expect( sharingSettingsObj ).toMatchObject( {} );
@@ -391,7 +391,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				const sharingSettingsObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				expect( sharingSettingsObj ).toMatchObject( sharingSettings );
@@ -403,7 +403,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				const shareableRolesObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getShareableRoles();
 
 				expect( console ).toHaveErrored();
@@ -416,7 +416,7 @@ describe( 'core/modules sharing-settings', () => {
 				};
 
 				const shareableRolesObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getShareableRoles();
 
 				expect( shareableRolesObj ).toMatchObject( [] );
@@ -426,7 +426,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				const shareableRolesObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getShareableRoles();
 
 				expect( shareableRolesObj ).toMatchObject( shareableRoles );
@@ -444,7 +444,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				const sharingManagement = registry
@@ -459,7 +459,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				const sharingManagement = registry
@@ -472,7 +472,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				const sharingManagement = registry
@@ -494,7 +494,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				const sharedRoles = registry
@@ -509,7 +509,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				const sharedRoles = registry
@@ -522,7 +522,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				const sharedRoles = registry
@@ -545,7 +545,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Still false after getting the sharing settings from the global variable.
@@ -592,7 +592,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'compares all keys when keys argument is not supplied', async () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Update the sharing settings so they differ. All values are being checked here.
@@ -607,7 +607,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'compares select keys when keys argument is supplied', async () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Update the sharing settings so they differ. Only `search-console` should trigger
@@ -650,7 +650,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'informs whether client-side sharing-settings differ from server-side ones', async () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// True after updating module's `sharedRoles` on the client.
@@ -686,7 +686,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'should be set to TRUE after starting submiting sharing changes', async () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				freezeFetch(
@@ -707,7 +707,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'should be set to FALSE after finishing submitting sharing changes', async () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				fetchMock.postOnce(
@@ -763,7 +763,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Still false after getting the sharing settings from the global variable.
@@ -816,7 +816,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Still false after getting the sharing settings from the global variable.
@@ -862,7 +862,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Still false after getting the sharing settings from the global variable.
@@ -898,7 +898,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Still false after getting the sharing settings from the global variable.
@@ -955,7 +955,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Still false after getting the sharing settings from the global variable.
@@ -1024,7 +1024,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'compares all keys when keys argument is not supplied', async () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Update the sharing settings so they differ. All values are being checked here.
@@ -1041,7 +1041,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'compares selected keys when keys argument is supplied', async () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharingSettings();
 
 				// Update the sharing settings so they differ. Only `search-console` should trigger
@@ -1099,7 +1099,7 @@ describe( 'core/modules sharing-settings', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				const defaultSharedOwnershipModuleSettingsObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getDefaultSharedOwnershipModuleSettings();
 
 				expect( console ).toHaveErrored();
@@ -1114,7 +1114,7 @@ describe( 'core/modules sharing-settings', () => {
 				};
 
 				const defaultSharedOwnershipModuleSettingsObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getDefaultSharedOwnershipModuleSettings();
 
 				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
@@ -1128,7 +1128,7 @@ describe( 'core/modules sharing-settings', () => {
 				};
 
 				const defaultSharedOwnershipModuleSettingsObj = await registry
-					.resolveSelect( CORE_MODULES )
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getDefaultSharedOwnershipModuleSettings();
 
 				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(

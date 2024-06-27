@@ -356,7 +356,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( initialSettings ).toBeUndefined();
 
 				const finalSettings = await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 					.getEnhancedMeasurementSettings(
 						propertyID,
 						webDataStreamID
@@ -488,7 +488,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( initialStreamEnabled ).toBeUndefined();
 
 				const finalStreamEnabled = await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
 					.isEnhancedMeasurementStreamAlreadyEnabled(
 						propertyID,
 						webDataStreamID
