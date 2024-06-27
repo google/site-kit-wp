@@ -38,7 +38,9 @@ import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-seg
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 import whenActive from '../../../../../util/when-active';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
@@ -60,7 +62,6 @@ import {
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../util';
 import AudienceErrorModal from './AudienceErrorModal';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -114,8 +115,9 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const [ apiErrors, setApiErrors ] = useState( [] );
 	const [ failedAudiences, setFailedAudiences ] = useState( [] );
+	const [ showErrorModal, setShowErrorModal ] = useState( false );
 	const onEnableGroups = useCallback(
-		async ( retryFailedAudiences ) => {
+		async ( retryFailedAudiences = [] ) => {
 			setIsSaving( true );
 
 			// If scope not granted, trigger scope error right away. These are
@@ -141,6 +143,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 					},
 				} );
 
+				setShowErrorModal( true );
 				setIsSaving( false );
 				return;
 			}
@@ -150,18 +153,22 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			} );
 
 			const { error, failedSiteKitAudienceResourceNames } =
-				await enableAudienceGroup( {
-					failedSiteKitAudienceResourceNames: retryFailedAudiences,
-				} );
+				( await enableAudienceGroup( retryFailedAudiences ) ) || {};
 
 			if ( error ) {
 				setApiErrors( [ error ] );
-			}
-
-			if ( failedSiteKitAudienceResourceNames ) {
+				setFailedAudiences( [] );
+			} else if ( Array.isArray( failedSiteKitAudienceResourceNames ) ) {
 				setFailedAudiences( failedSiteKitAudienceResourceNames );
+				setApiErrors( [] );
+			} else {
+				setApiErrors( [] );
+				setFailedAudiences( [] );
 			}
 
+			setShowErrorModal(
+				!! error || !! failedSiteKitAudienceResourceNames
+			);
 			setIsSaving( false );
 		},
 		[
@@ -207,6 +214,31 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	};
 
+	const permissionsError = useSelect( ( select ) =>
+		select( CORE_USER ).getPermissionScopeError()
+	);
+
+	const connectURL = useSelect( ( select ) =>
+		select( CORE_USER ).getConnectURL( {
+			additionalScopes: permissionsError?.data?.scopes,
+			redirectURL:
+				permissionsError?.data?.redirectURL || global.location.href,
+		} )
+	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+
+	const handleOAuthError = useCallback( () => {
+		setIsSaving( true );
+		navigateTo( connectURL );
+	}, [ connectURL, navigateTo ] );
+
+	const onCancel = useCallback( () => {
+		clearPermissionScopeError();
+		setShowErrorModal( false );
+	}, [ clearPermissionScopeError ] );
+
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
 	);
@@ -244,32 +276,20 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return null;
 	}
 
-	if ( hasOAuthError ) {
+	if ( showErrorModal ) {
 		return (
 			<AudienceErrorModal
-				hasOAuthError
-				onRetry={ onEnableGroups }
-				inProgress={ isSaving }
-			/>
-		);
-	}
-
-	if ( apiErrors.length ) {
-		return (
-			<AudienceErrorModal
+				hasOAuthError={ hasOAuthError }
 				apiErrors={ apiErrors }
-				onRetry={ onEnableGroups }
+				onRetry={
+					hasOAuthError
+						? handleOAuthError
+						: () => onEnableGroups( failedAudiences )
+				}
 				inProgress={ isSaving }
-			/>
-		);
-	}
-
-	if ( failedAudiences.length ) {
-		return (
-			<AudienceErrorModal
-				apiErrors={ apiErrors }
-				onRetry={ () => onEnableGroups( failedAudiences ) }
-				inProgress={ isSaving }
+				onCancel={
+					hasOAuthError ? onCancel : () => setShowErrorModal( false )
+				}
 			/>
 		);
 	}
