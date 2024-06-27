@@ -188,11 +188,10 @@ const baseActions = {
 	 * @since 1.128.0
 	 * @since n.e.x.t Added `failedSiteKitAudienceResourceNames` parameter to retry failed Site Kit audience creation.
 	 *
-	 * @param {Object} args                                    Arguments for enabling audience group.
-	 * @param {Array}  args.failedSiteKitAudienceResourceNames List of failed Site Kit audience resource names to retry.
+	 * @param {Array} failedSiteKitAudienceResourceNames List of failed Site Kit audience resource names to retry.
 	 * @return {Object} Object with `failedSiteKitAudienceResourceNames` and `error`.
 	 */
-	*enableAudienceGroup( { failedSiteKitAudienceResourceNames } ) {
+	*enableAudienceGroup( failedSiteKitAudienceResourceNames ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
@@ -279,10 +278,9 @@ const baseActions = {
 		}
 
 		if ( configuredAudiences.length === 0 ) {
-			const audiencesToCreate = failedSiteKitAudienceResourceNames || [
-				'new-visitors',
-				'returning-visitors',
-			];
+			const audiencesToCreate = failedSiteKitAudienceResourceNames?.length
+				? failedSiteKitAudienceResourceNames
+				: [ 'new-visitors', 'returning-visitors' ];
 
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
