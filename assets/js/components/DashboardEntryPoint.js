@@ -20,30 +20,30 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
+import ModuleRootComponents from './ModuleRootComponents';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
-
-	useMount( () => {
-		// TODO: Refactor this to be in a module-specific location
-		// where such conditional logic isn't needed.
-		ga4Actions?.syncGoogleTagSettings();
-	} );
-
-	if ( !! setupModuleSlug ) {
-		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
-	}
-
-	return <DashboardMainApp />;
+	return (
+		<Fragment>
+			<ModuleRootComponents dashboardType="main" />
+			{ !! setupModuleSlug ? (
+				<ModuleSetup moduleSlug={ setupModuleSlug } />
+			) : (
+				<DashboardMainApp />
+			) }
+		</Fragment>
+	);
 }
 
 DashboardEntryPoint.propTypes = {
