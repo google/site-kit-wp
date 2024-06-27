@@ -989,6 +989,288 @@ describe( 'modules/analytics-4 audiences', () => {
 					).toBe( true );
 				} );
 			} );
+
+			describe( 'error handling and retrying failed audience creations', () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				it( 'should return and dispatch an error if syncing available audiences request fails', async () => {
+					fetchMock.post( syncAvailableAudiencesEndpoint, {
+						body: errorResponse,
+						status: 500,
+					} );
+
+					const { response, error } = await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					expect( response ).toBeUndefined();
+					expect( error ).toEqual( errorResponse );
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getErrorForAction( 'syncAvailableAudiences' )
+					).toEqual( errorResponse );
+
+					expect( console ).toHaveErrored();
+				} );
+
+				it( 'should return failed audience names when creating new visitors and returning visitors audiences fails', async () => {
+					const expectedFailedAudiences = [
+						'new-visitors',
+						'returning-visitors',
+					];
+
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: [],
+						status: 200,
+					} );
+
+					// Mocking createAudience API call with failure response.
+					fetchMock.post(
+						{ url: createAudienceEndpoint, repeat: 2 },
+						{
+							body: errorResponse,
+							status: 500,
+						}
+					);
+
+					const result = await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					// Verifying the result contains the expected failed audiences.
+					expect( result ).toEqual( {
+						failedSiteKitAudienceResourceNames:
+							expectedFailedAudiences,
+					} );
+
+					// Ensuring no configured audiences are set when all creation attempts fail.
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getConfiguredAudiences()
+					).toBeNull();
+
+					expect( console ).toHaveErrored();
+					expect( console ).toHaveErrored();
+				} );
+
+				it( 'should create one audience and return failed audience names for the other', async () => {
+					const failedAudiencesToRetry = [
+						'new-visitors',
+						'returning-visitors',
+					];
+
+					const createdNewVisitorsAudienceName =
+						'properties/12345/audiences/888';
+					const expectedFailedAudiences = [ 'returning-visitors' ];
+
+					// Mocking createAudience API call with mixed responses.
+					fetchMock.post(
+						{ url: createAudienceEndpoint, repeat: 2 },
+						( url, opts ) => {
+							if ( opts.body.includes( 'new_visitors' ) ) {
+								return {
+									body: {
+										...SITE_KIT_AUDIENCE_DEFINITIONS[
+											'new-visitors'
+										],
+										name: createdNewVisitorsAudienceName,
+									},
+									status: 200,
+								};
+							}
+							return {
+								body: errorResponse,
+								status: 500,
+							};
+						}
+					);
+
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: [],
+						status: 200,
+					} );
+
+					const result = await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup( failedAudiencesToRetry );
+
+					// Verifying the result contains the expected failed audiences.
+					expect( result ).toEqual( {
+						failedSiteKitAudienceResourceNames:
+							expectedFailedAudiences,
+					} );
+
+					// Ensure no configured audiences are set when one creation attempt fails.
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getConfiguredAudiences()
+					).toBeNull();
+
+					// Ensuring the API calls were made as expected
+					expect( fetchMock ).toHaveFetchedTimes(
+						2,
+						createAudienceEndpoint
+					);
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						syncAvailableAudiencesEndpoint
+					);
+
+					// Ensure conse error is logged only once.
+					expect( console ).toHaveErrored();
+				} );
+
+				it( 'should create provided "failedSiteKitAudienceResourceNames" correctly', async () => {
+					const failedAudiencesToRetry = [
+						'new-visitors',
+						'returning-visitors',
+					];
+
+					const createdNewVisitorsAudienceName =
+						'properties/12345/audiences/888';
+					const createdReturningVisitorsAudienceName =
+						'properties/12345/audiences/999';
+
+					const expectedConfiguredAudiences = [
+						createdNewVisitorsAudienceName,
+						createdReturningVisitorsAudienceName,
+					];
+
+					const finalAvailableAudiences = [
+						[
+							...availableUserAudiences,
+							{
+								...availableNewVisitorsAudienceFixture,
+								name: createdNewVisitorsAudienceName,
+							},
+							{
+								...availableReturningVisitorsAudienceFixture,
+								name: createdReturningVisitorsAudienceName,
+							},
+						],
+					];
+
+					fetchMock.post(
+						{
+							url: syncAvailableAudiencesEndpoint,
+							repeat: 2,
+						},
+						() => {
+							const callCount = fetchMock.calls(
+								syncAvailableAudiencesEndpoint
+							).length;
+
+							return {
+								body:
+									callCount === 1
+										? availableUserAudiences
+										: finalAvailableAudiences,
+								status: 200,
+							};
+						}
+					);
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: expectedConfiguredAudiences,
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					fetchMock.post(
+						{ url: createAudienceEndpoint, repeat: 2 },
+						( url, opts ) => {
+							return {
+								body: opts.body.includes( 'new_visitors' )
+									? {
+											...SITE_KIT_AUDIENCE_DEFINITIONS[
+												'new-visitors'
+											],
+											name: createdNewVisitorsAudienceName,
+									  }
+									: {
+											...SITE_KIT_AUDIENCE_DEFINITIONS[
+												'returning-visitors'
+											],
+											name: createdReturningVisitorsAudienceName,
+									  },
+								status: 200,
+							};
+						}
+					);
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup( failedAudiencesToRetry );
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						2,
+						syncAvailableAudiencesEndpoint
+					);
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						createAudienceEndpoint,
+						{
+							body: {
+								data: {
+									audience:
+										SITE_KIT_AUDIENCE_DEFINITIONS[
+											'new-visitors'
+										],
+								},
+							},
+						}
+					);
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						createAudienceEndpoint,
+						{
+							body: {
+								data: {
+									audience:
+										SITE_KIT_AUDIENCE_DEFINITIONS[
+											'returning-visitors'
+										],
+								},
+							},
+						}
+					);
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						audienceSettingsEndpoint,
+						{
+							body: {
+								data: {
+									settings: {
+										configuredAudiences:
+											expectedConfiguredAudiences,
+										isAudienceSegmentationWidgetHidden,
+									},
+								},
+							},
+						}
+					);
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getConfiguredAudiences()
+					).toEqual( expectedConfiguredAudiences );
+				} );
+			} );
 		} );
 	} );
 
