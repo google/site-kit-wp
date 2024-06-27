@@ -116,6 +116,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ apiErrors, setApiErrors ] = useState( [] );
 	const [ failedAudiences, setFailedAudiences ] = useState( [] );
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
+
 	const onEnableGroups = useCallback(
 		async ( retryFailedAudiences = [] ) => {
 			setIsSaving( true );
@@ -243,7 +244,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const hasOAuthError = autoSubmit && setupErrorCode;
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
 	if ( isTooltipVisible ) {
 		return (
