@@ -33,6 +33,7 @@ import {
 	provideUserAuthentication,
 	unsubscribeFromAll,
 	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -40,6 +41,7 @@ import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
+	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from '../../../datastore/constants';
 import {
 	availableAudiences as audiencesFixture,
@@ -68,6 +70,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
+
+	const createAudienceEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
 
 	const testPropertyID = propertiesFixture[ 0 ]._id;
@@ -392,7 +398,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should show the `Don’t show again` CTA when the dismissCount is 1', () => {
+		it( 'should show the `Don’t show again` CTA when the dismissCount is 1', async () => {
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 				[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 					expires: 1000,
@@ -400,7 +406,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				},
 			} );
 
-			const { getByRole, queryByText } = render(
+			const { getByRole, queryByText, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
@@ -409,6 +415,8 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					registry,
 				}
 			);
+
+			await act( waitForRegistry );
 
 			expect(
 				getByRole( 'button', { name: /Don’t show again/i } )
@@ -432,24 +440,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetAudienceSettings( settings );
 
-			const { getByRole } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
-			);
-
-			expect(
-				getByRole( 'button', { name: /Enable groups/i } )
-			).toBeInTheDocument();
-
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					getByRole( 'button', { name: /Enable groups/i } )
-				);
-			} );
-
 			fetchMock.post( syncAvailableAudiencesEndpoint, {
 				status: 200,
 				body: audiencesFixture,
@@ -468,11 +458,53 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				body: settingsBody,
 			} );
 
+			fetchMock.post(
+				{ url: createAudienceEndpoint, repeat: 2 },
+				( url, opts ) => {
+					return {
+						body: opts.body.includes( 'new_visitors' )
+							? {
+									...SITE_KIT_AUDIENCE_DEFINITIONS[
+										'new-visitors'
+									],
+									name: audiencesFixture[ 2 ].name,
+							  }
+							: {
+									...SITE_KIT_AUDIENCE_DEFINITIONS[
+										'returning-visitors'
+									],
+									name: audiencesFixture[ 3 ].name,
+							  },
+						status: 200,
+					};
+				}
+			);
+
 			muteFetch( reportEndpoint );
+
+			const { getByRole } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				getByRole( 'button', { name: /Enable groups/i } )
+			).toBeInTheDocument();
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
 
 			expect(
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
+
+			await act( () => waitForTimeouts( 30 ) );
 		} );
 
 		it( 'should initialise the list of configured audiences when autoSubmit is set to true.', async () => {
@@ -514,6 +546,28 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				status: 200,
 				body: settingsBody,
 			} );
+
+			fetchMock.post(
+				{ url: createAudienceEndpoint, repeat: 2 },
+				( url, opts ) => {
+					return {
+						body: opts.body.includes( 'new_visitors' )
+							? {
+									...SITE_KIT_AUDIENCE_DEFINITIONS[
+										'new-visitors'
+									],
+									name: audiencesFixture[ 2 ].name,
+							  }
+							: {
+									...SITE_KIT_AUDIENCE_DEFINITIONS[
+										'returning-visitors'
+									],
+									name: audiencesFixture[ 3 ].name,
+							  },
+						status: 200,
+					};
+				}
+			);
 
 			muteFetch( reportEndpoint );
 
