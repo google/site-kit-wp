@@ -31,12 +31,12 @@ import { Fragment } from '@wordpress/element';
  */
 import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
-// import ModuleRootComponents from './ModuleRootComponents';
+import ModuleRootComponents from './ModuleRootComponents';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	return (
 		<Fragment>
-			{ /* <ModuleRootComponents dashboardType="main" /> */ }
+			<ModuleRootComponents dashboardType="main" />
 			{ !! setupModuleSlug ? (
 				<ModuleSetup moduleSlug={ setupModuleSlug } />
 			) : (
