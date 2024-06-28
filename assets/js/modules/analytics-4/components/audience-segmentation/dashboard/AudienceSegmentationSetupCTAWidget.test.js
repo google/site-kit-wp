@@ -575,17 +575,18 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 
-			const { getByRole, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
-			);
-
-			await act( waitForRegistry );
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				render(
+					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					{
+						registry,
+					}
+				);
+			} );
 
 			expect(
-				getByRole( 'button', { name: /Enabling groups/i } )
+				screen.getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
 
 			await act( waitForDefaultTimeouts );
