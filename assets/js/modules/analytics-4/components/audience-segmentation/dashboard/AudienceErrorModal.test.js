@@ -125,7 +125,7 @@ describe( 'AudienceErrorModal', () => {
 			data: { status: 500 },
 		};
 
-		const { queryByText, getByText } = render(
+		const { getByRole, getByText, queryByText } = render(
 			<AudienceErrorModal apiErrors={ error } />,
 			{
 				registry,
@@ -136,6 +136,9 @@ describe( 'AudienceErrorModal', () => {
 		expect(
 			getByText( /Failed to set up visitor groups/i )
 		).toBeInTheDocument();
+
+		// Verify the "Retry" button is displayed.
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		// Verify the "Get help" link is not displayed.
 		expect( queryByText( /get help/i ) ).not.toBeInTheDocument();
