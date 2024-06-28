@@ -666,7 +666,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				await act( waitForDefaultTimeouts );
 			} );
 
-			it( 'should show the insufficient permissio error modal when the user does not have the required permissions', async () => {
+			it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
 				const errorResponse = {
 					code: 'test_error',
 					message: 'Error message.',
@@ -714,6 +714,55 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					// Verify the "Request access" button is displayed.
 					expect(
 						screen.getByText( /request access/i )
+					).toBeInTheDocument();
+				} );
+
+				await act( waitForDefaultTimeouts );
+			} );
+
+			it( 'should show the generic error modal when an internal server error occurs', async () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					render(
+						<AudienceSegmentationSetupCTAWidget
+							Widget={ Widget }
+						/>,
+						{
+							registry,
+						}
+					);
+				} );
+
+				expect(
+					screen.getByRole( 'button', { name: /Enable groups/i } )
+				).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click(
+						screen.getByRole( 'button', { name: /Enable groups/i } )
+					);
+				} );
+
+				// Verify the error is "Insufficient permissions" variant.
+				await waitFor( () => {
+					expect(
+						screen.getByText( /Failed to set up visitor groups/i )
+					).toBeInTheDocument();
+
+					// Verify the "Retry" button is displayed.
+					expect(
+						screen.getByRole( 'button', { name: /retry/i } )
 					).toBeInTheDocument();
 				} );
 
