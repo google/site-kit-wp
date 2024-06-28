@@ -188,7 +188,6 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	beforeEach( async () => {
-		ignorePermissionScopeErrors();
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setupSiteKit();
 	} );
