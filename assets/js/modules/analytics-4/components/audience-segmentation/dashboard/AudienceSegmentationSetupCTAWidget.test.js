@@ -50,6 +50,7 @@ import {
 	availableAudiences as audiencesFixture,
 	properties as propertiesFixture,
 } from '../../../datastore/__fixtures__';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
@@ -636,12 +637,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					);
 				} );
 
-				// Verify the error is an OAuth error.
+				// Verify the error is an OAuth error variant.
 				await waitFor( () => {
 					expect(
 						screen.getByText( /Analytics update failed/i )
 					).toBeInTheDocument();
 
+					// Verify the "Get help" link is displayed.
 					expect(
 						screen.getByText( /get help/i )
 					).toBeInTheDocument();
@@ -657,7 +659,62 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 							} )
 					);
 
+					// Verify the "Retry" button is displayed.
 					expect( screen.getByText( /retry/i ) ).toBeInTheDocument();
+				} );
+
+				await act( waitForDefaultTimeouts );
+			} );
+
+			it( 'should show the insufficient permissio error modal when the user does not have the required permissions', async () => {
+				const errorResponse = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					render(
+						<AudienceSegmentationSetupCTAWidget
+							Widget={ Widget }
+						/>,
+						{
+							registry,
+						}
+					);
+				} );
+
+				expect(
+					screen.getByRole( 'button', { name: /Enable groups/i } )
+				).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click(
+						screen.getByRole( 'button', { name: /Enable groups/i } )
+					);
+				} );
+
+				// Verify the error is "Insufficient permissions" variant.
+				await waitFor( () => {
+					expect(
+						screen.getByText( /Insufficient permissions/i )
+					).toBeInTheDocument();
+
+					// Verify the "Get help" link is displayed.
+					expect(
+						screen.getByText( /get help/i )
+					).toBeInTheDocument();
+
+					// Verify the "Request access" button is displayed.
+					expect(
+						screen.getByText( /request access/i )
+					).toBeInTheDocument();
 				} );
 
 				await act( waitForDefaultTimeouts );
