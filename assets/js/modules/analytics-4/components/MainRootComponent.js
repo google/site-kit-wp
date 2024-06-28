@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
-// import { useMount } from 'react-use';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -37,7 +37,7 @@ import {
 } from '../datastore/constants';
 
 export default function MainRootComponent() {
-	// const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
+	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
 
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
@@ -68,9 +68,9 @@ export default function MainRootComponent() {
 		} );
 	}, [ createCustomDimensions, setValues ] );
 
-	// useMount( () => {
-	// 	ga4Actions?.syncGoogleTagSettings();
-	// } );
+	useMount( () => {
+		ga4Actions?.syncGoogleTagSettings();
+	} );
 
 	useEffect( () => {
 		if (
