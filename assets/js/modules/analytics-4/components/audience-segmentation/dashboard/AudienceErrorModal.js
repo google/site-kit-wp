@@ -140,6 +140,7 @@ AudienceErrorModal.propTypes = {
 	apiErrors: PropTypes.oneOfType( [
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
+		PropTypes.array,
 	] ),
 	hasOAuthError: PropTypes.bool,
 	inProgress: PropTypes.bool,

@@ -281,7 +281,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return (
 			<AudienceErrorModal
 				hasOAuthError={ hasOAuthError }
-				apiErrors={ apiErrors }
+				apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
 				onRetry={
 					hasOAuthError
 						? handleOAuthError
