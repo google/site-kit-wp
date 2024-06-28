@@ -325,8 +325,6 @@ describe( 'Analytics write scope requests', () => {
 				text: /Congrats on completing the setup for Analytics!/i,
 			}
 		);
-
-		await pageWait();
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
