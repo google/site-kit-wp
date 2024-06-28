@@ -21,13 +21,9 @@
  */
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-// import { useSelect } from 'googlesitekit-data';
 import {
-	// WithTestRegistry,
-	// createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
-	// provideUserInfo,
 	provideSiteInfo,
 } from '../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
@@ -41,6 +37,9 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.args = {
 	onRetry: () => {},
+};
+Default.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceErrorModal/Default',
 };
 
 export const WithInsufficientPermissionsError = Template.bind( {} );
@@ -66,25 +65,8 @@ WithOAuthError.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceErrorModal/WithOAuthError',
 };
 
-// export const AudienceSyncError = Template.bind( {} );
-// AudienceSyncError.storyName = 'Audience sync error';
-// AudienceSyncError.args = {
-// 	setupRegistry: ( registry ) => {
-// 		const error = {
-// 			code: 'test_error',
-// 			message: 'Error message.',
-// 			data: {},
-// 		};
-
-// 		registry
-// 			.dispatch( MODULES_ANALYTICS_4 )
-// 			.receiveError( error, 'syncAvailableAudiences' );
-// 	},
-// };
-
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceErrorModal',
-	// component: AudienceErrorModal,
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
