@@ -51,13 +51,13 @@ function ModuleRootComponents( { dashboardType } ) {
 		return null;
 	}
 
-	const rootComponents = filteredModules.map( ( module, index ) =>
+	const rootComponents = filteredModules.map( ( Module, index ) =>
 		'main' === dashboardType ? (
-			<module.MainRootComponent
+			<Module.MainRootComponent
 				key={ `module-root-component-${ index }` }
 			/>
 		) : (
-			<module.EntityRootComponent
+			<Module.EntityRootComponent
 				key={ `module-root-component-${ index }` }
 			/>
 		)
