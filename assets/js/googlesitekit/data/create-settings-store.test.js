@@ -400,13 +400,20 @@ describe( 'createSettingsStore store', () => {
 		] )( '%s', ( selector ) => {
 			it( 'should use provided validateHaveSettingsChanged function', () => {
 				const validateHaveSettingsChanged = jest.fn();
+
 				storeDefinition = createSettingsStore( ...STORE_ARGS, {
 					settingSlugs: [ 'isSkyBlue' ],
 					validateHaveSettingsChanged,
 					registry,
 				} );
 
+				registry.registerStore(
+					storeDefinition.STORE_NAME,
+					storeDefinition
+				);
+
 				storeDefinition.selectors[ selector ]();
+
 				expect( validateHaveSettingsChanged ).toHaveBeenCalled();
 			} );
 		} );
