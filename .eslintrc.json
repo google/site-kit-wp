@@ -112,6 +112,7 @@
       "googlesitekit-api",
       "googlesitekit-widgets",
       "googlesitekit-components",
+      "googlesitekit-notifications",
       "@wordpress/i18n__non-shim",
       "@wordpress/api-fetch__non-shim"
     ],

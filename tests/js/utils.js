@@ -34,6 +34,7 @@ import { useState } from '@wordpress/element';
 import * as coreForms from '../../assets/js/googlesitekit/datastore/forms';
 import * as coreLocation from '../../assets/js/googlesitekit/datastore/location';
 import * as coreModules from '../../assets/js/googlesitekit/modules';
+import * as coreNotifications from '../../assets/js/googlesitekit/notifications';
 import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
 import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
@@ -64,6 +65,7 @@ const allCoreStores = [
 	coreForms,
 	coreLocation,
 	coreModules,
+	coreNotifications,
 	coreSite,
 	coreUser,
 	coreUi,
