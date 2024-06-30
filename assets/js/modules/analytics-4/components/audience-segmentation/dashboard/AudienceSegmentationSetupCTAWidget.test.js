@@ -585,9 +585,11 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 			} );
 
-			expect(
-				screen.getByRole( 'button', { name: /Enabling groups/i } )
-			).toBeInTheDocument();
+			await waitFor( () => {
+				expect(
+					screen.getByRole( 'button', { name: /Enabling groups/i } )
+				).toBeInTheDocument();
+			} );
 
 			await act( waitForDefaultTimeouts );
 		} );
