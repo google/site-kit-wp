@@ -857,23 +857,23 @@ describe( 'core/modules modules', () => {
 				).toEqual( SettingsEditComponent );
 			} );
 
-			it( 'accepts MainRootComponent and EntityRootComponent components for the module', () => {
-				const MainRootComponent = () => 'main';
-				const EntityRootComponent = () => 'entity';
+			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
+				const DashboardMainEffectComponent = () => 'main';
+				const DashboardEntityEffectComponent = () => 'entity';
 
 				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
-					MainRootComponent,
-					EntityRootComponent,
+					DashboardMainEffectComponent,
+					DashboardEntityEffectComponent,
 				} );
 
 				expect(
 					store.getState().clientDefinitions[ moduleSlug ]
-						.MainRootComponent
-				).toEqual( MainRootComponent );
+						.DashboardMainEffectComponent
+				).toEqual( DashboardMainEffectComponent );
 				expect(
 					store.getState().clientDefinitions[ moduleSlug ]
-						.EntityRootComponent
-				).toEqual( EntityRootComponent );
+						.DashboardEntityEffectComponent
+				).toEqual( DashboardEntityEffectComponent );
 			} );
 		} );
 
@@ -1214,7 +1214,7 @@ describe( 'core/modules modules', () => {
 				expect( module.SettingsEditComponent ).toEqual( null );
 			} );
 
-			it( 'defaults MainRootComponent and EntityRootComponent components to `null` if not provided', () => {
+			it( 'defaults DashboardMainEffectComponent and DashboardEntityEffectComponent components to `null` if not provided', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 				registry
 					.dispatch( CORE_MODULES )
@@ -1224,8 +1224,8 @@ describe( 'core/modules modules', () => {
 					.select( CORE_MODULES )
 					.getModule( 'test-module' );
 
-				expect( module.MainRootComponent ).toEqual( null );
-				expect( module.EntityRootComponent ).toEqual( null );
+				expect( module.DashboardMainEffectComponent ).toEqual( null );
+				expect( module.DashboardEntityEffectComponent ).toEqual( null );
 			} );
 		} );
 
