@@ -2051,7 +2051,7 @@ describe( 'core/modules modules', () => {
 				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = await registry
-					.__experimentalResolveSelect( CORE_MODULES )
+					.resolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject( {} );
@@ -2064,7 +2064,7 @@ describe( 'core/modules modules', () => {
 				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = await registry
-					.__experimentalResolveSelect( CORE_MODULES )
+					.resolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject(

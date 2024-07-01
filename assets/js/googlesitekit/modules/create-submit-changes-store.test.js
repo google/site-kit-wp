@@ -155,11 +155,15 @@ describe( 'createSubmitChangesStore', () => {
 		] )( '%s', ( selector ) => {
 			it( 'should use provided validateCanSubmitChanges function', () => {
 				const validateCanSubmitChanges = jest.fn();
-				const { selectors } = createSubmitChangesStore( {
+				const store = createSubmitChangesStore( {
 					validateCanSubmitChanges,
 				} );
 
-				selectors[ selector ]();
+				const registry = createRegistry();
+				registry.registerStore( storeName, store );
+
+				store.selectors[ selector ]();
+
 				expect( validateCanSubmitChanges ).toHaveBeenCalled();
 			} );
 		} );

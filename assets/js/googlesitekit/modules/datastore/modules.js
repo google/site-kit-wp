@@ -563,13 +563,11 @@ export const baseControls = {
 			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select, __experimentalResolveSelect } ) =>
+		( { select, resolveSelect } ) =>
 			async ( { payload } ) => {
 				const { slug } = payload;
 				// Ensure the module is loaded before selecting the store name.
-				await __experimentalResolveSelect( CORE_MODULES ).getModule(
-					slug
-				);
+				await resolveSelect( CORE_MODULES ).getModule( slug );
 
 				const storeName =
 					select( CORE_MODULES ).getModuleStoreName( slug );
@@ -580,9 +578,7 @@ export const baseControls = {
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
-					return await __experimentalResolveSelect(
-						storeName
-					).getAdminReauthURL();
+					return await resolveSelect( storeName ).getAdminReauthURL();
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -665,11 +661,9 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 function* waitForModules() {
-	const { __experimentalResolveSelect } = yield commonActions.getRegistry();
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-	yield commonActions.await(
-		__experimentalResolveSelect( CORE_MODULES ).getModules()
-	);
+	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
 }
 
 const baseResolvers = {
@@ -685,9 +679,9 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield commonActions.getRegistry();
-		const { select, __experimentalResolveSelect } = registry;
+		const { select, resolveSelect } = registry;
 		const module = yield commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
+			resolveSelect( CORE_MODULES ).getModule( slug )
 		);
 		// At this point, all modules are loaded so we can safely select getModule below.
 
@@ -753,7 +747,7 @@ const baseResolvers = {
 	*getRecoverableModules() {
 		const registry = yield commonActions.getRegistry();
 		const modules = yield commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+			registry.resolveSelect( CORE_MODULES ).getModules()
 		);
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(

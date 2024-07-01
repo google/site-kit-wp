@@ -64,7 +64,7 @@ describe( 'modules/analytics-4 conversion-events', () => {
 				expect( initialConversionEvents ).toBeUndefined();
 
 				const conversionEvents = await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getConversionEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -110,7 +110,7 @@ describe( 'modules/analytics-4 conversion-events', () => {
 				);
 
 				await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getConversionEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

@@ -121,7 +121,7 @@ const baseActions = {
 			const registry = yield commonActions.getRegistry();
 			const audienceSettings = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getAudienceSettings()
 			);
 			const finalSettings = {
@@ -131,7 +131,7 @@ const baseActions = {
 
 			const availableAudiences = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getAvailableAudiences()
 			);
 
