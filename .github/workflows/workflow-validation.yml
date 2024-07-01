@@ -16,7 +16,10 @@ jobs:
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
-      # Neither inline shellcheck disable, nor actionlint_flags
-      # disable a rule, disabling using this shell variable.
-      - run: export SHELLCHECK_OPTS="-e SC2129"
       - uses: reviewdog/action-actionlint@v1
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          # Neither inline shellcheck disable, nor actionlint_flags
+          # disable a rule, disabling using this env variable.
+          SHELLCHECK_OPTS: "-e SC2129"
