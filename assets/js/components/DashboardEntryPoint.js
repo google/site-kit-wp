@@ -22,28 +22,17 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
-import ModuleRootComponents from './ModuleRootComponents';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	return (
-		<Fragment>
-			<ModuleRootComponents dashboardType="main" />
-			{ !! setupModuleSlug ? (
-				<ModuleSetup moduleSlug={ setupModuleSlug } />
-			) : (
-				<DashboardMainApp />
-			) }
-		</Fragment>
-	);
+	if ( !! setupModuleSlug ) {
+		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
+	}
+
+	return <DashboardMainApp />;
 }
 
 DashboardEntryPoint.propTypes = {

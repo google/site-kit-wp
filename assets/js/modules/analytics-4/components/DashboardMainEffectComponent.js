@@ -36,7 +36,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 
-export default function MainRootComponent() {
+export default function DashboardMainEffectComponent() {
 	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
 
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>

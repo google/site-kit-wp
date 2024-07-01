@@ -17,17 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import useDashboardType, {
+	DASHBOARD_TYPE_ENTITY,
+	DASHBOARD_TYPE_MAIN,
+} from '../hooks/useDashboardType';
 
-function ModuleRootComponents( { dashboardType } ) {
+function ModuleDashboardEffects() {
+	const dashboardType = useDashboardType();
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -36,29 +36,26 @@ function ModuleRootComponents( { dashboardType } ) {
 	if ( modules ) {
 		for ( const moduleSlug in modules ) {
 			if (
-				modules[ moduleSlug ].connected &&
-				( ( 'main' === dashboardType &&
-					modules[ moduleSlug ]?.MainRootComponent ) ||
-					( 'entity' === dashboardType &&
-						modules[ moduleSlug ]?.EntityRootComponent ) )
+				modules[ moduleSlug ].active &&
+				( ( DASHBOARD_TYPE_MAIN === dashboardType &&
+					modules[ moduleSlug ]?.DashboardMainEffectComponent ) ||
+					( DASHBOARD_TYPE_ENTITY === dashboardType &&
+						modules[ moduleSlug ]
+							?.DashboardEntityEffectComponent ) )
 			) {
 				filteredModules.push( modules[ moduleSlug ] );
 			}
 		}
 	}
 
-	if ( ! filteredModules?.length ) {
-		return null;
-	}
-
-	const rootComponents = filteredModules.map( ( Module, index ) =>
-		'main' === dashboardType ? (
-			<Module.MainRootComponent
-				key={ `module-root-component-${ index }` }
+	const rootComponents = filteredModules.map( ( Module ) =>
+		DASHBOARD_TYPE_MAIN === dashboardType ? (
+			<Module.DashboardMainEffectComponent
+				key={ `module-root-component-${ Module.slug }` }
 			/>
 		) : (
-			<Module.EntityRootComponent
-				key={ `module-root-component-${ index }` }
+			<Module.DashboardEntityEffectComponent
+				key={ `module-root-component-${ Module.slug }` }
 			/>
 		)
 	);
@@ -66,8 +63,4 @@ function ModuleRootComponents( { dashboardType } ) {
 	return rootComponents;
 }
 
-ModuleRootComponents.propTypes = {
-	dashboardType: PropTypes.oneOf( [ 'main', 'entity' ] ).isRequired,
-};
-
-export default ModuleRootComponents;
+export default ModuleDashboardEffects;

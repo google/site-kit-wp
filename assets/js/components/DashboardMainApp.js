@@ -71,6 +71,7 @@ import useViewOnly from '../hooks/useViewOnly';
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
+import ModuleDashboardEffects from './ModuleDashboardEffects';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import { useFeature } from '../hooks/useFeature';
 
@@ -190,6 +191,7 @@ export default function DashboardMainApp() {
 	return (
 		<Fragment>
 			<ScrollEffect />
+			<ModuleDashboardEffects />
 
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
