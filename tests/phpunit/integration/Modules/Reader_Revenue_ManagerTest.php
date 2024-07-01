@@ -121,7 +121,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_get_publications() {
+	public function test_service_entity_has_access() {
 		FakeHttp::fake_google_http_handler(
 			$this->reader_revenue_manager->get_client(),
 			function ( Request $request ) {
@@ -129,36 +129,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									array(
-										'paymentOptions'  => array(
-											'contributions' => true,
-											'thankStickers' => true,
-											'subscriptions' => true,
-											'noPayment' => true,
-										),
-										'publicationId'   => 'ABCDEFGH',
-										'onboardingState' => 'PENDING_VERIFICATION',
-										'displayName'     => 'Test Property',
-										'publicationPredicates' => '',
-										'products'        => array(
-											array(
-												'name' => 'basic',
-											),
-											array(
-												'name' => 'premium',
-											),
-										),
-										'verifiedDomains' => 'www.example.com',
-									),
-								)
-							)
-						);
-					default:
 						return new Response( 200 );
 				}
 			}
@@ -171,7 +141,27 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$data = $this->reader_revenue_manager->get_data( 'publications' );
-
 		$this->assertNotWPError( $data );
+	}
+
+	public function test_service_entity_has_no_access() {
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) {
+				$url = parse_url( $request->getUri() );
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response( 200 );
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+		$data = $this->reader_revenue_manager->get_data( 'publications' );
+		$this->assertWPError( $data );
+
+		$error_data = $data->get_error_data();
+		$this->assertEquals( 403, $error_data['status'] );
 	}
 }
