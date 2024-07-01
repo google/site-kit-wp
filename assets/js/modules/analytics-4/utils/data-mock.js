@@ -30,8 +30,11 @@ import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
-import { isValidDateString, stringifyObject } from '../../../util';
-import { stringToDate } from '../../../util/date-range/string-to-date';
+import {
+	isValidDateString,
+	stringifyObject,
+	stringToDate,
+} from '../../../util';
 import { isValidDimensionFilters } from './report-validation';
 import { isValidPivotsObject } from './report-pivots-validation';
 

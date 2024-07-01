@@ -32,12 +32,13 @@ export * from './storage';
 export * from './i18n';
 export * from './markdown';
 export * from './convert-time';
-export * from './date-range';
+export * from './dates';
 export * from './chart';
 export * from './urls';
 export * from './is-valid-numeric-id';
 export * from './isnumeric';
 export * from './safely-sort';
+export * from './partition-report';
 
 global._gsktag = trackEvent;
 /**
