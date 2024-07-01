@@ -144,10 +144,19 @@ class REST_Authentication_ControllerTest extends TestCase {
 	}
 
 	public function test_authentication_rest_endpoint_valid_token() {
-		$user_id = $this->create_user_with_access_token();
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$this->grant_manage_options_permission();
+		$authentication = new Authentication( $this->context );
+		$authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+		$authentication->register();
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/authentication' );
 		$response = rest_get_server()->dispatch( $request );
