@@ -16,6 +16,7 @@ jobs:
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
+      # Neither inline shellcheck disable, nor actionlint_flags
+      # disable a rule, disabling using this shell variable.
+      - run: export SHELLCHECK_OPTS="-e SC2129"
       - uses: reviewdog/action-actionlint@v1
-        with:
-          actionlint_flags: -ignore "SC2129"
