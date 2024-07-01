@@ -94,7 +94,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
@@ -113,16 +113,16 @@ jobs:
           npm ci
       - name: Create destination directory and update file permissions
         run: |
-          mkdir -p ${{ github.ref }}
-          sudo chown -R $(id -u):$(id -g) .
+          mkdir -p "${{ github.ref }}"
+          sudo chown -R "$(id -u):$(id -g)" .
       - name: Build develop version
         run: |
           npm run dev-zip
-          mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
+          mv *.zip "${{ github.ref }}/google-site-kit-dev.zip"
       - name: Build release version
         run: |
           npm run release-zip
-          mv *.zip ${{ github.ref }}/google-site-kit.zip
+          mv *.zip "${{ github.ref }}/google-site-kit.zip"
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -166,6 +166,7 @@ jobs:
       - name: Get comment body
         id: get-comment-body
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
+        # shellcheck disable=SC2129,SC2086
         run: |
           body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
           - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
