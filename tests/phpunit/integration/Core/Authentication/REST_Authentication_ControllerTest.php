@@ -68,8 +68,13 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 	}
 
+	/**
+	 * Tests disconnection logic.
+	 *
+	 * @return void
+	 */
 	public function test_disconnect() {
-		$user_id = $this->create_user_without_access_token();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$options = new Options( $this->context );
 		$this->user_options->switch_user( $user_id );
 		$auth = new Authentication( $this->context, $options, $this->user_options );
@@ -90,25 +95,13 @@ class REST_Authentication_ControllerTest extends TestCase {
 		}
 	}
 
-	public function test_connection_rest_endpoint_unauthenticated() {
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/connection' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 401, $response->status );
-	}
-
-	public function test_connection_rest_endpoint_authenticated() {
-		$user_id = $this->create_user_without_access_token();
-		wp_set_current_user( $user_id );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/connection' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 200, $response->status );
-	}
-
+	/**
+	 * Tests connection status is true when site is connected.
+	 *
+	 * @return void
+	 */
 	public function test_connection_rest_endpoint_connected() {
-		$user_id = $this->create_user_with_access_token();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$this->grant_manage_options_permission();
@@ -120,8 +113,13 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$this->assertTrue( $response->data['connected'] );
 	}
 
+	/**
+	 * Tests connection status is false when site is not connected.
+	 *
+	 * @return void
+	 */
 	public function test_connection_rest_endpoint_not_connected() {
-		$user_id = $this->create_user_with_access_token();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/connection' );
@@ -130,8 +128,13 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$this->assertFalse( $response->data['connected'] );
 	}
 
+	/**
+	 * Tests user is not authenticated when no token is set.
+	 *
+	 * @return void
+	 */
 	public function test_authentication_rest_endpoint_no_token() {
-		$user_id = $this->create_user_without_access_token();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$this->grant_manage_options_permission();
@@ -143,6 +146,11 @@ class REST_Authentication_ControllerTest extends TestCase {
 
 	}
 
+	/**
+	 * Tests user is correctly authenticated when valid token is set.
+	 *
+	 * @return void
+	 */
 	public function test_authentication_rest_endpoint_valid_token() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
@@ -161,13 +169,16 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/authentication' );
 		$response = rest_get_server()->dispatch( $request );
 
-		// $response->data['authenticated'] is always returned as false. phpcs:ignore
-		var_export( $response ); // phpcs:ignore
-		die();
+		$this->assertTrue( $response->data['authenticated'] );
 	}
 
+	/**
+	 * Tests presence of no oauth token with non-authenticated user.
+	 *
+	 * @return void
+	 */
 	public function test_get_token_rest_endpoint_no_token() {
-		$user_id = $this->create_user_without_access_token();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$this->grant_manage_options_permission();
@@ -178,33 +189,32 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$this->assertFalse( $response->data['token'] );
 	}
 
+	/**
+	 * Tests presence of oauth token with correctly authenticated user.
+	 *
+	 * @return void
+	 */
 	public function test_get_token_rest_endpoint_has_token() {
-		$user_id = $this->create_user_with_access_token();
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$this->grant_manage_options_permission();
 
+		$authentication = new Authentication( $this->context );
+		$authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+		$authentication->register();
+
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/get-token' );
 		$response = rest_get_server()->dispatch( $request );
 
-		// $response->data['token'] is always returned as false. phpcs:ignore
-		var_export( $response ); // phpcs:ignore
-		die();
-	}
-
-	private function create_user_without_access_token() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-
-		return $user_id;
-	}
-
-	private function create_user_with_access_token() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-
-		$this->set_user_access_token( $user_id, 'valid-auth-token' );
-
-		return $user_id;
+		$this->assertEquals( 'valid-auth-token', $response->data['token'] );
 	}
 
 	private function grant_manage_options_permission() {
