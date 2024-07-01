@@ -170,5 +170,4 @@ class URL {
 
 		return $hosts;
 	}
-
 }

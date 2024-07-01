@@ -46,5 +46,4 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 
 		return $script_asset;
 	}
-
 }

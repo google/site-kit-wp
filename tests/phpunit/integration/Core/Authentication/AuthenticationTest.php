@@ -688,7 +688,7 @@ class AuthenticationTest extends TestCase {
 		$authentication = new Authentication( $context, $options );
 		$authentication->register();
 
-		$home_url_hook = function() {
+		$home_url_hook = function () {
 			return 'https://example.com/subsite';
 		};
 
@@ -724,7 +724,7 @@ class AuthenticationTest extends TestCase {
 		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
 		add_filter(
 			'user_has_cap',
-			function( $caps ) {
+			function ( $caps ) {
 				$caps[ Permissions::SETUP ] = true;
 				return $caps;
 			}

@@ -108,7 +108,6 @@ class Site_Specific_Answers extends Setting {
 			}
 
 			return $results;
-
 		};
 	}
 }

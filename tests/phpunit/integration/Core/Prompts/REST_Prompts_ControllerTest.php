@@ -132,5 +132,4 @@ class REST_Prompts_ControllerTest extends TestCase {
 		$this->assertEqualsWithDelta( time() + 100, $response_data['foo']['expires'], 2 );
 		$this->assertEquals( 2, $response_data['foo']['count'] );
 	}
-
 }

@@ -66,5 +66,4 @@ class OptinMonster extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

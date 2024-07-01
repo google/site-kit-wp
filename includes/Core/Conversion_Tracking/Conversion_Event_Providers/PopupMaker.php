@@ -67,5 +67,4 @@ class PopupMaker extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

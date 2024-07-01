@@ -295,7 +295,7 @@ final class Authentication {
 
 		add_action(
 			'googlesitekit_authorize_user',
-			function ( $token_response, $scopes, $previous_scopes ) {
+			function () {
 				if ( ! $this->credentials->using_proxy() ) {
 					return;
 				}
@@ -308,14 +308,14 @@ final class Authentication {
 
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
 
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
-			function( $routes ) {
+			function ( $routes ) {
 				$authentication_routes = array(
 					'/' . REST_Routes::REST_ROOT . '/core/site/data/connection',
 					'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
@@ -326,7 +326,7 @@ final class Authentication {
 
 		add_filter(
 			'googlesitekit_user_data',
-			function( $user ) {
+			function ( $user ) {
 				if ( $this->profile->has() ) {
 					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
@@ -377,7 +377,7 @@ final class Authentication {
 
 		// If no initial version set for the current user, set it when getting a new access token.
 		if ( ! $this->initial_version->get() ) {
-			$set_initial_version = function() {
+			$set_initial_version = function () {
 				$this->initial_version->set( GOOGLESITEKIT_VERSION );
 			};
 			add_action( 'googlesitekit_authorize_user', $set_initial_version );
@@ -386,14 +386,14 @@ final class Authentication {
 
 		add_action(
 			'current_screen',
-			function( $current_screen ) {
+			function ( $current_screen ) {
 				$this->maybe_refresh_token_for_screen( $current_screen->id );
 			}
 		);
 
 		add_action(
 			'heartbeat_tick',
-			function() {
+			function () {
 				$this->maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
 			}
 		);
@@ -401,7 +401,7 @@ final class Authentication {
 		// Regularly synchronize Google profile data.
 		add_action(
 			'googlesitekit_reauthorize_user',
-			function() {
+			function () {
 				if ( ! $this->profile->has() ) {
 					return;
 				}
@@ -1038,19 +1038,19 @@ final class Authentication {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_setup = function() {
+		$can_setup = function () {
 			return current_user_can( Permissions::SETUP );
 		};
 
-		$can_access_authentication = function() {
+		$can_access_authentication = function () {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
-		$can_disconnect = function() {
+		$can_disconnect = function () {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
-		$can_view_authenticated_dashboard = function() {
+		$can_view_authenticated_dashboard = function () {
 			return current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD );
 		};
 
@@ -1060,7 +1060,7 @@ final class Authentication {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$data = array(
 								'connected'          => $this->credentials->has(),
 								'resettable'         => $this->options->has( Credentials::OPTION ),
@@ -1081,7 +1081,7 @@ final class Authentication {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$oauth_client     = $this->get_oauth_client();
 							$is_authenticated = $this->is_authenticated();
 
@@ -1106,7 +1106,7 @@ final class Authentication {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$this->disconnect();
 							return new WP_REST_Response( true );
 						},
@@ -1119,7 +1119,7 @@ final class Authentication {
 				array(
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$this->refresh_user_token();
 							return new WP_REST_Response(
 								array(
@@ -1167,7 +1167,7 @@ final class Authentication {
 		return new Notice(
 			'reconnect_after_url_mismatch',
 			array(
-				'content'         => function() {
+				'content'         => function () {
 					$connected_url = $this->connected_proxy_url->get();
 					$current_url   = $this->context->get_canonical_home_url();
 					$content       = '<p>' . sprintf(
@@ -1202,7 +1202,7 @@ final class Authentication {
 					return $content;
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() {
+				'active_callback' => function () {
 					return $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH
 						&& $this->credentials->has();
 				},
@@ -1221,7 +1221,7 @@ final class Authentication {
 		return new Notice(
 			'needs_reauthentication',
 			array(
-				'content'         => function() {
+				'content'         => function () {
 					ob_start();
 					?>
 					<p>
@@ -1260,7 +1260,7 @@ final class Authentication {
 					return ob_get_clean();
 				},
 				'type'            => Notice::TYPE_SUCCESS,
-				'active_callback' => function() {
+				'active_callback' => function () {
 					if ( ! empty( $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE ) ) ) {
 						return false;
 					}
@@ -1363,7 +1363,6 @@ final class Authentication {
 
 		wp_safe_redirect( $this->get_oauth_client()->get_proxy_permissions_url() );
 		exit;
-
 	}
 
 	/**

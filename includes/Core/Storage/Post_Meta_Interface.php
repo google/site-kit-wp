@@ -68,5 +68,4 @@ interface Post_Meta_Interface {
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
 	public function delete( $post_id, $key, $value = '' );
-
 }

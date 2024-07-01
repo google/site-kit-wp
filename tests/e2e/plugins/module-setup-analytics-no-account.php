@@ -66,7 +66,6 @@ add_action(
 				'permission_callback' => '__return_true',
 			)
 		);
-
 	},
 	0
 );

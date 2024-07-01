@@ -46,7 +46,6 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
 		$this->assertFalse( $tagproduction->can_activate() );
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => $env_type ) );
-
 	}
 
 	public function test_can_activate_in_development() {
@@ -73,6 +72,5 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 		$this->assertTrue( $tagproduction->can_activate() );
 
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => $env_type ) );
-
 	}
 }

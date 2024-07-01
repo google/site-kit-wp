@@ -65,7 +65,7 @@ class NoticeTest extends TestCase {
 			'test_hook_callback'  => array(
 				array(
 					'content'         => 'Test notice content.',
-					'active_callback' => function( $hook_suffix ) {
+					'active_callback' => function ( $hook_suffix ) {
 						return self::TEST_HOOK_SUFFIX === $hook_suffix;
 					},
 				),
@@ -74,7 +74,7 @@ class NoticeTest extends TestCase {
 			'other_hook_callback' => array(
 				array(
 					'content'         => 'Test notice content.',
-					'active_callback' => function( $hook_suffix ) {
+					'active_callback' => function ( $hook_suffix ) {
 						return 'other-hook-suffix' === $hook_suffix;
 					},
 				),
@@ -104,7 +104,7 @@ class NoticeTest extends TestCase {
 		$notice = new Notice(
 			'test-slug',
 			array(
-				'content'     => function() {
+				'content'     => function () {
 					return '<p>Successfully saved<script>document.write(" just now");</script>.</p>';
 				},
 				'type'        => Notice::TYPE_WARNING,

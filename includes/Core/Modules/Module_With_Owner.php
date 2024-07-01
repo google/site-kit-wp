@@ -27,5 +27,4 @@ interface Module_With_Owner {
 	 * @return int Owner ID.
 	 */
 	public function get_owner_id();
-
 }
