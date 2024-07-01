@@ -11,8 +11,14 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Modules
@@ -27,6 +33,34 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	private $context;
 
 	/**
+	 * Options object.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
+	 * User object.
+	 *
+	 * @var WP_User
+	 */
+	private $user;
+
+	/**
+	 * User Options object.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
+	 * Authentication object.
+	 *
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * Reader_Revenue_Manager object.
 	 *
 	 * @var Reader_Revenue_Manager
@@ -37,7 +71,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		parent::set_up();
 
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context );
+		$this->options                = new Options( $this->context );
+		$this->user                   = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_options           = new User_Options( $this->context, $this->user->ID );
+		$this->authentication         = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $this->user_options, $this->authentication );
 	}
 
 	public function test_register() {
@@ -72,5 +110,68 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertTrue(
 			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle' )
 		);
+	}
+
+	public function test_get_data_endpoints() {
+		$this->assertEqualSets(
+			array(
+				'publications',
+			),
+			$this->reader_revenue_manager->get_datapoints()
+		);
+	}
+
+	public function test_get_publications() {
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) {
+				$url = parse_url( $request->getUri() );
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									array(
+										'paymentOptions'  => array(
+											'contributions' => true,
+											'thankStickers' => true,
+											'subscriptions' => true,
+											'noPayment' => true,
+										),
+										'publicationId'   => 'ABCDEFGH',
+										'onboardingState' => 'PENDING_VERIFICATION',
+										'displayName'     => 'Test Property',
+										'publicationPredicates' => '',
+										'products'        => array(
+											array(
+												'name' => 'basic',
+											),
+											array(
+												'name' => 'premium',
+											),
+										),
+										'verifiedDomains' => 'www.example.com',
+									),
+								)
+							)
+						);
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$data = $this->reader_revenue_manager->get_data( 'publications' );
+
+		$this->assertNotWPError( $data );
 	}
 }
