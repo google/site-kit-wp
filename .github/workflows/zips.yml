@@ -1,3 +1,5 @@
+# shellcheck disable=SC2129
+
 name: Plugin Zip Files
 
 on:
@@ -172,11 +174,9 @@ jobs:
           - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
           - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
-          echo {
-            body<<${delimiter}
-            $body
-            ${delimiter}
-          } >> "$GITHUB_OUTPUT"
+          echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
+          echo "$body" >> "$GITHUB_OUTPUT"
+          echo "${delimiter}" >> "$GITHUB_OUTPUT"
       - name: Create comment on PR with links to build files
         if: ${{ steps.find-comment.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v4
