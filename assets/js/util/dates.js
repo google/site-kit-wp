@@ -208,3 +208,17 @@ export function isValidDateRange( dateRange = '' ) {
 		parts[ 2 ] === 'days'
 	);
 }
+
+/**
+ * Subtracts duration from the prodived date and returns it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Date|string} from     The date to subtract the duration from.
+ * @param {number}      duration The duration in seconds.
+ * @return {Date} Resulting date.
+ */
+export function dateAgo( from, duration ) {
+	const d = typeof from === 'string' ? Date.parse( from ) : from.getTime();
+	return new Date( d - duration * 1000 );
+}

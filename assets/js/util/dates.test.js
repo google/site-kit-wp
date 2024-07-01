@@ -26,6 +26,8 @@ import {
 	isValidDateString,
 	isValidDateRange,
 	stringToDate,
+	dateAgo,
+	DAY_IN_SECONDS,
 } from './dates';
 
 // [ testName, relativeDate, daysBefore, expectedReturnError ]
@@ -214,4 +216,27 @@ describe( 'isValidDateRange', () => {
 			expect( isValidDateRange( dateRange ) ).toEqual( expected );
 		}
 	);
+} );
+
+describe( 'dateAgo', () => {
+	// [ testName, initialDate, duration, expectedDate ]
+	const tests = [
+		[
+			'properly subtract one day from the date provided as a string',
+			'2021-01-02',
+			DAY_IN_SECONDS,
+			new Date( '2021-01-01' ),
+		],
+		[
+			'properly subtract one day from the date provided as a Date object',
+			new Date( '2021-01-02' ),
+			DAY_IN_SECONDS,
+			new Date( '2021-01-01' ),
+		],
+	];
+
+	it.each( tests )( 'should %s', ( _, from, duration, want ) => {
+		const got = dateAgo( from, duration );
+		expect( got.toISOString() ).toBe( want.toISOString() );
+	} );
 } );
