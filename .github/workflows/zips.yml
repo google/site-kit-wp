@@ -173,9 +173,9 @@ jobs:
           - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
           echo {
-            "body<<${delimiter}"
-            "$body"
-            "${delimiter}"
+            body<<${delimiter}
+            $body
+            ${delimiter}
           } >> "$GITHUB_OUTPUT"
       - name: Create comment on PR with links to build files
         if: ${{ steps.find-comment.outputs.comment-id == '' }}
