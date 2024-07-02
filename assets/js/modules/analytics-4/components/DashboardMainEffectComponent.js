@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
-import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -37,8 +36,6 @@ import {
 } from '../datastore/constants';
 
 export default function DashboardMainEffectComponent() {
-	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
-
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
@@ -67,10 +64,6 @@ export default function DashboardMainEffectComponent() {
 			isAutoCreatingCustomDimensions: false,
 		} );
 	}, [ createCustomDimensions, setValues ] );
-
-	useMount( () => {
-		ga4Actions?.syncGoogleTagSettings();
-	} );
 
 	useEffect( () => {
 		if (
