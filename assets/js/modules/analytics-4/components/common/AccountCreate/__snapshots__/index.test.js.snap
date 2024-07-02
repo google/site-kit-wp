@@ -319,5 +319,3 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
   </div>
 </div>
 `;
-
-exports[`AccountCreate when clicking on Create Account should invalidate the module cache 1`] = `<div />`;
