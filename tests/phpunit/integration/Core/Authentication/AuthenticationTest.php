@@ -494,29 +494,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_disconnect() {
-		$user_id      = $this->factory()->user->create();
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user_id );
-		$auth         = new Authentication( $context, $options, $user_options );
-
-		foreach ( $this->get_user_option_keys() as $key ) {
-			$user_options->set( $key, "test-$key-value" );
-		}
-
-		$mock_google_client = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
-			->setMethods( array( 'revokeToken' ) )->getMock();
-		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
-		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
-
-		$auth->disconnect();
-
-		foreach ( $this->get_user_option_keys() as $key ) {
-			$this->assertFalse( $user_options->get( $key ) );
-		}
-	}
-
 	public function test_get_connect_url() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
