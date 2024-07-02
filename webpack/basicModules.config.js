@@ -39,6 +39,8 @@ module.exports = ( mode ) => ( {
 		// Analytics advanced tracking script to be injected in the frontend.
 		'analytics-advanced-tracking':
 			'./assets/js/analytics-advanced-tracking.js',
+		// Consent Mode script.
+		'consent-mode': './assets/js/consent-mode/consent-mode.js',
 	},
 	externals,
 	output: {

@@ -162,6 +162,9 @@ class Consent_Mode {
 				'marketing'  => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
 			)
 		);
+
+		// The core Consent Mode code is in assets/js/consent-mode/consent-mode.js.
+		// Only code that passes data from PHP to JS should be in this file.
 		?>
 <!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ); ?> -->
 <script id='google_gtagjs-js-consent-mode-data-layer'>
