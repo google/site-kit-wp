@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-restricted-globals */
 ( function () {
 	document.addEventListener(
 		'wp_listen_for_consent_change',
@@ -22,12 +23,12 @@
 				const consentParameters = {};
 				let hasConsentParameters = false;
 				Object.keys( event.detail ).forEach( ( category ) => {
-					if ( global._googlesitekitConsentCategoryMap[ category ] ) {
+					if ( window._googlesitekitConsentCategoryMap[ category ] ) {
 						const status = event.detail[ category ];
 						const mappedStatus =
 							status === 'allow' ? 'granted' : 'denied';
 						const parameters =
-							global._googlesitekitConsentCategoryMap[ category ];
+							window._googlesitekitConsentCategoryMap[ category ];
 						parameters.forEach( ( parameter ) => {
 							consentParameters[ parameter ] = mappedStatus;
 						} );
@@ -35,23 +36,23 @@
 					}
 				} );
 				if ( hasConsentParameters ) {
-					window.gtag( 'consent', 'update', consentParameters ); // eslint-disable-line no-restricted-globals
+					window.gtag( 'consent', 'update', consentParameters );
 				}
 			}
 		}
 	);
 
 	function updateGrantedConsent() {
-		if ( ! ( global.wp_consent_type || global.wp_fallback_consent_type ) ) {
+		if ( ! ( window.wp_consent_type || window.wp_fallback_consent_type ) ) {
 			return;
 		}
 		const consentParameters = {};
 		let hasConsentParameters = false;
-		Object.entries( global._googlesitekitConsentCategoryMap ).forEach(
+		Object.entries( window._googlesitekitConsentCategoryMap ).forEach(
 			( [ category, parameters ] ) => {
 				if (
-					global.wp_has_consent &&
-					global.wp_has_consent( category )
+					window.wp_has_consent &&
+					window.wp_has_consent( category )
 				) {
 					parameters.forEach( ( parameter ) => {
 						consentParameters[ parameter ] = 'granted';
@@ -62,7 +63,7 @@
 			}
 		);
 		if ( hasConsentParameters ) {
-			window.gtag( 'consent', 'update', consentParameters ); // eslint-disable-line no-restricted-globals
+			window.gtag( 'consent', 'update', consentParameters );
 		}
 	}
 	document.addEventListener(
@@ -70,8 +71,9 @@
 		updateGrantedConsent
 	);
 	document.addEventListener( 'DOMContentLoaded', function () {
-		if ( ! global.waitfor_consent_hook ) {
+		if ( ! window.waitfor_consent_hook ) {
 			updateGrantedConsent();
 		}
 	} );
 } )();
+/* eslint-enable no-restricted-globals */
