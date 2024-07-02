@@ -88,6 +88,7 @@ import {
 	InfoNoticeWidget,
 } from './components/audience-segmentation/dashboard';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 
 export { registerStore } from './datastore';
 
@@ -97,6 +98,7 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
+		DashboardMainEffectComponent,
 		Icon: AnalyticsIcon,
 		features: [
 			__( 'Audience overview', 'google-site-kit' ),

@@ -1,7 +1,7 @@
 /**
- * GA4 Dashboard components.
+ * DashboardMainEffectComponent component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-export { default as CustomDimensionEffects } from './CustomDimensionEffects';
-export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';
-export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
-export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';
+/**
+ * Internal dependencies
+ */
+import CustomDimensionEffects from './dashboard/CustomDimensionEffects';
+
+export default function DashboardMainEffectComponent() {
+	return <CustomDimensionEffects />;
+}

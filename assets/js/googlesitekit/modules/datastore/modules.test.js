@@ -856,6 +856,25 @@ describe( 'core/modules modules', () => {
 						.SettingsEditComponent
 				).toEqual( SettingsEditComponent );
 			} );
+
+			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
+				const DashboardMainEffectComponent = () => 'main';
+				const DashboardEntityEffectComponent = () => 'entity';
+
+				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
+					DashboardMainEffectComponent,
+					DashboardEntityEffectComponent,
+				} );
+
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.DashboardMainEffectComponent
+				).toEqual( DashboardMainEffectComponent );
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.DashboardEntityEffectComponent
+				).toEqual( DashboardEntityEffectComponent );
+			} );
 		} );
 
 		describe( 'fetchGetModules', () => {
@@ -1193,6 +1212,20 @@ describe( 'core/modules modules', () => {
 
 				expect( module.SettingsViewComponent ).toEqual( null );
 				expect( module.SettingsEditComponent ).toEqual( null );
+			} );
+
+			it( 'defaults DashboardMainEffectComponent and DashboardEntityEffectComponent components to `null` if not provided', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+				registry
+					.dispatch( CORE_MODULES )
+					.registerModule( 'test-module' );
+
+				const module = registry
+					.select( CORE_MODULES )
+					.getModule( 'test-module' );
+
+				expect( module.DashboardMainEffectComponent ).toEqual( null );
+				expect( module.DashboardEntityEffectComponent ).toEqual( null );
 			} );
 		} );
 
