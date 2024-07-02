@@ -173,7 +173,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 	}
 
 	/**
-	 * Tests presence of no oauth token with non-authenticated user.
+	 * Tests presence of no OAuth token with non-authenticated user.
 	 *
 	 * @return void
 	 */
@@ -190,7 +190,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 	}
 
 	/**
-	 * Tests presence of oauth token with correctly authenticated user.
+	 * Tests presence of OAuth token with correctly authenticated user.
 	 *
 	 * @return void
 	 */
@@ -218,7 +218,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 	}
 
 	private function grant_manage_options_permission() {
-		// Setup SiteKit.
+		// Setup Site Kit.
 		$this->fake_proxy_site_connection();
 		// Override any existing filter to make sure the setup is marked as complete all the time.
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
