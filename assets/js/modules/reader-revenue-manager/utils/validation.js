@@ -41,9 +41,18 @@ export function isValidPublicationID( publicationID ) {
  */
 export const isURLUsingHTTPS = ( url ) => {
 	try {
+		if ( typeof url !== 'string' || ! url ) {
+			throw new TypeError( `Invalid URL: ${ url }` );
+		}
+
 		const parsedURL = new URL( url );
-		return parsedURL.protocol === 'https:';
+		if ( parsedURL.protocol !== 'https:' ) {
+			throw new TypeError( `Invalid URL: ${ url }` );
+		}
+
+		return true;
 	} catch ( error ) {
+		global.console.warn( 'Invalid URL:', error );
 		return false;
 	}
 };
