@@ -73,7 +73,7 @@ function reduceAnalytics4RowsData( rows, selectedStats ) {
  * @param {Object} report             The data returned from the Analytics API call.
  * @param {Array}  selectedStats      The currently selected stat we need to return data for.
  * @param {number} days               The number of days to extract data for. Pads empty data days.
- * @param {Date}   referenceDate      The reference date.
+ * @param {string} referenceDate      The reference date.
  * @param {Array}  dataLabels         The labels to be displayed.
  * @param {Array}  tooltipDataFormats The formats to be used for the tooltip data.
  * @param {Array}  chartDataFormats   The formats to be used for the chart data.
@@ -110,7 +110,7 @@ export function extractAnalytics4DashboardData(
 	if ( days * 2 > rowLength ) {
 		// Cloning the reference date to be able to change it in the padding
 		// loop without affecting the actual reference date.
-		const date = new Date( referenceDate.getTime() ); // eslint-disable-line sitekit/no-direct-date
+		const date = new Date( referenceDate ); // eslint-disable-line sitekit/no-direct-date
 		for ( let i = 0; days > i; i++ ) {
 			const month = ( date.getMonth() + 1 ).toString();
 			const day = date.getDate().toString();

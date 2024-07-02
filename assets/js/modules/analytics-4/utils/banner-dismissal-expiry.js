@@ -19,8 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds } from '../../../util/index';
-import { stringToDate } from '../../../util/date-range/string-to-date';
+import { getTimeInSeconds, stringToDate } from '../../../util';
 
 /**
  * Gets the time in seconds to expire a dismissal of the GA4 Activation Banner.

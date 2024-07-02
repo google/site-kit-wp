@@ -35,8 +35,9 @@ import {
 	calculateChange,
 	getChartDifferenceArrow,
 	calculateDifferenceBetweenChartValues,
+	getPreviousDate,
+	stringToDate,
 } from '../../../util';
-import { getPreviousDate, stringToDate } from '../../../util/date-range';
 
 /**
  * Gets data for a Google chart from a Search Console report.

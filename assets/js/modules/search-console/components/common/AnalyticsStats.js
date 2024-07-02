@@ -61,7 +61,7 @@ export default function AnalyticsStats( props ) {
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
 	const referenceDate = useSelect( ( select ) =>
-		select( CORE_USER ).getReferenceDate( { parsed: true } )
+		select( CORE_USER ).getReferenceDate()
 	);
 
 	const propertyCreateTime = useSelect( ( select ) => {

@@ -32,7 +32,7 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../utils/data-mock';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS } from '../../../../../util';
+import { dateAgo, DAY_IN_SECONDS } from '../../../../../util';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
@@ -209,14 +209,12 @@ MainDashboardDataUnavailable.args = {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( {}, { options } );
 
-			const now = registry
-				.select( CORE_USER )
-				.getReferenceDate( { parsed: true } );
-
 			// Set the property creation timestamp to one and a half days ago, so that
 			// the property is considered to be in the gathering data state.
-			const createTime = new Date(
-				now.getTime() - DAY_IN_SECONDS * 1.5 * 1000
+			const now = registry.select( CORE_USER ).getReferenceDate();
+			const createTime = dateAgo(
+				now,
+				1.5 * DAY_IN_SECONDS
 			).toISOString();
 
 			const property = {
@@ -256,15 +254,10 @@ MainDashboardZeroData.args = {
 				);
 		} );
 
-		const now = registry
-			.select( CORE_USER )
-			.getReferenceDate( { parsed: true } );
-
 		// Set the property creation timestamp to two days ago, so that
 		// the property is not considered to be in the gathering data state.
-		const createTime = new Date(
-			now.getTime() - DAY_IN_SECONDS * 3 * 1000
-		).toISOString();
+		const now = registry.select( CORE_USER ).getReferenceDate();
+		const createTime = dateAgo( now, 3 * DAY_IN_SECONDS ).toISOString();
 
 		const property = {
 			...__fixtures__.properties[ 0 ],
