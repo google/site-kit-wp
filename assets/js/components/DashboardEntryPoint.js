@@ -38,6 +38,8 @@ export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
 
 	useMount( () => {
+		// @TODO investigate if it is possible to move this action
+		// into module specific hooks.
 		ga4Actions?.syncGoogleTagSettings();
 	} );
 
