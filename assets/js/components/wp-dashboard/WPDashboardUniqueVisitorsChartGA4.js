@@ -79,8 +79,9 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		],
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 
 	const loading = useSelect(

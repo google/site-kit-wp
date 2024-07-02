@@ -50,15 +50,15 @@ export default function AudienceTileCitiesMetric( {
 					{ hasDimensionValues &&
 						validDimensionValues.map( ( city, index ) => (
 							<div
-								key={ city?.value }
+								key={ city }
 								className="googlesitekit-audience-segmentation-tile-metric__cities-metric"
 							>
 								<div className="googlesitekit-audience-segmentation-tile-metric__cities-metric-name">
-									{ city?.value }
+									{ city }
 								</div>
 								<div className="googlesitekit-audience-segmentation-tile-metric__cities-metric-value">
 									{ numFmt(
-										topCities?.metricValues[ index ]?.value,
+										topCities?.metricValues[ index ],
 										{
 											style: 'percent',
 											maximumFractionDigits: 1,

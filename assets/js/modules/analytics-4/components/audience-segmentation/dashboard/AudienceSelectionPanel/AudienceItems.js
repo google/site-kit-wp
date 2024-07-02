@@ -40,8 +40,11 @@ import { SelectionPanelItems } from '../../../../../../components/SelectionPanel
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const availableAudiences = useSelect( ( select ) => {
-		const { getConfigurableAudiences, getReport } =
-			select( MODULES_ANALYTICS_4 );
+		const {
+			getConfigurableAudiences,
+			getReport,
+			getAudiencesUserCountReportOptions,
+		} = select( MODULES_ANALYTICS_4 );
 
 		const audiences = getConfigurableAudiences();
 
@@ -85,36 +88,26 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
-		const reportOptions = {
-			...dateRangeDates,
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-		};
-
 		// Get the user count for the available Site Kit audiences using the `newVsReturning` dimension
 		// to avoid the partial data state for these audiences.
 		const newVsReturningReport =
 			isSiteKitAudiencePartialData &&
 			getReport( {
-				...reportOptions,
+				...dateRangeDates,
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
 				dimensions: [ { name: 'newVsReturning' } ],
 			} );
 
-		const audienceResourceNames = (
-			isSiteKitAudiencePartialData ? otherAudiences : audiences
-		 ).map( ( { name } ) => name );
-
 		// Get the user count for the available audiences using the `audienceResourceName` dimension.
-		const audienceResourceNameReport = getReport( {
-			...reportOptions,
-			dimensions: [ { name: 'audienceResourceName' } ],
-			dimensionFilters: {
-				audienceResourceName: audienceResourceNames,
-			},
-		} );
+		const audienceResourceNameReport = getReport(
+			getAudiencesUserCountReportOptions(
+				isSiteKitAudiencePartialData ? otherAudiences : audiences
+			)
+		);
 
 		const { rows: newVsReturningRows = [] } = newVsReturningReport || {};
 		const { rows: audienceResourceNameRows = [] } =

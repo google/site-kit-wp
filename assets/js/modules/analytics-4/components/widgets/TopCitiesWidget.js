@@ -64,8 +64,10 @@ function TopCitiesWidget( { Widget } ) {
 		limit: 3,
 	};
 
-	const topCitiesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions )
+	const topCitiesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions ),
+		[ topcCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>

@@ -307,14 +307,16 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
 
 	if ( keys ) {
-		return (
+		invariant(
 			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
-			haveConversionTrackingSettingsChanged
+				haveConversionTrackingSettingsChanged,
+			INVARIANT_SETTINGS_NOT_CHANGED
 		);
 	}
 
-	return (
+	invariant(
 		! isEqual( settings, savedSettings ) ||
-		haveConversionTrackingSettingsChanged
+			haveConversionTrackingSettingsChanged,
+		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 }

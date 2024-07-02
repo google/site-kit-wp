@@ -22,16 +22,20 @@
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
-import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideUserAuthentication,
+} from '../../../../../../../../tests/js/utils';
+import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceSelectionPanel from '.';
 
 function Template( { viewContext } ) {
@@ -80,11 +84,77 @@ WithOneGroup.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithOneGroup',
 };
 
+export const WithInsufficientPermissionsError = Template.bind( {} );
+WithInsufficientPermissionsError.storyName = 'Insufficient permissions error';
+WithInsufficientPermissionsError.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( error, 'syncAvailableAudiences' );
+	},
+};
+WithInsufficientPermissionsError.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithInsufficientPermissionsError',
+};
+
+export const AudienceSyncError = Template.bind( {} );
+AudienceSyncError.storyName = 'Audience sync error';
+AudienceSyncError.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: {},
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( error, 'syncAvailableAudiences' );
+	},
+};
+AudienceSyncError.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceSyncError',
+};
+
+export const UserCountError = Template.bind( {} );
+UserCountError.storyName = 'User count retrieval error';
+UserCountError.args = {
+	setupRegistry: ( registry ) => {
+		const { getConfigurableAudiences, getAudiencesUserCountReportOptions } =
+			registry.select( MODULES_ANALYTICS_4 );
+
+		const error = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: {},
+		};
+
+		const configurableAudiences = getConfigurableAudiences();
+
+		const reportOptions = getAudiencesUserCountReportOptions(
+			configurableAudiences
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( error, 'getReport', [ reportOptions ] );
+	},
+};
+UserCountError.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/UserCountError',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',
 	component: AudienceSelectionPanel,
 	decorators: [
-		( Story, { args: { configuredAudiences = [] } } ) => {
+		( Story, { args } ) => {
 			const reportOptions = {
 				endDate: '2024-03-27',
 				startDate: '2024-02-29',
@@ -105,13 +175,22 @@ export default {
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
+				provideModuleRegistrations( registry );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setConfiguredAudiences( configuredAudiences );
+					.setConfiguredAudiences( args?.configuredAudiences || [] );
 
 				provideAnalytics4MockReport( registry, reportOptions );
 
@@ -141,6 +220,8 @@ export default {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+				args?.setupRegistry?.( registry );
 			};
 
 			return (

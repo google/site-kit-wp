@@ -32,7 +32,7 @@ import { isValidOrders } from './report-validation';
  * and an optional "orderby" property. The "orderby" property should be a valid
  * order definition using the `isValidOrders` function.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  *
  * @param {Object[]} pivots The pivots object to check.
  * @return {boolean} TRUE if pivot definitions are valid, otherwise FALSE.
