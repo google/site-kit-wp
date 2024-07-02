@@ -23,6 +23,7 @@ import InfoNoticeWidget from '.';
 import {
 	createTestRegistry,
 	fireEvent,
+	muteFetch,
 	provideModules,
 	render,
 } from '../../../../../../../../tests/js/test-utils';
@@ -48,15 +49,6 @@ describe( 'InfoNoticeWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/1' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
 		dismissPromptSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissPrompt'
@@ -66,6 +58,107 @@ describe( 'InfoNoticeWidget', () => {
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAudienceInfoNotice'
 	)( InfoNoticeWidget );
+
+	const audienceSettingsRegExp = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	);
+
+	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
+		muteFetch( audienceSettingsRegExp );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render when availableAudiences is not loaded', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/1' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render when configuredAudiences is not loaded', () => {
+		muteFetch( audienceSettingsRegExp );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render when there is no available audience', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/9' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render when there is no configured audience', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render when configuredAudiences is null (not set)', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 
 	it( 'should not render when there is no matching audience', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
@@ -83,6 +176,14 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when permanently dismissed', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/1' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_INFO_NOTICE_SLUG ]: {
 				expires: 0,
@@ -105,6 +206,15 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should render when expiry has passed', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/1' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
@@ -131,6 +241,15 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should call the onDismiss handler with two weeks expiry until it reaches the last notice', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/1' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
@@ -167,6 +286,15 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should call the onDismiss handler to dismiss permanently when it reaches the last notice', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/1' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
 		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
@@ -207,6 +335,17 @@ describe( 'InfoNoticeWidget', () => {
 	)(
 		'should render the "%s" notice when dismiss count is %d',
 		async ( notice, dismissCount ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					configuredAudiences: [ 'properties/12345/audiences/1' ],
+					isAudienceSegmentationWidgetHidden: false,
+				} );
+
 			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {

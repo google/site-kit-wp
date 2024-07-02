@@ -47,13 +47,9 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
-	const hasNoMatchingAudience =
-		configuredAudiences?.length &&
-		configuredAudiences.every(
-			( audience ) =>
-				Array.isArray( availableAudiences ) &&
-				! availableAudiences.includes( audience )
-		);
+	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
+		availableAudiences?.includes( audience )
+	);
 
 	const noticesCount = AUDIENCE_INFO_NOTICES.length;
 
@@ -82,7 +78,7 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 
 	// Return null if there are no matching audiences or if the notice has been dismissed.
 	if (
-		hasNoMatchingAudience ||
+		hasMatchingAudience !== true ||
 		isDismissed ||
 		dismissCount === undefined ||
 		dismissCount >= noticesCount
