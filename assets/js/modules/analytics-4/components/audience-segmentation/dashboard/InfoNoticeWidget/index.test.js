@@ -19,17 +19,19 @@
 /**
  * Internal dependencies.
  */
+import InfoNoticeWidget from '.';
 import {
-	render,
-	provideModules,
 	createTestRegistry,
 	fireEvent,
+	provideModules,
+	render,
 } from '../../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { AUDIENCE_INFO_NOTICE_SLUG, AUDIENCE_INFO_NOTICES } from './constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
-import InfoNoticeWidget from '.';
+import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 describe( 'InfoNoticeWidget', () => {
 	let registry;
@@ -45,6 +47,15 @@ describe( 'InfoNoticeWidget', () => {
 				slug: 'analytics-4',
 			},
 		] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/1' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
 
 		dismissPromptSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
@@ -52,8 +63,24 @@ describe( 'InfoNoticeWidget', () => {
 		);
 	} );
 
-	const WidgetWithComponentProps =
-		withWidgetComponentProps( 'InfoNoticeWidget' )( InfoNoticeWidget );
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		'analyticsAudienceInfoNotice'
+	)( InfoNoticeWidget );
+
+	it( 'should not render when there is no matching audience', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/9' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 
 	it( 'should not render when permanently dismissed', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {

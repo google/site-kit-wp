@@ -29,10 +29,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
-import AudienceTileErrorImage from '../../../../../../../svg/graphics/analytics-audience-segmentation-tile-error.svg';
-import ReportErrorActions from '../../../../../../components/ReportErrorActions';
-import GetHelpLink from './GetHelpLink';
+import { isInsufficientPermissionsError } from '../../../../../../../util/errors';
+import AudienceTileErrorImage from '../../../../../../../../svg/graphics/analytics-audience-segmentation-tile-error.svg';
+import ReportErrorActions from '../../../../../../../components/ReportErrorActions';
+import GetHelpLink from '../../GetHelpLink';
 
 export default function AudienceTileError( { errors } ) {
 	const hasInsufficientPermissionsError = errors.some( ( err ) =>

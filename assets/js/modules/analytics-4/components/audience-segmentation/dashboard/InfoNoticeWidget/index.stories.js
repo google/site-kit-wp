@@ -21,10 +21,12 @@
  */
 import InfoNoticeWidget from '.';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { AUDIENCE_INFO_NOTICE_SLUG } from './constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'InfoNoticeWidget' )( InfoNoticeWidget );
@@ -154,6 +156,19 @@ export default {
 						slug: 'analytics-4',
 					},
 				] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						configuredAudiences: [ 'properties/12345/audiences/1' ],
+						isAudienceSegmentationWidgetHidden: false,
+					} );
 				await args?.setupRegistry( registry );
 			};
 			return (
