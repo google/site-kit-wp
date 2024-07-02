@@ -522,6 +522,8 @@ NodeList [
 ]
 `;
 
+exports[`WidgetAreaRenderer should render the widget area title, subtitle and icon 1`] = `NodeList []`;
+
 exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns to fill the full 12 columns (3, 12, 3-6, 6 -> 3, 12, 4-8, 6) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"

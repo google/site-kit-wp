@@ -28,16 +28,16 @@ import {
 	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 
 describe( 'NoAudienceBannerWidget', () => {
 	let registry;
 
-	const { Widget, WidgetNull } = getWidgetComponentProps(
+	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsNoAudienceBanner'
-	);
+	)( NoAudienceBannerWidget );
 
 	const audienceSettingsRegExp = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
@@ -64,15 +64,9 @@ describe( 'NoAudienceBannerWidget', () => {
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
 		muteFetch( audienceSettingsRegExp );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -83,15 +77,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -103,15 +91,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -126,15 +108,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -149,15 +125,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -172,15 +142,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -198,15 +162,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -224,15 +182,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -247,15 +199,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container, getByText } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect(
 			container.querySelector( '.googlesitekit-no-audience-banner' )
@@ -274,15 +220,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container, getByText } = render(
-			<NoAudienceBannerWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
+		const { container, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect(
 			container.querySelector( '.googlesitekit-no-audience-banner' )

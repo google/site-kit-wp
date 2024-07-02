@@ -28,16 +28,16 @@ import {
 	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 
 describe( 'AudienceTilesWidget', () => {
 	let registry;
 
-	const { Widget, WidgetNull } = getWidgetComponentProps(
+	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAudienceTiles'
-	);
+	)( AudienceTilesWidget );
 
 	const audienceSettingsRegExp = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
@@ -64,12 +64,9 @@ describe( 'AudienceTilesWidget', () => {
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
 		muteFetch( audienceSettingsRegExp );
 
-		const { container } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -80,12 +77,9 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -97,12 +91,9 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		const { container } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -115,12 +106,9 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -135,12 +123,9 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -155,12 +140,9 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -175,12 +157,9 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
-			{
-				registry,
-			}
-		);
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -196,7 +175,7 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
+			<WidgetWithComponentProps />,
 			{
 				registry,
 			}
@@ -221,7 +200,7 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
+			<WidgetWithComponentProps />,
 			{
 				registry,
 			}
@@ -246,7 +225,7 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
+			<WidgetWithComponentProps />,
 			{
 				registry,
 			}
