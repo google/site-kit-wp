@@ -21,6 +21,6 @@ if ( ! empty( $message[0] ) ) {
 
 	$message[0] = implode( ' ', $tokens );
 
-	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
 	file_put_contents( $argv[1], implode( PHP_EOL, $message ) );
 }

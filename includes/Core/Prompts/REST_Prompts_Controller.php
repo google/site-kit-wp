@@ -80,7 +80,7 @@ class REST_Prompts_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_dismiss_prompt = function() {
+		$can_dismiss_prompt = function () {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
@@ -131,5 +131,4 @@ class REST_Prompts_Controller {
 			),
 		);
 	}
-
 }

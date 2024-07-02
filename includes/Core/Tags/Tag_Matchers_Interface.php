@@ -27,5 +27,4 @@ interface Tag_Matchers_Interface {
 	 * @return array Array of regex matchers.
 	 */
 	public function regex_matchers();
-
 }

@@ -74,5 +74,4 @@ class AMP_Tag extends Module_AMP_Tag {
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager AMP snippet added by Site Kit', 'google-site-kit' ) );
 	}
-
 }

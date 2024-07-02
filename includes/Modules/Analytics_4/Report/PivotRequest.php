@@ -72,5 +72,4 @@ class PivotRequest extends PivotReport {
 
 		return $request;
 	}
-
 }

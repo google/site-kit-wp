@@ -50,5 +50,4 @@ abstract class Module_Tag_Guard implements Guard_Interface {
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */
 	abstract public function can_activate();
-
 }

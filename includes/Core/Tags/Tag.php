@@ -85,5 +85,4 @@ abstract class Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	abstract public function register();
-
 }

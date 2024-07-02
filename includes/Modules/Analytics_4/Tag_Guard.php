@@ -32,5 +32,4 @@ class Tag_Guard extends Module_Tag_Guard {
 		$settings = $this->settings->get();
 		return ! empty( $settings['useSnippet'] ) && ! empty( $settings['measurementID'] );
 	}
-
 }

@@ -46,5 +46,4 @@ class Tag_Verify_GuardTest extends TestCase {
 			$this->assertFalse( $this->tagverify->can_activate(), "Should return FALSE when tagverify has \"{$tagverify}\" value" );
 		}
 	}
-
 }

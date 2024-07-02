@@ -53,5 +53,4 @@ class Reset_CLI_Command extends CLI_Command {
 
 		WP_CLI::success( 'Settings successfully reset.' );
 	}
-
 }

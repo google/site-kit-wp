@@ -303,5 +303,4 @@ class Google_Site_Kit_Client extends Google_Client {
 
 		return $auth;
 	}
-
 }

@@ -33,5 +33,4 @@ abstract class Module_Tag_Matchers implements Tag_Matchers_Interface {
 	 * @return array Array of regex matchers.
 	 */
 	abstract public function regex_matchers();
-
 }

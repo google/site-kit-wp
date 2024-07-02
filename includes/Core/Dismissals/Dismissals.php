@@ -71,5 +71,4 @@ class Dismissals {
 		$this->dismissed_items->register();
 		$this->rest_controller->register();
 	}
-
 }

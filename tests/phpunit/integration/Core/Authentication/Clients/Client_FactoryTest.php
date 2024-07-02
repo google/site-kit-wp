@@ -64,7 +64,7 @@ class Client_FactoryTest extends TestCase {
 	public function test_client_ip_resolve_config_options( $ip_resolve, $expected_value ) {
 		add_filter(
 			'googlesitekit_force_ip_resolve',
-			function() use ( $ip_resolve ) {
+			function () use ( $ip_resolve ) {
 				return $ip_resolve;
 			}
 		);
@@ -81,5 +81,4 @@ class Client_FactoryTest extends TestCase {
 			'xyz'  => array( 'xyz', null ),
 		);
 	}
-
 }

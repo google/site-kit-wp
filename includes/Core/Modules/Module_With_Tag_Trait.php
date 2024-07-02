@@ -51,5 +51,4 @@ trait Module_With_Tag_Trait {
 
 		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
-
 }

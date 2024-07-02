@@ -121,7 +121,7 @@ class Notifications {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function ( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$endpoint = add_query_arg(
 								array(
 									'site_id' => $this->credentials->get()['oauth2_client_id'],

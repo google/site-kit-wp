@@ -57,5 +57,4 @@ class Contact_Form_7Test extends TestCase {
 		$this->assertInstanceOf( Script::class, $script );
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
-
 }

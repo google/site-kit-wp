@@ -32,5 +32,4 @@ class WP_Query_404_GuardTest extends TestCase {
 		$this->assertQueryTrue( 'is_404' );
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when the current page doesnt exist (is_404).' );
 	}
-
 }

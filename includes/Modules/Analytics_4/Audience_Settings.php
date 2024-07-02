@@ -105,6 +105,4 @@ class Audience_Settings extends User_Setting {
 			return $sanitized_settings;
 		};
 	}
-
-
 }

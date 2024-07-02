@@ -67,5 +67,4 @@ class Mailchimp extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

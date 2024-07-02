@@ -50,5 +50,4 @@ abstract class Module_Tag extends Tag {
 	 * @since 1.24.0
 	 */
 	abstract protected function render();
-
 }

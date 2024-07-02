@@ -54,7 +54,7 @@ class Feature_FlagsTest extends TestCase {
 
 		add_filter(
 			'googlesitekit_is_feature_enabled',
-			function( $enabled, $feature_name ) {
+			function ( $enabled, $feature_name ) {
 				return 'test_feature' === $feature_name;
 			},
 			10,
@@ -74,5 +74,4 @@ class Feature_FlagsTest extends TestCase {
 
 		$this->assertFalse( Feature_Flags::enabled( 'test_feature' ) );
 	}
-
 }

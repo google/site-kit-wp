@@ -29,5 +29,4 @@ interface Guard_Interface {
 	 * @return bool|WP_Error TRUE if guarded entity can be activated, otherwise FALSE or an error.
 	 */
 	public function can_activate();
-
 }

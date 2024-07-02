@@ -12,8 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 
-class FakeModule_WithDataAvailable extends FakeModule
-implements Module_With_Data_Available_State {
+class FakeModule_WithDataAvailable extends FakeModule implements Module_With_Data_Available_State {
 	protected $_data_available; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	public function is_data_available() {

@@ -106,7 +106,7 @@ return array(
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
 	),
 	'patchers'                   => array(
-		function( $file_path, $prefix, $contents ) {
+		function ( $file_path, $prefix, $contents ) {
 			// Avoid prefixing the `static` keyword in some places.
 			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
 

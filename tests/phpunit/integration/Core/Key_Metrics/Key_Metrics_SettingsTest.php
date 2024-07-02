@@ -88,7 +88,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 				array( 'widgetSlugs' => array( 'validWidgetSlug1', false, true, null, array(), 'validWidgetSlug2', '' ) ),
 				array( 'widgetSlugs' => array( 'validWidgetSlug1', 'validWidgetSlug2' ) ),
 			),
-			'array of widgetSlugs and int isWidgetHidden flag' => array(
+			'array of widgetSlugs and int isWidgetHidden 1 flag' => array(
 				array(
 					'widgetSlugs'    => array( 'validWidgetSlug1', 'validWidgetSlug1' ),
 					'isWidgetHidden' => 1,
@@ -98,7 +98,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 					'isWidgetHidden' => true,
 				),
 			),
-			'array of widgetSlugs and int isWidgetHidden flag' => array(
+			'array of widgetSlugs and int isWidgetHidden 0 flag' => array(
 				array(
 					'widgetSlugs'    => array( 'validWidgetSlug1', 'validWidgetSlug1' ),
 					'isWidgetHidden' => 0,

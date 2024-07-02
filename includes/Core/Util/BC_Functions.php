@@ -147,5 +147,4 @@ class BC_Functions {
 
 		return null;
 	}
-
 }

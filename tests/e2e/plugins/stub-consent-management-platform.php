@@ -14,7 +14,7 @@
 
 add_filter(
 	'wp_get_consent_type',
-	function() {
+	function () {
 		return 'optin';
 	}
 );

@@ -27,7 +27,7 @@ class Dynamic_Blog_Post_Link_Event_List extends Event_List {
 
 		add_action(
 			'the_post',
-			function( $post, $wp_query ) {
+			function ( $post, $wp_query ) {
 				if ( ! $wp_query->is_main_query() ) {
 					return;
 				}

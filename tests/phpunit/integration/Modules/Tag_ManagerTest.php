@@ -369,7 +369,7 @@ class Tag_ManagerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_module_exists' );
 		add_filter(
 			'googlesitekit_module_exists',
-			function( $exists, $slug ) {
+			function ( $exists, $slug ) {
 				return 'analytics-4' === $slug ? false : true;
 			},
 			10,

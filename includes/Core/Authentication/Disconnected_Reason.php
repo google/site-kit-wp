@@ -40,5 +40,4 @@ class Disconnected_Reason extends User_Setting {
 		parent::register();
 		add_action( 'googlesitekit_authorize_user', array( $this, 'delete' ) );
 	}
-
 }

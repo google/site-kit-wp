@@ -81,7 +81,7 @@ class Health_Checks {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
+						'callback'            => function () {
 							$checks = array(
 								'googleAPI' => $this->check_google_api(),
 								'skService' => $this->check_service_connectivity(),
@@ -100,7 +100,7 @@ class Health_Checks {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
+						'callback'            => function () {
 							return 'true';
 						},
 						'permission_callback' => function () {

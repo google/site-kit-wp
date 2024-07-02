@@ -41,7 +41,6 @@ final class Standalone {
 	public function __construct( Context $context ) {
 
 		$this->context = $context;
-
 	}
 
 	/**
@@ -64,7 +63,7 @@ final class Standalone {
 		 */
 		add_filter(
 			'admin_body_class',
-			function( $admin_body_classes ) {
+			function ( $admin_body_classes ) {
 				return "{$admin_body_classes} googlesitekit-standalone";
 			}
 		);
@@ -76,7 +75,7 @@ final class Standalone {
 
 		add_action(
 			'admin_head',
-			function() {
+			function () {
 				$this->print_standalone_styles();
 			}
 		);

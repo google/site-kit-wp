@@ -24,7 +24,8 @@ use Google\Site_Kit\Core\Tags\Tag_With_Linker_Trait;
  */
 class AMP_Tag extends Module_AMP_Tag implements Tag_With_Linker_Interface {
 
-	use Method_Proxy_Trait, Tag_With_Linker_Trait;
+	use Method_Proxy_Trait;
+	use Tag_With_Linker_Trait;
 
 	/**
 	 * Sets the current home domain.

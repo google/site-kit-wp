@@ -51,5 +51,4 @@ class Plugin_Row_Meta {
 			'<a href="https://wordpress.org/support/plugin/google-site-kit/#new-post">' . __( 'Support', 'google-site-kit' ) . '</a>',
 		);
 	}
-
 }

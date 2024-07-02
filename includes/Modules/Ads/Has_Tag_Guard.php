@@ -52,5 +52,4 @@ class Has_Tag_Guard extends Module_Tag_Guard {
 	public function can_activate() {
 		return ! empty( $this->tag_id );
 	}
-
 }

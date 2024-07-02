@@ -25,5 +25,4 @@ interface Module_With_Persistent_Registration {
 	 * @since 1.38.0
 	 */
 	public function register_persistent();
-
 }

@@ -70,5 +70,4 @@ class Has_Multiple_Admins {
 
 		return $admins_count > 1;
 	}
-
 }

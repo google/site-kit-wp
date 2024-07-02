@@ -132,5 +132,4 @@ class Dismissed_ItemsTest extends TestCase {
 		$this->assertTrue( $this->dismissed_items->is_dismissed( 'bar' ) );
 		$this->assertFalse( $this->dismissed_items->is_dismissed( 'baz' ) );
 	}
-
 }

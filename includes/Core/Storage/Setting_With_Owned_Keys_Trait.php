@@ -122,5 +122,4 @@ trait Setting_With_Owned_Keys_Trait {
 
 		return false;
 	}
-
 }

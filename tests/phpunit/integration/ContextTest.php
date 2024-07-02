@@ -343,7 +343,7 @@ class ContextTest extends TestCase {
 		// Fake plugin being network-active.
 		add_filter(
 			'pre_site_option_active_sitewide_plugins',
-			function() {
+			function () {
 				$plugin_basename = GOOGLESITEKIT_PLUGIN_BASENAME;
 				return array( $plugin_basename => true );
 			}

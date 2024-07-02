@@ -54,5 +54,4 @@ class WooCommerceTest extends TestCase {
 		$this->woocommerce->register_hooks();
 		$this->assertTrue( has_action( 'woocommerce_thankyou' ) );
 	}
-
 }

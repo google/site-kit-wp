@@ -217,7 +217,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$granted_scopes     = $this->get_granted_scopes();
 		$unsatisfied_scopes = array_filter(
 			$scopes,
-			function( $scope ) use ( $granted_scopes ) {
+			function ( $scope ) use ( $granted_scopes ) {
 				return ! Scopes::is_satisfied_by( $scope, $granted_scopes );
 			}
 		);
@@ -457,7 +457,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		}
 		$scopes = array_filter(
 			$scopes,
-			function( $scope ) {
+			function ( $scope ) {
 				if ( ! is_string( $scope ) ) {
 					return false;
 				}

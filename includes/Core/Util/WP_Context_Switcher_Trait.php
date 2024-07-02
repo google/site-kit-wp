@@ -71,7 +71,7 @@ trait WP_Context_Switcher_Trait {
 
 		$original_screen = $current_screen;
 
-		return static function() use ( $original_screen ) {
+		return static function () use ( $original_screen ) {
 			global $current_screen;
 
 			$current_screen = $original_screen; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited

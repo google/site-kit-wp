@@ -19,14 +19,14 @@
  */
 add_filter(
 	'get_user_metadata',
-	function ( $null, $object_id, $meta_key ) {
+	function ( $null_verification, $object_id, $meta_key ) {
 		if (
 			preg_match( '/googlesitekit_site_verified_meta$/', $meta_key )
 			&& get_current_user_id() === $object_id
 		) {
 			return '1';
 		}
-		return $null;
+		return $null_verification;
 	},
 	10,
 	3

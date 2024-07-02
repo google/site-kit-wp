@@ -135,5 +135,4 @@ class Dismissed_Prompts extends User_Setting {
 			return $sanitized_prompts;
 		};
 	}
-
 }

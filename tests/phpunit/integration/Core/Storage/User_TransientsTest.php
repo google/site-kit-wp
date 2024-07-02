@@ -192,5 +192,4 @@ class User_TransientsTest extends TestCase {
 		$this->assertFalse( $user_options->get( 'googlesitekit_transient_testkey11' ) );
 		$this->assertFalse( $user_options->get( 'googlesitekit_transient_timeout_testkey11' ) );
 	}
-
 }

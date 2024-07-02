@@ -88,4 +88,3 @@ class Auto_UpdatesTest extends TestCase {
 		$this->assertIsObject( $item );
 	}
 }
-

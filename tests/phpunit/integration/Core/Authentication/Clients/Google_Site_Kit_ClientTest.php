@@ -19,7 +19,7 @@ class Google_Site_Kit_ClientTest extends TestCase {
 		remove_all_filters( 'home_url' );
 		add_filter(
 			'home_url',
-			function() use ( $url ) {
+			function () use ( $url ) {
 				return $url;
 			}
 		);
@@ -56,5 +56,4 @@ class Google_Site_Kit_ClientTest extends TestCase {
 
 		$this->assertEquals( "http://{$user_id}@example.com/subdirectory", Google_Site_Kit_Client::getQuotaUser() );
 	}
-
 }

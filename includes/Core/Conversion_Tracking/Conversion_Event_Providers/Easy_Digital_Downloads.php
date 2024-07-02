@@ -67,5 +67,4 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

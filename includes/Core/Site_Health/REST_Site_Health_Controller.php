@@ -78,5 +78,4 @@ class REST_Site_Health_Controller {
 			),
 		);
 	}
-
 }

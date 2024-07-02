@@ -109,5 +109,4 @@ class Conversion_Tracking_SettingsTest extends SettingsTestCase {
 		$this->settings->set( array( 'enabled' => false ) );
 		$this->assertFalse( $this->settings->is_conversion_tracking_enabled() );
 	}
-
 }

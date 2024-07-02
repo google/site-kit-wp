@@ -34,5 +34,4 @@ interface Tag_Interface {
 	 * @return bool TRUE if the tag can be register, otherwise FALSE.
 	 */
 	public function can_register();
-
 }

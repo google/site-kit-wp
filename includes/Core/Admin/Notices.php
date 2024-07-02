@@ -25,7 +25,7 @@ final class Notices {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		$callback = function() {
+		$callback = function () {
 			global $hook_suffix;
 
 			if ( empty( $hook_suffix ) ) {
@@ -85,7 +85,7 @@ final class Notices {
 
 		return array_filter(
 			$notices,
-			function( $notice ) {
+			function ( $notice ) {
 				return $notice instanceof Notice;
 			}
 		);

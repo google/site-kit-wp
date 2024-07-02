@@ -74,11 +74,11 @@ final class Advanced_Tracking {
 
 		add_action(
 			"googlesitekit_{$slug_name}_init_tag",
-			function() {
+			function () {
 				$this->register_event_lists();
 				add_action(
 					'wp_footer',
-					function() {
+					function () {
 						$this->set_up_advanced_tracking();
 					}
 				);
@@ -86,11 +86,11 @@ final class Advanced_Tracking {
 		);
 		add_action(
 			"googlesitekit_{$slug_name}_init_tag_amp",
-			function() {
+			function () {
 				$this->register_event_lists();
 				add_filter(
 					'googlesitekit_amp_gtag_opt',
-					function( $gtag_amp_opt ) {
+					function ( $gtag_amp_opt ) {
 						return $this->set_up_advanced_tracking_amp( $gtag_amp_opt );
 					}
 				);

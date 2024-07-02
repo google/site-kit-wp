@@ -202,5 +202,4 @@ class URLTest extends TestCase {
 			),
 		);
 	}
-
 }

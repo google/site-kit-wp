@@ -24,7 +24,8 @@ use Google\Site_Kit\Core\Tags\Tag_With_Linker_Trait;
  */
 class AMP_Tag extends Module_AMP_Tag implements Tag_Interface, Tag_With_Linker_Interface {
 
-	use Method_Proxy_Trait, Tag_With_Linker_Trait;
+	use Method_Proxy_Trait;
+	use Tag_With_Linker_Trait;
 
 	/**
 	 * Custom dimensions data.
@@ -153,7 +154,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface, Tag_With_Linker_I
 		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
-
 	}
 
 	/**

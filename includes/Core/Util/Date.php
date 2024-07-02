@@ -47,5 +47,4 @@ class Date {
 
 		return array( $date_start, $date_end );
 	}
-
 }

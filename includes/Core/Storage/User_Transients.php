@@ -271,5 +271,4 @@ class User_Transients implements User_Aware_Interface {
 		$prefixed_transient = $this->get_transient_name_for_user_options( $transient );
 		return $this->user_options->delete( $prefixed_transient );
 	}
-
 }

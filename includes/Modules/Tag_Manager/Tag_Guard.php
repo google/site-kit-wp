@@ -55,5 +55,4 @@ class Tag_Guard extends Module_Tag_Guard {
 		$container_id = $this->is_amp ? $settings['ampContainerID'] : $settings['containerID'];
 		return ! empty( $settings['useSnippet'] ) && ! empty( $container_id );
 	}
-
 }

@@ -127,5 +127,4 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 			$response->get_data()
 		);
 	}
-
 }

@@ -27,5 +27,4 @@ interface Setting_With_Owned_Keys_Interface {
 	 * @return array An array of keys for owned settings.
 	 */
 	public function get_owned_keys();
-
 }

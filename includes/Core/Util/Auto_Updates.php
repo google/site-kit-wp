@@ -160,5 +160,4 @@ class Auto_Updates {
 
 		return array_merge( $sitekit_update_data, (array) $transient_data );
 	}
-
 }

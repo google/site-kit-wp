@@ -138,5 +138,4 @@ class Survey_Queue extends User_Setting {
 	protected function sanitize_list_items( $items ) {
 		return $items;
 	}
-
 }

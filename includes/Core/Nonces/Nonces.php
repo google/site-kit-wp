@@ -75,7 +75,7 @@ final class Nonces {
 	public function register() {
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
@@ -118,7 +118,7 @@ final class Nonces {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_access_nonces = function() {
+		$can_access_nonces = function () {
 			return is_user_logged_in();
 		};
 
@@ -128,7 +128,7 @@ final class Nonces {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
+						'callback'            => function () {
 							return new WP_REST_Response( $this->get_nonces() );
 						},
 						'permission_callback' => $can_access_nonces,

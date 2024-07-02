@@ -81,7 +81,7 @@ class REST_Expirable_Items_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_manage_expirable_item = function() {
+		$can_manage_expirable_item = function () {
 			return current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 

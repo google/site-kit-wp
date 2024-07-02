@@ -75,5 +75,4 @@ class Activity_Metrics {
 			'active_consumers' => implode( ' ', $formatted_consumers ),
 		);
 	}
-
 }

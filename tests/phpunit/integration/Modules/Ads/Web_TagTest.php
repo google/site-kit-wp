@@ -38,5 +38,4 @@ class Web_TagTest extends TestCase {
 			$head_html
 		);
 	}
-
 }

@@ -94,7 +94,7 @@ class WP_Query_FactoryTest extends TestCase {
 
 		add_filter(
 			'option_home',
-			function() {
+			function () {
 				return 'https://example.com';
 			}
 		);
@@ -594,7 +594,7 @@ class WP_Query_FactoryTest extends TestCase {
 
 		add_filter(
 			'option_home',
-			function() {
+			function () {
 				return 'https://example.com';
 			}
 		);
@@ -1025,7 +1025,7 @@ class WP_Query_FactoryTest extends TestCase {
 
 		add_filter(
 			'option_home',
-			function() {
+			function () {
 				return 'https://example.com';
 			}
 		);

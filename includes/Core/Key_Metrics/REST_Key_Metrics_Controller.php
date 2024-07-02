@@ -93,7 +93,7 @@ class REST_Key_Metrics_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$has_capabilities = function() {
+		$has_capabilities = function () {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
@@ -184,5 +184,4 @@ class REST_Key_Metrics_Controller {
 			),
 		);
 	}
-
 }

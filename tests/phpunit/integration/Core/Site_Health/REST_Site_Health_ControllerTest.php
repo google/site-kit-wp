@@ -45,5 +45,4 @@ class REST_Site_Health_ControllerTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 	}
-
 }

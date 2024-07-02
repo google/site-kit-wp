@@ -51,5 +51,4 @@ class Disconnected_ReasonTest extends SettingsTestCase {
 	protected function get_option_name() {
 		return Disconnected_Reason::OPTION;
 	}
-
 }

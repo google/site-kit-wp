@@ -171,7 +171,7 @@ class Migration_1_8_1Test extends TestCase {
 		// Despite API error, users have been determined and cleared correctly.
 		$this->assertSentAPIRequestIdentifiers(
 			array_map(
-				function( $user ) {
+				function ( $user ) {
 					return $user->user_email;
 				},
 				$problem_cases

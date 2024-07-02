@@ -56,8 +56,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -141,7 +140,7 @@ final class Tag_Manager extends Module
 
 		$container_id_errors = array_filter(
 			$container_ids,
-			function( $container_id ) {
+			function ( $container_id ) {
 				return ! $container_id;
 			}
 		);
@@ -601,7 +600,7 @@ final class Tag_Manager extends Module
 		}
 
 		$all_containers = array_map(
-			function( $container ) {
+			function ( $container ) {
 				return $container->getPublicId();
 			},
 			$containers->getContainer()
@@ -609,5 +608,4 @@ final class Tag_Manager extends Module
 
 		return empty( array_diff( $configured_containers, $all_containers ) );
 	}
-
 }

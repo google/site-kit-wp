@@ -137,7 +137,7 @@ class Migration_1_123_0Test extends TestCase {
 	protected function filter_settings( $settings, $keys_to_filter ) {
 		return array_filter(
 			$settings,
-			function( $key ) use ( $keys_to_filter ) {
+			function ( $key ) use ( $keys_to_filter ) {
 				if ( in_array( $key, $keys_to_filter, true ) ) {
 					return true;
 				}

@@ -73,5 +73,4 @@ trait List_Setting {
 	 * @return array Filtered items.
 	 */
 	abstract protected function sanitize_list_items( $items );
-
 }

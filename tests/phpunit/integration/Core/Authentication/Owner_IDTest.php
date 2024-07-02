@@ -94,5 +94,4 @@ class Owner_IDTest extends SettingsTestCase {
 	protected function get_option_name() {
 		return Owner_ID::OPTION;
 	}
-
 }

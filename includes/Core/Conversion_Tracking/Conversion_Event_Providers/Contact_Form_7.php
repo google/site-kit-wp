@@ -66,5 +66,4 @@ class Contact_Form_7 extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

@@ -100,8 +100,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
+final class Analytics_4 extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -235,7 +234,7 @@ final class Analytics_4 extends Module
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
 		$this->get_settings()->on_change(
-			function( $old_value, $new_value ) {
+			function ( $old_value, $new_value ) {
 				// Ensure that the data available state is reset when the property ID or measurement ID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
@@ -325,7 +324,7 @@ final class Analytics_4 extends Module
 
 		add_filter(
 			'googlesitekit_auth_scopes',
-			function( array $scopes ) {
+			function ( array $scopes ) {
 				$oauth_client = $this->authentication->get_oauth_client();
 
 				$needs_tagmanager_scope = false;
@@ -337,18 +336,17 @@ final class Analytics_4 extends Module
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
-				} else {
+
 					// Ensure the Tag Manager scope is not added as a required scope in the case where the user has
 					// granted the Analytics scope but not the Tag Manager scope, in order to allow the GTE-specific
 					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
 					// modal also appearing.
-					if ( ! $oauth_client->has_sufficient_scopes(
-						array(
-							self::READONLY_SCOPE,
-						)
-					) ) {
+				} elseif ( ! $oauth_client->has_sufficient_scopes(
+					array(
+						self::READONLY_SCOPE,
+					)
+				) ) {
 						$needs_tagmanager_scope = true;
-					}
 				}
 
 				if ( $needs_tagmanager_scope ) {
@@ -368,7 +366,7 @@ final class Analytics_4 extends Module
 		// Core\Authentication\Google_Proxy::get_metadata_fields.
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
-			function( $original_mode ) {
+			function ( $original_mode ) {
 				return ! $this->is_connected()
 					? 'analytics-step'
 					: $original_mode;
@@ -378,7 +376,7 @@ final class Analytics_4 extends Module
 		// Preload the path to avoid layout shift for audience setup CTA banner.
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge(
 					$routes,
 					array(
@@ -1099,7 +1097,7 @@ final class Analytics_4 extends Module
 						$post_body
 					);
 			case 'GET:audience-settings':
-				return function() {
+				return function () {
 					return $this->audience_settings->get();
 				};
 			case 'POST:audience-settings':
@@ -1122,7 +1120,7 @@ final class Analytics_4 extends Module
 
 				$this->audience_settings->merge( $data['settings'] );
 
-				return function() {
+				return function () {
 					return $this->audience_settings->get();
 				};
 			case 'POST:create-account-ticket':
@@ -1501,7 +1499,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return function() use ( $data ) {
+				return function () use ( $data ) {
 					return $this->custom_dimensions_data_available->set_data_available( $data['customDimension'] );
 				};
 			case 'POST:save-resource-data-availability-date':
@@ -1529,7 +1527,7 @@ final class Analytics_4 extends Module
 					throw new Invalid_Param_Exception( 'date' );
 				}
 
-				return function() use ( $data ) {
+				return function () use ( $data ) {
 					return $this->resource_data_availability_date->set_resource_date( $data['resourceSlug'], $data['resourceType'], $data['date'] );
 				};
 			case 'GET:webdatastreams':
@@ -1581,7 +1579,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return function() use ( $batch_request ) {
+				return function () use ( $batch_request ) {
 					return $batch_request->execute();
 				};
 			case 'GET:container-lookup':
@@ -1649,12 +1647,12 @@ final class Analytics_4 extends Module
 				}
 
 				if ( false === $data['hasMismatchedTag'] ) {
-					return function() {
+					return function () {
 						return $this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
 					};
 				}
 
-				return function() use ( $data ) {
+				return function () use ( $data ) {
 					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
 				};
 		}
@@ -1678,10 +1676,10 @@ final class Analytics_4 extends Module
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
 			case 'GET:account-summaries':
 				$account_summaries = array_map(
-					function( $account ) {
+					function ( $account ) {
 						$obj                    = self::filter_account_with_ids( $account, 'account' );
 						$obj->propertySummaries = array_map( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-							function( $property ) {
+							function ( $property ) {
 								return self::filter_property_with_ids( $property, 'property' );
 							},
 							$account->getPropertySummaries()
@@ -1756,7 +1754,7 @@ final class Analytics_4 extends Module
 				$matching_dimensions = array_values(
 					array_filter(
 						$custom_dimensions,
-						function( $dimension ) {
+						function ( $dimension ) {
 							return strpos( $dimension, 'googlesitekit_' ) === 0;
 						}
 					)
@@ -2400,7 +2398,7 @@ final class Analytics_4 extends Module
 	 */
 	private function set_available_audiences( $audiences ) {
 		$available_audiences = array_map(
-			function( GoogleAnalyticsAdminV1alphaAudience $audience ) {
+			function ( GoogleAnalyticsAdminV1alphaAudience $audience ) {
 				$display_name  = $audience->getDisplayName();
 				$audience_item = array(
 					'name'        => $audience->getName(),

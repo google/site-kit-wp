@@ -246,5 +246,4 @@ class Migration_1_8_1 {
 			)
 		);
 	}
-
 }

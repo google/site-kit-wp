@@ -24,7 +24,8 @@ use WP_REST_Request;
 
 class REST_User_Surveys_ControllerTest extends TestCase {
 
-	use RestTestTrait, Fake_Site_Connection_Trait;
+	use RestTestTrait;
+	use Fake_Site_Connection_Trait;
 
 	/**
 	 * REST_User_Surveys_Controller object.
@@ -153,7 +154,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		);
 
 		$this->subscribe_to_wp_http_requests(
-			function() {},
+			function () {},
 			array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array(),
@@ -180,7 +181,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	 */
 	public function test_survey_event_survey_shown( $code ) {
 		$this->subscribe_to_wp_http_requests(
-			function() {},
+			function () {},
 			array(
 				'response' => array( 'code' => $code ),
 				'headers'  => array(),
@@ -254,7 +255,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		);
 
 		$this->subscribe_to_wp_http_requests(
-			function() {},
+			function () {},
 			array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array(),
@@ -360,5 +361,4 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$this->assertEqualSets( array( 'survey' => $survey ), $response );
 	}
-
 }

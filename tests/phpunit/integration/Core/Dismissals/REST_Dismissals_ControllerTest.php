@@ -106,5 +106,4 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			rest_get_server()->dispatch( $request )->get_data()
 		);
 	}
-
 }

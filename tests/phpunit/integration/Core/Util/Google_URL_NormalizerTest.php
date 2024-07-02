@@ -74,4 +74,3 @@ class Google_URL_NormalizerTest extends TestCase {
 		);
 	}
 }
-

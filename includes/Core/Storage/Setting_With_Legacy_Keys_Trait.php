@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
-use \Google\Site_Kit\Core\Util\Migrate_Legacy_Keys;
+use Google\Site_Kit\Core\Util\Migrate_Legacy_Keys;
 
 /**
  * Trait for a Setting that has legacy option keys to migrate.

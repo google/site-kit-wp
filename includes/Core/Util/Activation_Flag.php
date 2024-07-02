@@ -64,7 +64,7 @@ final class Activation_Flag {
 	public function register() {
 		add_action(
 			'googlesitekit_activation',
-			function( $network_wide ) {
+			function ( $network_wide ) {
 				// Set activation flag.
 				$this->set_activation_flag( $network_wide );
 			}

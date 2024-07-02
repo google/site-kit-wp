@@ -192,7 +192,7 @@ class Tag_Placement {
 
 		$active_modules = array_filter(
 			$active_modules,
-			function( $module ) {
+			function ( $module ) {
 				return $module instanceof Module_With_Tag;
 			}
 		);
@@ -243,5 +243,4 @@ class Tag_Placement {
 				);
 		}
 	}
-
 }

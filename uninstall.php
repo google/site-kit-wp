@@ -14,7 +14,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 // Load plugin main file to bootstrap infrastructure and add hooks.
-require_once dirname( __FILE__ ) . '/google-site-kit.php';
+require_once __DIR__ . '/google-site-kit.php';
 
 // Fire action to trigger uninstallation logic.
 do_action( 'googlesitekit_uninstallation' );

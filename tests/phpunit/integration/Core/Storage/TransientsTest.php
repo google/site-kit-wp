@@ -106,5 +106,4 @@ class TransientsTest extends TestCase {
 
 		$this->assertFalse( get_site_transient( 'test-transient' ) );
 	}
-
 }

@@ -98,5 +98,4 @@ class String_Filter implements Filter {
 
 		return $filter_expression;
 	}
-
 }

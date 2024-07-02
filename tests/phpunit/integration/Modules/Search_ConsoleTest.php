@@ -247,5 +247,4 @@ class Search_ConsoleTest extends TestCase {
 	protected function get_module_with_data_available_state() {
 		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
-
 }

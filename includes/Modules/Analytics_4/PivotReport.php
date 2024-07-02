@@ -89,5 +89,4 @@ class PivotReport extends ReportParsers {
 
 		return $results;
 	}
-
 }

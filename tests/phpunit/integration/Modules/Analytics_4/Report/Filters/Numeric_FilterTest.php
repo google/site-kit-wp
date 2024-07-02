@@ -45,5 +45,4 @@ class Numeric_FilterTest extends TestCase {
 			json_decode( wp_json_encode( $expression ), true )
 		);
 	}
-
 }

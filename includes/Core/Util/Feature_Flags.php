@@ -98,5 +98,4 @@ class Feature_Flags {
 	public static function get_available_features() {
 		return static::$features;
 	}
-
 }

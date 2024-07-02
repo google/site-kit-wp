@@ -24,18 +24,18 @@ trait Migrate_Legacy_Keys {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @param array $array          Input associative array to migrate keys for.
+	 * @param array $legacy_array          Input associative array to migrate keys for.
 	 * @param array $key_mapping    Map of legacy key to current key.
 	 * @return array Updated array.
 	 */
-	protected function migrate_legacy_keys( array $array, array $key_mapping ) {
+	protected function migrate_legacy_keys( array $legacy_array, array $key_mapping ) {
 		foreach ( $key_mapping as $legacy_key => $current_key ) {
-			if ( ! isset( $array[ $current_key ] ) && isset( $array[ $legacy_key ] ) ) {
-				$array[ $current_key ] = $array[ $legacy_key ];
+			if ( ! isset( $legacy_array[ $current_key ] ) && isset( $legacy_array[ $legacy_key ] ) ) {
+				$legacy_array[ $current_key ] = $legacy_array[ $legacy_key ];
 			}
-			unset( $array[ $legacy_key ] );
+			unset( $legacy_array[ $legacy_key ] );
 		}
 
-		return $array;
+		return $legacy_array;
 	}
 }

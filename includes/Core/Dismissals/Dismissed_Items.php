@@ -170,5 +170,4 @@ class Dismissed_Items extends User_Setting {
 
 		return $dismissed;
 	}
-
 }

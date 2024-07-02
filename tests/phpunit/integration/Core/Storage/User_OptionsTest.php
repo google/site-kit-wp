@@ -129,5 +129,4 @@ class User_OptionsTest extends TestCase {
 
 		return array( $user_options, $user_id );
 	}
-
 }

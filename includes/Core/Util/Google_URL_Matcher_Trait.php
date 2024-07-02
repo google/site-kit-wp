@@ -90,5 +90,4 @@ trait Google_URL_Matcher_Trait {
 	protected function strip_domain_www( $domain ) {
 		return preg_replace( '/^www\./', '', $domain );
 	}
-
 }

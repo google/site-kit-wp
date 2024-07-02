@@ -30,5 +30,4 @@ class WP_Query_404_Guard implements Guard_Interface {
 	public function can_activate() {
 		return ! is_404();
 	}
-
 }

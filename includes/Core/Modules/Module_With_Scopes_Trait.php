@@ -27,7 +27,7 @@ trait Module_With_Scopes_Trait {
 	private function register_scopes_hook() {
 		add_filter(
 			'googlesitekit_auth_scopes',
-			function( array $scopes ) {
+			function ( array $scopes ) {
 				return array_merge( $scopes, $this->get_scopes() );
 			}
 		);

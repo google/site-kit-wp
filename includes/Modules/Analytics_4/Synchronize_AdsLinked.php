@@ -61,7 +61,7 @@ class Synchronize_AdsLinked {
 	public function register() {
 		add_action(
 			self::CRON_SYNCHRONIZE_ADS_LINKED,
-			function() {
+			function () {
 				$this->synchronize_ads_linked_data();
 			}
 		);

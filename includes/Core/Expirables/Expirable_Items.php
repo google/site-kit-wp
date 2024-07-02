@@ -130,5 +130,4 @@ class Expirable_Items extends User_Setting {
 
 		return $expirables;
 	}
-
 }

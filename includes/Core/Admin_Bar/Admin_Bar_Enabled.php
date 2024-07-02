@@ -69,5 +69,4 @@ class Admin_Bar_Enabled extends Setting {
 	protected function get_sanitize_callback() {
 		return 'boolval';
 	}
-
 }

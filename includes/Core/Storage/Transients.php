@@ -92,4 +92,3 @@ final class Transients {
 		return delete_transient( $transient );
 	}
 }
-

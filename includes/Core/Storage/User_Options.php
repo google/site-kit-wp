@@ -136,5 +136,4 @@ final class User_Options implements User_Options_Interface {
 
 		return $wpdb->get_blog_prefix() . $option;
 	}
-
 }

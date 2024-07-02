@@ -69,5 +69,4 @@ class User_Surveys {
 		$this->survey_timeouts->register();
 		$this->rest_controller->register();
 	}
-
 }

@@ -79,7 +79,7 @@ class REST_Conversion_Tracking_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$has_capabilities = function() {
+		$has_capabilities = function () {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 

@@ -105,5 +105,4 @@ class Key_Metrics_Settings extends User_Setting {
 			return $sanitized_settings;
 		};
 	}
-
 }

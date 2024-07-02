@@ -27,5 +27,4 @@ interface Setting_With_ViewOnly_Keys_Interface {
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys();
-
 }

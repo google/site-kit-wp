@@ -107,7 +107,6 @@ class User_Specific_Answers extends User_Setting {
 			}
 
 			return $results;
-
 		};
 	}
 }

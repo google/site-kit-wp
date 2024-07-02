@@ -179,7 +179,7 @@ class GTag {
 	protected function get_gtag_call_for_command( $command ) {
 		$gtag_args = array_merge( array( $command['command'] ), $command['parameters'] );
 		$gtag_args = array_map(
-			function( $arg ) {
+			function ( $arg ) {
 				return wp_json_encode( $arg );
 			},
 			$gtag_args

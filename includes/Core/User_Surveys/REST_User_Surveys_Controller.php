@@ -252,7 +252,7 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'permission_callback' => $can_authenticate,
-					'callback'            => function ( WP_REST_Request $request ) {
+					'callback'            => function () {
 						return new WP_REST_Response( $this->timeouts->get_survey_timeouts() );
 					},
 				)
@@ -262,7 +262,7 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'permission_callback' => $can_authenticate,
-					'callback'            => function ( WP_REST_Request $request ) {
+					'callback'            => function () {
 						return new WP_REST_Response(
 							array(
 								'survey' => $this->queue->front(),
@@ -273,5 +273,4 @@ class REST_User_Surveys_Controller {
 			),
 		);
 	}
-
 }

@@ -103,5 +103,4 @@ class Key_Metrics {
 
 		return $data;
 	}
-
 }

@@ -43,5 +43,4 @@ class Auto_Ad_Guard extends Module_Tag_Guard {
 
 		return true;
 	}
-
 }

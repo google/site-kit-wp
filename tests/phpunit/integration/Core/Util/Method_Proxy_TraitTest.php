@@ -45,7 +45,6 @@ class Method_Proxy_TraitTest extends TestCase {
 	}
 
 	private function hidden_function() {
-		$this->calls++;
+		++$this->calls;
 	}
-
 }

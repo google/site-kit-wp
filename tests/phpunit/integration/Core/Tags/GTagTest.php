@@ -119,5 +119,4 @@ class GTagTest extends TestCase {
 		// Verify that this returns the correct URL for the different tag ID.
 		$this->assertEquals( 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_2, $this->gtag->get_gtag_src() );
 	}
-
 }

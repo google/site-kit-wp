@@ -20,5 +20,4 @@ class FakeModule_WithViewOnlySettings extends FakeModule {
 	protected function setup_settings() {
 		return new FakeModuleSettings_WithViewOnlyKeys( $this->options );
 	}
-
 }

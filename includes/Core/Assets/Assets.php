@@ -78,7 +78,7 @@ final class Assets {
 	 * @since 1.37.0 Enqueues Block Editor assets.
 	 */
 	public function register() {
-		$register_callback = function() {
+		$register_callback = function () {
 			if ( ! is_admin() ) {
 				return;
 			}
@@ -95,7 +95,7 @@ final class Assets {
 
 		add_filter(
 			'script_loader_tag',
-			function( $tag, $handle ) {
+			function ( $tag, $handle ) {
 				return $this->add_async_defer_attribute( $tag, $handle );
 			},
 			10,
@@ -115,7 +115,7 @@ final class Assets {
 
 		add_action(
 			'admin_print_scripts-edit.php',
-			function() {
+			function () {
 				global $post_type;
 				if ( 'post' !== $post_type ) {
 					// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
@@ -125,7 +125,7 @@ final class Assets {
 
 				array_walk(
 					$assets,
-					function( Asset $asset ) {
+					function ( Asset $asset ) {
 						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POSTS ) ) {
 							$this->enqueue_asset( $asset->get_handle() );
 						}
@@ -136,12 +136,12 @@ final class Assets {
 
 		add_action(
 			'enqueue_block_editor_assets',
-			function() {
+			function () {
 				$assets = $this->get_assets();
 
 				array_walk(
 					$assets,
-					function( $asset ) {
+					function ( $asset ) {
 						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POST_EDITOR ) ) {
 							$this->enqueue_asset( $asset->get_handle() );
 						}
@@ -150,14 +150,14 @@ final class Assets {
 			}
 		);
 
-		$scripts_print_callback = function() {
+		$scripts_print_callback = function () {
 			$scripts = wp_scripts();
 			$this->run_before_print_callbacks( $scripts, $scripts->queue );
 		};
 		add_action( 'wp_print_scripts', $scripts_print_callback );
 		add_action( 'admin_print_scripts', $scripts_print_callback );
 
-		$styles_print_callback = function() {
+		$styles_print_callback = function () {
 			$styles = wp_styles();
 			$this->run_before_print_callbacks( $styles, $styles->queue );
 		};
@@ -263,7 +263,7 @@ final class Assets {
 			'script_loader_tag',
 			function ( $tag, $handle ) use ( $assets ) {
 				// TODO: 'hoverintent-js' can be removed from here at some point, see https://github.com/ampproject/amp-wp/pull/3928.
-				if ( $this->context->is_amp() && ( isset( $assets[ $handle ] ) && $assets[ $handle ] instanceof Script || 'hoverintent-js' === $handle ) ) {
+				if ( $this->context->is_amp() && ( isset( $assets[ $handle ] ) && ( $assets[ $handle ] instanceof Script || 'hoverintent-js' === $handle ) ) ) {
 					$tag = preg_replace( '/(?<=<script)(?=\s|>)/i', ' data-ampdevmode', $tag );
 				}
 				return $tag;
@@ -370,7 +370,7 @@ final class Assets {
 				'googlesitekit-user-data',
 				array(
 					'global'        => '_googlesitekitUserData',
-					'data_callback' => function() {
+					'data_callback' => function () {
 						return $this->get_inline_user_data();
 					},
 				)
@@ -409,7 +409,7 @@ final class Assets {
 				'googlesitekit-dashboard-sharing-data',
 				array(
 					'global'        => '_googlesitekitDashboardSharingData',
-					'data_callback' => function() {
+					'data_callback' => function () {
 						return $this->get_inline_dashboard_sharing_data();
 					},
 				)
@@ -418,7 +418,7 @@ final class Assets {
 				'googlesitekit-tracking-data',
 				array(
 					'global'        => '_googlesitekitTrackingData',
-					'data_callback' => function() {
+					'data_callback' => function () {
 						return $this->get_inline_tracking_data();
 					},
 				)
@@ -427,7 +427,7 @@ final class Assets {
 				'googlesitekit-modules-data',
 				array(
 					'global'        => '_googlesitekitModulesData',
-					'data_callback' => function() {
+					'data_callback' => function () {
 						return $this->get_inline_modules_data();
 					},
 				)
@@ -1097,5 +1097,4 @@ final class Assets {
 
 		return null;
 	}
-
 }

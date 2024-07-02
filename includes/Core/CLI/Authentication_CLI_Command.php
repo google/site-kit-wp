@@ -57,5 +57,4 @@ class Authentication_CLI_Command extends CLI_Command {
 
 		WP_CLI::success( sprintf( 'User with ID %d successfully disconnected.', $user_id ) );
 	}
-
 }

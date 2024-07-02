@@ -81,7 +81,7 @@ class REST_User_Input_Controller {
 	public function register() {
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
@@ -113,7 +113,7 @@ class REST_User_Input_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
+						'callback'            => function () {
 							$response = rest_ensure_response( $this->user_input->get_answers() );
 
 							// Iterating over each setting in the response data to remove the 'author' key.
@@ -130,13 +130,13 @@ class REST_User_Input_Controller {
 
 							return $response;
 						},
-						'permission_callback' => function() {
+						'permission_callback' => function () {
 							return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 						},
 					),
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request->get_param( 'data' );
 
 							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
@@ -169,7 +169,7 @@ class REST_User_Input_Controller {
 
 							return $response;
 						},
-						'permission_callback' => function() {
+						'permission_callback' => function () {
 							return current_user_can( Permissions::AUTHENTICATE );
 						},
 						'args'                => array(

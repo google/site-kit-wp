@@ -32,7 +32,7 @@ final class View_Only_Pointer {
 	public function register() {
 		add_filter(
 			'googlesitekit_admin_pointers',
-			function( $pointers ) {
+			function ( $pointers ) {
 				$pointers[] = $this->get_view_only_pointer();
 				return $pointers;
 			}
@@ -53,7 +53,7 @@ final class View_Only_Pointer {
 				'title'           => __( 'You now have access to Site Kit', 'google-site-kit' ),
 				'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
 				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
-				'active_callback' => function( $hook_suffix ) {
+				'active_callback' => function ( $hook_suffix ) {
 					if ( 'index.php' !== $hook_suffix
 						|| current_user_can( Permissions::AUTHENTICATE )
 						|| ! current_user_can( Permissions::VIEW_SPLASH )

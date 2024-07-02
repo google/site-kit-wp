@@ -52,5 +52,4 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 
 		return $tag_matchers;
 	}
-
 }

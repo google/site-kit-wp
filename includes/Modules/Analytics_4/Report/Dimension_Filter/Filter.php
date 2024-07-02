@@ -29,5 +29,4 @@ interface Filter {
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression instance.
 	 */
 	public function parse_filter_expression( $dimension_name, $dimension_value );
-
 }

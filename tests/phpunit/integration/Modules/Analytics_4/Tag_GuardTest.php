@@ -77,5 +77,4 @@ class Tag_GuardTest extends TestCase {
 			'Should return FALSE when measurementID is empty.'
 		);
 	}
-
 }

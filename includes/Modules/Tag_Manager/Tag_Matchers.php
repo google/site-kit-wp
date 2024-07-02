@@ -44,5 +44,4 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 			"/<amp-analytics [^>]*config=['|\"]https:\/\/www.googletagmanager.com\/amp.json\?id=(GTM-[0-9A-Z]+)['|\"]/",
 		);
 	}
-
 }
