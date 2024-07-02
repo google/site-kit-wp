@@ -71,9 +71,7 @@ function AuthenticatedPermissionsModal() {
 		await snapshotAllStores( registry );
 
 		// Navigate to the authorization page.
-		if ( ! permissionsError?.data?.skipDefaultErrorNotifications ) {
-			navigateTo( connectURL );
-		}
+		navigateTo( connectURL );
 	}, [ registry, connectURL, navigateTo, permissionsError, setValues ] );
 
 	useEffect( () => {
@@ -102,10 +100,6 @@ function AuthenticatedPermissionsModal() {
 			'permissionsError lacks scopes array to use for redirect, so not showing the PermissionsModal. permissionsError was:',
 			permissionsError
 		);
-		return null;
-	}
-
-	if ( permissionsError?.data?.skipDefaultErrorNotifications ) {
 		return null;
 	}
 
