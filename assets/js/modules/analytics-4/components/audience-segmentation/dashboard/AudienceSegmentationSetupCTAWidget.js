@@ -38,7 +38,6 @@ import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-seg
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 import whenActive from '../../../../../util/when-active';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
@@ -117,69 +116,63 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ failedAudiences, setFailedAudiences ] = useState( [] );
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const onEnableGroups = useCallback(
-		async ( retryFailedAudiences = [] ) => {
-			setIsSaving( true );
+	const onEnableGroups = useCallback( async () => {
+		setIsSaving( true );
 
-			// If scope not granted, trigger scope error right away. These are
-			// typically handled automatically based on API responses, but
-			// this particular case has some special handling to improve UX.
-			if ( ! hasAnalytics4EditScope ) {
-				setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-					autoSubmit: true,
-				} );
-
-				setPermissionScopeError( {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: __(
-						'Additional permissions are required to create new audiences in Analytics.',
-						'google-site-kit'
-					),
-					data: {
-						status: 403,
-						scopes: [ EDIT_SCOPE ],
-						skipModal: true,
-						skipDefaultErrorNotifications: true,
-						redirectURL,
-					},
-				} );
-
-				setShowErrorModal( true );
-				setIsSaving( false );
-				return;
-			}
-
+		// If scope not granted, trigger scope error right away. These are
+		// typically handled automatically based on API responses, but
+		// this particular case has some special handling to improve UX.
+		if ( ! hasAnalytics4EditScope ) {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-				autoSubmit: false,
+				autoSubmit: true,
 			} );
 
-			const { error, failedSiteKitAudienceResourceNames } =
-				( await enableAudienceGroup( retryFailedAudiences ) ) || {};
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create new audiences in Analytics.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes: [ EDIT_SCOPE ],
+					skipModal: true,
+					skipDefaultErrorNotifications: true,
+					redirectURL,
+				},
+			} );
 
-			if ( error ) {
-				setApiErrors( [ error ] );
-				setFailedAudiences( [] );
-			} else if ( Array.isArray( failedSiteKitAudienceResourceNames ) ) {
-				setFailedAudiences( failedSiteKitAudienceResourceNames );
-				setApiErrors( [] );
-			} else {
-				setApiErrors( [] );
-				setFailedAudiences( [] );
-			}
+			return;
+		}
 
-			setShowErrorModal(
-				!! error || !! failedSiteKitAudienceResourceNames
-			);
-			setIsSaving( false );
-		},
-		[
-			enableAudienceGroup,
-			hasAnalytics4EditScope,
-			setPermissionScopeError,
-			redirectURL,
-			setValues,
-		]
-	);
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+
+		const { error, failedSiteKitAudienceResourceNames } =
+			( await enableAudienceGroup( failedAudiences ) ) || {};
+
+		if ( error ) {
+			setApiErrors( [ error ] );
+			setFailedAudiences( [] );
+		} else if ( Array.isArray( failedSiteKitAudienceResourceNames ) ) {
+			setFailedAudiences( failedSiteKitAudienceResourceNames );
+			setApiErrors( [] );
+		} else {
+			setApiErrors( [] );
+			setFailedAudiences( [] );
+		}
+
+		setShowErrorModal( !! error || !! failedSiteKitAudienceResourceNames );
+		setIsSaving( false );
+	}, [
+		hasAnalytics4EditScope,
+		setValues,
+		enableAudienceGroup,
+		failedAudiences,
+		setPermissionScopeError,
+		redirectURL,
+	] );
 
 	// If the user ends up back on this component with the required scope granted,
 	// and already submitted the form, trigger the submit again.
@@ -215,25 +208,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	};
 
-	const permissionsError = useSelect( ( select ) =>
-		select( CORE_USER ).getPermissionScopeError()
-	);
-
-	const connectURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectURL( {
-			additionalScopes: permissionsError?.data?.scopes,
-			redirectURL:
-				permissionsError?.data?.redirectURL || global.location.href,
-		} )
-	);
-
-	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
-
-	const handleOAuthError = useCallback( () => {
-		setIsSaving( true );
-		navigateTo( connectURL );
-	}, [ connectURL, navigateTo ] );
 
 	const onCancel = useCallback( () => {
 		clearPermissionScopeError();
@@ -277,16 +252,12 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return null;
 	}
 
-	if ( showErrorModal ) {
+	if ( showErrorModal || hasOAuthError ) {
 		return (
 			<AudienceErrorModal
 				hasOAuthError={ hasOAuthError }
 				apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
-				onRetry={
-					hasOAuthError
-						? handleOAuthError
-						: () => onEnableGroups( failedAudiences )
-				}
+				onRetry={ onEnableGroups }
 				inProgress={ isSaving }
 				onCancel={
 					hasOAuthError ? onCancel : () => setShowErrorModal( false )
