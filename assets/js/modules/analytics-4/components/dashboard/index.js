@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as CustomDimensionEffects } from './CustomDimensionEffects';
 export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';
 export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
 export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import CustomDimensionEffects from './dashboard-effects/CustomDimensionEffects';
+import CustomDimensionEffects from './dashboard/CustomDimensionEffects';
 
 export default function DashboardMainEffectComponent() {
 	return <CustomDimensionEffects />;
