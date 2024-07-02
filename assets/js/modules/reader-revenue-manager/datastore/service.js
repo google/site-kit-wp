@@ -48,7 +48,7 @@ const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) =>
-			( state, { publicationID } ) => {
+			( state, publicationID = null ) => {
 				// If there is no publication ID, return link to platform.
 				if ( ! publicationID ) {
 					return publicationCenterURL;

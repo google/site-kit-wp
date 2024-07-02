@@ -53,10 +53,9 @@ describe( 'module/reader-revenue-manager service store', () => {
 			} );
 
 			it( 'should retrieve the correct URL with no arguments', () => {
-				const publicationID = null;
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getServiceURL( { publicationID } );
+					.getServiceURL();
 
 				expect( new URL( serviceURL ) ).toMatchObject( {
 					origin: 'https://publishercenter.google.com',
@@ -67,7 +66,7 @@ describe( 'module/reader-revenue-manager service store', () => {
 				const publicationID = 'ABCDEFG';
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getServiceURL( { publicationID } );
+					.getServiceURL( publicationID );
 
 				expect(
 					new URL( decodeServiceURL( serviceURL ) ).pathname
@@ -78,7 +77,7 @@ describe( 'module/reader-revenue-manager service store', () => {
 				const publicationID = 'ABCDEFG';
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getServiceURL( { publicationID } );
+					.getServiceURL( publicationID );
 
 				const query = {
 					publication: publicationID,
