@@ -1,5 +1,5 @@
 /**
- * MainRootComponent component.
+ * DashboardMainEffectComponent component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,76 +17,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useCallback, useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import {
-	EDIT_SCOPE,
-	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
+import CustomDimensionEffects from './dashboard-effects/CustomDimensionEffects';
 
 export default function DashboardMainEffectComponent() {
-	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
-		select( CORE_SITE ).isKeyMetricsSetupCompleted()
-	);
-
-	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const hasAnalyticsEditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( EDIT_SCOPE )
-	);
-
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_CUSTOM_DIMENSIONS_CREATE,
-			'autoSubmit'
-		)
-	);
-	const { setValues } = useDispatch( CORE_FORMS );
-
-	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
-
-	const createDimensionsAndUpdateForm = useCallback( async () => {
-		await createCustomDimensions();
-		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-			isAutoCreatingCustomDimensions: false,
-		} );
-	}, [ createCustomDimensions, setValues ] );
-
-	useEffect( () => {
-		if (
-			isKeyMetricsSetupCompleted &&
-			isGA4Connected &&
-			hasAnalyticsEditScope &&
-			autoSubmit
-		) {
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				autoSubmit: false,
-				isAutoCreatingCustomDimensions: true,
-			} );
-			createDimensionsAndUpdateForm();
-		}
-	}, [
-		autoSubmit,
-		createCustomDimensions,
-		hasAnalyticsEditScope,
-		isKeyMetricsSetupCompleted,
-		isGA4Connected,
-		setValues,
-		createDimensionsAndUpdateForm,
-	] );
-
-	return null;
+	return <CustomDimensionEffects />;
 }
