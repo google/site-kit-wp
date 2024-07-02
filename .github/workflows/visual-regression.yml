@@ -38,6 +38,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: github.event.pull_request.draft == false
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1-4, 2-4, 3-4, 4-4]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js (.nvmrc)
@@ -48,12 +52,12 @@ jobs:
       - name: npm install
         run: npm ci
       - name: Run Backstopjs
-        run: npm run test:visualtest
+        run: npm run test:visualtest -- ${{ matrix.shard }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: vrt-report
+          name: vrt-report-${{ matrix.shard }}
           path: |
             tests/backstop/html_report
             tests/backstop/reference
