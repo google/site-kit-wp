@@ -20,8 +20,12 @@
 
 	.googlesitekit-lean-cta-banner.googlesitekit-no-audience-banner {
 
-		.googlesitekit-lean-cta-banner--graphic {
+		.googlesitekit-lean-cta-banner__graphic {
 			padding-bottom: 26px;
+
+			svg {
+				max-height: 110px;
+			}
 
 			@media (min-width: $bp-nonTablet) {
 				padding-bottom: 20px;

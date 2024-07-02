@@ -39,7 +39,7 @@ describe( 'AudienceTilesWidget', () => {
 		'analyticsAudienceTiles'
 	);
 
-	const auduenceSettingsRegExp = new RegExp(
+	const audienceSettingsRegExp = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 	);
 
@@ -62,7 +62,7 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
-		muteFetch( auduenceSettingsRegExp );
+		muteFetch( audienceSettingsRegExp );
 
 		const { container } = render(
 			<AudienceTilesWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
@@ -91,7 +91,7 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should not render when configuredAudiences is not loaded', () => {
-		muteFetch( auduenceSettingsRegExp );
+		muteFetch( audienceSettingsRegExp );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -185,7 +185,7 @@ describe( 'AudienceTilesWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render render when configured audience is matching available audiences', async () => {
+	it( 'should render when configured audience is matching available audiences', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );

@@ -20,21 +20,21 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import whenActive from '../../../../../../util/when-active';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect } from 'googlesitekit-data';
+import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceTiles from './AudienceTiles';
 
 function AudienceTilesWidget( { Widget, WidgetNull } ) {
-	const availableAudiences = useSelect( ( select ) => {
+	const availableAudiences = useInViewSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
 	} );
-	const configuredAudiences = useSelect( ( select ) =>
+	const configuredAudiences = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 

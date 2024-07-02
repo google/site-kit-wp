@@ -39,7 +39,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		'analyticsNoAudienceBanner'
 	);
 
-	const auduenceSettingsRegExp = new RegExp(
+	const audienceSettingsRegExp = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 	);
 
@@ -62,7 +62,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
-		muteFetch( auduenceSettingsRegExp );
+		muteFetch( audienceSettingsRegExp );
 
 		const { container } = render(
 			<NoAudienceBannerWidget
@@ -97,7 +97,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	it( 'should not render when configuredAudiences is not loaded', () => {
-		muteFetch( auduenceSettingsRegExp );
+		muteFetch( audienceSettingsRegExp );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

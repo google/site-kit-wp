@@ -54,7 +54,7 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	);
 
 	const content = isTabletBreakpoint ? (
-		<p className="googlesitekit-lean-cta-banner--body__text">
+		<p>
 			{ createInterpolateElement(
 				__(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed. <a>Connect Google Analytics</a>',
@@ -67,7 +67,7 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 		</p>
 	) : (
 		<Fragment>
-			<p className="googlesitekit-lean-cta-banner--body__text">
+			<p>
 				{ __(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed',
 					'google-site-kit'

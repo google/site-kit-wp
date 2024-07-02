@@ -12,19 +12,17 @@ exports[`NoAudienceBannerWidget should render with correct message when there ar
         class="googlesitekit-lean-cta-banner googlesitekit-no-audience-banner"
       >
         <div
-          class="googlesitekit-lean-cta-banner--body"
+          class="googlesitekit-lean-cta-banner__body"
         >
           <div
-            class="googlesitekit-lean-cta-banner--body__icon"
+            class="googlesitekit-lean-cta-banner__body-icon"
           >
             <svg />
           </div>
           <div
-            class="googlesitekit-lean-cta-banner--body__content"
+            class="googlesitekit-lean-cta-banner__body-content"
           >
-            <p
-              class="googlesitekit-lean-cta-banner--body__text"
-            >
+            <p>
               It looks like your visitor groups aren’t available anymore. 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -37,9 +35,7 @@ exports[`NoAudienceBannerWidget should render with correct message when there ar
               </button>
               .
             </p>
-            <p
-              class="googlesitekit-lean-cta-banner--body__text"
-            >
+            <p>
               You can deactivate this widget in 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -55,7 +51,7 @@ exports[`NoAudienceBannerWidget should render with correct message when there ar
           </div>
         </div>
         <div
-          class="googlesitekit-lean-cta-banner--graphic"
+          class="googlesitekit-lean-cta-banner__graphic"
         >
           <svg />
         </div>
@@ -77,19 +73,17 @@ exports[`NoAudienceBannerWidget should render with correct message when there is
         class="googlesitekit-lean-cta-banner googlesitekit-no-audience-banner"
       >
         <div
-          class="googlesitekit-lean-cta-banner--body"
+          class="googlesitekit-lean-cta-banner__body"
         >
           <div
-            class="googlesitekit-lean-cta-banner--body__icon"
+            class="googlesitekit-lean-cta-banner__body-icon"
           >
             <svg />
           </div>
           <div
-            class="googlesitekit-lean-cta-banner--body__content"
+            class="googlesitekit-lean-cta-banner__body-content"
           >
-            <p
-              class="googlesitekit-lean-cta-banner--body__text"
-            >
+            <p>
               It looks like your visitor groups aren’t available anymore. Learn more about how to group site visitors in 
               <a
                 aria-label="Analytics (opens in a new tab)"
@@ -106,9 +100,7 @@ exports[`NoAudienceBannerWidget should render with correct message when there is
               </a>
               .
             </p>
-            <p
-              class="googlesitekit-lean-cta-banner--body__text"
-            >
+            <p>
               You can deactivate this widget in 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -124,7 +116,7 @@ exports[`NoAudienceBannerWidget should render with correct message when there is
           </div>
         </div>
         <div
-          class="googlesitekit-lean-cta-banner--graphic"
+          class="googlesitekit-lean-cta-banner__graphic"
         >
           <svg />
         </div>

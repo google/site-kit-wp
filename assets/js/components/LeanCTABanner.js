@@ -35,20 +35,20 @@ export default function LeanCTABanner( {
 				className
 			) }
 		>
-			<div className="googlesitekit-lean-cta-banner--body">
+			<div className="googlesitekit-lean-cta-banner__body">
 				{ Icon && (
-					<div className="googlesitekit-lean-cta-banner--body__icon">
+					<div className="googlesitekit-lean-cta-banner__body-icon">
 						<Icon width="32" height="32" />
 					</div>
 				) }
 				{
-					<div className="googlesitekit-lean-cta-banner--body__content">
+					<div className="googlesitekit-lean-cta-banner__body-content">
 						{ children }
 					</div>
 				}
 			</div>
 			{ SVGGraphic && (
-				<div className="googlesitekit-lean-cta-banner--graphic">
+				<div className="googlesitekit-lean-cta-banner__graphic">
 					<SVGGraphic />
 				</div>
 			) }
