@@ -68,8 +68,8 @@ export default function AudienceTilePagesMetric( {
 	const hasDimensionValues = !! validDimensionValues.length;
 
 	function ContentLinkComponent( { content } ) {
-		const pageTitle = topContentTitles[ content?.value ];
-		const url = content?.value;
+		const pageTitle = topContentTitles[ content ];
+		const url = content;
 
 		const serviceURL = useSelect( ( select ) => {
 			return ! viewOnlyDashboard
@@ -131,14 +131,13 @@ export default function AudienceTilePagesMetric( {
 						validDimensionValues.map( ( content, index ) => {
 							return (
 								<div
-									key={ content?.value }
+									key={ content }
 									className="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
 								>
 									<ContentLinkComponent content={ content } />
 									<div className="googlesitekit-audience-segmentation-tile-metric__page-metric-value">
 										{ numFmt(
 											topContent?.metricValues[ index ]
-												?.value
 										) }
 									</div>
 								</div>

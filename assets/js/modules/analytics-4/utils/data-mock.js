@@ -498,6 +498,14 @@ export function getAnalytics4MockResponse(
 		) {
 			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
+		} else if (
+			dimension &&
+			Array.isArray( args?.dimensionFilters?.[ dimension ] ) &&
+			args.dimensionFilters[ dimension ].every(
+				( dimensionValue ) => typeof dimensionValue === 'string'
+			)
+		) {
+			streams.push( from( args.dimensionFilters[ dimension ] ) );
 		} else {
 			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
 			streams.push( from( [ null ] ) );
@@ -717,22 +725,54 @@ export function provideAnalytics4MockReport( registry, options ) {
 }
 
 /**
- * Creates all combinations of pivot dimension values that we expect in a pivot report response.
+ * Creates all combinations of pivot multi-dimension values that we expect in a pivot report response.
+ * This is different from `cartesianProduct` function in regard that it considers multi-dimension as a single entity
+ * and another dimension as a different one.
+ *
+ * For example consider the pivots with these dimensions
+ * [
+ *     {
+ *         fieldNames: [ 'pagePath', 'pageTitle' ], // having 10 rows
+ *         limit: 15,
+ *     },
+ *     {
+ *         fieldNames: [ 'audienceResourceName' ], // having 3 rows
+ *         limit: 3,
+ *     },
+ * ]
+ *
+ * in this case this function will generate 30 (10 x 3) combinations.
  *
  * @since 1.130.0
  *
  * @param {Array.<string>} dimensionValues An array of valid dimension names.
- * @return {Array.<Array>} An array of all possible combinations of dimension values.
+ * @param {Array.<string>} pivotFieldNames An array of pivot field names.
+ * @return {Array.<Array>} Creates necessary combinations of dimension values.
  */
-function createPivotDimensionCombinations( dimensionValues ) {
-	// Find every combination of each array of dimensionValues.
-	return dimensionValues.reduce(
-		( acc, dimensionValue ) =>
-			acc.flatMap( ( combination ) =>
-				dimensionValue.map( ( value ) => [ ...combination, value ] )
-			),
-		[ [] ]
+function createPivotMultiDimensionCombinations(
+	dimensionValues,
+	pivotFieldNames
+) {
+	let indexSum = 0;
+	const chunks = [];
+
+	pivotFieldNames.forEach( ( dimensions ) => {
+		const count = dimensions.length;
+		const slicedDimensions = dimensionValues.slice(
+			indexSum,
+			indexSum + count
+		);
+
+		chunks.push( zip( ...slicedDimensions ) );
+
+		indexSum += count;
+	} );
+
+	const combinations = cartesianProduct(
+		chunks.filter( ( chunkVal ) => chunkVal?.length )
 	);
+
+	return combinations.map( ( combination ) => combination.flat() );
 }
 
 /**
@@ -814,6 +854,9 @@ export function getAnalytics4MockPivotResponse( options ) {
 	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
 	const args = cloneDeep( options );
 
+	const hasMultiDimensions = options.pivots.some(
+		( pivot ) => pivot.fieldNames.length > 1
+	);
 	const originalSeedValue = faker.seedValue;
 	const argsURL = args.url || 'http://example.com';
 
@@ -858,61 +901,74 @@ export function getAnalytics4MockPivotResponse( options ) {
 		? parseDimensionArgs( args.dimensions )
 		: [];
 
+	const allDimensionValues = dimensions.reduce( ( acc, dimension ) => {
+		acc[ dimension ] = [];
+		return acc;
+	}, {} );
+
+	const pivotFieldNames = args.pivots.map( ( pivot ) => pivot.fieldNames );
+
 	// Generate streams (array) for each pivot field names (which map 1:1 to the report dimensions).
 	args.pivots.forEach( ( { fieldNames, limit } ) => {
 		// We only support one dimension for each pivot in our current pivot report implementation
 		// so we can choose the first fieldNames value as our dimension.
-		const dimension = fieldNames[ 0 ];
 
-		if (
-			dimension &&
-			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
-		) {
-			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
-			streams.push(
-				new Observable( ( observer ) => {
-					// The limit here is the pivot limit as limits are set within the pivot level, never at the root of the report.
-					for ( let i = 1; i <= limit; i++ ) {
-						const dimensionValue =
-							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
-						if ( dimensionValue ) {
-							observer.next( dimensionValue );
-						} else {
-							break;
-						}
-					}
-
-					observer.complete();
-				} )
-			);
-		} else if (
-			dimension &&
-			Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
-		) {
-			// Uses predefined array of dimension values to create a stream (an array) from.
-			streams.push(
-				from(
-					// Slice here applies the limit for the pivot.
-					ANALYTICS_4_DIMENSION_OPTIONS[ dimension ].slice( 0, limit )
+		fieldNames.forEach( ( dimension ) => {
+			// If an array of filter values is provided for the dimension, use that to generate the stream.
+			if (
+				dimension &&
+				Array.isArray( args?.dimensionFilters?.[ dimension ] ) &&
+				args.dimensionFilters[ dimension ].every(
+					( dimensionValue ) => typeof dimensionValue === 'string'
 				)
-			);
-		} else {
-			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
-			streams.push( from( [ null ] ) );
-		}
-	} );
+			) {
+				allDimensionValues[ dimension ] =
+					args.dimensionFilters[ dimension ];
+				streams.push( from( allDimensionValues[ dimension ] ) );
+			} else if (
+				dimension &&
+				typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
+			) {
+				// The limit here is the pivot limit as limits are set within the pivot level, never at the root of the report.
 
-	// Keep our stream formatted list of dimensions to generate the pivotHeaders at the end.
-	let allLimitedDimensionValues = [];
+				for ( let i = 1; i <= limit; i++ ) {
+					const dimensionValue =
+						ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
+					if ( dimensionValue ) {
+						allDimensionValues[ dimension ].push( dimensionValue );
+					} else {
+						break;
+					}
+				}
+
+				streams.push( from( allDimensionValues[ dimension ] ) );
+			} else if (
+				dimension &&
+				Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
+			) {
+				// Slice here applies the limit for the pivot.
+				allDimensionValues[ dimension ] = ANALYTICS_4_DIMENSION_OPTIONS[
+					dimension
+				].slice( 0, limit );
+
+				streams.push( from( allDimensionValues[ dimension ] ) );
+			} else {
+				// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
+				streams.push( from( [ null ] ) );
+			}
+		} );
+	} );
 
 	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
 		// Create a row object, with generate metric values, for each combination of dimensions to generate the pivot columns.
 		map( ( dimensionValue ) => {
-			allLimitedDimensionValues = dimensionValue;
-
-			const pivotDimensionCombinations =
-				createPivotDimensionCombinations( dimensionValue );
+			const pivotDimensionCombinations = hasMultiDimensions
+				? createPivotMultiDimensionCombinations(
+						dimensionValue,
+						pivotFieldNames
+				  )
+				: cartesianProduct( dimensionValue );
 
 			return pivotDimensionCombinations.map(
 				( pivotDimensionCombination ) => {
@@ -949,41 +1005,47 @@ export function getAnalytics4MockPivotResponse( options ) {
 				'RESERVED_MAX',
 				'RESERVED_TOTAL',
 			].reduce( ( acc, aggregate ) => {
-				dimensions.forEach( ( dimension ) => {
-					acc.push( {
-						dimensionValues: [
-							{
-								value: aggregate,
-							},
-							{
-								value: dimension,
-							},
-						],
-						metricValues: generateMetricValues( validMetrics ),
+				options.pivots.forEach( ( { fieldNames } ) => {
+					const pivotDimensionValueSets = fieldNames.map(
+						( dimension ) => allDimensionValues[ dimension ]
+					);
+
+					zip( ...pivotDimensionValueSets ).forEach( ( values ) => {
+						acc.push( {
+							dimensionValues: dimensions.map( ( dimension ) => {
+								const fieldNameIndex =
+									fieldNames.indexOf( dimension );
+
+								return {
+									value:
+										fieldNameIndex === -1
+											? aggregate
+											: values[ fieldNameIndex ],
+								};
+							} ),
+							metricValues: generateMetricValues( validMetrics ),
+						} );
 					} );
 				} );
 				return acc;
 			}, [] );
 
-			// Generate the pivot headers with a row count and pivotDimensionHeaders for each column.
-			data.pivotHeaders = allLimitedDimensionValues.reduce(
-				( acc, dimensionValues ) => {
-					acc.push( {
-						pivotDimensionHeaders: dimensionValues.map(
-							( value ) => ( {
-								dimensionValues: [
-									{
-										value,
-									},
-								],
-							} )
-						),
-						rowCount: dimensionValues.length,
-					} );
-					return acc;
-				},
-				[]
-			);
+			data.pivotHeaders = options.pivots.map( ( { fieldNames } ) => {
+				const pivotDimensionValueSets = fieldNames.map(
+					( dimension ) => allDimensionValues[ dimension ]
+				);
+
+				return {
+					pivotDimensionHeaders: zip(
+						...pivotDimensionValueSets
+					).map( ( values ) => ( {
+						dimensionValues: values.map( ( value ) => ( {
+							value,
+						} ) ),
+					} ) ),
+					rowCount: pivotDimensionValueSets.flat().length,
+				};
+			} );
 		} );
 
 	// Set the original seed value for the faker.
@@ -1014,7 +1076,7 @@ export function getAnalytics4MockPivotResponse( options ) {
 export function provideAnalytics4MockPivotReport( registry, options ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( getAnalytics4MockPivotResponse( options ), {
+		.receiveGetPivotReport( getAnalytics4MockPivotResponse( options ), {
 			options,
 		} );
 }
