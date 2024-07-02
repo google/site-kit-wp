@@ -25,14 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import Link from '../../../../../components/Link';
 import PencilIcon from '../../../../../../svg/icons/pencil-alt.svg';
-
-const { useSelect, useDispatch } = Data;
 
 export default function ChangeGroupsLink() {
 	const availableAudiences = useSelect( ( select ) =>

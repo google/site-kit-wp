@@ -32,7 +32,7 @@ import { Fragment, useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
 import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
@@ -59,8 +59,6 @@ import {
 } from '../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../util';
-
-const { useSelect, useDispatch } = Data;
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -207,6 +205,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
+		configuredAudiences === undefined ||
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed

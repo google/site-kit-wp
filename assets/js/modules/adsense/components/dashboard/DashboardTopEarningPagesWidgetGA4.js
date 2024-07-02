@@ -32,7 +32,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
@@ -53,8 +53,6 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import { ZeroDataMessage } from '../../../analytics-4/components/common';
 import { AdSenseLinkCTA } from '../common';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-
-const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,
@@ -89,8 +87,9 @@ function DashboardTopEarningPagesWidgetGA4( {
 		limit: 5,
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -99,10 +98,12 @@ function DashboardTopEarningPagesWidgetGA4( {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles( data, args )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles( data, args )
+				: undefined,
+		[ data, args ]
 	);
 
 	const loading = useSelect(

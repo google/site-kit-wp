@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Slug for audience segmentation info notice.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @private
  */
 export const AUDIENCE_INFO_NOTICE_SLUG = 'audience-segmentation-info-notice';
@@ -32,7 +32,7 @@ export const AUDIENCE_INFO_NOTICE_SLUG = 'audience-segmentation-info-notice';
 /**
  * List of info notices for audiences.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @private
  */
 export const AUDIENCE_INFO_NOTICES = [
@@ -45,7 +45,7 @@ export const AUDIENCE_INFO_NOTICES = [
 		'google-site-kit'
 	),
 	__(
-		'Configure your own custom audiences in Analytics to gain deeper insights into visitor behavior, for example consider creating a “Existing customers” or “Subscribers” segment, depending on what goals you have for your site.',
+		'Configure your own custom audiences in Analytics to gain deeper insights into visitor behavior, for example consider creating an “Existing customers” or “Subscribers” segment, depending on what goals you have for your site.',
 		'google-site-kit'
 	),
 	__(

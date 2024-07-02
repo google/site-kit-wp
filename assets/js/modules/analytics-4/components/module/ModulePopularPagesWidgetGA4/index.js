@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -47,7 +47,6 @@ import Header from './Header';
 import Footer from './Footer';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import ga4ReportingTour from '../../../../../feature-tours/ga4-reporting';
-const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -98,14 +97,17 @@ function ModulePopularPagesWidgetGA4( props ) {
 		] )
 	);
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
+				: undefined,
+		[ error, report, args ]
 	);
 
 	const loaded = useSelect( ( select ) => {

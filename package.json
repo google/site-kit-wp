@@ -221,6 +221,7 @@
 		"fs-extra": "^9.0.1",
 		"git-repo-info": "^2.1.1",
 		"glob": "^7.1.7",
+		"glob-to-regexp": "^0.4.1",
 		"google-pax-sdk": "1.0.9",
 		"husky": "^3.1.0",
 		"jest": "^26.6.3",

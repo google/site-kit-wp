@@ -24,7 +24,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -34,7 +34,6 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util/tracking';
 import useViewContext from './useViewContext';
-const { useSelect, useDispatch } = Data;
 
 /**
  * Returns a callback to activate a module. If the call to activate the module is successful, navigate to the reauthentication URL.

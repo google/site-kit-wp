@@ -25,7 +25,12 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -33,8 +38,6 @@ import { extractExistingTag, getExistingTagURLs } from '../../../util/tag';
 import adBlockingRecoveryTagMatcher from '../util/ad-blocking-recovery-tag-matcher';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
-
-const { createRegistryControl, createRegistrySelector } = Data;
 
 // Actions
 const FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
@@ -138,7 +141,7 @@ const reducer = createReducer( ( state, { type, payload } ) => {
 
 const resolvers = {
 	*getExistingAdBlockingRecoveryTag() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingAdBlockingRecoveryTag = registry
 			.select( MODULES_ADSENSE )
@@ -189,7 +192,7 @@ const selectors = {
 	),
 };
 
-const store = Data.combineStores( fetchSyncAdBlockingRecoveryTagsStore, {
+const store = combineStores( fetchSyncAdBlockingRecoveryTagsStore, {
 	initialState,
 	actions,
 	reducer,

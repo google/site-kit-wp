@@ -24,22 +24,23 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import AddGroupNotice from './AddGroupNotice';
 import AudienceItems from './AudienceItems';
+import ErrorNotice from './ErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
-
-const { useSelect, useDispatch } = Data;
 
 export default function AudienceSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>
@@ -67,6 +68,7 @@ export default function AudienceSelectionPanel() {
 	const onSideSheetOpen = useCallback( () => {
 		setValues( AUDIENCE_SELECTION_FORM, {
 			[ AUDIENCE_SELECTED ]: savedItemSlugs,
+			[ AUDIENCE_SELECTION_CHANGED ]: false,
 		} );
 	}, [ savedItemSlugs, setValues ] );
 
@@ -85,7 +87,9 @@ export default function AudienceSelectionPanel() {
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
+			<AddGroupNotice savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
+			<ErrorNotice />
 			<Footer
 				closePanel={ closePanel }
 				isOpen={ isOpen }

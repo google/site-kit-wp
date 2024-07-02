@@ -20,11 +20,13 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-
-const { createRegistrySelector } = Data;
 
 function createGetAuthenticationSelector( property ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -112,7 +114,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getAuthentication() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( ! select( CORE_USER ).getAuthentication() ) {
 			yield fetchGetAuthenticationStore.actions.fetchGetAuthentication();
@@ -284,7 +286,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetAuthenticationStore, {
+const store = combineStores( fetchGetAuthenticationStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	reducer: baseReducer,

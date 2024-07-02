@@ -19,11 +19,10 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Layout from '../layout/Layout';
 import SettingsActiveModule from './SettingsActiveModule';
-const { useSelect } = Data;
 
 export default function SettingsActiveModules() {
 	const modules = useSelect( ( select ) =>

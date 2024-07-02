@@ -31,13 +31,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../util/tracking';
 import TourTooltip from './TourTooltip';
 import useViewContext from '../hooks/useViewContext';
-const { useSelect, useDispatch, useRegistry } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {

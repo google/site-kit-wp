@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import AuthError from './AuthError';
 import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
@@ -39,7 +39,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
 
 export default function ErrorNotifications() {
 	const isAuthenticated = useSelect( ( select ) =>

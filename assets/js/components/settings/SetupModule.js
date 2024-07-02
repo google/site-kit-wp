@@ -31,7 +31,7 @@ import { useState, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
 import Link from '../Link';
@@ -44,7 +44,6 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { EXPERIMENTAL_MODULES } from '../dashboard-sharing/DashboardSharingSettings/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupModule( { slug, name, description } ) {
 	const viewContext = useViewContext();

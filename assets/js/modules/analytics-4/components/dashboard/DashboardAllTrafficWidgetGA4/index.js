@@ -26,7 +26,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -49,7 +49,6 @@ import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 import { getSampleReportArgs } from '../../../../analytics-4/utils/report-args';
-const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -160,12 +159,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			pieArgs,
 		] )
 	);
-	const pieChartReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
-		);
-	} );
+	const pieChartReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, pieArgs ]
+	);
 
 	const userCountGraphLoaded = useSelect(
 		( select ) =>
@@ -179,12 +181,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			graphArgs,
 		] )
 	);
-	const userCountGraphReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
-		);
-	} );
+	const userCountGraphReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, graphArgs ]
+	);
 
 	const totalUsersLoaded = useSelect(
 		( select ) =>
@@ -198,12 +203,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			totalsArgs,
 		] )
 	);
-	const totalUsersReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
-		);
-	} );
+	const totalUsersReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, totalsArgs ]
+	);
 
 	const reportArgs = {
 		dates: {

@@ -33,6 +33,7 @@ import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { isValidDateString, stringifyObject } from '../../../util';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 import { isValidDimensionFilters } from './report-validation';
+import { isValidPivotsObject } from './report-pivots-validation';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';
@@ -497,6 +498,14 @@ export function getAnalytics4MockResponse(
 		) {
 			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
+		} else if (
+			dimension &&
+			Array.isArray( args?.dimensionFilters?.[ dimension ] ) &&
+			args.dimensionFilters[ dimension ].every(
+				( dimensionValue ) => typeof dimensionValue === 'string'
+			)
+		) {
+			streams.push( from( args.dimensionFilters[ dimension ] ) );
 		} else {
 			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
 			streams.push( from( [ null ] ) );
@@ -713,4 +722,361 @@ export function provideAnalytics4MockReport( registry, options ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetReport( getAnalytics4MockResponse( options ), { options } );
+}
+
+/**
+ * Creates all combinations of pivot multi-dimension values that we expect in a pivot report response.
+ * This is different from `cartesianProduct` function in regard that it considers multi-dimension as a single entity
+ * and another dimension as a different one.
+ *
+ * For example consider the pivots with these dimensions
+ * [
+ *     {
+ *         fieldNames: [ 'pagePath', 'pageTitle' ], // having 10 rows
+ *         limit: 15,
+ *     },
+ *     {
+ *         fieldNames: [ 'audienceResourceName' ], // having 3 rows
+ *         limit: 3,
+ *     },
+ * ]
+ *
+ * in this case this function will generate 30 (10 x 3) combinations.
+ *
+ * @since 1.130.0
+ *
+ * @param {Array.<string>} dimensionValues An array of valid dimension names.
+ * @param {Array.<string>} pivotFieldNames An array of pivot field names.
+ * @return {Array.<Array>} Creates necessary combinations of dimension values.
+ */
+function createPivotMultiDimensionCombinations(
+	dimensionValues,
+	pivotFieldNames
+) {
+	let indexSum = 0;
+	const chunks = [];
+
+	pivotFieldNames.forEach( ( dimensions ) => {
+		const count = dimensions.length;
+		const slicedDimensions = dimensionValues.slice(
+			indexSum,
+			indexSum + count
+		);
+
+		chunks.push( zip( ...slicedDimensions ) );
+
+		indexSum += count;
+	} );
+
+	const combinations = cartesianProduct(
+		chunks.filter( ( chunkVal ) => chunkVal?.length )
+	);
+
+	return combinations.map( ( combination ) => combination.flat() );
+}
+
+/**
+ * Sorts pivot report rows and returns them.
+ *
+ * @since 1.130.0
+ *
+ * @param {Array.<Object>} rows    Array of rows to sort.
+ * @param {Array.<Object>} metrics Array of report metrics.
+ * @param {Array.<Object>} pivots  Report pivots which may include orderby values.
+ * @return {Array.<Object>} Sorted rows.
+ */
+export function sortPivotRows( rows, metrics, pivots ) {
+	// Extract all dimensions from the pivots orderby values if present.
+	const orderby = pivots
+		.filter( ( pivot ) => pivot.orderby )
+		.reduce( ( acc, pivot ) => {
+			pivot.orderby.forEach( ( orderByItem ) => {
+				acc.push( orderByItem );
+			} );
+			return acc;
+		}, [] );
+
+	if ( orderby.length === 0 ) {
+		return rows;
+	}
+
+	// For each pivot orderby, sort the rows by the given sorting metric and desc value.
+	return orderby.reduce( ( acc, orderbyItem ) => {
+		// Our mock metrics are returned in the rows in the order the metrics are given
+		// in the report config so we can take the index in the report array to find the
+		// column to sort by.
+		const metricIndex = metrics.findIndex(
+			( metric ) => metric.name === orderbyItem.metric.metricName
+		);
+
+		return acc.sort( ( rowA, rowB ) => {
+			if ( orderbyItem.desc ) {
+				return (
+					rowB.metricValues[ metricIndex ].value -
+					rowA.metricValues[ metricIndex ].value
+				);
+			}
+
+			return (
+				rowA.metricValues[ metricIndex ].value -
+				rowB.metricValues[ metricIndex ].value
+			);
+		} );
+	}, rows );
+}
+
+/**
+ * Generates mock data for Analytics 4 pivot reports.
+ *
+ * @since 1.130.0
+ *
+ * @param {Object} options Report options.
+ * @return {Array.<Object>} An array with generated report.
+ */
+export function getAnalytics4MockPivotResponse( options ) {
+	invariant(
+		isPlainObject( options ),
+		'report options are required to generate a mock response.'
+	);
+	invariant(
+		isValidDateString( options.startDate ),
+		'a valid startDate is required.'
+	);
+	invariant(
+		isValidDateString( options.endDate ),
+		'a valid endDate is required.'
+	);
+	invariant(
+		isValidPivotsObject( options.pivots ),
+		'pivots must be an array of objects with valid keys and values.'
+	);
+
+	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
+	const args = cloneDeep( options );
+
+	const hasMultiDimensions = options.pivots.some(
+		( pivot ) => pivot.fieldNames.length > 1
+	);
+	const originalSeedValue = faker.seedValue;
+	const argsURL = args.url || 'http://example.com';
+
+	let seed = argsURL;
+
+	if ( args.dimensionFilters ) {
+		invariant(
+			isValidDimensionFilters( args.dimensionFilters ),
+			'dimensionFilters must be an object with valid keys and values.'
+		);
+
+		seed += stringifyObject( args.dimensionFilters );
+	}
+
+	const argsHash = parseInt( md5( seed ).substring( 0, 8 ), 16 );
+
+	// We set seed for every data mock to make sure that the same arguments get the same report data.
+	// It means that everyone will have the same report data and will see the same widgets in the storybook.
+	// This approach gives us additional flexibility to control randomness on a per widget basis.
+	if ( ! Number.isNaN( argsHash ) ) {
+		faker.seed( argsHash );
+	}
+
+	const data = {
+		pivotHeaders: [],
+		aggregates: [],
+		rows: [],
+		metadata: {
+			currencyCode: 'USD',
+			timeZone: 'America/Los_Angeles',
+		},
+		kind: 'analyticsData#runPivotReport',
+	};
+
+	const validMetrics = ( args.metrics || [] ).filter(
+		( metric ) => !! getMetricType( metric )
+	);
+	const streams = [];
+
+	// Get all dimensions from the report args. All reports must have a pivot for each dimension used.
+	const dimensions = args.dimensions
+		? parseDimensionArgs( args.dimensions )
+		: [];
+
+	const allDimensionValues = dimensions.reduce( ( acc, dimension ) => {
+		acc[ dimension ] = [];
+		return acc;
+	}, {} );
+
+	const pivotFieldNames = args.pivots.map( ( pivot ) => pivot.fieldNames );
+
+	// Generate streams (array) for each pivot field names (which map 1:1 to the report dimensions).
+	args.pivots.forEach( ( { fieldNames, limit } ) => {
+		// We only support one dimension for each pivot in our current pivot report implementation
+		// so we can choose the first fieldNames value as our dimension.
+
+		fieldNames.forEach( ( dimension ) => {
+			// If an array of filter values is provided for the dimension, use that to generate the stream.
+			if (
+				dimension &&
+				Array.isArray( args?.dimensionFilters?.[ dimension ] ) &&
+				args.dimensionFilters[ dimension ].every(
+					( dimensionValue ) => typeof dimensionValue === 'string'
+				)
+			) {
+				allDimensionValues[ dimension ] =
+					args.dimensionFilters[ dimension ];
+				streams.push( from( allDimensionValues[ dimension ] ) );
+			} else if (
+				dimension &&
+				typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
+			) {
+				// The limit here is the pivot limit as limits are set within the pivot level, never at the root of the report.
+
+				for ( let i = 1; i <= limit; i++ ) {
+					const dimensionValue =
+						ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
+					if ( dimensionValue ) {
+						allDimensionValues[ dimension ].push( dimensionValue );
+					} else {
+						break;
+					}
+				}
+
+				streams.push( from( allDimensionValues[ dimension ] ) );
+			} else if (
+				dimension &&
+				Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
+			) {
+				// Slice here applies the limit for the pivot.
+				allDimensionValues[ dimension ] = ANALYTICS_4_DIMENSION_OPTIONS[
+					dimension
+				].slice( 0, limit );
+
+				streams.push( from( allDimensionValues[ dimension ] ) );
+			} else {
+				// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
+				streams.push( from( [ null ] ) );
+			}
+		} );
+	} );
+
+	// This is the list of operations that we apply to the combined stream (array) of dimension values.
+	const ops = [
+		// Create a row object, with generate metric values, for each combination of dimensions to generate the pivot columns.
+		map( ( dimensionValue ) => {
+			const pivotDimensionCombinations = hasMultiDimensions
+				? createPivotMultiDimensionCombinations(
+						dimensionValue,
+						pivotFieldNames
+				  )
+				: cartesianProduct( dimensionValue );
+
+			return pivotDimensionCombinations.map(
+				( pivotDimensionCombination ) => {
+					return {
+						dimensionValues: pivotDimensionCombination.map(
+							( value ) => ( {
+								value,
+							} )
+						),
+						metricValues: generateMetricValues( validMetrics ),
+					};
+				}
+			);
+		} ),
+		// Sort rows if args.pivots contain orderbys.
+		map( ( rows ) => sortPivotRows( rows, validMetrics, args.pivots ) ),
+	];
+
+	// Process the streams of dimension values and add generated rows to the report data object.
+	// First we merge all streams into one which will emit each set of dimension values as an array.
+	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
+		.pipe(
+			// Then we convert the resulting stream to an array...
+			toArray(),
+			// Then we apply the remaining operations to generate a row for each combination of dimension values.
+			...ops
+		)
+		.subscribe( ( rows ) => {
+			data.rows = rows;
+
+			// Generate aggregates for each dimension and metric.
+			data.aggregates = [
+				'RESERVED_MIN',
+				'RESERVED_MAX',
+				'RESERVED_TOTAL',
+			].reduce( ( acc, aggregate ) => {
+				options.pivots.forEach( ( { fieldNames } ) => {
+					const pivotDimensionValueSets = fieldNames.map(
+						( dimension ) => allDimensionValues[ dimension ]
+					);
+
+					zip( ...pivotDimensionValueSets ).forEach( ( values ) => {
+						acc.push( {
+							dimensionValues: dimensions.map( ( dimension ) => {
+								const fieldNameIndex =
+									fieldNames.indexOf( dimension );
+
+								return {
+									value:
+										fieldNameIndex === -1
+											? aggregate
+											: values[ fieldNameIndex ],
+								};
+							} ),
+							metricValues: generateMetricValues( validMetrics ),
+						} );
+					} );
+				} );
+				return acc;
+			}, [] );
+
+			data.pivotHeaders = options.pivots.map( ( { fieldNames } ) => {
+				const pivotDimensionValueSets = fieldNames.map(
+					( dimension ) => allDimensionValues[ dimension ]
+				);
+
+				return {
+					pivotDimensionHeaders: zip(
+						...pivotDimensionValueSets
+					).map( ( values ) => ( {
+						dimensionValues: values.map( ( value ) => ( {
+							value,
+						} ) ),
+					} ) ),
+					rowCount: pivotDimensionValueSets.flat().length,
+				};
+			} );
+		} );
+
+	// Set the original seed value for the faker.
+	faker.seed( originalSeedValue );
+
+	return {
+		dimensionHeaders: args?.dimensions
+			? dimensions.map( ( dimension ) => ( {
+					name: dimension,
+			  } ) )
+			: null,
+		metricHeaders: validMetrics.map( ( metric ) => ( {
+			name: metric?.name || metric.toString(),
+			type: getMetricType( metric ),
+		} ) ),
+		...data,
+	};
+}
+
+/**
+ * Generates mock response for Analytics 4 pivot reports.
+ *
+ * @since 1.130.0
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ * @param {Object}           options  Pivot report options.
+ */
+export function provideAnalytics4MockPivotReport( registry, options ) {
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetPivotReport( getAnalytics4MockPivotResponse( options ), {
+			options,
+		} );
 }

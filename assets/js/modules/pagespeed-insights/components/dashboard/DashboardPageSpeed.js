@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import { Button, ProgressBar, Tab, TabBar } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import Link from '../../../../components/Link';
 import LabReportMetrics from '../common/LabReportMetrics';
@@ -56,7 +56,6 @@ import {
 import Spinner from '../../../../components/Spinner';
 import useViewContext from '../../../../hooks/useViewContext';
 import DashboardPageSpeedLoading from './DashboardPageSpeedLoading';
-const { useSelect, useDispatch, useInViewSelect } = Data;
 
 const TAB_INDEX_LAB = 0;
 const TAB_INDEX_FIELD = 1;
@@ -103,18 +102,22 @@ export default function DashboardPageSpeed() {
 			};
 		} );
 
-	const reportMobile = useInViewSelect( ( select ) =>
-		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
-			referenceURL,
-			STRATEGY_MOBILE
-		)
+	const reportMobile = useInViewSelect(
+		( select ) =>
+			select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+				referenceURL,
+				STRATEGY_MOBILE
+			),
+		[ referenceURL ]
 	);
 
-	const reportDesktop = useInViewSelect( ( select ) =>
-		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
-			referenceURL,
-			STRATEGY_DESKTOP
-		)
+	const reportDesktop = useInViewSelect(
+		( select ) =>
+			select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+				referenceURL,
+				STRATEGY_DESKTOP
+			),
+		[ referenceURL ]
 	);
 
 	const { setValues } = useDispatch( CORE_UI );

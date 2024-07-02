@@ -19,12 +19,11 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CurrentSurvey from './CurrentSurvey';
 import Portal from '../Portal';
-const { useSelect } = Data;
 
 export default function CurrentSurveyPortal() {
 	const currentSurvey = useSelect( ( select ) =>

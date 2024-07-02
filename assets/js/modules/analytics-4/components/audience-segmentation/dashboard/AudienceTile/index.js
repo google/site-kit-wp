@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -51,26 +51,21 @@ import ChangeBadge from '../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import PartialDataBadge from '../PartialDataBadge';
 import PartialDataNotice from '../PartialDataNotice';
+import { getDataFromRows, collectAudienceRows } from './utils';
 import { numFmt } from '../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
-const { useSelect } = Data;
 
-// TODO: as part of #8484 the report props should be updated to expect
-// the full report rows for the current tile to reduce data manipulation
-// in AudienceTiles.
 export default function AudienceTile( {
 	loaded,
 	title,
 	infoTooltip,
-	visitors,
-	visitsPerVisitor,
-	pagesPerVisit,
-	pageviews,
-	percentageOfTotalPageViews,
-	topCities,
-	topContent,
-	topContentTitles,
+	reportRow,
+	previousReportRow,
+	topCitiesReport,
+	topContentReport,
+	topContentTitlesReport,
+	totalPageviewsReport,
 	Widget,
 	audienceResourceName,
 	isZeroData,
@@ -79,6 +74,45 @@ export default function AudienceTile( {
 	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
+
+	const topCitiesReportRows = collectAudienceRows(
+		audienceResourceName,
+		topCitiesReport?.rows
+	);
+
+	const topContentReportRows = collectAudienceRows(
+		audienceResourceName,
+		topContentReport?.rows
+	);
+
+	const topContentTitlesReportRows = collectAudienceRows(
+		audienceResourceName,
+		topContentTitlesReport?.rows,
+		2
+	);
+
+	const totalPageViews =
+		Number(
+			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
+		) || 0;
+
+	const {
+		visitors,
+		visitsPerVisitor,
+		pagesPerVisit,
+		pageviews,
+		percentageOfTotalPageViews,
+		topCities,
+		topContent,
+		topContentTitles,
+	} = getDataFromRows( {
+		reportRow,
+		previousReportRow,
+		topCitiesReportRows,
+		topContentReportRows,
+		topContentTitlesReportRows,
+		totalPageViews,
+	} );
 
 	const isPropertyPartialData = useSelect( ( select ) => {
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -278,6 +312,7 @@ AudienceTile.propTypes = {
 	topCities: PropTypes.object,
 	topContent: PropTypes.object,
 	topContentTitles: PropTypes.object,
+	totalPageviewsReport: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
 	isZeroData: PropTypes.bool,

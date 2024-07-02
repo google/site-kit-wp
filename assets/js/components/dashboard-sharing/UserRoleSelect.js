@@ -38,7 +38,7 @@ import {
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Chip } from 'googlesitekit-components';
 import Link from '../Link';
 import ShareIcon from '../../../svg/icons/share.svg';
@@ -49,7 +49,6 @@ import { trackEvent } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
-const { useSelect, useDispatch } = Data;
 
 const ALL_CHIP_ID = 'all';
 const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );

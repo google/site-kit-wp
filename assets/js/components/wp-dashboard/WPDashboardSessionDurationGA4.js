@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -39,7 +39,6 @@ import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
-const { useSelect, useInViewSelect } = Data;
 
 function WPDashboardSessionDurationGA4( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -67,8 +66,9 @@ function WPDashboardSessionDurationGA4( { WPDashboardReportError } ) {
 		],
 	};
 
-	const analytics4Data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const analytics4Data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [

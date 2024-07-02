@@ -1,7 +1,5 @@
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-
-const { useSelect } = Data;
 
 export function useTooltipState( tooltipStateKey ) {
 	return useSelect(

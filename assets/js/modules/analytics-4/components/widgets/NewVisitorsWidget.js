@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -43,8 +43,6 @@ import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util/i18n';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-
-const { useSelect, useInViewSelect } = Data;
 
 function NewVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -60,8 +58,9 @@ function NewVisitorsWidget( { Widget } ) {
 		metrics: [ { name: 'activeUsers' } ],
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>

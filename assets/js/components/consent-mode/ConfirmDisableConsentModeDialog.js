@@ -28,14 +28,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { listFormat, trackEvent } from '../../util';
 import ModalDialog from '../ModalDialog';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useSelect } = Data;
 
 export default function ConfirmDisableConsentModeDialog( {
 	onConfirm,

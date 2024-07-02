@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -38,8 +38,6 @@ import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useSelect } = Data;
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();

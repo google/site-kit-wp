@@ -43,6 +43,20 @@ import {
 } from './utils';
 import { createReducer } from './create-reducer';
 
+/**
+ * The Site Kit data registry.
+ *
+ * This should not be imported directly outside of `googlesitekit-*` files
+ * that need access to the registry to register datastores/widgets/etc.
+ *
+ * Instead, use the exported functions (eg `useSelect`,
+ * `createRegistrySelector`, etc.) from the `googlesitekit-data` package to
+ * access parts of the registry.
+ *
+ * @since 1.3.0 Data registry introduced.
+ * @since 1.130.0 Deprecated for general use in favor of named exports from `googlesitekit-data` package.
+ * @deprecated
+ */
 const Data = createRegistry( {}, global.wp?.data );
 
 // Attach some of our utility functions to the registry so third-party
@@ -67,5 +81,22 @@ Data.useRegistry = useRegistry;
 Data.withSelect = withSelect;
 Data.withDispatch = withDispatch;
 Data.RegistryProvider = RegistryProvider;
+
+export {
+	combineStores,
+	commonActions,
+	commonControls,
+	commonStore,
+	createReducer,
+	useInViewSelect,
+	createRegistryControl,
+	createRegistrySelector,
+	useSelect,
+	useDispatch,
+	useRegistry,
+	withSelect,
+	withDispatch,
+	RegistryProvider,
+};
 
 export default Data;

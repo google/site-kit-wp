@@ -36,7 +36,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
@@ -57,7 +57,6 @@ import {
 	PAX_SETUP_STEP,
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
-const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =

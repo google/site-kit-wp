@@ -24,8 +24,10 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-const { createRegistrySelector, createRegistryControl } = Data;
+import {
+	createRegistrySelector,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import { CORE_MODULES } from './constants';
 import { createValidatedAction } from '../../data/utils';
 

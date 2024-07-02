@@ -37,7 +37,7 @@ import { StrictMode, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Data, { RegistryProvider } from 'googlesitekit-data';
 import ErrorHandler from '../ErrorHandler';
 import FeaturesProvider from '../FeaturesProvider';
 import { enabledFeatures } from '../../features';
@@ -62,7 +62,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 	return (
 		<StrictMode>
 			<InViewProvider value={ inViewState }>
-				<Data.RegistryProvider value={ registry }>
+				<RegistryProvider value={ registry }>
 					<FeaturesProvider value={ enabledFeatures }>
 						<ViewContextProvider value={ viewContext }>
 							<ThemeProvider theme={ theme() }>
@@ -85,7 +85,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 							</ThemeProvider>
 						</ViewContextProvider>
 					</FeaturesProvider>
-				</Data.RegistryProvider>
+				</RegistryProvider>
 			</InViewProvider>
 		</StrictMode>
 	);
