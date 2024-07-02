@@ -253,6 +253,8 @@ export default compose(
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {
-		reportOptions: getReportOptions,
+		reportOptions( select ) {
+			return getReportOptions( select( CORE_USER ).getReferenceDate() );
+		},
 	} )
 )( TopRecentTrendingPagesWidget );

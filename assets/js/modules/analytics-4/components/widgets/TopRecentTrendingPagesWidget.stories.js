@@ -47,23 +47,27 @@ import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.
 const KM_WIDGET_DEF =
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];
 
+const referenceDate = '2024-05-07';
+
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
 )( TopRecentTrendingPagesWidget );
 
-const selectPageTitlesReportOptions = ( select ) => ( {
-	...getDateRange( select ),
-	dimensionFilters: {
-		pagePath: new Array( 3 )
-			.fill( '' )
-			.map( ( _, i ) => `/test-post-${ i + 1 }/` )
-			.sort(),
-	},
-	dimensions: [ 'pagePath', 'pageTitle' ],
-	metrics: [ { name: 'screenPageViews' } ],
-	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-	limit: 15,
-} );
+function selectPageTitlesReportOptions() {
+	return {
+		...getDateRange( referenceDate ),
+		dimensionFilters: {
+			pagePath: new Array( 3 )
+				.fill( '' )
+				.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+				.sort(),
+		},
+		dimensions: [ 'pagePath', 'pageTitle' ],
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 15,
+	};
+}
 
 function Template( { setupRegistry, ...args } ) {
 	return (
@@ -79,7 +83,7 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		const { select, dispatch } = registry;
+		const { dispatch } = registry;
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID,
 			availableCustomDimensions: [
@@ -87,9 +91,9 @@ Ready.args = {
 			],
 		} );
 
-		const reportOptions = getReportOptions( select );
+		const reportOptions = getReportOptions( referenceDate );
 
-		const pageTitlesReportOptions = selectPageTitlesReportOptions( select );
+		const pageTitlesReportOptions = selectPageTitlesReportOptions();
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
 			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -112,8 +116,7 @@ Ready.scenario = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( { select, dispatch } ) => {
-		const reportOptions = getReportOptions( select );
+	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID,
 			availableCustomDimensions: [
@@ -122,7 +125,7 @@ Loading.args = {
 		} );
 
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			reportOptions,
+			getReportOptions( referenceDate ),
 		] );
 	},
 };
@@ -133,8 +136,8 @@ Loading.scenario = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( { select, dispatch } ) => {
-		const reportOptions = getReportOptions( select );
+	setupRegistry: ( { dispatch } ) => {
+		const reportOptions = getReportOptions( referenceDate );
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
@@ -179,7 +182,7 @@ GatheringData.scenario = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( { select, dispatch } ) => {
+	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID,
 			availableCustomDimensions: [
@@ -187,7 +190,7 @@ Error.args = {
 			],
 		} );
 
-		const reportOptions = getReportOptions( select );
+		const reportOptions = getReportOptions( referenceDate );
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',
@@ -294,7 +297,9 @@ export default {
 
 				provideModuleRegistrations( registry );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-07' );
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( referenceDate );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
 					{
