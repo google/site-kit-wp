@@ -252,20 +252,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return null;
 	}
 
-	if ( showErrorModal || hasOAuthError ) {
-		return (
-			<AudienceErrorModal
-				hasOAuthError={ hasOAuthError }
-				apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
-				onRetry={ onEnableGroups }
-				inProgress={ isSaving }
-				onCancel={
-					hasOAuthError ? onCancel : () => setShowErrorModal( false )
-				}
-			/>
-		);
-	}
-
 	// TODO: We need to refactor this and the ConsentModeSetupCTAWidget to avoid this duplicate inlining of the widget context and area structure,
 	// and to ensure only one of these setup CTAs is shown at a time. This will be handled in a subsequent issue.
 	return (
@@ -369,6 +355,19 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 					</Cell>
 				</Row>
 			</Grid>
+			{ ( showErrorModal || hasOAuthError ) && (
+				<AudienceErrorModal
+					hasOAuthError={ hasOAuthError }
+					apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
+					onRetry={ onEnableGroups }
+					inProgress={ isSaving }
+					onCancel={
+						hasOAuthError
+							? onCancel
+							: () => setShowErrorModal( false )
+					}
+				/>
+			) }
 		</div>
 	);
 }
