@@ -57,6 +57,7 @@ function ModalDialog( {
 	inProgress = false,
 	small = false,
 	medium = false,
+	buttonLink = null,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
@@ -125,14 +126,25 @@ function ModalDialog( {
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Button>
-				<SpinnerButton
-					onClick={ handleConfirm }
-					danger={ danger }
-					disabled={ inProgress }
-					isSaving={ inProgress }
-				>
-					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
-				</SpinnerButton>
+				{ buttonLink ? (
+					<Button
+						href={ buttonLink }
+						target="_blank"
+						danger={ danger }
+					>
+						{ confirmButton }
+					</Button>
+				) : (
+					<SpinnerButton
+						onClick={ handleConfirm }
+						danger={ danger }
+						disabled={ inProgress }
+						isSaving={ inProgress }
+					>
+						{ confirmButton ||
+							__( 'Disconnect', 'google-site-kit' ) }
+					</SpinnerButton>
+				) }
 			</DialogFooter>
 		</Dialog>
 	);
@@ -150,6 +162,7 @@ ModalDialog.propTypes = {
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
+	buttonLink: PropTypes.string,
 };
 
 export default ModalDialog;
