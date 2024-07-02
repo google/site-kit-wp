@@ -1,0 +1,48 @@
+[
+	{
+		"publicationId": "ABCDEFGH",
+		"publicationPredicates": {
+			"businessPredicates": {
+				"supportsSiteKit": true,
+				"canSell": true
+			}
+		},
+		"verifiedDomains": "example.com",
+		"paymentOptions": {
+			"subscriptions": true,
+			"noPayment": false,
+			"contributions": false,
+			"thankStickers": true
+		},
+		"displayName": "Test Property",
+		"products": [
+			{
+				"name": "basic"
+			}
+		],
+		"onboardingState": "PENDING_VERIFICATION"
+	},
+	{
+		"publicationId": "PQRSTUV",
+		"publicationPredicates": {
+			"businessPredicates": {
+				"supportsSiteKit": true,
+				"canSell": false
+			}
+		},
+		"verifiedDomains": "example.com",
+		"paymentOptions": {
+			"subscriptions": true,
+			"noPayment": false,
+			"contributions": false,
+			"thankStickers": true
+		},
+		"displayName": "Test Property",
+		"products": [
+			{
+				"name": "premium"
+			}
+		],
+		"onboardingState": "PENDING_VERIFICATION"
+	}
+]
