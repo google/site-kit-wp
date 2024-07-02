@@ -53,7 +53,7 @@ export const registerModule = isRrmModuleEnabled( ( modules ) => {
 		SetupComponent: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
-			__( 'Create tags without updating code', 'google-site-kit' ),
+			// TODO: Implement the features as part of #8845.
 		],
 		checkRequirements: async ( registry ) => {
 			const homeURL = await registry
