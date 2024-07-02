@@ -56,9 +56,11 @@ export const registerModule = isRrmModuleEnabled( ( modules ) => {
 			// TODO: Implement the features as part of #8845.
 		],
 		checkRequirements: async ( registry ) => {
-			const homeURL = await registry
+			// Ensure the site info is resolved to get the home URL.
+			await registry
 				.__experimentalResolveSelect( CORE_SITE )
-				.getHomeURL();
+				.getSiteInfo();
+			const homeURL = registry.select( CORE_SITE ).getHomeURL();
 
 			if ( isURLUsingHTTPS( homeURL ) ) {
 				return;
