@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store.
+ * `modules/reader-revenue-manager` base data store.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,23 +19,11 @@
 /**
  * Internal dependencies
  */
-
-import { combineStores } from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
-import baseModuleStore from './base';
-import publications from './publications';
+import { validateCanSubmitChanges } from './settings';
 
-const store = combineStores( baseModuleStore, publications );
-
-export const initialState = store.initialState;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
-
-export const registerStore = ( registry ) => {
-	registry.registerStore( MODULES_READER_REVENUE_MANAGER, store );
-};
-
-export default store;
+export default Modules.createModuleStore( 'reader-revenue-manager', {
+	storeName: MODULES_READER_REVENUE_MANAGER,
+	validateCanSubmitChanges,
+} );

@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store constants.
+ * Reader Revenue Manager SettingsView component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,6 +16,22 @@
  * limitations under the License.
  */
 
-export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
-export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
+export default function SettingsView() {
+	return (
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
+			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				{ __(
+					'Reader Revenue Manager Settings View',
+					'google-site-kit'
+				) }
+			</h2>
+
+			{ /* TODO: Add the rest of the settings steps */ }
+		</div>
+	);
+}

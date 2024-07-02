@@ -44,6 +44,7 @@ import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
+import * as modulesreaderRevenueManager from '../../assets/js/modules/reader-revenue-manager';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
@@ -76,6 +77,7 @@ const allCoreModules = [
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
+	modulesreaderRevenueManager,
 ];
 
 /**

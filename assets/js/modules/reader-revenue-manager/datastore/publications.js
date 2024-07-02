@@ -69,7 +69,7 @@ const baseSelectors = {
 	/**
 	 * Gets list of publications associated with the account.
 	 *
-	 * @since 1.31.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An array publications; `undefined` if not loaded.

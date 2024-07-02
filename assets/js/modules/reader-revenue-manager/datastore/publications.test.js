@@ -40,11 +40,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
 	} );
 
 	describe( 'selectors', () => {
@@ -55,19 +50,16 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					status: 200,
 				} );
 
-				const accountID = '12345';
 				const initialProperties = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getProperties( accountID );
+					.getPublications();
 				expect( initialProperties ).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getProperties( accountID );
-				expect( fetchMock ).toHaveFetched( publicationsEndpoint, {
-					query: { accountID },
-				} );
+				).getPublications();
+				expect( fetchMock ).toHaveFetched( publicationsEndpoint );
 
 				const publications = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
@@ -82,7 +74,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			it( 'should not make a network request if properties for this account are already present', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetProperties( fixtures.publications );
+					.receiveGetPublications( fixtures.publications );
 
 				const publications = registry
 					.select( MODULES_READER_REVENUE_MANAGER )

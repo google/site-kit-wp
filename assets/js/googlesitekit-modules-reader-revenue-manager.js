@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store constants.
+ * Reader Revenue Manager module entrypoint.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import {
+	registerStore,
+	registerModule,
+} from './modules/reader-revenue-manager';
 
-export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
+registerStore( Data );
+registerModule( Modules );
