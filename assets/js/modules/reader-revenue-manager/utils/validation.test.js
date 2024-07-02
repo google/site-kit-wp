@@ -40,8 +40,24 @@ describe( 'utility functions', () => {
 	} );
 
 	describe( 'isURLUsingHTTPS', () => {
+		beforeAll( () => {
+			jest.spyOn( console, 'warn' ).mockImplementation( () => {} );
+		} );
+
+		afterAll( () => {
+			// eslint-disable-next-line no-console
+			console.warn.mockRestore();
+		} );
+
+		afterEach( () => {
+			// eslint-disable-next-line no-console
+			console.warn.mockClear();
+		} );
+
 		it( 'should return TRUE when a URL with HTTPS is passed', () => {
 			expect( isURLUsingHTTPS( 'https://example.com' ) ).toBe( true );
+			// eslint-disable-next-line no-console
+			expect( console.warn ).not.toHaveBeenCalled();
 		} );
 
 		it.each( [
@@ -52,6 +68,8 @@ describe( 'utility functions', () => {
 			[ 'false', false ],
 		] )( 'should return FALSE when %s is passed', ( _, url ) => {
 			expect( isURLUsingHTTPS( url ) ).toBe( false );
+			// eslint-disable-next-line no-console
+			expect( console.warn ).toHaveBeenCalled();
 		} );
 	} );
 } );
