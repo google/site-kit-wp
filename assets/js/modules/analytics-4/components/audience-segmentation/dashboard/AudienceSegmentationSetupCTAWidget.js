@@ -149,21 +149,21 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			autoSubmit: false,
 		} );
 
-		const { error, failedSiteKitAudienceResourceNames } =
+		const { error, failedSiteKitAudienceSlugs } =
 			( await enableAudienceGroup( failedAudiences ) ) || {};
 
 		if ( error ) {
 			setApiErrors( [ error ] );
 			setFailedAudiences( [] );
-		} else if ( Array.isArray( failedSiteKitAudienceResourceNames ) ) {
-			setFailedAudiences( failedSiteKitAudienceResourceNames );
+		} else if ( Array.isArray( failedSiteKitAudienceSlugs ) ) {
+			setFailedAudiences( failedSiteKitAudienceSlugs );
 			setApiErrors( [] );
 		} else {
 			setApiErrors( [] );
 			setFailedAudiences( [] );
 		}
 
-		setShowErrorModal( !! error || !! failedSiteKitAudienceResourceNames );
+		setShowErrorModal( !! error || !! failedSiteKitAudienceSlugs );
 		setIsSaving( false );
 	}, [
 		hasAnalytics4EditScope,
@@ -213,7 +213,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const onCancel = useCallback( () => {
 		clearPermissionScopeError();
 		setShowErrorModal( false );
-	}, [ clearPermissionScopeError ] );
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+	}, [ clearPermissionScopeError, setValues ] );
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
@@ -245,7 +248,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	if (
 		configuredAudiences === undefined ||
-		configuredAudiences?.length ||
+		( configuredAudiences?.length && ! failedAudiences.length ) ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed
 	) {
