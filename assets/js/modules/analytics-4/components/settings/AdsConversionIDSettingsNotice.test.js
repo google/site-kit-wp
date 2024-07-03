@@ -18,7 +18,7 @@
 
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS, dateAgo } from '../../../../util';
+import { DAY_IN_SECONDS, dateSub } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import { render } from '../../../../../../tests/js/test-utils';
@@ -47,7 +47,7 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 
 	it( 'should not render if it has been over 28 days since the migration', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			adsConversionIDMigratedAtMs: dateAgo(
+			adsConversionIDMigratedAtMs: dateSub(
 				now,
 				29 * DAY_IN_SECONDS
 			).getTime(), // 29 days ago.
@@ -68,7 +68,7 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 			] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			adsConversionIDMigratedAtMs: dateAgo(
+			adsConversionIDMigratedAtMs: dateSub(
 				now,
 				7 * DAY_IN_SECONDS
 			).getTime(), // 7 days ago.
@@ -83,7 +83,7 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 
 	it( 'should render the notice', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			adsConversionIDMigratedAtMs: dateAgo(
+			adsConversionIDMigratedAtMs: dateSub(
 				now,
 				7 * DAY_IN_SECONDS
 			).getTime(), // 7 days ago.
