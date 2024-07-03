@@ -24,7 +24,7 @@ import { isValidPublicationID, isURLUsingHTTPS } from './validation';
 describe( 'utility functions', () => {
 	describe( 'isValidPublicationID', () => {
 		it( 'should return TRUE when a valid publication ID is passed', () => {
-			expect( isValidPublicationID( 'valid-publication_123.ID' ) ).toBe(
+			expect( isValidPublicationID( 'valid_publication-123' ) ).toBe(
 				true
 			);
 		} );
@@ -33,7 +33,8 @@ describe( 'utility functions', () => {
 			[ 'false', false ],
 			[ 'an integer', 12345 ],
 			[ 'an empty string', '' ],
-			[ 'a string with invalid characters', 'invalid-publication!ID' ],
+			[ 'a string with invalid characters', 'invalid.publication!ID' ],
+			[ 'a string with periods', 'invalid.publication.ID' ],
 		] )( 'should return FALSE when %s is passed', ( _, publicationID ) => {
 			expect( isValidPublicationID( publicationID ) ).toBe( false );
 		} );
