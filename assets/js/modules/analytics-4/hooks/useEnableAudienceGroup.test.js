@@ -19,8 +19,13 @@
 /**
  * Internal dependencies
  */
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE, MODULES_ANALYTICS_4 } from '../datastore/constants';
+import {
+	AUDIENCE_SEGMENTATION_SETUP_FORM,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../datastore/constants';
 import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';
 import { actHook, renderHook } from '../../../../../tests/js/test-utils';
 import {
@@ -136,6 +141,30 @@ describe( 'useEnableAudienceGroup', () => {
 		);
 
 		expect( enableAudienceGroupSpy ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should automatically call `onEnableGroups` function when user returns from the OAuth screen', () => {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			status: 200,
+			body: audiencesFixture,
+		} );
+
+		muteFetch( reportEndpoint );
+
+		// Set autoSubmit to true.
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+				autoSubmit: true,
+			} );
+
+		actHook( () => {
+			renderHook( () => useEnableAudienceGroup(), {
+				registry,
+			} );
+		} );
+
+		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', () => {
