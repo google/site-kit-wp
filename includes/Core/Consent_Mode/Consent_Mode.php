@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Assets\Manifest;
 
 /**
  * Class for handling Consent Mode.
@@ -107,10 +108,12 @@ class Consent_Mode {
 	 * @since n.e.x.t
 	 */
 	protected function enqueue_script() {
+		list( $filename ) = Manifest::get( 'consent-mode' );
+
 		$consent_mode_script = new Script(
 			'google_gtagjs-consent-mode',
 			array(
-				'src' => $this->context->url( 'dist/assets/' ) . 'js/consent-mode.js',
+				'src' => $this->context->url( 'dist/assets/js/' . $filename ),
 			)
 		);
 		$consent_mode_script->register( $this->context );
