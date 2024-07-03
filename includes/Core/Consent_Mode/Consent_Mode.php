@@ -108,12 +108,10 @@ class Consent_Mode {
 	 * @since n.e.x.t
 	 */
 	protected function enqueue_script() {
-		list( $filename ) = Manifest::get( 'consent-mode' );
-
 		$consent_mode_script = new Script(
-			'google_gtagjs-consent-mode',
+			'consent-mode',
 			array(
-				'src' => $this->context->url( 'dist/assets/js/' . $filename ),
+				'src' => $this->context->url( 'dist/assets/js/consent-mode.js' ),
 			)
 		);
 		$consent_mode_script->register( $this->context );
