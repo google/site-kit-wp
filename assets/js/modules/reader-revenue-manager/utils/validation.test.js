@@ -41,36 +41,29 @@ describe( 'utility functions', () => {
 	} );
 
 	describe( 'isURLUsingHTTPS', () => {
-		beforeAll( () => {
-			jest.spyOn( console, 'warn' ).mockImplementation( () => {} );
-		} );
-
-		afterAll( () => {
-			// eslint-disable-next-line no-console
-			console.warn.mockRestore();
-		} );
-
-		afterEach( () => {
-			// eslint-disable-next-line no-console
-			console.warn.mockClear();
-		} );
-
 		it( 'should return TRUE when a URL with HTTPS is passed', () => {
 			expect( isURLUsingHTTPS( 'https://example.com' ) ).toBe( true );
-			// eslint-disable-next-line no-console
-			expect( console.warn ).not.toHaveBeenCalled();
+			expect( console ).not.toHaveWarned();
+		} );
+
+		it.each( [
+			[ 'a string without protocol', 'example.com' ],
+			[ 'an empty string', '' ],
+			[ 'false', false ],
+		] )( 'should return FALSE and warn when %s is passed', ( _, url ) => {
+			expect( isURLUsingHTTPS( url ) ).toBe( false );
+			expect( console ).toHaveWarned();
 		} );
 
 		it.each( [
 			[ 'an HTTP URL', 'http://example.com' ],
 			[ 'an invalid URL', 'htp://example.com' ],
-			[ 'a string without protocol', 'example.com' ],
-			[ 'an empty string', '' ],
-			[ 'false', false ],
-		] )( 'should return FALSE when %s is passed', ( _, url ) => {
-			expect( isURLUsingHTTPS( url ) ).toBe( false );
-			// eslint-disable-next-line no-console
-			expect( console.warn ).toHaveBeenCalled();
-		} );
+		] )(
+			'should return FALSE but not warn when %s is passed',
+			( _, url ) => {
+				expect( isURLUsingHTTPS( url ) ).toBe( false );
+				expect( console ).not.toHaveWarned();
+			}
+		);
 	} );
 } );
