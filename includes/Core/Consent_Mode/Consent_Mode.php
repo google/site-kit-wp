@@ -89,7 +89,7 @@ class Consent_Mode {
 			);
 
 			// Register the consent mode script.
-			add_action( 'wp_enqueue_scripts', fn () => $this->enqueue_script(), 30 );
+			add_action( 'wp_enqueue_scripts', fn () => $this->enqueue_script() );
 		}
 
 		add_filter(
