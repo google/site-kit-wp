@@ -201,8 +201,8 @@ export function isValidDateRange( dateRange ) {
  * @return {Date} Resulting date.
  */
 export function dateSub( relativeDate, duration ) {
-	const d = isValidDateString( relativeDate )
+	const timestamp = isValidDateString( relativeDate )
 		? Date.parse( relativeDate )
 		: relativeDate.getTime();
-	return new Date( d - duration * 1000 );
+	return new Date( timestamp - duration * 1000 );
 }
