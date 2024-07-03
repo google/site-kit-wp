@@ -150,10 +150,11 @@ class REST_Consent_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							$is_active = function_exists( 'wp_set_consent' );
-							$installed = $is_active;
-							$slug      = 'wp-consent-api';
-							$plugin    = "$slug/$slug.php";
+							$is_active  = function_exists( 'wp_set_consent' );
+							$installed  = $is_active;
+							$plugin_uri = 'https://wordpress.org/plugins/wp-consent-api';
+							$slug       = '';
+							$plugin     = '';
 
 							$response = array(
 								'hasConsentAPI' => $is_active,
@@ -163,12 +164,18 @@ class REST_Consent_Mode_Controller {
 								if ( ! function_exists( 'get_plugins' ) ) {
 									require_once ABSPATH . 'wp-admin/includes/plugin.php';
 								}
-								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
-									if ( $installed_plugin === $plugin ) {
+								foreach ( get_plugins() as $plugin_file => $installed_plugin ) {
+									if ( $installed_plugin['PluginURI'] === $plugin_uri ) {
+										$slug      = $installed_plugin['TextDomain'];
+										$plugin    = $plugin_file;
 										$installed = true;
 										break;
 									}
 								}
+
+								// If the plugin is not installed, set fallback slug and plugin objects.
+								$slug   = ! empty( $slug ) ? $slug : 'wp-consent-api';
+								$plugin = ! empty( $plugin ) ? $plugin : "$slug/$slug.php";
 
 								// Alternate wp_nonce_url without esc_html breaking query parameters.
 								$nonce_url = function ( $action_url, $action ) {
