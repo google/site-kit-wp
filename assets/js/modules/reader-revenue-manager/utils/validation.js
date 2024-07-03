@@ -46,11 +46,7 @@ export const isURLUsingHTTPS = ( url ) => {
 		}
 
 		const parsedURL = new URL( url );
-		if ( parsedURL.protocol !== 'https:' ) {
-			throw new TypeError( `Invalid URL: ${ url }` );
-		}
-
-		return true;
+		return parsedURL.protocol === 'https:';
 	} catch ( error ) {
 		global.console.warn( 'Invalid URL:', error );
 		return false;
