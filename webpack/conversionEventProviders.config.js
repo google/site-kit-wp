@@ -48,7 +48,9 @@ module.exports = ( mode ) => ( {
 	externals,
 	output: {
 		filename:
-			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+			mode === 'production'
+				? 'googlesitekit-events-provider-[name]-[contenthash].js'
+				: 'googlesitekit-events-provider-[name].js',
 		path: rootDir + '/dist/assets/js',
 		publicPath: '',
 	},
