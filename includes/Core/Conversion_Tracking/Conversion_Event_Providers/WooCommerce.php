@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 
+use Google\Site_Kit\Core\Assets\Manifest;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -55,10 +56,11 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @return Script Script instance.
 	 */
 	public function register_script() {
-		$script = new Script(
+		list( $filename ) = Manifest::get( self::CONVERSION_EVENT_PROVIDER_SLUG );
+		$script           = new Script(
 			'gsk-cep-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'          => $this->context->url( 'dist/assets/js/woocommerce.js' ),
+				'src'          => $this->context->url( 'dist/assets/js/' . $filename ),
 				'execution'    => 'defer',
 				'dependencies' => array( 'woocommerce' ),
 			)
