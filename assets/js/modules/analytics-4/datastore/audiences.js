@@ -182,10 +182,14 @@ const baseActions = {
 	 * @since 1.128.0
 	 * @since n.e.x.t Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
 	 *
-	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience resource names to retry.
-	 * @return {Object} Object with `failedSiteKitAudienceSlugs` and `error`.
+	 * @param {Array} failedSiteKitAudienceSlugs  List of failed Site Kit audience slugs to retry.
+	 * @param {Array} createdSiteKitAudienceSlugs List of successfully created Site Kit audience slugs.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
 	 */
-	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
+	*enableAudienceGroup(
+		failedSiteKitAudienceSlugs,
+		createdSiteKitAudienceSlugs = []
+	) {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
@@ -278,40 +282,38 @@ const baseActions = {
 
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
-			const [ newVisitorsResult, returningVisitorsResult ] =
-				yield commonActions.await(
-					Promise.all(
-						audiencesToCreate.map( ( audienceSlug ) => {
-							return dispatch(
-								MODULES_ANALYTICS_4
-							).createAudience(
-								SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
-							);
-						} )
-					)
-				);
+			const audienceCreationResults = yield commonActions.await(
+				Promise.all(
+					audiencesToCreate.map( ( audienceSlug ) => {
+						return dispatch( MODULES_ANALYTICS_4 ).createAudience(
+							SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
+						);
+					} )
+				)
+			);
 
 			const failedAudiencesToRetry = [];
+			// const createdAudiences = [];
+			const createdAudiences = [ ...createdSiteKitAudienceSlugs ];
 
-			if ( newVisitorsResult.error ) {
-				failedAudiencesToRetry.push( 'new-visitors' );
-			} else {
-				configuredAudiences.push( newVisitorsResult.response.name );
-			}
-
-			if ( returningVisitorsResult.error ) {
-				failedAudiencesToRetry.push( 'returning-visitors' );
-			} else {
-				configuredAudiences.push(
-					returningVisitorsResult.response.name
-				);
-			}
+			audienceCreationResults.forEach( ( result, index ) => {
+				const audienceSlug = audiencesToCreate[ index ];
+				if ( result.error ) {
+					failedAudiencesToRetry.push( audienceSlug );
+				} else {
+					createdAudiences.push( result.response.name );
+				}
+			} );
 
 			if ( failedAudiencesToRetry.length > 0 ) {
 				return {
 					failedSiteKitAudienceSlugs: failedAudiencesToRetry,
+					createdSiteKitAudienceSlugs: createdAudiences,
 				};
 			}
+
+			// Add created audiences to configured audiences.
+			configuredAudiences.push( ...createdAudiences );
 
 			// Resync available audiences to ensure the newly created audiences are available.
 			yield commonActions.await(
