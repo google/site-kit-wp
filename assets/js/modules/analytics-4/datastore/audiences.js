@@ -272,9 +272,13 @@ const baseActions = {
 		}
 
 		if ( configuredAudiences.length === 0 ) {
+			const requiredAudienceSlugs = [
+				'new-visitors',
+				'returning-visitors',
+			];
 			const audiencesToCreate = failedSiteKitAudienceSlugs?.length
 				? failedSiteKitAudienceSlugs
-				: [ 'new-visitors', 'returning-visitors' ];
+				: requiredAudienceSlugs;
 
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
@@ -299,14 +303,10 @@ const baseActions = {
 				}
 			} );
 
-			const existingConfiguredAudiences =
-				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || [];
-
-			configuredAudiences.push( ...existingConfiguredAudiences );
-
-			// If the audiences were created successfully, set them as configured audiences.
-			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
-				configuredAudiences
+			yield commonActions.await(
+				__experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getAudienceSettings()
 			);
 
 			if ( failedAudiencesToRetry.length > 0 ) {
@@ -315,10 +315,32 @@ const baseActions = {
 				};
 			}
 
+			const existingConfiguredAudiences =
+				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || [];
+
+			configuredAudiences.push( ...existingConfiguredAudiences );
+
 			// Resync available audiences to ensure the newly created audiences are available.
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
+			const { response: newAvailableAudiences } =
+				yield commonActions.await(
+					dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+				);
+
+			// Find the audience in the newly available audiences that matches the required slug.
+			// If a matching audience is found and it's not already in the configured audiences, add it.
+			// This is to ensure if one audience was created successfully but the other failed,
+			// the successful one is still added on the retry.
+			requiredAudienceSlugs.forEach( ( slug ) => {
+				const matchingAudience = newAvailableAudiences.find(
+					( item ) => item.audienceSlug === slug
+				);
+				if (
+					matchingAudience &&
+					! configuredAudiences.includes( matchingAudience.name )
+				) {
+					configuredAudiences.push( matchingAudience.name );
+				}
+			} );
 		}
 
 		// Create custom dimension if it doesn't exist.
