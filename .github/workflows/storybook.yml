@@ -69,7 +69,7 @@ jobs:
         run: |
           npm run build:storybook
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: storybook-files
           path: dist
@@ -84,25 +84,25 @@ jobs:
           ref: gh-pages
           token: ${{ secrets.GH_BOT_TOKEN }}
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: storybook-files
           path: dist
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        run: echo "dir=${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
-        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
+        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> "$GITHUB_OUTPUT"
       - name: Commit updates
         run: |
-          mkdir -p storybook/${TARGET_DIR}
-          rm -rf storybook/${TARGET_DIR}
-          mv dist storybook/${TARGET_DIR}
+          mkdir -p "storybook/${TARGET_DIR}"
+          rm -rf "storybook/${TARGET_DIR}"
+          mv dist "storybook/${TARGET_DIR}"
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
@@ -134,7 +134,7 @@ jobs:
           GIT_COMMITTER_EMAIL: google-site-kit-bot@google.com
           GIT_COMMITTER_NAME: google-site-kit-bot
         run: |
-          git rm -rf storybook/pull/${PULL_REQUEST_NUMBER}
+          git rm -rf "storybook/pull/${PULL_REQUEST_NUMBER}"
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
           git pull --no-edit --quiet
@@ -150,7 +150,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: storybook-files
           path: dist
