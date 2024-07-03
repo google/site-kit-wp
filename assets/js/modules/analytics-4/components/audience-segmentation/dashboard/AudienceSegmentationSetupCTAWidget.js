@@ -209,14 +209,16 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 
 	const onCancel = useCallback( () => {
-		clearPermissionScopeError();
-		setShowErrorModal( false );
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 			autoSubmit: false,
 		} );
-	}, [ clearPermissionScopeError, setValues ] );
+		clearPermissionScopeError();
+		setSetupErrorCode( null );
+		setShowErrorModal( false );
+	}, [ clearPermissionScopeError, setSetupErrorCode, setValues ] );
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
