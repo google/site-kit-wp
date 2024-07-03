@@ -180,12 +180,12 @@ const baseActions = {
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
 	 * @since 1.128.0
-	 * @since n.e.x.t Added `failedSiteKitAudienceResourceNames` parameter to retry failed Site Kit audience creation.
+	 * @since n.e.x.t Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
 	 *
-	 * @param {Array} failedSiteKitAudienceResourceNames List of failed Site Kit audience resource names to retry.
-	 * @return {Object} Object with `failedSiteKitAudienceResourceNames` and `error`.
+	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience resource names to retry.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs` and `error`.
 	 */
-	*enableAudienceGroup( failedSiteKitAudienceResourceNames ) {
+	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
@@ -205,7 +205,7 @@ const baseActions = {
 
 		const configuredAudiences = [];
 
-		if ( ! failedSiteKitAudienceResourceNames ) {
+		if ( ! failedSiteKitAudienceSlugs ) {
 			if ( userAudiences.length > 0 ) {
 				// If there are user audiences, filter and sort them by total users over the last 90 days,
 				// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
@@ -272,8 +272,8 @@ const baseActions = {
 		}
 
 		if ( configuredAudiences.length === 0 ) {
-			const audiencesToCreate = failedSiteKitAudienceResourceNames?.length
-				? failedSiteKitAudienceResourceNames
+			const audiencesToCreate = failedSiteKitAudienceSlugs?.length
+				? failedSiteKitAudienceSlugs
 				: [ 'new-visitors', 'returning-visitors' ];
 
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
@@ -309,7 +309,7 @@ const baseActions = {
 
 			if ( failedAudiencesToRetry.length > 0 ) {
 				return {
-					failedSiteKitAudienceResourceNames: failedAudiencesToRetry,
+					failedSiteKitAudienceSlugs: failedAudiencesToRetry,
 				};
 			}
 
