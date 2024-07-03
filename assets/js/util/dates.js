@@ -32,9 +32,11 @@ export const INVALID_DATE_STRING_ERROR =
 export const INVALID_DATE_RANGE_ERROR =
 	'Invalid date range, it must be a string with the format "last-x-days".';
 
+export const MINUTE_IN_SECONDS = 60;
 export const HOUR_IN_SECONDS = 3600;
 export const DAY_IN_SECONDS = 86400;
 export const WEEK_IN_SECONDS = 604800;
+export const MONTH_IN_SECONDS = 18144000; // 30 days.
 
 /**
  * Gets the hash of available date ranges.
@@ -126,7 +128,7 @@ export function isValidDateString( dateString = '' ) {
  * @return {string}                 The parsed date string (YYYY-MM-DD).
  */
 export function getDateString( date ) {
-	invariant( isDate( date ), INVALID_DATE_INSTANCE_ERROR );
+	invariant( isDate( date ) && ! isNaN( date ), INVALID_DATE_INSTANCE_ERROR );
 
 	const month = `${ date.getMonth() + 1 }`;
 	const day = `${ date.getDate() }`;
@@ -206,6 +208,12 @@ export function isValidDateRange( dateRange ) {
  * @return {Date} Resulting date.
  */
 export function dateSub( relativeDate, duration ) {
+	invariant(
+		isValidDateString( relativeDate ) ||
+			( isDate( relativeDate ) && ! isNaN( relativeDate ) ),
+		INVALID_DATE_STRING_ERROR
+	);
+
 	const timestamp = isValidDateString( relativeDate )
 		? Date.parse( relativeDate )
 		: relativeDate.getTime();

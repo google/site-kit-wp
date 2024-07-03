@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, stringToDate } from '../../../util';
+import { DAY_IN_SECONDS, MONTH_IN_SECONDS, stringToDate } from '../../../util';
 
 /**
  * Gets the time in seconds to expire a dismissal of the GA4 Activation Banner.
@@ -34,7 +34,7 @@ export function getBannerDismissalExpiryTime( referenceDateString ) {
 
 	// If dismissed before May 2023, show the banner again after 30 days.
 	if ( referenceDate < stringToDate( '2023-05-01' ) ) {
-		return getTimeInSeconds( 'month' );
+		return MONTH_IN_SECONDS;
 	}
 
 	// If dismissed in May 2023, show the banner again in June 2023.
@@ -43,12 +43,11 @@ export function getBannerDismissalExpiryTime( referenceDateString ) {
 		referenceDate < stringToDate( '2023-06-01' )
 	) {
 		return Math.max(
-			31 * getTimeInSeconds( 'day' ) -
-				referenceDate.getDate() * getTimeInSeconds( 'day' ),
-			getTimeInSeconds( 'day' ) * 2
+			31 * DAY_IN_SECONDS - referenceDate.getDate() * DAY_IN_SECONDS,
+			DAY_IN_SECONDS * 2
 		);
 	}
 
 	// If dismissed after May 2023, show the banner every 2 days.
-	return getTimeInSeconds( 'day' ) * 2;
+	return DAY_IN_SECONDS * 2;
 }
