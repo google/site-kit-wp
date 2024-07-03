@@ -108,7 +108,12 @@ export function isValidDateString( dateString = '' ) {
 	}
 
 	const dateArray = dateString.split( '-' );
-	return dateArray.length === 3 && isDate( new Date( dateString ) );
+	if ( dateArray.length !== 3 ) {
+		return false;
+	}
+
+	const date = new Date( dateString );
+	return isDate( date ) && ! isNaN( date );
 }
 
 /**
