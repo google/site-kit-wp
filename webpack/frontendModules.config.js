@@ -1,5 +1,5 @@
 /**
- * Conversion event providers config webpack partial.
+ * Frontend modules config webpack partial.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -35,15 +35,7 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
-		'contact-form-7': './assets/js/event-providers/contact-form-7.js',
-		'easy-digital-downloads':
-			'./assets/js/event-providers/easy-digital-downloads.js',
-		mailchimp: './assets/js/event-providers/mailchimp.js',
-		'ninja-forms': './assets/js/event-providers/ninja-forms.js',
-		'optin-monster': './assets/js/event-providers/optin-monster.js',
-		'popup-maker': './assets/js/event-providers/popup-maker.js',
-		woocommerce: './assets/js/event-providers/woocommerce.js',
-		wpforms: './assets/js/event-providers/wpforms.js',
+		'consent-mode': './assets/js/consent-mode/consent-mode.js',
 	},
 	externals,
 	output: {
@@ -75,8 +67,8 @@ module.exports = ( mode ) => ( {
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Conversion Providers',
-			color: '#34dbeb',
+			name: 'Frontend Modules',
+			color: '#FFD7F6',
 		} ),
 		new ManifestPlugin( {
 			...manifestArgs( mode ),
