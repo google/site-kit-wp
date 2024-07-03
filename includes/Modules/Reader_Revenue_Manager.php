@@ -10,7 +10,10 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 
@@ -21,7 +24,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
  * @access private
  * @ignore
  */
-final class Reader_Revenue_Manager extends Module implements Module_With_Scopes {
+final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets {
+	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 
 	/**
@@ -65,6 +69,35 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes 
 			'description' => __( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', 'google-site-kit' ),
 			'order'       => 5,
 			'homepage'    => __( 'https://readerrevenue.withgoogle.com/', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-reader-revenue-manager',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-reader-revenue-manager.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
+						'googlesitekit-components',
+					),
+				)
+			),
 		);
 	}
 }
