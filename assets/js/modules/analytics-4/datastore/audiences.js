@@ -182,14 +182,10 @@ const baseActions = {
 	 * @since 1.128.0
 	 * @since n.e.x.t Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
 	 *
-	 * @param {Array} failedSiteKitAudienceSlugs  List of failed Site Kit audience slugs to retry.
-	 * @param {Array} createdSiteKitAudienceSlugs List of successfully created Site Kit audience slugs.
+	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
 	 */
-	*enableAudienceGroup(
-		failedSiteKitAudienceSlugs,
-		createdSiteKitAudienceSlugs = []
-	) {
+	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
@@ -293,27 +289,31 @@ const baseActions = {
 			);
 
 			const failedAudiencesToRetry = [];
-			// const createdAudiences = [];
-			const createdAudiences = [ ...createdSiteKitAudienceSlugs ];
 
 			audienceCreationResults.forEach( ( result, index ) => {
 				const audienceSlug = audiencesToCreate[ index ];
 				if ( result.error ) {
 					failedAudiencesToRetry.push( audienceSlug );
 				} else {
-					createdAudiences.push( result.response.name );
+					configuredAudiences.push( result.response.name );
 				}
 			} );
+
+			const existingConfiguredAudiences =
+				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || [];
+
+			configuredAudiences.push( ...existingConfiguredAudiences );
+
+			// If the audiences were created successfully, set them as configured audiences.
+			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
+				configuredAudiences
+			);
 
 			if ( failedAudiencesToRetry.length > 0 ) {
 				return {
 					failedSiteKitAudienceSlugs: failedAudiencesToRetry,
-					createdSiteKitAudienceSlugs: createdAudiences,
 				};
 			}
-
-			// Add created audiences to configured audiences.
-			configuredAudiences.push( ...createdAudiences );
 
 			// Resync available audiences to ensure the newly created audiences are available.
 			yield commonActions.await(
