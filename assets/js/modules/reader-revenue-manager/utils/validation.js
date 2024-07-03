@@ -27,7 +27,7 @@
 export function isValidPublicationID( publicationID ) {
 	return (
 		typeof publicationID === 'string' &&
-		/^[A-Za-z0-9_.-]+$/.test( publicationID )
+		/^[A-Za-z0-9_-]+$/.test( publicationID )
 	);
 }
 
@@ -41,9 +41,14 @@ export function isValidPublicationID( publicationID ) {
  */
 export const isURLUsingHTTPS = ( url ) => {
 	try {
+		if ( typeof url !== 'string' || ! url ) {
+			throw new TypeError( `Invalid URL: ${ url }` );
+		}
+
 		const parsedURL = new URL( url );
 		return parsedURL.protocol === 'https:';
 	} catch ( error ) {
+		global.console.warn( 'Invalid URL:', error );
 		return false;
 	}
 };

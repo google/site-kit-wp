@@ -42,6 +42,7 @@ import * as modulesAds from '../../assets/js/modules/ads';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
+import * as modulesReaderRevenueManager from '../../assets/js/modules/reader-revenue-manager';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import * as modulesReaderRevenueManager from '../../assets/js/modules/reader-revenue-manager';
@@ -75,6 +76,7 @@ const allCoreModules = [
 	modulesAdSense,
 	modulesAnalytics4,
 	modulesPageSpeedInsights,
+	modulesReaderRevenueManager,
 	modulesSearchConsole,
 	modulesTagManager,
 	modulesReaderRevenueManager,

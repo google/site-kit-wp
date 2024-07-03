@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store: selectors test.
+ * Reader Revenue Manager SetupMain component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,28 +16,13 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { render } from '../../../../../../tests/js/test-utils';
+import SetupMain from './SetupMain';
 
-describe( 'modules/reader-revenue-manager properties', () => {
-	let registry;
+describe( 'SetupMain', () => {
+	it( 'should render the component', () => {
+		const { getByText } = render( <SetupMain /> );
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
-	describe( 'store', () => {
-		it( 'is registered correctly', () => {
-			//  TODO: Implement tests as part of #8793.
-		} );
+		expect( getByText( /Reader Revenue Manager/i ) ).toBeInTheDocument();
 	} );
 } );

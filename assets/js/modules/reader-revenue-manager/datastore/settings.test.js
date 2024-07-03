@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store: selectors test.
+ * `modules/reader-revenue-manager` data store: settings tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,13 +19,18 @@
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 
-describe( 'modules/reader-revenue-manager properties', () => {
+describe( 'modules/reader-revenue-manager settings', () => {
 	let registry;
+
+	beforeAll( () => {
+		API.setUsingCache( false );
+	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -35,8 +40,12 @@ describe( 'modules/reader-revenue-manager properties', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'store', () => {
-		it( 'is registered correctly', () => {
+	afterAll( () => {
+		API.setUsingCache( true );
+	} );
+
+	describe( 'validateCanSubmitChanges', () => {
+		it( 'it validates', () => {
 			//  TODO: Implement tests as part of #8793.
 		} );
 	} );

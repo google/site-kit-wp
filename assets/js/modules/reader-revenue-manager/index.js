@@ -24,14 +24,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from './components/settings';
-import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
 } from './datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { SetupMain } from './components/setup';
+import { SettingsEdit, SettingsView } from './components/settings';
+import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
 import { isFeatureEnabled } from '../../features';
 import { isURLUsingHTTPS } from './utils/validation';
 
@@ -53,12 +53,14 @@ export const registerModule = isRrmModuleEnabled( ( modules ) => {
 		SetupComponent: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
-			__( 'Create tags without updating code', 'google-site-kit' ),
+			// TODO: Implement the features as part of #8845.
 		],
 		checkRequirements: async ( registry ) => {
-			const homeURL = await registry
+			// Ensure the site info is resolved to get the home URL.
+			await registry
 				.__experimentalResolveSelect( CORE_SITE )
-				.getHomeURL();
+				.getSiteInfo();
+			const homeURL = registry.select( CORE_SITE ).getHomeURL();
 
 			if ( isURLUsingHTTPS( homeURL ) ) {
 				return;

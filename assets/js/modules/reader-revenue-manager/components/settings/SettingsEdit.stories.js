@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store: selectors test.
+ * Reader Revenue Manager SettingsEdit component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,25 +19,16 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import SettingsEdit from './SettingsEdit';
 
-describe( 'modules/reader-revenue-manager properties', () => {
-	let registry;
+function Template() {
+	return <SettingsEdit />;
+}
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
-	describe( 'store', () => {
-		it( 'is registered correctly', () => {
-			//  TODO: Implement tests as part of #8793.
-		} );
-	} );
-} );
+export default {
+	title: 'Modules/ReaderRevenueManager/Settings/SettingsEdit',
+	component: SettingsEdit,
+};
