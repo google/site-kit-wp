@@ -250,7 +250,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	if (
 		configuredAudiences === undefined ||
-		( configuredAudiences?.length && ! failedAudiences.length ) ||
+		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed
 	) {
