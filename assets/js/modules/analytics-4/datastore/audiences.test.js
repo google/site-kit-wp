@@ -1047,8 +1047,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					// Verifying the result contains the expected failed audiences.
 					expect( result ).toEqual( {
-						failedSiteKitAudienceResourceNames:
-							expectedFailedAudiences,
+						failedSiteKitAudienceSlugs: expectedFailedAudiences,
 					} );
 
 					// Ensuring no configured audiences are set when all creation attempts fail.
@@ -1105,8 +1104,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					// Verifying the result contains the expected failed audiences.
 					expect( result ).toEqual( {
-						failedSiteKitAudienceResourceNames:
-							expectedFailedAudiences,
+						failedSiteKitAudienceSlugs: expectedFailedAudiences,
 					} );
 
 					// Ensure no configured audiences are set when one creation attempt fails.
@@ -1131,7 +1129,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					expect( console ).toHaveErrored();
 				} );
 
-				it( 'should create provided "failedSiteKitAudienceResourceNames" correctly', async () => {
+				it( 'should create provided "failedSiteKitAudienceSlugs" correctly', async () => {
 					const failedAudiencesToRetry = [
 						'new-visitors',
 						'returning-visitors',
