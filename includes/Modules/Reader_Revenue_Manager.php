@@ -10,18 +10,17 @@
 
 namespace Google\Site_Kit\Modules;
 
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
-use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
 use Exception;
 
 /**
@@ -52,7 +51,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since 1.130.0
+	 * @since n.e.x.t
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -68,7 +67,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -83,7 +82,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Checks if the current user has access to the current configured service entity.
 	 *
-	 * @since 1.70.0
+	 * @since n.e.x.t
 	 *
 	 * @return boolean|WP_Error
 	 */
@@ -101,19 +100,21 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					'pageSize' => 1,
 				)
 			);
+
+			return true;
+
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 403 ) {
 				return false;
 			}
 			return $this->exception_to_error( $e );
 		}
-
 	}
 
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -126,16 +127,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 *
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
-	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
-	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
-	 *
-	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -146,7 +143,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				 * @var Google_Service_SubscribewithGoogle
 				 */
 				$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
-				return $subscribewithgoogle->publications->listPublications( $this->get_publication_filters() );
+				return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
 		}
 
 		return parent::create_data_request( $data );
@@ -155,7 +152,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
@@ -175,7 +172,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since 1.130.0
+	 * @since n.e.x.t
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -190,11 +187,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
-	 * Gets the filters for retrieving publications for the current property.
+	 * Gets the filters for retrieving publications for the current site.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Permutations for site hosts or URL.
 	 */
-	private function get_publication_filters() {
+	private function get_publication_filter() {
 		$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
 		$sc_property_id = $sc_settings['propertyID'];
 		$raw_url        = str_replace(
@@ -225,9 +224,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			);
 		}
 
-		return array(
-			'filter' => $filter,
-		);
+		return $filter;
 	}
 
 	/**

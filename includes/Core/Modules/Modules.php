@@ -144,14 +144,13 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		Site_Verification::MODULE_SLUG      => Site_Verification::class,
-		Search_Console::MODULE_SLUG         => Search_Console::class,
-		Ads::MODULE_SLUG                    => Ads::class,
-		Analytics_4::MODULE_SLUG            => Analytics_4::class,
-		Tag_Manager::MODULE_SLUG            => Tag_Manager::class,
-		AdSense::MODULE_SLUG                => AdSense::class,
-		PageSpeed_Insights::MODULE_SLUG     => PageSpeed_Insights::class,
-		Reader_Revenue_Manager::MODULE_SLUG => Reader_Revenue_Manager::class,
+		Site_Verification::MODULE_SLUG  => Site_Verification::class,
+		Search_Console::MODULE_SLUG     => Search_Console::class,
+		Ads::MODULE_SLUG                => Ads::class,
+		Analytics_4::MODULE_SLUG        => Analytics_4::class,
+		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
+		AdSense::MODULE_SLUG            => AdSense::class,
+		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
 	);
 
 	/**

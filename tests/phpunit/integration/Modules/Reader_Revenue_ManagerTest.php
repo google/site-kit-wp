@@ -19,39 +19,23 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
 
 /**
  * @group Modules
  * @group Reader_Revenue_Manager
  */
 class Reader_Revenue_ManagerTest extends TestCase {
+
+	use Module_With_Service_Entity_ContractTests;
+
 	/**
 	 * Context instance.
 	 *
 	 * @var Context
 	 */
 	private $context;
-
-	/**
-	 * Options object.
-	 *
-	 * @var Options
-	 */
-	private $options;
-
-	/**
-	 * User object.
-	 *
-	 * @var WP_User
-	 */
-	private $user;
-
-	/**
-	 * User Options object.
-	 *
-	 * @var User_Options
-	 */
-	private $user_options;
 
 	/**
 	 * Authentication object.
@@ -71,11 +55,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		parent::set_up();
 
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options                = new Options( $this->context );
-		$this->user                   = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options           = new User_Options( $this->context, $this->user->ID );
-		$this->authentication         = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $this->user_options, $this->authentication );
+		$options                      = new Options( $this->context );
+		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options                 = new User_Options( $this->context, $user->ID );
+		$this->authentication         = new Authentication( $this->context, $options, $user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options, $this->authentication );
+
+		$this->enable_feature( 'rrmModule' );
 	}
 
 	public function test_register() {
@@ -112,7 +98,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_get_data_endpoints() {
+	public function test_get_datapoints() {
 		$this->assertEqualSets(
 			array(
 				'publications',
@@ -121,7 +107,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_service_entity_has_access() {
+	public function test_get_publications() {
 		FakeHttp::fake_google_http_handler(
 			$this->reader_revenue_manager->get_client(),
 			function ( Request $request ) {
@@ -142,26 +128,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$data = $this->reader_revenue_manager->get_data( 'publications' );
 		$this->assertNotWPError( $data );
+		$this->assertIsArray( $data );
 	}
 
-	public function test_service_entity_has_no_access() {
-		FakeHttp::fake_google_http_handler(
-			$this->reader_revenue_manager->get_client(),
-			function ( Request $request ) {
-				$url = parse_url( $request->getUri() );
-
-				switch ( $url['path'] ) {
-					case '/v1/publications':
-						return new Response( 200 );
-				}
-			}
-		);
-
-		$this->reader_revenue_manager->register();
-		$data = $this->reader_revenue_manager->get_data( 'publications' );
-		$this->assertWPError( $data );
-
-		$error_data = $data->get_error_data();
-		$this->assertEquals( 403, $error_data['status'] );
+	/**
+	 * @return Reader_Revenue_Manager
+	 */
+	protected function get_module_with_service_entity() {
+		return $this->reader_revenue_manager;
 	}
 }
