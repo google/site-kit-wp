@@ -74,6 +74,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 				'./assets/js/googlesitekit-modules-analytics-4.js',
 			'googlesitekit-modules-pagespeed-insights':
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
+			'googlesitekit-modules-reader-revenue-manager':
+				'./assets/js/googlesitekit-modules-reader-revenue-manager.js',
 			'googlesitekit-modules-search-console':
 				'./assets/js/googlesitekit-modules-search-console.js',
 			'googlesitekit-modules-tagmanager':
