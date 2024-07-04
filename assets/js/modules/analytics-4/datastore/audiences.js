@@ -304,9 +304,7 @@ const baseActions = {
 			} );
 
 			yield commonActions.await(
-				__experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getAudienceSettings()
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
 			);
 
 			if ( failedAudiencesToRetry.length > 0 ) {
