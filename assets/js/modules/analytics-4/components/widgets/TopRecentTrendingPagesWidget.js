@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../common';
 import { getPreviousDate, numFmt } from '../../../../util';
 import {
 	MetricTileTable,
@@ -140,10 +139,6 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 		];
 	} );
 
-	const isGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
-	);
-
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
 		[ reportOptions ]
@@ -232,11 +227,7 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			ZeroState={
-				! isGatheringData && rows.length === 0
-					? CustomZeroDataMessage
-					: ZeroDataMessage
-			}
+			ZeroState={ CustomZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>

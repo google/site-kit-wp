@@ -48,6 +48,7 @@ const KM_WIDGET_DEF =
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];
 
 const referenceDate = '2024-05-07';
+const reportOptions = getReportOptions( referenceDate );
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
@@ -91,8 +92,6 @@ Ready.args = {
 			],
 		} );
 
-		const reportOptions = getReportOptions( referenceDate );
-
 		const pageTitlesReportOptions = selectPageTitlesReportOptions();
 		const pageTitlesReport = getAnalytics4MockResponse(
 			pageTitlesReportOptions,
@@ -125,7 +124,7 @@ Loading.args = {
 		} );
 
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			getReportOptions( referenceDate ),
+			reportOptions,
 		] );
 	},
 };
@@ -137,7 +136,6 @@ export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
-		const reportOptions = getReportOptions( referenceDate );
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
@@ -190,7 +188,6 @@ Error.args = {
 			],
 		} );
 
-		const reportOptions = getReportOptions( referenceDate );
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',
