@@ -591,7 +591,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				).toBeInTheDocument();
 			} );
 
-			await act( waitForDefaultTimeouts );
+			await act( () => waitForTimeouts( 30 ) );
 		} );
 
 		describe( 'AudienceErrorModal', () => {
