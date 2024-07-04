@@ -11,12 +11,19 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
@@ -26,12 +33,14 @@ use Exception;
 /**
  * Class representing the Reader Revenue Manager module.
  *
- * @since 1.130.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity {
+final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 	use Module_With_Assets_Trait;
+	use Module_With_Owner_Trait;
+	use Module_With_Settings_Trait;
 	use Module_With_Scopes_Trait;
 
 	/**
@@ -42,7 +51,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.130.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -77,6 +86,43 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		return array(
 			'subscribewithgoogle' => new Google_Service_SubscribewithGoogle( $client ),
 		);
+	}
+
+	/**
+	 * Checks whether the module is connected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$options = $this->get_settings()->get();
+
+		if ( ! empty( $options['publicationID'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
+	}
+
+	/**
+	 * Cleans up when the module is deactivated.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function on_deactivation() {
+		$this->get_settings()->delete();
 	}
 
 	/**
