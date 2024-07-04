@@ -1,0 +1,123 @@
+<?php
+/**
+ * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings
+ *
+ * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager
+ * @copyright 2021 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
+
+use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
+use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
+use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+
+/**
+ * Class for RRM settings.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
+class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interface, Setting_With_ViewOnly_Keys_Interface {
+
+	use Setting_With_Owned_Keys_Trait;
+	use Method_Proxy_Trait;
+
+	const OPTION = 'googlesitekit_reader-revenue-manager_settings';
+
+	/**
+	 * Registers the setting in WordPress.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register() {
+		parent::register();
+
+		$this->register_owned_keys();
+	}
+
+	/**
+	 * Returns keys for owned settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An array of keys for owned settings.
+	 */
+	public function get_owned_keys() {
+		return array(
+			'publicationID',
+			'publicationOnboardingState',
+			'publicationOnboardingStateLastSyncedAtMs',
+		);
+	}
+
+	/**
+	 * Gets the default value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	protected function get_default() {
+		return array(
+			'publicationID'                            => '',
+			'publicationOnboardingState'               => '',
+			'publicationOnboardingStateLastSyncedAtMs' => 0,
+		);
+	}
+
+	/**
+	 * Returns keys for view-only settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An array of keys for view-only settings.
+	 */
+	public function get_view_only_keys() {
+		return array();
+	}
+
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_sanitize_callback() {
+		return function( $option ) {
+			if ( isset( $option['publicationID'] ) ) {
+				if ( ! preg_match( '/^[a-zA-Z0-9]+$/', $option['publicationID'] ) ) {
+					$option['publicationID'] = '';
+				}
+			}
+
+			if ( isset( $option['publicationOnboardingStateLastSyncedAtMs'] ) ) {
+				if ( ! is_int( $option['publicationOnboardingStateLastSyncedAtMs'] ) ) {
+					$option['publicationOnboardingStateLastSyncedAtMs'] = 0;
+				}
+			}
+
+			if ( isset( $option['publicationOnboardingState'] ) ) {
+
+				$valid_onboarding_states = array(
+					'ONBOARDING_STATE_UNSPECIFIED',
+					'ONBOARDING_ACTION_REQUIRED',
+					'PENDING_VERIFICATION',
+					'ONBOARDING_COMPLETE',
+				);
+
+				if ( ! in_array( $option['publicationOnboardingState'], $valid_onboarding_states, true ) ) {
+					$option['publicationOnboardingState'] = '';
+				}
+			}
+
+			return $option;
+		};
+	}
+}
