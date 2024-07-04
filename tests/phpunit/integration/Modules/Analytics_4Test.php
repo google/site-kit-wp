@@ -4431,8 +4431,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	protected function set_test_resource_data_availability_dates() {
-		$this->enable_feature( 'audienceSegmentation' );
-
 		$test_resource_slug_audience         = 'properties/12345678/audiences/12345';
 		$test_resource_slug_custom_dimension = 'googlesitekit_post_type';
 		$test_resource_slug_property         = '12345678';

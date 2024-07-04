@@ -11,20 +11,38 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
 
 /**
  * @group Modules
  * @group Reader_Revenue_Manager
  */
 class Reader_Revenue_ManagerTest extends TestCase {
+
+	use Module_With_Service_Entity_ContractTests;
+
 	/**
 	 * Context instance.
 	 *
 	 * @var Context
 	 */
 	private $context;
+
+	/**
+	 * Authentication object.
+	 *
+	 * @var Authentication
+	 */
+	private $authentication;
 
 	/**
 	 * Reader_Revenue_Manager object.
@@ -37,7 +55,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		parent::set_up();
 
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context );
+		$options                      = new Options( $this->context );
+		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options                 = new User_Options( $this->context, $user->ID );
+		$this->authentication         = new Authentication( $this->context, $options, $user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options, $this->authentication );
+
+		$this->enable_feature( 'rrmModule' );
 	}
 
 	public function test_register() {
@@ -72,5 +96,45 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertTrue(
 			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle' )
 		);
+	}
+
+	public function test_get_datapoints() {
+		$this->assertEqualSets(
+			array(
+				'publications',
+			),
+			$this->reader_revenue_manager->get_datapoints()
+		);
+	}
+
+	public function test_get_publications() {
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) {
+				$url = parse_url( $request->getUri() );
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response( 200 );
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$data = $this->reader_revenue_manager->get_data( 'publications' );
+		$this->assertNotWPError( $data );
+		$this->assertIsArray( $data );
+	}
+
+	/**
+	 * @return Reader_Revenue_Manager
+	 */
+	protected function get_module_with_service_entity() {
+		return $this->reader_revenue_manager;
 	}
 }
