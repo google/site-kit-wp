@@ -73,7 +73,6 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 	);
 
 	if ( error ) {
-		// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
 		return { error };
 	}
 
@@ -181,8 +180,12 @@ const baseActions = {
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
 	 * @since 1.128.0
+	 * @since n.e.x.t Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
+	 *
+	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
 	 */
-	*enableAudienceGroup() {
+	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, __experimentalResolveSelect } = registry;
@@ -193,8 +196,7 @@ const baseActions = {
 			);
 
 		if ( syncError ) {
-			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
-			return;
+			return { error: syncError };
 		}
 
 		const userAudiences = availableAudiences.filter(
@@ -203,97 +205,142 @@ const baseActions = {
 
 		const configuredAudiences = [];
 
-		if ( userAudiences.length > 0 ) {
-			// If there are user audiences, filter and sort them by total users over the last 90 days,
-			// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
+		if ( ! failedSiteKitAudienceSlugs ) {
+			if ( userAudiences.length > 0 ) {
+				// If there are user audiences, filter and sort them by total users over the last 90 days,
+				// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
 
-			const endDate = select( CORE_USER ).getReferenceDate();
+				const endDate = select( CORE_USER ).getReferenceDate();
 
-			const startDate = getPreviousDate(
-				endDate,
-				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-			);
+				const startDate = getPreviousDate(
+					endDate,
+					90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
+				);
 
-			const { audienceResourceNames, error } = yield commonActions.await(
-				getNonZeroDataAudiencesSortedByTotalUsers(
-					registry,
-					userAudiences,
-					startDate,
-					endDate
-				)
-			);
+				const { audienceResourceNames, error } =
+					yield commonActions.await(
+						getNonZeroDataAudiencesSortedByTotalUsers(
+							registry,
+							userAudiences,
+							startDate,
+							endDate
+						)
+					);
 
-			if ( ! error ) {
-				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+				if ( error ) {
+					return { error };
+				}
+
 				configuredAudiences.push(
 					...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
 				);
 			}
-		}
 
-		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
-			// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
-			// up to the limit of two.
+			if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+				// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
+				// up to the limit of two.
 
-			const siteKitAudiences = availableAudiences.filter(
-				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
-			);
+				const siteKitAudiences = availableAudiences.filter(
+					( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+				);
 
-			// Audience slugs to sort by:
-			const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
+				// Audience slugs to sort by:
+				const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
 
-			const sortedSiteKitAudiences = siteKitAudiences.sort(
-				( audienceA, audienceB ) => {
-					const indexA = sortedSlugs.indexOf(
-						audienceA.audienceSlug
-					);
-					const indexB = sortedSlugs.indexOf(
-						audienceB.audienceSlug
-					);
+				const sortedSiteKitAudiences = siteKitAudiences.sort(
+					( audienceA, audienceB ) => {
+						const indexA = sortedSlugs.indexOf(
+							audienceA.audienceSlug
+						);
+						const indexB = sortedSlugs.indexOf(
+							audienceB.audienceSlug
+						);
 
-					return indexA - indexB;
-				}
-			);
+						return indexA - indexB;
+					}
+				);
 
-			const audienceResourceNames = sortedSiteKitAudiences
-				.slice( 0, MAX_INITIAL_AUDIENCES - configuredAudiences.length )
-				.map( ( { name } ) => name );
+				const audienceResourceNames = sortedSiteKitAudiences
+					.slice(
+						0,
+						MAX_INITIAL_AUDIENCES - configuredAudiences.length
+					)
+					.map( ( { name } ) => name );
 
-			configuredAudiences.push( ...audienceResourceNames );
+				configuredAudiences.push( ...audienceResourceNames );
+			}
 		}
 
 		if ( configuredAudiences.length === 0 ) {
+			const requiredAudienceSlugs = [
+				'new-visitors',
+				'returning-visitors',
+			];
+			const audiencesToCreate = failedSiteKitAudienceSlugs?.length
+				? failedSiteKitAudienceSlugs
+				: requiredAudienceSlugs;
+
 			// If there are no configured audiences by this point, create the "new-visitors" and "returning-visitors" audiences,
 			// and add them to the configured audiences.
-			const [ newVisitorsResult, returningVisitorsResult ] =
-				yield commonActions.await(
-					Promise.all( [
-						dispatch( MODULES_ANALYTICS_4 ).createAudience(
-							SITE_KIT_AUDIENCE_DEFINITIONS[ 'new-visitors' ]
-						),
-						dispatch( MODULES_ANALYTICS_4 ).createAudience(
-							SITE_KIT_AUDIENCE_DEFINITIONS[
-								'returning-visitors'
-							]
-						),
-					] )
-				);
+			const audienceCreationResults = yield commonActions.await(
+				Promise.all(
+					audiencesToCreate.map( ( audienceSlug ) => {
+						return dispatch( MODULES_ANALYTICS_4 ).createAudience(
+							SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
+						);
+					} )
+				)
+			);
 
-			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
-			if ( ! newVisitorsResult.error ) {
-				configuredAudiences.push( newVisitorsResult.response.name );
+			const failedAudiencesToRetry = [];
+
+			audienceCreationResults.forEach( ( result, index ) => {
+				const audienceSlug = audiencesToCreate[ index ];
+				if ( result.error ) {
+					failedAudiencesToRetry.push( audienceSlug );
+				} else {
+					configuredAudiences.push( result.response.name );
+				}
+			} );
+
+			yield commonActions.await(
+				__experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getAudienceSettings()
+			);
+
+			if ( failedAudiencesToRetry.length > 0 ) {
+				return {
+					failedSiteKitAudienceSlugs: failedAudiencesToRetry,
+				};
 			}
 
-			if ( ! returningVisitorsResult.error ) {
-				configuredAudiences.push(
-					returningVisitorsResult.response.name
-				);
-			}
+			const existingConfiguredAudiences =
+				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || [];
+
+			configuredAudiences.push( ...existingConfiguredAudiences );
 
 			// Resync available audiences to ensure the newly created audiences are available.
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
+			const { response: newAvailableAudiences } =
+				yield commonActions.await(
+					dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+				);
+
+			// Find the audience in the newly available audiences that matches the required slug.
+			// If a matching audience is found and it's not already in the configured audiences, add it.
+			// This is to ensure if one audience was created successfully but the other failed,
+			// the successful one is still added on the retry.
+			requiredAudienceSlugs.forEach( ( slug ) => {
+				const matchingAudience = newAvailableAudiences.find(
+					( item ) => item.audienceSlug === slug
+				);
+				if (
+					matchingAudience &&
+					! configuredAudiences.includes( matchingAudience.name )
+				) {
+					configuredAudiences.push( matchingAudience.name );
+				}
+			} );
 		}
 
 		// Create custom dimension if it doesn't exist.
@@ -318,24 +365,24 @@ const baseActions = {
 			);
 
 			if ( error ) {
-				// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
-			} else {
-				// If the custom dimension was created successfully, mark it as gathering
-				// data immediately so that it doesn't cause unnecessary report requests.
+				return { error };
+			}
+
+			// If the custom dimension was created successfully, mark it as gathering
+			// data immediately so that it doesn't cause unnecessary report requests.
+			dispatch(
+				MODULES_ANALYTICS_4
+			).receiveIsCustomDimensionGatheringData(
+				'googlesitekit_post_type',
+				true
+			);
+
+			// Resync available custom dimensions to ensure the newly created custom dimension is available.
+			yield commonActions.await(
 				dispatch(
 					MODULES_ANALYTICS_4
-				).receiveIsCustomDimensionGatheringData(
-					'googlesitekit_post_type',
-					true
-				);
-
-				// Resync available custom dimensions to ensure the newly created custom dimension is available.
-				yield commonActions.await(
-					dispatch(
-						MODULES_ANALYTICS_4
-					).fetchSyncAvailableCustomDimensions()
-				);
-			}
+				).fetchSyncAvailableCustomDimensions()
+			);
 		}
 
 		dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
@@ -347,7 +394,7 @@ const baseActions = {
 		);
 
 		if ( error ) {
-			// TODO: Full error handling will be implemented via https://github.com/google/site-kit-wp/issues/8134.
+			return { error };
 		}
 	},
 };
