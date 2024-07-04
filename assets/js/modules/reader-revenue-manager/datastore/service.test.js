@@ -57,16 +57,21 @@ describe( 'module/reader-revenue-manager service store', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getServiceURL();
 
-				expect( new URL( serviceURL ) ).toMatchObject( {
-					origin: 'https://publishercenter.google.com',
-				} );
+				expect( new URL( decodeServiceURL( serviceURL ) ).origin ).toBe(
+					'https://publishercenter.google.com'
+				);
 			} );
 
 			it( 'should append `reader-revenue-manager` path to the URL', () => {
 				const publicationID = 'ABCDEFG';
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getServiceURL( publicationID );
+					.getServiceURL( {
+						path: 'reader-revenue-manager',
+						query: {
+							publication: publicationID,
+						},
+					} );
 
 				expect(
 					new URL( decodeServiceURL( serviceURL ) ).pathname
@@ -77,7 +82,12 @@ describe( 'module/reader-revenue-manager service store', () => {
 				const publicationID = 'ABCDEFG';
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getServiceURL( publicationID );
+					.getServiceURL( {
+						path: 'reader-revenue-manager',
+						query: {
+							publication: publicationID,
+						},
+					} );
 
 				const query = {
 					publication: publicationID,

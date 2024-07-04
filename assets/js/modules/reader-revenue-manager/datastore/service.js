@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -31,11 +26,6 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-
-/**
- * Link to RRM platform.
- */
-const publicationCenterURL = 'https://publishercenter.google.com';
 
 const selectors = {
 	/**
@@ -48,27 +38,24 @@ const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) =>
-			( state, publicationID = null ) => {
-				// If there is no publication ID, return link to platform.
-				if ( ! publicationID ) {
-					return publicationCenterURL;
+			( state, { path, query } = {} ) => {
+				let serviceURL = 'https://publishercenter.google.com';
+
+				// Always add the utm_source.
+				query = {
+					...query,
+					utm_source: 'sitekit',
+				};
+
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					serviceURL = `${ serviceURL }${ sanitizedPath }`;
 				}
 
-				invariant(
-					'string' === typeof publicationID,
-					'Publication ID must be string.'
-				);
-
-				const linkRRM = addQueryArgs(
-					publicationCenterURL + '/reader-revenue-manager',
-					{
-						publication: publicationID,
-						utm_source: 'sitekit',
-					}
-				);
+				serviceURL = addQueryArgs( serviceURL, query );
 
 				const accountChooserBaseURI =
-					select( CORE_USER ).getAccountChooserURL( linkRRM );
+					select( CORE_USER ).getAccountChooserURL( serviceURL );
 
 				if ( accountChooserBaseURI === undefined ) {
 					return undefined;
