@@ -131,7 +131,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
 		// Encapsulate dependencies to avoid function changing after launch.
-		const { select, __experimentalResolveSelect: resolveSelect } = registry;
+		const { select, resolveSelect } = registry;
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 		const redirectURL = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-dashboard',

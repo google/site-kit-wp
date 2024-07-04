@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';
@@ -33,8 +33,6 @@ import Link from '../../../../../../components/Link';
 import ReportErrorActions from '../../../../../../components/ReportErrorActions';
 import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
-
-const { useSelect, useDispatch } = Data;
 
 export default function ErrorNotice() {
 	const syncAvailableAudiencesError = useSelect( ( select ) =>
