@@ -57,7 +57,7 @@ class Ninja_Forms extends Conversion_Events_Provider {
 		$script = new Script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'          => $this->context->url( 'dist/assets/js/ninja-forms.js' ),
+				'src'          => $this->context->url( 'dist/assets/js/googlesitekit-events-provider-ninja-forms.js' ),
 				'execution'    => 'defer',
 				'dependencies' => array( 'nf-front-end-deps' ),
 			)

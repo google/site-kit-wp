@@ -57,7 +57,7 @@ class Mailchimp extends Conversion_Events_Provider {
 		$script = new Script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'          => $this->context->url( 'dist/assets/js/mailchimp.js' ),
+				'src'          => $this->context->url( 'dist/assets/js/googlesitekit-events-provider-mailchimp.js' ),
 				'execution'    => 'defer',
 				'dependencies' => array( 'mc4wp-forms-api' ),
 			)
