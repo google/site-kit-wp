@@ -12,16 +12,16 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager;
-use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
+use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Modules
@@ -55,14 +55,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options                      = new Options( $this->context );
+		$context                      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options                      = new Options( $context );
 		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options                 = new User_Options( $this->context, $user->ID );
-		$this->authentication         = new Authentication( $this->context, $options, $user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options, $this->authentication );
-
-		$this->enable_feature( 'rrmModule' );
+		$user_options                 = new User_Options( $context, $user->ID );
+		$this->authentication         = new Authentication( $context, $options, $user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $context, $options, $user_options, $this->authentication );
 	}
 
 	public function test_register() {
@@ -165,7 +163,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	/**
-	 * @return Reader_Revenue_Manager
+	 * @return Module_With_Service_Entity
 	 */
 	protected function get_module_with_service_entity() {
 		return $this->reader_revenue_manager;

@@ -10,18 +10,19 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
-use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
-use Exception;
 
 /**
  * Class representing the Reader Revenue Manager module.
@@ -88,7 +89,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	public function check_service_entity_access() {
 		/**
-		 * Get the subscribe with google service instance.
+		 * Get the SubscribewithGoogle service instance.
 		 *
 		 * @var Google_Service_SubscribewithGoogle
 		 */
@@ -100,15 +101,14 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					'pageSize' => 1,
 				)
 			);
-
-			return true;
-
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 403 ) {
 				return false;
 			}
 			return $this->exception_to_error( $e );
 		}
+
+		return true;
 	}
 
 	/**
@@ -138,7 +138,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
 				/**
-				 * Get the subscribe with google service instance.
+				 * Get the SubscribewithGoogle service instance.
 				 *
 				 * @var Google_Service_SubscribewithGoogle
 				 */
@@ -191,7 +191,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Permutations for site hosts or URL.
+	 * @return string Permutations for site hosts or URL.
 	 */
 	private function get_publication_filter() {
 		$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
