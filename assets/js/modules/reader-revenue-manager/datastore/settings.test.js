@@ -45,7 +45,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	describe( 'validateCanSubmitChanges', () => {
-		it( 'it validates', () => {
+		it( 'validates', () => {
 			//  TODO: Implement tests as part of #8793.
 		} );
 	} );
