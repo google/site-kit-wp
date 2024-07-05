@@ -153,8 +153,15 @@ describe( 'Analytics write scope requests', () => {
 			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
 			) {
+				const requestURL = new URL( request.url() );
+				const destinationID =
+					requestURL.searchParams.get( 'destinationId' );
+				const container = {
+					...fixtures.containerE2E[ 'G-500' ],
+					tagIds: [ destinationID ],
+				};
 				request.respond( {
-					body: JSON.stringify( fixtures.container ),
+					body: JSON.stringify( container ),
 					status: 200,
 				} );
 			} else if (
