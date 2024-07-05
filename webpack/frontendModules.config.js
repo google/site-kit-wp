@@ -1,5 +1,5 @@
 /**
- * Frontend modules config webpack partial.
+ * Conversion event providers config webpack partial.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -35,7 +35,25 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
+		// Consent Mode
 		'consent-mode': './assets/js/consent-mode/consent-mode.js',
+		// Event Providers
+		'googlesitekit-events-provider-contact-form-7':
+			'./assets/js/event-providers/contact-form-7.js',
+		'googlesitekit-events-provider-easy-digital-downloads':
+			'./assets/js/event-providers/easy-digital-downloads.js',
+		'googlesitekit-events-provider-mailchimp':
+			'./assets/js/event-providers/mailchimp.js',
+		'googlesitekit-events-provider-ninja-forms':
+			'./assets/js/event-providers/ninja-forms.js',
+		'googlesitekit-events-provider-optin-monster':
+			'./assets/js/event-providers/optin-monster.js',
+		'googlesitekit-events-provider-popup-maker':
+			'./assets/js/event-providers/popup-maker.js',
+		'googlesitekit-events-provider-woocommerce':
+			'./assets/js/event-providers/woocommerce.js',
+		'googlesitekit-events-provider-wpforms':
+			'./assets/js/event-providers/wpforms.js',
 	},
 	externals,
 	output: {
@@ -57,7 +75,16 @@ module.exports = ( mode ) => ( {
 							babelrc: false,
 							configFile: false,
 							cacheDirectory: true,
-							presets: [ '@wordpress/default' ],
+							presets: [
+								[
+									'@babel/preset-env',
+									{
+										targets: {
+											browsers: [ '> 0.25%', 'not dead' ],
+										},
+									},
+								],
+							],
 						},
 					},
 				],
@@ -68,7 +95,7 @@ module.exports = ( mode ) => ( {
 	plugins: [
 		new WebpackBar( {
 			name: 'Frontend Modules',
-			color: '#FFD7F6',
+			color: '#34dbeb',
 		} ),
 		new ManifestPlugin( {
 			...manifestArgs( mode ),

@@ -22,7 +22,7 @@
 const { createRules } = require( './webpack/common' );
 const adminCssConfig = require( './webpack/adminCss.config' );
 const basicModulesConfig = require( './webpack/basicModules.config' );
-const frontendScripts = require( './webpack/frontendScripts.config' );
+const frontendModules = require( './webpack/frontendModules.config' );
 const modulesConfig = require( './webpack/modules.config' );
 const testBundleConfig = require( './webpack/testBundle.config' );
 
@@ -42,8 +42,8 @@ function* webpackConfig( env, argv ) {
 	// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 	yield basicModulesConfig( mode );
 
-	// Build conversion event provider files.
-	yield frontendScripts( mode );
+	// Build modules that will be used on the frontend, that require wider browser support.
+	yield frontendModules( mode );
 
 	// Build the main plugin admin css.
 	yield adminCssConfig( mode );
