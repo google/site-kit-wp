@@ -26,41 +26,29 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../hooks/useDashboardType';
 
-function ModuleDashboardEffects() {
+const dashboardTypeComponentMap = {
+	[ DASHBOARD_TYPE_MAIN ]: 'DashboardMainEffectComponent',
+	[ DASHBOARD_TYPE_ENTITY ]: 'DashboardEntityEffectComponent',
+};
+
+export default function ModuleDashboardEffects() {
 	const dashboardType = useDashboardType();
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 
-	const filteredModules = [];
-	if ( modules ) {
-		for ( const moduleSlug in modules ) {
-			if (
-				modules[ moduleSlug ].active &&
-				( ( DASHBOARD_TYPE_MAIN === dashboardType &&
-					modules[ moduleSlug ]?.DashboardMainEffectComponent ) ||
-					( DASHBOARD_TYPE_ENTITY === dashboardType &&
-						modules[ moduleSlug ]
-							?.DashboardEntityEffectComponent ) )
-			) {
-				filteredModules.push( modules[ moduleSlug ] );
-			}
-		}
+	if ( ! modules ) {
+		return null;
 	}
 
-	const rootComponents = filteredModules.map( ( Module ) =>
-		DASHBOARD_TYPE_MAIN === dashboardType ? (
-			<Module.DashboardMainEffectComponent
-				key={ `module-root-component-${ Module.slug }` }
-			/>
-		) : (
-			<Module.DashboardEntityEffectComponent
-				key={ `module-root-component-${ Module.slug }` }
-			/>
-		)
-	);
+	const moduleComponentKey = dashboardTypeComponentMap[ dashboardType ];
+	return Object.values( modules ).reduce( ( elements, module ) => {
+		const ModuleEffectComponent = module[ moduleComponentKey ];
 
-	return rootComponents;
+		if ( ! module.active || ! ModuleEffectComponent ) {
+			return elements;
+		}
+
+		return [ ...elements, <ModuleEffectComponent key={ module.slug } /> ];
+	}, [] );
 }
-
-export default ModuleDashboardEffects;
