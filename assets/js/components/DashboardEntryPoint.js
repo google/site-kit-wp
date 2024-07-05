@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
@@ -31,18 +26,8 @@ import PropTypes from 'prop-types';
  */
 import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
-import { useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
-
-	useMount( () => {
-		// @TODO investigate if it is possible to move this action
-		// into module specific hooks.
-		ga4Actions?.syncGoogleTagSettings();
-	} );
-
 	if ( !! setupModuleSlug ) {
 		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}

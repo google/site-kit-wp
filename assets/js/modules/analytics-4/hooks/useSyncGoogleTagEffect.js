@@ -1,7 +1,5 @@
 /**
- * GA4 Dashboard components.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +14,23 @@
  * limitations under the License.
  */
 
-export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';
-export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
-export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';
+/**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
+ * Internal dependencies
+ */
+import { useDispatch } from '../../../googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+
+export default function useSyncGoogleTagEffect() {
+	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
+
+	useMount( () => {
+		ga4Actions.syncGoogleTagSettings();
+	} );
+
+	return null;
+}

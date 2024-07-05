@@ -19,8 +19,12 @@
 /**
  * Internal dependencies
  */
-import CustomDimensionEffects from './dashboard/CustomDimensionEffects';
+import useCreateCustomDimensionsEffect from '../hooks/useCreateCustomDimensionsEffect';
+import useSyncGoogleTagEffect from '../hooks/useSyncGoogleTagEffect';
 
 export default function DashboardMainEffectComponent() {
-	return <CustomDimensionEffects />;
+	useCreateCustomDimensionsEffect();
+	useSyncGoogleTagEffect();
+
+	return null;
 }
