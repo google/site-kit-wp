@@ -151,9 +151,7 @@ const baseControls = {
 	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl(
 		( registry ) =>
 			( { payload: { url } } ) =>
-				registry
-					.__experimentalResolveSelect( CORE_SITE )
-					.getHTMLForURL( url )
+				registry.resolveSelect( CORE_SITE ).getHTMLForURL( url )
 	),
 	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl(
 		( registry ) => async () => {

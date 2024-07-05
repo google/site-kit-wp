@@ -39,6 +39,7 @@ import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-seg
 import whenActive from '../../../../../util/when-active';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
@@ -59,6 +60,7 @@ import {
 } from '../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../util';
+import AudienceErrorModal from './AudienceErrorModal';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -110,6 +112,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		notification: 'audience_segmentation',
 	} );
 
+	const [ apiErrors, setApiErrors ] = useState( [] );
+	const [ failedAudiences, setFailedAudiences ] = useState( [] );
+	const [ showErrorModal, setShowErrorModal ] = useState( false );
+
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
 
@@ -131,6 +137,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 					status: 403,
 					scopes: [ EDIT_SCOPE ],
 					skipModal: true,
+					skipDefaultErrorNotifications: true,
 					redirectURL,
 				},
 			} );
@@ -138,14 +145,33 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			return;
 		}
 
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
-		await enableAudienceGroup();
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+
+		const { error, failedSiteKitAudienceSlugs } =
+			( await enableAudienceGroup( failedAudiences ) ) || {};
+
+		if ( error ) {
+			setApiErrors( [ error ] );
+			setFailedAudiences( [] );
+		} else if ( Array.isArray( failedSiteKitAudienceSlugs ) ) {
+			setFailedAudiences( failedSiteKitAudienceSlugs );
+			setApiErrors( [] );
+		} else {
+			setApiErrors( [] );
+			setFailedAudiences( [] );
+		}
+
+		setShowErrorModal( !! error || !! failedSiteKitAudienceSlugs );
+		setIsSaving( false );
 	}, [
-		enableAudienceGroup,
 		hasAnalytics4EditScope,
+		setValues,
+		enableAudienceGroup,
+		failedAudiences,
 		setPermissionScopeError,
 		redirectURL,
-		setValues,
 	] );
 
 	// If the user ends up back on this component with the required scope granted,
@@ -181,6 +207,24 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION );
 		}
 	};
+
+	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+
+	const onCancel = useCallback( () => {
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+		clearPermissionScopeError();
+		setSetupErrorCode( null );
+		setShowErrorModal( false );
+	}, [ clearPermissionScopeError, setSetupErrorCode, setValues ] );
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
 	if ( isTooltipVisible ) {
 		return (
@@ -316,6 +360,19 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 					</Cell>
 				</Row>
 			</Grid>
+			{ ( showErrorModal || hasOAuthError ) && (
+				<AudienceErrorModal
+					hasOAuthError={ hasOAuthError }
+					apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
+					onRetry={ onEnableGroups }
+					inProgress={ isSaving }
+					onCancel={
+						hasOAuthError
+							? onCancel
+							: () => setShowErrorModal( false )
+					}
+				/>
+			) }
 		</div>
 	);
 }

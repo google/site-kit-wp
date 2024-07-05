@@ -47,6 +47,7 @@ const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
 const SET_KEY_METRICS_SETUP_COMPLETED_BY = 'SET_KEY_METRICS_SETUP_COMPLETED_BY';
+const SET_SETUP_ERROR_CODE = 'SET_SETUP_ERROR_CODE';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -124,6 +125,27 @@ export const actions = {
 		return {
 			payload: { keyMetricsSetupCompletedBy },
 			type: SET_KEY_METRICS_SETUP_COMPLETED_BY,
+		};
+	},
+
+	/**
+	 * Sets `setupErrorCode` value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string|null} setupErrorCode Error code from setup, or `null` if no error.
+	 * @return {Object} Redux-style action.
+	 */
+	setSetupErrorCode( setupErrorCode ) {
+		// setupErrorCode can be a string or null.
+		invariant(
+			typeof setupErrorCode === 'string' || setupErrorCode === null,
+			'setupErrorCode must be a string or null.'
+		);
+
+		return {
+			payload: { setupErrorCode },
+			type: SET_SETUP_ERROR_CODE,
 		};
 	},
 };
@@ -225,6 +247,16 @@ export const reducer = ( state, { payload, type } ) => {
 				siteInfo: {
 					...state.siteInfo,
 					keyMetricsSetupCompletedBy,
+				},
+			};
+
+		case SET_SETUP_ERROR_CODE:
+			const { setupErrorCode } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					setupErrorCode,
 				},
 			};
 
