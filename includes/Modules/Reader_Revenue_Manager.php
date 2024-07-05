@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
@@ -39,6 +40,7 @@ use Exception;
  */
 final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 	use Module_With_Assets_Trait;
+	use Module_With_Data_Available_State_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Scopes_Trait;
@@ -123,6 +125,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+		$this->reset_data_available();
 	}
 
 	/**

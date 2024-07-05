@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -22,6 +23,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 
 /**
  * @group Modules
@@ -29,6 +31,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
  */
 class Reader_Revenue_ManagerTest extends TestCase {
 
+	use Module_With_Settings_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
 
 	/**
@@ -162,6 +165,38 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
 		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+	}
+
+	public function test_is_connected() {
+		$options = new Options( $this->context );
+		$rrm     = new Reader_Revenue_Manager( $this->context, $options );
+
+		$this->assertFalse( $rrm->is_connected() );
+
+		$options->set(
+			Settings::OPTION,
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
+		$this->assertTrue( $rrm->is_connected() );
+	}
+
+	public function test_on_deactivation() {
+		$options = new Options( $this->context );
+		$options->set( Settings::OPTION, 'test-value' );
+
+		$rrm = new Reader_Revenue_Manager( $this->context, $options );
+		$rrm->set_data_available();
+		$rrm->on_deactivation();
+
+		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertFalse( $rrm->is_data_available() );
+	}
+
+	public function get_module_with_settings() {
+		return $this->reader_revenue_manager;
 	}
 
 	/**
