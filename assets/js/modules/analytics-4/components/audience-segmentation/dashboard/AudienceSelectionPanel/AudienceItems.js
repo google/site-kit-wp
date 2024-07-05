@@ -63,6 +63,19 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		setFirstView( false );
 	}, [ firstView, isOpen, syncAvailableAudiences ] );
 
+	useEffect( () => {
+		// @TODO Explore more elegant option to re-establish the focus. After `syncAvailableAudiences`
+		// happens the focus is lost, even without preview block being shown.
+		if ( ! isLoading && isOpen ) {
+			const firstInput = document.querySelector(
+				'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item input'
+			);
+			if ( firstInput ) {
+				firstInput.focus();
+			}
+		}
+	}, [ isLoading, isOpen ] );
+
 	const availableAudiences = useSelect( ( select ) => {
 		const {
 			getConfigurableAudiences,
