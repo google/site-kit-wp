@@ -26,10 +26,12 @@ import { useDispatch } from '../../../googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 
 export default function useSyncGoogleTagEffect() {
-	const ga4Actions = useDispatch( MODULES_ANALYTICS_4 );
+	const { syncGoogleTagSettings } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useMount( () => {
-		ga4Actions.syncGoogleTagSettings();
+		// The sync action has its own guards internally,
+		// so it's safe to use uncondionally here.
+		syncGoogleTagSettings();
 	} );
 
 	return null;
