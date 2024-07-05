@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as AudienceErrorModal } from './AudienceErrorModal';
 export { default as AudienceTile } from './AudienceTile';
 export { default as AudienceSegmentationErrorWidget } from './AudienceSegmentationErrorWidget';
 export { default as AudienceSegmentationIntroductoryOverlayNotification } from './AudienceSegmentationIntroductoryOverlayNotification';

@@ -224,7 +224,7 @@ const baseActions = {
 
 			const currentSettings = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getEnhancedMeasurementSettings(
 						propertyID,
 						webDataStreamID
@@ -298,7 +298,7 @@ const baseActions = {
 
 			const currentSettings = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getEnhancedMeasurementSettings(
 						propertyID,
 						webDataStreamID
