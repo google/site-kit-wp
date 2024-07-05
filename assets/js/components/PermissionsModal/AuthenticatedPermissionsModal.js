@@ -69,6 +69,8 @@ function AuthenticatedPermissionsModal() {
 		// If we have a datastores to snapshot before navigating away to the
 		// authorization page, do that first.
 		await snapshotAllStores( registry );
+
+		// Navigate to the authorization page.
 		navigateTo( connectURL );
 	}, [ registry, connectURL, navigateTo, permissionsError, setValues ] );
 

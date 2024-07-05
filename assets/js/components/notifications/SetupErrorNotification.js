@@ -27,6 +27,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
 
 export default function SetupErrorNotification() {
 	// These will be `null` if no errors exist.
@@ -37,7 +39,19 @@ export default function SetupErrorNotification() {
 		select( CORE_SITE ).getSetupErrorRedoURL()
 	);
 
-	if ( ! setupErrorMessage ) {
+	const { data: permissionsErrorData } = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+				'permissionsError'
+			) || {}
+	);
+
+	// If there's no setup error message or the temporary persisted permissions error has skipDefaultErrorNotifications flag set, return null.
+	if (
+		! setupErrorMessage ||
+		permissionsErrorData?.skipDefaultErrorNotifications
+	) {
 		return null;
 	}
 
