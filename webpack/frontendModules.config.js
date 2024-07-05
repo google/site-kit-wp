@@ -1,5 +1,5 @@
 /**
- * Conversion event providers config webpack partial.
+ * Frontend modules config webpack partial.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
