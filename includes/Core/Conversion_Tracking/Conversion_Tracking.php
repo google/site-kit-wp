@@ -59,7 +59,7 @@ class Conversion_Tracking {
 	 * Supported conversion event providers.
 	 *
 	 * @since 1.126.0
-	 * @since n.e.x.t Added Ninja Forms class.
+	 * @since 1.130.0 Added Ninja Forms class.
 	 * @var array
 	 */
 	public static $providers = array(

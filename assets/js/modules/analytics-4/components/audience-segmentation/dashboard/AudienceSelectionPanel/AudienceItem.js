@@ -36,6 +36,7 @@ import {
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { numFmt } from '../../../../../../util';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
 
@@ -51,6 +52,9 @@ export default function AudienceItem( {
 			AUDIENCE_SELECTION_FORM,
 			AUDIENCE_SELECTED
 		)
+	);
+	const userCountReportError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudiencesUserCountReportError()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -82,7 +86,7 @@ export default function AudienceItem( {
 			description={ description }
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
-			suffix={ numFmt( userCount ) }
+			suffix={ userCountReportError ? '-' : numFmt( userCount ) }
 		/>
 	);
 }

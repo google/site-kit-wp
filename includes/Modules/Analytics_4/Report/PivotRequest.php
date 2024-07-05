@@ -20,7 +20,7 @@ use WP_Error;
 /**
  * Class for Analytics 4 pivot report requests.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class PivotRequest extends PivotReport {
 	/**
 	 * Creates and executes a new Analytics 4 pivot report request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @param Data_Request $data           Data request object.
 	 * @param bool         $is_shared_request Determines whether the current request is shared or not.

@@ -54,7 +54,7 @@ import { createReducer } from './create-reducer';
  * access parts of the registry.
  *
  * @since 1.3.0 Data registry introduced.
- * @since n.e.x.t Deprecated for general use in favor of named exports from `googlesitekit-data` package.
+ * @since 1.130.0 Deprecated for general use in favor of named exports from `googlesitekit-data` package.
  * @deprecated
  */
 const Data = createRegistry( {}, global.wp?.data );

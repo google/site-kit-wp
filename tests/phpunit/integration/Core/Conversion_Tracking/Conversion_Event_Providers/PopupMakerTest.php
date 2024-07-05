@@ -50,7 +50,7 @@ class PopupMakerTest extends TestCase {
 	}
 
 	public function test_register_script() {
-		$handle = 'gsk-cep-' . PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-' . PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
 		$script = $this->popupmaker->register_script();
