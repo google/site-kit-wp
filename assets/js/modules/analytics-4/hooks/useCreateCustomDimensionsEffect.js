@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -55,15 +55,13 @@ export default function useCreateCustomDimensionsEffect() {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
-
-	const createDimensionsAndUpdateForm = useCallback( async () => {
-		await createCustomDimensions();
-		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-			isAutoCreatingCustomDimensions: false,
-		} );
-	}, [ createCustomDimensions, setValues ] );
-
 	useEffect( () => {
+		async function createDimensionsAndUpdateForm() {
+			await createCustomDimensions();
+			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				isAutoCreatingCustomDimensions: false,
+			} );
+		}
 		if (
 			isKeyMetricsSetupCompleted &&
 			isGA4Connected &&
@@ -83,7 +81,6 @@ export default function useCreateCustomDimensionsEffect() {
 		isKeyMetricsSetupCompleted,
 		isGA4Connected,
 		setValues,
-		createDimensionsAndUpdateForm,
 	] );
 
 	return null;
