@@ -20,7 +20,8 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 
 /**
  * @group Modules
@@ -115,7 +116,34 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response( 200 );
+						$publications = array(
+							array(
+								'publicationId'         => 'ABCDEFGH',
+								'publicationPredicates' => array(
+									'businessPredicates' => array(
+										'supportsSiteKit' => true,
+										'canSell'         => true,
+									),
+								),
+								'verifiedDomains'       => 'example.com',
+								'paymentOptions'        => array(
+									'subscriptions' => true,
+									'noPayment'     => false,
+									'contributions' => false,
+									'thankStickers' => true,
+								),
+								'displayName'           => 'Test Property',
+								'products'              => array(
+									array(
+										'name' => 'basic',
+									),
+								),
+								'onboardingState'       => 'PENDING_VERIFICATION',
+							),
+						);
+						$response     = new ListPublicationsResponse();
+						$response->setPublications( $publications );
+						return new Response( 200, array(), json_encode( $response ) );
 				}
 			}
 		);
@@ -126,9 +154,14 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
-		$data = $this->reader_revenue_manager->get_data( 'publications' );
-		$this->assertNotWPError( $data );
-		$this->assertIsArray( $data );
+		$result = $this->reader_revenue_manager->get_data( 'publications' );
+		$this->assertNotWPError( $result );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
+
+		$publication = $result[0];
+
+		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
 	}
 
 	/**
