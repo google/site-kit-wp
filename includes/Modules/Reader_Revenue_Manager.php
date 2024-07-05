@@ -187,7 +187,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
-	 * Gets the filters for retrieving publications for the current site.
+	 * Gets the filter for retrieving publications for the current site.
 	 *
 	 * @since n.e.x.t
 	 *
