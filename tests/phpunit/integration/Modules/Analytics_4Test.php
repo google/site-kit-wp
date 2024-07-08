@@ -452,7 +452,7 @@ class Analytics_4Test extends TestCase {
 		$account_id              = '12345678';
 		$property_id             = '1001';
 		$webdatastream_id        = '2001';
-		$measurement_id          = '1A2BCD345E';
+		$measurement_id          = 'G-1A2BCD345E';
 		$google_tag_account_id   = '123';
 		$google_tag_container_id = '456';
 		$tag_ids                 = array( 'GT-123', 'G-456' );
@@ -590,7 +590,7 @@ class Analytics_4Test extends TestCase {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
-		$measurement_id   = '1A2BCD345E';
+		$measurement_id   = 'G-1A2BCD345E';
 
 		$options = new Options( $this->context );
 		$options->set(
@@ -729,7 +729,7 @@ class Analytics_4Test extends TestCase {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
-		$measurement_id   = '1A2BCD345E';
+		$measurement_id   = 'G-1A2BCD345E';
 
 		$options = new Options( $this->context );
 		$options->set(
