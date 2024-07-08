@@ -219,6 +219,10 @@ export default function AudienceTile( {
 								currentValue={ pagesPerVisit.currentValue }
 							/>
 						) }
+						metricValueFormat={ {
+							style: 'decimal',
+							maximumFractionDigits: 2,
+						} }
 					/>
 
 					<AudienceTileMetric
