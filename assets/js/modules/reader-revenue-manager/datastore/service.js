@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store.
+ * `modules/reader-revenue-manager` data store: service.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -33,8 +33,11 @@ const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} publicationID Publication ID.
-	 * @return {string} Link to Reader Revenue Management platform.
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Object containing optional path and query args.
+	 * @param {string} [args.path]  A path to append to the base url.
+	 * @param {Object} [args.query] Object of query params to be added to the URL. utm_source would always get added to the URL even if this is empty.
+	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) =>

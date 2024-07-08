@@ -28,7 +28,7 @@ import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
-describe( 'module/reader-revenue-manager service store', () => {
+describe( 'modules/reader-revenue-manager service store', () => {
 	const userData = {
 		id: 1,
 		email: 'admin@example.com',
