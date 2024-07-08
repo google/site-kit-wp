@@ -308,8 +308,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} );
 
 			await step( 'redirect and check notification bar', async () => {
+				await page.waitForNavigation();
 				await page.waitForSelector(
-					'.googlesitekit-publisher-win--win-success'
+					'.googlesitekit-publisher-win__title',
+					{
+						timeout: 5_000,
+					}
 				);
 				await expect( page ).toMatchElement(
 					'.googlesitekit-publisher-win__title',
