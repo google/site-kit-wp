@@ -36,7 +36,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 
-export default function useEnableAudienceGroup() {
+export default function useEnableAudienceGroup( { redirectURL } = {} ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
@@ -53,14 +53,16 @@ export default function useEnableAudienceGroup() {
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const redirectURL = addQueryArgs( global.location.href, {
-		notification: 'audience_segmentation',
-	} );
+	if ( ! redirectURL ) {
+		redirectURL = addQueryArgs( global.location.href, {
+			notification: 'audience_segmentation',
+		} );
+	}
 
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
 
-		// If scope not granted, trigger scope error right away. These are
+		// If scope is not granted, trigger scope error right away. These are
 		// typically handled automatically based on API responses, but
 		// this particular case has some special handling to improve UX.
 		if ( ! hasAnalytics4EditScope ) {
@@ -78,6 +80,7 @@ export default function useEnableAudienceGroup() {
 					status: 403,
 					scopes: [ EDIT_SCOPE ],
 					skipModal: true,
+					skipDefaultErrorNotifications: true,
 					redirectURL,
 				},
 			} );
@@ -87,7 +90,6 @@ export default function useEnableAudienceGroup() {
 
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
 		await enableAudienceGroup();
-		setIsSaving( false );
 	}, [
 		enableAudienceGroup,
 		hasAnalytics4EditScope,

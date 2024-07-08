@@ -19,20 +19,16 @@
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
-import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { actHook, renderHook } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
-	freezeFetch,
-	muteFetch,
-	provideModules,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
@@ -40,13 +36,6 @@ import useEnableAudienceGroup from './useEnableAudienceGroup';
 describe( 'useEnableAudienceGroup', () => {
 	let registry;
 	let enableAudienceGroupSpy;
-
-	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
-	);
-	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
-	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -56,26 +45,10 @@ describe( 'useEnableAudienceGroup', () => {
 			'enableAudienceGroup'
 		);
 
+		enableAudienceGroupSpy.mockImplementation( () => Promise.resolve() );
+
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
-		} );
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			availableAudiences: null,
-			availableCustomDimensions: [ 'googlesitekit_post_type' ],
-			propertyID: '123456789',
-		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			configuredAudiences: null,
-			isAudienceSegmentationWidgetHidden: false,
 		} );
 	} );
 
@@ -100,8 +73,6 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should set `isSaving` to true when `onEnableGroups` is called', () => {
-		freezeFetch( syncAvailableAudiencesEndpoint );
-
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,
 		} );
@@ -144,13 +115,6 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should automatically call `onEnableGroups` function when user returns from the OAuth screen', () => {
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
-			status: 200,
-			body: audiencesFixture,
-		} );
-
-		muteFetch( reportEndpoint );
-
 		// Set autoSubmit to true.
 		registry
 			.dispatch( CORE_FORMS )
@@ -168,13 +132,6 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', () => {
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
-			status: 200,
-			body: audiencesFixture,
-		} );
-
-		muteFetch( reportEndpoint );
-
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,
 		} );
