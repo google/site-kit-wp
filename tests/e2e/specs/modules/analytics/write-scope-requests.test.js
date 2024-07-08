@@ -167,21 +167,14 @@ describe( 'Analytics write scope requests', () => {
 			} else if (
 				request.url().match( 'analytics-4/data/container-destinations' )
 			) {
-				const requestURL = new URL( request.url() );
-				const gtmAccountID = requestURL.searchParams.get( 'accountID' );
-				const gtmContainerID =
-					requestURL.searchParams.get( 'containerID' );
 				const googleTagID = global.googlesitekit.data
 					.select( 'modules/analytics-4' )
 					.googleTagID();
 				// eslint-disable-next-line sitekit/acronym-case
 				const destination = { destinationId: googleTagID };
-				const destinations = {
-					[ gtmAccountID ]: { [ gtmContainerID ]: [ destination ] },
-				};
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( destinations ),
+					body: JSON.stringify( [ destination ] ),
 				} );
 			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
 				const requestURL = new URL( request.url() );
