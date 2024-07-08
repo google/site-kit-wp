@@ -185,12 +185,12 @@ const baseActions = {
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
-			const { select, dispatch, __experimentalResolveSelect } =
+			const { select, dispatch, resolveSelect } =
 				yield commonActions.getRegistry();
 
 			// Wait for user authentication state to be available before selecting.
 			yield commonActions.await(
-				__experimentalResolveSelect( CORE_USER ).getAuthentication()
+				resolveSelect( CORE_USER ).getAuthentication()
 			);
 
 			if ( ! select( CORE_USER ).isAuthenticated() ) {
@@ -199,7 +199,7 @@ const baseActions = {
 
 			// Await for surveys to be resolved before checking timeouts.
 			yield commonActions.await(
-				__experimentalResolveSelect( CORE_USER ).getSurveyTimeouts()
+				resolveSelect( CORE_USER ).getSurveyTimeouts()
 			);
 
 			const isTimedOut =
