@@ -190,6 +190,44 @@ describe( 'core/site site info', () => {
 				);
 			} );
 		} );
+
+		describe( 'setSetupErrorCode', () => {
+			it( 'sets the `setupErrorCode` property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setSetupErrorCode( 'error_code' );
+
+				expect( store.getState().siteInfo.setupErrorCode ).toBe(
+					'error_code'
+				);
+			} );
+
+			it( 'requires a string or null argument', () => {
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode();
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSetupErrorCode( undefined );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( true );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( 1 );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( null );
+
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( 'error' );
+				} ).not.toThrow( 'setupErrorCode must be a string or null.' );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

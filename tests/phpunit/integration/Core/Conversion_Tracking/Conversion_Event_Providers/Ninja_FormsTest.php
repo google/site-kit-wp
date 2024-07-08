@@ -50,7 +50,7 @@ class Ninja_FormsTest extends TestCase {
 	}
 
 	public function test_register_script() {
-		$handle = 'gsk-cep-' . Ninja_Forms::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-' . Ninja_Forms::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
 		$script = $this->ninjaform->register_script();

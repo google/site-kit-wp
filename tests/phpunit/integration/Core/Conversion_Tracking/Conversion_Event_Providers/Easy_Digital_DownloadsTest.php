@@ -50,7 +50,7 @@ class Easy_Digital_DownloadsTest extends TestCase {
 	}
 
 	public function test_register_script() {
-		$handle = 'gsk-cep-' . Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-' . Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
 		$script = $this->contactform->register_script();
