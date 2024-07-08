@@ -16,16 +16,62 @@
  * limitations under the License.
  */
 
-import { render, waitFor } from '../../../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import SettingsCardVisitorGroups from './SettingsCardVisitorGroups';
+import { render, waitFor } from '../../../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideUserAuthentication,
+} from '../../../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
+import SettingsCardVisitorGroups from './';
 
 describe( 'SettingsCardVisitorGroups', () => {
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
+			] );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+	} );
+
+	it( 'should render the setup CTA if groups are not configured', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { getByRole } = render( <SettingsCardVisitorGroups />, {
+			registry,
+		} );
+
+		expect(
+			getByRole( 'button', { name: /Enable groups/i } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render the setup success notification once groups are configured', () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'audienceA', 'audienceB' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { getByText } = render( <SettingsCardVisitorGroups />, {
+			registry,
+		} );
+
+		expect(
+			getByText( 'We’ve added the audiences section to your dashboard!' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the visitor groups switch correctly', async () => {

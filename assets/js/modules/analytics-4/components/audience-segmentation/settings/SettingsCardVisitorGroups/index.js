@@ -19,21 +19,26 @@
 /**
  * WordPress dependencies
  */
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { Switch } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../../../../material-components';
-import Layout from '../../../../../components/layout/Layout';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { Cell, Grid, Row } from '../../../../../../material-components';
+import Layout from '../../../../../../components/layout/Layout';
+import SetupCTA from './SetupCTA';
+import SetupSuccess from './SetupSuccess';
 
 export default function SettingsCardVisitorGroups() {
 	const audienceSegmentationWidgetHidden = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isAudienceSegmentationWidgetHidden()
+	);
+	const configuredAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
 	const { setAudienceSegmentationWidgetHidden, saveAudienceSettings } =
@@ -50,6 +55,10 @@ export default function SettingsCardVisitorGroups() {
 		setAudienceSegmentationWidgetHidden,
 	] );
 
+	if ( configuredAudiences === undefined ) {
+		return null;
+	}
+
 	return (
 		<Layout
 			className="googlesitekit-settings-meta"
@@ -62,15 +71,23 @@ export default function SettingsCardVisitorGroups() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<Switch
-								label={ __(
-									'Display visitor groups in dashboard',
-									'google-site-kit'
-								) }
-								checked={ ! audienceSegmentationWidgetHidden }
-								onClick={ handleKeyMetricsToggle }
-								hideLabel={ false }
-							/>
+							{ ! configuredAudiences?.length && <SetupCTA /> }
+							{ !! configuredAudiences?.length && (
+								<Fragment>
+									<SetupSuccess />
+									<Switch
+										label={ __(
+											'Display visitor groups in dashboard',
+											'google-site-kit'
+										) }
+										checked={
+											! audienceSegmentationWidgetHidden
+										}
+										onClick={ handleKeyMetricsToggle }
+										hideLabel={ false }
+									/>
+								</Fragment>
+							) }
 						</Cell>
 					</Row>
 				</Grid>
