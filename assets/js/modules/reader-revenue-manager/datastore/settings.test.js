@@ -51,10 +51,26 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	describe( 'validateCanSubmitChanges', () => {
-		it( 'should throw invariant error for invalid publication ID', () => {
+		it( 'should throw invariant error for invalid publication ID of type number', () => {
 			const settings = {
 				publicationID: 12345,
 				publicationOnboardingState: '',
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PUBLICATION_ID
+			);
+		} );
+
+		it( 'should throw invariant error for invalid publication ID with special chars', () => {
+			const settings = {
+				publicationID: 'ABCD&*12345',
+				publicationOnboardingState: 'ONBOARDING_ACTION_REQUIRED',
 				publicationOnboardingStateLastSyncedAtMs: 0,
 			};
 
