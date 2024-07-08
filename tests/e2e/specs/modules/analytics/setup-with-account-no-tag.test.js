@@ -69,9 +69,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
-			const measurementID = 'G-2B7M8YQ1K6';
-			const containerMock = fixtures.container[ measurementID ];
-
 			if (
 				request
 					.url()
@@ -178,9 +175,31 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
 			) {
+				const requestURL = new URL( request.url() );
+				const destinationID =
+					requestURL.searchParams.get( 'destinationID' );
+				const googleTagID = global.googlesitekit.data
+					.select( 'modules/analytics-4' )
+					.googleTagID();
+				const container = {
+					...fixtures.containerE2E[ 'G-500' ],
+					tagIds: [ destinationID, googleTagID ],
+				};
 				request.respond( {
-					body: JSON.stringify( containerMock ),
+					body: JSON.stringify( container ),
 					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-destinations' )
+			) {
+				const googleTagID = global.googlesitekit.data
+					.select( 'modules/analytics-4' )
+					.googleTagID();
+				// eslint-disable-next-line sitekit/acronym-case
+				const destination = { destinationId: googleTagID };
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [ destination ] ),
 				} );
 			} else {
 				request.continue();
