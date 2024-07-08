@@ -124,16 +124,23 @@ LoadingWithGroups.args = {
 export const WithInsufficientPermissionsError = Template.bind( {} );
 WithInsufficientPermissionsError.storyName = 'Insufficient permissions error';
 WithInsufficientPermissionsError.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: () => {
 		const error = {
 			code: 'test_error',
 			message: 'Error message.',
 			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 		};
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'syncAvailableAudiences' );
+		fetchMock.postOnce(
+			syncAvailableAudiencesEndpoint,
+			{
+				body: error,
+				status: 403,
+			},
+			{
+				overwriteRoutes: true,
+			}
+		);
 	},
 };
 WithInsufficientPermissionsError.scenario = {
@@ -143,16 +150,23 @@ WithInsufficientPermissionsError.scenario = {
 export const AudienceSyncError = Template.bind( {} );
 AudienceSyncError.storyName = 'Audience sync error';
 AudienceSyncError.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: () => {
 		const error = {
 			code: 'test_error',
 			message: 'Error message.',
 			data: {},
 		};
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'syncAvailableAudiences' );
+		fetchMock.postOnce(
+			syncAvailableAudiencesEndpoint,
+			{
+				body: error,
+				status: 400,
+			},
+			{
+				overwriteRoutes: true,
+			}
+		);
 	},
 };
 AudienceSyncError.scenario = {
