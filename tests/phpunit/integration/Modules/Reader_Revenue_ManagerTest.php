@@ -35,6 +35,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	use Module_With_Service_Entity_ContractTests;
 
 	/**
+	 * Context object.
+	 *
+	 * @var Context
+	 */
+	private $context;
+
+	/**
 	 * Authentication object.
 	 *
 	 * @var Authentication
@@ -51,12 +58,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$context                      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options                      = new Options( $context );
+		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options                      = new Options( $this->context );
 		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options                 = new User_Options( $context, $user->ID );
-		$this->authentication         = new Authentication( $context, $options, $user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $context, $options, $user_options, $this->authentication );
+		$user_options                 = new User_Options( $this->context, $user->ID );
+		$this->authentication         = new Authentication( $this->context, $options, $user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options, $this->authentication );
 	}
 
 	public function test_register() {
