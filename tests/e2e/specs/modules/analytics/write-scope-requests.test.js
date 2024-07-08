@@ -155,7 +155,7 @@ describe( 'Analytics write scope requests', () => {
 			) {
 				const requestURL = new URL( request.url() );
 				const destinationID =
-					requestURL.searchParams.get( 'destinationId' );
+					requestURL.searchParams.get( 'destinationID' );
 				const container = {
 					...fixtures.containerE2E[ 'G-500' ],
 					tagIds: [ destinationID ],
@@ -163,6 +163,34 @@ describe( 'Analytics write scope requests', () => {
 				request.respond( {
 					body: JSON.stringify( container ),
 					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-destinations' )
+			) {
+				const requestURL = new URL( request.url() );
+				const gtmAccountID = requestURL.searchParams.get( 'accountID' );
+				const gtmContainerID =
+					requestURL.searchParams.get( 'containerID' );
+				const googleTagID = global.googlesitekit.data
+					.select( 'modules/analytics-4' )
+					.googleTagID();
+				// eslint-disable-next-line sitekit/acronym-case
+				const destination = { destinationId: googleTagID };
+				const destinations = {
+					[ gtmAccountID ]: { [ gtmContainerID ]: [ destination ] },
+				};
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( destinations ),
+				} );
+			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
+				const requestURL = new URL( request.url() );
+				const propertyID = requestURL.searchParams.get( 'propertyID' );
+				const property = fixtures.properties.find(
+					( { _id } ) => _id === propertyID
+				);
+				request.respond( {
+					body: JSON.stringify( property ),
 				} );
 			} else if (
 				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
@@ -321,11 +349,10 @@ describe( 'Analytics write scope requests', () => {
 		);
 
 		// They should end up on the dashboard.
-		await Promise.all( [
-			page.waitForNavigation(),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
-
+		await page.waitForNavigation();
+		await page.waitForSelector( '.googlesitekit-publisher-win__title', {
+			timeout: 5_000,
+		} );
 		await expect( page ).toMatchElement(
 			'.googlesitekit-publisher-win__title',
 			{
@@ -403,10 +430,10 @@ describe( 'Analytics write scope requests', () => {
 		);
 
 		// They should end up on the dashboard.
-		await Promise.all( [
-			page.waitForNavigation(),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
+		await page.waitForNavigation();
+		await page.waitForSelector( '.googlesitekit-publisher-win__title', {
+			timeout: 5_000,
+		} );
 		await expect( page ).toMatchElement(
 			'.googlesitekit-publisher-win__title',
 			{
