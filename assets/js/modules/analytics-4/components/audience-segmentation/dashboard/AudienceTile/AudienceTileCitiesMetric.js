@@ -58,7 +58,8 @@ export default function AudienceTileCitiesMetric( {
 								</div>
 								<div className="googlesitekit-audience-segmentation-tile-metric__cities-metric-value">
 									{ numFmt(
-										topCities?.metricValues[ index ],
+										topCities?.metricValues[ index ] /
+											topCities?.total,
 										{
 											style: 'percent',
 											maximumFractionDigits: 1,
