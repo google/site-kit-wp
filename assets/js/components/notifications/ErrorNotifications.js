@@ -108,6 +108,12 @@ export default function ErrorNotifications() {
 		}
 	}
 
+	if (
+		temporaryPersistedPermissionsError?.data?.skipDefaultErrorNotifications
+	) {
+		return null;
+	}
+
 	return (
 		<Fragment>
 			<InternalServerError />

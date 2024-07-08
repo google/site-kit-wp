@@ -56,7 +56,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 */
 	public function register_script() {
 		$script = new Script(
-			'gsk-cep-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
+			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
 				'src'          => $this->context->url( 'dist/assets/js/woocommerce.js' ),
 				'execution'    => 'defer',

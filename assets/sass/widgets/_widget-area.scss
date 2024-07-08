@@ -48,6 +48,10 @@
 		letter-spacing: $ls-s;
 		line-height: $lh-body-md;
 		margin: 0;
+
+		.googlesitekit-new-badge {
+			margin-left: 14px;
+		}
 	}
 
 	.googlesitekit-widget-area-header__details {
