@@ -35,13 +35,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	use Module_With_Service_Entity_ContractTests;
 
 	/**
-	 * Context instance.
-	 *
-	 * @var Context
-	 */
-	private $context;
-
-	/**
 	 * Authentication object.
 	 *
 	 * @var Authentication

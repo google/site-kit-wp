@@ -62,7 +62,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -220,7 +220,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -235,7 +235,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
-	 * Gets the filters for retrieving publications for the current site.
+	 * Gets the filter for retrieving publications for the current site.
 	 *
 	 * @since n.e.x.t
 	 *
