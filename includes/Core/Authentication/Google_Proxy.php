@@ -583,7 +583,7 @@ class Google_Proxy {
 		if ( is_multisite() ) {
 			return 'wordpress-multisite';
 		}
-		return 'WordPress'; // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		return 'wordpress'; // phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText
 	}
 
 	/**
