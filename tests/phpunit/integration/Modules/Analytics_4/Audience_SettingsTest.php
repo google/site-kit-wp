@@ -77,7 +77,7 @@ class Audience_SettingsTest extends TestCase {
 				array( 'configuredAudiences' => array( 'validAudienceResourceName1', false, true, null, array(), 'validAudienceResourceName2', '' ) ),
 				array( 'configuredAudiences' => array( 'validAudienceResourceName1', 'validAudienceResourceName2' ) ),
 			),
-			'array of configuredAudiences and int isAudienceSegmentationWidgetHidden flag' => array(
+			'array of configuredAudiences and int isAudienceSegmentationWidgetHidden 1 flag' => array(
 				array(
 					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
 					'isAudienceSegmentationWidgetHidden' => 1,
@@ -87,7 +87,7 @@ class Audience_SettingsTest extends TestCase {
 					'isAudienceSegmentationWidgetHidden' => true,
 				),
 			),
-			'array of configuredAudiences and int isAudienceSegmentationWidgetHidden flag' => array(
+			'array of configuredAudiences and int isAudienceSegmentationWidgetHidden 0 flag' => array(
 				array(
 					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
 					'isAudienceSegmentationWidgetHidden' => 0,

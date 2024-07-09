@@ -50,5 +50,4 @@ class Connected_Proxy_URL extends Setting {
 	protected function get_sanitize_callback() {
 		return 'trailingslashit';
 	}
-
 }

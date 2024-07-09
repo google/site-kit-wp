@@ -39,10 +39,10 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		// Backwards compatibility with previous dedicated option.
 		add_filter(
 			'default_option_' . self::OPTION,
-			function ( $default ) {
-				$default['propertyID'] = $this->options->get( 'googlesitekit_search_console_property' ) ?: '';
+			function ( $default_option ) {
+				$default_option['propertyID'] = $this->options->get( 'googlesitekit_search_console_property' ) ?: '';
 
-				return $default;
+				return $default_option;
 			}
 		);
 	}
@@ -73,5 +73,4 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'propertyID',
 		);
 	}
-
 }

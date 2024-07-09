@@ -45,5 +45,4 @@ class In_List_Filter implements Filter {
 
 		return $expression;
 	}
-
 }

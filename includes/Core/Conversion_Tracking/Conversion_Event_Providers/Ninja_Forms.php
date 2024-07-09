@@ -67,5 +67,4 @@ class Ninja_Forms extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

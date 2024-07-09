@@ -130,5 +130,4 @@ class Migration_1_3_0 {
 			)
 		);
 	}
-
 }

@@ -181,5 +181,4 @@ class Survey_QueueTest extends TestCase {
 		$survey = $this->queue->find_by_session( $this->survey3['session'] );
 		$this->assertNull( $survey );
 	}
-
 }

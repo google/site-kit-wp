@@ -72,5 +72,4 @@ class Owner_ID extends Setting {
 	protected function get_sanitize_callback() {
 		return 'intval';
 	}
-
 }

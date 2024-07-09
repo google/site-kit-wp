@@ -17,5 +17,4 @@ class FakeModule_AMP_Tag extends Module_AMP_Tag {
 	public function register() {}
 
 	protected function render() {}
-
 }

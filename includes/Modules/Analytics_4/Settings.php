@@ -113,7 +113,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return callable|null
 	 */
 	protected function get_sanitize_callback() {
-		return function( $option ) {
+		return function ( $option ) {
 			if ( is_array( $option ) ) {
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
@@ -151,7 +151,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					if ( is_array( $option['availableCustomDimensions'] ) ) {
 						$valid_dimensions = array_filter(
 							$option['availableCustomDimensions'],
-							function( $dimension ) {
+							function ( $dimension ) {
 								return is_string( $dimension ) && strpos( $dimension, 'googlesitekit_' ) === 0;
 							}
 						);
