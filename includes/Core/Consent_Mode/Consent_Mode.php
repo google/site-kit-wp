@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Assets\Manifest;
 
 /**
  * Class for handling Consent Mode.
