@@ -101,5 +101,4 @@ class Post_MetaTest extends TestCase {
 		$this->assertTrue( $deleted );
 		$this->assertPostMetaNotExists( $post_id, $meta_key );
 	}
-
 }

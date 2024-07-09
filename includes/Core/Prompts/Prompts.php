@@ -71,5 +71,4 @@ class Prompts {
 		$this->dismissed_prompts->register();
 		$this->rest_controller->register();
 	}
-
 }

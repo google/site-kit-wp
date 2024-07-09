@@ -25,11 +25,12 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useState, useEffect } from '@wordpress/element';
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -37,11 +38,50 @@ import {
 } from '../../../../datastore/constants';
 import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
+import AudienceItemPreviewBlock from './AudienceItemPreviewBlock';
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
+	const [ firstView, setFirstView ] = useState( true );
+	const { syncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+	);
+
+	const isLoading = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableAudiences()
+	);
+
+	useEffect( () => {
+		if ( ! firstView || ! isOpen ) {
+			return;
+		}
+
+		syncAvailableAudiences();
+		setFirstView( false );
+	}, [ firstView, isOpen, syncAvailableAudiences ] );
+
+	useEffect( () => {
+		// @TODO Explore more elegant option to re-establish the focus. After `syncAvailableAudiences`
+		// happens the focus is lost, even without preview block being shown.
+		if ( ! isLoading && isOpen ) {
+			const firstInput = document.querySelector(
+				'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item input'
+			);
+			if ( firstInput ) {
+				firstInput.focus();
+			}
+		}
+	}, [ isLoading, isOpen ] );
+
 	const availableAudiences = useSelect( ( select ) => {
-		const { getConfigurableAudiences, getReport } =
-			select( MODULES_ANALYTICS_4 );
+		const {
+			getConfigurableAudiences,
+			getReport,
+			getAudiencesUserCountReportOptions,
+		} = select( MODULES_ANALYTICS_4 );
 
 		const audiences = getConfigurableAudiences();
 
@@ -85,36 +125,26 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
-		const reportOptions = {
-			...dateRangeDates,
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-		};
-
 		// Get the user count for the available Site Kit audiences using the `newVsReturning` dimension
 		// to avoid the partial data state for these audiences.
 		const newVsReturningReport =
 			isSiteKitAudiencePartialData &&
 			getReport( {
-				...reportOptions,
+				...dateRangeDates,
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
 				dimensions: [ { name: 'newVsReturning' } ],
 			} );
 
-		const audienceResourceNames = (
-			isSiteKitAudiencePartialData ? otherAudiences : audiences
-		 ).map( ( { name } ) => name );
-
 		// Get the user count for the available audiences using the `audienceResourceName` dimension.
-		const audienceResourceNameReport = getReport( {
-			...reportOptions,
-			dimensions: [ { name: 'audienceResourceName' } ],
-			dimensionFilters: {
-				audienceResourceName: audienceResourceNames,
-			},
-		} );
+		const audienceResourceNameReport = getReport(
+			getAudiencesUserCountReportOptions(
+				isSiteKitAudiencePartialData ? otherAudiences : audiences
+			)
+		);
 
 		const { rows: newVsReturningRows = [] } = newVsReturningReport || {};
 		const { rows: audienceResourceNameRows = [] } =
@@ -203,7 +233,9 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			availableItemsTitle={ __( 'Additional groups', 'google-site-kit' ) }
 			availableSavedItems={ availableSavedItems }
 			availableUnsavedItems={ availableUnsavedItems }
-			ItemComponent={ AudienceItem }
+			ItemComponent={
+				isLoading ? AudienceItemPreviewBlock : AudienceItem
+			}
 			savedItemSlugs={ savedItemSlugs }
 		/>
 	);

@@ -55,7 +55,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 */
 	public function register_script() {
 		$script = new Script(
-			'gsk-cep-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
+			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
 				'src'          => $this->context->url( 'dist/assets/js/easy-digital-downloads.js' ),
 				'execution'    => 'defer',
@@ -67,5 +67,4 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

@@ -36,5 +36,4 @@ interface Blockable_Tag_Interface {
 	 * @return string HTML attributes to add if the tag requires consent to load, or an empty string.
 	 */
 	public function get_tag_blocked_on_consent_attribute();
-
 }

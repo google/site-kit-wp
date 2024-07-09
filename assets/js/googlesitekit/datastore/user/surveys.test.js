@@ -222,18 +222,14 @@ describe( 'core/user surveys', () => {
 
 				provideUserAuthentication( registry );
 
-				await registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getAuthentication();
+				await registry.resolveSelect( CORE_USER ).getAuthentication();
 
 				muteFetch( surveyTriggerEndpoint );
 				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
-				await registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getSurveyTimeouts();
+				await registry.resolveSelect( CORE_USER ).getSurveyTimeouts();
 
 				jest.useFakeTimers();
 

@@ -212,7 +212,7 @@ class ResponseTest extends TestCase {
 			$expected_value_index = 1;
 			if ( $args['expected_dimension_values'] > 1 ) {
 				$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][1], $dimension_values[1]->getValue() );
-				$expected_value_index++;
+				++$expected_value_index;
 			}
 
 			// Verify that metric values are set correctly.
@@ -220,5 +220,4 @@ class ResponseTest extends TestCase {
 			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[1]->getValue() );
 		}
 	}
-
 }

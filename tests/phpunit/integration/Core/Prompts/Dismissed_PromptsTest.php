@@ -113,5 +113,4 @@ class Dismissed_PromptsTest extends TestCase {
 			$this->user_options->get( Dismissed_Prompts::OPTION )
 		);
 	}
-
 }

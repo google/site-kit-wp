@@ -82,31 +82,45 @@ export default function ZeroDataStateNotifications() {
 		return Object.keys( recoverableModules ).includes( 'search-console' );
 	} );
 
-	const analyticsGatheringData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected &&
-		canViewSharedAnalytics &&
-		false === showRecoverableAnalytics
-			? select( MODULES_ANALYTICS_4 ).isGatheringData()
-			: false
+	const analyticsGatheringData = useInViewSelect(
+		( select ) =>
+			isAnalyticsConnected &&
+			canViewSharedAnalytics &&
+			false === showRecoverableAnalytics
+				? select( MODULES_ANALYTICS_4 ).isGatheringData()
+				: false,
+		[
+			isAnalyticsConnected,
+			canViewSharedAnalytics,
+			showRecoverableAnalytics,
+		]
 	);
 	const searchConsoleGatheringData = useInViewSelect(
 		( select ) =>
 			canViewSharedSearchConsole &&
 			false === showRecoverableSearchConsole &&
-			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData(),
+		[ canViewSharedSearchConsole, showRecoverableSearchConsole ]
 	);
-	const analyticsHasZeroData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected &&
-		canViewSharedAnalytics &&
-		false === showRecoverableAnalytics
-			? select( MODULES_ANALYTICS_4 ).hasZeroData()
-			: false
+	const analyticsHasZeroData = useInViewSelect(
+		( select ) =>
+			isAnalyticsConnected &&
+			canViewSharedAnalytics &&
+			false === showRecoverableAnalytics
+				? select( MODULES_ANALYTICS_4 ).hasZeroData()
+				: false,
+		[
+			isAnalyticsConnected,
+			canViewSharedAnalytics,
+			showRecoverableAnalytics,
+		]
 	);
 	const searchConsoleHasZeroData = useInViewSelect(
 		( select ) =>
 			canViewSharedSearchConsole &&
 			false === showRecoverableSearchConsole &&
-			select( MODULES_SEARCH_CONSOLE ).hasZeroData()
+			select( MODULES_SEARCH_CONSOLE ).hasZeroData(),
+		[ canViewSharedSearchConsole, showRecoverableSearchConsole ]
 	);
 
 	// If any of the checks for gathering data or zero data states have

@@ -29,5 +29,4 @@ interface Module_With_Tag {
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
 	public function get_tag_matchers();
-
 }

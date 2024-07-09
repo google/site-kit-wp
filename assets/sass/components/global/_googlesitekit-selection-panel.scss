@@ -55,6 +55,22 @@
 		padding: 8px; // Tweak the padding to ensure the link is aligned in its focus state.
 	}
 
+	.googlesitekit-selection-panel__loading {
+		border-bottom: 2px solid $c-neutral-n-50;
+		display: flex;
+		justify-content: space-between;
+		margin: 8px $grid-gap-desktop 10px;
+		padding: 6px 0;
+
+		&:last-child {
+			border: none;
+		}
+	}
+
+	.googlesitekit-selection-panel__loading-item {
+		margin: 0 0 10px;
+	}
+
 	.googlesitekit-selection-panel-items {
 		overflow: auto;
 

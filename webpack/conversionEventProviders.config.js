@@ -35,15 +35,22 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
-		'contact-form-7': './assets/js/event-providers/contact-form-7.js',
-		'easy-digital-downloads':
+		'googlesitekit-events-provider-contact-form-7':
+			'./assets/js/event-providers/contact-form-7.js',
+		'googlesitekit-events-provider-easy-digital-downloads':
 			'./assets/js/event-providers/easy-digital-downloads.js',
-		mailchimp: './assets/js/event-providers/mailchimp.js',
-		'ninja-forms': './assets/js/event-providers/ninja-forms.js',
-		'optin-monster': './assets/js/event-providers/optin-monster.js',
-		'popup-maker': './assets/js/event-providers/popup-maker.js',
-		woocommerce: './assets/js/event-providers/woocommerce.js',
-		wpforms: './assets/js/event-providers/wpforms.js',
+		'googlesitekit-events-provider-mailchimp':
+			'./assets/js/event-providers/mailchimp.js',
+		'googlesitekit-events-provider-ninja-forms':
+			'./assets/js/event-providers/ninja-forms.js',
+		'googlesitekit-events-provider-optin-monster':
+			'./assets/js/event-providers/optin-monster.js',
+		'googlesitekit-events-provider-popup-maker':
+			'./assets/js/event-providers/popup-maker.js',
+		'googlesitekit-events-provider-woocommerce':
+			'./assets/js/event-providers/woocommerce.js',
+		'googlesitekit-events-provider-wpforms':
+			'./assets/js/event-providers/wpforms.js',
 	},
 	externals,
 	output: {
