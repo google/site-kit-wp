@@ -36,7 +36,8 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		// Consent Mode
-		'consent-mode': './assets/js/consent-mode/consent-mode.js',
+		'googlesitekit-consent-mode':
+			'./assets/js/consent-mode/consent-mode.js',
 		// Event Providers
 		'googlesitekit-events-provider-contact-form-7':
 			'./assets/js/event-providers/contact-form-7.js',

@@ -32,7 +32,8 @@ describe( 'Consent Mode', () => {
 	} );
 
 	afterEach( () => {
-		jest.restoreAllMocks();
+		delete global.gtag;
+		delete global._googlesitekitConsentCategoryMap;
 	} );
 
 	it( 'should call gtag with the correct parameters when wp_listen_for_consent_change event is triggered', () => {

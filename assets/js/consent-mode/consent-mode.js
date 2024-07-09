@@ -15,30 +15,31 @@
  */
 
 ( function () {
-	document.addEventListener(
-		'wp_listen_for_consent_change',
-		function ( event ) {
-			if ( event.detail ) {
-				const consentParameters = {};
-				let hasConsentParameters = false;
-				Object.keys( event.detail ).forEach( ( category ) => {
-					if ( global._googlesitekitConsentCategoryMap[ category ] ) {
-						const status = event.detail[ category ];
-						const mappedStatus =
-							status === 'allow' ? 'granted' : 'denied';
-						const parameters =
-							global._googlesitekitConsentCategoryMap[ category ];
-						parameters.forEach( ( parameter ) => {
-							consentParameters[ parameter ] = mappedStatus;
-						} );
-						hasConsentParameters = !! parameters.length;
-					}
-				} );
-				if ( hasConsentParameters ) {
-					global.gtag( 'consent', 'update', consentParameters );
+	function actionConsentChange( event ) {
+		if ( event.detail ) {
+			const consentParameters = {};
+			let hasConsentParameters = false;
+			Object.keys( event.detail ).forEach( ( category ) => {
+				if ( global._googlesitekitConsentCategoryMap[ category ] ) {
+					const status = event.detail[ category ];
+					const mappedStatus =
+						status === 'allow' ? 'granted' : 'denied';
+					const parameters =
+						global._googlesitekitConsentCategoryMap[ category ];
+					parameters.forEach( ( parameter ) => {
+						consentParameters[ parameter ] = mappedStatus;
+					} );
+					hasConsentParameters = !! parameters.length;
 				}
+			} );
+			if ( hasConsentParameters ) {
+				global.gtag( 'consent', 'update', consentParameters );
 			}
 		}
+	}
+	document.addEventListener(
+		'wp_listen_for_consent_change',
+		actionConsentChange
 	);
 
 	function updateGrantedConsent() {

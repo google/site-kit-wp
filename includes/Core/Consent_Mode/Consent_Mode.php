@@ -88,8 +88,7 @@ class Consent_Mode {
 				1 // Set priority to 1 to ensure the snippet is printed with top priority in the head.
 			);
 
-			// Register the consent mode script.
-			add_action( 'wp_enqueue_scripts', fn () => $this->enqueue_script() );
+			add_action( 'wp_enqueue_scripts', fn () => $this->register_and_enqueue_script() );
 		}
 
 		add_filter(
@@ -103,15 +102,15 @@ class Consent_Mode {
 	}
 
 	/**
-	 * Enqueues the consent mode script.
+	 * Registers and Enqueues the consent mode script.
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function enqueue_script() {
+	protected function register_and_enqueue_script() {
 		$consent_mode_script = new Script(
-			'consent-mode',
+			'googlesitekit-consent-mode',
 			array(
-				'src' => $this->context->url( 'dist/assets/js/consent-mode.js' ),
+				'src' => $this->context->url( 'dist/assets/js/googlesitekit-consent-mode.js' ),
 			)
 		);
 		$consent_mode_script->register( $this->context );
