@@ -88,7 +88,7 @@ describe( 'useEnableAudienceGroup', () => {
 		enableAudienceGroupSpy.mockRestore();
 	} );
 
-	it( 'should return an object containing the `isSaving` state and `onEnableGroups` callback function', () => {
+	it( 'should return an object with appropriate properties', () => {
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,
 		} );
