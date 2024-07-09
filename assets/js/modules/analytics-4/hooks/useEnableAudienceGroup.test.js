@@ -26,16 +26,31 @@ import {
 } from '../datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { actHook, renderHook } from '../../../../../tests/js/test-utils';
+import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';
+import { act, actHook, renderHook } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	freezeFetch,
+	muteFetch,
+	provideModules,
 	provideUserAuthentication,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
 
 describe( 'useEnableAudienceGroup', () => {
 	let registry;
 	let enableAudienceGroupSpy;
+
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	);
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+	const syncAvailableAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -45,10 +60,29 @@ describe( 'useEnableAudienceGroup', () => {
 			'enableAudienceGroup'
 		);
 
-		enableAudienceGroupSpy.mockImplementation( () => Promise.resolve() );
+		// enableAudienceGroupSpy.mockImplementation( () => Promise.resolve() );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
+		} );
+
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableAudiences: null,
+			availableCustomDimensions: [ 'googlesitekit_post_type' ],
+			propertyID: '123456789',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
 		} );
 	} );
 
@@ -62,6 +96,8 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		expect( Object.keys( result.current ) ).toEqual( [
+			'apiErrors',
+			'failedAudiences',
 			'isSaving',
 			'onEnableGroups',
 		] );
@@ -73,6 +109,8 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should set `isSaving` to true when `onEnableGroups` is called', () => {
+		freezeFetch( syncAvailableAudiencesEndpoint );
+
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,
 		} );
@@ -88,7 +126,7 @@ describe( 'useEnableAudienceGroup', () => {
 		expect( result.current.isSaving ).toBe( true );
 	} );
 
-	it( 'should set permissions scope error when `onEnableGroups` is called but the user does not have the required scope', () => {
+	it( 'should set permission scope error when `onEnableGroups` is called but the user does not have the required scope', () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [],
 		} );
@@ -114,7 +152,25 @@ describe( 'useEnableAudienceGroup', () => {
 		expect( enableAudienceGroupSpy ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should automatically call `onEnableGroups` function when user returns from the OAuth screen', () => {
+	it( 'should automatically call `onEnableGroups` function when user returns from the OAuth screen', async () => {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			status: 200,
+			body: audiencesFixture,
+		} );
+
+		fetchMock.postOnce( audienceSettingsEndpoint, {
+			status: 200,
+			body: {
+				configuredAudiences: [
+					audiencesFixture[ 3 ].name,
+					audiencesFixture[ 4 ].name,
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			},
+		} );
+
+		muteFetch( reportEndpoint );
+
 		// Set autoSubmit to true.
 		registry
 			.dispatch( CORE_FORMS )
@@ -129,9 +185,29 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
+
+		await act( waitForDefaultTimeouts );
 	} );
 
-	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', () => {
+	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			status: 200,
+			body: audiencesFixture,
+		} );
+
+		fetchMock.postOnce( audienceSettingsEndpoint, {
+			status: 200,
+			body: {
+				configuredAudiences: [
+					audiencesFixture[ 3 ].name,
+					audiencesFixture[ 4 ].name,
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			},
+		} );
+
+		muteFetch( reportEndpoint );
+
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,
 		} );
@@ -143,5 +219,7 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
+
+		await act( waitForDefaultTimeouts );
 	} );
 } );
