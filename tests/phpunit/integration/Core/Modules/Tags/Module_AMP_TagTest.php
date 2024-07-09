@@ -96,5 +96,4 @@ class Module_AMP_TagTest extends TestCase {
 			),
 		);
 	}
-
 }

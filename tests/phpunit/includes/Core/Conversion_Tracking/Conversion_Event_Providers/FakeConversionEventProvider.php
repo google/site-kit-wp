@@ -59,5 +59,4 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 		// Register a fake action.
 		add_action( 'fake_provider_action', '__return_true' );
 	}
-
 }

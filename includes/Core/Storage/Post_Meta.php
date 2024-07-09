@@ -76,5 +76,4 @@ final class Post_Meta implements Post_Meta_Interface {
 	public function delete( $post_id, $key, $value = '' ) {
 		return delete_post_meta( $post_id, $key, $value );
 	}
-
 }

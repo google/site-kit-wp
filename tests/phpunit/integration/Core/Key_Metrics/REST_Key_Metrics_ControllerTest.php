@@ -254,5 +254,4 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			),
 		);
 	}
-
 }

@@ -53,7 +53,7 @@ class PointerTest extends TestCase {
 		$pointer = new Pointer(
 			'test-slug',
 			array(
-				'content' => function() {
+				'content' => function () {
 					return '<strong>Test Content</strong>';
 				},
 			)
@@ -178,7 +178,7 @@ class PointerTest extends TestCase {
 					'title'           => 'Test pointer title',
 					'content'         => 'Test pointer content.',
 					'target_id'       => 'test-target',
-					'active_callback' => function( $hook_suffix ) {
+					'active_callback' => function ( $hook_suffix ) {
 						return self::TEST_HOOK_SUFFIX === $hook_suffix;
 					},
 				),
@@ -189,7 +189,7 @@ class PointerTest extends TestCase {
 					'title'           => 'Test pointer title',
 					'content'         => 'Test pointer content.',
 					'target_id'       => 'test-target',
-					'active_callback' => function( $hook_suffix ) {
+					'active_callback' => function ( $hook_suffix ) {
 						return 'other-hook-suffix' === $hook_suffix;
 					},
 				),

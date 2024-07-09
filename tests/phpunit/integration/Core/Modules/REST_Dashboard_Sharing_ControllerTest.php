@@ -305,5 +305,4 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 			)
 		);
 	}
-
 }
