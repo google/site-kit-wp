@@ -106,15 +106,18 @@ class Consent_Mode {
 		$consent_defaults = apply_filters(
 			'googlesitekit_consent_defaults',
 			array(
-				'ad_personalization' => 'denied',
-				'ad_storage'         => 'denied',
-				'ad_user_data'       => 'denied',
-				'analytics_storage'  => 'denied',
+				'ad_personalization'      => 'denied',
+				'ad_storage'              => 'denied',
+				'ad_user_data'            => 'denied',
+				'analytics_storage'       => 'denied',
+				'functionality_storage'   => 'denied',
+				'security_storage'        => 'denied',
+				'personalization_storage' => 'denied',
 				// TODO: The value for `region` should be retrieved from $this->consent_mode_settings->get_regions(),
 				// but we'll need to migrate/clean up the incorrect values that were set from the initial release.
 				// See https://github.com/google/site-kit-wp/issues/8444.
-				'region'             => Regions::get_regions(),
-				'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
+				'region'                  => Regions::get_regions(),
+				'wait_for_update'         => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
 			)
 		);
 
@@ -128,8 +131,10 @@ class Consent_Mode {
 		$consent_category_map = apply_filters(
 			'googlesitekit_consent_category_map',
 			array(
-				'statistics' => array( 'analytics_storage' ),
-				'marketing'  => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
+				'statistics'  => array( 'analytics_storage' ),
+				'marketing'   => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
+				'functional'  => array( 'functionality_storage', 'security_storage' ),
+				'preferences' => array( 'personalization_storage' ),
 			)
 		);
 		// TODO: We may want to extract some of this JS so it can be transpiled and rewrite it using modern language features.

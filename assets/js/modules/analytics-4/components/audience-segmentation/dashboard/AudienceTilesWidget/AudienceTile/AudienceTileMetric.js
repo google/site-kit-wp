@@ -31,6 +31,7 @@ export default function AudienceTileMetric( {
 	title,
 	metricValue,
 	Badge,
+	metricValueFormat,
 } ) {
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric">
@@ -39,7 +40,7 @@ export default function AudienceTileMetric( {
 			</div>
 			<div className="googlesitekit-audience-segmentation-tile-metric__container">
 				<div className="googlesitekit-audience-segmentation-tile-metric__value">
-					{ numFmt( metricValue ) }
+					{ numFmt( metricValue, metricValueFormat ) }
 				</div>
 				<div className="googlesitekit-audience-segmentation-tile-metric__title">
 					{ title }
@@ -57,4 +58,5 @@ AudienceTileMetric.propTypes = {
 	title: PropTypes.string.isRequired,
 	metricValue: PropTypes.number.isRequired,
 	Badge: PropTypes.elementType.isRequired,
+	metricValueFormat: PropTypes.object,
 };

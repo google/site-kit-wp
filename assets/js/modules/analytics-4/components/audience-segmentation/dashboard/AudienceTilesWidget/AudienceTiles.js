@@ -126,109 +126,94 @@ export default function AudienceTiles( { Widget } ) {
 		] )
 	);
 
+	const totalPageviews =
+		Number(
+			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
+		) || 0;
+
 	const topCitiesReportOptions = {
 		startDate,
 		endDate,
-		dimensions: [ { name: 'city' }, { name: 'audienceResourceName' } ],
-		dimensionFilters: {
-			audienceResourceName: configuredAudiences,
-		},
+		dimensions: [ 'city' ],
 		metrics: [ { name: 'totalUsers' } ],
-		pivots: [
+		orderby: [
 			{
-				fieldNames: [ 'city' ],
-				orderby: [
-					{ metric: { metricName: 'totalUsers' }, desc: true },
-				],
-				limit: 3,
-			},
-			{
-				fieldNames: [ 'audienceResourceName' ],
-				limit: configuredAudiences.length,
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
 			},
 		],
+		limit: 3,
 	};
 
 	const topCitiesReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPivotReport( topCitiesReportOptions )
+		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+			topCitiesReportOptions,
+			configuredAudiences
+		)
 	);
 	const topCitiesReportLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getPivotReport', [
-			topCitiesReportOptions,
-		] )
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topCitiesReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
+		)
 	);
 
 	const topContentReportOptions = {
 		startDate,
 		endDate,
-		dimensions: [ { name: 'pagePath' }, { name: 'audienceResourceName' } ],
-		dimensionFilters: {
-			audienceResourceName: configuredAudiences,
-		},
+		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
-		pivots: [
-			{
-				fieldNames: [ 'pagePath' ],
-				orderby: [
-					{ metric: { metricName: 'screenPageViews' }, desc: true },
-				],
-				limit: 3,
-			},
-			{
-				fieldNames: [ 'audienceResourceName' ],
-				limit: configuredAudiences.length,
-			},
-		],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 3,
 	};
 
 	const topContentReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPivotReport( topContentReportOptions )
+		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+			topContentReportOptions,
+			configuredAudiences
+		)
 	);
 	const topContentReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( () =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getPivotReport',
-				[ topContentReportOptions ]
-			)
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topContentReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
 		)
 	);
 
 	const topContentPageTitlesReportOptions = {
 		startDate,
 		endDate,
-		dimensions: [
-			{ name: 'pagePath' },
-			{ name: 'pageTitle' },
-			{ name: 'audienceResourceName' },
-		],
-		dimensionFilters: {
-			audienceResourceName: configuredAudiences,
-		},
+		dimensions: [ 'pagePath', 'pageTitle' ],
 		metrics: [ { name: 'screenPageViews' } ],
-		pivots: [
-			{
-				fieldNames: [ 'pagePath', 'pageTitle' ],
-				orderby: [
-					{ metric: { metricName: 'screenPageViews' }, desc: true },
-				],
-				limit: 15,
-			},
-			{
-				fieldNames: [ 'audienceResourceName' ],
-				limit: configuredAudiences.length,
-			},
-		],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 15,
 	};
 
 	const topContentPageTitlesReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPivotReport(
-			topContentPageTitlesReportOptions
+		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+			topContentPageTitlesReportOptions,
+			configuredAudiences
 		)
 	);
 	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getPivotReport', [
-			topContentPageTitlesReportOptions,
-		] )
+		configuredAudiences.every( ( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+				{
+					...topContentPageTitlesReportOptions,
+					dimensionFilters: { audienceResourceName },
+				},
+			] )
+		)
 	);
 
 	const dismissedItems = useSelect( ( select ) =>
@@ -371,6 +356,8 @@ export default function AudienceTiles( { Widget } ) {
 						return null;
 					}
 
+					// TODO: as part of #8484, this data manipulation should be removed and the relevant
+					// pivot report rows should be passed directly to the AudienceTile component.
 					const metricIndexBase = index * 2;
 
 					const audienceName =
@@ -383,8 +370,58 @@ export default function AudienceTiles( { Widget } ) {
 							( { name } ) => name === audienceResourceName
 						)?.[ 0 ]?.audienceSlug || '';
 
-					const reportRow = rows[ metricIndexBase ];
-					const previousReportRow = rows[ metricIndexBase + 1 ];
+					const visitors =
+						Number(
+							rows[ metricIndexBase ]?.metricValues?.[ 0 ]?.value
+						) || 0;
+					const prevVisitors =
+						Number(
+							rows[ metricIndexBase + 1 ]?.metricValues?.[ 0 ]
+								?.value
+						) || 0;
+
+					const visitsPerVisitors =
+						Number(
+							rows[ metricIndexBase ]?.metricValues?.[ 1 ]?.value
+						) || 0;
+					const prevVisitsPerVisitors =
+						Number(
+							rows[ metricIndexBase + 1 ]?.metricValues?.[ 1 ]
+								?.value
+						) || 0;
+
+					const pagesPerVisit =
+						Number(
+							rows[ metricIndexBase ]?.metricValues?.[ 2 ]?.value
+						) || 0;
+					const prevPagesPerVisit =
+						Number(
+							rows[ metricIndexBase + 1 ]?.metricValues?.[ 2 ]
+								?.value
+						) || 0;
+
+					const pageviews =
+						Number(
+							rows[ metricIndexBase ]?.metricValues?.[ 3 ]?.value
+						) || 0;
+					const prevPageviews =
+						Number(
+							rows[ metricIndexBase + 1 ]?.metricValues?.[ 3 ]
+								?.value
+						) || 0;
+
+					const topCities = topCitiesReport?.[ index ];
+
+					const topContent = topContentReport?.[ index ];
+
+					const topContentTitles = {};
+
+					topContentPageTitlesReport?.[ index ]?.rows?.forEach(
+						( row ) => {
+							topContentTitles[ row.dimensionValues[ 0 ].value ] =
+								row.dimensionValues[ 1 ].value;
+						}
+					);
 
 					const isPartialData =
 						partialDataStates[ audienceResourceName ];
@@ -404,14 +441,62 @@ export default function AudienceTiles( { Widget } ) {
 									audienceSlug={ audienceSlug }
 								/>
 							}
-							reportRow={ reportRow }
-							previousReportRow={ previousReportRow }
-							topCitiesReport={ topCitiesReport }
-							topContentReport={ topContentReport }
-							topContentTitlesReport={
-								topContentPageTitlesReport
+							visitors={ {
+								currentValue: visitors,
+								previousValue: prevVisitors,
+							} }
+							visitsPerVisitor={ {
+								currentValue: visitsPerVisitors,
+								previousValue: prevVisitsPerVisitors,
+							} }
+							pagesPerVisit={ {
+								currentValue: pagesPerVisit,
+								previousValue: prevPagesPerVisit,
+							} }
+							pageviews={ {
+								currentValue: pageviews,
+								previousValue: prevPageviews,
+							} }
+							percentageOfTotalPageViews={
+								totalPageviews !== 0
+									? pageviews / totalPageviews
+									: 0
 							}
-							totalPageViewsReport={ totalPageviewsReport }
+							topCities={ {
+								dimensionValues: [
+									topCities?.rows?.[ 0 ]
+										?.dimensionValues?.[ 0 ],
+									topCities?.rows?.[ 1 ]
+										?.dimensionValues?.[ 0 ],
+									topCities?.rows?.[ 2 ]
+										?.dimensionValues?.[ 0 ],
+								],
+								metricValues: [
+									topCities?.rows?.[ 0 ]?.metricValues?.[ 0 ],
+									topCities?.rows?.[ 1 ]?.metricValues?.[ 0 ],
+									topCities?.rows?.[ 2 ]?.metricValues?.[ 0 ],
+								],
+								total: visitors,
+							} }
+							topContent={ {
+								dimensionValues: [
+									topContent?.rows?.[ 0 ]
+										?.dimensionValues?.[ 0 ],
+									topContent?.rows?.[ 1 ]
+										?.dimensionValues?.[ 0 ],
+									topContent?.rows?.[ 2 ]
+										?.dimensionValues?.[ 0 ],
+								],
+								metricValues: [
+									topContent?.rows?.[ 0 ]
+										?.metricValues?.[ 0 ],
+									topContent?.rows?.[ 1 ]
+										?.metricValues?.[ 0 ],
+									topContent?.rows?.[ 2 ]
+										?.metricValues?.[ 0 ],
+								],
+							} }
+							topContentTitles={ topContentTitles }
 							Widget={ Widget }
 							audienceResourceName={ audienceResourceName }
 							isZeroData={ isZeroData }

@@ -1,44 +1,28 @@
 {
 	"dimensionHeaders": [
-		{
-			"name": "city"
-		},
-		{
-			"name": "audienceResourceName"
-		}
+		{ "name": "city" },
+		{ "name": "audienceResourceName" }
 	],
 	"metricHeaders": [
-		{
-			"name": "screenPageViewsPerSession",
-			"type": "TYPE_FLOAT"
-		},
-		{
-			"name": "averageSessionDuration",
-			"type": "TYPE_SECONDS"
-		}
+		{ "name": "screenPageViewsPerSession", "type": "TYPE_FLOAT" },
+		{ "name": "averageSessionDuration", "type": "TYPE_SECONDS" }
 	],
 	"pivotHeaders": [
 		{
 			"pivotDimensionHeaders": [
 				{
 					"dimensionValues": [
-						{
-							"value": "properties/12345/audiences/1"
-						}
+						{ "value": "properties/12345/audiences/1" }
 					]
 				},
 				{
 					"dimensionValues": [
-						{
-							"value": "properties/12345/audiences/2"
-						}
+						{ "value": "properties/12345/audiences/2" }
 					]
 				},
 				{
 					"dimensionValues": [
-						{
-							"value": "properties/12345/audiences/3"
-						}
+						{ "value": "properties/12345/audiences/3" }
 					]
 				}
 			],
@@ -46,27 +30,9 @@
 		},
 		{
 			"pivotDimensionHeaders": [
-				{
-					"dimensionValues": [
-						{
-							"value": "Dublin"
-						}
-					]
-				},
-				{
-					"dimensionValues": [
-						{
-							"value": "(not set)"
-						}
-					]
-				},
-				{
-					"dimensionValues": [
-						{
-							"value": "Cork"
-						}
-					]
-				}
+				{ "dimensionValues": [ { "value": "Dublin" } ] },
+				{ "dimensionValues": [ { "value": "(not set)" } ] },
+				{ "dimensionValues": [ { "value": "Cork" } ] }
 			],
 			"rowCount": 3
 		}
@@ -74,496 +40,157 @@
 	"aggregates": [
 		{
 			"dimensionValues": [
-				{
-					"value": "RESERVED_MIN"
-				},
-				{
-					"value": "properties/12345/audiences/1"
-				}
+				{ "value": "RESERVED_MIN" },
+				{ "value": "city" }
 			],
 			"metricValues": [
-				{
-					"value": "0.21675125462934375"
-				},
-				{
-					"value": "45"
-				}
+				{ "value": "0.21675125462934375" },
+				{ "value": "45" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "RESERVED_MIN"
-				},
-				{
-					"value": "properties/12345/audiences/2"
-				}
+				{ "value": "RESERVED_MIN" },
+				{ "value": "audienceResourceName" }
 			],
 			"metricValues": [
-				{
-					"value": "0.6551630264148116"
-				},
-				{
-					"value": "48"
-				}
+				{ "value": "0.6551630264148116" },
+				{ "value": "48" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "RESERVED_MIN"
-				},
-				{
-					"value": "properties/12345/audiences/3"
-				}
+				{ "value": "RESERVED_MAX" },
+				{ "value": "city" }
 			],
 			"metricValues": [
-				{
-					"value": "0.16770161758176982"
-				},
-				{
-					"value": "13"
-				}
+				{ "value": "0.16770161758176982" },
+				{ "value": "13" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "Dublin"
-				},
-				{
-					"value": "RESERVED_MIN"
-				}
+				{ "value": "RESERVED_MAX" },
+				{ "value": "audienceResourceName" }
 			],
 			"metricValues": [
-				{
-					"value": "0.4477149748709053"
-				},
-				{
-					"value": "20"
-				}
+				{ "value": "0.4477149748709053" },
+				{ "value": "20" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "(not set)"
-				},
-				{
-					"value": "RESERVED_MIN"
-				}
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "city" }
 			],
 			"metricValues": [
-				{
-					"value": "0.2326529796700925"
-				},
-				{
-					"value": "55"
-				}
+				{ "value": "0.2326529796700925" },
+				{ "value": "55" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "Cork"
-				},
-				{
-					"value": "RESERVED_MIN"
-				}
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "audienceResourceName" }
 			],
 			"metricValues": [
-				{
-					"value": "0.3812290767673403"
-				},
-				{
-					"value": "40"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "RESERVED_MAX"
-				},
-				{
-					"value": "properties/12345/audiences/1"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.1929994630627334"
-				},
-				{
-					"value": "45"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "RESERVED_MAX"
-				},
-				{
-					"value": "properties/12345/audiences/2"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.7351190783083439"
-				},
-				{
-					"value": "28"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "RESERVED_MAX"
-				},
-				{
-					"value": "properties/12345/audiences/3"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.5336146391928196"
-				},
-				{
-					"value": "7"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "Dublin"
-				},
-				{
-					"value": "RESERVED_MAX"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.8252552815247326"
-				},
-				{
-					"value": "8"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "(not set)"
-				},
-				{
-					"value": "RESERVED_MAX"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.7144356013741344"
-				},
-				{
-					"value": "34"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "Cork"
-				},
-				{
-					"value": "RESERVED_MAX"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.7837852367665619"
-				},
-				{
-					"value": "33"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "RESERVED_TOTAL"
-				},
-				{
-					"value": "properties/12345/audiences/1"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.9294344277586787"
-				},
-				{
-					"value": "36"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "RESERVED_TOTAL"
-				},
-				{
-					"value": "properties/12345/audiences/2"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.9450901707168669"
-				},
-				{
-					"value": "54"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "RESERVED_TOTAL"
-				},
-				{
-					"value": "properties/12345/audiences/3"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.5247559030540287"
-				},
-				{
-					"value": "35"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "Dublin"
-				},
-				{
-					"value": "RESERVED_TOTAL"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.5626270831562579"
-				},
-				{
-					"value": "42"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "(not set)"
-				},
-				{
-					"value": "RESERVED_TOTAL"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.49032815080136066"
-				},
-				{
-					"value": "49"
-				}
-			]
-		},
-		{
-			"dimensionValues": [
-				{
-					"value": "Cork"
-				},
-				{
-					"value": "RESERVED_TOTAL"
-				}
-			],
-			"metricValues": [
-				{
-					"value": "0.7994207737501711"
-				},
-				{
-					"value": "3"
-				}
+				{ "value": "0.3812290767673403" },
+				{ "value": "40" }
 			]
 		}
 	],
 	"rows": [
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/1"
-				},
-				{
-					"value": "(not set)"
-				}
+				{ "value": "properties/12345/audiences/1" },
+				{ "value": "(not set)" }
 			],
 			"metricValues": [
-				{
-					"value": "0.03756667533889413"
-				},
-				{
-					"value": "8"
-				}
+				{ "value": "0.03756667533889413" },
+				{ "value": "8" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/2"
-				},
-				{
-					"value": "Dublin"
-				}
+				{ "value": "properties/12345/audiences/2" },
+				{ "value": "Dublin" }
 			],
 			"metricValues": [
-				{
-					"value": "0.10197289939969778"
-				},
-				{
-					"value": "44"
-				}
+				{ "value": "0.10197289939969778" },
+				{ "value": "44" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/1"
-				},
-				{
-					"value": "Cork"
-				}
+				{ "value": "properties/12345/audiences/1" },
+				{ "value": "Cork" }
 			],
 			"metricValues": [
-				{
-					"value": "0.17282110475935042"
-				},
-				{
-					"value": "23"
-				}
+				{ "value": "0.17282110475935042" },
+				{ "value": "23" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/3"
-				},
-				{
-					"value": "Dublin"
-				}
+				{ "value": "properties/12345/audiences/3" },
+				{ "value": "Dublin" }
 			],
 			"metricValues": [
-				{
-					"value": "0.2705660976935178"
-				},
-				{
-					"value": "55"
-				}
+				{ "value": "0.2705660976935178" },
+				{ "value": "55" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/3"
-				},
-				{
-					"value": "Cork"
-				}
+				{ "value": "properties/12345/audiences/3" },
+				{ "value": "Cork" }
 			],
 			"metricValues": [
-				{
-					"value": "0.3845741776749492"
-				},
-				{
-					"value": "43"
-				}
+				{ "value": "0.3845741776749492" },
+				{ "value": "43" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/1"
-				},
-				{
-					"value": "Dublin"
-				}
+				{ "value": "properties/12345/audiences/1" },
+				{ "value": "Dublin" }
 			],
 			"metricValues": [
-				{
-					"value": "0.5493685828987509"
-				},
-				{
-					"value": "8"
-				}
+				{ "value": "0.5493685828987509" },
+				{ "value": "8" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/3"
-				},
-				{
-					"value": "(not set)"
-				}
+				{ "value": "properties/12345/audiences/3" },
+				{ "value": "(not set)" }
 			],
 			"metricValues": [
-				{
-					"value": "0.8528603634331376"
-				},
-				{
-					"value": "32"
-				}
+				{ "value": "0.8528603634331376" },
+				{ "value": "32" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/2"
-				},
-				{
-					"value": "(not set)"
-				}
+				{ "value": "properties/12345/audiences/2" },
+				{ "value": "(not set)" }
 			],
 			"metricValues": [
-				{
-					"value": "0.8865012191236019"
-				},
-				{
-					"value": "37"
-				}
+				{ "value": "0.8865012191236019" },
+				{ "value": "37" }
 			]
 		},
 		{
 			"dimensionValues": [
-				{
-					"value": "properties/12345/audiences/2"
-				},
-				{
-					"value": "Cork"
-				}
+				{ "value": "properties/12345/audiences/2" },
+				{ "value": "Cork" }
 			],
 			"metricValues": [
-				{
-					"value": "0.9724421766586602"
-				},
-				{
-					"value": "4"
-				}
+				{ "value": "0.9724421766586602" },
+				{ "value": "4" }
 			]
 		}
 	],
-	"metadata": {
-		"currencyCode": "USD",
-		"timeZone": "America/Los_Angeles"
-	},
+	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },
 	"kind": "analyticsData#runPivotReport"
 }
