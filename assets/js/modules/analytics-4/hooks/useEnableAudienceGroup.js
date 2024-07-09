@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMountedState } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -37,6 +42,10 @@ import {
 } from '../datastore/constants';
 
 export default function useEnableAudienceGroup( { redirectURL } = {} ) {
+	const isMounted = useMountedState();
+
+	const [ apiErrors, setApiErrors ] = useState( [] );
+	const [ failedAudiences, setFailedAudiences ] = useState( [] );
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
@@ -89,13 +98,32 @@ export default function useEnableAudienceGroup( { redirectURL } = {} ) {
 		}
 
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
-		await enableAudienceGroup();
+
+		const { error, failedSiteKitAudienceSlugs } =
+			( await enableAudienceGroup( failedAudiences ) ) || {};
+
+		if ( isMounted() ) {
+			if ( error ) {
+				setApiErrors( [ error ] );
+				setFailedAudiences( [] );
+			} else if ( Array.isArray( failedSiteKitAudienceSlugs ) ) {
+				setFailedAudiences( failedSiteKitAudienceSlugs );
+				setApiErrors( [] );
+			} else {
+				setApiErrors( [] );
+				setFailedAudiences( [] );
+			}
+
+			setIsSaving( false );
+		}
 	}, [
-		enableAudienceGroup,
 		hasAnalytics4EditScope,
+		setValues,
+		enableAudienceGroup,
+		failedAudiences,
+		isMounted,
 		setPermissionScopeError,
 		redirectURL,
-		setValues,
 	] );
 
 	// If the user ends up back on this component with the required scope granted,
@@ -107,6 +135,8 @@ export default function useEnableAudienceGroup( { redirectURL } = {} ) {
 	}, [ hasAnalytics4EditScope, autoSubmit, onEnableGroups ] );
 
 	return {
+		apiErrors,
+		failedAudiences,
 		isSaving,
 		onEnableGroups,
 	};
