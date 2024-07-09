@@ -32,7 +32,7 @@ export function isValidPublicationID( publicationID ) {
 }
 
 /**
- * Checks if the given publication onboarding state appears to be a valid.
+ * Checks if the given publication onboarding state is valid.
  *
  * @since n.e.x.t
  *

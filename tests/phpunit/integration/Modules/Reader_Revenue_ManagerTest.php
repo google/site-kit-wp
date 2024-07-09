@@ -166,10 +166,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected() {
-		$options = new Options( $this->context );
-		$rrm     = new Reader_Revenue_Manager( $this->context, $options );
+		$options                = new Options( $this->context );
+		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
 
-		$this->assertFalse( $rrm->is_connected() );
+		$this->assertFalse( $reader_revenue_manager->is_connected() );
 
 		$options->set(
 			Settings::OPTION,
@@ -178,19 +178,19 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $rrm->is_connected() );
+		$this->assertTrue( $reader_revenue_manager->is_connected() );
 	}
 
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
 
-		$rrm = new Reader_Revenue_Manager( $this->context, $options );
-		$rrm->set_data_available();
-		$rrm->on_deactivation();
+		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
+		$reader_revenue_manager->set_data_available();
+		$reader_revenue_manager->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
-		$this->assertFalse( $rrm->is_data_available() );
+		$this->assertFalse( $reader_revenue_manager->is_data_available() );
 	}
 
 	public function get_module_with_settings() {

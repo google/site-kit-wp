@@ -69,6 +69,33 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEmpty( $this->settings->get_view_only_keys() );
 	}
 
+	public function data_publications() {
+		return array(
+			'publicationID is valid string'                => array( 'publicationID', 'ABCD1234', 'ABCD1234' ),
+			'publicationOnboardingState is valid string'   => array( 'publicationOnboardingState', 'PENDING_VERIFICATION', 'PENDING_VERIFICATION' ),
+			'publicationOnboardingStateLastSyncedAtMs is valid' => array( 'publicationOnboardingStateLastSyncedAtMs', 0, 0 ),
+			'publicationID is invalid string'              => array( 'publicationID', 'ABCD1234&^##', '' ),
+			'publicationOnboardingState is invalid string' => array( 'publicationOnboardingState', 'INVALID_STATE', '' ),
+			'publicationOnboardingStateLastSyncedAtMs is invalid' => array( 'publicationOnboardingStateLastSyncedAtMs', 0.87686, 0 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_publications
+	 */
+	public function test_rrm_settings_sanitization( $setting, $value, $expected_value ) {
+		$this->settings->register();
+
+		$options_key = $this->get_option_name();
+		delete_option( $options_key );
+
+		$options             = $this->settings->get();
+		$options[ $setting ] = $value;
+		$this->settings->set( $options );
+		$options = get_option( $options_key );
+		$this->assertEquals( $expected_value, $options[ $setting ] );
+	}
+
 	/**
 	 * @inheritDoc
 	 */

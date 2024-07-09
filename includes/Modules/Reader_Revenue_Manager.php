@@ -34,7 +34,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Se
 /**
  * Class representing the Reader Revenue Manager module.
  *
- * @since n.e.x.t
+ * @since 1.130.0
  * @access private
  * @ignore
  */
@@ -53,7 +53,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.130.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();

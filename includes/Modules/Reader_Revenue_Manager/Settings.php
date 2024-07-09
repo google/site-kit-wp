@@ -30,6 +30,14 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 
 	const OPTION = 'googlesitekit_reader-revenue-manager_settings';
 
+	const ONBOARDING_STATE_UNSPECIFIED = 'ONBOARDING_STATE_UNSPECIFIED';
+
+	const ONBOARDING_STATE_ACTION_REQUIRED = 'ONBOARDING_ACTION_REQUIRED';
+
+	const ONBOARDING_STATE_PENDING_VERIFICATION = 'PENDING_VERIFICATION';
+
+	const ONBOARDING_STATE_COMPLETE = 'ONBOARDING_COMPLETE';
+
 	/**
 	 * Registers the setting in WordPress.
 	 *
@@ -49,11 +57,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for owned settings.
 	 */
 	public function get_owned_keys() {
-		return array(
-			'publicationID',
-			'publicationOnboardingState',
-			'publicationOnboardingStateLastSyncedAtMs',
-		);
+		return array( 'publicationID' );
 	}
 
 	/**
@@ -104,12 +108,11 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			}
 
 			if ( isset( $option['publicationOnboardingState'] ) ) {
-
 				$valid_onboarding_states = array(
-					'ONBOARDING_STATE_UNSPECIFIED',
-					'ONBOARDING_ACTION_REQUIRED',
-					'PENDING_VERIFICATION',
-					'ONBOARDING_COMPLETE',
+					self::ONBOARDING_STATE_UNSPECIFIED,
+					self::ONBOARDING_STATE_ACTION_REQUIRED,
+					self::ONBOARDING_STATE_PENDING_VERIFICATION,
+					self::ONBOARDING_STATE_COMPLETE,
 				);
 
 				if ( ! in_array( $option['publicationOnboardingState'], $valid_onboarding_states, true ) ) {
