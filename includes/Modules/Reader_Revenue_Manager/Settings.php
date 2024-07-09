@@ -94,9 +94,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return callable|null
 	 */
 	protected function get_sanitize_callback() {
-
-		return function( $option ) {
-
+		return function ( $option ) {
 			if ( isset( $option['publicationID'] ) ) {
 				if ( ! preg_match( '/^[a-zA-Z0-9]+$/', $option['publicationID'] ) ) {
 					$option['publicationID'] = '';
