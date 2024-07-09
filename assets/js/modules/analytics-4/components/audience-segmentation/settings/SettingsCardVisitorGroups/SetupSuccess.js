@@ -20,10 +20,12 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../googlesitekit/widgets/default-areas';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -40,9 +42,15 @@ export default function SetupSuccess() {
 			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
 		)
 	);
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
+	const dashboardURL = useSelect( ( select ) => {
+		const url = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard'
+		);
+
+		return addQueryArgs( url, {
+			widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		} );
+	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -55,8 +63,6 @@ export default function SetupSuccess() {
 
 	function scrollToWidgetArea() {
 		dismissNotificationForUser().then( () => navigateTo( dashboardURL ) );
-
-		// TODO: Scrolling to the widget area will be implemented in a subsequent issue.
 	}
 
 	if ( isDismissed ) {

@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import {
@@ -27,6 +32,7 @@ import {
 	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../googlesitekit/widgets/default-areas';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import SetupSuccess, {
@@ -139,11 +145,18 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
 		);
 
+		const expectedURL = addQueryArgs(
+			registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-dashboard' ),
+			{
+				widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+			}
+		);
+
 		await waitFor( () => {
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				registry
-					.select( CORE_SITE )
-					.getAdminURL( 'googlesitekit-dashboard' )
+				expectedURL
 			);
 		} );
 	} );
