@@ -34,7 +34,7 @@ import {
 	muteFetch,
 	provideModules,
 	provideUserAuthentication,
-	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
 
@@ -186,7 +186,7 @@ describe( 'useEnableAudienceGroup', () => {
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
 
-		await act( waitForDefaultTimeouts );
+		await act( () => waitForTimeouts( 30 ) );
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
@@ -220,6 +220,6 @@ describe( 'useEnableAudienceGroup', () => {
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
 
-		await act( waitForDefaultTimeouts );
+		await act( () => waitForTimeouts( 30 ) );
 	} );
 } );
