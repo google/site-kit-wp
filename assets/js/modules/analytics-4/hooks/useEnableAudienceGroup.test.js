@@ -27,7 +27,7 @@ import {
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';
-import { act, actHook, renderHook } from '../../../../../tests/js/test-utils';
+import { actHook, renderHook } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -59,8 +59,6 @@ describe( 'useEnableAudienceGroup', () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'enableAudienceGroup'
 		);
-
-		// enableAudienceGroupSpy.mockImplementation( () => Promise.resolve() );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
@@ -178,7 +176,8 @@ describe( 'useEnableAudienceGroup', () => {
 				autoSubmit: true,
 			} );
 
-		actHook( () => {
+		// eslint-disable-next-line require-await
+		await actHook( async () => {
 			renderHook( () => useEnableAudienceGroup(), {
 				registry,
 			} );
@@ -186,7 +185,7 @@ describe( 'useEnableAudienceGroup', () => {
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
 
-		await act( () => waitForTimeouts( 30 ) );
+		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
@@ -214,12 +213,12 @@ describe( 'useEnableAudienceGroup', () => {
 
 		const { onEnableGroups } = result.current;
 
-		actHook( () => {
-			onEnableGroups();
+		await actHook( async () => {
+			await onEnableGroups();
 		} );
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
 
-		await act( () => waitForTimeouts( 30 ) );
+		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 } );
