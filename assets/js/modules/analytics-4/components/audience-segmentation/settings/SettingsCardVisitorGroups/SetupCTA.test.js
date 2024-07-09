@@ -25,6 +25,7 @@ import {
 	fireEvent,
 	freezeFetch,
 	muteFetch,
+	provideModules,
 	provideUserAuthentication,
 	render,
 } from '../../../../../../../../tests/js/test-utils';
@@ -55,6 +56,14 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
+
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 
