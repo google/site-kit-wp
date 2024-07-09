@@ -104,7 +104,11 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
-		useEnableAudienceGroup();
+		useEnableAudienceGroup( {
+			onError: () => {
+				setShowErrorModal( true );
+			},
+		} );
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
@@ -115,12 +119,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			onEnableGroups();
 		}
 	}, [ hasAnalytics4EditScope, autoSubmit, onEnableGroups ] );
-
-	useEffect( () => {
-		if ( ! showErrorModal && ( !! apiErrors || !! failedAudiences ) ) {
-			setShowErrorModal( true );
-		}
-	}, [ apiErrors, failedAudiences, showErrorModal ] );
 
 	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
 		// We should call isGatheringData() within this component for completeness

@@ -41,7 +41,10 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 
-export default function useEnableAudienceGroup( { redirectURL } = {} ) {
+export default function useEnableAudienceGroup( {
+	redirectURL,
+	onError,
+} = {} ) {
 	const isMounted = useMountedState();
 
 	const [ apiErrors, setApiErrors ] = useState( [] );
@@ -114,6 +117,10 @@ export default function useEnableAudienceGroup( { redirectURL } = {} ) {
 				setFailedAudiences( [] );
 			}
 
+			if ( !! error || !! failedSiteKitAudienceSlugs ) {
+				onError?.();
+			}
+
 			setIsSaving( false );
 		}
 	}, [
@@ -124,6 +131,7 @@ export default function useEnableAudienceGroup( { redirectURL } = {} ) {
 		isMounted,
 		setPermissionScopeError,
 		redirectURL,
+		onError,
 	] );
 
 	// If the user ends up back on this component with the required scope granted,
