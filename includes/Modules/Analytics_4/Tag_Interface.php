@@ -35,5 +35,4 @@ interface Tag_Interface {
 	 * @param string $custom_dimensions Custom dimensions data.
 	 */
 	public function set_custom_dimensions( $custom_dimensions );
-
 }

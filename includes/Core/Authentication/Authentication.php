@@ -301,7 +301,7 @@ final class Authentication {
 
 		add_action(
 			'googlesitekit_authorize_user',
-			function ( $token_response, $scopes, $previous_scopes ) {
+			function () {
 				if ( ! $this->credentials->using_proxy() ) {
 					return;
 				}
@@ -314,7 +314,7 @@ final class Authentication {
 
 		add_filter(
 			'googlesitekit_user_data',
-			function( $user ) {
+			function ( $user ) {
 				if ( $this->profile->has() ) {
 					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
@@ -365,7 +365,7 @@ final class Authentication {
 
 		// If no initial version set for the current user, set it when getting a new access token.
 		if ( ! $this->initial_version->get() ) {
-			$set_initial_version = function() {
+			$set_initial_version = function () {
 				$this->initial_version->set( GOOGLESITEKIT_VERSION );
 			};
 			add_action( 'googlesitekit_authorize_user', $set_initial_version );
@@ -374,14 +374,14 @@ final class Authentication {
 
 		add_action(
 			'current_screen',
-			function( $current_screen ) {
+			function ( $current_screen ) {
 				$this->maybe_refresh_token_for_screen( $current_screen->id );
 			}
 		);
 
 		add_action(
 			'heartbeat_tick',
-			function() {
+			function () {
 				$this->maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
 			}
 		);
@@ -389,7 +389,7 @@ final class Authentication {
 		// Regularly synchronize Google profile data.
 		add_action(
 			'googlesitekit_reauthorize_user',
-			function() {
+			function () {
 				if ( ! $this->profile->has() ) {
 					return;
 				}
@@ -1062,7 +1062,7 @@ final class Authentication {
 		return new Notice(
 			'reconnect_after_url_mismatch',
 			array(
-				'content'         => function() {
+				'content'         => function () {
 					$connected_url = $this->connected_proxy_url->get();
 					$current_url   = $this->context->get_canonical_home_url();
 					$content       = '<p>' . sprintf(
@@ -1097,7 +1097,7 @@ final class Authentication {
 					return $content;
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() {
+				'active_callback' => function () {
 					return $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH
 						&& $this->credentials->has();
 				},
@@ -1116,7 +1116,7 @@ final class Authentication {
 		return new Notice(
 			'needs_reauthentication',
 			array(
-				'content'         => function() {
+				'content'         => function () {
 					ob_start();
 					?>
 					<p>
@@ -1155,7 +1155,7 @@ final class Authentication {
 					return ob_get_clean();
 				},
 				'type'            => Notice::TYPE_SUCCESS,
-				'active_callback' => function() {
+				'active_callback' => function () {
 					if ( ! empty( $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE ) ) ) {
 						return false;
 					}
@@ -1258,7 +1258,6 @@ final class Authentication {
 
 		wp_safe_redirect( $this->get_oauth_client()->get_proxy_permissions_url() );
 		exit;
-
 	}
 
 	/**

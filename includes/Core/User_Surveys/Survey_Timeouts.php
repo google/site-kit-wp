@@ -86,5 +86,4 @@ class Survey_Timeouts extends User_Setting {
 
 		return $surveys;
 	}
-
 }

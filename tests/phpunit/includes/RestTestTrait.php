@@ -31,5 +31,4 @@ trait RestTestTrait {
 
 		return $routes;
 	}
-
 }

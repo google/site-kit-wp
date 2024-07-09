@@ -24,8 +24,7 @@ use Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
-class FakeModule extends Module
-	implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
+class FakeModule extends Module implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 
 	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;

@@ -80,5 +80,4 @@ class Survey_TimeoutsTest extends TestCase {
 		$this->assertTrue( $time[0] >= $timeouts[ Survey_Timeouts::GLOBAL_KEY ] );
 		$this->assertTrue( $time[1] <= $timeouts[ Survey_Timeouts::GLOBAL_KEY ] );
 	}
-
 }

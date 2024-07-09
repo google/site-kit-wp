@@ -102,7 +102,7 @@ final class Screens {
 		if ( $this->context->is_network_mode() ) {
 			add_action(
 				'network_admin_menu',
-				function() {
+				function () {
 					$this->add_screens();
 				}
 			);
@@ -110,21 +110,21 @@ final class Screens {
 
 		add_action(
 			'admin_menu',
-			function() {
+			function () {
 				$this->add_screens();
 			}
 		);
 
 		add_action(
 			'admin_enqueue_scripts',
-			function( $hook_suffix ) {
+			function ( $hook_suffix ) {
 				$this->enqueue_screen_assets( $hook_suffix );
 			}
 		);
 
 		add_action(
 			'admin_page_access_denied',
-			function() {
+			function () {
 				// Redirect dashboard to splash if no dashboard access (yet).
 				$this->no_access_redirect_dashboard_to_splash();
 				// Redirect splash to (shared) dashboard if splash is dismissed.
@@ -138,7 +138,7 @@ final class Screens {
 		// Ensure the menu icon always is rendered correctly, without enqueueing a global CSS file.
 		add_action(
 			'admin_head',
-			function() {
+			function () {
 				?>
 				<style type="text/css">
 					#adminmenu .toplevel_page_googlesitekit-dashboard img {
@@ -153,7 +153,7 @@ final class Screens {
 			}
 		);
 
-		$remove_notices_callback = function() {
+		$remove_notices_callback = function () {
 			global $hook_suffix;
 
 			if ( empty( $hook_suffix ) ) {
@@ -171,7 +171,7 @@ final class Screens {
 		add_filter( 'custom_menu_order', '__return_true' );
 		add_filter(
 			'menu_order',
-			function( array $menu_order ) {
+			function ( array $menu_order ) {
 				// Move the Site Kit dashboard menu item to be one after the index.php item if it exists.
 				$dashboard_index = array_search( 'index.php', $menu_order, true );
 
@@ -232,7 +232,7 @@ final class Screens {
 
 		add_action(
 			"load-{$hook_suffix}",
-			function() use ( $screen ) {
+			function () use ( $screen ) {
 				$screen->initialize( $this->context );
 			}
 		);
@@ -360,14 +360,14 @@ final class Screens {
 				array(
 					'title'            => __( 'Dashboard', 'google-site-kit' ),
 					'capability'       => Permissions::VIEW_DASHBOARD,
-					'enqueue_callback' => function( Assets $assets ) {
+					'enqueue_callback' => function ( Assets $assets ) {
 						if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							$assets->enqueue_asset( 'googlesitekit-entity-dashboard' );
 						} else {
 							$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 						}
 					},
-					'render_callback'  => function( Context $context ) {
+					'render_callback'  => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
 						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
@@ -408,7 +408,7 @@ final class Screens {
 					'capability'          => Permissions::VIEW_SPLASH,
 					'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : self::PARENT_SLUG_NULL,
 					// This callback will redirect to the dashboard on successful authentication.
-					'initialize_callback' => function( Context $context ) {
+					'initialize_callback' => function ( Context $context ) {
 						// Get the dismissed items for this user.
 						$user_options = new User_Options( $context );
 						$dismissed_items = new Dismissed_Items( $user_options );
@@ -482,5 +482,4 @@ final class Screens {
 
 		return $screens;
 	}
-
 }

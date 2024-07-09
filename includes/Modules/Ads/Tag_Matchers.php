@@ -34,5 +34,4 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 			"/gtag\\s*\\(\\s*['|\"]config['|\"]\\s*,\\s*['|\"](AW-[0-9]+)['|\"]\\s*\\)/i",
 		);
 	}
-
 }

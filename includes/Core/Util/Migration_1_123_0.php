@@ -137,7 +137,7 @@ class Migration_1_123_0 {
 
 		array_walk(
 			$options_to_migrate,
-			function( $setting ) use ( &$recovered_settings, $legacy_settings ) {
+			function ( $setting ) use ( &$recovered_settings, $legacy_settings ) {
 				$recovered_settings[ $setting ] = $legacy_settings[ $setting ];
 			}
 		);
