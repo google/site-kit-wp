@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store.
+ * `modules/reader-revenue-manager` data store: publications.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -24,7 +24,7 @@ import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
-const getPublicationStore = createFetchStore( {
+const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
 		API.get(
@@ -55,12 +55,12 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {
 	*getPublications() {
 		const registry = yield commonActions.getRegistry();
-		// Only fetch publications if there are none in the store for the given account.
+		// Only fetch publications if there are none in the store.
 		const publications = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublications();
 		if ( publications === undefined ) {
-			yield getPublicationStore.actions.fetchGetPublications();
+			yield fetchGetPublicationsStore.actions.fetchGetPublications();
 		}
 	},
 };
@@ -72,14 +72,14 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array.<Object>|undefined)} An array publications; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of publications; `undefined` if not loaded.
 	 */
 	getPublications( state ) {
 		return state.publications;
 	},
 };
 
-const store = combineStores( getPublicationStore, {
+const store = combineStores( fetchGetPublicationsStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,

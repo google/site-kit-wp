@@ -50,10 +50,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					status: 200,
 				} );
 
-				const initialProperties = registry
+				const initialPublications = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getPublications();
-				expect( initialProperties ).toBeUndefined();
+				expect( initialPublications ).toBeUndefined();
 
 				await untilResolved(
 					registry,
@@ -71,7 +71,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				);
 			} );
 
-			it( 'should not make a network request if properties for this account are already present', async () => {
+			it( 'should not make a network request if publications are already present', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );

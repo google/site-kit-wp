@@ -14,13 +14,13 @@
 			"contributions": false,
 			"thankStickers": true
 		},
-		"displayName": "Test Property",
+		"displayName": "Test Property 1",
 		"products": [
 			{
 				"name": "basic"
 			}
 		],
-		"onboardingState": "PENDING_VERIFICATION"
+		"onboardingState": "ONBOARDING_STATE_UNSPECIFIED"
 	},
 	{
 		"publicationId": "PQRSTUV",
@@ -37,12 +37,58 @@
 			"contributions": false,
 			"thankStickers": true
 		},
-		"displayName": "Test Property",
+		"displayName": "Test Property 2",
 		"products": [
 			{
 				"name": "premium"
 			}
 		],
 		"onboardingState": "PENDING_VERIFICATION"
+	},
+	{
+		"publicationId": "IJKLMNOP",
+		"publicationPredicates": {
+			"businessPredicates": {
+				"supportsSiteKit": true,
+				"canSell": true
+			}
+		},
+		"verifiedDomains": "example.com",
+		"paymentOptions": {
+			"subscriptions": true,
+			"noPayment": false,
+			"contributions": false,
+			"thankStickers": true
+		},
+		"displayName": "Test Property 3",
+		"products": [
+			{
+				"name": "basic"
+			}
+		],
+		"onboardingState": "ONBOARDING_ACTION_REQUIRED"
+	},
+	{
+		"publicationId": "QRSTUVWX",
+		"publicationPredicates": {
+			"businessPredicates": {
+				"supportsSiteKit": false,
+				"canSell": true
+			}
+		},
+		"verifiedDomains": "example.com",
+		"paymentOptions": {
+			"subscriptions": true,
+			"noPayment": false,
+			"contributions": true,
+			"thankStickers": true
+		},
+		"displayName": "Test Property 4",
+		"products": [
+			{
+				"name": "premium"
+			}
+		],
+		"onboardingState": "ONBOARDING_STATE_UNSPECIFIED"
 	}
 ]
