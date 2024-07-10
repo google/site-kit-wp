@@ -33,11 +33,11 @@ const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}      state         Data store's state.
-	 * @param {Object}      [args]        Object containing optional path and query args.
-	 * @param {string}      [args.path]   A path to append to the base url.
-	 * @param {Object}      [args.query]  Object of query params to be added to the URL. utm_source would always get added to the URL even if this is empty.
-	 * @param {string|null} publicationID Publication ID to be used in the URL.
+	 * @param {Object} state                Data store's state.
+	 * @param {Object} [args]               Object containing optional publication ID, path and query args.
+	 * @param {string} [args.publicationID] Publication ID to be used in the URL.
+	 * @param {string} [args.path]          A path to append to the base url.
+	 * @param {Object} [args.query]         Object of query params to be added to the URL.
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
 	getServiceURL: createRegistrySelector(
