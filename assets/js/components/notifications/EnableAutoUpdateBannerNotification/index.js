@@ -28,7 +28,7 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { getTimeInSeconds } from '../../../util';
+import { MINUTE_IN_SECONDS } from '../../../util';
 import useQueryArg from '../../../hooks/useQueryArg';
 import {
 	CORE_USER,
@@ -101,7 +101,7 @@ function EnableAutoUpdateBannerNotification() {
 					CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
 					true,
 					{
-						ttl: getTimeInSeconds() * 10,
+						ttl: MINUTE_IN_SECONDS * 10,
 					}
 				);
 				setIsFirstPluginSetup( isFirstSetup );

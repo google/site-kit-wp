@@ -29,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS, dateAgo, trackEvent } from '../../../../util';
+import { DAY_IN_SECONDS, dateSub, trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsNotice, {
 	TYPE_INFO,
@@ -63,7 +63,7 @@ export default function AdsConversionIDSettingsNotice() {
 
 		// If it has been <= 28 days since the migration.
 		const now = select( CORE_USER ).getReferenceDate();
-		const fourWeeksAgo = dateAgo( now, 28 * DAY_IN_SECONDS );
+		const fourWeeksAgo = dateSub( now, 28 * DAY_IN_SECONDS );
 		return fourWeeksAgo.getTime() <= adsConversionIDMigratedAtMs;
 	} );
 

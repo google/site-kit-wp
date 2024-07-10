@@ -41,42 +41,6 @@ export * from './safely-sort';
 export * from './partition-report';
 
 /**
- * Transforms a period string into a number of seconds.
- *
- * @since 1.0.0
- *
- * @param {string} period The period to transform.
- * @return {number} The number of seconds.
- */
-export const getTimeInSeconds = ( period ) => {
-	const minute = 60;
-	const hour = minute * 60;
-	const day = hour * 24;
-	const week = day * 7;
-	const month = day * 30;
-	const year = day * 365;
-	switch ( period ) {
-		case 'minute':
-			return minute;
-
-		case 'hour':
-			return hour;
-
-		case 'day':
-			return day;
-
-		case 'week':
-			return week;
-
-		case 'month':
-			return month;
-
-		case 'year':
-			return year;
-	}
-};
-
-/**
  * Calculates the change between two values.
  *
  * @since 1.24.0

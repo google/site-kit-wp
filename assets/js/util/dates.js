@@ -18,6 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isString, isDate } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -31,9 +32,11 @@ export const INVALID_DATE_STRING_ERROR =
 export const INVALID_DATE_RANGE_ERROR =
 	'Invalid date range, it must be a string with the format "last-x-days".';
 
+export const MINUTE_IN_SECONDS = 60;
 export const HOUR_IN_SECONDS = 3600;
 export const DAY_IN_SECONDS = 86400;
 export const WEEK_IN_SECONDS = 604800;
+export const MONTH_IN_SECONDS = 18144000; // 30 days.
 
 /**
  * Gets the hash of available date ranges.
@@ -94,19 +97,6 @@ export function getCurrentDateRangeDayCount( dateRange ) {
 }
 
 /**
- * Asserts whether a given date instance is valid or invalid.
- *
- * @since 1.18.0
- *
- * @param {Date} date Date instance to be asserted against.
- * @return {boolean}  True if the given date instance is valid.
- */
-export function isValidDateInstance( date ) {
-	// type coercion provided by isNaN is preferred here over Number.isNaN
-	return date instanceof Date && ! isNaN( date );
-}
-
-/**
  * Asserts whether a given date string is valid or invalid.
  *
  * @since 1.18.0
@@ -115,17 +105,17 @@ export function isValidDateInstance( date ) {
  * @return {boolean}          True if the given date string is valid.
  */
 export function isValidDateString( dateString = '' ) {
-	const isString = typeof dateString === 'string';
-
-	if ( ! isString ) {
+	if ( ! isString( dateString ) ) {
 		return false;
 	}
 
 	const dateArray = dateString.split( '-' );
+	if ( dateArray.length !== 3 ) {
+		return false;
+	}
 
-	return (
-		dateArray.length === 3 && isValidDateInstance( new Date( dateString ) )
-	);
+	const date = new Date( dateString );
+	return isDate( date ) && ! isNaN( date );
 }
 
 /**
@@ -138,7 +128,7 @@ export function isValidDateString( dateString = '' ) {
  * @return {string}                 The parsed date string (YYYY-MM-DD).
  */
 export function getDateString( date ) {
-	invariant( isValidDateInstance( date ), INVALID_DATE_INSTANCE_ERROR );
+	invariant( isDate( date ) && ! isNaN( date ), INVALID_DATE_INSTANCE_ERROR );
 
 	const month = `${ date.getMonth() + 1 }`;
 	const day = `${ date.getDate() }`;
@@ -182,11 +172,10 @@ export function stringToDate( dateString ) {
  * @param {number} daysBefore   Number of days to subtract from relativeDate.
  * @return {string}             The date string (YYYY-MM-DD) for the previous date.
  */
-export function getPreviousDate( relativeDate = '', daysBefore ) {
-	const date = stringToDate( relativeDate );
-	date.setDate( date.getDate() - daysBefore );
-
-	return getDateString( date );
+export function getPreviousDate( relativeDate, daysBefore ) {
+	return getDateString(
+		dateSub( relativeDate, daysBefore * DAY_IN_SECONDS )
+	);
 }
 
 /**
@@ -197,7 +186,7 @@ export function getPreviousDate( relativeDate = '', daysBefore ) {
  * @param {string} dateRange Date string to be asserted against. Defaults to an empty string.
  * @return {boolean}          True if the given dateRange string is valid.
  */
-export function isValidDateRange( dateRange = '' ) {
+export function isValidDateRange( dateRange ) {
 	const parts = dateRange.split( '-' );
 
 	return (
@@ -214,11 +203,19 @@ export function isValidDateRange( dateRange = '' ) {
  *
  * @since n.e.x.t
  *
- * @param {Date|string} from     The date to subtract the duration from.
- * @param {number}      duration The duration in seconds.
+ * @param {Date|string} relativeDate Date string (YYYY-MM-DD) or date object to subtract duration from.
+ * @param {number}      duration     The duration in seconds to subtract from relativeDate.
  * @return {Date} Resulting date.
  */
-export function dateAgo( from, duration ) {
-	const d = typeof from === 'string' ? Date.parse( from ) : from.getTime();
-	return new Date( d - duration * 1000 );
+export function dateSub( relativeDate, duration ) {
+	invariant(
+		isValidDateString( relativeDate ) ||
+			( isDate( relativeDate ) && ! isNaN( relativeDate ) ),
+		INVALID_DATE_STRING_ERROR
+	);
+
+	const timestamp = isValidDateString( relativeDate )
+		? Date.parse( relativeDate )
+		: relativeDate.getTime();
+	return new Date( timestamp - duration * 1000 );
 }
