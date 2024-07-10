@@ -43,6 +43,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../material-components';
 import BannerGraphicsSVG from '../../../svg/graphics/consent-mode-setup.svg';
+import BannerGraphicsTabletSVG from '../../../svg/graphics/consent-mode-setup-tablet.svg';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
@@ -54,10 +55,17 @@ import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS, trackEvent } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_XLARGE,
+	useBreakpoint,
+} from '../../hooks/useBreakpoint';
 
 function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ saveError, setSaveError ] = useState( null );
+
+	const breakpoint = useBreakpoint();
 
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
@@ -222,14 +230,9 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 							noPadding
 							className="googlesitekit-setup-cta-banner googlesitekit-consent-mode-setup-cta-widget"
 						>
-							<Grid collapsed ref={ trackingRef }>
-								<Row>
-									<Cell
-										smSize={ 6 }
-										mdSize={ 8 }
-										lgSize={ 6 }
-										className="googlesitekit-setup-cta-banner__primary-cell"
-									>
+							<div ref={ trackingRef }>
+								<div className="googlesitekit-setup-cta-banner__cells">
+									<div className="googlesitekit-setup-cta-banner__primary-cell">
 										<h3 className="googlesitekit-setup-cta-banner__title">
 											{ __(
 												'Enable Consent Mode to preserve tracking for your Ads campaigns',
@@ -292,18 +295,17 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 												</Button>
 											</Fragment>
 										</div>
-									</Cell>
-									<Cell
-										alignBottom
-										className="googlesitekit-setup-cta-banner__svg-wrapper"
-										smSize={ 6 }
-										mdSize={ 8 }
-										lgSize={ 6 }
-									>
-										<BannerGraphicsSVG />
-									</Cell>
-								</Row>
-							</Grid>
+									</div>
+									<div className="googlesitekit-setup-cta-banner__svg-wrapper">
+										{ breakpoint !== BREAKPOINT_SMALL &&
+										breakpoint !== BREAKPOINT_XLARGE ? (
+											<BannerGraphicsTabletSVG />
+										) : (
+											<BannerGraphicsSVG />
+										) }
+									</div>
+								</div>
+							</div>
 						</Widget>
 					</Cell>
 				</Row>
