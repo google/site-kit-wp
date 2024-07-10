@@ -62,28 +62,12 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				);
 			} );
 
-			it( 'should add the path parameter', () => {
+			it( 'should append a publication ID to the URL', () => {
 				const publicationID = 'ABCDEFG';
+
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getServiceURL( {
-						path: 'reader-revenue-manager',
-						query: {},
-						publicationID,
-					} );
-
-				expect(
-					new URL( decodeServiceURL( serviceURL ) ).pathname
-				).toMatch( '/reader-revenue-manager' );
-			} );
-
-			it( 'should append correct query parameters to the URL', () => {
-				const publicationID = 'ABCDEFG';
-				const serviceURL = registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getServiceURL( {
-						path: 'reader-revenue-manager',
-						query: {},
 						publicationID,
 					} );
 
@@ -94,6 +78,38 @@ describe( 'modules/reader-revenue-manager service store', () => {
 
 				expect( decodeServiceURL( serviceURL ) ).toMatchQueryParameters(
 					query
+				);
+			} );
+
+			it( 'should add the path parameter', () => {
+				const serviceURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getServiceURL( {
+						path: 'reader-revenue-manager',
+					} );
+
+				expect(
+					new URL( decodeServiceURL( serviceURL ) ).pathname
+				).toMatch( '/reader-revenue-manager' );
+			} );
+
+			it( 'should append correct query parameters to the URL', () => {
+				const query = {
+					param1: '1',
+					param2: '2',
+				};
+
+				const serviceURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getServiceURL( {
+						query,
+					} );
+
+				expect( decodeServiceURL( serviceURL ) ).toMatchQueryParameters(
+					{
+						...query,
+						utm_source: 'sitekit',
+					}
 				);
 			} );
 		} );
