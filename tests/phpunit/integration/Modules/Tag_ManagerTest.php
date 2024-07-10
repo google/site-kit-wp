@@ -13,11 +13,9 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Analytics\Settings as AnalyticsSettings;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -45,7 +43,6 @@ class Tag_ManagerTest extends TestCase {
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
 
 		$tagmanager->register();
 
@@ -53,38 +50,6 @@ class Tag_ManagerTest extends TestCase {
 			$tagmanager->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
-		$this->assertTrue( has_filter( 'googlesitekit_analytics_can_use_snippet' ) );
-	}
-
-	public function test_analytics_can_use_snippet() {
-		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
-		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options            = new Options( $context );
-		$analytics_settings = new AnalyticsSettings( $options );
-		$analytics_settings->delete();
-		$tagmanager = new Tag_Manager( $context );
-		$settings   = $tagmanager->get_settings();
-
-		// The value should be `true` by default.
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Delayed to differentiate between initial value and post-registration value.
-		$tagmanager->register();
-		$analytics_settings->register();
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Should be `true` if there is a `gaPropertyID` set and is not the same as analytics property ID.
-		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
-		$analytics_settings->merge( array( 'propertyID' => 'UA-9999999-1' ) );
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Should be `false` if there is a `gaPropertyID` set and is the same as analytics property ID.
-		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
-		$analytics_settings->merge( array( 'propertyID' => 'UA-S1T3K1T-1' ) );
-		$this->assertFalse( $analytics_settings->get()['canUseSnippet'] );
-		// Should be `true` even with a `gaPropertyID` if GTM's snippet is disabled.
-		$settings->merge( array( 'useSnippet' => false ) );
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Still `true` if no `gaPropertyID` and no GTM snippet.
-		$settings->merge( array( 'gaPropertyID' => '' ) );
-		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -389,7 +354,7 @@ class Tag_ManagerTest extends TestCase {
 				'googlesitekit-datastore-site',
 				'googlesitekit-modules',
 				'googlesitekit-vendor',
-				'googlesitekit-modules-analytics',
+				'googlesitekit-modules-analytics-4',
 				'googlesitekit-components',
 			),
 			$dependency->deps
@@ -404,8 +369,8 @@ class Tag_ManagerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_module_exists' );
 		add_filter(
 			'googlesitekit_module_exists',
-			function( $exists, $slug ) {
-				return 'analytics' === $slug ? false : true;
+			function ( $exists, $slug ) {
+				return 'analytics-4' === $slug ? false : true;
 			},
 			10,
 			2
@@ -436,7 +401,7 @@ class Tag_ManagerTest extends TestCase {
 
 		// This is implied from the above assertion, but let's be explicit about what we are trying to test.
 		$this->assertNotContains(
-			'googlesitekit-module-analytics',
+			'googlesitekit-module-analytics-4',
 			$dependency->deps
 		);
 	}
@@ -521,6 +486,14 @@ class Tag_ManagerTest extends TestCase {
 	 */
 	protected function get_module_with_service_entity() {
 		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return int The error code returned by the listAccountsContainers( "accounts/{account_id}" )
+	 * endpoint when permission is denied.
+	 */
+	protected function get_service_entity_no_access_error_code() {
+		return 404;
 	}
 
 	protected function set_up_check_service_entity_access( Module $module ) {

@@ -26,6 +26,14 @@ trait Module_With_Service_Entity_ContractTests {
 	abstract protected function get_module_with_service_entity();
 
 	/**
+	 * All service entities return 403 for the permission denied error,
+	 * except for Tag Manager which returns a 404.
+	 */
+	protected function get_service_entity_no_access_error_code() {
+		return 403;
+	}
+
+	/**
 	 * @group Module_With_Service_Entity
 	 */
 	public function test_check_service_entity_access_success() {
@@ -48,7 +56,8 @@ trait Module_With_Service_Entity_ContractTests {
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_service_entity();
 
-		$this->mock_service_entity_access( $module, 403 );
+		$no_access_error_code = $this->get_service_entity_no_access_error_code();
+		$this->mock_service_entity_access( $module, $no_access_error_code );
 		$this->set_up_check_service_entity_access( $module );
 
 		$access = $module->check_service_entity_access();
@@ -82,5 +91,4 @@ trait Module_With_Service_Entity_ContractTests {
 			}
 		);
 	}
-
 }

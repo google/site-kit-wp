@@ -25,7 +25,7 @@ import { Fragment, createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
@@ -39,8 +39,6 @@ import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
-
-const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const webStoriesActive = useSelect( ( select ) =>

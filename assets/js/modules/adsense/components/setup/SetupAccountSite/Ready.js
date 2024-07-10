@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../util';
 import {
@@ -34,7 +34,6 @@ import {
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import SetupAccountSiteUI from './SetupAccountSiteUI';
-const { useSelect, useDispatch } = Data;
 
 export default function Ready( { site, finishSetup } ) {
 	const [ acknowledgedDisabledAutoAds, setAcknowledgedDisabledAutoAds ] =
@@ -160,7 +159,7 @@ export default function Ready( { site, finishSetup } ) {
 			  );
 
 		uiProps.primaryButton = {
-			label: __( 'Configure AdSense', 'google-site-kit' ),
+			label: __( 'Complete setup', 'google-site-kit' ),
 			onClick: continueSetupHandler,
 		};
 	}

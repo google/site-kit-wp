@@ -24,59 +24,25 @@ import { __ } from '@wordpress/i18n';
 /**
  * External dependencies
  */
-import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { DAY_IN_SECONDS, stringifyObject } from '../../../util';
-import { isValidDateRange } from '../../../util/report-validation';
-import {
-	normalizeReportOptions,
-	isValidDimensionFilters,
-	isValidDimensions,
-	isValidMetrics,
-	isValidMetricFilters,
-	isValidOrders,
-	isZeroReport,
-} from '../utils';
+import { normalizeReportOptions, isZeroReport } from '../utils';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
-const { createRegistrySelector } = Data;
-
-/**
- * Returns report args for a sample report.
- *
- * @since 1.107.0
- *
- * @param {Function} select The select function of the registry.
- * @return {Object} Report args.
- */
-const getSampleReportArgs = ( select ) => {
-	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
-
-	const args = {
-		dimensions: [ 'date' ],
-		metrics: [ { name: 'totalUsers' } ],
-		startDate,
-		endDate,
-	};
-
-	const url = select( CORE_SITE ).getCurrentEntityURL();
-	if ( url ) {
-		args.url = url;
-	}
-
-	return args;
-};
+import { getSampleReportArgs } from '../utils/report-args';
+import { validateReport } from '../utils/validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -100,61 +66,7 @@ const fetchGetReportStore = createFetchStore( {
 	argsToParams: ( options ) => {
 		return { options };
 	},
-	validateParams: ( { options } = {} ) => {
-		invariant(
-			isPlainObject( options ),
-			'options for Analytics 4 report must be an object.'
-		);
-		invariant(
-			isValidDateRange( options ),
-			'Either date range or start/end dates must be provided for Analytics 4 report.'
-		);
-
-		const {
-			metrics,
-			dimensions,
-			dimensionFilters,
-			metricFilters,
-			orderby,
-		} = normalizeReportOptions( options );
-
-		invariant(
-			metrics.length,
-			'Requests must specify at least one metric for an Analytics 4 report.'
-		);
-		invariant(
-			isValidMetrics( metrics ),
-			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property. Metric names must match the expression ^[a-zA-Z0-9_]+$.'
-		);
-
-		if ( dimensions ) {
-			invariant(
-				isValidDimensions( dimensions ),
-				'dimensions for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
-			);
-		}
-
-		if ( dimensionFilters ) {
-			invariant(
-				isValidDimensionFilters( dimensionFilters ),
-				'dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values.'
-			);
-		}
-
-		if ( metricFilters ) {
-			invariant(
-				isValidMetricFilters( metricFilters ),
-				'metricFilters for an Analytics 4 report must be a map of metric names as keys and filter value(s) as numeric fields, depending on the filterType.'
-			);
-		}
-
-		if ( orderby ) {
-			invariant(
-				isValidOrders( orderby ),
-				'orderby for an Analytics 4 report must be an array of OrderBy objects where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
-			);
-		}
-	},
+	validateParams: ( { options } = {} ) => validateReport( options ),
 } );
 
 const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
@@ -211,7 +123,8 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 		}
 
 		// If the property was created within the last three days and has no data, assume it's still gathering data.
-		if ( propertyCreateTime > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
+		const now = select( CORE_USER ).getReferenceDate( { parsed: true } );
+		if ( propertyCreateTime > now.getTime() - DAY_IN_SECONDS * 3 * 1000 ) {
 			return false;
 		}
 
@@ -225,7 +138,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getReport( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getReport( options );
@@ -370,37 +283,67 @@ const baseSelectors = {
 	 *
 	 * @since 1.95.0
 	 * @since 1.107.0 Returns `true` if the report request has an error to be consistent with `hasZeroData` selectors of other modules.
+	 * @since 1.128.0 Add optional `reportArgs` parameter to allow checking zero data for a specific report.
 	 *
+	 * @param {Object}           state      Data store's state.
+	 * @param {Object|undefined} reportArgs Optional. Options for generating the report.
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
-	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const args = getSampleReportArgs( select );
+	hasZeroData: createRegistrySelector(
+		( select ) => ( state, reportArgs ) => {
+			const args = reportArgs || getSampleReportArgs( select );
 
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ args ] );
+			// Disable reason: select needs to be called here or it will never run.
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const report = select( MODULES_ANALYTICS_4 ).getReport( args );
+			const hasResolvedReport = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getReport', [ args ] );
 
-		if ( ! hasResolvedReport ) {
-			return undefined;
+			if ( ! hasResolvedReport ) {
+				return undefined;
+			}
+
+			const hasReportError = select(
+				MODULES_ANALYTICS_4
+			).getErrorForSelector( 'getReport', [ args ] );
+
+			// If there is an error, we assume it's a zero report.
+			if ( hasReportError ) {
+				return true;
+			}
+
+			return isZeroReport( report );
 		}
+	),
 
-		const hasReportError = select(
-			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ args ] );
-
-		// If there is an error, we assume it's a zero report.
-		if ( hasReportError ) {
-			return true;
+	/**
+	 * Gets a given report for each of the provided audiences.
+	 *
+	 * TODO: This will be refactored to use pivot reports in #8484.
+	 *
+	 * @since 1.126.0
+	 *
+	 * @param {Object}   state                 Data store's state.
+	 * @param {Object}   options               Options for generating the report.
+	 * @param {string[]} audienceResourceNames Audience resource names to get the report for.
+	 * @return {Array.<Object>} An array of report response objects for each provided audience resource name.
+	 */
+	getReportForAllAudiences: createRegistrySelector(
+		( select ) => ( state, options, audienceResourceNames ) => {
+			return audienceResourceNames?.map( ( audienceResourceName ) =>
+				select( MODULES_ANALYTICS_4 ).getReport( {
+					...options,
+					dimensionFilters: {
+						audienceResourceName,
+					},
+				} )
+			);
 		}
-
-		return isZeroReport( report );
-	} ),
+	),
 };
 
-const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
+const store = combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

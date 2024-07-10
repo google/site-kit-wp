@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -131,25 +132,25 @@ class Debug_Data {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param string $string     Input string to redact.
+	 * @param string $input_string     Input string to redact.
 	 * @param int    $mask_start Starting position of redaction and length of preserved characters.
 	 *                             If positive, characters are redacted from the end, preserving the first X characters.
 	 *                             If negative, characters are redacted from the beginning preserving the last X characters.
 	 * @return string
 	 */
-	public static function redact_debug_value( $string, $mask_start = 4 ) {
-		if ( ! is_scalar( $string ) ) {
+	public static function redact_debug_value( $input_string, $mask_start = 4 ) {
+		if ( ! is_scalar( $input_string ) ) {
 			return '';
 		}
 
-		$string = (string) $string;
+		$input_string = (string) $input_string;
 		if ( $mask_start < 0 ) {
-			$redacted = substr( $string, 0, $mask_start );
-			$unmasked = substr( $string, $mask_start );
+			$redacted = substr( $input_string, 0, $mask_start );
+			$unmasked = substr( $input_string, $mask_start );
 			return str_repeat( '•', strlen( $redacted ) ) . $unmasked;
 		} else {
-			$redacted = substr( $string, $mask_start );
-			$unmasked = substr( $string, 0, $mask_start );
+			$redacted = substr( $input_string, $mask_start );
+			$unmasked = substr( $input_string, 0, $mask_start );
 			return $unmasked . str_repeat( '•', strlen( $redacted ) );
 		}
 	}
@@ -190,6 +191,12 @@ class Debug_Data {
 			'capabilities'         => $this->get_capabilities_field(),
 			'enabled_features'     => $this->get_feature_fields(),
 		);
+
+		if ( Feature_Flags::enabled( 'conversionInfra' ) ) {
+			$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
+		}
+
+		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
 
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 
@@ -328,7 +335,6 @@ class Debug_Data {
 			'value' => __( 'Verified outside of Site Kit', 'google-site-kit' ),
 			'debug' => 'verified-non-site-kit',
 		);
-
 	}
 
 
@@ -450,7 +456,7 @@ class Debug_Data {
 		$wp_role_names     = wp_roles()->get_names();
 		$shared_role_names = array_filter(
 			$wp_role_names,
-			function( $key ) use ( $role_slugs ) {
+			function ( $key ) use ( $role_slugs ) {
 				return in_array( $key, $role_slugs, true );
 			},
 			ARRAY_FILTER_USE_KEY
@@ -576,6 +582,64 @@ class Debug_Data {
 		return array(
 			'label' => __( 'Features', 'google-site-kit' ),
 			'value' => $value,
+		);
+	}
+
+	/**
+	 * Gets the consent mode fields.
+	 *
+	 * @since 1.125.0
+	 *
+	 * @return array
+	 */
+	private function get_consent_mode_fields() {
+		/**
+		 * Filters the status of consent mode in Site Kit.
+		 *
+		 * @since 1.125.0
+		 *
+		 * @param string $status The consent mode status. Default: 'disabled'.
+		 */
+		$consent_mode_status = apply_filters( 'googlesitekit_consent_mode_status', 'disabled' );
+
+		$consent_api_active = function_exists( 'wp_set_consent' );
+
+		return array(
+			'consent_mode' => array(
+				'label' => __( 'Consent Mode', 'google-site-kit' ),
+				'value' => 'enabled' === $consent_mode_status ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
+				'debug' => $consent_mode_status,
+			),
+			'consent_api'  => array(
+				'label' => __( 'WP Consent API', 'google-site-kit' ),
+				'value' => $consent_api_active ? __( 'Detected', 'google-site-kit' ) : __( 'Not detected', 'google-site-kit' ),
+				'debug' => $consent_api_active ? 'detected' : 'not-detected',
+			),
+		);
+	}
+
+	/**
+	 * Gets the conversion event names registered by the currently supported
+	 * active plugins.
+	 *
+	 * @since 1.127.0
+	 *
+	 * @return array
+	 */
+	private function get_active_conversion_event_provider_fields() {
+		$value               = array();
+		$conversion_tracking = new Conversion_Tracking( $this->context );
+		$active_providers    = $conversion_tracking->get_active_providers();
+
+		foreach ( $active_providers as $active_provider_slug => $active_provider ) {
+			$value[ $active_provider_slug ] = implode( ', ', $active_provider->get_event_names() );
+		}
+
+		return array(
+			'active_conversion_event_providers' => array(
+				'label' => __( 'Active conversion event providers', 'google-site-kit' ),
+				'value' => $value,
+			),
 		);
 	}
 }

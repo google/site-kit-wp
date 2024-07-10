@@ -29,18 +29,18 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/ConnectGA4CTATileWidget';
@@ -48,7 +48,6 @@ import useViewOnly from '../../../../hooks/useViewOnly';
 import { AdSenseLinkCTA } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
-const { useSelect, useInViewSelect } = Data;
 
 function TopEarningContentWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
@@ -59,10 +58,17 @@ function TopEarningContentWidget( { Widget } ) {
 		} )
 	);
 
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pagePath' ],
+		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+		},
 		orderby: [
 			{
 				metric: { metricName: 'totalAdRevenue' },
@@ -72,9 +78,12 @@ function TopEarningContentWidget( { Widget } ) {
 		limit: 3,
 	};
 
-	const report = useInViewSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+	const report = useInViewSelect(
+		( select ) => {
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[ reportOptions ]
+	);
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
@@ -82,13 +91,15 @@ function TopEarningContentWidget( { Widget } ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ report, reportOptions ]
 	);
 
 	const loading = useSelect(

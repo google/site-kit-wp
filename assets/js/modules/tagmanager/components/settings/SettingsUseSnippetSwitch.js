@@ -25,10 +25,9 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import UseSnippetSwitch from '../common/UseSnippetSwitch';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-const { useSelect } = Data;
 
 export default function SettingsUseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) =>
@@ -61,7 +60,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated',
+							'Consider removing the existing tag to avoid loading both tags on your site',
 							'google-site-kit'
 						) }
 					</p>

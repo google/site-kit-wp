@@ -24,7 +24,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
 import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
@@ -34,7 +34,6 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Row, Cell } from '../../material-components';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-const { useSelect } = Data;
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'adminBarImpressions';
@@ -57,13 +56,13 @@ const AdminBarSessionsGA4Widget =
 
 export default function AdminBarWidgets() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const canViewSharedAnalytics = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )

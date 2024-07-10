@@ -198,13 +198,14 @@ exports[`SetupForm renders the form correctly 1`] = `
       class="googlesitekit-setup-module__action"
     >
       <button
-        class="mdc-button googlesitekit-button-icon--spinner mdc-button--raised"
+        class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+        disabled=""
         target="_self"
       >
         <span
           class="mdc-button__label"
         >
-          Configure Analytics
+          Complete setup
         </span>
       </button>
     </div>

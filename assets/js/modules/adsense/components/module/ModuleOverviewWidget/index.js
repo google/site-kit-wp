@@ -30,7 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	DATE_RANGE_OFFSET,
+} from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { SITE_STATUS_ADDED, legacyAccountStatuses } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -39,10 +42,9 @@ import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
 import Stats from './Stats';
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import StatusMigration from './StatusMigration';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-const { useSelect, useInViewSelect } = Data;
 
 function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const viewOnlyDashboard = useViewOnly();
@@ -67,7 +69,11 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		siteStatus === SITE_STATUS_ADDED;
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
-		( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } )
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				compare: true,
+				offsetDays: DATE_RANGE_OFFSET,
+			} )
 	);
 
 	const currentRangeArgs = {
@@ -89,17 +95,23 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( currentRangeArgs )
+	const currentRangeData = useInViewSelect(
+		( select ) => select( MODULES_ADSENSE ).getReport( currentRangeArgs ),
+		[ currentRangeArgs ]
 	);
-	const previousRangeData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( previousRangeArgs )
+	const previousRangeData = useInViewSelect(
+		( select ) => select( MODULES_ADSENSE ).getReport( previousRangeArgs ),
+		[ previousRangeArgs ]
 	);
-	const currentRangeChartData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( currentRangeChartArgs )
+	const currentRangeChartData = useInViewSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).getReport( currentRangeChartArgs ),
+		[ currentRangeChartArgs ]
 	);
-	const previousRangeChartData = useInViewSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getReport( previousRangeChartArgs )
+	const previousRangeChartData = useInViewSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).getReport( previousRangeChartArgs ),
+		[ previousRangeChartArgs ]
 	);
 
 	const loading = useSelect(

@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
@@ -53,7 +53,6 @@ import {
 } from '../common';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -125,7 +124,7 @@ export default function SetupForm( { finishSetup } ) {
 					! analyticsModuleActive
 				) {
 					const { response, error } = await activateModule(
-						'analytics'
+						'analytics-4'
 					);
 					if ( error ) {
 						throw error;
@@ -245,7 +244,7 @@ export default function SetupForm( { finishSetup } ) {
 						disabled={ ! canSubmitChanges || isSaving }
 						isSaving={ isSaving }
 					>
-						{ __( 'Confirm & Continue', 'google-site-kit' ) }
+						{ __( 'Complete setup', 'google-site-kit' ) }
 					</SpinnerButton>
 				) }
 			</div>

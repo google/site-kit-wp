@@ -24,15 +24,14 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import AdBlockerWarning from '../common/AdBlockerWarning';
+import { useSelect } from 'googlesitekit-data';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import whenActive from '../../../../util/when-active';
-const { useSelect } = Data;
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 function AdBlockerWarningWidget( { Widget, WidgetNull } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
+		select( CORE_USER ).isAdBlockerActive()
 	);
 
 	if ( ! isAdBlockerActive ) {
@@ -41,7 +40,7 @@ function AdBlockerWarningWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget noPadding>
-			<AdBlockerWarning />
+			<AdBlockerWarning moduleSlug="adsense" />
 		</Widget>
 	);
 }

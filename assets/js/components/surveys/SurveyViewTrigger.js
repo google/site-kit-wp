@@ -29,10 +29,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-const { useSelect, useDispatch } = Data;
 
 export default function SurveyViewTrigger( { triggerID, ttl = 0 } ) {
 	const usingProxy = useSelect( ( select ) =>

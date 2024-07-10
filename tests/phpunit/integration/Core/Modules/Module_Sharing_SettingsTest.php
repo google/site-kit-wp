@@ -57,7 +57,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 		// Test sanitizing invalid sharedRoles.
 		$test_sharing_settings = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( '', 'editor', array( 'edit' ) ),
 				'management'  => 'owner',
 			),
@@ -71,7 +71,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$expected              = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( 'editor' ),
 				'management'  => 'owner',
 			),
@@ -95,7 +95,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 		// Test invalid settings when we get settings.
 		$test_sharing_settings = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => '',
 				'management'  => '',
 			),
@@ -113,7 +113,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$expected              = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array(),
 				'management'  => 'owner',
 			),
@@ -179,7 +179,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 	public function test_unset_module() {
 		$test_sharing_settings = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array(),
 				'management'  => 'owner',
 			),
@@ -197,7 +197,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$expected              = array(
-			'analytics'      => array(
+			'analytics-4'    => array(
 				'sharedRoles' => array(),
 				'management'  => 'owner',
 			),
@@ -220,7 +220,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 	public function test_get_all_shared_roles() {
 		$test_sharing_settings = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( 'contributor' ),
 				'management'  => '',
 			),
@@ -245,7 +245,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
 
 		$test_sharing_settings = array(
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( 'editor', 'author' ),
 				'management'  => 'owner',
 			),
@@ -256,7 +256,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		);
 
 		$this->settings->set( $test_sharing_settings );
-		$this->assertEquals( array( 'editor', 'author' ), $this->settings->get_shared_roles( 'analytics' ) );
+		$this->assertEquals( array( 'editor', 'author' ), $this->settings->get_shared_roles( 'analytics-4' ) );
 		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
 	}
 
@@ -271,7 +271,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 						'sharedRoles' => array( 'contributor' ),
 						'management'  => 'owner',
 					),
-					'analytics'      => array(
+					'analytics-4'    => array(
 						'sharedRoles' => array( 'contributor', 'author' ),
 						'management'  => 'all_admins',
 					),
@@ -284,7 +284,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			$this->settings->merge(
 				array(
 					'search-console' => null,
-					'analytics'      => null,
+					'analytics-4'    => null,
 				)
 			)
 		);
@@ -294,7 +294,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			$this->settings->merge(
 				array(
 					'search-console' => array(),
-					'analytics'      => array(),
+					'analytics-4'    => array(),
 				)
 			)
 		);
@@ -304,7 +304,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			'search-console'     => array(
 				'sharedRoles' => array( 'contributor', 'editor' ),
 			),
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'management' => 'owner',
 			),
 			'pagespeed-insights' => array(
@@ -317,7 +317,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'sharedRoles' => array( 'contributor', 'editor' ),
 				'management'  => 'owner',
 			),
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( 'contributor', 'author' ),
 				'management'  => 'owner',
 			),
@@ -333,7 +333,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		// Keeps the valid parts of partial and discards the invalid parts.
 		$test_sharing_settings = array(
 			'search-console'     => null,
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( 'contributor' ),
 				'invalid'     => array( 'invalid' ),
 			),
@@ -347,7 +347,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'sharedRoles' => array( 'contributor', 'editor' ),
 				'management'  => 'owner',
 			),
-			'analytics'          => array(
+			'analytics-4'        => array(
 				'sharedRoles' => array( 'contributor' ),
 				'management'  => 'owner',
 			),
@@ -360,5 +360,4 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
 		$this->assertEquals( $expected, $this->settings->get() );
 	}
-
 }

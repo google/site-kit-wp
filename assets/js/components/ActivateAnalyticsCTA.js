@@ -31,25 +31,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../hooks/useDebounce';
-const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {
-	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
+	const activateModuleCallback = useActivateModuleCallback( 'analytics-4' );
 	const completeModuleActivationCallback =
-		useCompleteModuleActivationCallback( 'analytics' );
+		useCompleteModuleActivationCallback( 'analytics-4' );
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 	const [ inProgress, setInProgress ] = useState( false );
 
@@ -58,7 +57,8 @@ export default function ActivateAnalyticsCTA( { children } ) {
 			return false;
 		}
 
-		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
+		const adminReauthURL =
+			select( MODULES_ANALYTICS_4 ).getAdminReauthURL();
 
 		if ( ! adminReauthURL ) {
 			return false;
@@ -73,7 +73,7 @@ export default function ActivateAnalyticsCTA( { children } ) {
 		}
 
 		return select( CORE_MODULES ).isFetchingSetModuleActivation(
-			'analytics',
+			'analytics-4',
 			true
 		);
 	} );

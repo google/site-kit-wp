@@ -203,7 +203,7 @@ final class Permissions {
 	public function register() {
 		add_filter(
 			'map_meta_cap',
-			function( array $caps, $cap, $user_id, $args ) {
+			function ( array $caps, $cap, $user_id, $args ) {
 				return $this->map_meta_capabilities( $caps, $cap, $user_id, $args );
 			},
 			10,
@@ -212,7 +212,7 @@ final class Permissions {
 
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
@@ -236,7 +236,7 @@ final class Permissions {
 
 		add_filter(
 			'user_has_cap',
-			function( array $allcaps ) {
+			function ( array $allcaps ) {
 				return $this->grant_additional_caps( $allcaps );
 			}
 		);
@@ -471,7 +471,7 @@ final class Permissions {
 			return $view_dashboard_capability;
 		}
 
-		if ( ! $this->user_has_shared_role_for_module( $user_id, 'analytics' ) &&
+		if ( ! $this->user_has_shared_role_for_module( $user_id, 'analytics-4' ) &&
 			! $this->user_has_shared_role_for_module( $user_id, 'search-console' ) ) {
 			return array( 'do_not_allow' );
 		}
@@ -710,10 +710,10 @@ final class Permissions {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
+						'callback'            => function () {
 							return new WP_REST_Response( $this->check_all_for_current_user() );
 						},
-						'permission_callback' => function() {
+						'permission_callback' => function () {
 							return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 						},
 					),

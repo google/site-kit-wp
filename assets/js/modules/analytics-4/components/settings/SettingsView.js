@@ -25,7 +25,7 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -33,11 +33,12 @@ import {
 import OptionalSettingsView from './OptionalSettingsView';
 import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-const { useSelect } = Data;
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -114,7 +115,7 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ createInterpolateElement(
 							__(
-								'<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID',
+								'<VisuallyHidden>Google Analytics</VisuallyHidden> Measurement ID',
 								'google-site-kit'
 							),
 							{
@@ -167,7 +168,7 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-						{ ! useSnippet && (
+						{ useSnippet === false && (
 							<span>
 								{ __(
 									'Snippet is not inserted',
@@ -175,6 +176,7 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
+						{ useSnippet === undefined && BLANK_SPACE }
 					</p>
 				</div>
 			</div>

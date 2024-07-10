@@ -51,6 +51,8 @@ class Debug_DataTest extends TestCase {
 	}
 
 	public function test_registered_debug_information() {
+		self::enable_feature( 'conversionInfra' );
+
 		remove_all_filters( 'debug_information' );
 		$debug_data = $this->new_debug_data();
 		$debug_data->register();
@@ -61,6 +63,9 @@ class Debug_DataTest extends TestCase {
 		$this->assertNonConditionalFields( $info );
 		$this->assertArrayHasKey( 'recoverable_modules', $info['google-site-kit']['fields'] );
 		$this->assertHasDashboardSharingModuleFields( 'fake-module', $info );
+
+		$this->assertArrayHasKey( 'consent_mode', $info['google-site-kit']['fields'] );
+		$this->assertArrayHasKey( 'consent_api', $info['google-site-kit']['fields'] );
 	}
 
 	/**
@@ -113,6 +118,9 @@ class Debug_DataTest extends TestCase {
 			'required_scopes',
 			'capabilities',
 			'enabled_features',
+			'consent_mode',
+			'consent_api',
+			'active_conversion_event_providers',
 		);
 		$actual_keys          = array_keys( $debug_information['google-site-kit']['fields'] );
 

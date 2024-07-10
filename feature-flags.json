@@ -1,7 +1,1 @@
-[
-	"adsModule",
-	"audienceSegmentation",
-	"consentMode",
-	"ga4AdSenseIntegration",
-	"gm3Components"
-]
+[ "adsPax", "audienceSegmentation", "consentModeSwitzerland", "conversionInfra", "gm3Components", "rrmModule" ]

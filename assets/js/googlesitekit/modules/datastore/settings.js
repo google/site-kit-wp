@@ -24,8 +24,10 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-const { createRegistrySelector, createRegistryControl } = Data;
+import {
+	createRegistrySelector,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import { CORE_MODULES } from './constants';
 import { createValidatedAction } from '../../data/utils';
 
@@ -150,6 +152,22 @@ export const selectors = {
 		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
 		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
+
+	/**
+	 * Checks whether there are changes to save for a module.
+	 *
+	 * @since 1.125.0
+	 *
+	 * @param {string} slug Slug for module store.
+	 * @return {boolean} Whether changes have been made in the settings form.
+	 */
+	haveSettingsChanged: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'slug is required.' );
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			return !! select( storeName )?.haveSettingsChanged?.();
+		}
+	),
 };
 
 export default {

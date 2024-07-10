@@ -93,7 +93,7 @@ MultipleRecoverableModule.args = {
 	setupRegistry: ( registry ) => {
 		provideModulesWithRecoverable( registry, [
 			'search-console',
-			'analytics',
+			'analytics-4',
 		] );
 		registry
 			.dispatch( CORE_MODULES )
@@ -140,7 +140,7 @@ MultipleRecoverableModuleNoAccess.args = {
 	setupRegistry: ( registry ) => {
 		provideModulesWithRecoverable( registry, [
 			'search-console',
-			'analytics',
+			'analytics-4',
 		] );
 		registry
 			.dispatch( CORE_MODULES )
@@ -232,7 +232,7 @@ MultipleRecoverableModuleErrors.args = {
 
 		provideModulesWithRecoverable( registry, [
 			'search-console',
-			'analytics',
+			'analytics-4',
 		] );
 		registry
 			.dispatch( CORE_MODULES )
@@ -244,11 +244,11 @@ MultipleRecoverableModuleErrors.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'analytics' }
+				{ slug: 'analytics-4' }
 			);
 		registry
 			.dispatch( CORE_MODULES )
-			.recoverModules( [ 'search-console', 'analytics' ] );
+			.recoverModules( [ 'search-console', 'analytics-4' ] );
 	},
 };
 

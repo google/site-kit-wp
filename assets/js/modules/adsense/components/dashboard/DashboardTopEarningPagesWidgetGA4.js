@@ -20,36 +20,39 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
 import { __, _x } from '@wordpress/i18n';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../analytics-4/datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
+import { numFmt, trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import whenActive from '../../../../util/when-active';
+import SourceLink from '../../../../components/SourceLink';
 import Link from '../../../../components/Link';
 import PreviewTable from '../../../../components/PreviewTable';
 import ReportTable from '../../../../components/ReportTable';
-import SourceLink from '../../../../components/SourceLink';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import { numFmt } from '../../../../util';
-import whenActive from '../../../../util/when-active';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { ZeroDataMessage } from '../../../analytics/components/common';
-import { DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
-import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
-import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import { ZeroDataMessage } from '../../../analytics-4/components/common';
 import { AdSenseLinkCTA } from '../common';
-import AdBlockerWarning from '../common/AdBlockerWarning';
-
-const { useSelect, useInViewSelect } = Data;
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 
 function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,
@@ -68,17 +71,25 @@ function DashboardTopEarningPagesWidgetGA4( {
 		} )
 	);
 
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
 	const args = {
 		startDate,
 		endDate,
-		dimensions: [ 'pageTitle', 'pagePath' ],
+		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+		},
+		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 5,
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -87,12 +98,21 @@ function DashboardTopEarningPagesWidgetGA4( {
 		] )
 	);
 
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles( data, args )
+				: undefined,
+		[ data, args ]
+	);
+
 	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
 				[ args ]
-			)
+			) ||
+			( ! error && titles === undefined )
 	);
 
 	const isDismissed = useSelect( ( select ) =>
@@ -103,6 +123,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 		if ( viewOnlyDashboard ) {
 			return null;
 		}
+
 		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
 			'content-publisher-overview',
 			generateDateRangeArgs( { startDate, endDate } )
@@ -114,8 +135,57 @@ function DashboardTopEarningPagesWidgetGA4( {
 	);
 
 	const isAdblockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
+		select( CORE_USER ).isAdBlockerActive()
 	);
+
+	const trackingRef = useRef();
+
+	// This function works around the fact that useRef does not trigger a re-render when its value changes.
+	// This meant that if you scrolled slowly, the trackingRef would be null when the intersection observer
+	// was created, and the observer would never detect the component as in view.
+	// Full discussion: https://github.com/google/site-kit-wp/issues/8212#issuecomment-1954275748
+	const [ trackingRefReady, setTrackingRefReady ] = useState( false );
+	const updateTrackingRef = ( element ) => {
+		trackingRef.current = element;
+		if ( element && ! trackingRefReady ) {
+			setTrackingRefReady( true );
+		}
+	};
+
+	const viewContext = useViewContext();
+
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			if ( isAdSenseLinked ) {
+				trackEvent(
+					`${ viewContext }_top-earning-pages-widget`,
+					'view_widget'
+				);
+			}
+
+			if ( ! isAdSenseLinked ) {
+				trackEvent(
+					`${ viewContext }_top-earning-pages-widget`,
+					'view_notification'
+				);
+			}
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, viewContext, isAdSenseLinked, hasBeenInView ] );
+
+	const onClickAdSenseLinkedCTA = () => {
+		trackEvent(
+			`${ viewContext }_top-earning-pages-widget`,
+			'click_learn_more_link'
+		);
+	};
 
 	if ( isDismissed ) {
 		return <WidgetNull />;
@@ -128,7 +198,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	if ( isAdblockerActive ) {
 		return (
 			<Widget Footer={ Footer }>
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="adsense" />
 			</Widget>
 		);
 	}
@@ -143,8 +213,8 @@ function DashboardTopEarningPagesWidgetGA4( {
 
 	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
-			<Widget Footer={ Footer }>
-				<AdSenseLinkCTA />
+			<Widget Footer={ Footer } ref={ updateTrackingRef }>
+				<AdSenseLinkCTA onClick={ onClickAdSenseLinkedCTA } />
 			</Widget>
 		);
 	}
@@ -174,8 +244,9 @@ function DashboardTopEarningPagesWidgetGA4( {
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
 			Component( { row } ) {
-				const [ { value: title }, { value: url } ] =
-					row.dimensionValues;
+				const [ { value: url } ] = row.dimensionValues;
+				const title = titles[ url ];
+
 				const serviceURL = useSelect( ( select ) => {
 					return ! viewOnlyDashboard
 						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
@@ -192,6 +263,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 						  )
 						: null;
 				} );
+
+				if ( viewOnlyDashboard ) {
+					return <span>{ title }</span>;
+				}
 
 				return (
 					<Link
@@ -223,7 +298,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer }>
+		<Widget noPadding Footer={ Footer } ref={ updateTrackingRef }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.rows || [] }

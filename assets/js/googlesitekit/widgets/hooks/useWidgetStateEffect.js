@@ -24,9 +24,8 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { CORE_WIDGETS } from '../datastore/constants';
-const { useDispatch } = Data;
 
 export default function useWidgetStateEffect(
 	widgetSlug,

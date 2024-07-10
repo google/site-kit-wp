@@ -25,7 +25,7 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { isValidMeasurementID } from '../../modules/analytics-4/utils/validation';
 import { Button, SpinnerButton, ProgressBar } from 'googlesitekit-components';
@@ -33,8 +33,6 @@ import BannerNotification from './BannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import { getBestTagID } from '../../modules/analytics-4/utils/google-tag';
-
-const { useSelect, useDispatch } = Data;
 
 export default function GoogleTagIDMismatchNotification() {
 	const currentAnalyticsConfig = useSelect( ( select ) =>
@@ -177,7 +175,7 @@ export default function GoogleTagIDMismatchNotification() {
 				description={ sprintf(
 					/* translators: 1: Currently GA4 property name. 2: Current GA4 property ID. 3: Newly linked GA4 property name. 4: Newly linked GA4 property ID. */
 					__(
-						'The Google Tag on your site is no longer associated with your current Google Analytics 4 property "%1$s (%2$s)". It is now recording metrics to another Google Analytics 4 property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.',
+						'The Google Tag on your site is no longer associated with your current Google Analytics property "%1$s (%2$s)". It is now recording metrics to another Google Analytics property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.',
 						'google-site-kit'
 					),
 					currentAnalyticsProperty.displayName,
@@ -217,7 +215,7 @@ export default function GoogleTagIDMismatchNotification() {
 				description={ sprintf(
 					/* translators: 1: Currently set Google Tag ID. 2: Newly linked Google Tag ID. 3: Currently GA4 property name. 4: Current GA4 property ID. */
 					__(
-						'The Google tag for your Google Analytics 4 configuration has changed from %1$s to %2$s. To keep using your current Google Analytics 4 property "%3$s (%4$s)", you need to configure Site Kit to place the new Google tag %2$s instead.',
+						'The Google tag for your Google Analytics configuration has changed from %1$s to %2$s. To keep using your current Google Analytics property "%3$s (%4$s)", you need to configure Site Kit to place the new Google tag %2$s instead.',
 						'google-site-kit'
 					),
 					currentAnalyticsConfig.googleTagID,

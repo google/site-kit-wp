@@ -107,14 +107,14 @@ describe( 'isZeroReport', () => {
 		[ 'an object without rows', { totals: [ 1 ] } ],
 		[ 'an object with invalid rows', { rows: 12, totals: [ 1 ] } ],
 	] )( 'should return TRUE when %s is passed', ( _, report ) => {
-		expect( isZeroReport( report ) ).toBe( true );
+		expect( isZeroReport( report, 1 ) ).toBe( true );
 	} );
 
 	it( 'should return FALSE when a valid object is passed', () => {
-		expect( isZeroReport( validReport ) ).toBe( false );
+		expect( isZeroReport( validReport, 1 ) ).toBe( false );
 	} );
 
 	it( 'should return undefined when an undefined value is passed', () => {
-		expect( isZeroReport( undefined ) ).toBeUndefined();
+		expect( isZeroReport( undefined, 1 ) ).toBeUndefined();
 	} );
 } );

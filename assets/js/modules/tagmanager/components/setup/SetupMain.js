@@ -29,15 +29,13 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import TagManagerIcon from '../../../../../svg/graphics/tagmanager.svg';
 import SetupForm from './SetupForm';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate } from '../common';
-import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
-const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
@@ -56,8 +54,6 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Set useSnippet to `false` if there is an existing tag and it is the same as the selected container ID.
 	useExistingTagEffect();
-	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
-	useGAPropertyIDEffect();
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
@@ -72,15 +68,18 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
-			<div className="googlesitekit-setup-module__logo">
-				<TagManagerIcon width="33" height="33" />
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<TagManagerIcon width="40" height="40" />
+				</div>
+
+				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
+				</h2>
 			</div>
-
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
-			</h2>
-
-			{ viewComponent }
+			<div className="googlesitekit-setup-module__step">
+				{ viewComponent }
+			</div>
 		</div>
 	);
 }

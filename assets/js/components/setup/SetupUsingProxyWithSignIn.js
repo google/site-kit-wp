@@ -35,7 +35,7 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
@@ -64,16 +64,15 @@ import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
 
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const connectAnalytics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -142,7 +141,9 @@ export default function SetupUsingProxyWithSignIn() {
 			let moduleReauthURL;
 
 			if ( connectAnalytics ) {
-				const { error, response } = await activateModule( 'analytics' );
+				const { error, response } = await activateModule(
+					'analytics-4'
+				);
 
 				if ( ! error ) {
 					await trackEvent(

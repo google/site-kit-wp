@@ -20,17 +20,27 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { AccountSelect, PropertySelect, WebDataStreamSelect } from '../common';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+	MODULES_ANALYTICS_4,
+	WEBDATASTREAM_CREATE,
+} from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	AccountSelect,
+	PropertySelect,
+	WebDataStreamSelect,
+	WebDataStreamNameInput,
+} from '../common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupFormFields() {
 	const accounts =
@@ -46,6 +56,11 @@ export default function SetupFormFields() {
 	const measurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
+	const webDataStreamID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
@@ -54,6 +69,12 @@ export default function SetupFormFields() {
 			setUseSnippet( existingTag !== measurementID );
 		}
 	}, [ setUseSnippet, hasExistingTag, existingTag, measurementID ] );
+
+	const resetEnhancedMeasurementSetting = useCallback( () => {
+		setValues( ENHANCED_MEASUREMENT_FORM, {
+			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+		} );
+	}, [ setValues ] );
 
 	return (
 		<Fragment>
@@ -67,10 +88,18 @@ export default function SetupFormFields() {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect />
-				<PropertySelect />
-				<WebDataStreamSelect />
+				<AccountSelect onChange={ resetEnhancedMeasurementSetting } />
+				<PropertySelect onChange={ resetEnhancedMeasurementSetting } />
+				<WebDataStreamSelect
+					onChange={ resetEnhancedMeasurementSetting }
+				/>
 			</div>
+
+			{ webDataStreamID === WEBDATASTREAM_CREATE && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<WebDataStreamNameInput />
+				</div>
+			) }
 
 			{ hasExistingTag && <SetupUseSnippetSwitch /> }
 			<SetupEnhancedMeasurementSwitch />

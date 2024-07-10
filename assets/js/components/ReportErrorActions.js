@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
@@ -45,10 +45,18 @@ import {
 import useViewOnly from '../hooks/useViewOnly';
 import Link from './Link';
 
-const { useSelect, useDispatch } = Data;
-
 export default function ReportErrorActions( props ) {
-	const { moduleSlug, error, GetHelpLink, onRetry, getHelpClassName } = props;
+	const {
+		moduleSlug,
+		error,
+		GetHelpLink,
+		hideGetHelpLink,
+		buttonVariant,
+		onRetry,
+		getHelpClassName,
+		RequestAccessButton,
+		RetryButton,
+	} = props;
 
 	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
@@ -117,37 +125,61 @@ export default function ReportErrorActions( props ) {
 
 	return (
 		<div className="googlesitekit-report-error-actions">
-			{ showRequestAccessURL && (
-				<Button href={ requestAccessURL } target="_blank">
-					{ __( 'Request access', 'google-site-kit' ) }
-				</Button>
-			) }
-			{ showRetry ? (
-				<Fragment>
-					<Button onClick={ handleRetry }>
-						{ __( 'Retry', 'google-site-kit' ) }
+			{ showRequestAccessURL &&
+				( typeof RequestAccessButton === 'function' ? (
+					<RequestAccessButton
+						requestAccessURL={ requestAccessURL }
+					/>
+				) : (
+					<Button
+						href={ requestAccessURL }
+						target="_blank"
+						danger={ buttonVariant === 'danger' }
+						tertiary={ buttonVariant === 'tertiary' }
+					>
+						{ __( 'Request access', 'google-site-kit' ) }
 					</Button>
-					<span className="googlesitekit-error-retry-text">
-						{ createInterpolateElement(
-							__(
-								'Retry didn’t work? <HelpLink />',
-								'google-site-kit'
-							),
-							{
-								HelpLink: (
-									<Link
-										href={ errorTroubleshootingLinkURL }
-										external
-										hideExternalIndicator
-									>
-										{ __( 'Get help', 'google-site-kit' ) }
-									</Link>
+				) ) }
+			{ showRetry && (
+				<Fragment>
+					{ typeof RetryButton === 'function' ? (
+						<RetryButton handleRetry={ handleRetry } />
+					) : (
+						<Button
+							onClick={ handleRetry }
+							danger={ buttonVariant === 'danger' }
+							tertiary={ buttonVariant === 'tertiary' }
+						>
+							{ __( 'Retry', 'google-site-kit' ) }
+						</Button>
+					) }
+					{ ! hideGetHelpLink && (
+						<span className="googlesitekit-error-retry-text">
+							{ createInterpolateElement(
+								__(
+									'Retry didn’t work? <HelpLink />',
+									'google-site-kit'
 								),
-							}
-						) }
-					</span>
+								{
+									HelpLink: (
+										<Link
+											href={ errorTroubleshootingLinkURL }
+											external
+											hideExternalIndicator
+										>
+											{ __(
+												'Get help',
+												'google-site-kit'
+											) }
+										</Link>
+									),
+								}
+							) }
+						</span>
+					) }
 				</Fragment>
-			) : (
+			) }
+			{ ! showRetry && ! hideGetHelpLink && (
 				<div className={ getHelpClassName }>
 					{ typeof GetHelpLink === 'function' ? (
 						<GetHelpLink linkURL={ errorTroubleshootingLinkURL } />
@@ -173,6 +205,10 @@ ReportErrorActions.propTypes = {
 		PropTypes.object,
 	] ).isRequired,
 	GetHelpLink: PropTypes.elementType,
+	hideGetHelpLink: PropTypes.bool,
+	buttonVariant: PropTypes.string,
 	onRetry: PropTypes.func,
 	getHelpClassName: PropTypes.string,
+	RequestAccessButton: PropTypes.elementType,
+	RetryButton: PropTypes.elementType,
 };

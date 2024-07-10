@@ -38,10 +38,11 @@ import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
 import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
+import * as modulesAds from '../../assets/js/modules/ads';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
-import * as modulesAnalytics from '../../assets/js/modules/analytics';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
+import * as modulesReaderRevenueManager from '../../assets/js/modules/reader-revenue-manager';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
@@ -70,10 +71,11 @@ const allCoreStores = [
 	coreWidgets,
 ];
 const allCoreModules = [
+	modulesAds,
 	modulesAdSense,
-	modulesAnalytics,
 	modulesAnalytics4,
 	modulesPageSpeedInsights,
+	modulesReaderRevenueManager,
 	modulesSearchConsole,
 	modulesTagManager,
 ];

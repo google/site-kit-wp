@@ -29,7 +29,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
@@ -42,13 +42,20 @@ import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../common';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import { numFmt } from '../../../../util';
-const { useSelect, useInViewSelect } = Data;
 
+/**
+ * Gets the report options for the Popular Authors widget.
+ *
+ * @since 1.113.0
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
 function getPopularAuthorsWidgetReportOptions( select ) {
 	const dates = select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
@@ -81,8 +88,9 @@ function PopularAuthorsWidget( props ) {
 	const { Widget } = props;
 
 	const reportOptions = useSelect( getPopularAuthorsWidgetReportOptions );
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>

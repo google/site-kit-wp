@@ -56,7 +56,7 @@ describe( 'TopCategoriesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsCustomDimensionGatheringData(
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 				false
 			);
 

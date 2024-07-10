@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import {
 	MODULES_ADSENSE,
 	API_STATE_READY,
@@ -50,7 +50,6 @@ import GettingReady from './GettingReady';
 import RequiresReview from './RequiresReview';
 import Ready from './Ready';
 import ErrorText from '../../../../../components/ErrorText';
-const { useDispatch } = Data;
 
 export default function SetupAccountSite( { site, finishSetup } ) {
 	const { autoAdsEnabled, state } = site;

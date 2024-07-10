@@ -35,7 +35,12 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	createRegistryControl,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -46,9 +51,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
-
-const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -384,7 +386,7 @@ const baseActions = {
 				type: REGISTER_MODULE,
 			};
 
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
 			// As we can specify a custom checkRequirements function here, we're
 			// invalidating the resolvers for activation checks.
@@ -471,7 +473,7 @@ const baseActions = {
 			invariant( Array.isArray( slugs ), 'slugs must be an array' );
 		},
 		function* ( slugs ) {
-			const { dispatch, select } = yield Data.commonActions.getRegistry();
+			const { dispatch, select } = yield commonActions.getRegistry();
 			const { response } =
 				yield fetchRecoverModulesStore.actions.fetchRecoverModules(
 					slugs
@@ -487,7 +489,7 @@ const baseActions = {
 					select( CORE_MODULES ).getModuleStoreName( slug );
 
 				// Reload the module's settings from the server.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch( storeName ).fetchGetSettings()
 				);
 			}
@@ -504,7 +506,7 @@ const baseActions = {
 				);
 
 				// Refresh user capabilities from the server.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch( CORE_USER ).refreshCapabilities()
 				);
 			}
@@ -561,13 +563,11 @@ export const baseControls = {
 			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select, __experimentalResolveSelect } ) =>
+		( { select, resolveSelect } ) =>
 			async ( { payload } ) => {
 				const { slug } = payload;
 				// Ensure the module is loaded before selecting the store name.
-				await __experimentalResolveSelect( CORE_MODULES ).getModule(
-					slug
-				);
+				await resolveSelect( CORE_MODULES ).getModule( slug );
 
 				const storeName =
 					select( CORE_MODULES ).getModuleStoreName( slug );
@@ -578,9 +578,7 @@ export const baseControls = {
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
-					return await __experimentalResolveSelect(
-						storeName
-					).getAdminReauthURL();
+					return await resolveSelect( storeName ).getAdminReauthURL();
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -663,17 +661,14 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 function* waitForModules() {
-	const { __experimentalResolveSelect } =
-		yield Data.commonActions.getRegistry();
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-	yield Data.commonActions.await(
-		__experimentalResolveSelect( CORE_MODULES ).getModules()
-	);
+	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
 }
 
 const baseResolvers = {
 	*getModules() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingModules = registry.select( CORE_MODULES ).getModules();
 
@@ -683,10 +678,10 @@ const baseResolvers = {
 	},
 
 	*canActivateModule( slug ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const { select, __experimentalResolveSelect } = registry;
-		const module = yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
+		const registry = yield commonActions.getRegistry();
+		const { select, resolveSelect } = registry;
+		const module = yield commonActions.await(
+			resolveSelect( CORE_MODULES ).getModule( slug )
 		);
 		// At this point, all modules are loaded so we can safely select getModule below.
 
@@ -725,7 +720,7 @@ const baseResolvers = {
 			} );
 		} else {
 			try {
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					module.checkRequirements( registry )
 				);
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
@@ -736,7 +731,7 @@ const baseResolvers = {
 	},
 
 	*hasModuleAccess( slug ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingCheckAccess = registry
 			.select( CORE_MODULES )
@@ -750,27 +745,15 @@ const baseResolvers = {
 	},
 
 	*getRecoverableModules() {
-		const registry = yield Data.commonActions.getRegistry();
-		const modules = yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		const registry = yield commonActions.getRegistry();
+		const modules = yield commonActions.await(
+			registry.resolveSelect( CORE_MODULES ).getModules()
 		);
-
-		if ( modules?.analytics?.recoverable ) {
-			yield Data.commonActions.await(
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS )
-					.getSettings()
-			);
-		}
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable && ! module.internal ) {
-					if ( moduleSlug === 'analytics' ) {
-						moduleList.push( 'analytics-4' );
-					} else {
-						moduleList.push( moduleSlug );
-					}
+					moduleList.push( moduleSlug );
 				}
 
 				return moduleList;
@@ -782,7 +765,7 @@ const baseResolvers = {
 	},
 
 	*getSharedOwnershipModules() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_MODULES ).getSharedOwnershipModules() ) {
 			return;
@@ -829,9 +812,7 @@ const baseSelectors = {
 	 *   "internal": false,
 	 *   "active": false,
 	 *   "connected": false,
-	 *   "dependencies": [
-	 *     "analytics"
-	 *   ],
+	 *   "dependencies": [],
 	 *   "dependents": []
 	 * }
 	 * ```
@@ -1389,10 +1370,6 @@ const baseSelectors = {
 		}
 
 		return Object.keys( modules ).reduce( ( acc, slug ) => {
-			if ( slug === 'analytics' ) {
-				return acc;
-			}
-
 			if ( modules[ slug ].shareable ) {
 				return { [ slug ]: modules[ slug ], ...acc };
 			}
@@ -1406,7 +1383,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	fetchCheckModuleAccessStore,

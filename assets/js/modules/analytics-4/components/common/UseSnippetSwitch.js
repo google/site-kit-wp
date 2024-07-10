@@ -30,12 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch( { description } ) {
 	const viewContext = useViewContext();
@@ -61,10 +60,7 @@ export default function UseSnippetSwitch( { description } ) {
 	return (
 		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
-				label={ __(
-					'Place Google Analytics 4 code',
-					'google-site-kit'
-				) }
+				label={ __( 'Place Google Analytics code', 'google-site-kit' ) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }

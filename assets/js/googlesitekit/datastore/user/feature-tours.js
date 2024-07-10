@@ -27,7 +27,12 @@ import { isPlainObject, isNull } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from './constants';
@@ -35,8 +40,7 @@ import featureTours from '../../../feature-tours';
 import { getItem } from '../../../googlesitekit/api/cache';
 import { createValidatedAction } from '../../data/utils';
 
-const { createRegistrySelector, createRegistryControl } = Data;
-const { getRegistry } = Data.commonActions;
+const { getRegistry } = commonActions;
 
 // Feature tour cooldown period is 2 hours
 export const FEATURE_TOUR_COOLDOWN_SECONDS = 60 * 60 * 2;
@@ -112,8 +116,10 @@ const baseActions = {
 				payload: { slug },
 			};
 
-			// Save the timestamp to allow the cooldown
-			yield actions.setLastDismissedAt( Date.now() );
+			// Save the timestamp to allow the cooldown.
+			// The timestamp used here should reflect the actual time the
+			// user interacted with this feature tour, not the reference date.
+			yield actions.setLastDismissedAt( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
 			// Dispatch a request to persist and receive updated dismissed tours.
 			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
@@ -198,10 +204,10 @@ const baseActions = {
 	},
 
 	*triggerTourForView( viewContext ) {
-		const { select, __experimentalResolveSelect } = yield getRegistry();
+		const { select, resolveSelect } = yield getRegistry();
 
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getLastDismissedAt()
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getLastDismissedAt()
 		);
 
 		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
@@ -241,7 +247,7 @@ const baseControls = {
 
 				// Only tours with a version after a user's initial Site Kit version should qualify.
 				const initialVersion = await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getInitialSiteKitVersion();
 				if ( ! initialVersion ) {
 					return false;
@@ -258,7 +264,7 @@ const baseControls = {
 				// Check if the tour has already been dismissed.
 				// Here we need to first await the underlying selector with the asynchronous resolver.
 				await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getDismissedFeatureTourSlugs();
 				if (
 					registry.select( CORE_USER ).isTourDismissed( tour.slug )
@@ -281,7 +287,7 @@ const baseControls = {
 				// Check if the tour has already been dismissed.
 				// Here we need to first await the underlying selector with the asynchronous resolver.
 				await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getDismissedFeatureTourSlugs();
 				if (
 					registry.select( CORE_USER ).isTourDismissed( tour.slug )
@@ -365,7 +371,7 @@ const baseResolvers = {
 	},
 
 	*getLastDismissedAt() {
-		const { value: lastDismissedAt } = yield Data.commonActions.await(
+		const { value: lastDismissedAt } = yield commonActions.await(
 			getItem( FEATURE_TOUR_LAST_DISMISSED_AT )
 		);
 
@@ -487,7 +493,11 @@ const baseSelectors = {
 		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
 		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMilliseconds;
 
-		return Date.now() < coolDownExpiresAt;
+		// When using feature tour cooldowns, we should compare the actual
+		// time with the cooldown time. Comparing the reference date with
+		// the cooldown time expiration would not be accurate (and somewhat
+		// confusing during testing).
+		return Date.now() < coolDownExpiresAt; // eslint-disable-line sitekit/no-direct-date
 	} ),
 };
 
@@ -498,7 +508,7 @@ export const {
 	reducer,
 	resolvers,
 	selectors,
-} = Data.combineStores(
+} = combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

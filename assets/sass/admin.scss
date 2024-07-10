@@ -129,6 +129,7 @@
 @import "components/global/googlesitekit-preview-table";
 @import "components/global/googlesitekit-publisher-wins";
 @import "components/global/googlesitekit-selection-box";
+@import "components/global/googlesitekit-selection-panel";
 @import "components/global/googlesitekit-sharing-settings";
 @import "components/global/googlesitekit-side-sheet";
 @import "components/global/googlesitekit-source-link";
@@ -141,6 +142,7 @@
 @import "components/global/googlesitekit-use-snippet-switch";
 @import "components/global/googlesitekit-user-menu";
 @import "components/global/googlesitekit-view-only-menu";
+@import "components/global/googlesitekit-warning-notice";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
@@ -149,6 +151,9 @@
 @import "components/dashboard/googlesitekit-entity-dashboard";
 @import "components/dashboard/googlesitekit-DashboardPageSpeed";
 @import "components/dashboard/googlesitekit-ReportMetric";
+@import "components/dashboard/googlesitekit-subtle-notification";
+@import "components/dashboard/googlesitekit-setup-cta-banner";
+@import "components/dashboard/googlesitekit-consent-mode-setup-cta";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -162,7 +167,6 @@
 
 // Key Metrics
 @import "components/key-metrics/googlesitekit-key-metrics-setup-cta";
-@import "components/key-metrics/googlesitekit-km-selection-panel";
 @import "components/key-metrics/googlesitekit-key-metrics-widgets";
 
 // Setup
@@ -172,9 +176,9 @@
 
 // Settings
 @import "components/settings/googlesitekit-settings-connect-module";
+@import "components/settings/googlesitekit-settings-consent-mode";
 @import "components/settings/googlesitekit-settings-meta";
 @import "components/settings/googlesitekit-settings-module";
-@import "components/settings/googlesitekit-settings-module-warning";
 @import "components/settings/googlesitekit-settings-notice";
 @import "components/settings/googlesitekit-settings-user-input";
 
@@ -191,6 +195,7 @@
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
 // Modules
+@import "components/ads";
 @import "components/adsense";
 @import "components/analytics-4";
 
@@ -201,6 +206,9 @@
 
 // User Feedback
 @import "components/surveys";
+
+// Overlay Notification
+@import "components/overlay-notification/googlesitekit-overlay-notification";
 
 // Widget Styles
 @import "widgets/widget-area";

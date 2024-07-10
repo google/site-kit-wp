@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import ReportError from './ReportError';
 import {
 	createTestRegistry,
@@ -30,17 +30,15 @@ import {
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
-import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
-const { useSelect } = Data;
-
 function ReportErrorWrapper( { ...args } ) {
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrors()
+		select( MODULES_ANALYTICS_4 ).getErrors()
 	);
 
 	return <ReportError error={ error } { ...args } />;
@@ -50,7 +48,7 @@ function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
 	const setupRegistryCallback = async ( registry ) => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
-		await registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		await setupRegistry( registry );
 	};
 	return (
@@ -58,7 +56,7 @@ function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
 			<ViewContextProvider
 				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
 			>
-				<ReportErrorWrapper moduleSlug="analytics" { ...args } />
+				<ReportErrorWrapper moduleSlug="analytics-4" { ...args } />
 			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
@@ -72,7 +70,7 @@ export const DefaultReportError = Template.bind( {} );
 DefaultReportError.storyName = 'Default ReportError';
 DefaultReportError.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -87,7 +85,7 @@ export const ReportErrorWithHTMLTags = Template.bind( {} );
 ReportErrorWithHTMLTags.storyName = 'ReportError with HTML tags';
 ReportErrorWithHTMLTags.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message:
@@ -104,7 +102,7 @@ ReportErrorWithInsufficientPermissions.storyName =
 	'ReportError with insufficient permissions';
 ReportErrorWithInsufficientPermissions.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -122,28 +120,36 @@ export const ReportErrorWithInsufficientPermissionsWithRequestAccess =
 ReportErrorWithInsufficientPermissionsWithRequestAccess.storyName =
 	'ReportError with insufficient permissions with request access';
 ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
-	moduleSlug: 'analytics',
+	moduleSlug: 'analytics-4',
 	setupRegistry: async ( registry ) => {
 		provideModules( registry, [
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics',
+				slug: 'analytics-4',
 			},
 		] );
 
-		const [ accountID, internalWebPropertyID, profileID ] = [
+		const [ accountID, propertyID, measurementID, webDataStreamID ] = [
 			'12345',
 			'34567',
 			'56789',
+			'78901',
 		];
 
-		await registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 		await registry
-			.dispatch( MODULES_ANALYTICS )
-			.setInternalWebPropertyID( internalWebPropertyID );
-		await registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAccountID( accountID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyID( propertyID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setMeasurementID( measurementID );
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setWebDataStreamID( webDataStreamID );
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -162,7 +168,7 @@ ReportErrorWithInsufficientPermissionsForViewOnlyUser.storyName =
 	'ReportError with insufficient permissions for view-only user';
 ReportErrorWithInsufficientPermissionsForViewOnlyUser.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -180,7 +186,7 @@ export const ReportErrorWithRetryButton = Template.bind( {} );
 ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
 ReportErrorWithRetryButton.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -207,7 +213,7 @@ MultipleReportErrorsWithRetryButton.storyName =
 	'Multiple Report Errors with Retry Button';
 MultipleReportErrorsWithRetryButton.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message one',
@@ -225,7 +231,7 @@ MultipleReportErrorsWithRetryButton.args = {
 				},
 			]
 		);
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message two',
@@ -243,7 +249,7 @@ MultipleReportErrorsWithRetryButton.args = {
 				},
 			]
 		);
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message three',
@@ -271,7 +277,7 @@ MultipleUniqueReportErrorsWithRetryButtonWith.storyName =
 	'Multiple Unique Report Errors with Retry Button';
 MultipleUniqueReportErrorsWithRetryButtonWith.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -289,7 +295,7 @@ MultipleUniqueReportErrorsWithRetryButtonWith.args = {
 				},
 			]
 		);
-		await registry.dispatch( MODULES_ANALYTICS ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',

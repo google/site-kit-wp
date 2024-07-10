@@ -29,7 +29,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
@@ -40,7 +40,6 @@ import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-const { useSelect } = Data;
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
@@ -74,7 +73,7 @@ const WPDashboardUniqueVisitorsChartGA4Widget =
 
 export default function WPDashboardWidgets() {
 	const analyticsModule = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'analytics' )
+		select( CORE_MODULES ).getModule( 'analytics-4' )
 	);
 
 	const canViewSharedAnalytics = useSelect( ( select ) =>

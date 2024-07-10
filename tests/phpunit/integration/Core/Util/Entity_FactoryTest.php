@@ -18,13 +18,15 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FixWPCoreEntityRewriteTrait;
+use WP_Post;
 use WP_Query;
 
 /**
  * @group Util
  */
 class Entity_FactoryTest extends TestCase {
-	use Fake_Site_Connection_Trait, FixWPCoreEntityRewriteTrait;
+	use Fake_Site_Connection_Trait;
+	use FixWPCoreEntityRewriteTrait;
 
 	private static $orig_permalink_structure;
 	private static $orig_show_on_front;
@@ -300,7 +302,7 @@ class Entity_FactoryTest extends TestCase {
 
 		add_filter(
 			'option_home',
-			function() {
+			function () {
 				return 'https://example.com';
 			}
 		);
@@ -829,6 +831,82 @@ class Entity_FactoryTest extends TestCase {
 						),
 					);
 				},
+			),
+		);
+	}
+
+	/**
+	 * @param $post_factory
+	 * @param $expected_url
+	 * @param $expected_title
+	 *
+	 * @dataProvider data_posts
+	 */
+	public function test_create_entity_for_post( Closure $post_factory, $expected_url, $expected_title, $pagenum = 1 ) {
+		$post = $post_factory();
+		$this->assertInstanceOf( WP_Post::class, $post );
+
+		$entity = Entity_Factory::create_entity_for_post( $post, $pagenum );
+
+		$this->assertEquals( $expected_url, $entity->get_url() );
+		$this->assertEquals( $expected_title, $entity->get_title() );
+	}
+
+	public function data_posts() {
+		$arabic_test = 'امتحان';
+
+		return array(
+			'basic post'                      => array(
+				fn () => $this->factory()->post->create_and_get(
+					array(
+						'post_name'  => 'test',
+						'post_title' => 'Test',
+					)
+				),
+				'http://example.org/blog/test/',
+				'Test',
+			),
+			'basic post with page num'        => array(
+				fn () => $this->factory()->post->create_and_get(
+					array(
+						'post_name'  => 'test',
+						'post_title' => 'Test',
+					)
+				),
+				'http://example.org/blog/test/3/',
+				'Test',
+				3,
+			),
+			'with utf8 slug'                  => array(
+				fn () => $this->factory()->post->create_and_get(
+					array(
+						'post_name'  => $arabic_test,
+						'post_title' => $arabic_test,
+					)
+				),
+				"http://example.org/blog/$arabic_test/",
+				$arabic_test,
+			),
+			'with utf8 slug and page'         => array(
+				fn () => $this->factory()->post->create_and_get(
+					array(
+						'post_name'  => $arabic_test . '-1',
+						'post_title' => $arabic_test,
+					)
+				),
+				"http://example.org/blog/$arabic_test-1/3/",
+				$arabic_test,
+				3,
+			),
+			'with special characters in slug' => array(
+				fn () => $this->factory()->post->create_and_get(
+					array(
+						'post_name'  => 'test-!@#$%^&*()',
+						'post_title' => 'Test',
+					)
+				),
+				'http://example.org/blog/test/',
+				'Test',
 			),
 		);
 	}

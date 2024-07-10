@@ -54,8 +54,6 @@
 		.googlesitekit-settings-module__status-icon--warning {
 			background-color: $c-white;
 			color: $c-selective-yellow;
-			height: 26px;
-			width: 26px;
 		}
 
 		.googlesitekit-settings-module__content {
@@ -70,7 +68,9 @@
 		}
 
 		.googlesitekit-settings-module__content--open {
+			border: none;
 			display: block;
+			margin-top: -10px; // Remove some default duplicated <Grid> padding gap between header and content
 		}
 
 		.googlesitekit-settings-module__heading {
@@ -91,7 +91,7 @@
 		.googlesitekit-settings-module__heading-icon {
 			height: auto;
 			margin-right: $grid-gap-phone;
-			width: 24px;
+			width: 40px;
 		}
 
 		.googlesitekit-settings-module__heading-badges {
@@ -284,9 +284,13 @@
 			}
 
 			.mdc-button {
-				background-color: $c-surfaces-surface-2;
-				color: $c-surfaces-on-surface;
+				color: $c-surfaces-inverse-on-surface;
 				font-weight: $fw-medium;
+			}
+
+			.mdc-button:disabled {
+				background-color: $c-interactive-disable-container;
+				color: $c-interactive-on-disable-container;
 			}
 
 			.googlesitekit-settings-module__status {

@@ -27,7 +27,6 @@ import { storiesOf } from '@storybook/react';
 import {
 	AccountSelect,
 	UseSnippetSwitch,
-	AdBlockerWarning,
 	UserProfile,
 } from '../assets/js/modules/adsense/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
@@ -106,21 +105,6 @@ storiesOf( 'AdSense Module', module )
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<UseSnippetSwitch />
-					</div>
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'AdBlocker Warning', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<div className="googlesitekit-setup-module__inputs">
-						<AdBlockerWarning />
 					</div>
 				</SetupWrap>
 			</WithTestRegistry>

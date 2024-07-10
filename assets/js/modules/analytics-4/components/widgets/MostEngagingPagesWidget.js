@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
@@ -38,12 +38,11 @@ import {
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../common';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { numFmt } from '../../../../util';
-const { useSelect, useInViewSelect } = Data;
 
 function MostEngagingPagesWidget( props ) {
 	const { Widget } = props;
@@ -63,8 +62,10 @@ function MostEngagingPagesWidget( props ) {
 		limit: 1,
 	};
 
-	const pageViewsReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions )
+	const pageViewsReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions ),
+		[ pageViewsReportOptions ]
 	);
 
 	const averagePageViews =
@@ -121,24 +122,33 @@ function MostEngagingPagesWidget( props ) {
 		] )
 	);
 
-	const report = useInViewSelect( ( select ) => {
-		if ( ! hasFinishedResolvingPageViewReport ) {
-			return undefined;
-		}
-		if ( pageViewsReportErrors ) {
-			return null;
-		}
+	const report = useInViewSelect(
+		( select ) => {
+			if ( ! hasFinishedResolvingPageViewReport ) {
+				return undefined;
+			}
+			if ( pageViewsReportErrors ) {
+				return null;
+			}
 
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[
+			hasFinishedResolvingPageViewReport,
+			pageViewsReportErrors,
+			reportOptions,
+		]
+	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect(

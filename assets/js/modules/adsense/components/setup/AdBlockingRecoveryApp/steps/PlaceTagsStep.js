@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
 import Link from '../../../../../../components/Link';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
@@ -45,7 +45,6 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
-const { useSelect, useDispatch } = Data;
 
 export default function PlaceTagsStep( { setActiveStep } ) {
 	const viewContext = useViewContext();

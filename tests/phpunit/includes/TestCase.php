@@ -104,32 +104,32 @@ class TestCase extends WP_UnitTestCase {
 	/**
 	 * Forcibly set a property of an object that would otherwise not be possible.
 	 *
-	 * @param object|string $class Class instance to set the property on, or class name containing the property.
+	 * @param object|string $class_instance Class instance to set the property on, or class name containing the property.
 	 * @param string $property Property name
 	 * @param mixed $value New value to assign the property
 	 *
 	 * @throws \ReflectionException
 	 */
-	protected function force_set_property( $class, $property, $value ) {
-		$reflection_property = new \ReflectionProperty( $class, $property );
+	protected function force_set_property( $class_instance, $property, $value ) {
+		$reflection_property = new \ReflectionProperty( $class_instance, $property );
 		$reflection_property->setAccessible( true );
-		$reflection_property->setValue( $class, $value );
+		$reflection_property->setValue( $class_instance, $value );
 	}
 
 	/**
 	 * Forcibly get a property's value from an object that would otherwise not be possible.
 	 *
-	 * @param object|string $class Class instance to get the property from, or class name containing the property.
+	 * @param object|string $class_instance Class instance to get the property from, or class name containing the property.
 	 * @param string $property Property name
 	 *
 	 * @return mixed
 	 * @throws \ReflectionException
 	 */
-	protected function force_get_property( $class, $property ) {
-		$reflection_property = new \ReflectionProperty( $class, $property );
+	protected function force_get_property( $class_instance, $property ) {
+		$reflection_property = new \ReflectionProperty( $class_instance, $property );
 		$reflection_property->setAccessible( true );
 
-		return $reflection_property->getValue( $class );
+		return $reflection_property->getValue( $class_instance );
 	}
 
 	/**
@@ -217,12 +217,12 @@ class TestCase extends WP_UnitTestCase {
 	 *
 	 * Replacement for PHPUnit's deprecated assertArraySubset in PHPUnit 8.
 	 *
-	 * @param array  $subset  Partial array.
-	 * @param array  $array   Array to check includes the partial.
+	 * @param array  $subset            Partial array.
+	 * @param array  $array_to_check    Array to check includes the partial.
 	 * @param string $message Optional. Message to display when the assertion fails.
 	 */
-	protected function assertArrayIntersection( array $subset, array $array, $message = '' ) {
-		$intersection = array_intersect_key( $array, $subset );
+	protected function assertArrayIntersection( array $subset, array $array_to_check, $message = '' ) {
+		$intersection = array_intersect_key( $array_to_check, $subset );
 
 		$this->assertEqualSetsWithIndex( $subset, $intersection, $message );
 	}

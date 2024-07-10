@@ -31,20 +31,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
-export default function AccountSelect( { hasModuleAccess } ) {
+export default function AccountSelect( { hasModuleAccess, onChange } ) {
 	const viewContext = useViewContext();
 
-	const accountID = useSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getAccountID() ||
-			select( MODULES_ANALYTICS ).getAccountID()
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
@@ -57,26 +53,24 @@ export default function AccountSelect( { hasModuleAccess } ) {
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS_4 );
 
-	// TODO: Remove this when the legacy 'analytics' module is removed (see #7932).
-	// Temporarily added so that the module setup and settings work in the meantime.
-	const { selectAccount: selectLegacyAnalyticsAccount } =
-		useDispatch( MODULES_ANALYTICS );
-
-	const onChange = useCallback(
+	const onAccountChange = useCallback(
 		( index, item ) => {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
-				selectLegacyAnalyticsAccount( newAccountID );
 
 				const action =
 					newAccountID === ACCOUNT_CREATE
 						? 'change_account_new'
 						: 'change_account';
 				trackEvent( `${ viewContext }_analytics`, action );
+
+				if ( onChange ) {
+					onChange();
+				}
 			}
 		},
-		[ accountID, selectAccount, selectLegacyAnalyticsAccount, viewContext ]
+		[ accountID, selectAccount, viewContext, onChange ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
@@ -103,7 +97,7 @@ export default function AccountSelect( { hasModuleAccess } ) {
 			className="googlesitekit-analytics__select-account"
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
-			onEnhancedChange={ onChange }
+			onEnhancedChange={ onAccountChange }
 			enhanced
 			outlined
 		>

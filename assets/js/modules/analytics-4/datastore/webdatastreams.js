@@ -26,14 +26,20 @@ import { pick, difference } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '../utils/validation';
-const { createRegistryControl, createRegistrySelector } = Data;
+import {
+	isValidPropertyID,
+	isValidWebDataStreamName,
+} from '../utils/validation';
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -111,9 +117,10 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
-	controlCallback( { propertyID } ) {
+	controlCallback( { propertyID, displayName } ) {
 		return API.set( 'modules', 'analytics-4', 'create-webdatastream', {
 			propertyID,
+			displayName,
 		} );
 	},
 	reducerCallback( state, webDataStream, { propertyID } ) {
@@ -128,13 +135,17 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams( propertyID ) {
-		return { propertyID };
+	argsToParams( propertyID, displayName ) {
+		return { propertyID, displayName };
 	},
-	validateParams( { propertyID } = {} ) {
+	validateParams( { propertyID, displayName } = {} ) {
 		invariant(
 			isValidPropertyID( propertyID ),
 			'A valid GA4 propertyID is required.'
+		);
+		invariant(
+			isValidWebDataStreamName( displayName ),
+			'A valid web data stream name is required.'
 		);
 	},
 } );
@@ -151,18 +162,22 @@ const baseActions = {
 	 * Creates a new GA4 web data stream.
 	 *
 	 * @since 1.31.0
+	 * @since 1.124.0 Added displayName parameter.
 	 *
-	 * @param {string} propertyID GA4 property ID.
+	 * @param {string} propertyID  GA4 property ID.
+	 * @param {string} displayName A web data stream name.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	createWebDataStream: createValidatedAction(
-		( propertyID ) => {
+		( propertyID, displayName ) => {
 			invariant( propertyID, 'GA4 propertyID is required.' );
+			invariant( displayName, 'Web data stream name is required.' );
 		},
-		function* ( propertyID ) {
+		function* ( propertyID, displayName ) {
 			const { response, error } =
 				yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
-					propertyID
+					propertyID,
+					displayName
 				);
 			return { response, error };
 		}
@@ -179,7 +194,7 @@ const baseActions = {
 	*matchWebDataStream( propertyID ) {
 		yield baseActions.waitForWebDataStreams( propertyID );
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		return registry
 			.select( MODULES_ANALYTICS_4 )
 			.getMatchingWebDataStreamByPropertyID( propertyID );
@@ -202,12 +217,12 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
+		( { resolveSelect } ) => {
 			return async ( { payload } ) => {
 				const { propertyID } = payload;
-				await __experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getWebDataStreams( propertyID );
+				await resolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreams(
+					propertyID
+				);
 			};
 		}
 	),
@@ -223,7 +238,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		// Only fetch web data streams if there are none in the store for the given property.
 		const webdatastreams = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -235,7 +250,7 @@ const baseResolvers = {
 		}
 	},
 	*getWebDataStreamsBatch( propertyIDs ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const webdatastreams =
 			registry
 				.select( MODULES_ANALYTICS_4 )
@@ -452,7 +467,8 @@ const baseSelectors = {
 			// Sort summaries to have the current account at the very beginning,
 			// so we can check it first because its more likely that the current
 			// account will contain a measurement ID that we are looking for.
-			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
+			const currentAccountID =
+				select( MODULES_ANALYTICS_4 ).getAccountID();
 			// Clone summaries to avoid mutating the original array.
 			summaries = [ ...summaries ].sort( ( { _id: accountID } ) =>
 				accountID === currentAccountID ? -1 : 0
@@ -579,7 +595,7 @@ const baseSelectors = {
 
 				if (
 					select(
-						MODULES_ANALYTICS
+						MODULES_ANALYTICS_4
 					).hasFinishedSelectingAccount() === false
 				) {
 					return true;
@@ -597,9 +613,39 @@ const baseSelectors = {
 				);
 			}
 	),
+
+	/**
+	 * Checks if a web data stream with the same name already exists.
+	 *
+	 * @since 1.124.0
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {string} propertyID        GA4 property ID.
+	 * @param {string} webDataStreamName Web data stream name.
+	 * @return {(boolean|undefined)} TRUE if web data stream already exists, FALSE otherwise. Undefined if web data streams are not loaded yet.
+	 */
+	doesWebDataStreamExist: createRegistrySelector(
+		( select ) => ( _state, propertyID, webDataStreamName ) => {
+			invariant(
+				isValidPropertyID( propertyID ),
+				'A valid GA4 propertyID is required.'
+			);
+
+			const webDataStreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+
+			if ( webDataStreams === undefined ) {
+				return undefined;
+			}
+
+			return webDataStreams.some(
+				( { displayName } ) => displayName === webDataStreamName
+			);
+		}
+	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetWebDataStreamsStore,
 	fetchGetWebDataStreamsBatchStore,
 	fetchCreateWebDataStreamStore,

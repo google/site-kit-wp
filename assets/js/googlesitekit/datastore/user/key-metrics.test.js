@@ -47,7 +47,6 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
@@ -737,7 +736,9 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'should return false if a module that the widget depends on is not accessible by a view-only user', async () => {
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
 
 				provideUserAuthentication( registry, {
 					authenticated: false,
@@ -748,6 +749,7 @@ describe( 'core/user key metrics', () => {
 						slug: 'analytics-4',
 						active: true,
 						connected: true,
+						shareable: true,
 					},
 				] );
 
@@ -791,7 +793,7 @@ describe( 'core/user key metrics', () => {
 				} );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( analytics4Fixtures.defaultSettings );
 
 				expect(

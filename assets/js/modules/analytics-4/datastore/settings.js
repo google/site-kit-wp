@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -30,6 +31,7 @@ import {
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
+	isValidWebDataStreamName,
 	isValidWebDataStreamSelection,
 } from '../utils/validation';
 import {
@@ -38,31 +40,35 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import {
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../analytics/datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { isValidConversionID } from '../../ads/utils/validation';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
 	'a valid propertyID is required to submit changes';
 export const INVARIANT_INVALID_WEBDATASTREAM_ID =
 	'a valid webDataStreamID is required to submit changes';
+export const INVARIANT_INVALID_WEBDATASTREAM_NAME =
+	'a valid web data stream name is required to submit changes';
+export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
+	'a web data stream with the same name already exists';
+export const INVARIANT_INVALID_ADS_CONVERSION_ID =
+	'a valid ads adsConversionID is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const accountID = select( MODULES_ANALYTICS_4 ).getAccountID();
 		const { response: property, error } = await dispatch(
 			MODULES_ANALYTICS_4
 		).createProperty( accountID );
@@ -82,24 +88,46 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	let webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
-	if (
-		propertyID &&
-		( webDataStreamID === WEBDATASTREAM_CREATE ||
-			! isValidWebDataStreamID( webDataStreamID ) )
-	) {
-		const { response: webdatastream, error } = await dispatch(
-			MODULES_ANALYTICS_4
-		).createWebDataStream( propertyID );
-		if ( error ) {
-			return { error };
+	if ( propertyID && webDataStreamID === WEBDATASTREAM_CREATE ) {
+		const webDataStreamName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'webDataStreamName'
+		);
+
+		let webDataStreamAlreadyExists = false;
+
+		if ( isValidPropertyID( propertyID ) ) {
+			await dispatch( MODULES_ANALYTICS_4 ).waitForWebDataStreams(
+				propertyID
+			);
+
+			webDataStreamAlreadyExists = select(
+				MODULES_ANALYTICS_4
+			).doesWebDataStreamExist( propertyID, webDataStreamName );
 		}
 
-		webDataStreamID = webdatastream._id;
-		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webDataStreamID );
-		await dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
-			// eslint-disable-next-line sitekit/acronym-case
-			webdatastream.webStreamData.measurementId
-		);
+		if (
+			isValidWebDataStreamName( webDataStreamName ) &&
+			false === webDataStreamAlreadyExists
+		) {
+			const { response: webdatastream, error } = await dispatch(
+				MODULES_ANALYTICS_4
+			).createWebDataStream( propertyID, webDataStreamName );
+			if ( error ) {
+				return { error };
+			}
+
+			webDataStreamID = webdatastream._id;
+			dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID(
+				webDataStreamID
+			);
+			await dispatch(
+				MODULES_ANALYTICS_4
+			).updateSettingsForMeasurementID(
+				// eslint-disable-next-line sitekit/acronym-case
+				webdatastream.webStreamData.measurementId
+			);
+		}
 	}
 
 	if (
@@ -113,62 +141,24 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Only make the API request to enable the Enhanced Measurement setting, not to disable it.
 		if ( isEnhancedMeasurementEnabled ) {
-			await dispatch(
-				MODULES_ANALYTICS_4
-			).setEnhancedMeasurementStreamEnabled(
+			const { error } = await updateEnhancedMeasurementSettings( {
+				select,
+				dispatch,
 				propertyID,
 				webDataStreamID,
-				isEnhancedMeasurementEnabled
-			);
+				isEnhancedMeasurementEnabled,
+			} );
 
-			if (
-				select(
-					MODULES_ANALYTICS_4
-				).haveEnhancedMeasurementSettingsChanged(
-					propertyID,
-					webDataStreamID
-				)
-			) {
-				const { error } = await dispatch(
-					MODULES_ANALYTICS_4
-				).updateEnhancedMeasurementSettings(
-					propertyID,
-					webDataStreamID
-				);
-
-				if ( error ) {
-					return { error };
-				}
-
-				const shouldDismissActivationBanner = select(
-					CORE_FORMS
-				).getValue(
-					ENHANCED_MEASUREMENT_FORM,
-					ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
-				);
-
-				if ( shouldDismissActivationBanner ) {
-					await dispatch( CORE_USER ).dismissItem(
-						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
-					);
-				}
+			if ( error ) {
+				return { error };
 			}
 		}
 	}
 
-	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
-		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
-		if ( error ) {
-			return { error };
-		}
+	const { error } = await saveSettings( select, dispatch );
 
-		if (
-			select( CORE_MODULES ).isModuleConnected( 'analytics' ) &&
-			! select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-		) {
-			// Refresh modules from server if GA4 was connected after initial setup.
-			await dispatch( CORE_MODULES ).fetchGetModules();
-		}
+	if ( error ) {
+		return error;
 	}
 
 	await API.invalidateCache( 'modules', 'analytics-4' );
@@ -176,11 +166,78 @@ export async function submitChanges( { select, dispatch } ) {
 	return {};
 }
 
-export function rollbackChanges( { select, dispatch } ) {
-	dispatch( CORE_FORMS ).setValues( FORM_SETUP, { enableGA4: undefined } );
+async function saveSettings( select, dispatch ) {
+	const haveSettingsChanged =
+		select( MODULES_ANALYTICS_4 ).haveSettingsChanged();
 
+	if ( haveSettingsChanged ) {
+		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+		if ( error ) {
+			return { error };
+		}
+	}
+
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+	if ( haveConversionTrackingSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveConversionTrackingSettings();
+
+		if ( error ) {
+			return { error };
+		}
+	}
+
+	return {};
+}
+
+async function updateEnhancedMeasurementSettings( {
+	select,
+	dispatch,
+	propertyID,
+	webDataStreamID,
+	isEnhancedMeasurementEnabled,
+} ) {
+	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled(
+		propertyID,
+		webDataStreamID,
+		isEnhancedMeasurementEnabled
+	);
+
+	if (
+		select( MODULES_ANALYTICS_4 ).haveEnhancedMeasurementSettingsChanged(
+			propertyID,
+			webDataStreamID
+		)
+	) {
+		const { error } = await dispatch(
+			MODULES_ANALYTICS_4
+		).updateEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+		if ( error ) {
+			return { error };
+		}
+
+		const shouldDismissActivationBanner = select( CORE_FORMS ).getValue(
+			ENHANCED_MEASUREMENT_FORM,
+			ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
+		);
+
+		if ( shouldDismissActivationBanner ) {
+			await dispatch( CORE_USER ).dismissItem(
+				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			);
+		}
+	}
+
+	return {};
+}
+
+export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
+		dispatch( CORE_SITE ).resetConversionTrackingSettings();
 	}
 
 	dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
@@ -192,30 +249,74 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getPropertyID,
 		getWebDataStreamID,
+		doesWebDataStreamExist,
+		getAdsConversionID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
-	const { haveSettingsChanged: haveUASettingsChanged } =
-		createStrictSelect( select )( MODULES_ANALYTICS );
-
-	// Check if GA4 / enhanced measurement settings are changed only if we are sure that there are no UA changes.
-	if ( ! haveUASettingsChanged() ) {
-		invariant(
-			haveAnyGA4SettingsChanged(),
-			INVARIANT_SETTINGS_NOT_CHANGED
-		);
-	}
+	invariant( haveAnyGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
 	const propertyID = getPropertyID();
+
 	invariant(
 		isValidPropertySelection( propertyID ),
 		INVARIANT_INVALID_PROPERTY_SELECTION
 	);
-	if ( propertyID !== PROPERTY_CREATE ) {
+
+	const webDataStreamID = getWebDataStreamID();
+
+	invariant(
+		isValidWebDataStreamSelection( webDataStreamID ),
+		INVARIANT_INVALID_WEBDATASTREAM_ID
+	);
+
+	if ( webDataStreamID === WEBDATASTREAM_CREATE ) {
+		const webDataStreamName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'webDataStreamName'
+		);
+
 		invariant(
-			isValidWebDataStreamSelection( getWebDataStreamID() ),
-			INVARIANT_INVALID_WEBDATASTREAM_ID
+			isValidWebDataStreamName( webDataStreamName ),
+			INVARIANT_INVALID_WEBDATASTREAM_NAME
+		);
+
+		if ( isValidPropertyID( propertyID ) ) {
+			invariant(
+				false ===
+					doesWebDataStreamExist( propertyID, webDataStreamName ),
+				INVARIANT_WEBDATASTREAM_ALREADY_EXISTS
+			);
+		}
+	}
+
+	const adsConversionID = getAdsConversionID();
+
+	if ( adsConversionID !== '' ) {
+		invariant(
+			isValidConversionID( adsConversionID ),
+			INVARIANT_INVALID_ADS_CONVERSION_ID
 		);
 	}
+}
+
+export function validateHaveSettingsChanged( select, state, keys ) {
+	const { settings, savedSettings } = state;
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+
+	if ( keys ) {
+		invariant(
+			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
+				haveConversionTrackingSettingsChanged,
+			INVARIANT_SETTINGS_NOT_CHANGED
+		);
+	}
+
+	invariant(
+		! isEqual( settings, savedSettings ) ||
+			haveConversionTrackingSettingsChanged,
+		INVARIANT_SETTINGS_NOT_CHANGED
+	);
 }

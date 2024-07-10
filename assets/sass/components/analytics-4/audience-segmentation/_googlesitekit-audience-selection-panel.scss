@@ -1,0 +1,104 @@
+/**
+ * Audience Selection Panel styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-audience-selection-panel {
+
+		.googlesitekit-selection-box .mdc-checkbox__description {
+			padding-top: 4px;
+		}
+
+		.googlesitekit-audience-selection-panel__learn-more {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: auto;
+			padding: $grid-gap-phone + 4px $grid-gap-desktop;
+		}
+
+		.googlesitekit-selection-panel-footer {
+			margin: 0;
+		}
+
+		.googlesitekit-audience-selection-panel__error-notice {
+			align-items: center;
+			background-color: $c-utility-error-container;
+			display: flex;
+			justify-content: space-between;
+			padding: $grid-gap-phone - 2 $grid-gap-desktop;
+
+			p {
+				color: $c-utility-on-error-container;
+				flex-basis: 65%;
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+				margin: 0;
+
+				a {
+					color: $c-utility-on-error-container;
+					text-decoration: underline;
+				}
+			}
+
+			.googlesitekit-audience-selection-panel__error-notice-actions {
+
+				.googlesitekit-cta-link {
+					color: $c-utility-on-error-container;
+					font-size: $fs-label-md;
+					font-weight: $fw-medium;
+					line-height: $lh-label-md;
+				}
+			}
+		}
+
+		.googlesitekit-audience-selection-panel__add-group-notice {
+			background-color: $c-surfaces-background;
+			margin: 5px $grid-gap-desktop;
+			padding: $grid-gap-phone 20px;
+
+			@media (max-width: $bp-xsmallOnly) {
+				padding: $grid-gap-phone;
+			}
+
+			.googlesitekit-audience-segmentation-info-notice__body {
+				flex-wrap: nowrap;
+				grid-gap: 0 30px;
+
+				@media (max-width: $bp-xsmallOnly) {
+					flex-wrap: wrap;
+				}
+
+				p {
+					margin: 0;
+				}
+			}
+
+			svg {
+				height: 22px;
+				width: 22px;
+			}
+
+			.googlesitekit-audience-segmentation-info-notice__dismiss {
+				color: $c-surfaces-on-surface;
+			}
+		}
+	}
+}

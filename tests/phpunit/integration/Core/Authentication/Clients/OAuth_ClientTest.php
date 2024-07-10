@@ -329,7 +329,7 @@ class OAuth_ClientTest extends TestCase {
 		$base_scopes        = $client->get_required_scopes();
 		$post_auth_redirect = 'http://example.com/test/redirect/url';
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
-		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 
 		// Verify that the user locale is included in the URL.
@@ -351,7 +351,7 @@ class OAuth_ClientTest extends TestCase {
 		$saved_extra_scopes = array( 'http://example.com/saved/extra-scope' );
 		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $saved_extra_scopes );
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
-		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
 			explode( ' ', $params['scope'] ),
@@ -364,7 +364,7 @@ class OAuth_ClientTest extends TestCase {
 			'http://example.com/bar/baz',
 		);
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $extra_scopes );
-		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
 			explode( ' ', $params['scope'] ),
@@ -577,8 +577,8 @@ class OAuth_ClientTest extends TestCase {
 			return $method->invoke( $client, $args );
 		};
 
-		$map_meta_cap = function( $user_id ) {
-			return function( $caps, $cap, $uid ) use ( $user_id ) {
+		$map_meta_cap = function ( $user_id ) {
+			return function ( $caps, $cap, $uid ) use ( $user_id ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap && $uid === $user_id ) {
 					return array( 'manage_options' );
 				}

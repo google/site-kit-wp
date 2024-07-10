@@ -41,25 +41,20 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 	const sharedOwnershipModulesList = {
-		sharedOwnershipModules: [ 'analytics', 'search-console', 'tagmanager' ],
+		sharedOwnershipModules: [
+			'analytics-4',
+			'search-console',
+			'tagmanager',
+		],
 	};
 
 	const allModules = [
-		{
-			slug: 'analytics',
-			name: 'Analytics',
-			active: true,
-			connected: true,
-			shareable: true,
-			recoverable: true,
-			internal: false,
-		},
 		{
 			slug: 'analytics-4',
 			name: 'Analytics-4',
@@ -90,15 +85,6 @@ describe( 'core/modules modules', () => {
 	];
 
 	const expectedRecoverableModules = [
-		{
-			slug: 'analytics-4',
-			name: 'Analytics-4',
-			active: true,
-			connected: true,
-			shareable: true,
-			recoverable: true,
-			internal: true,
-		},
 		{
 			slug: 'search-console',
 			name: 'Search Console',
@@ -250,12 +236,12 @@ describe( 'core/modules modules', () => {
 				);
 				fetchMock.get(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-					{ body: withActive( 'analytics' ) }
+					{ body: withActive( 'analytics-4' ) }
 				);
 
 				const { response } = await registry
 					.dispatch( CORE_MODULES )
-					.activateModule( 'analytics' );
+					.activateModule( 'analytics-4' );
 
 				expect( response.moduleReauthURL ).toContain( connectURL );
 				expect(
@@ -321,11 +307,11 @@ describe( 'core/modules modules', () => {
 		describe( 'recoverModules', () => {
 			it( 'dispatches requests to recover modules', async () => {
 				provideModuleRegistrations( registry );
-				const slugs = [ 'analytics', 'tagmanager' ];
+				const slugs = [ 'analytics-4', 'tagmanager' ];
 
 				const recoverModulesResponse = {
 					success: {
-						analytics: true,
+						'analytics-4': true,
 						tagmanager: true,
 					},
 					error: {},
@@ -347,7 +333,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: getModulesBySlugList( [ slugs ], FIXTURES ),
@@ -389,13 +375,13 @@ describe( 'core/modules modules', () => {
 						body: [
 							...FIXTURES,
 							{
-								slug: 'analytics',
+								slug: 'analytics-4',
 								name: 'Analytics',
 								active: true,
 								connected: true,
 								shareable: true,
 								recoverable: false,
-								storeName: 'modules/analytics',
+								storeName: 'modules/analytics-4',
 							},
 							{
 								slug: 'search-console',
@@ -425,7 +411,7 @@ describe( 'core/modules modules', () => {
 					.recoverModules( slugs );
 
 				expect( response.success ).toStrictEqual( {
-					analytics: true,
+					'analytics-4': true,
 					tagmanager: true,
 				} );
 
@@ -439,7 +425,7 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slugs: [ 'analytics', 'tagmanager' ],
+								slugs: [ 'analytics-4', 'tagmanager' ],
 							},
 						},
 					}
@@ -448,12 +434,12 @@ describe( 'core/modules modules', () => {
 				// Ensure fetchGetSettings have been called.
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: {
 							data: {
-								slug: 'analytics',
+								slug: 'analytics-4',
 							},
 						},
 					}
@@ -461,7 +447,7 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: {
@@ -506,11 +492,11 @@ describe( 'core/modules modules', () => {
 
 			it( 'encounters an error if the any module is not recoverable', async () => {
 				provideModuleRegistrations( registry );
-				const slugs = [ 'analytics', 'tagmanager' ];
+				const slugs = [ 'analytics-4', 'tagmanager' ];
 
 				const recoverModulesResponse = {
 					success: {
-						analytics: true,
+						'analytics-4': true,
 						tagmanager: false,
 					},
 					error: {
@@ -539,7 +525,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: getModulesBySlugList( [ slugs ], FIXTURES ),
@@ -571,13 +557,13 @@ describe( 'core/modules modules', () => {
 						body: [
 							...FIXTURES,
 							{
-								slug: 'analytics',
+								slug: 'analytics-4',
 								name: 'Analytics',
 								active: true,
 								connected: true,
 								shareable: true,
 								recoverable: false,
-								storeName: 'modules/analytics',
+								storeName: 'modules/analytics-4',
 							},
 							{
 								slug: 'search-console',
@@ -607,7 +593,7 @@ describe( 'core/modules modules', () => {
 					.recoverModules( slugs );
 
 				expect( response.success ).toStrictEqual( {
-					analytics: true,
+					'analytics-4': true,
 					tagmanager: false,
 				} );
 				expect( response.error.tagmanager.message ).toBe(
@@ -624,7 +610,7 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slugs: [ 'analytics', 'tagmanager' ],
+								slugs: [ 'analytics-4', 'tagmanager' ],
 							},
 						},
 					}
@@ -633,12 +619,12 @@ describe( 'core/modules modules', () => {
 				// Ensure fetchGetSettings has been called for Analytics.
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					),
 					{
 						body: {
 							data: {
-								slug: 'analytics',
+								slug: 'analytics-4',
 							},
 						},
 					}
@@ -688,7 +674,7 @@ describe( 'core/modules modules', () => {
 		describe( 'deactivateModule', () => {
 			it( 'dispatches a request to deactivate this module', async () => {
 				// In our fixtures, analytics is off by default.
-				const slug = 'analytics';
+				const slug = 'analytics-4';
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( withActive( slug ) );
@@ -741,7 +727,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, analytics is off by default.
-				const slug = 'analytics';
+				const slug = 'analytics-4';
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( withActive( slug ) );
@@ -1216,7 +1202,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'analytics';
+				const slug = 'analytics-4';
 				const module = registry
 					.select( CORE_MODULES )
 					.getModule( slug );
@@ -1243,7 +1229,7 @@ describe( 'core/modules modules', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				const slug = 'analytics';
+				const slug = 'analytics-4';
 
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
@@ -1272,7 +1258,7 @@ describe( 'core/modules modules', () => {
 
 				const module = registry
 					.select( CORE_MODULES )
-					.getModule( 'analytics' );
+					.getModule( 'analytics-4' );
 
 				expect( module ).toBeUndefined();
 
@@ -1285,7 +1271,7 @@ describe( 'core/modules modules', () => {
 					{ body: FIXTURES, status: 200 }
 				);
 
-				const slug = 'analytics';
+				const slug = 'analytics-4';
 				const module = registry
 					.select( CORE_MODULES )
 					.getModule( slug );
@@ -1433,7 +1419,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: FIXTURES.filter(
-							( { slug } ) => slug !== 'analytics'
+							( { slug } ) => slug !== 'analytics-4'
 						),
 						status: 200,
 					}
@@ -1461,7 +1447,7 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns false if a module is not available', async () => {
-				const slug = 'analytics';
+				const slug = 'analytics-4';
 				const isAvailable = registry
 					.select( CORE_MODULES )
 					.isModuleAvailable( slug );
@@ -1487,7 +1473,7 @@ describe( 'core/modules modules', () => {
 
 				const isAvailable = registry
 					.select( CORE_MODULES )
-					.isModuleAvailable( 'analytics' );
+					.isModuleAvailable( 'analytics-4' );
 
 				expect( isAvailable ).toBeUndefined();
 
@@ -1569,7 +1555,7 @@ describe( 'core/modules modules', () => {
 
 				const isActive = registry
 					.select( CORE_MODULES )
-					.isModuleActive( 'analytics' );
+					.isModuleActive( 'analytics-4' );
 
 				expect( isActive ).toBeUndefined();
 
@@ -1581,7 +1567,7 @@ describe( 'core/modules modules', () => {
 			it.each( [
 				[
 					'true if a module is connected',
-					'analytics',
+					'analytics-4',
 					true,
 					{ connected: true },
 				],
@@ -1644,7 +1630,7 @@ describe( 'core/modules modules', () => {
 
 				const isConnected = registry
 					.select( CORE_MODULES )
-					.isModuleConnected( 'analytics' );
+					.isModuleConnected( 'analytics-4' );
 
 				expect( isConnected ).toBeUndefined();
 
@@ -1660,7 +1646,7 @@ describe( 'core/modules modules', () => {
 				);
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
-					.getModuleFeatures( 'analytics' );
+					.getModuleFeatures( 'analytics-4' );
 
 				// The modules will be undefined whilst loading.
 				expect( featuresLoaded ).toBeUndefined();
@@ -1669,19 +1655,27 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns features when modules are loaded', () => {
-				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+				provideModules( registry );
+				provideModuleRegistrations( registry, [
+					{
+						slug: 'analytics-4',
+						features: [ 'feature one', 'feature two' ],
+					},
+				] );
 
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
-					.getModuleFeatures( 'analytics' );
+					.getModuleFeatures( 'analytics-4' );
 
-				expect( featuresLoaded ).toMatchObject(
-					fixturesKeyValue.analytics.features
-				);
+				expect( featuresLoaded ).toStrictEqual( [
+					'feature one',
+					'feature two',
+				] );
 			} );
 
 			it( 'returns an empty object when requesting features for a non-existent module', () => {
-				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+				provideModules( registry );
+				provideModuleRegistrations( registry );
 
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
@@ -1988,7 +1982,7 @@ describe( 'core/modules modules', () => {
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics/data/settings'
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
 					)
 				);
 
@@ -2057,7 +2051,7 @@ describe( 'core/modules modules', () => {
 				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = await registry
-					.__experimentalResolveSelect( CORE_MODULES )
+					.resolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject( {} );
@@ -2070,7 +2064,7 @@ describe( 'core/modules modules', () => {
 				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = await registry
-					.__experimentalResolveSelect( CORE_MODULES )
+					.resolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject(
@@ -2144,7 +2138,7 @@ describe( 'core/modules modules', () => {
 					.getShareableModules();
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( analytics4fixtures.defaultSettings );
 
 				expect(
@@ -2159,20 +2153,6 @@ describe( 'core/modules modules', () => {
 					).length
 				).toEqual( Object.values( shareableModules ).length );
 				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should not include `analytics` module if the dashboard view is GA4', () => {
-				provideModuleRegistrations( registry );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
-
-				const shareableModules = registry
-					.select( CORE_MODULES )
-					.getShareableModules();
-
-				expect( shareableModules ).not.toHaveProperty( 'analytics' );
-				expect( shareableModules ).toHaveProperty( 'analytics-4' );
 			} );
 		} );
 	} );

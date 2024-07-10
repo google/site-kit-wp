@@ -24,16 +24,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-const { useSelect } = Data;
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 
 function AdminBarSessionsGA4( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>

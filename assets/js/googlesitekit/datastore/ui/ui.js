@@ -25,8 +25,9 @@ import { isPlainObject, isBoolean } from 'lodash';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions } from 'googlesitekit-data';
 import { CORE_UI } from './constants';
+import { CORE_USER } from '../user/constants';
 
 const SET_VALUES = 'SET_VALUES';
 const SET_VALUE = 'SET_VALUE';
@@ -46,7 +47,7 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetInViewHook() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const useInViewResetCount = registry
 			.select( CORE_UI )
@@ -71,6 +72,68 @@ export const actions = {
 		invariant( isBoolean( value ), 'value must be boolean.' );
 
 		return actions.setValue( 'isOnline', value );
+	},
+
+	/**
+	 * Sets `activeOverlayNotification` state.
+	 *
+	 * @since 1.123.0
+	 * @private
+	 *
+	 * @param {string} overlayNotification Overlay notification component name.
+	 * @return {Object} Redux-style action.
+	 */
+	*setOverlayNotificationToShow( overlayNotification ) {
+		invariant( overlayNotification, 'overlayNotification is required.' );
+
+		const registry = yield commonActions.getRegistry();
+
+		const activeOverlayNotification = registry
+			.select( CORE_UI )
+			.getValue( 'activeOverlayNotification' );
+
+		// If `activeOverlayNotification` is already set, don't override it.
+		if ( activeOverlayNotification ) {
+			return;
+		}
+
+		return yield actions.setValue(
+			'activeOverlayNotification',
+			overlayNotification
+		);
+	},
+
+	/**
+	 * Resets the `activeOverlayNotification` state and dismiss the overlay from
+	 * the user's profile.
+	 *
+	 * @since 1.123.0
+	 * @private
+	 *
+	 * @param {string} overlayNotification Overlay notification component name.
+	 * @return {Object} Redux-style action.
+	 */
+	*dismissOverlayNotification( overlayNotification ) {
+		invariant( overlayNotification, 'overlayNotification is required.' );
+
+		const registry = yield commonActions.getRegistry();
+
+		const activeOverlayNotification = registry
+			.select( CORE_UI )
+			.getValue( 'activeOverlayNotification' );
+
+		yield commonActions.await(
+			registry.dispatch( CORE_USER ).dismissItem( overlayNotification )
+		);
+
+		if (
+			activeOverlayNotification &&
+			overlayNotification === activeOverlayNotification
+		) {
+			return yield actions.setValues( {
+				activeOverlayNotification: undefined,
+			} );
+		}
 	},
 
 	/**
@@ -180,6 +243,21 @@ export const selectors = {
 	 */
 	getIsOnline( state ) {
 		return state.isOnline;
+	},
+
+	/**
+	 * Returns `true` if the overlay notification name passed is currently
+	 * active, `false` otherwise.
+	 *
+	 * @since 1.123.0
+	 * @private
+	 *
+	 * @param {Object} state               Data store's state.
+	 * @param {string} overlayNotification Overlay notification name.
+	 * @return {boolean} `true` if the overlay notification is currently active.
+	 */
+	isShowingOverlayNotification( state, overlayNotification ) {
+		return state.activeOverlayNotification === overlayNotification;
 	},
 };
 

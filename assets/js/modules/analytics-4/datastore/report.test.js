@@ -397,9 +397,9 @@ describe( 'modules/analytics-4 report', () => {
 
 					muteFetch( dataAvailableRegexp );
 
-					// Create a timestamp that is three days ago.
+					// Create a timestamp that is four days ago.
 					const createTime = new Date(
-						Date.now() - DAY_IN_SECONDS * 3 * 1000
+						Date.now() - DAY_IN_SECONDS * 4 * 1000
 					).toISOString();
 
 					const property = {
@@ -496,73 +496,208 @@ describe( 'modules/analytics-4 report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return `undefined` if getReport has not resolved yet', async () => {
-				freezeFetch( analytics4ReportRegexp );
+			describe.each( [
+				[
+					'using the default report args',
+					{
+						expectedReportQueryParams: {
+							startDate: '2024-04-03',
+							endDate: '2024-04-30',
+							'dimensions[0][name]': 'date',
+							'metrics[0][name]': 'totalUsers',
+							_locale: 'user',
+						},
+					},
+				],
+				[
+					'provided with custom report args',
+					{
+						reportArgs: {
+							startDate: '2022-11-02',
+							endDate: '2022-11-04',
+							dimensions: [ 'pageTitle' ],
+							metrics: [ 'PageViews' ],
+						},
+						expectedReportQueryParams: {
+							startDate: '2022-11-02',
+							endDate: '2022-11-04',
+							'dimensions[0][name]': 'pageTitle',
+							'metrics[0][name]': 'PageViews',
+							_locale: 'user',
+						},
+					},
+				],
+			] )(
+				'when %s',
+				( _, { reportArgs, expectedReportQueryParams } ) => {
+					beforeEach( () => {
+						// Provide a reference date to ensure the date range is consistent for the default report.
+						registry
+							.dispatch( CORE_USER )
+							.setReferenceDate( '2024-05-01' );
+					} );
 
-				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+					it( 'should return `undefined` if getReport has not resolved yet', async () => {
+						freezeFetch( analytics4ReportRegexp );
 
-				expect( hasZeroData() ).toBeUndefined();
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
 
-				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
-			} );
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
 
-			it( 'should return TRUE if report API returns error', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
+						// Wait for resolvers to run.
+						await waitForTimeouts( 30 );
+					} );
+
+					it( 'should make a request for the correct report', async () => {
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: fixtures.report,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						// Wait for resolvers to run.
+						await waitForTimeouts( 30 );
+
+						expect( fetchMock ).toHaveFetchedTimes( 1 );
+						expect( fetchMock ).toHaveFetched(
+							analytics4ReportRegexp,
+							{
+								query: expectedReportQueryParams,
+							}
+						);
+					} );
+
+					it( 'should return TRUE if report API returns error', async () => {
+						const response = {
+							code: 'internal_server_error',
+							message: 'Internal server error',
+							data: { status: 500 },
+						};
+
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: response,
+							status: 500,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						// Wait for resolvers to run.
+						await waitForTimeouts( 30 );
+
+						expect( hasZeroData( reportArgs ) ).toBe( true );
+						expect( console ).toHaveErrored();
+					} );
+
+					it( 'should return TRUE if isZeroReport is true', async () => {
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: zeroDataReport,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						await subscribeUntil(
+							registry,
+							() => hasZeroData( reportArgs ) !== undefined
+						);
+
+						expect( hasZeroData( reportArgs ) ).toBe( true );
+					} );
+
+					it( 'should return FALSE if isZeroReport returns FALSE', async () => {
+						expect( isZeroReport( fixtures.report ) ).toBe( false );
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: fixtures.report,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						await subscribeUntil(
+							registry,
+							() => hasZeroData( reportArgs ) !== undefined
+						);
+
+						expect( hasZeroData( reportArgs ) ).toBe( false );
+					} );
+				}
+			);
+		} );
+
+		describe( 'getReportForAllAudiences', () => {
+			const getAudiencesEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audiences'
+			);
+
+			const audiences = fixtures.audiences.map( ( { name } ) => name );
+
+			it( 'should trigger a separate report for each provided audience', async () => {
+				const options = {
+					startDate: '2022-11-02',
+					endDate: '2022-11-04',
+					compareStartDate: '2022-11-01',
+					compareEndDate: '2022-11-02',
+					dimensions: [
+						{
+							name: 'pageTitle',
+						},
+					],
+					metrics: [
+						{
+							name: 'PageViews',
+						},
+						{
+							name: 'total',
+							expression: 'totalUsers',
+						},
+					],
 				};
 
-				fetchMock.getOnce( analytics4ReportRegexp, {
-					body: response,
-					status: 500,
-				} );
-
-				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
-
-				expect( hasZeroData() ).toBeUndefined();
-
-				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
-
-				expect( hasZeroData() ).toBe( true );
-				expect( console ).toHaveErrored();
-			} );
-
-			it( 'should return TRUE if isZeroReport is true', async () => {
-				fetchMock.getOnce( analytics4ReportRegexp, {
-					body: zeroDataReport,
-				} );
-
-				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
-
-				expect( hasZeroData() ).toBeUndefined();
-
-				await subscribeUntil(
-					registry,
-					() => hasZeroData() !== undefined
-				);
-
-				expect( hasZeroData() ).toBe( true );
-			} );
-
-			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
-				expect( isZeroReport( fixtures.report ) ).toBe( false );
-				fetchMock.getOnce( analytics4ReportRegexp, {
+				fetchMock.get( analytics4ReportRegexp, {
 					body: fixtures.report,
+					status: 200,
 				} );
 
-				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+				fetchMock.getOnce( getAudiencesEndpoint, {
+					body: fixtures.audiences,
+				} );
 
-				expect( hasZeroData() ).toBeUndefined();
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportForAllAudiences( options, audiences );
 
-				await subscribeUntil(
-					registry,
-					() => hasZeroData() !== undefined
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					{
+						...options,
+						dimensionFilters: {
+							audienceResourceName:
+								fixtures.audiences[
+									fixtures.audiences.length - 1
+								].name,
+						},
+					}
 				);
 
-				expect( hasZeroData() ).toBe( false );
+				const reports = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportForAllAudiences( options, audiences );
+
+				expect( reports ).toEqual(
+					Array( fixtures.audiences.length ).fill( fixtures.report )
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 			} );
 		} );
 	} );

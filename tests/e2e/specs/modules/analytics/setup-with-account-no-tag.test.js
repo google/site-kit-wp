@@ -75,7 +75,9 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			if (
 				request
 					.url()
-					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
+					.startsWith(
+						'https://accounts.google.com/o/oauth2/v2/auth'
+					)
 			) {
 				request.respond( {
 					status: 302,
@@ -200,7 +202,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /connect more services/i,
 			} );
 			await page.waitForSelector(
-				'.googlesitekit-settings-connect-module--analytics'
+				'.googlesitekit-settings-connect-module--analytics-4'
 			);
 		} );
 
@@ -301,7 +303,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await step( 'wait and click configure button', async () => {
 				await pageWait( 500 );
 				await expect( page ).toClick( 'button', {
-					text: /configure analytics/i,
+					text: /complete setup/i,
 				} );
 			} );
 
@@ -331,7 +333,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			);
 
 			await expect( page ).toMatchElement( 'button[disabled]', {
-				text: /configure analytics/i,
+				text: /complete setup/i,
 			} );
 
 			// Select Test Account A
@@ -388,7 +390,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				text: /connect more services/i,
 			} );
 			await page.waitForSelector(
-				'.googlesitekit-settings-connect-module--analytics'
+				'.googlesitekit-settings-connect-module--analytics-4'
 			);
 		} );
 

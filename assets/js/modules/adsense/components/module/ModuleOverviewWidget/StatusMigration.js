@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../../components/SettingsNotice';
@@ -34,8 +34,6 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { Cell, Grid, Row } from '../../../../../material-components/layout';
 import { API_STATE_READY, MODULES_ADSENSE } from '../../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../../util/status';
-
-const { useDispatch, useSelect } = Data;
 
 export default function StatusMigration() {
 	const accountID = useSelect( ( select ) =>

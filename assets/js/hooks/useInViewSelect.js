@@ -28,6 +28,17 @@ import { useCallback, useRef } from '@wordpress/element';
 import { useInView } from './useInView';
 
 /**
+ * Returns undefined when the component is not in view.
+ *
+ * @since 1.131.0 Moved this inline function outside the hook and assigned it a stable function name.
+ *
+ * @return {undefined} Always returns undefined.
+ */
+function notInViewCallback() {
+	return undefined;
+}
+
+/**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
  *
  * @since 1.49.0
@@ -41,14 +52,13 @@ export const useInViewSelect = ( mapSelect, deps = [] ) => {
 	const isInView = useInView( { sticky: true } );
 	const latestSelectorResult = useRef();
 
-	const mapSelectCallback = useCallback( mapSelect, [ ...deps, mapSelect ] );
+	// These are "pass-through" dependencies from the parent hook,
+	// and the parent should catch any hook rule violations.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const mapSelectCallback = useCallback( mapSelect, deps );
 
 	const selectorResult = useSelect(
-		isInView
-			? mapSelectCallback
-			: () => {
-					return undefined;
-			  }
+		isInView ? mapSelectCallback : notInViewCallback
 	);
 
 	if ( isInView ) {

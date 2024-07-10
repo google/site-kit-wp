@@ -25,14 +25,12 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../util';
 import { Cell, Grid, Row } from '../../material-components';
-
-const { useSelect } = Data;
 
 export default function WebDataStreamNotAvailableNotification() {
 	const isWebDataStreamAvailable = useSelect( ( select ) =>
@@ -72,18 +70,18 @@ export default function WebDataStreamNotAvailableNotification() {
 		<BannerNotification
 			id="web-data-stream-not-available"
 			title={ __(
-				'Your Analytics 4 configuration has changed',
+				'Your Analytics configuration has changed',
 				'google-site-kit'
 			) }
 			description={ sprintf(
-				/* translators: 1: Google Analytics 4 Measurement ID. */
+				/* translators: 1: Google Analytics Measurement ID. */
 				__(
-					'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
+					'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics.',
 					'google-site-kit'
 				),
 				measurementID
 			) }
-			ctaLink={ `${ settingsURL }#connected-services/analytics/edit` }
+			ctaLink={ `${ settingsURL }#connected-services/analytics-4/edit` }
 			ctaLabel={ __( 'Update Analytics settings', 'google-site-kit' ) }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			// This is arbitrarily set to 55 minutes to ensure that the notification

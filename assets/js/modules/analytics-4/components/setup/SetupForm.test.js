@@ -31,14 +31,15 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import {
 	EDIT_SCOPE,
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../analytics-4/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../analytics-4/constants';
 
 const {
 	accountSummaries,
@@ -95,10 +96,7 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const { container, getByText, waitForRegistry } = render(
 			<SetupForm />,
@@ -116,7 +114,9 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'submits the form upon pressing the CTA', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			adsConversionID: '',
+		} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -145,10 +145,7 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -193,7 +190,7 @@ describe( 'SetupForm', () => {
 
 		act( () => {
 			fireEvent.click(
-				getByRole( 'button', { name: /Configure Analytics/i } )
+				getByRole( 'button', { name: /Complete setup/i } )
 			);
 		} );
 
@@ -233,29 +230,40 @@ describe( 'SetupForm', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetEnhancedMeasurementSettings(
-				defaultEnhancedMeasurementSettings,
+				fixtures.defaultEnhancedMeasurementSettings,
 				{
 					propertyID,
 					webDataStreamID,
 				}
 			);
+		registry.dispatch( CORE_FORMS ).setValues( ENHANCED_MEASUREMENT_FORM, {
+			[ ENHANCED_MEASUREMENT_ENABLED ]: false,
+		} );
+
+		fetchMock.post(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+			),
+			{
+				status: 200,
+				body: fixtures.defaultEnhancedMeasurementSettings,
+			}
+		);
 
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
 		// In this situation, the autoSubmit is set before the user goes to oAuth,
 		// store state is snapshotted, and then restored upon returning.
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( FORM_SETUP, { autoSubmit: true } );
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+			autoSubmit: true,
+			webDataStreamName: fixtures.createWebDataStream.displayName,
+		} );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
@@ -314,7 +322,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Configure Analytics/i } )
+			getByRole( 'button', { name: /Complete setup/i } )
 		).toBeInTheDocument();
 
 		await waitForRegistry();
@@ -353,18 +361,16 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		// @TODO: This is temporarily needed here as the AccountSelect component
-		// still relies on the `analytics` datastore. This should be removed
-		// once the two Analytics modules are entirely decoupled.
-		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
 		// In this situation, the autoSubmit is set before the user goes to oAuth,
 		// store state is snapshotted, and then restored upon returning.
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( FORM_SETUP, { autoSubmit: true } );
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+			autoSubmit: true,
+			webDataStreamName: fixtures.createWebDataStream.displayName,
+		} );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
@@ -397,7 +403,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Configure Analytics/i } )
+			getByRole( 'button', { name: /Complete setup/i } )
 		).toBeInTheDocument();
 
 		// While not strictly needed, add waits to match the successful auto-submit test case to help avoid a false positive result.
@@ -412,5 +418,116 @@ describe( 'SetupForm', () => {
 		expect( finishSetup ).not.toHaveBeenCalled();
 		// Expect a console error due to the API error (otherwise this test will fail).
 		expect( console ).toHaveErrored();
+	} );
+
+	describe.each( [
+		[
+			'account is changed',
+			( getByRole ) =>
+				fireEvent.click(
+					getByRole( 'menuitem', {
+						name: /Example Org/i,
+						hidden: true,
+					} )
+				),
+		],
+		[
+			'property is changed',
+			( getByRole ) =>
+				fireEvent.click(
+					getByRole( 'menuitem', {
+						name: /set up a new property/i,
+						hidden: true,
+					} )
+				),
+		],
+		[
+			'web data stream is changed',
+			( getByRole ) =>
+				fireEvent.click(
+					getByRole( 'menuitem', {
+						name: /set up a new web data stream/i,
+						hidden: true,
+					} )
+				),
+		],
+	] )( 'when the %s', ( _, triggerChange ) => {
+		beforeEach( async () => {
+			muteFetch( { query: { tagverify: '1' } } );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+			registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( accountSummaries );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetProperty( properties[ 0 ], {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+					propertyIDs: [ propertyID ],
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...defaultEnhancedMeasurementSettings,
+						streamEnabled: false,
+					},
+					{
+						propertyID,
+						webDataStreamID,
+					}
+				);
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.selectAccount( accountID );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
+
+			const { getByRole, getByLabelText, waitForRegistry } = render(
+				<SetupForm />,
+				{
+					registry,
+				}
+			);
+			await waitForRegistry();
+
+			const switchControl = getByLabelText(
+				'Enable enhanced measurement'
+			);
+
+			switchControl.click();
+
+			const isEnhancedMeasurementEnabled = registry
+				.select( CORE_FORMS )
+				.getValue(
+					ENHANCED_MEASUREMENT_FORM,
+					ENHANCED_MEASUREMENT_ENABLED
+				);
+
+			expect( isEnhancedMeasurementEnabled ).toBe( false );
+
+			act( () => {
+				triggerChange( getByRole );
+			} );
+
+			await waitForRegistry();
+		} );
+
+		it( 'should revert the enhanced measurement from off to on', () => {
+			const updatedIsEnhancedMeasurementEnabled = registry
+				.select( CORE_FORMS )
+				.getValue(
+					ENHANCED_MEASUREMENT_FORM,
+					ENHANCED_MEASUREMENT_ENABLED
+				);
+
+			expect( updatedIsEnhancedMeasurementEnabled ).toBe( true );
+		} );
 	} );
 } );

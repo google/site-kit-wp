@@ -25,10 +25,9 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import UseSnippetSwitch from '../common/UseSnippetSwitch';
-const { useSelect } = Data;
 
 export default function SetupUseSnippetSwitch() {
 	const existingTag = useSelect( ( select ) =>
@@ -53,7 +52,7 @@ export default function SetupUseSnippetSwitch() {
 				</p>
 				<p>
 					{ __(
-						'Make sure you remove it if you decide to place the same GA4 tag via Site Kit, otherwise they will be duplicated',
+						'Consider removing the existing tag to avoid loading both tags on your site',
 						'google-site-kit'
 					) }
 				</p>
@@ -72,7 +71,7 @@ export default function SetupUseSnippetSwitch() {
 				</p>
 				<p>
 					{ __(
-						'If you prefer to collect data using that existing GA4 tag, please select the corresponding account and property above',
+						'If you prefer to collect data using that existing Analytics tag, please select the corresponding account and property above',
 						'google-site-kit'
 					) }
 				</p>

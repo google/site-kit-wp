@@ -25,7 +25,7 @@ import { useCallback, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
@@ -33,7 +33,6 @@ import BannerNotification from '../../../../../components/notifications/BannerNo
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../util';
-const { useDispatch, useSelect } = Data;
 
 export default function SuccessBanner() {
 	const viewContext = useViewContext();

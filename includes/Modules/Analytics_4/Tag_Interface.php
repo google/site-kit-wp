@@ -19,16 +19,6 @@ namespace Google\Site_Kit\Modules\Analytics_4;
  */
 interface Tag_Interface {
 	/**
-	 * Sets the current home domain.
-	 *
-	 * @since 1.118.0
-	 *
-	 * @param string $domain Domain name.
-	 */
-	public function set_home_domain( $domain );
-
-
-	/**
 	 * Sets the ads conversion ID.
 	 *
 	 * @since 1.118.0
@@ -45,5 +35,4 @@ interface Tag_Interface {
 	 * @param string $custom_dimensions Custom dimensions data.
 	 */
 	public function set_custom_dimensions( $custom_dimensions );
-
 }

@@ -25,24 +25,39 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-const { useSelect } = Data;
+import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
+import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
+import { useFeature } from '../../../../hooks/useFeature';
 
 export default function OptionalSettingsView() {
+	const iceEnabled = useFeature( 'conversionInfra' );
+
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
-
+	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
+	);
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getTrackingDisabled() || []
 	);
-
 	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
 	);
+
+	const isConversionTrackingEnabled = useSelect( ( select ) => {
+		if ( ! iceEnabled ) {
+			return false;
+		}
+
+		return select( CORE_SITE ).isConversionTrackingEnabled();
+	} );
 
 	return (
 		<Fragment>
@@ -74,22 +89,47 @@ export default function OptionalSettingsView() {
 				</div>
 			</div>
 
-			{ useSnippet && (
-				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ !! adsConversionID && (
-								<DisplaySetting value={ adsConversionID } />
-							) }
-							{ ! adsConversionID &&
-								__( 'None', 'google-site-kit' ) }
-						</p>
-					</div>
+			{ iceEnabled && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __(
+							'Enhanced Conversion Tracking',
+							'google-site-kit'
+						) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ isConversionTrackingEnabled &&
+							__( 'Enabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === false &&
+							__( 'Disabled', 'google-site-kit' ) }
+						{ isConversionTrackingEnabled === undefined &&
+							BLANK_SPACE }
+					</p>
 				</div>
 			) }
+
+			{ /* Prevent the Ads Conversion ID setting displaying after this field has been
+				 migrated to the Ads module, even after resetting the Analytics module. */ }
+			{ useSnippet &&
+				! adsConversionIDMigratedAtMs &&
+				!! adsConversionID && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Ads Conversion ID', 'google-site-kit' ) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ !! adsConversionID && (
+									<DisplaySetting value={ adsConversionID } />
+								) }
+								{ ! adsConversionID &&
+									__( 'None', 'google-site-kit' ) }
+							</p>
+						</div>
+					</div>
+				) }
+
+			<AdsConversionIDSettingsNotice />
 		</Fragment>
 	);
 }

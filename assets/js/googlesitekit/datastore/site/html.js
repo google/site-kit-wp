@@ -29,13 +29,15 @@ import { isURL, addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { extractExistingTag } from '../../../util/tag';
-
-const { createRegistryControl } = Data;
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
@@ -53,7 +55,10 @@ const fetchHTMLForURLStore = createFetchStore( {
 			// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
 			tagverify: 1,
 			// Add a timestamp for cache-busting.
-			timestamp: Date.now(),
+			//
+			// This value is used for cache-busting, so we don't want to rely on
+			// the reference date. We should always use the current time.
+			timestamp: Date.now(), // eslint-disable-line sitekit/no-direct-date
 		};
 		const response = await fetch(
 			addQueryArgs( url, fetchHTMLQueryArgs ),
@@ -106,7 +111,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetHTMLForURL( url ) {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
 			payload: { url },
@@ -146,9 +151,7 @@ const baseControls = {
 	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl(
 		( registry ) =>
 			( { payload: { url } } ) =>
-				registry
-					.__experimentalResolveSelect( CORE_SITE )
-					.getHTMLForURL( url )
+				registry.resolveSelect( CORE_SITE ).getHTMLForURL( url )
 	),
 	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl(
 		( registry ) => async () => {
@@ -204,7 +207,7 @@ const baseReducer = ( state, { type, payload } ) => {
 
 export const baseResolvers = {
 	*getHTMLForURL( url ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingHTML = registry.select( CORE_SITE ).getHTMLForURL( url );
 
@@ -234,7 +237,7 @@ export const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchHTMLForURLStore, {
+const store = combineStores( fetchHTMLForURLStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,

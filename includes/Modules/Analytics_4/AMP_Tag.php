@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_AMP_Tag;
+use Google\Site_Kit\Core\Tags\Tag_With_Linker_Interface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Tags\Tag_With_Linker_Trait;
 
 /**
  * Class for AMP tag.
@@ -20,9 +22,10 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
+class AMP_Tag extends Module_AMP_Tag implements Tag_Interface, Tag_With_Linker_Interface {
 
 	use Method_Proxy_Trait;
+	use Tag_With_Linker_Trait;
 
 	/**
 	 * Custom dimensions data.
@@ -31,14 +34,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	 * @var array
 	 */
 	private $custom_dimensions;
-
-	/**
-	 * Home domain name.
-	 *
-	 * @since 1.118.0
-	 * @var string
-	 */
-	private $home_domain;
 
 	/**
 	 * Ads conversion ID.
@@ -159,7 +154,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
-
 	}
 
 	/**
@@ -193,9 +187,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 		$config = array(
 			$this->tag_id => array(
 				'groups' => 'default',
-				'linker' => array(
-					'domains' => array( $this->home_domain ),
-				),
 			),
 		);
 
@@ -206,6 +197,6 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 			);
 		}
 
-		return $config;
+		return $this->add_linker_to_tag_config( $config );
 	}
 }

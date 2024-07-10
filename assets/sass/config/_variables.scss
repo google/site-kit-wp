@@ -183,7 +183,7 @@ $c-background-notice-info: $c-surfaces-surface-1;
 $c-background-notice-suggestion: $c-solitude;
 
 $c-border: $c-boulder;
-$c-border-light: $c-neutral-n-50;
+$c-border-light: $c-surfaces-inverse-on-surface;
 $c-border-medium: $c-silver;
 $c-border-brand: $c-royal-blue;
 $c-border-notice-info-hover: $c-jordy-blue;
@@ -200,7 +200,7 @@ $c-icon-notice-info: $c-denim;
 $c-icon-notice-suggestion: $c-denim;
 
 $c-chart-1: $c-cornflower-blue;
-$c-chart-2: $c-scooter;
+$c-chart-2: $c-teal-t-300;
 $c-chart-3: $c-elm;
 $c-chart-4: $c-purple-heart;
 
@@ -273,6 +273,7 @@ $bp-xsmallOnly: $width-xsmall - 1 + px;
 $bp-mobileOnly: $width-tablet - 1 + px;
 $bp-tablet: $width-tablet + px;
 $bp-nonMobile: $width-tablet + 1 + px;
+$bp-nonTablet: $width-desktop + 1 + px;
 $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
 $bp-desktop: $width-desktop + px;
 $bp-xlarge: $width-xlarge + px;
@@ -326,3 +327,29 @@ $max-width-settings-notice-content: 1098px;
 $z-index-sk-side-sheet: 10000;
 $z-index-sk-side-sheet-overlay: 9990;
 $z-index-sk-header: 9980;
+$z-index-sk-overlay-notification: 9970;
+
+// Start Authorize Application screen specific styles.
+$c-authorize-application-background: $c-base;
+$c-authorize-application-sys-light-primary: #0b57d0;
+$c-authorize-application-sys-light-on-primary: $c-base;
+$c-authorize-application-sys-light-on-surface: #1f1f1f;
+$c-authorize-application-sys-light-outline: #747775;
+$c-authorize-application-gallery: #ededed; // Gallery color name from http://chir.ag/projects/name-that-color/.
+$c-authorize-application-pumice: #c4c7c5; // Pumice color name as above.
+$c-authorize-application-vivid-blue: #1a73e8; // Vivid Blue color name as above.
+
+$fs-authorize-application-headline-sm: 24px;
+$fs-authorize-application-title-lg: 18px;
+$fs-authorize-application-label-lg: 14px;
+$fs-authorize-application-label-md: 12px;
+$fs-authorize-application-body-md: 14px;
+$fs-authorize-application-footer-lg: 16px;
+
+$lh-authorize-application-headline-sm: 32px;
+$lh-authorize-application-title-lg: 24px;
+$lh-authorize-application-label-lg: 20px;
+$lh-authorize-application-label-md: 16px;
+$lh-authorize-application-body-md: 20px;
+
+// End Authorize Application screen specific styles.

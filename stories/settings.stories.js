@@ -95,8 +95,9 @@ storiesOf( 'Settings', module )
 				provideModules(
 					registry,
 					[
+						'ads',
 						'adsense',
-						'analytics',
+						'analytics-4',
 						'pagespeed-insights',
 						'search-console',
 					].map( ( slug ) => ( {
@@ -127,13 +128,16 @@ storiesOf( 'Settings', module )
 			const setupRegistry = async ( registry ) => {
 				provideModules(
 					registry,
-					[ 'adsense', 'pagespeed-insights', 'search-console' ].map(
-						( slug ) => ( {
-							slug,
-							active: true,
-							connected: true,
-						} )
-					)
+					[
+						'ads',
+						'adsense',
+						'pagespeed-insights',
+						'search-console',
+					].map( ( slug ) => ( {
+						slug,
+						active: true,
+						connected: true,
+					} ) )
 				);
 				provideModuleRegistrations( registry );
 				registry.select( CORE_MODULES ).getModule( 'adsense' );
@@ -157,7 +161,9 @@ storiesOf( 'Settings', module )
 
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
-				provideModules( registry );
+				provideModules( registry, [
+					{ slug: 'ads', active: true, connected: true },
+				] );
 
 				registry
 					.dispatch( CORE_USER )
@@ -165,6 +171,19 @@ storiesOf( 'Settings', module )
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetAdminBarSettings( { enabled: true } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConsentModeSettings( { enabled: false } );
+				registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
+					hasConsentAPI: false,
+					wpConsentPlugin: {
+						installed: false,
+						activateURL:
+							'http://example.com/wp-admin/plugins.php?action=activate&plugin=some-plugin',
+						installURL:
+							'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
+					},
+				} );
 			};
 
 			return (

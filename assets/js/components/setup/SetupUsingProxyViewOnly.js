@@ -29,7 +29,7 @@ import {
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import OptIn from '../OptIn';
 import Header from '../Header';
@@ -44,7 +44,6 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { Grid, Row, Cell } from '../../material-components';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();

@@ -58,39 +58,43 @@ function CTA( {
 					{ headerContent }
 				</div>
 			) }
-			{ title && <h3 className="googlesitekit-cta__title">{ title }</h3> }
-			{ description && typeof description === 'string' && (
-				<p className="googlesitekit-cta__description">
-					{ description }
-				</p>
-			) }
-			{ description && typeof description !== 'string' && (
-				<div className="googlesitekit-cta__description">
-					{ description }
-				</div>
-			) }
-			{ ctaLabel && ctaType === 'button' && (
-				<Button
-					aria-label={ ariaLabel }
-					href={ ctaLink }
-					onClick={ onClick }
-				>
-					{ ctaLabel }
-				</Button>
-			) }
-			{ ctaLabel && ctaType === 'link' && (
-				<Link
-					href={ ctaLink }
-					onClick={ onClick }
-					aria-label={ ariaLabel }
-					external={ ctaLinkExternal }
-					hideExternalIndicator={ ctaLinkExternal }
-					arrow
-				>
-					{ ctaLabel }
-				</Link>
-			) }
-			{ children }
+			<div className="googlesitekit-cta__body">
+				{ title && (
+					<h3 className="googlesitekit-cta__title">{ title }</h3>
+				) }
+				{ description && typeof description === 'string' && (
+					<p className="googlesitekit-cta__description">
+						{ description }
+					</p>
+				) }
+				{ description && typeof description !== 'string' && (
+					<div className="googlesitekit-cta__description">
+						{ description }
+					</div>
+				) }
+				{ ctaLabel && ctaType === 'button' && (
+					<Button
+						aria-label={ ariaLabel }
+						href={ ctaLink }
+						onClick={ onClick }
+					>
+						{ ctaLabel }
+					</Button>
+				) }
+				{ ctaLabel && ctaType === 'link' && (
+					<Link
+						href={ ctaLink }
+						onClick={ onClick }
+						aria-label={ ariaLabel }
+						external={ ctaLinkExternal }
+						hideExternalIndicator={ ctaLinkExternal }
+						arrow
+					>
+						{ ctaLabel }
+					</Link>
+				) }
+				{ children }
+			</div>
 		</div>
 	);
 }

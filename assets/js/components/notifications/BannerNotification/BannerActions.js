@@ -28,10 +28,9 @@ import { useState } from '@wordpress/element';
 /*
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-const { useSelect } = Data;
 
 export default function BannerActions( props ) {
 	const {

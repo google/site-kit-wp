@@ -36,6 +36,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import BannerNotifications from './BannerNotifications';
 import Header from '../Header';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 describe( 'BannerNotifications', () => {
 	mockLocation();
@@ -93,6 +94,9 @@ describe( 'BannerNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [] );
 		registry.dispatch( CORE_USER ).receiveNonces( [] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveHasMismatchGoogleTagID( false );
 	} );
 
 	it( 'should render the `authentication_success` notification if the `authentication_success` query param value is passed', async () => {

@@ -303,11 +303,12 @@ abstract class Module {
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
+	 *
 	 * // phpcs:ignore Squiz.Commenting.FunctionComment.InvalidNoReturn
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 * @throws Invalid_Datapoint_Exception Override in a sub-class.
 	 */
-	protected function create_data_request( Data_Request $data ) {
+	protected function create_data_request( Data_Request $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found,Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		throw new Invalid_Datapoint_Exception();
 	}
 
@@ -581,7 +582,7 @@ abstract class Module {
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Site_Kit_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		return array();
 	}
 
@@ -641,7 +642,7 @@ abstract class Module {
 	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.
 	 * @return WP_Error WordPress error object.
 	 */
-	protected function exception_to_error( Exception $e, $datapoint = '' ) {
+	protected function exception_to_error( Exception $e, $datapoint = '' ) { // phpcs:ignore phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter.Found,Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( $e instanceof WP_Errorable ) {
 			return $e->to_wp_error();
 		}
@@ -710,7 +711,7 @@ abstract class Module {
 		}
 
 		$items = array_map(
-			function( $item ) {
+			function ( $item ) {
 				if ( ! is_string( $item ) ) {
 					return false;
 				}

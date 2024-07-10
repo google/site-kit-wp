@@ -24,21 +24,31 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { AccountSelect, PropertySelect, WebDataStreamSelect } from '../common';
+import { useSelect } from 'googlesitekit-data';
+import {
+	MODULES_ANALYTICS_4,
+	WEBDATASTREAM_CREATE,
+} from '../../datastore/constants';
+import {
+	AccountSelect,
+	PropertySelect,
+	WebDataStreamSelect,
+	WebDataStreamNameInput,
+} from '../common';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
-const { useSelect } = Data;
 
 export default function SettingsControls( props ) {
 	const { hasModuleAccess } = props;
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+	const webDataStreamID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
 	return (
@@ -64,6 +74,12 @@ export default function SettingsControls( props ) {
 					isDisabled={ ! propertyID }
 				/>
 			</div>
+
+			{ webDataStreamID === WEBDATASTREAM_CREATE && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<WebDataStreamNameInput />
+				</div>
+			) }
 
 			<AnalyticsSettingsNotice hasModuleAccess={ hasModuleAccess } />
 

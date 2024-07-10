@@ -1,0 +1,248 @@
+/**
+ * Audience Segmentation Tile styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-audience-segmentation-tile {
+		margin-bottom: 16px;
+
+		.googlesitekit-audience-segmentation-tile__header {
+			align-items: center;
+			border-bottom: 1px solid $c-utility-divider;
+			color: $c-surfaces-on-surface;
+			display: flex;
+			font-size: $fs-title-sm;
+			justify-content: space-between;
+			line-height: 16px;
+			padding: 25px;
+			width: 100%;
+
+			.googlesitekit-audience-segmentation-tile__header-title {
+				display: flex;
+
+				.googlesitekit-info-tooltip {
+					display: inline-block;
+					height: 16px;
+					margin-left: 5px;
+				}
+			}
+		}
+
+		.googlesitekit-audience-segmentation-tile__metrics {
+
+			> .googlesitekit-audience-segmentation-partial-data-notice {
+				margin: 16px 16px 10px;
+			}
+		}
+
+		.googlesitekit-audience-segmentation-tile-metric {
+			border-bottom: 1px solid $c-utility-divider;
+			display: flex;
+			margin: 0 $grid-gap-phone;
+			padding: 12px 0;
+
+			@media (min-width: $width-desktop + 1 + px) {
+				margin: 0 $grid-gap-desktop;
+			}
+
+			&:last-child {
+				border-bottom: none;
+			}
+
+			.googlesitekit-audience-segmentation-tile-metric__icon {
+				align-items: center;
+				display: flex;
+				margin-right: 4px;
+				min-width: 36px;
+				width: 36px;
+
+				svg {
+					height: 20px;
+					width: 20px;
+				}
+
+				@media (min-width: $width-desktop + 1 + px) {
+					justify-content: center;
+					min-width: 52px;
+					width: 52px;
+				}
+			}
+
+			.googlesitekit-audience-segmentation-tile-metric__container {
+				flex-grow: 1;
+
+				.googlesitekit-audience-segmentation-tile-metric__value {
+					color: $c-surfaces-on-surface;
+					font-family: $f-secondary;
+					font-size: $fs-headline-md;
+					font-weight: $fw-normal;
+					line-height: 32px; // Fixed line hight required for this components height to match designs.
+				}
+
+				.googlesitekit-audience-segmentation-tile-metric__title {
+					color: $c-surfaces-on-surface-variant;
+					font-size: $fs-body-md;
+					font-weight: $fw-normal;
+					letter-spacing: 0.25px;
+					line-height: 20px; // Fixed line hight required for this components height to match designs.
+				}
+			}
+
+			.googlesitekit-audience-segmentation-tile-metric__badge-container {
+				align-items: center;
+				display: flex;
+				flex-direction: row;
+
+				.googlesitekit-change-badge {
+					margin-top: 0;
+				}
+			}
+
+			// Cities custom metric.
+			&.googlesitekit-audience-segmentation-tile-metric--cities {
+				.googlesitekit-audience-segmentation-tile-metric__container {
+					min-width: 0;
+				}
+
+				.googlesitekit-audience-segmentation-tile-metric__content {
+					display: grid;
+					gap: $grid-gap-phone;
+					grid-auto-columns: minmax(0, 1fr);
+					grid-auto-flow: column;
+					margin-top: 12px;
+
+					@media (min-width: $width-desktop + 1 + px) {
+						gap: 10px; // Designs specify a non-standard grid gap.
+					}
+
+					.googlesitekit-audience-segmentation-tile-metric__cities-metric {
+						.googlesitekit-audience-segmentation-tile-metric__cities-metric-name {
+							color: $c-surfaces-on-surface;
+							font-size: $fs-title-sm;
+							font-weight: $fw-medium;
+							line-height: $lh-title-sm;
+							margin-bottom: 2px;
+
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
+
+						.googlesitekit-audience-segmentation-tile-metric__cities-metric-value {
+							color: $c-surfaces-on-surface;
+							font-size: $fs-body-md;
+							font-weight: $fw-normal;
+							line-height: $lh-body-md;
+						}
+					}
+				}
+			}
+
+			// Top content custom metric.
+			&.googlesitekit-audience-segmentation-tile-metric--top-content {
+				.googlesitekit-audience-segmentation-tile-metric__title {
+					height: 20px;
+					line-height: 20px;
+					margin-bottom: 10px;
+
+					&:has(.googlesitekit-audience-segmentation-partial-data-badge) {
+						align-items: center;
+						display: flex;
+						height: auto;
+						justify-content: space-between;
+						margin: 4px 0 14px;
+					}
+				}
+
+				.googlesitekit-cta-link,
+				.googlesitekit-audience-segmentation-tile__top-content-metric-name {
+					margin-right: 30px;
+				}
+
+				.googlesitekit-audience-segmentation-tile-metric__container,
+				.googlesitekit-cta-link {
+					min-width: 0;
+
+					.googlesitekit-cta-link__contents,
+					.googlesitekit-audience-segmentation-tile__top-content-metric-name {
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+				}
+
+				.googlesitekit-audience-segmentation-tile-metric__page-metric-container {
+					display: flex;
+					font-size: $fs-body-sm;
+					justify-content: space-between;
+					line-height: $lh-body-sm;
+					margin: 6px 0;
+				}
+
+				.googlesitekit-audience-segmentation-tile-metric__content {
+
+					.googlesitekit-audience-segmentation-partial-data-notice {
+						margin-top: 10px;
+					}
+				}
+			}
+		}
+
+		&.googlesitekit-audience-segmentation-tile--partial-data {
+
+			.googlesitekit-audience-segmentation-tile__header {
+				padding: 19px 25px;
+			}
+		}
+
+		.googlesitekit-audience-segmentation-tile__zero-data-container {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			text-align: center;
+
+			.googlesitekit-audience-segmentation-tile__header {
+				border-bottom: none;
+			}
+
+			.googlesitekit-audience-segmentation-tile__zero-data-content {
+				padding: 155px 0;
+			}
+
+			.googlesitekit-audience-segmentation-tile__zero-data-image {
+				margin-bottom: 20px;
+				width: 106px;
+			}
+
+			.googlesitekit-audience-segmentation-tile__zero-data-description {
+				font-family: $f-primary;
+				font-size: $fs-title-sm;
+				font-weight: $fw-medium;
+				line-height: $lh-title-sm;
+				margin: 0;
+			}
+
+			.googlesitekit-audience-segmentation-tile-hide-cta {
+				font-family: $f-primary;
+				font-weight: $fw-medium;
+				margin: 6px 0;
+				padding: 6px 12px;
+				white-space: nowrap;
+			}
+		}
+	}
+}

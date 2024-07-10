@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_CONTENT,
@@ -38,12 +38,11 @@ import {
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
-const { useSelect, useInViewSelect } = Data;
 
 function PopularContentWidget( props ) {
 	const { Widget } = props;
@@ -69,8 +68,9 @@ function PopularContentWidget( props ) {
 		limit: 3,
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -79,13 +79,15 @@ function PopularContentWidget( props ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect(

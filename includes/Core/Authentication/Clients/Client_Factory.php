@@ -89,7 +89,7 @@ final class Client_Factory {
 		$token_callback = $args['token_callback'];
 		if ( $token_callback ) {
 			$client->setTokenCallback(
-				function( $cache_key, $access_token ) use ( $client, $token_callback ) {
+				function ( $cache_key, $access_token ) use ( $client, $token_callback ) {
 					// The same token from this callback should also already be set in the client object, which is useful
 					// to get the full token data, all of which needs to be saved. Just in case, if that is not the same,
 					// we save the passed token only, relying on defaults for the other values.
@@ -182,7 +182,7 @@ final class Client_Factory {
 		return array(
 			'client_id'                   => $client_id,
 			'client_secret'               => $client_secret,
-			'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
+			'auth_uri'                    => 'https://accounts.google.com/o/oauth2/v2/auth',
 			'token_uri'                   => 'https://oauth2.googleapis.com/token',
 			'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
 			'redirect_uris'               => array( $redirect_uri ),

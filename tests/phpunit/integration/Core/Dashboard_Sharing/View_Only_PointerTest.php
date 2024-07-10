@@ -51,7 +51,6 @@ class View_Only_PointerTest extends TestCase {
 
 		$pointer = new View_Only_Pointer();
 		$pointer->register();
-
 	}
 
 	public function test_register() {
@@ -157,7 +156,7 @@ class View_Only_PointerTest extends TestCase {
 	private function grant_editors_view_only_dashboard_access() {
 		$settings              = new Module_Sharing_Settings( new Options( $this->context ) );
 		$test_sharing_settings = array(
-			'analytics' => array(
+			'analytics-4' => array(
 				'sharedRoles' => array( 'editor' ),
 				'management'  => 'all_admins',
 			),
@@ -168,5 +167,4 @@ class View_Only_PointerTest extends TestCase {
 	private function create_editor_user() {
 		return $this->factory()->user->create( array( 'role' => 'editor' ) );
 	}
-
 }

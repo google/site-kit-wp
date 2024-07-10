@@ -22,9 +22,8 @@ import { useEffectOnce } from 'react-use';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-const { useDispatch } = Data;
 
 export const UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED =
 	'KEY_METRICS_SETUP_CTA_RENDERED';

@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
-export { default as ActivationBanner } from './ActivationBanner';
 export { default as EnhancedMeasurementActivationBanner } from './EnhancedMeasurementActivationBanner';
+export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
+export { default as DashboardOverallPageMetricsWidgetGA4 } from './DashboardOverallPageMetricsWidgetGA4';

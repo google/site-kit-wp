@@ -25,17 +25,18 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
-import { MODULES_TAGMANAGER, CONTEXT_WEB } from './constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
+import { MODULES_TAGMANAGER } from './constants';
 import {
 	isValidAccountID,
 	isValidInternalContainerID,
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '../../analytics/util';
 import { isValidGoogleTagID } from '../../analytics-4/utils/validation';
-const { createRegistrySelector } = Data;
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {
 	baseName: 'getLiveContainerVersion',
@@ -62,11 +63,18 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 				{ useCache: false }
 			);
 		} catch ( err ) {
-			// If the container has no published version, it will error with a 404.
-			if ( 404 === err.code ) {
+			// If the container has no published version, it will error with a 404
+			// and the message will be "Published container version not found".
+			// If the user has no permission to access the container, the error is also a 404
+			// with a different message. In this case or any other case, we want to display
+			// the error message along with the option to retry, so we allow it to be thrown
+			// but filter out the former case.
+			if (
+				404 === err.code &&
+				err.message.includes( 'container version not found' )
+			) {
 				return null;
 			}
-			// Otherwise rethrow the error to be handled as usual.
 			throw err;
 		}
 	},
@@ -99,7 +107,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if (
 			undefined ===
@@ -117,119 +125,6 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
-	/**
-	 * Gets a unique list of Analytics property IDs for all effective containers based on current selections.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @return {(Array|undefined)} Array of unique property IDs, including `null` if none, or `undefined` if not fully loaded.
-	 */
-	getAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
-		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
-		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
-
-		if ( ! isValidAccountID( accountID ) ) {
-			return [];
-		}
-
-		const propertyIDs = new Set();
-		const internalContainerID =
-			select( MODULES_TAGMANAGER ).getInternalContainerID();
-		if (
-			( ! isAMP() || isSecondaryAMP() ) &&
-			isValidInternalContainerID( internalContainerID )
-		) {
-			propertyIDs.add(
-				select(
-					MODULES_TAGMANAGER
-				).getLiveContainerAnalyticsPropertyID(
-					accountID,
-					internalContainerID
-				)
-			);
-		}
-
-		const internalAMPContainerID =
-			select( MODULES_TAGMANAGER ).getInternalAMPContainerID();
-		if ( isAMP() && isValidInternalContainerID( internalAMPContainerID ) ) {
-			propertyIDs.add(
-				select(
-					MODULES_TAGMANAGER
-				).getLiveContainerAnalyticsPropertyID(
-					accountID,
-					internalAMPContainerID
-				)
-			);
-		}
-
-		// If either selector returned undefined, return undefined here as well.
-		// We do this here to ensure resolvers are triggered for both.
-		if ( propertyIDs.has( undefined ) ) {
-			return undefined;
-		}
-
-		return Array.from( propertyIDs );
-	} ),
-
-	/**
-	 * Gets the live container Universal Analytics property ID for the given account and container ID.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @param {Object} state               Data store's state.
-	 * @param {string} accountID           Account ID the container belongs to.
-	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
-	 * @return {(string|null|undefined)} Analytics property ID if present and valid, `null` if none exists or not valid, or `undefined` if not loaded yet.
-	 */
-	getLiveContainerAnalyticsPropertyID: createRegistrySelector(
-		( select ) =>
-			function ( state, accountID, internalContainerID ) {
-				const analyticsTag = select(
-					MODULES_TAGMANAGER
-				).getLiveContainerAnalyticsTag(
-					accountID,
-					internalContainerID
-				);
-
-				if ( analyticsTag === undefined ) {
-					return undefined;
-				}
-
-				if ( analyticsTag?.parameter ) {
-					// Check if property ID is provided directly on the tag first.
-					let propertyID = analyticsTag.parameter.find(
-						( { key } ) => key === 'trackingId'
-					)?.value;
-					// If not, check if there is a gaSettings variable referenced.
-					if ( ! propertyID ) {
-						propertyID = analyticsTag.parameter.find(
-							( { key } ) => key === 'gaSettings'
-						)?.value;
-					}
-					// If the propertyID is a variable, parse out the name and look up its value.
-					if ( propertyID?.startsWith( '{{' ) ) {
-						propertyID = propertyID.replace( /(\{\{|\}\})/g, '' );
-						const gaSettingsVariable = select(
-							MODULES_TAGMANAGER
-						).getLiveContainerVariable(
-							accountID,
-							internalContainerID,
-							propertyID
-						);
-						propertyID = gaSettingsVariable?.parameter.find(
-							( { key } ) => key === 'trackingId'
-						)?.value;
-					}
-					// Finally, check that whatever was found is a valid ID.
-					if ( isValidPropertyID( propertyID ) ) {
-						return propertyID;
-					}
-				}
-
-				return null;
-			}
-	),
-
 	/**
 	 * Gets the first Google Tag object within the current live container for the given account and internal container ID.
 	 *
@@ -346,44 +241,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the live container Universal Analytics tag object for the given account and container ID.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @param {Object} state               Data store's state.
-	 * @param {string} accountID           Account ID the container belongs to.
-	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
-	 * @return {(Object|null|undefined)} Live container Universal Analytics tag object, `null` if none exists, or `undefined` if not loaded yet.
-	 */
-	getLiveContainerAnalyticsTag: createRegistrySelector(
-		( select ) =>
-			function ( state, accountID, internalContainerID ) {
-				const liveContainerVersion = select(
-					MODULES_TAGMANAGER
-				).getLiveContainerVersion( accountID, internalContainerID );
-
-				if ( liveContainerVersion === undefined ) {
-					return undefined;
-				}
-
-				if ( liveContainerVersion?.tag ) {
-					const tagType =
-						liveContainerVersion.container.usageContext[ 0 ] ===
-						CONTEXT_WEB
-							? 'ua'
-							: 'ua_amp';
-					return (
-						liveContainerVersion.tag.find(
-							( { type } ) => type === tagType
-						) || null
-					);
-				}
-
-				return null;
-			}
-	),
-
-	/**
 	 * Gets the live container variable object by the given name for the given account and container ID.
 	 *
 	 * @since 1.18.0
@@ -434,51 +291,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the single property ID used by all selected containers.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @return {(string|null|boolean|undefined)} String property ID used by all containers,
-	 *                                           `null` if no property ID was found in either container,
-	 *                                           `false` if a single property ID could not be determined,
-	 *                                           or `undefined` if live container data is not loaded yet.
-	 */
-	getSingleAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
-		const propertyIDs =
-			select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
-
-		if ( propertyIDs === undefined ) {
-			return undefined;
-		}
-
-		if ( propertyIDs.length === 1 ) {
-			return propertyIDs[ 0 ]; // (string|null)
-		}
-
-		return false;
-	} ),
-
-	/**
-	 * Checks whether any Analytics property ID is present in either selected container.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @return {(boolean|undefined)} `true` if an Analytics property ID is present in either container,
-	 *                               `false` if no Analytics property ID is present in either container,
-	 *                               `undefined` if live container version data is not loaded yet.
-	 */
-	hasAnyAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
-		const propertyIDs =
-			select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
-
-		if ( propertyIDs === undefined ) {
-			return undefined;
-		}
-
-		return propertyIDs.some( ( propertyID ) => propertyID !== null );
-	} ),
-
-	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
 	 *
 	 * @since 1.11.0
@@ -500,7 +312,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchGetLiveContainerVersionStore, {
+const store = combineStores( fetchGetLiveContainerVersionStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

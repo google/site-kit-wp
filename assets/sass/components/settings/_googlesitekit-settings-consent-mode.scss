@@ -1,0 +1,148 @@
+/**
+ * Settings Consent Mode styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-settings-consent-mode {
+		.googlesitekit-settings-consent-mode-switch__enabled-notice,
+		.googlesitekit-settings-consent-mode-requirements__description {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+		}
+
+		.googlesitekit-settings-consent-mode-switch-description--loading {
+			margin: 14px 0;
+		}
+
+		.googlesitekit-settings-consent-mode-requirements__grid {
+			padding: 0;
+		}
+
+		.googlesitekit-settings-consent-mode-requirement {
+			border: 1px solid $c-utility-divider;
+			border-radius: $br-xs;
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			padding: $grid-gap-phone;
+
+			@media (min-width: $bp-nonMobile) {
+				padding: $grid-gap-desktop;
+			}
+
+			h4 {
+				font-size: $fs-title-md;
+				font-weight: $fw-medium;
+				line-height: $lh-title-md;
+				margin: 0;
+			}
+		}
+
+		.googlesitekit-settings-consent-mode-requirement__description {
+			flex: 1;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+		}
+
+		.googlesitekit-settings-notice {
+			border-radius: $br-xs;
+			display: flex;
+			flex-direction: column;
+
+			@media (min-width: $bp-nonMobile) {
+				flex-direction: row;
+			}
+
+			.googlesitekit-settings-notice__icon {
+				align-self: start;
+				margin-bottom: 6px;
+
+				@media (min-width: $bp-nonMobile) {
+					align-self: center;
+					margin-bottom: 0;
+				}
+			}
+		}
+	}
+
+	.googlesitekit-settings-consent-mode__recommendation-notice {
+		background-color: $c-blue-b-50;
+		color: $c-blue-b-600;
+		font-size: $fs-body-md;
+		line-height: $lh-body-md;
+		margin-bottom: 0;
+		margin-top: 8px;
+
+		svg {
+			color: $c-blue-b-400;
+		}
+	}
+
+	.googlesitekit-settings-consent-mode-requirement__footer {
+		align-items: center;
+		display: flex;
+		flex: 1;
+	}
+
+	.googlesitekit-settings-consent-mode-requirement__consent-api-detected-wrapper {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+
+		@media (min-width: $bp-nonMobile) {
+			flex-direction: row;
+			gap: 10px;
+		}
+	}
+
+	.googlesitekit-settings-consent-mode-requirement__consent-api-detected-icon {
+		align-items: center;
+		align-self: start;
+		background-color: $c-content-primary-container;
+		border-radius: 11px;
+		color: $c-utility-on-success-container;
+		display: flex;
+		height: 22px;
+		justify-content: center;
+		margin-top: 10px;
+		min-width: 22px;
+		width: 22px;
+
+		svg {
+			height: 10px;
+			width: 10px;
+		}
+
+		@media (min-width: $bp-nonMobile) {
+			align-self: center;
+			margin-top: 0;
+		}
+	}
+
+	.googlesitekit-settings-consent-mode-requirement__install-button {
+		padding: 6px 16px;
+	}
+
+	.googlesitekit-settings-consent-mode-requirement__consent-management-plugin-notice {
+		margin-bottom: 0;
+		padding: 10px $grid-gap-phone;
+	}
+}

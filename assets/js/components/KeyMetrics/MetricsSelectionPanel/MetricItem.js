@@ -30,20 +30,33 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
-import SelectionBox from '../../SelectionBox';
-const { useSelect, useDispatch } = Data;
+import { SelectionPanelItem } from '../../SelectionPanel';
 
 export default function MetricItem( {
-	id,
 	slug,
 	title,
 	description,
-	disconnectedModules,
-	savedMetrics = [],
+	savedItemSlugs = [],
 } ) {
+	const disconnectedModules = useSelect( ( select ) => {
+		const { getModule } = select( CORE_MODULES );
+		const widget = select( CORE_WIDGETS ).getWidget( slug );
+
+		return widget?.modules.reduce( ( modulesAcc, widgetSlug ) => {
+			const module = getModule( widgetSlug );
+			if ( module?.connected || ! module?.name ) {
+				return modulesAcc;
+			}
+
+			return [ ...modulesAcc, module.name ];
+		}, [] );
+	} );
+
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -74,45 +87,43 @@ export default function MetricItem( {
 
 	const isMetricSelected = selectedMetrics?.includes( slug );
 	const isMetricDisabled =
-		! savedMetrics.includes( slug ) && disconnectedModules.length > 0;
+		! savedItemSlugs.includes( slug ) && disconnectedModules.length > 0;
+
+	const id = `key-metric-selection-checkbox-${ slug }`;
 
 	return (
-		<div className="googlesitekit-km-selection-panel-metrics__metric-item">
-			<SelectionBox
-				checked={ isMetricSelected }
-				disabled={ isMetricDisabled }
-				id={ id }
-				onChange={ onCheckboxChange }
-				title={ title }
-				value={ slug }
-			>
-				{ description }
-				{ disconnectedModules.length > 0 && (
-					<div className="googlesitekit-km-selection-panel-metrics__metric-item-error">
-						{ sprintf(
-							/* translators: %s: module names. */
-							_n(
-								'%s is disconnected, no data to show',
-								'%s are disconnected, no data to show',
-								disconnectedModules.length,
-								'google-site-kit'
-							),
-							disconnectedModules.join(
-								__( ' and ', 'google-site-kit' )
-							)
-						) }
-					</div>
-				) }
-			</SelectionBox>
-		</div>
+		<SelectionPanelItem
+			id={ id }
+			slug={ slug }
+			title={ title }
+			description={ description }
+			isItemSelected={ isMetricSelected }
+			isItemDisabled={ isMetricDisabled }
+			onCheckboxChange={ onCheckboxChange }
+		>
+			{ disconnectedModules.length > 0 && (
+				<div className="googlesitekit-selection-panel-item-error">
+					{ sprintf(
+						/* translators: %s: module names. */
+						_n(
+							'%s is disconnected, no data to show',
+							'%s are disconnected, no data to show',
+							disconnectedModules.length,
+							'google-site-kit'
+						),
+						disconnectedModules.join(
+							__( ' and ', 'google-site-kit' )
+						)
+					) }
+				</div>
+			) }
+		</SelectionPanelItem>
 	);
 }
 
 MetricItem.propTypes = {
-	id: PropTypes.string.isRequired,
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
-	disconnectedModules: PropTypes.array,
-	savedMetrics: PropTypes.array,
+	savedItemSlugs: PropTypes.array,
 };

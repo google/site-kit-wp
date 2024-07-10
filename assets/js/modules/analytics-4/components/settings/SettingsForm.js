@@ -24,37 +24,72 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { AdsConversionIDTextField, TrackingExclusionSwitches } from '../common';
+import { useSelect } from 'googlesitekit-data';
+import { TrackingExclusionSwitches } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsControls from './SettingsControls';
+import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
-const { useSelect } = Data;
+import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
+import { useFeature } from '../../../../hooks/useFeature';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Link from '../../../../components/Link';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 
+	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'enhanced-conversion-tracking'
+		)
+	);
+
+	const iceEnabled = useFeature( 'conversionInfra' );
+
 	return (
 		<Fragment>
 			<SettingsControls hasModuleAccess={ hasModuleAccess } />
 
-			{ isValidAccountID( accountID ) && (
-				<Fragment>
-					<TrackingExclusionSwitches />
-					<AdsConversionIDTextField />
-				</Fragment>
-			) }
+			{ isValidAccountID( accountID ) && <TrackingExclusionSwitches /> }
 
 			{ hasModuleAccess && (
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
+			) }
+
+			{ iceEnabled && (
+				<ConversionTrackingToggle>
+					{ createInterpolateElement(
+						__(
+							'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ conversionTrackingDocumentationURL }
+									external
+									aria-label={ __(
+										'Learn more about conversion tracking',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
+					) }
+				</ConversionTrackingToggle>
+			) }
+
+			{ isValidAccountID( accountID ) && (
+				<AdsConversionIDSettingsNotice />
 			) }
 		</Fragment>
 	);

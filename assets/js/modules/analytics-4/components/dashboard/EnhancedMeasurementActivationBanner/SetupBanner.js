@@ -31,16 +31,13 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	EDIT_SCOPE,
-	FORM_SETUP,
-} from '../../../../analytics/datastore/constants';
+import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import {
 	DAY_IN_SECONDS,
@@ -52,8 +49,6 @@ import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.sv
 import ErrorNotice from '../../../../../components/ErrorNotice';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 import useViewContext from '../../../../../hooks/useViewContext';
-
-const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( props ) {
 	const {

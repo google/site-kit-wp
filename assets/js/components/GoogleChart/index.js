@@ -46,7 +46,7 @@ import {
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
 import DateMarker from './DateMarker';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -61,7 +61,6 @@ import {
 import { stringToDate, getDateString } from '../../util/date-range';
 import { getLocale } from '../../util';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
 	const {
@@ -97,7 +96,7 @@ export default function GoogleChart( props ) {
 	const breakpoint = useBreakpoint();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
+		select( CORE_USER ).getDateRangeDates( { offsetDays: 0 } )
 	);
 
 	const viewContext = useViewContext();

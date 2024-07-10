@@ -33,7 +33,7 @@ import { isURL } from '@wordpress/url';
 /*
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Cell } from '../../../material-components';
 import { getStickyHeaderHeightWithoutNav } from '../../../util/scroll';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
@@ -53,7 +53,6 @@ import {
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import BannerDescription from './BannerDescription';
-const { useSelect, useDispatch } = Data;
 
 export * from './constants';
 
@@ -103,10 +102,14 @@ export default function BannerNotification( props ) {
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( false );
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
+
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
+	//
+	// We should not use the getReferenceDate selector here because we need
+	// the current time while the selector returns date only.
 	const persistDismissal = () =>
-		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
+		setItem( cacheKeyDismissed, new Date(), { ttl: null } ); // eslint-disable-line sitekit/no-direct-date
 
 	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
@@ -221,6 +224,11 @@ export default function BannerNotification( props ) {
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);
 
+			// We don't use the getReferenceDate selector here because it returns
+			// the current date only while we need the current time as well to
+			// properly determine expiration.
+			//
+			// eslint-disable-next-line sitekit/no-direct-date
 			if ( expiration < new Date() ) {
 				await deleteItem( cacheKeyDismissed );
 			}

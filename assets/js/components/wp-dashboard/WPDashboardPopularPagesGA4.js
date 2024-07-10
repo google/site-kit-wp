@@ -30,19 +30,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics-4/datastore/constants';
-import { ZeroDataMessage } from '../../modules/analytics/components/common';
+import { ZeroDataMessage } from '../../modules/analytics-4/components/common';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../PreviewTable';
 import TableOverflowContainer from '../TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPagesGA4( {
 	WPDashboardReportError,
@@ -76,12 +75,15 @@ export default function WPDashboardPopularPagesGA4( {
 		limit: 5,
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPageTitles( report, reportArgs )
+	const titles = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getPageTitles( report, reportArgs ),
+		[ report, reportArgs ]
 	);
 
 	const error = useSelect( ( select ) =>

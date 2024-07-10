@@ -32,7 +32,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
 import ErrorNotifications from './notifications/ErrorNotifications';
@@ -45,8 +45,8 @@ import SetupErrorNotification from './notifications/SetupErrorNotification';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
+import SubtleNotifications from './notifications/SubtleNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
 
 function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();
@@ -116,6 +116,8 @@ function Header( { children, subHeader, showNavigation } ) {
 			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
+
+			{ isDashboard && <SubtleNotifications /> }
 
 			<EntityHeader />
 		</Fragment>

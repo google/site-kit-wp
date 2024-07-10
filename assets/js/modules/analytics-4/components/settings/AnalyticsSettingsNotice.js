@@ -30,12 +30,11 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
 
 export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>

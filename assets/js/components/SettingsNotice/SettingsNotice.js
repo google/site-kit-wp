@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
 import {
@@ -41,15 +41,16 @@ import {
 } from './utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
+import { forwardRef } from 'react';
 
-const { useSelect, useDispatch } = Data;
-
-export default function SettingsNotice( props ) {
+const SettingsNotice = forwardRef( ( props, ref ) => {
 	const {
 		className,
 		children,
 		type,
 		dismiss = '',
+		dismissCallback,
+		dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 		Icon = getIconFromType( type ),
 		OuterCTA,
 	} = props;
@@ -68,6 +69,7 @@ export default function SettingsNotice( props ) {
 
 	return (
 		<div
+			ref={ ref }
 			className={ classnames(
 				className,
 				'googlesitekit-settings-notice',
@@ -88,11 +90,13 @@ export default function SettingsNotice( props ) {
 			{ dismiss && (
 				<div className="googlesitekit-settings-notice__button">
 					<Button
+						tertiary
 						onClick={ () => {
 							dismissItem( dismiss );
+							dismissCallback();
 						} }
 					>
-						{ __( 'OK, Got it!', 'google-site-kit' ) }
+						{ dismissLabel }
 					</Button>
 				</div>
 			) }
@@ -103,7 +107,7 @@ export default function SettingsNotice( props ) {
 			) }
 		</div>
 	);
-}
+} );
 
 // Extra props are used in child components.
 SettingsNotice.propTypes = {
@@ -115,8 +119,12 @@ SettingsNotice.propTypes = {
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
 	OuterCTA: PropTypes.elementType,
+	dismissLabel: PropTypes.string,
+	dismissCallback: PropTypes.func,
 };
 
 SettingsNotice.defaultProps = {
 	type: TYPE_INFO,
 };
+
+export default SettingsNotice;

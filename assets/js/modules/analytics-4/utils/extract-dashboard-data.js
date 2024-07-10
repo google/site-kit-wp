@@ -38,7 +38,7 @@ import {
 	calculateDifferenceBetweenChartValues,
 } from '../../../util';
 import { partitionAnalytics4Report } from './partition-report';
-import parseDimensionStringToDate from '../../analytics/util/parseDimensionStringToDate';
+import parseDimensionStringToDate from './parseDimensionStringToDate';
 
 /**
  * Reduces and processes an array of analytics-4 row data.
@@ -73,6 +73,7 @@ function reduceAnalytics4RowsData( rows, selectedStats ) {
  * @param {Object} report             The data returned from the Analytics API call.
  * @param {Array}  selectedStats      The currently selected stat we need to return data for.
  * @param {number} days               The number of days to extract data for. Pads empty data days.
+ * @param {Date}   referenceDate      The reference date.
  * @param {Array}  dataLabels         The labels to be displayed.
  * @param {Array}  tooltipDataFormats The formats to be used for the tooltip data.
  * @param {Array}  chartDataFormats   The formats to be used for the chart data.
@@ -82,6 +83,7 @@ export function extractAnalytics4DashboardData(
 	report,
 	selectedStats,
 	days,
+	referenceDate,
 	dataLabels = [
 		__( 'Users', 'google-site-kit' ),
 		__( 'Sessions', 'google-site-kit' ),
@@ -106,7 +108,9 @@ export function extractAnalytics4DashboardData(
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( days * 2 > rowLength ) {
-		const date = new Date();
+		// Cloning the reference date to be able to change it in the padding
+		// loop without affecting the actual reference date.
+		const date = new Date( referenceDate.getTime() ); // eslint-disable-line sitekit/no-direct-date
 		for ( let i = 0; days > i; i++ ) {
 			const month = ( date.getMonth() + 1 ).toString();
 			const day = date.getDate().toString();
@@ -146,6 +150,7 @@ export function extractAnalytics4DashboardData(
 			}
 			date.setDate( date.getDate() - 1 );
 		}
+
 		rows.push(
 			{
 				dimensionValues: [

@@ -29,10 +29,10 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../common';
 import { getPreviousDate, numFmt } from '../../../../util';
 import {
 	MetricTileTable,
@@ -46,7 +46,6 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 } from '../../../../googlesitekit/datastore/user/constants';
-const { useSelect, useInViewSelect } = Data;
 
 /**
  * Computes the dates for the last three days relative to today (reference date).
@@ -148,8 +147,9 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 	const dates = useSelect( getDateRange );
 	const reportOptions = useSelect( getReportOptions );
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -158,13 +158,15 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error && report
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error && report
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect(

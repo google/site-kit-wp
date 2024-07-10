@@ -25,14 +25,12 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { CORE_USER } from '../../datastore/user/constants';
 import { CORE_WIDGETS } from '../datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import useViewOnly from '../../../hooks/useViewOnly';
-
-const { useSelect } = Data;
 
 function WidgetContextRenderer( props ) {
 	const { id, slug, className, Header, Footer } = props;

@@ -31,14 +31,15 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
 import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../util';
-import { AdBlockerWarning, ErrorNotices } from '../common';
+import { ErrorNotices } from '../common';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import {
 	BACKGROUND_SUBMIT_SUSPENDED,
 	MODULES_ADSENSE,
@@ -53,7 +54,6 @@ import {
 import useViewContext from '../../../../hooks/useViewContext';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();
@@ -78,7 +78,7 @@ export default function SetupMain( { finishSetup } ) {
 			!! select( CORE_UI ).getValue( BACKGROUND_SUBMIT_SUSPENDED )
 	);
 	const isAdBlockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
+		select( CORE_USER ).isAdBlockerActive()
 	);
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccounts()
@@ -272,7 +272,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
 			<div className="googlesitekit-setup-module__step">
 				<div className="googlesitekit-setup-module__logo">
-					<AdSenseIcon width="33" height="33" />
+					<AdSenseIcon width="40" height="40" />
 				</div>
 
 				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
@@ -281,7 +281,7 @@ export default function SetupMain( { finishSetup } ) {
 			</div>
 
 			<div className="googlesitekit-setup-module__step">
-				<AdBlockerWarning />
+				<AdBlockerWarning moduleSlug="adsense" />
 
 				{ ! isAdBlockerActive && viewComponent }
 			</div>

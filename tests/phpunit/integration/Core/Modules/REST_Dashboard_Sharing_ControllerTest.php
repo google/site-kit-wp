@@ -93,7 +93,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 						'sharedRoles' => array( 'editor', 'subscriber' ),
 						'management'  => 'all_admins',
 					),
-					'analytics'      => array(
+					'analytics-4'    => array(
 						'sharedRoles' => array( 'editor' ),
 					),
 				),
@@ -121,7 +121,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'search-console' => array(
 						'sharedRoles' => array( 'editor', 'contributor' ),
 					),
-					'analytics'      => array(
+					'analytics-4'    => array(
 						'sharedRoles' => array( 'editor' ),
 						'management'  => 'owner',
 					),
@@ -164,7 +164,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'sharedRoles' => array(),
 					'management'  => 'owner',
 				),
-				'analytics'      => array(
+				'analytics-4'    => array(
 					'sharedRoles' => array( 'contributor', 'subscriber' ),
 					'management'  => 'all_admins',
 				),
@@ -189,7 +189,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'adsense'        => array(
 						'sharedRoles' => array( 'author' ),
 					),
-					'analytics'      => array(
+					'analytics-4'    => array(
 						'sharedRoles' => array( 'editor' ),
 					),
 				),
@@ -207,7 +207,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'sharedRoles' => array(),
 					'management'  => 'owner',
 				),
-				'analytics'          => array(
+				'analytics-4'        => array(
 					'sharedRoles' => array( 'editor' ),
 					'management'  => 'all_admins',
 				),
@@ -233,7 +233,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'sharedRoles' => array(),
 					'management'  => 'owner',
 				),
-				'analytics'      => array(
+				'analytics-4'    => array(
 					'sharedRoles' => array( 'contributor', 'editor' ),
 					'management'  => 'all_admins',
 				),
@@ -258,7 +258,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'adsense'        => array(
 						'management' => 'all_admins',
 					),
-					'analytics'      => array(
+					'analytics-4'    => array(
 						'management' => 'owner',
 					),
 				),
@@ -276,7 +276,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'sharedRoles' => array(),
 					'management'  => 'owner',
 				),
-				'analytics'          => array(
+				'analytics-4'        => array(
 					'sharedRoles' => array( 'contributor', 'editor' ),
 					'management'  => 'all_admins',
 				),
@@ -305,5 +305,4 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 			)
 		);
 	}
-
 }

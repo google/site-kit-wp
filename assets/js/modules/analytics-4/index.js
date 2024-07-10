@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import {
@@ -41,7 +46,14 @@ import {
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+} from '../../googlesitekit/widgets/default-areas';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -65,6 +77,17 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain } from './components/setup';
+import {
+	DashboardAllTrafficWidgetGA4,
+	DashboardOverallPageMetricsWidgetGA4,
+} from './components/dashboard';
+import { ModulePopularPagesWidgetGA4 } from './components/module';
+import {
+	AudienceTilesWidget,
+	ConnectAnalyticsCTAWidget,
+	InfoNoticeWidget,
+} from './components/audience-segmentation/dashboard';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -75,10 +98,111 @@ export const registerModule = ( modules ) => {
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
 		Icon: AnalyticsIcon,
+		features: [
+			__( 'Audience overview', 'google-site-kit' ),
+			__( 'Top pages', 'google-site-kit' ),
+			__( 'Top acquisition channels', 'google-site-kit' ),
+		],
 	} );
 };
 
 export const registerWidgets = ( widgets ) => {
+	// Register Analytics 4 Widgets.
+	widgets.registerWidget(
+		'analyticsAllTrafficGA4',
+		{
+			Component: DashboardAllTrafficWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudienceTiles',
+		{
+			Component: AudienceTilesWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				const configuredAudiences =
+					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+				return configuredAudiences?.length > 0;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'audienceConnectAnalyticsCTA',
+		{
+			Component: ConnectAnalyticsCTAWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				const isAnalyticsConnected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+				/**
+				 * TODO: This widget should be shown only if the audience group
+				 * is set up for the current user. This should be fixed once
+				 * the audience settings become accessible without `analytics-4`
+				 * module being connected.
+				 * See: https://github.com/google/site-kit-wp/issues/8810 for
+				 * more details.
+				 */
+
+				return ! isAnalyticsConnected;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudienceInfoNotice',
+		{
+			Component: InfoNoticeWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsOverallPageMetricsGA4',
+		{
+			Component: DashboardOverallPageMetricsWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 3,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		'analyticsModulePopularPagesGA4',
+		{
+			Component: ModulePopularPagesWidgetGA4,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 4,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
+	);
+
 	/*
 	 * Key metrics widgets.
 	 */

@@ -38,12 +38,18 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+
+const adSenseAccountID = 'pub-1234567890';
 
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: [ 'pagePath' ],
+	dimensions: [ 'pagePath', 'adSourceName' ],
 	metrics: [ { name: 'totalAdRevenue' } ],
+	dimensionFilters: {
+		adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+	},
 	orderby: [
 		{
 			metric: { metricName: 'totalAdRevenue' },
@@ -257,6 +263,10 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAdSenseLinked( true );
+
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.setAccountID( adSenseAccountID );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

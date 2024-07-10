@@ -35,7 +35,6 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -65,6 +64,20 @@ describe( 'modules/analytics-4 properties', () => {
 	);
 	const containerLookupEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
+	);
+	const containerDestinationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/container-destinations'
+	);
+	const setGoogleTagIDMismatchEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
+	);
+
+	const containerDestinationsMock =
+		fixtures.containerDestinations[ 6065484567 ][ 98369876 ];
+
+	const googleTagContainerDestinationIDs = containerDestinationsMock.map(
+		// eslint-disable-next-line sitekit/acronym-case
+		( { destinationId } ) => destinationId
 	);
 
 	beforeAll( () => {
@@ -374,7 +387,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				expect( store.getState().settings ).toMatchObject( {
 					propertyID,
-					webDataStreamID: WEBDATASTREAM_CREATE,
+					webDataStreamID: '',
 					measurementID: '',
 					propertyCreateTime: 0,
 				} );
@@ -603,6 +616,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( matchedProperty ).toBeNull();
 			} );
 		} );
+
 		describe( 'updateSettingsForMeasurementID', () => {
 			it( 'should update the settings with the measurement ID.', async () => {
 				const measurementID = 'G-1A2BCD346E';
@@ -692,11 +706,19 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'setHasMismatchedGoogleTagID', () => {
 			it( 'sets the value of hasMismatchedGoogleTagID', async () => {
+				fetchMock.post( setGoogleTagIDMismatchEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveHasMismatchGoogleTagID( false );
+
 				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				// It is false by default.
 				expect( hasMismatchedGoogleTagID ).toBe( false );
 
 				await registry
@@ -896,6 +918,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const {
 					googleTagAccountID,
 					googleTagContainerID,
@@ -925,7 +952,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
 					query: {
 						measurementID,
@@ -936,6 +963,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -958,6 +986,12 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+				global._googlesitekitModulesData = {
+					'analytics-4': {
+						tagIDMismatch: false,
+					},
+				};
+
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 				} );
@@ -990,6 +1024,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1013,7 +1052,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1024,6 +1063,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -1036,11 +1076,25 @@ describe( 'modules/analytics-4 properties', () => {
 						.isWebDataStreamAvailable()
 				).toBe( false );
 
+				// Initially undefined.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).hasMismatchedGoogleTagID();
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.hasMismatchedGoogleTagID()
 				).toBe( false );
+
+				delete global._googlesitekitModulesData;
 			} );
 
 			it( 'should check for mismatched Google Tag ID if Google Tag settings already exist', async () => {
@@ -1076,6 +1130,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1091,6 +1150,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( setGoogleTagIDMismatchEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncGoogleTagSettings();
@@ -1099,7 +1163,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1110,6 +1174,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: {
 						data: {
 							...ga4Settings,
+							googleTagContainerDestinationIDs,
 							googleTagLastSyncedAtMs,
 						},
 					},
@@ -1129,6 +1194,92 @@ describe( 'modules/analytics-4 properties', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.hasMismatchedGoogleTagID()
 				).toBe( true );
+			} );
+
+			it( 'should set Google Tag container destination IDs in module setting', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const containerMock = fixtures.container[ measurementID ];
+
+				const {
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+				} = fixtures.googleTagSettings;
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
+					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( setGoogleTagIDMismatchEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagContainerDestinationIDs,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerDestinationIDs()
+				).toEqual( googleTagContainerDestinationIDs );
 			} );
 		} );
 	} );
@@ -1515,23 +1666,43 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'hasMismatchedGoogleTagID', () => {
-			it( 'returns a specific key in state', () => {
+			it( 'should use a resolver to source value from global', async () => {
+				global._googlesitekitModulesData = {
+					'analytics-4': {
+						tagIDMismatch: false,
+					},
+				};
+
+				const initialHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( initialHasMismatchedGoogleTagID ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).hasMismatchedGoogleTagID();
+
 				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				// It is false by default.
-				expect( hasMismatchedGoogleTagID ).toBe( false );
+				expect( hasMismatchedGoogleTagID ).toEqual( false );
 
+				delete global._googlesitekitModulesData;
+			} );
+
+			it( 'should not source data from global if the value is already present', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setHasMismatchedGoogleTagID( true );
+					.receiveHasMismatchGoogleTagID( true );
 
-				const updatedHasMismatchedGoogleTagID = registry
+				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+				expect( hasMismatchedGoogleTagID ).toBe( true );
 			} );
 		} );
 
@@ -1567,7 +1738,7 @@ describe( 'modules/analytics-4 properties', () => {
 				provideUserAuthentication( registry );
 				provideModules( registry );
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID,
 				} );
 
@@ -1634,10 +1805,10 @@ describe( 'modules/analytics-4 properties', () => {
 
 			it( 'should return true while selecting an account', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties( [], { accountID } );
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getProperties', [ accountID ] );
 
 				registry
@@ -1657,7 +1828,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( false );
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.selectAccount( accountID );
 
 				expect(

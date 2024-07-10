@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES,
@@ -33,7 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { ZeroDataMessage } from '../../../analytics/components/common';
+import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import {
 	MetricTileTable,
@@ -41,7 +41,6 @@ import {
 } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-const { useSelect, useInViewSelect } = Data;
 
 function TopCitiesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -65,8 +64,10 @@ function TopCitiesWidget( { Widget } ) {
 		limit: 3,
 	};
 
-	const topCitiesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions )
+	const topCitiesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions ),
+		[ topcCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>

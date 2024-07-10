@@ -26,16 +26,17 @@ import { useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	EDIT_SCOPE,
+} from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { EDIT_SCOPE as ANALYTICS_EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import { elementsOverlap } from '../../../util/geometry';
 import whenActive from '../../../util/when-active';
-const { useSelect } = Data;
 
 function CustomDimensionsNotice() {
 	const selectedMetrics = useSelect( ( select ) =>
@@ -60,7 +61,7 @@ function CustomDimensionsNotice() {
 		);
 	} );
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( ANALYTICS_EDIT_SCOPE )
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
 	// This is called here to ensure that the list of available custom dimensions is
@@ -87,7 +88,7 @@ function CustomDimensionsNotice() {
 			if (
 				currentFocusedElement &&
 				currentFocusedElement.closest(
-					'.googlesitekit-km-selection-panel-metrics__metric-item'
+					'.googlesitekit-selection-panel-item'
 				) &&
 				elementsOverlap( noticeRef.current, currentFocusedElement )
 			) {
@@ -111,10 +112,7 @@ function CustomDimensionsNotice() {
 		  );
 
 	return (
-		<div
-			className="googlesitekit-km-selection-panel-notice"
-			ref={ noticeRef }
-		>
+		<div className="googlesitekit-selection-panel-notice" ref={ noticeRef }>
 			<p>{ customDimensionMessage }</p>
 		</div>
 	);

@@ -33,15 +33,17 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
-		const { result } = renderHook(
-			() =>
-				useInViewSelect( ( select ) =>
-					select( CORE_UI ).getValue( 'test' )
-				),
-			{ inView: true, registry }
+		const mapSelectMock = jest.fn( ( select ) =>
+			select( CORE_UI ).getValue( 'test' )
 		);
 
+		const { result } = renderHook( () => useInViewSelect( mapSelectMock ), {
+			inView: true,
+			registry,
+		} );
+
 		expect( result.current ).toBe( '123' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 2 );
 	} );
 
 	it( 'should return undefined when a parent <InViewProvider /> has a `false` value', () => {
@@ -49,15 +51,17 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
-		const { result } = renderHook(
-			() =>
-				useInViewSelect( ( select ) =>
-					select( CORE_UI ).getValue( 'test' )
-				),
-			{ inView: false, registry }
+		const mapSelectMock = jest.fn( ( select ) =>
+			select( CORE_UI ).getValue( 'test' )
 		);
 
+		const { result } = renderHook( () => useInViewSelect( mapSelectMock ), {
+			inView: false,
+			registry,
+		} );
+
 		expect( result.current ).toBe( undefined );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 0 );
 	} );
 
 	it( 'should update and return a value after a parent <InViewProvider /> changes from `false` to `true`', () => {
@@ -65,22 +69,25 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
+		const mapSelectMock = jest.fn( ( select ) =>
+			select( CORE_UI ).getValue( 'test' )
+		);
+
 		const { result, setInView } = renderHook(
-			() =>
-				useInViewSelect( ( select ) =>
-					select( CORE_UI ).getValue( 'test' )
-				),
+			() => useInViewSelect( mapSelectMock ),
 			{ inView: false, registry }
 		);
 
 		// Should be undefined at first.
 		expect( result.current ).toBe( undefined );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 0 );
 
 		// Mark the provider as in-view.
 		act( () => setInView( true ) );
 
 		// Now the selector should be run and return the correct value.
 		expect( result.current ).toBe( '123' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should continue to return values from a selector after the <InViewProvider /> changes from `true` to `false`', () => {
@@ -88,20 +95,23 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
+		const mapSelectMock = jest.fn( ( select ) =>
+			select( CORE_UI ).getValue( 'test' )
+		);
+
 		const { result, setInView } = renderHook(
-			() =>
-				useInViewSelect( ( select ) =>
-					select( CORE_UI ).getValue( 'test' )
-				),
+			() => useInViewSelect( mapSelectMock ),
 			{ inView: true, registry }
 		);
 
 		expect( result.current ).toBe( '123' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 2 );
 
 		act( () => setInView( false ) );
 
 		// The selector should still be run and return the correct value.
 		expect( result.current ).toBe( '123' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 2 );
 	} );
 
 	it( 'should continue to return values from a selector after the <InViewProvider /> changes from `true` to `false` across an inView reset', async () => {
@@ -109,21 +119,24 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
+		const mapSelectMock = jest.fn( ( select ) =>
+			select( CORE_UI ).getValue( 'test' )
+		);
+
 		const { result, rerender, setInView } = renderHook(
-			() =>
-				useInViewSelect( ( select ) =>
-					select( CORE_UI ).getValue( 'test' )
-				),
+			() => useInViewSelect( mapSelectMock ),
 			{ inView: true, registry }
 		);
 
 		expect( result.current ).toBe( '123' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 2 );
 
 		act( () => setInView( false ) );
 		await act( () => registry.dispatch( CORE_UI ).resetInViewHook() );
 
 		// The selector should still be run and return the correct value.
 		expect( result.current ).toBe( '123' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 3 );
 
 		await act( () =>
 			registry.dispatch( CORE_UI ).setValue( 'test', '999' )
@@ -132,10 +145,12 @@ describe( 'useInViewSelect', () => {
 
 		// The result is the same because the inView state is false.
 		expect( result.current ).toBe( '123' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 3 );
 
 		act( () => setInView( true ) );
 
 		// The result updates to the value in the datastore once it is in view again.
 		expect( result.current ).toBe( '999' );
+		expect( mapSelectMock ).toHaveBeenCalledTimes( 4 );
 	} );
 } );

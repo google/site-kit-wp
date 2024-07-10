@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
@@ -65,23 +64,28 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                 => '',
-				'adsConversionID'           => '',
-				'propertyID'                => '',
-				'webDataStreamID'           => '',
-				'measurementID'             => '',
-				'trackingDisabled'          => array( 'loggedinUsers' ),
-				'useSnippet'                => true,
-				'canUseSnippet'             => true,
-				'ownerID'                   => 0,
-				'googleTagID'               => '',
-				'googleTagAccountID'        => '',
-				'googleTagContainerID'      => '',
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => 0,
-				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => 0,
+				'accountID'                        => '',
+				'adsConversionID'                  => '',
+				'propertyID'                       => '',
+				'webDataStreamID'                  => '',
+				'measurementID'                    => '',
+				'trackingDisabled'                 => array( 'loggedinUsers' ),
+				'useSnippet'                       => true,
+				'ownerID'                          => 0,
+				'googleTagID'                      => '',
+				'googleTagAccountID'               => '',
+				'googleTagContainerID'             => '',
+				'googleTagContainerDestinationIDs' => null,
+				'googleTagLastSyncedAtMs'          => 0,
+				'availableCustomDimensions'        => null,
+				'propertyCreateTime'               => 0,
+				'adSenseLinked'                    => false,
+				'adSenseLinkedLastSyncedAt'        => 0,
+				'adsConversionIDMigratedAtMs'      => 0,
+				'adsLinked'                        => false,
+				'adsLinkedLastSyncedAt'            => 0,
+				'availableAudiences'               => null,
+				'availableAudiencesLastSyncedAt'   => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -135,7 +139,7 @@ class SettingsTest extends SettingsTestCase {
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
-			function( $caps, $cap ) {
+			function ( $caps, $cap ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap ) {
 					return array( 'manage_options' );
 				}
@@ -149,46 +153,6 @@ class SettingsTest extends SettingsTestCase {
 		$this->settings->merge( array( $property_name => $property_value ) );
 
 		$this->assertEquals( $this->user_id, $this->settings->get()['ownerID'] );
-	}
-
-	public function test_retrieve_missing_analytics_4_settings() {
-		delete_option( Settings::OPTION );
-
-		$analytics_settings = new Analytics_Settings( $this->options );
-		$analytics_settings->register();
-		$this->settings->register();
-
-		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options->set(
-			Settings::OPTION,
-			array(
-				'propertyID'                => '123',
-				'webDataStreamID'           => '456',
-				'measurementID'             => 'G-789',
-				'useSnippet'                => true,
-				'ownerID'                   => $this->user_id,
-				'googleTagID'               => 'GT-123',
-				'googleTagAccountID'        => '123',
-				'googleTagContainerID'      => '456',
-				'googleTagLastSyncedAtMs'   => 0,
-				'availableCustomDimensions' => null,
-				'propertyCreateTime'        => 0,
-				'adSenseLinked'             => false,
-				'adSenseLinkedLastSyncedAt' => 0,
-			)
-		);
-
-		$keys_to_check = array(
-			'accountID',
-			'adsConversionID',
-			'canUseSnippet',
-			'trackingDisabled',
-		);
-		$settings      = $options->get( Settings::OPTION );
-
-		foreach ( $keys_to_check as $key ) {
-			$this->assertArrayHasKey( $key, $settings );
-		}
 	}
 
 	public function data_owned_keys() {
@@ -206,5 +170,4 @@ class SettingsTest extends SettingsTestCase {
 
 		return $tests;
 	}
-
 }

@@ -59,7 +59,7 @@ trait Module_With_Assets_Trait {
 		$assets = $this->get_assets();
 		array_walk(
 			$assets,
-			function( Asset $asset, $index, $asset_context ) {
+			function ( Asset $asset, $index, $asset_context ) {
 				if ( $asset->has_context( $asset_context ) ) {
 					$asset->enqueue();
 				}

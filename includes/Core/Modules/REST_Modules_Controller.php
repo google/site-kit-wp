@@ -15,8 +15,6 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
-use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\Analytics_4;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -61,7 +59,7 @@ class REST_Modules_Controller {
 	public function register() {
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
@@ -187,19 +185,19 @@ class REST_Modules_Controller {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_setup = function() {
+		$can_setup = function () {
 			return current_user_can( Permissions::SETUP );
 		};
 
-		$can_authenticate = function() {
+		$can_authenticate = function () {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
-		$can_list_data = function() {
+		$can_list_data = function () {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
-		$can_view_insights = function() {
+		$can_view_insights = function () {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
 				return true;
@@ -208,7 +206,7 @@ class REST_Modules_Controller {
 			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
 		};
 
-		$can_manage_options = function() {
+		$can_manage_options = function () {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
 				return true;
@@ -227,7 +225,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$modules = array_map(
 								array( $this, 'prepare_module_data_for_response' ),
 								$this->modules->get_available_modules()
@@ -246,7 +244,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request['data'];
 							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
 
@@ -306,7 +304,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							try {
 								$module = $this->modules->get_module( $request['slug'] );
 							} catch ( Exception $e ) {
@@ -334,7 +332,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request['data'];
 							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
 
@@ -388,7 +386,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							$modules = $this->modules->get_available_modules();
 							if ( ! isset( $modules[ $slug ] ) ) {
@@ -425,7 +423,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) use ( $can_manage_options ) {
+						'callback'            => function ( WP_REST_Request $request ) use ( $can_manage_options ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -458,7 +456,7 @@ class REST_Modules_Controller {
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -482,7 +480,7 @@ class REST_Modules_Controller {
 							'data' => array(
 								'type'              => 'object',
 								'description'       => __( 'Settings to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
+								'validate_callback' => function ( $value ) {
 									return is_array( $value );
 								},
 							),
@@ -504,7 +502,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -540,7 +538,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -562,7 +560,7 @@ class REST_Modules_Controller {
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -586,7 +584,7 @@ class REST_Modules_Controller {
 							'data' => array(
 								'type'              => 'object',
 								'description'       => __( 'Data to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
+								'validate_callback' => function ( $value ) {
 									return is_array( $value );
 								},
 							),
@@ -613,7 +611,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request['data'];
 							$slugs = isset( $data['slugs'] ) ? $data['slugs'] : array();
 
@@ -703,27 +701,6 @@ class REST_Modules_Controller {
 										)
 									);
 									continue;
-								}
-
-								// Since currently the Analytics_4 module doesn't have an ownerID setting,
-								// it uses the ownerID from Analytics as the source of truth. Hence,
-								// instead of updating ownerID for Analytics_4, we should be updating that
-								// of Analytics.
-								if ( Analytics_4::MODULE_SLUG === $slug ) {
-									try {
-										$module = $this->modules->get_module( Analytics::MODULE_SLUG );
-									} catch ( Exception $e ) {
-										$response = $this->handle_module_recovery_error(
-											$slug,
-											$response,
-											new WP_Error(
-												'invalid_module_slug',
-												$e->getMessage(),
-												array( 'status' => 404 )
-											)
-										);
-										continue;
-									}
 								}
 
 								// Update the module's ownerID to the ID of the user making the request.

@@ -31,13 +31,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
 import { isUniqueContainerName } from '../../util';
-import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
-const { useSelect, useDispatch } = Data;
 
 export default function ContainerNameTextField( { label, name } ) {
 	const containers = useSelect( ( select ) => {
@@ -69,7 +68,7 @@ export default function ContainerNameTextField( { label, name } ) {
 	const trailingIcon =
 		containerName && ! isUniqueName ? (
 			<span className="googlesitekit-text-field-icon--error">
-				<WarningIcon width={ 14 } height={ 12 } />
+				<AccessibleWarningIcon />
 			</span>
 		) : (
 			false

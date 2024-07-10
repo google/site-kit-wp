@@ -31,7 +31,7 @@ import { sprintf, _n } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -39,7 +39,6 @@ import { Cell } from '../../material-components';
 import { USER_INPUT_QUESTION_POST_FREQUENCY } from './util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function UserInputSelectOptions( {
 	slug,

@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import {
@@ -40,17 +40,26 @@ import {
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
 const scopeIDToSlug = {
 	siteverification: 'site-verification',
 	webmasters: 'search-console',
+	analytics: 'analytics-4',
 };
 const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';
 const MESSAGE_GENERIC = 'generic';
 
+/**
+ * Maps unsatisfied scopes to module names.
+ *
+ * @since 1.39.0
+ *
+ * @param {Array}  scopes  Array of unsatisfied scopes.
+ * @param {Object} modules Object of all modules.
+ * @return {Array} Array of module names. If a scope does not map to a module, it is set to `false`.
+ */
 function mapScopesToModuleNames( scopes, modules ) {
 	if ( modules === undefined ) {
 		return null;

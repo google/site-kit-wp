@@ -29,11 +29,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { isValidPropertyID } from '../../utils/validation';
 import ErrorText from '../../../../components/ErrorText';
-const { useSelect } = Data;
 
 export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	const { hasModuleAccess, isDisabled } = props;
@@ -108,9 +107,9 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		return (
 			<ErrorText
 				message={ sprintf(
-					/* translators: 1: Google Analytics 4 Measurement ID. */
+					/* translators: 1: Google Analytics Measurement ID. */
 					__(
-						'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics 4.',
+						'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics.',
 						'google-site-kit'
 					),
 					measurementID
@@ -123,9 +122,9 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		return (
 			<ErrorText
 				message={ sprintf(
-					/* translators: 1: Google Analytics 4 Property ID. */
+					/* translators: 1: Google Analytics Property ID. */
 					__(
-						'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics 4.',
+						'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics.',
 						'google-site-kit'
 					),
 					propertyID

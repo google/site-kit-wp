@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
@@ -34,7 +35,7 @@ import {
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
@@ -55,7 +56,43 @@ import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
-const { useSelect, useInViewSelect, useDispatch } = Data;
+import withCustomDimensions from '../../utils/withCustomDimensions';
+
+/**
+ * Gets the report options for the Popular Products widget.
+ *
+ * @since 1.127.0
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
+function getPopularProductsWidgetReportOptions( select ) {
+	const dates = select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+
+	const productPostType = select( CORE_SITE ).getProductPostType();
+
+	return {
+		...dates,
+		dimensions: [ 'pagePath' ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: productPostType,
+			},
+		},
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [
+			{
+				metric: { metricName: 'screenPageViews' },
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+}
 
 function PopularProductsWidget( props ) {
 	const { Widget, WidgetNull } = props;
@@ -91,25 +128,7 @@ function PopularProductsWidget( props ) {
 		}, 0 );
 	}, [ setValue ] );
 
-	const reportOptions = {
-		...dates,
-		dimensions: [ 'pagePath' ],
-		dimensionFilters: {
-			'customEvent:googlesitekit_post_type': {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: productPostType,
-			},
-		},
-		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [
-			{
-				metric: { metricName: 'screenPageViews' },
-				desc: true,
-			},
-		],
-		limit: 3,
-	};
+	const reportOptions = useSelect( getPopularProductsWidgetReportOptions );
 
 	const isPopularProductsWidgetActive = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricActive( KM_ANALYTICS_POPULAR_PRODUCTS )
@@ -117,10 +136,12 @@ function PopularProductsWidget( props ) {
 
 	const showWidget = isPopularProductsWidgetActive || productPostType;
 
-	const report = useInViewSelect( ( select ) =>
-		showWidget
-			? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-			: undefined
+	const report = useInViewSelect(
+		( select ) =>
+			showWidget
+				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+				: undefined,
+		[ showWidget, reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -129,13 +150,15 @@ function PopularProductsWidget( props ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error && report
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error && report
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect( ( select ) =>
@@ -247,7 +270,12 @@ PopularProductsWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( {
-	moduleName: 'analytics-4',
-	FallbackComponent: ConnectGA4CTATileWidget,
-} )( PopularProductsWidget );
+export default compose(
+	whenActive( {
+		moduleName: 'analytics-4',
+		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
+	withCustomDimensions( {
+		reportOptions: getPopularProductsWidgetReportOptions,
+	} )
+)( PopularProductsWidget );

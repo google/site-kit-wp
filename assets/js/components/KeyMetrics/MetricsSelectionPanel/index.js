@@ -24,7 +24,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -33,14 +33,13 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
-import SideSheet from '../../SideSheet';
+import CustomDimensionsNotice from './CustomDimensionsNotice';
 import Header from './Header';
 import Footer from './Footer';
-import Metrics from './Metrics';
-import CustomDimensionsNotice from './CustomDimensionsNotice';
+import MetricItems from './MetricItems';
+import SelectionPanel from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-const { useSelect, useDispatch } = Data;
 
 export default function MetricsSelectionPanel() {
 	const viewContext = useViewContext();
@@ -69,7 +68,7 @@ export default function MetricsSelectionPanel() {
 		trackEvent( `${ viewContext }_kmw-sidebar`, 'metrics_sidebar_view' );
 	}, [ savedViewableMetrics, setValues, viewContext ] );
 
-	const sideSheetCloseFn = useCallback( () => {
+	const closePanel = useCallback( () => {
 		if ( isOpen ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 		}
@@ -79,25 +78,23 @@ export default function MetricsSelectionPanel() {
 		useState( false );
 
 	return (
-		<SideSheet
-			className="googlesitekit-km-selection-panel"
+		<SelectionPanel
 			isOpen={ isOpen || isNavigatingToOAuthURL }
 			onOpen={ onSideSheetOpen }
-			closeFn={ sideSheetCloseFn }
-			focusTrapOptions={ {
-				initialFocus:
-					'.googlesitekit-km-selection-panel-metrics__metric-item .googlesitekit-selection-box input',
-			} }
+			closePanel={ closePanel }
+			className="googlesitekit-km-selection-panel"
 		>
-			<Header />
-			<Metrics savedMetrics={ savedViewableMetrics } />
+			<Header closePanel={ closePanel } />
+			<MetricItems savedMetrics={ savedViewableMetrics } />
 			<CustomDimensionsNotice />
 			<Footer
+				isOpen={ isOpen }
+				closePanel={ closePanel }
 				savedMetrics={ savedViewableMetrics }
 				onNavigationToOAuthURL={ () => {
 					setIsNavigatingToOAuthURL( true );
 				} }
 			/>
-		</SideSheet>
+		</SelectionPanel>
 	);
 }

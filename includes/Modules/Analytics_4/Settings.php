@@ -14,7 +14,6 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -40,14 +39,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		parent::register();
 
 		$this->register_owned_keys();
-
-		// Since migration of Analytics module settings into Analytics 4 settings,
-		// if data was saved previously, it needs to be recovered.
-		add_filter(
-			'option_' . self::OPTION,
-			$this->get_method_proxy( 'retrieve_missing_settings' ),
-			10
-		);
 	}
 
 	/**
@@ -89,23 +80,28 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'                   => 0,
-			'accountID'                 => '',
-			'adsConversionID'           => '',
-			'propertyID'                => '',
-			'webDataStreamID'           => '',
-			'measurementID'             => '',
-			'trackingDisabled'          => array( 'loggedinUsers' ),
-			'useSnippet'                => true,
-			'canUseSnippet'             => true,
-			'googleTagID'               => '',
-			'googleTagAccountID'        => '',
-			'googleTagContainerID'      => '',
-			'googleTagLastSyncedAtMs'   => 0,
-			'availableCustomDimensions' => null,
-			'propertyCreateTime'        => 0,
-			'adSenseLinked'             => false,
-			'adSenseLinkedLastSyncedAt' => 0,
+			'ownerID'                          => 0,
+			'accountID'                        => '',
+			'adsConversionID'                  => '',
+			'propertyID'                       => '',
+			'webDataStreamID'                  => '',
+			'measurementID'                    => '',
+			'trackingDisabled'                 => array( 'loggedinUsers' ),
+			'useSnippet'                       => true,
+			'googleTagID'                      => '',
+			'googleTagAccountID'               => '',
+			'googleTagContainerID'             => '',
+			'googleTagContainerDestinationIDs' => null,
+			'googleTagLastSyncedAtMs'          => 0,
+			'availableCustomDimensions'        => null,
+			'propertyCreateTime'               => 0,
+			'adSenseLinked'                    => false,
+			'adSenseLinkedLastSyncedAt'        => 0,
+			'adsConversionIDMigratedAtMs'      => 0,
+			'adsLinked'                        => false,
+			'adsLinkedLastSyncedAt'            => 0,
+			'availableAudiences'               => null,
+			'availableAudiencesLastSyncedAt'   => 0,
 		);
 	}
 
@@ -117,13 +113,10 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return callable|null
 	 */
 	protected function get_sanitize_callback() {
-		return function( $option ) {
+		return function ( $option ) {
 			if ( is_array( $option ) ) {
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
-				}
-				if ( isset( $option['canUseSnippet'] ) ) {
-					$option['canUseSnippet'] = (bool) $option['canUseSnippet'];
 				}
 				if ( isset( $option['googleTagID'] ) ) {
 					if ( ! preg_match( '/^(G|GT|AW)-[a-zA-Z0-9]+$/', $option['googleTagID'] ) ) {
@@ -148,11 +141,17 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
+				if ( isset( $option['googleTagContainerDestinationIDs'] ) ) {
+					if ( ! is_array( $option['googleTagContainerDestinationIDs'] ) ) {
+						$option['googleTagContainerDestinationIDs'] = null;
+					}
+				}
+
 				if ( isset( $option['availableCustomDimensions'] ) ) {
 					if ( is_array( $option['availableCustomDimensions'] ) ) {
 						$valid_dimensions = array_filter(
 							$option['availableCustomDimensions'],
-							function( $dimension ) {
+							function ( $dimension ) {
 								return is_string( $dimension ) && strpos( $dimension, 'googlesitekit_' ) === 0;
 							}
 						);
@@ -172,57 +171,37 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 						$option['adSenseLinkedLastSyncedAt'] = 0;
 					}
 				}
+
+				if ( isset( $option['adsConversionIDMigratedAtMs'] ) ) {
+					if ( ! is_int( $option['adsConversionIDMigratedAtMs'] ) ) {
+						$option['adsConversionIDMigratedAtMs'] = 0;
+					}
+				}
+
+				if ( isset( $option['adsLinked'] ) ) {
+					$option['adsLinked'] = (bool) $option['adsLinked'];
+				}
+
+				if ( isset( $option['adsLinkedLastSyncedAt'] ) ) {
+					if ( ! is_int( $option['adsLinkedLastSyncedAt'] ) ) {
+						$option['adsLinkedLastSyncedAt'] = 0;
+					}
+				}
+
+				if ( isset( $option['availableAudiences'] ) ) {
+					if ( ! is_array( $option['availableAudiences'] ) ) {
+						$option['availableAudiences'] = null;
+					}
+				}
+
+				if ( isset( $option['availableAudiencesLastSyncedAt'] ) ) {
+					if ( ! is_int( $option['availableAudiencesLastSyncedAt'] ) ) {
+						$option['availableAudiencesLastSyncedAt'] = 0;
+					}
+				}
 			}
 
 			return $option;
 		};
 	}
-
-	/**
-	 * Sync settings migrated from `Analytics` module if they are not
-	 * present in `Analytics_4` settings.
-	 *
-	 * This ensures backward compatibility for the users who had Site Kit installed
-	 * before migrating to the singular Analytics module. As some settings were defined
-	 * in old `Analtyics` module and re-used here.
-	 *
-	 * @since 1.118.0
-	 *
-	 * @param array $option Analytics 4 settings.
-	 * @return array Missing Analytics 4 settings array, or empty array if no setting is missing.
-	 */
-	protected function retrieve_missing_settings( $option ) {
-		if ( ! is_array( $option ) ) {
-			return $option;
-		}
-
-		$recovered_settings = array();
-		$keys_to_check      = array(
-			'accountID',
-			'adsConversionID',
-			'canUseSnippet',
-			'trackingDisabled',
-		);
-		$missing_settings   = array_diff( $keys_to_check, array_keys( $option ) );
-
-		if ( empty( $missing_settings ) ) {
-			return $option;
-		}
-
-		$analytics_settings = get_option( 'googlesitekit_analytics_settings' );
-
-		array_walk(
-			$missing_settings,
-			function( $setting ) use ( &$recovered_settings, $analytics_settings ) {
-				$recovered_settings[ $setting ] = $analytics_settings[ $setting ];
-			}
-		);
-
-		if ( ! empty( $recovered_settings ) ) {
-			return $option + $recovered_settings;
-		}
-
-		return $option;
-	}
-
 }

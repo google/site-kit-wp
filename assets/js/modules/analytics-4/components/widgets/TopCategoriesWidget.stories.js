@@ -24,7 +24,6 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import {
@@ -90,7 +89,7 @@ Ready.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -110,7 +109,7 @@ Loading.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -131,7 +130,7 @@ ZeroData.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -148,13 +147,13 @@ GatheringData.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 
 		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
 			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-				.requiredCustomDimensions?.[ 0 ],
+				.requiredCustomDimensions[ 0 ],
 			true
 		);
 	},
@@ -190,7 +189,7 @@ Error.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -227,7 +226,7 @@ InsufficientPermissions.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 	},
@@ -271,14 +270,14 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
@@ -305,14 +304,14 @@ ErrorCustomDimensionsGeneric.args = {
 			propertyID,
 			availableCustomDimensions: [
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			],
 		} );
 
 		provideCustomDimensionError( registry, {
 			customDimension:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-					.requiredCustomDimensions?.[ 0 ],
+					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 	},
@@ -340,7 +339,7 @@ export default {
 				const [ accountID, webDataStreamID ] = [ '12345', '56789' ];
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAccountID( accountID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -361,7 +360,7 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsCustomDimensionGatheringData(
 						KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-							.requiredCustomDimensions?.[ 0 ],
+							.requiredCustomDimensions[ 0 ],
 						false
 					);
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );

@@ -30,7 +30,7 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import SetupForm from './SetupForm';
@@ -38,7 +38,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate, AccountCreateLegacy } from '../common';
-const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
@@ -111,15 +110,18 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			<div className="googlesitekit-setup-module__logo">
-				<AnalyticsIcon width="33" height="33" />
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<AnalyticsIcon width="40" height="40" />
+				</div>
+
+				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				</h2>
 			</div>
-
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			</h2>
-
-			{ viewComponent }
+			<div className="googlesitekit-setup-module__step">
+				{ viewComponent }
+			</div>
 		</div>
 	);
 }

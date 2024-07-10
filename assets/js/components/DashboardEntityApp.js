@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Header from './Header';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
@@ -56,13 +56,14 @@ import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
 import EntityBannerNotifications from './notifications/EntityBannerNotifications';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-const { useSelect } = Data;
+import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
@@ -205,6 +206,7 @@ function DashboardEntityApp() {
 						</Cell>
 					</Row>
 				</Grid>
+
 				<OfflineNotification />
 			</div>
 		);
@@ -218,6 +220,11 @@ function DashboardEntityApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
+
+			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
+
+			<OverlayNotificationsRenderer />
+
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
@@ -250,6 +257,7 @@ function DashboardEntityApp() {
 						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
 				} ) }
 			/>
+
 			<OfflineNotification />
 		</Fragment>
 	);

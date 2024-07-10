@@ -25,7 +25,9 @@ use WPDieException;
  * @group Util
  */
 class ResetTest extends TestCase {
-	use OptionsTestTrait, UserOptionsTestTrait, TransientsTestTrait;
+	use OptionsTestTrait;
+	use UserOptionsTestTrait;
+	use TransientsTestTrait;
 
 	const TEST_OPTION = 'googlesitekit_test_option';
 

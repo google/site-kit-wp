@@ -22,6 +22,7 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -36,7 +37,7 @@ const measurementID =
 	// eslint-disable-next-line sitekit/acronym-case
 	webDataStreamsBatch[ propertyID ][ 0 ].webStreamData.measurementId;
 
-function Template( {} ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
@@ -57,10 +58,28 @@ function Template( {} ) {
 export const Default = Template.bind( null );
 Default.storyName = 'SettingsView';
 
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'SettingsView ICE Enabled';
+IceEnabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceEnabled.args = {
+	enhancedConversionTracking: true,
+};
+
+export const IceDisabled = Template.bind( null );
+IceDisabled.storyName = 'SettingsView ICE Disabled';
+IceDisabled.parameters = {
+	features: [ 'conversionInfra' ],
+};
+IceDisabled.args = {
+	enhancedConversionTracking: false,
+};
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -76,7 +95,6 @@ export default {
 					webDataStreamID,
 					measurementID,
 					useSnippet: true,
-					canUseSnippet: true,
 					...googleTagSettings,
 				} );
 
@@ -87,6 +105,14 @@ export default {
 						webDataStreamID,
 						true
 					);
+
+				if ( args.hasOwnProperty( 'enhancedConversionTracking' ) ) {
+					registry
+						.dispatch( CORE_SITE )
+						.setConversionTrackingEnabled(
+							args.enhancedConversionTracking
+						);
+				}
 			};
 
 			return (

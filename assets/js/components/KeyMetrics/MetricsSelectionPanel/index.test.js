@@ -20,7 +20,12 @@
  * Internal dependencies
  */
 import MetricsSelectionPanel from '.';
-import { act, fireEvent, render } from '../../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	waitForDefaultTimeouts,
+} from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -47,10 +52,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/co
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 import {
-	MODULES_ANALYTICS,
 	EDIT_SCOPE,
-} from '../../../modules/analytics/datastore/constants';
-import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
@@ -132,6 +134,7 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 
 			await waitForRegistry();
+			await act( waitForDefaultTimeouts );
 
 			expect(
 				getByText(
@@ -186,13 +189,13 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
 				)
 			).toHaveTextContent( 'Returning visitors' );
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
 				)
 			).toHaveTextContent( 'Top performing keywords' );
 		} );
@@ -230,7 +233,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
 				)
 			).toHaveTextContent(
 				'Search Console is disconnected, no data to show'
@@ -270,10 +273,10 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
 				)
 			).toHaveTextContent(
-				'Analytics 4 and Search Console are disconnected, no data to show'
+				'Analytics and Search Console are disconnected, no data to show'
 			);
 		} );
 
@@ -366,7 +369,7 @@ describe( 'MetricsSelectionPanel', () => {
 			// Verify the limit of 4 metrics is not reached.
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-footer__metric-count'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer__item-count'
 				)
 			).toHaveTextContent( '1 selected (up to 4)' );
 
@@ -428,7 +431,7 @@ describe( 'MetricsSelectionPanel', () => {
 			// Verify that the last metric is positioned at the top.
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics__metric-item:first-child label'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-item:first-child label'
 				)
 			).toHaveTextContent( 'Top converting traffic source' );
 		} );
@@ -443,6 +446,9 @@ describe( 'MetricsSelectionPanel', () => {
 					slug: 'analytics-4',
 					active: true,
 					connected: true,
+					// Module is shareable after connected, but by default in fixtures it is false.
+					// This updates on the backend, but here value is pulled from fixtures.
+					shareable: true,
 				},
 			] );
 
@@ -477,7 +483,7 @@ describe( 'MetricsSelectionPanel', () => {
 			} );
 
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetSettings( analytics4Fixtures.defaultSettings );
 
 			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
@@ -490,14 +496,14 @@ describe( 'MetricsSelectionPanel', () => {
 			// Verify that a metric dependent on GA4 isn't listed.
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
 				)
 			).not.toHaveTextContent( 'Returning visitors' );
 
 			// Verify that a metric dependent on Search Console is listed.
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-metrics'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
 				)
 			).toHaveTextContent( 'Top performing keywords' );
 		} );
@@ -626,7 +632,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-footer .googlesitekit-button-icon--spinner'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-button-icon--spinner'
 				)
 			).toBeDisabled();
 		} );
@@ -649,7 +655,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-error-text'
 				).textContent
 			).toBe( 'Select at least 2 metrics (1 selected)' );
 
@@ -661,7 +667,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-footer .googlesitekit-error-text'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-error-text'
 				)
 			).not.toBeInTheDocument();
 		} );
@@ -830,7 +836,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel-footer__metric-count'
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer__item-count'
 				)
 			).toHaveTextContent( '2 selected (up to 4)' );
 		} );

@@ -30,29 +30,24 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import { isValidAccountID } from '../../../analytics/util';
 import {
+	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function WebDataStreamSelect( props ) {
-	const { hasModuleAccess, isDisabled, className } = props;
-
-	// TODO: Update this select hook to pull accountID from the modules/analytics-4
-	// datastore when GA4 module becomes separated from the Analytics one.
+	const { hasModuleAccess, isDisabled, className, onChange } = props;
 	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 
 	const { propertyID, webDataStreamID, measurementID } = useSelect(
@@ -98,6 +93,10 @@ export default function WebDataStreamSelect( props ) {
 					: 'change_webdatastream',
 				'ga4'
 			);
+
+			if ( onChange ) {
+				onChange();
+			}
 		},
 		[
 			webDataStreams,
@@ -105,6 +104,7 @@ export default function WebDataStreamSelect( props ) {
 			setWebDataStreamID,
 			updateSettingsForMeasurementID,
 			viewContext,
+			onChange,
 		]
 	);
 
@@ -170,7 +170,7 @@ export default function WebDataStreamSelect( props ) {
 									/* translators: 1: Data stream name. 2: Measurement ID. */
 									_x(
 										'%1$s (%2$s)',
-										'Analytics 4 data stream name and measurement ID',
+										'Analytics data stream name and measurement ID',
 										'google-site-kit'
 									),
 									displayName,

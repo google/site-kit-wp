@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import baseModuleStore from './base';
 import accounts from './accounts';
 import adunits from './adunits';
@@ -33,7 +33,7 @@ import sites from './sites';
 import adBlockingRecovery from './ad-blocking-recovery';
 import { MODULES_ADSENSE } from './constants';
 
-const store = Data.combineStores(
+const store = combineStores(
 	baseModuleStore,
 	accounts,
 	adunits,

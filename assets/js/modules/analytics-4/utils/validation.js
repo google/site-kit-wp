@@ -31,6 +31,16 @@ import {
 	WEBDATASTREAM_CREATE,
 } from '../datastore/constants';
 import { isValidNumericID } from '../../../util';
+import { isValidDateRange } from '../../../util/report-validation';
+import { normalizeReportOptions } from './report-normalization';
+import {
+	isValidDimensionFilters,
+	isValidDimensions,
+	isValidMetricFilters,
+	isValidMetrics,
+	isValidOrders,
+} from './report-validation';
+import { isValidPivotsObject } from './report-pivots-validation';
 
 /**
  * Checks if the given value is a valid selection for an Account.
@@ -118,6 +128,18 @@ export function isValidWebDataStreamSelection( webDataStreamID ) {
 }
 
 /**
+ * Checks if the given web data stream name appears to be valid.
+ *
+ * @since 1.124.0
+ *
+ * @param {string} value Web data stream name to test.
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidWebDataStreamName( value ) {
+	return typeof value === 'string' && value.trim().length > 0;
+}
+
+/**
  * Checks whether the given measurementID appears to be valid.
  *
  * @since 1.35.0
@@ -171,16 +193,137 @@ export function isValidGoogleTagContainerID( googleTagContainerID ) {
 	return isValidNumericID( googleTagContainerID );
 }
 
-/** Checks if the given ads conversion ID is valid.
+/**
+ * Checks whether a given report options object is valid.
  *
- * @since 1.32.0
- * @since 1.121.0 Migrated from analytics to analytics-4.
+ * @since 1.130.0
  *
- * @param {*} value Conversion ID to test.
- * @return {boolean} Whether or not the given ID is valid.
+ * @param {Object} options The options for the report.
  */
-export function isValidAdsConversionID( value ) {
-	return typeof value === 'string' && /^AW-[0-9]+$/.test( value );
+export function validateReport( options ) {
+	invariant(
+		isPlainObject( options ),
+		'options for Analytics 4 report must be an object.'
+	);
+	invariant(
+		isValidDateRange( options ),
+		'Either date range or start/end dates must be provided for Analytics 4 report.'
+	);
+
+	const { metrics, dimensions, dimensionFilters, metricFilters, orderby } =
+		normalizeReportOptions( options );
+
+	invariant(
+		metrics.length,
+		'Requests must specify at least one metric for an Analytics 4 report.'
+	);
+	invariant(
+		isValidMetrics( metrics ),
+		'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property. Metric names must match the expression ^[a-zA-Z0-9_]+$.'
+	);
+
+	if ( dimensions ) {
+		invariant(
+			isValidDimensions( dimensions ),
+			'dimensions for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
+		);
+	}
+
+	if ( dimensionFilters ) {
+		invariant(
+			isValidDimensionFilters( dimensionFilters ),
+			'dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values.'
+		);
+	}
+
+	if ( metricFilters ) {
+		invariant(
+			isValidMetricFilters( metricFilters ),
+			'metricFilters for an Analytics 4 report must be a map of metric names as keys and filter value(s) as numeric fields, depending on the filterType.'
+		);
+	}
+
+	if ( orderby ) {
+		invariant(
+			isValidOrders( orderby ),
+			'orderby for an Analytics 4 report must be an array of OrderBy objects where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
+		);
+	}
+}
+
+/**
+ * Checks whether a given pivot report options object is valid.
+ *
+ * @since 1.130.0
+ *
+ * @param {Object} options The options for the pivot report.
+ */
+export function validatePivotReport( options ) {
+	invariant(
+		isPlainObject( options ),
+		'options for Analytics 4 pivot report must be an object.'
+	);
+	invariant(
+		isValidDateRange( options ),
+		'Start/end dates must be provided for Analytics 4 pivot report.'
+	);
+
+	const {
+		metrics,
+		dimensions,
+		dimensionFilters,
+		metricFilters,
+		pivots,
+		orderby,
+		limit,
+	} = normalizeReportOptions( options );
+
+	invariant(
+		metrics.length,
+		'Requests must specify at least one metric for an Analytics 4 pivot report.'
+	);
+	invariant(
+		isValidMetrics( metrics ),
+		'metrics for an Analytics 4 pivot report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property. Metric names must match the expression ^[a-zA-Z0-9_]+$.'
+	);
+	invariant(
+		isValidPivotsObject( pivots ),
+		'pivots for an Analytics 4 pivot report must be an array of objects. Each object must have a "fieldNames" property and a "limit".'
+	);
+
+	if ( orderby ) {
+		invariant(
+			Array.isArray( orderby ),
+			'orderby for an Analytics 4 pivot report must be passed within a pivot.'
+		);
+	}
+	if ( limit ) {
+		invariant(
+			typeof limit === 'number',
+			'limit for an Analytics 4 pivot report must be passed within a pivot.'
+		);
+	}
+
+	if ( dimensions ) {
+		invariant(
+			isValidDimensions( dimensions ),
+			'dimensions for an Analytics 4 pivot report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
+		);
+	}
+
+	if ( dimensionFilters ) {
+		invariant(
+			isValidDimensionFilters( dimensionFilters ),
+			'dimensionFilters for an Analytics 4 pivot report must be a map of dimension names as keys and dimension values as values.'
+		);
+	}
+
+	if ( metricFilters ) {
+		invariant(
+			isValidMetricFilters( metricFilters ),
+			'metricFilters for an Analytics 4 pivot report must be a map of metric names as keys and filter value(s) as numeric fields, depending on the filterType.'
+		);
+	}
 }
 
 /**

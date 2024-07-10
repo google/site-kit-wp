@@ -43,17 +43,14 @@ import {
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
-import {
-	AREA_MODULE_ADSENSE_MAIN,
-	ERROR_CODE_ADBLOCKER_ACTIVE,
-} from './constants';
+import { AREA_MODULE_ADSENSE_MAIN } from './constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,
+	ERROR_CODE_ADBLOCKER_ACTIVE,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
-import { isFeatureEnabled } from '../../features';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -71,7 +68,7 @@ export const registerModule = ( modules ) => {
 		],
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
-				.__experimentalResolveSelect( MODULES_ADSENSE )
+				.resolveSelect( CORE_USER )
 				.isAdBlockerActive();
 
 			if ( ! adBlockerActive ) {
@@ -116,10 +113,6 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'adsense', 'analytics-4' ],
 			isActive: ( select ) => {
-				if ( ! isFeatureEnabled( 'ga4AdSenseIntegration' ) ) {
-					return false;
-				}
-
 				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
 				if (
@@ -188,9 +181,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ 'adsense', 'analytics-4' ],
-			isActive: () => {
-				return isFeatureEnabled( 'ga4AdSenseIntegration' );
-			},
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);

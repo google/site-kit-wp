@@ -25,6 +25,7 @@ import {
 	submitChanges,
 	validateCanSubmitChanges,
 	rollbackChanges,
+	validateHaveSettingsChanged,
 } from './settings';
 import { convertDateStringToUNIXTimestamp } from '../../../util';
 
@@ -48,19 +49,25 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'webDataStreamID',
 		'measurementID',
 		'useSnippet',
-		'canUseSnippet',
 		'ownerID',
 		'googleTagID',
 		'googleTagAccountID',
 		'googleTagContainerID',
+		'googleTagContainerDestinationIDs',
 		'googleTagLastSyncedAtMs',
 		'availableCustomDimensions',
 		'propertyCreateTime',
 		'trackingDisabled',
+		'adsConversionIDMigratedAtMs',
+		'adsLinked',
+		'adsLinkedLastSyncedAt',
+		'availableAudiences',
+		'availableAudiencesLastSyncedAt',
 	],
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
+	validateHaveSettingsChanged,
 } );
 
 const originalSetPropertyCreateTime =
