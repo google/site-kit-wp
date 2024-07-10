@@ -45,9 +45,9 @@ function mark_notification( $id ) {
 }
 
 function create_proxy_http_mock( $proxy_base_url ) {
-	return function ( $false, $parsed_args, $url ) use ( $proxy_base_url ) {
+	return function ( $false_value, $parsed_args, $url ) use ( $proxy_base_url ) {
 		if ( 0 !== strpos( $url, $proxy_base_url ) ) {
-			return $false;
+			return $false_value;
 		}
 
 		$response = array(
@@ -95,7 +95,7 @@ function create_proxy_http_mock( $proxy_base_url ) {
 				$response['body'] = wp_json_encode( array( 'success' => true ) );
 				break;
 			default:
-				return $false;
+				return $false_value;
 		}
 
 		return $response;
@@ -146,4 +146,3 @@ add_action(
 	},
 	0
 );
-

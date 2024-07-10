@@ -184,5 +184,4 @@ class Synchronize_AdsLinkedTest extends TestCase {
 			1 // 1 second threshold to allow for micro changes at runtime.
 		);
 	}
-
 }

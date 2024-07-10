@@ -56,12 +56,12 @@ function echo_error_if( $condition, $message ) {
 	if ( $condition ) {
 		$has_color_support = has_color_support();
 
-		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_read_fwrite,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fwrite,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
 		$has_color_support && fwrite( STDERR, "\033[31m" );
 		fwrite( STDERR, '- ' . $message );
 		$has_color_support && fwrite( STDERR, "\033[0m" );
 		fwrite( STDERR, PHP_EOL );
-		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_read_fwrite,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fwrite,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
 
 		return $current_code;
 	}

@@ -155,7 +155,7 @@ final class Screen {
 					 */
 					add_action(
 						'current_screen',
-						function() {
+						function () {
 							global $menu, $_wp_admin_css_colors;
 
 							if ( ! is_array( $menu ) ) {
@@ -180,7 +180,6 @@ final class Screen {
 									break;
 								}
 							}
-
 						},
 						100
 					);
@@ -198,7 +197,7 @@ final class Screen {
 			$this->args['menu_title'],
 			$this->args['capability'],
 			$this->slug,
-			function() use ( $context ) {
+			function () use ( $context ) {
 				$this->render( $context );
 			}
 		);
@@ -232,7 +231,7 @@ final class Screen {
 
 		$cb = is_callable( $this->args['enqueue_callback'] )
 			? $this->args['enqueue_callback']
-			: function( Assets $assets ) {
+			: function ( Assets $assets ) {
 				$assets->enqueue_asset( $this->slug );
 			};
 
@@ -249,7 +248,7 @@ final class Screen {
 	private function render( Context $context ) {
 		$cb = is_callable( $this->args['render_callback'] )
 			? $this->args['render_callback']
-			: function() {
+			: function () {
 				printf( '<div id="js-%s" class="googlesitekit-page"></div>', esc_attr( $this->slug ) );
 			};
 

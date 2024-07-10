@@ -38,12 +38,11 @@ class Sanitize {
 
 		$filtered_elements = array_filter(
 			$elements,
-			function( $element ) {
+			function ( $element ) {
 				return is_string( $element ) && ! empty( $element );
 			}
 		);
 		// Avoid index gaps for filtered values.
 		return array_values( $filtered_elements );
 	}
-
 }

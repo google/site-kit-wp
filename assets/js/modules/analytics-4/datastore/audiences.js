@@ -205,7 +205,7 @@ const baseActions = {
 
 		const configuredAudiences = [];
 
-		if ( ! failedSiteKitAudienceSlugs ) {
+		if ( ! failedSiteKitAudienceSlugs?.length ) {
 			if ( userAudiences.length > 0 ) {
 				// If there are user audiences, filter and sort them by total users over the last 90 days,
 				// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.

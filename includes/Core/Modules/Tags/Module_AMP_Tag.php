@@ -84,7 +84,7 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 	 * @return callable Hook function.
 	 */
 	protected function enqueue_amp_reader_component_script( $handle, $src ) {
-		$component_script_hook = function( $data ) use ( $handle, $src ) {
+		$component_script_hook = function ( $data ) use ( $handle, $src ) {
 			if ( ! isset( $data['amp_component_scripts'] ) || ! is_array( $data['amp_component_scripts'] ) ) {
 				$data['amp_component_scripts'] = array();
 			}
@@ -116,5 +116,4 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 		 */
 		do_action( "googlesitekit_{$this->module_slug}_init_tag_amp", $this->tag_id );
 	}
-
 }

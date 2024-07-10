@@ -58,7 +58,7 @@ class WooCommerce extends Conversion_Events_Provider {
 		$script = new Script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'          => $this->context->url( 'dist/assets/js/woocommerce.js' ),
+				'src'          => $this->context->url( 'dist/assets/js/googlesitekit-events-provider-woocommerce.js' ),
 				'execution'    => 'defer',
 				'dependencies' => array( 'woocommerce' ),
 			)

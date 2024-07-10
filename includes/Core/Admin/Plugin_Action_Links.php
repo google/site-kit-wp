@@ -62,11 +62,10 @@ class Plugin_Action_Links {
 					);
 
 					array_unshift( $links, $settings_link );
-				};
+				}
 
 				return $links;
 			}
 		);
 	}
-
 }

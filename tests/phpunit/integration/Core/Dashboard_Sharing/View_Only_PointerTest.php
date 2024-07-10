@@ -51,7 +51,6 @@ class View_Only_PointerTest extends TestCase {
 
 		$pointer = new View_Only_Pointer();
 		$pointer->register();
-
 	}
 
 	public function test_register() {
@@ -168,5 +167,4 @@ class View_Only_PointerTest extends TestCase {
 	private function create_editor_user() {
 		return $this->factory()->user->create( array( 'role' => 'editor' ) );
 	}
-
 }

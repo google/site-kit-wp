@@ -170,5 +170,4 @@ abstract class Post_Meta_Setting {
 	public function delete( $post_id ) {
 		return $this->post_meta->delete( $post_id, static::META_KEY );
 	}
-
 }

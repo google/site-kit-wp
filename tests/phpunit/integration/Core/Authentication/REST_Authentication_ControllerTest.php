@@ -143,7 +143,6 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertFalse( $response->data['authenticated'] );
-
 	}
 
 	/**
