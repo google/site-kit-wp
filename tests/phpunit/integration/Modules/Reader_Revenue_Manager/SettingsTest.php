@@ -69,7 +69,7 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEmpty( $this->settings->get_view_only_keys() );
 	}
 
-	public function data_publications() {
+	public function data_publication_settings() {
 		return array(
 			'publicationID is valid string'                => array( 'publicationID', 'ABCD1234', 'ABCD1234' ),
 			'publicationOnboardingState is valid string'   => array( 'publicationOnboardingState', 'PENDING_VERIFICATION', 'PENDING_VERIFICATION' ),
@@ -81,9 +81,9 @@ class SettingsTest extends SettingsTestCase {
 	}
 
 	/**
-	 * @dataProvider data_publications
+	 * @dataProvider data_publication_settings
 	 */
-	public function test_rrm_settings_sanitization( $setting, $value, $expected_value ) {
+	public function test_reader_revenue_manager_settings_sanitization( $setting, $value, $expected_value ) {
 		$this->settings->register();
 
 		$options_key = $this->get_option_name();

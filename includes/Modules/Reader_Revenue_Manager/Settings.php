@@ -30,13 +30,13 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 
 	const OPTION = 'googlesitekit_reader-revenue-manager_settings';
 
-	const ONBOARDING_STATE_UNSPECIFIED = 'ONBOARDING_STATE_UNSPECIFIED';
-
-	const ONBOARDING_STATE_ACTION_REQUIRED = 'ONBOARDING_ACTION_REQUIRED';
-
+	/**
+	 * Various Reader Revenue Manager onboarding statuses.
+	 */
+	const ONBOARDING_STATE_UNSPECIFIED          = 'ONBOARDING_STATE_UNSPECIFIED';
+	const ONBOARDING_STATE_ACTION_REQUIRED      = 'ONBOARDING_ACTION_REQUIRED';
 	const ONBOARDING_STATE_PENDING_VERIFICATION = 'PENDING_VERIFICATION';
-
-	const ONBOARDING_STATE_COMPLETE = 'ONBOARDING_COMPLETE';
+	const ONBOARDING_STATE_COMPLETE             = 'ONBOARDING_COMPLETE';
 
 	/**
 	 * Registers the setting in WordPress.
