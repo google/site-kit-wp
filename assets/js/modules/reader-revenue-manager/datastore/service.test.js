@@ -62,6 +62,20 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				);
 			} );
 
+			it( 'should append a utm_source of "sitekit" to the URL', () => {
+				const serviceURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getServiceURL();
+
+				const query = {
+					utm_source: 'sitekit',
+				};
+
+				expect( decodeServiceURL( serviceURL ) ).toMatchQueryParameters(
+					query
+				);
+			} );
+
 			it( 'should append a publication ID to the URL', () => {
 				const publicationID = 'ABCDEFG';
 
