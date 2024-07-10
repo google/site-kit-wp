@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Report\Filters;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Filter as Google_Service_AnalyticsData_Filter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\NumericFilter as Google_Service_AnalyticsData_NumericFilter;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\NumericValue as NumericValue;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\NumericValue;
 
 /**
  * Class for parsing the metric numeric filter.
@@ -51,5 +51,4 @@ class Numeric_Filter {
 
 		return $expression;
 	}
-
 }

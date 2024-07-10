@@ -103,7 +103,7 @@ class Conversion_Tracking {
 
 		array_walk(
 			$active_providers,
-			function( Conversion_Events_Provider $active_provider ) {
+			function ( Conversion_Events_Provider $active_provider ) {
 				$active_provider->register_hooks();
 			}
 		);
@@ -125,7 +125,7 @@ class Conversion_Tracking {
 
 		array_walk(
 			$active_providers,
-			function( Conversion_Events_Provider $active_provider ) {
+			function ( Conversion_Events_Provider $active_provider ) {
 				$script_asset = $active_provider->register_script();
 				$script_asset->enqueue();
 			}
@@ -187,5 +187,4 @@ class Conversion_Tracking {
 
 		return $active_providers;
 	}
-
 }

@@ -139,5 +139,4 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 			)
 		);
 	}
-
 }

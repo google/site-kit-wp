@@ -55,7 +55,7 @@ class Developer_Plugin_Installer {
 		if ( ! defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' ) ) {
 			add_filter(
 				'plugins_api',
-				function( $value, $action, $args ) {
+				function ( $value, $action, $args ) {
 					return $this->plugin_info( $value, $action, $args );
 				},
 				10,
@@ -65,7 +65,7 @@ class Developer_Plugin_Installer {
 
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
@@ -79,7 +79,7 @@ class Developer_Plugin_Installer {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_setup = function() {
+		$can_setup = function () {
 			return current_user_can( Permissions::SETUP );
 		};
 
@@ -89,7 +89,7 @@ class Developer_Plugin_Installer {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$is_active = defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' );
 							$installed = $is_active;
 							$slug      = self::SLUG;

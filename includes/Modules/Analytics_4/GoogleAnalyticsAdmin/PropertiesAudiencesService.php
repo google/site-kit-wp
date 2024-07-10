@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin;
 
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\Resource\PropertiesAudiences as PropertiesAudiences;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\Resource\PropertiesAudiences;
 use Google\Site_Kit_Dependencies\Google_Client;
 
 /**

@@ -70,7 +70,7 @@ class Uninstallation {
 	public function register() {
 		add_action(
 			'googlesitekit_uninstallation',
-			function() {
+			function () {
 				$this->uninstall();
 			}
 		);

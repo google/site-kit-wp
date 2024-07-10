@@ -64,6 +64,7 @@ class Has_Connected_Admins extends Setting {
 		add_action(
 			'added_user_meta',
 			function ( $mid, $uid, $meta_key ) use ( $access_token_meta_key ) {
+				// phpcs:ignore WordPress.WP.Capabilities.RoleFound
 				if ( $meta_key === $access_token_meta_key && user_can( $uid, 'administrator' ) ) {
 					$this->set( true );
 				}
@@ -135,5 +136,4 @@ class Has_Connected_Admins extends Setting {
 	protected function get_type() {
 		return 'boolean';
 	}
-
 }

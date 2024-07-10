@@ -21,10 +21,10 @@ class SanitizeTest extends TestCase {
 	/**
 	 * @dataProvider data_lists
 	 */
-	public function test_sanitize_string_list( $list, $expected ) {
+	public function test_sanitize_string_list( $data_list, $expected ) {
 		$this->assertEquals(
 			$expected,
-			Sanitize::sanitize_string_list( $list )
+			Sanitize::sanitize_string_list( $data_list )
 		);
 	}
 
@@ -57,5 +57,4 @@ class SanitizeTest extends TestCase {
 			),
 		);
 	}
-
 }

@@ -41,5 +41,4 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 			'/<(?:script|amp-auto-ads)[^>]*src="[^"]*\\?client=(ca-pub-[^"]+)"[^>]*>/',
 		);
 	}
-
 }

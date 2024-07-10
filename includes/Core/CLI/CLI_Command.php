@@ -41,5 +41,4 @@ class CLI_Command extends WP_CLI_Command {
 	public function __construct( Context $context ) {
 		$this->context = $context;
 	}
-
 }

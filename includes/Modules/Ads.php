@@ -114,7 +114,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				'googlesitekit-ads-pax-config',
 				array(
 					'global'        => '_googlesitekitPAXConfig',
-					'data_callback' => function() {
+					'data_callback' => function () {
 						if ( ! current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
 							return array();
 						}
@@ -134,7 +134,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					// The Ads module is already connected.
 					$this->is_connected() ||
 					// Or the user is on the Ads module setup screen.
-					is_admin() && $is_googlesitekit_dashboard && $is_ads_slug && $is_re_auth
+					( ( ( is_admin() && $is_googlesitekit_dashboard ) && $is_ads_slug ) && $is_re_auth )
 				)
 			) {
 				$assets[] = new Script(
@@ -326,5 +326,4 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function get_tag_matchers() {
 		return new Tag_Matchers();
 	}
-
 }

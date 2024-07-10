@@ -67,7 +67,7 @@ class REST_Entity_Search_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_search = function() {
+		$can_search = function () {
 			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
 		};
 
@@ -77,7 +77,7 @@ class REST_Entity_Search_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$query = rawurldecode( $request['query'] );
 							$entities = array();
 							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
@@ -107,7 +107,7 @@ class REST_Entity_Search_Controller {
 
 								if ( ! empty( $posts ) ) {
 									$entities = array_map(
-										function( $post ) {
+										function ( $post ) {
 											$entity = Entity_Factory::create_entity_for_post( $post, 1 );
 											return array(
 												'id'    => $entity->get_id(),

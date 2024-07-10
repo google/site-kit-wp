@@ -34,7 +34,6 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 		parent::set_up();
 		$this->ad_blocking_recovery_tag = new Ad_Blocking_Recovery_Tag( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$this->ad_blocking_recovery_tag->register();
-
 	}
 
 	public function test_get_default() {
