@@ -156,5 +156,4 @@ class ReportParsers {
 
 		return $results;
 	}
-
 }

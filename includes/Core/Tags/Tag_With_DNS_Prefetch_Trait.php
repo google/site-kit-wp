@@ -28,12 +28,11 @@ trait Tag_With_DNS_Prefetch_Trait {
 	 * @return array List of urls.
 	 */
 	protected function get_dns_prefetch_hints_callback( $url ) {
-		return function( $urls, $relation_type ) use ( $url ) {
+		return function ( $urls, $relation_type ) use ( $url ) {
 			if ( 'dns-prefetch' === $relation_type ) {
 				$urls[] = $url;
 			}
 			return $urls;
 		};
 	}
-
 }

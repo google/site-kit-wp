@@ -41,7 +41,7 @@ class WooCommerceTest extends TestCase {
 	}
 
 	public function test_register_script() {
-		$handle = 'gsk-cep-' . WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-' . WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
 		$script = $this->woocommerce->register_script();
@@ -54,5 +54,4 @@ class WooCommerceTest extends TestCase {
 		$this->woocommerce->register_hooks();
 		$this->assertTrue( has_action( 'woocommerce_thankyou' ) );
 	}
-
 }

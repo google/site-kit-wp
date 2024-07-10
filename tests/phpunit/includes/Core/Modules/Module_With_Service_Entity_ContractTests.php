@@ -91,5 +91,4 @@ trait Module_With_Service_Entity_ContractTests {
 			}
 		);
 	}
-
 }

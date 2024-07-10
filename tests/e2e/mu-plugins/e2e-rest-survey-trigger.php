@@ -23,7 +23,7 @@ add_action(
 			'core/user/data/survey-trigger',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => function ( WP_REST_Request $request ) {
+				'callback'            => function () {
 					return array(
 						'session'                    => null,
 						'survey_payload'             => null,

@@ -64,7 +64,7 @@ class Synchronize_Property {
 
 		add_action(
 			self::CRON_SYNCHRONIZE_PROPERTY,
-			function() {
+			function () {
 				$this->synchronize_property_data();
 			}
 		);

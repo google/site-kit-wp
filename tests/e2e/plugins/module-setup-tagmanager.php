@@ -129,7 +129,6 @@ add_action(
 			),
 			true
 		);
-
 	},
 	0
 );

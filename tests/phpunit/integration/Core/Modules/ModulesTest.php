@@ -403,49 +403,49 @@ class ModulesTest extends TestCase {
 		);
 
 		yield 'should remove all the modules from the register, except the ones flagged as force active' => array(
-			function ( $modules ) {
+			function () {
 				return array();
 			},
 			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield 'should remove all module if `false` is used on the filter, except the ones flagged as force active' => array(
-			function ( $modules ) {
+			function () {
 				return false;
 			},
 			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield 'should remove all module if `null` is used on the filter, except the ones flagged as force active' => array(
-			function ( $modules ) {
+			function () {
 				return null;
 			},
 			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield 'should remove all module if `0` is used on the filter,  except the ones flagged as force active' => array(
-			function ( $modules ) {
+			function () {
 				return 0;
 			},
 			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield "should remove all module if `''` is used on the filter,  except the ones flagged as force active" => array(
-			function ( $modules ) {
+			function () {
 				return '';
 			},
 			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield 'should enable only analytics, search console and forced active modules' => array(
-			function ( $modules ) {
+			function () {
 				return array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG );
 			},
 			array( Site_Verification::MODULE_SLUG, Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
 		yield 'should ignore non existing modules, and include modules flagged as forced active' => array(
-			function ( $modules ) {
+			function () {
 				return array( 'apollo-landing', 'orbital-phase' );
 			},
 			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
@@ -1105,7 +1105,5 @@ class ModulesTest extends TestCase {
 
 		// Connecting the module makes it shareable.
 		$this->assertTrue( $modules->is_module_shareable( 'pagespeed-insights' ) );
-
 	}
-
 }

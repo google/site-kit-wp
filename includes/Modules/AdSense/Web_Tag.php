@@ -24,7 +24,8 @@ use Google\Site_Kit\Core\Util\BC_Functions;
  */
 class Web_Tag extends Module_Web_Tag {
 
-	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
+	use Method_Proxy_Trait;
+	use Tag_With_DNS_Prefetch_Trait;
 
 	/**
 	 * Registers tag hooks.
@@ -95,5 +96,4 @@ class Web_Tag extends Module_Web_Tag {
 		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_attributes ) );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
-
 }

@@ -37,5 +37,4 @@ interface User_Aware_Interface {
 	 * @return callable A closure to switch back to the original user.
 	 */
 	public function switch_user( $user_id );
-
 }

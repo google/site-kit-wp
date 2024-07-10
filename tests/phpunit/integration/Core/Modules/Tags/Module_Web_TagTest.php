@@ -48,5 +48,4 @@ class Module_Web_TagTest extends TestCase {
 
 		$this->assertEquals( ' type="text/plain" data-block-on-consent', $this->web_tag->get_tag_blocked_on_consent_attribute() );
 	}
-
 }

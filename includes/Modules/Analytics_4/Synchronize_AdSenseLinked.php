@@ -74,7 +74,7 @@ class Synchronize_AdSenseLinked {
 	public function register() {
 		add_action(
 			self::CRON_SYNCHRONIZE_ADSENSE_LINKED,
-			function() {
+			function () {
 				$this->synchronize_adsense_linked_data();
 			}
 		);

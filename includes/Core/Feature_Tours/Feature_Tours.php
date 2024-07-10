@@ -60,5 +60,4 @@ class Feature_Tours {
 		$this->dismissed_tours->register();
 		$this->rest_controller->register();
 	}
-
 }

@@ -55,9 +55,9 @@ class WPForms extends Conversion_Events_Provider {
 	 */
 	public function register_script() {
 		$script = new Script(
-			'gsk-cep-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
+			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'       => $this->context->url( 'dist/assets/js/wpforms.js' ),
+				'src'       => $this->context->url( 'dist/assets/js/googlesitekit-events-provider-wpforms.js' ),
 				'execution' => 'defer',
 			)
 		);
@@ -66,5 +66,4 @@ class WPForms extends Conversion_Events_Provider {
 
 		return $script;
 	}
-
 }

@@ -40,7 +40,6 @@ export * from './isnumeric';
 export * from './safely-sort';
 export * from './partition-report';
 
-global._gsktag = trackEvent;
 /**
  * Transforms a period string into a number of seconds.
  *
