@@ -42,7 +42,7 @@ const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) =>
-			( state, { path, query, publicationID = null } = {} ) => {
+			( state, { path, query, publicationID } = {} ) => {
 				let serviceURL = 'https://publishercenter.google.com';
 
 				// Always add the utm_source.
