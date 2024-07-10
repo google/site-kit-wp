@@ -83,7 +83,7 @@ class SettingsTest extends SettingsTestCase {
 	/**
 	 * @dataProvider data_publication_settings
 	 */
-	public function test_rrm_settings_sanitization( $setting, $value, $expected_value ) {
+	public function test_reader_revenue_manager_settings_sanitization( $setting, $value, $expected_value ) {
 		$this->settings->register();
 
 		$options_key = $this->get_option_name();
