@@ -149,7 +149,7 @@ export default function WPConsentAPIRequirements() {
 										<Fragment>
 											{ wpConsentPlugin.installed && (
 												<Fragment>
-													{ apiInstallResponse?.error && (
+													{ !! apiInstallResponse?.error && (
 														<ErrorText
 															message={
 																apiInstallResponse
@@ -174,7 +174,7 @@ export default function WPConsentAPIRequirements() {
 															);
 														} }
 													>
-														{ apiInstallResponse?.error
+														{ !! apiInstallResponse?.error
 															? __(
 																	'Retry',
 																	'google-site-kit'
@@ -188,7 +188,7 @@ export default function WPConsentAPIRequirements() {
 											) }
 											{ ! wpConsentPlugin.installed && (
 												<Fragment>
-													{ apiInstallResponse?.error && (
+													{ !! apiInstallResponse?.error && (
 														<ErrorText
 															message={
 																apiInstallResponse.error
@@ -211,7 +211,7 @@ export default function WPConsentAPIRequirements() {
 															);
 														} }
 													>
-														{ apiInstallResponse?.error
+														{ !! apiInstallResponse?.error
 															? __(
 																	'Retry',
 																	'google-site-kit'
