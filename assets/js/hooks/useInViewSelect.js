@@ -30,7 +30,7 @@ import { useInView } from './useInView';
 /**
  * Returns undefined when the component is not in view.
  *
- * @since n.e.x.t Moved this inline function outside the hook and assigned it a stable function name.
+ * @since 1.131.0 Moved this inline function outside the hook and assigned it a stable function name.
  *
  * @return {undefined} Always returns undefined.
  */

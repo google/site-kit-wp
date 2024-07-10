@@ -180,7 +180,7 @@ const baseActions = {
 	 * If the `googlesitekit_post_type` custom dimension doesn't exist, creates it.
 	 *
 	 * @since 1.128.0
-	 * @since n.e.x.t Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
+	 * @since 1.131.0 Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
@@ -573,7 +573,7 @@ const baseSelectors = {
 	/**
 	 * Gets the options for the audiences user count report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param {Object} state             Data store's state.
 	 * @param {Array}  audiences         Array of available audiences.
@@ -610,7 +610,7 @@ const baseSelectors = {
 	/**
 	 * Gets the error for the audiences user count report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 	 */

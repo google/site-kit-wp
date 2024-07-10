@@ -19,7 +19,7 @@
 /**
  * Checks if the given publication ID appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.131.0
  *
  * @param {string} publicationID Publication ID to test.
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
@@ -58,7 +58,7 @@ export function isValidOnboardingState( onboardingState ) {
 /**
  * Checks if a given URL uses HTTPS.
  *
- * @since n.e.x.t
+ * @since 1.131.0
  *
  * @param {string} url The URL to check.
  * @return {boolean} True if the URL uses HTTPS, false otherwise.

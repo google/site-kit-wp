@@ -218,7 +218,7 @@ final class Authentication {
 	/**
 	 * REST_Authentication_controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 * @var REST_Authentication_Controller
 	 */
 	protected $rest_authentication_controller;
@@ -713,7 +713,7 @@ final class Authentication {
 	/**
 	 * Accessible method to call refresh_user_token() for classes using Authentication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return void
 	 */
@@ -1315,7 +1315,7 @@ final class Authentication {
 	/**
 	 * Helper method to return options property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Options
 	 */
@@ -1326,7 +1326,7 @@ final class Authentication {
 	/**
 	 * Helper method to return has_connected_admins property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Has_Connected_Admins
 	 */
@@ -1337,7 +1337,7 @@ final class Authentication {
 	/**
 	 * Helper method to return has_multiple_admins property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Has_Multiple_Admins
 	 */
@@ -1348,7 +1348,7 @@ final class Authentication {
 	/**
 	 * Helper method to return owner_id property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Owner_ID
 	 */
@@ -1359,7 +1359,7 @@ final class Authentication {
 	/**
 	 * Helper method to return disconnected_reason property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Disconnected_Reason
 	 */
@@ -1370,7 +1370,7 @@ final class Authentication {
 	/**
 	 * Helper method to return connected_proxy_url property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Connected_Proxy_URL
 	 */
