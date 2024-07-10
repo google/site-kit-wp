@@ -68,7 +68,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -83,7 +83,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Checks if the current user has access to the current configured service entity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return boolean|WP_Error
 	 */
@@ -114,7 +114,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -127,7 +127,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -152,7 +152,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
@@ -189,7 +189,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Gets the filter for retrieving publications for the current site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return string Permutations for site hosts or URL.
 	 */
@@ -230,7 +230,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

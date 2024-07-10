@@ -131,7 +131,7 @@ export const actions = {
 	/**
 	 * Sets `setupErrorCode` value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param {string|null} setupErrorCode Error code from setup, or `null` if no error.
 	 * @return {Object} Redux-style action.
