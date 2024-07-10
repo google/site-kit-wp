@@ -62,15 +62,14 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				);
 			} );
 
-			it( 'should append `reader-revenue-manager` path to the URL', () => {
+			it( 'should add the path parameter', () => {
 				const publicationID = 'ABCDEFG';
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getServiceURL( {
 						path: 'reader-revenue-manager',
-						query: {
-							publication: publicationID,
-						},
+						query: {},
+						publicationID,
 					} );
 
 				expect(
@@ -84,9 +83,8 @@ describe( 'modules/reader-revenue-manager service store', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getServiceURL( {
 						path: 'reader-revenue-manager',
-						query: {
-							publication: publicationID,
-						},
+						query: {},
+						publicationID,
 					} );
 
 				const query = {

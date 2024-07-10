@@ -33,15 +33,16 @@ const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {Object} [args]       Object containing optional path and query args.
-	 * @param {string} [args.path]  A path to append to the base url.
-	 * @param {Object} [args.query] Object of query params to be added to the URL. utm_source would always get added to the URL even if this is empty.
+	 * @param {Object}      state         Data store's state.
+	 * @param {Object}      [args]        Object containing optional path and query args.
+	 * @param {string}      [args.path]   A path to append to the base url.
+	 * @param {Object}      [args.query]  Object of query params to be added to the URL. utm_source would always get added to the URL even if this is empty.
+	 * @param {string|null} publicationID Publication ID to be used in the URL.
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) =>
-			( state, { path, query } = {} ) => {
+			( state, { path, query, publicationID = null } = {} ) => {
 				let serviceURL = 'https://publishercenter.google.com';
 
 				// Always add the utm_source.
@@ -49,6 +50,10 @@ const selectors = {
 					...query,
 					utm_source: 'sitekit',
 				};
+
+				if ( publicationID ) {
+					query.publication = publicationID;
+				}
 
 				if ( path ) {
 					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
