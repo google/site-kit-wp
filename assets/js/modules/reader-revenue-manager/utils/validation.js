@@ -32,6 +32,30 @@ export function isValidPublicationID( publicationID ) {
 }
 
 /**
+ * Checks if the given publication onboarding state is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} onboardingState Publication onboarding state.
+ * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
+ */
+export function isValidOnboardingState( onboardingState ) {
+	if ( typeof onboardingState !== 'string' ) {
+		return false;
+	}
+
+	// List of valid onboarding states.
+	const validStates = [
+		'ONBOARDING_STATE_UNSPECIFIED',
+		'ONBOARDING_ACTION_REQUIRED',
+		'PENDING_VERIFICATION',
+		'ONBOARDING_COMPLETE',
+	];
+
+	return validStates.includes( onboardingState );
+}
+
+/**
  * Checks if a given URL uses HTTPS.
  *
  * @since n.e.x.t
