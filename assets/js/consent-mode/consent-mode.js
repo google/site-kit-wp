@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+const { isEqual } = require( 'lodash' );
+
 ( function () {
 	function actionConsentChange( event ) {
 		if ( event.detail ) {
@@ -62,8 +67,13 @@
 				}
 			}
 		);
-		if ( hasConsentParameters ) {
+		if (
+			hasConsentParameters &&
+			// Prevent duplicate calls to gtag, only updating if the consent parameters have changed.
+			! isEqual( consentParameters, global._googlesitekitConsents )
+		) {
 			global.gtag( 'consent', 'update', consentParameters );
+			global._googlesitekitConsents = consentParameters;
 		}
 	}
 	document.addEventListener(
