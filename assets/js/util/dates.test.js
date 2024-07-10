@@ -183,4 +183,15 @@ describe( 'dateSub', () => {
 		const got = dateSub( from, duration );
 		expect( got.toISOString() ).toBe( want.toISOString() );
 	} );
+
+	it.each( [
+		// [ testName, invalidDate ]
+		[ 'isValidDateString returns FALSE', 'not a date' ],
+		[ '{from} is neither a string nor a Date', 150 ],
+		[ '{from} is an invalid Date', new Date( '202-201-01' ) ],
+	] )( 'should throw an error when %s', ( _, invalidDate ) => {
+		expect( () => dateSub( invalidDate, DAY_IN_SECONDS ) ).toThrow(
+			INVALID_DATE_STRING_ERROR
+		);
+	} );
 } );

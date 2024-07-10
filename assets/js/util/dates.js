@@ -33,10 +33,10 @@ export const INVALID_DATE_RANGE_ERROR =
 	'Invalid date range, it must be a string with the format "last-x-days".';
 
 export const MINUTE_IN_SECONDS = 60;
-export const HOUR_IN_SECONDS = 3600;
-export const DAY_IN_SECONDS = 86400;
-export const WEEK_IN_SECONDS = 604800;
-export const MONTH_IN_SECONDS = 18144000; // 30 days.
+export const HOUR_IN_SECONDS = 60 * MINUTE_IN_SECONDS;
+export const DAY_IN_SECONDS = 24 * HOUR_IN_SECONDS;
+export const WEEK_IN_SECONDS = 7 * DAY_IN_SECONDS;
+export const MONTH_IN_SECONDS = 30 * DAY_IN_SECONDS;
 
 /**
  * Gets the hash of available date ranges.

@@ -108,8 +108,6 @@ export function extractAnalytics4DashboardData(
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( days * 2 > rowLength ) {
-		// Cloning the reference date to be able to change it in the padding
-		// loop without affecting the actual reference date.
 		const date = new Date( referenceDate ); // eslint-disable-line sitekit/no-direct-date
 		for ( let i = 0; days > i; i++ ) {
 			const month = ( date.getMonth() + 1 ).toString();
