@@ -230,80 +230,79 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 							noPadding
 							className="googlesitekit-setup-cta-banner googlesitekit-consent-mode-setup-cta-widget"
 						>
-							<div ref={ trackingRef }>
-								<div className="googlesitekit-setup-cta-banner__cells">
-									<div className="googlesitekit-setup-cta-banner__primary-cell">
-										<h3 className="googlesitekit-setup-cta-banner__title">
-											{ __(
-												'Enable Consent Mode to preserve tracking for your Ads campaigns',
+							<div
+								ref={ trackingRef }
+								className="googlesitekit-setup-cta-banner__cells"
+							>
+								<div className="googlesitekit-setup-cta-banner__primary-cell">
+									<h3 className="googlesitekit-setup-cta-banner__title">
+										{ __(
+											'Enable Consent Mode to preserve tracking for your Ads campaigns',
+											'google-site-kit'
+										) }
+									</h3>
+									<p className="googlesitekit-setup-cta-banner__description">
+										{ createInterpolateElement(
+											__(
+												'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
 												'google-site-kit'
-											) }
-										</h3>
-										<p className="googlesitekit-setup-cta-banner__description">
-											{ createInterpolateElement(
-												__(
-													'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
-													'google-site-kit'
+											),
+											{
+												a: (
+													<Link
+														href={
+															consentModeDocumentationURL
+														}
+														external
+														aria-label={ __(
+															'Learn more about consent mode',
+															'google-site-kit'
+														) }
+													/>
 												),
-												{
-													a: (
-														<Link
-															href={
-																consentModeDocumentationURL
-															}
-															external
-															aria-label={ __(
-																'Learn more about consent mode',
-																'google-site-kit'
-															) }
-														/>
-													),
-												}
-											) }
-										</p>
-										{ saveError && (
-											<ErrorText
-												message={ saveError.message }
-											/>
+											}
 										) }
-										<div className="googlesitekit-setup-cta-banner__actions-wrapper">
-											<Fragment>
-												<SpinnerButton
-													onClick={ handleCTAClick }
-													isSaving={ isSaving }
-												>
-													{ __(
-														'Enable consent mode',
-														'google-site-kit'
-													) }
-												</SpinnerButton>
-												<Button
-													tertiary
-													onClick={
-														handleDismissClick
-													}
-												>
-													{ dismissCount < 2
-														? __(
-																'Maybe later',
-																'google-site-kit'
-														  )
-														: __(
-																'Don’t show again',
-																'google-site-kit'
-														  ) }
-												</Button>
-											</Fragment>
-										</div>
+									</p>
+									{ saveError && (
+										<ErrorText
+											message={ saveError.message }
+										/>
+									) }
+									<div className="googlesitekit-setup-cta-banner__actions-wrapper">
+										<Fragment>
+											<SpinnerButton
+												onClick={ handleCTAClick }
+												isSaving={ isSaving }
+											>
+												{ __(
+													'Enable consent mode',
+													'google-site-kit'
+												) }
+											</SpinnerButton>
+											<Button
+												tertiary
+												onClick={ handleDismissClick }
+											>
+												{ dismissCount < 2
+													? __(
+															'Maybe later',
+															'google-site-kit'
+													  )
+													: __(
+															'Don’t show again',
+															'google-site-kit'
+													  ) }
+											</Button>
+										</Fragment>
 									</div>
-									<div className="googlesitekit-setup-cta-banner__svg-wrapper">
-										{ breakpoint !== BREAKPOINT_SMALL &&
-										breakpoint !== BREAKPOINT_XLARGE ? (
-											<BannerGraphicsTabletSVG />
-										) : (
-											<BannerGraphicsSVG />
-										) }
-									</div>
+								</div>
+								<div className="googlesitekit-setup-cta-banner__svg-wrapper">
+									{ breakpoint !== BREAKPOINT_SMALL &&
+									breakpoint !== BREAKPOINT_XLARGE ? (
+										<BannerGraphicsTabletSVG />
+									) : (
+										<BannerGraphicsSVG />
+									) }
 								</div>
 							</div>
 						</Widget>
