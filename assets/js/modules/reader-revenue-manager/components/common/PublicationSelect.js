@@ -1,4 +1,3 @@
-/* eslint-disable sitekit/acronym-case */
 /**
  * Publication Select component.
  *
@@ -37,7 +36,21 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { isValidPublicationID } from '../../utils/validation';
 
+/**
+ * Publication Select component.
+ * This component is responsible for rendering the publication select dropdown.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   props                 Component props.
+ * @param {boolean}  props.isDisabled      Whether the select is disabled.
+ * @param {boolean}  props.hasModuleAccess Whether the user has access to the module.
+ * @param {string}   props.className       Additional class names to apply to the select.
+ * @param {Function} props.onChange        Callback function to run when the select value changes.
+ * @return {JSX.Element}                   Publication Select component.
+ */
 export default function PublicationSelect( props ) {
+	/* eslint-disable sitekit/acronym-case */
 	const {
 		isDisabled,
 		hasModuleAccess,
@@ -69,7 +82,6 @@ export default function PublicationSelect( props ) {
 
 			const { publicationId, onboardingState } = publication;
 
-			// eslint-disable-next-line sitekit/acronym-case
 			setPublicationID( publicationId );
 			setPublicationOnboardingState( onboardingState );
 
@@ -128,11 +140,7 @@ export default function PublicationSelect( props ) {
 		>
 			{ ( publications || [] ).map(
 				( { publicationId, displayName } ) => (
-					<Option
-						// eslint-disable-next-line sitekit/acronym-case
-						key={ publicationId }
-						value={ publicationId }
-					>
+					<Option key={ publicationId } value={ publicationId }>
 						{ displayName }
 					</Option>
 				)
