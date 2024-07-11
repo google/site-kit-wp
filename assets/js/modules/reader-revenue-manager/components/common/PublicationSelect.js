@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Option, Select } from 'googlesitekit-components';
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { isValidPublicationID } from '../../utils/validation';
@@ -72,6 +72,12 @@ export default function PublicationSelect( props ) {
 			: null
 	);
 
+	const publicationsLoaded = useSelect( ( select ) => {
+		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+			'getPublications'
+		);
+	} );
+
 	const onPublicationChange = useCallback(
 		( index, item ) => {
 			const newPublicationID = item.dataset.value;
@@ -97,6 +103,9 @@ export default function PublicationSelect( props ) {
 
 	if ( ! isValidPublicationID( publicationID ) ) {
 		return null;
+	} else if ( ! publicationsLoaded ) {
+		// Display progress bar while publications are loading.
+		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
 	}
 
 	const isValidSelection =
