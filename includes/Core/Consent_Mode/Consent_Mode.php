@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Plugin_Upgrader;
+use Plugin_Installer_Skin;
 
 /**
  * Class for handling Consent Mode.
@@ -98,6 +100,66 @@ class Consent_Mode {
 		);
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+
+		add_action( 'wp_ajax_install_activate_wp_consent_api', array( $this, 'install_activate_wp_consent_api' ) );
+	}
+
+	/**
+	 * AJAX callback that installs and activates the WP Consent API plugin.
+	 *
+	 * This function utilizes an AJAX approach instead of the standardized REST approach
+	 * due to the requirement of the Plugin_Upgrader class, which relies on functions
+	 * from `admin.php` among others. These functions are properly loaded during the
+	 * AJAX callback, ensuring the installation and activation processes can execute correctly.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function install_activate_wp_consent_api() {
+		check_ajax_referer( 'updates' );
+
+		$slug   = 'wp-consent-api';
+		$plugin = "$slug/$slug.php";
+
+		if ( ! current_user_can( 'activate_plugin', $plugin ) ) {
+			wp_send_json( array( 'error' => __( 'You do not have permission to activate plugins on this site.', 'google-site-kit' ) ) );
+		}
+
+		/** WordPress Administration Bootstrap */
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php'; // For Plugin_Upgrader and Plugin_Installer_Skin.
+		require_once ABSPATH . 'wp-admin/includes/plugin-install.php'; // For plugins_api.
+
+		$api = plugins_api(
+			'plugin_information',
+			array(
+				'slug'   => $slug,
+				'fields' => array(
+					'sections' => false,
+				),
+			)
+		);
+
+		if ( is_wp_error( $api ) ) {
+			wp_send_json( array( 'error' => $api->get_error_message() ) );
+		}
+
+		$title = '';
+		$nonce = 'install-plugin_' . $plugin;
+		$url   = 'update.php?action=install-plugin&plugin=' . rawurlencode( $plugin );
+
+		$upgrader       = new Plugin_Upgrader( new Plugin_Installer_Skin( compact( 'title', 'url', 'nonce', 'plugin', 'api' ) ) );
+		$install_plugin = $upgrader->install( $api->download_link );
+
+		if ( is_wp_error( $install_plugin ) ) {
+			wp_send_json( array( 'error' => $install_plugin->get_error_message() ) );
+		}
+
+		$activated = activate_plugin( $plugin );
+
+		if ( is_wp_error( $activated ) ) {
+			wp_send_json( array( 'error' => $activated->get_error_message() ) );
+		}
+
+		wp_send_json( array( 'success' => true ) );
 	}
 
 	/**
