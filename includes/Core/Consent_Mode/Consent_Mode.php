@@ -109,7 +109,7 @@ class Consent_Mode {
 		$plugin = "$slug/$slug.php";
 
 		if ( ! current_user_can( 'activate_plugin', $plugin ) ) {
-			wp_send_json( array( 'error' => __( 'Sorry, you are not allowed to activate plugins on this site.', 'google-site-kit' ) ) );
+			wp_send_json( array( 'error' => __( 'You do not have permission to activate plugins on this site.', 'google-site-kit' ) ) );
 		}
 
 		/** WordPress Administration Bootstrap */
