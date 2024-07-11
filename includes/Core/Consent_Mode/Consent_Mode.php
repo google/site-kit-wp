@@ -237,6 +237,7 @@ class Consent_Mode {
 window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
 gtag('consent', 'default', <?php echo wp_json_encode( $consent_defaults ); ?>);
 window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
+window._googlesitekitConsents = <?php echo wp_json_encode( $consent_defaults ); ?>
 </script>
 <!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php
