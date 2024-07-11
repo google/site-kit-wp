@@ -96,6 +96,10 @@ class REST_Consent_Mode_Controller {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
+		$can_update_plugins = function () {
+			return current_user_can( Permissions::UPDATE_PLUGINS );
+		};
+
 		return array(
 			new REST_Route(
 				'core/site/data/consent-mode',
@@ -210,7 +214,7 @@ class REST_Consent_Mode_Controller {
 
 							return new WP_REST_Response( array( 'success' => true ) );
 						},
-						'permission_callback' => $can_manage_options,
+						'permission_callback' => $can_update_plugins,
 					),
 				),
 			),
