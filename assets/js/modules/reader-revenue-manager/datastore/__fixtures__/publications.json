@@ -14,7 +14,7 @@
 			"contributions": false,
 			"thankStickers": true
 		},
-		"displayName": "Test Property 1",
+		"displayName": "Test Publication 1",
 		"products": [
 			{
 				"name": "basic"
@@ -37,7 +37,7 @@
 			"contributions": false,
 			"thankStickers": true
 		},
-		"displayName": "Test Property 2",
+		"displayName": "Test Publication 2",
 		"products": [
 			{
 				"name": "premium"
@@ -60,7 +60,7 @@
 			"contributions": false,
 			"thankStickers": true
 		},
-		"displayName": "Test Property 3",
+		"displayName": "Test Publication 3",
 		"products": [
 			{
 				"name": "basic"
@@ -83,12 +83,12 @@
 			"contributions": true,
 			"thankStickers": true
 		},
-		"displayName": "Test Property 4",
+		"displayName": "Test Publication 4",
 		"products": [
 			{
 				"name": "premium"
 			}
 		],
-		"onboardingState": "ONBOARDING_STATE_UNSPECIFIED"
+		"onboardingState": "ONBOARDING_COMPLETE"
 	}
 ]
