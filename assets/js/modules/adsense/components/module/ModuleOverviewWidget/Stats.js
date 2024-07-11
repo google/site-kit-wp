@@ -41,7 +41,7 @@ export default function Stats( props ) {
 		currentRangeData.headers[ selectedStats + 1 ]
 	);
 
-	const colors = [ '#6380b8', '#bed4ff', '#5c9271', '#6e48ab' ];
+	const colors = [ '#6380b8', '#4bbbbb', '#3c7251', '#8e68cb' ];
 
 	function getFormat( { type, currencyCode } = {} ) {
 		if ( type === 'METRIC_CURRENCY' ) {
