@@ -23,8 +23,9 @@ import { combineStores } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import baseModuleStore from './base';
 import publications from './publications';
+import service from './service';
 
-const store = combineStores( baseModuleStore, publications );
+const store = combineStores( baseModuleStore, publications, service );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

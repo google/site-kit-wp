@@ -56,7 +56,6 @@ class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', $output );
 		$this->assertStringContainsString( 'test-tag', $output );
 		$this->assertStringContainsString( 'test-error-protection-code', $output );
-
 	}
 
 	public function test_does_not_render_error_protection_tag_when_disabled() {
@@ -80,6 +79,5 @@ class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 		$this->assertStringNotContainsString( 'Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', $output );
 		$this->assertStringContainsString( 'test-tag', $output );
 		$this->assertStringNotContainsString( 'test-error-protection-code', $output );
-
 	}
 }

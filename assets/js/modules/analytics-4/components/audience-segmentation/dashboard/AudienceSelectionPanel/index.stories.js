@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
@@ -37,6 +42,10 @@ import {
 import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceSelectionPanel from '.';
+
+const syncAvailableAudiencesEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+);
 
 function Template( { viewContext } ) {
 	return (
@@ -84,19 +93,54 @@ WithOneGroup.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithOneGroup',
 };
 
+export const LoadingNoGroups = Template.bind( {} );
+LoadingNoGroups.storyName = 'Loading state no groups selected';
+LoadingNoGroups.args = {
+	setupRegistry: () => {
+		fetchMock.postOnce(
+			syncAvailableAudiencesEndpoint,
+			new Promise( () => {} ),
+			{ overwriteRoutes: true }
+		);
+	},
+};
+
+export const LoadingWithGroups = Template.bind( {} );
+LoadingWithGroups.storyName = 'Loading state with groups selected';
+LoadingWithGroups.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/3',
+		'properties/12345/audiences/4',
+	],
+	setupRegistry: () => {
+		fetchMock.postOnce(
+			syncAvailableAudiencesEndpoint,
+			new Promise( () => {} ),
+			{ overwriteRoutes: true }
+		);
+	},
+};
+
 export const WithInsufficientPermissionsError = Template.bind( {} );
 WithInsufficientPermissionsError.storyName = 'Insufficient permissions error';
 WithInsufficientPermissionsError.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: () => {
 		const error = {
 			code: 'test_error',
 			message: 'Error message.',
 			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 		};
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'syncAvailableAudiences' );
+		fetchMock.postOnce(
+			syncAvailableAudiencesEndpoint,
+			{
+				body: error,
+				status: 403,
+			},
+			{
+				overwriteRoutes: true,
+			}
+		);
 	},
 };
 WithInsufficientPermissionsError.scenario = {
@@ -106,16 +150,23 @@ WithInsufficientPermissionsError.scenario = {
 export const AudienceSyncError = Template.bind( {} );
 AudienceSyncError.storyName = 'Audience sync error';
 AudienceSyncError.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: () => {
 		const error = {
 			code: 'test_error',
 			message: 'Error message.',
 			data: {},
 		};
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'syncAvailableAudiences' );
+		fetchMock.postOnce(
+			syncAvailableAudiencesEndpoint,
+			{
+				body: error,
+				status: 400,
+			},
+			{
+				overwriteRoutes: true,
+			}
+		);
 	},
 };
 AudienceSyncError.scenario = {
@@ -174,6 +225,17 @@ export default {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+
+				// Mock the sync available audiences endpoint since it is required that it's resolution is finished
+				// so items can go out of the loading state.
+				fetchMock.postOnce(
+					syncAvailableAudiencesEndpoint,
+					{
+						body: availableAudiences,
+						status: 200,
+					},
+					{ overwriteRoutes: false }
+				);
 
 				provideModuleRegistrations( registry );
 

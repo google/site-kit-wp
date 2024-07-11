@@ -171,5 +171,4 @@ JS;
 
 		wp_add_inline_script( $this->handle, $output, 'before' );
 	}
-
 }

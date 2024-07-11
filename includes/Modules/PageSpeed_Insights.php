@@ -36,9 +36,11 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class PageSpeed_Insights extends Module
-	implements Module_With_Scopes, Module_With_Assets, Module_With_Deactivation, Module_With_Settings, Module_With_Owner {
-	use Module_With_Scopes_Trait, Module_With_Assets_Trait, Module_With_Settings_Trait, Module_With_Owner_Trait;
+final class PageSpeed_Insights extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Deactivation, Module_With_Settings, Module_With_Owner {
+	use Module_With_Scopes_Trait;
+	use Module_With_Assets_Trait;
+	use Module_With_Settings_Trait;
+	use Module_With_Owner_Trait;
 
 	/**
 	 * Module slug name.

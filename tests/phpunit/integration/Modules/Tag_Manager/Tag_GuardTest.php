@@ -101,5 +101,4 @@ class Tag_GuardTest extends TestCase {
 
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when ampContainerID is empty.' );
 	}
-
 }

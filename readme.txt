@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.6
 Requires PHP:      7.4
-Stable tag:        1.130.0
+Stable tag:        1.131.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,31 +109,28 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.130.0 =
+= 1.131.0 =
 
 **Enhanced**
 
-* Added events tracking to the conversion tracking toggle. See [#8894](https://github.com/google/site-kit-wp/issues/8894).
-* Add support for Easy Digital Downloads "add to cart" event in Analytics enhanced tracking. See [#8801](https://github.com/google/site-kit-wp/issues/8801).
-* Add conversion events tracking for the Ninja Forms plugin. See [#8799](https://github.com/google/site-kit-wp/issues/8799).
-* Add foundation for new Reader Revenue Manager feature (PHP). See [#8785](https://github.com/google/site-kit-wp/issues/8785).
-* Add the Subscribe with Google PHP client library. See [#8783](https://github.com/google/site-kit-wp/issues/8783).
-* Ensure that Audiences are listed in the correct order, both in the Audience Tiles Widget and the Selection Panel. See [#8519](https://github.com/google/site-kit-wp/issues/8519).
-* Add support for pivot reports from Analytics to improve report request efficiency. See [#8484](https://github.com/google/site-kit-wp/issues/8484).
-* Update Analytics and AdSense modules to check the linked status as soon as one of these modules is connected. See [#8463](https://github.com/google/site-kit-wp/issues/8463).
-* Add a fallback mechanism to obtain user count for Site Kit audiences in the partial data state. See [#8160](https://github.com/google/site-kit-wp/issues/8160).
-* Show a notice in the Audience Selection Panel when it's opened with a single audience in the selection. See [#8159](https://github.com/google/site-kit-wp/issues/8159).
-* Add a CTA banner in the audiences widget area to reconnect Analytics if disconnected. See [#8156](https://github.com/google/site-kit-wp/issues/8156).
-* Show an Audience Tile in a zero-data state, and allow it to be temporarily hidden. See [#8143](https://github.com/google/site-kit-wp/issues/8143).
-* Update audiences widget area to show multiple notices in sequence. See [#8139](https://github.com/google/site-kit-wp/issues/8139).
-* Navigate to the OAuth flow as needed when setting up Audience Segmentation from the Setup CTA Banner. See [#8132](https://github.com/google/site-kit-wp/issues/8132).
-* Update the `url` parameter used in creating a new AdSense account not to contain subdomain information. See [#8124](https://github.com/google/site-kit-wp/issues/8124).
-* Update the Google Tag Mismatch notification to persist until a user dismisses it. See [#6819](https://github.com/google/site-kit-wp/issues/6819).
-* Add error boundary to widgets to prevent errors in an individual widget from crashing the entire dashboard. See [#6695](https://github.com/google/site-kit-wp/issues/6695).
+* Update margins for the Audience Segmentation widget's title. See [#8862](https://github.com/google/site-kit-wp/issues/8862).
+* Improve margins between "New" badge and text. See [#8861](https://github.com/google/site-kit-wp/issues/8861).
+* Add Reader Revenue Manager API functionality to retrieve publications. See [#8791](https://github.com/google/site-kit-wp/issues/8791).
+* Update the `useInViewSelect` hook to use dependencies. See [#8789](https://github.com/google/site-kit-wp/issues/8789).
+* Add Reader Revenue Module setup and settings view foundations. See [#8786](https://github.com/google/site-kit-wp/issues/8786).
+* Update Consent Mode to support additional consent types out of the box. See [#8385](https://github.com/google/site-kit-wp/issues/8385).
+* Detect WP Consent API plugin even when it's installed in a non-standard folder name. See [#8307](https://github.com/google/site-kit-wp/issues/8307).
+* Implement the loading state for the audience selection panel. See [#8162](https://github.com/google/site-kit-wp/issues/8162).
+* If an error occurs while loading the Audience Selection Panel, show it an an error state, with a notice that allows the data loading to be retried. See [#8161](https://github.com/google/site-kit-wp/issues/8161).
+* Handle errors in the Audience Segmentation setup flow, showing an error modal allowing the setup to be retried, or relevant permissions to be requested. See [#8134](https://github.com/google/site-kit-wp/issues/8134).
+
+**Changed**
+
+* Update `@wordpress/data` to version `4.27.3`, including a patch to avoid breaking changes. See [#8826](https://github.com/google/site-kit-wp/issues/8826).
 
 **Fixed**
 
-* Fix the problem with sticky header when the admin menu tooltip is shown. See [#8764](https://github.com/google/site-kit-wp/issues/8764).
-* Fix Analytics data inconsistency for Arabic language pages. See [#8184](https://github.com/google/site-kit-wp/issues/8184).
+* Fix bug that prevented Event Provider JavaScript files from loading. See [#8955](https://github.com/google/site-kit-wp/issues/8955).
+* Add a "Learn more" link for Enhanced Conversion Tracking. See [#8941](https://github.com/google/site-kit-wp/issues/8941).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
