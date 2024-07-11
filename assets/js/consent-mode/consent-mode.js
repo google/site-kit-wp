@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-const { isEqual } = require( 'lodash' );
+import { isEqual } from 'lodash';
 
 ( function () {
 	function actionConsentChange( event ) {
