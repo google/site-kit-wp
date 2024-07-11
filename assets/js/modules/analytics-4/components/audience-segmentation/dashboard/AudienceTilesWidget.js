@@ -356,10 +356,6 @@ function AudienceTilesWidget( { Widget } ) {
 						return null;
 					}
 
-					// TODO: as part of #8484, this data manipulation should be removed and the relevant
-					// pivot report rows should be passed directly to the AudienceTile component.
-					const metricIndexBase = index * 2;
-
 					const audienceName =
 						audiences?.filter(
 							( { name } ) => name === audienceResourceName
@@ -370,44 +366,48 @@ function AudienceTilesWidget( { Widget } ) {
 							( { name } ) => name === audienceResourceName
 						)?.[ 0 ]?.audienceSlug || '';
 
+					// Filter only rows for this audience by dimensionValue, as we can't rely on the order
+					// to match the audience tiles set by the user.
+					const audienceRows = rows.filter(
+						( row ) =>
+							row.dimensionValues[ 0 ].value ===
+							audienceResourceName
+					);
+
 					const visitors =
 						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 0 ]?.value
+							audienceRows[ 0 ]?.metricValues?.[ 0 ]?.value
 						) || 0;
 					const prevVisitors =
 						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 0 ]
-								?.value
+							audienceRows[ 1 ]?.metricValues?.[ 0 ]?.value
 						) || 0;
 
 					const visitsPerVisitors =
 						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 1 ]?.value
+							audienceRows[ 0 ]?.metricValues?.[ 1 ]?.value
 						) || 0;
 					const prevVisitsPerVisitors =
 						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 1 ]
-								?.value
+							audienceRows[ 1 ]?.metricValues?.[ 1 ]?.value
 						) || 0;
 
 					const pagesPerVisit =
 						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 2 ]?.value
+							audienceRows[ 0 ]?.metricValues?.[ 2 ]?.value
 						) || 0;
 					const prevPagesPerVisit =
 						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 2 ]
-								?.value
+							audienceRows[ 1 ]?.metricValues?.[ 2 ]?.value
 						) || 0;
 
 					const pageviews =
 						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 3 ]?.value
+							audienceRows[ 0 ]?.metricValues?.[ 3 ]?.value
 						) || 0;
 					const prevPageviews =
 						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 3 ]
-								?.value
+							audienceRows[ 1 ]?.metricValues?.[ 3 ]?.value
 						) || 0;
 
 					const topCities = topCitiesReport?.[ index ];
