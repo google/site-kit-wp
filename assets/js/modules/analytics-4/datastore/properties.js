@@ -714,7 +714,7 @@ const baseActions = {
 				googleTagAccountID,
 				googleTagContainerID
 			)
-		);
+		) || []; // Fallback used in the event of an error.
 
 		const googleTagContainerDestinationIDs =
 			googleTagContainerDestinations.map(

@@ -64,6 +64,7 @@ import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
+import ModuleDashboardEffects from './ModuleDashboardEffects';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
@@ -142,6 +143,7 @@ function DashboardEntityApp() {
 		return (
 			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-entity-dashboard">
 				<ScrollEffect />
+				<ModuleDashboardEffects />
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -214,6 +216,7 @@ function DashboardEntityApp() {
 	return (
 		<Fragment>
 			<ScrollEffect />
+			<ModuleDashboardEffects />
 			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />

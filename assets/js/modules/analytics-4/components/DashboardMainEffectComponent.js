@@ -1,7 +1,7 @@
 /**
- * DashboardEntryPoint component.
+ * DashboardMainEffectComponent component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,14 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
-import ModuleSetup from './setup/ModuleSetup';
-import DashboardMainApp from './DashboardMainApp';
+import useCreateCustomDimensionsEffect from '../hooks/useCreateCustomDimensionsEffect';
+import useSyncGoogleTagEffect from '../hooks/useSyncGoogleTagEffect';
 
-export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	if ( !! setupModuleSlug ) {
-		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
-	}
+export default function DashboardMainEffectComponent() {
+	useCreateCustomDimensionsEffect();
+	useSyncGoogleTagEffect();
 
-	return <DashboardMainApp />;
+	return null;
 }
-
-DashboardEntryPoint.propTypes = {
-	setupModuleSlug: PropTypes.string,
-};

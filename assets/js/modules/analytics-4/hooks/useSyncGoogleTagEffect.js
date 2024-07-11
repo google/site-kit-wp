@@ -1,7 +1,5 @@
 /**
- * DashboardEntryPoint component.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +17,22 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
  */
-import ModuleSetup from './setup/ModuleSetup';
-import DashboardMainApp from './DashboardMainApp';
+import { useDispatch } from '../../../googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 
-export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	if ( !! setupModuleSlug ) {
-		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
-	}
+export default function useSyncGoogleTagEffect() {
+	const { syncGoogleTagSettings } = useDispatch( MODULES_ANALYTICS_4 );
 
-	return <DashboardMainApp />;
+	useMount( () => {
+		// The sync action has its own guards internally,
+		// so it's safe to use uncondionally here.
+		syncGoogleTagSettings();
+	} );
+
+	return null;
 }
-
-DashboardEntryPoint.propTypes = {
-	setupModuleSlug: PropTypes.string,
-};

@@ -72,17 +72,20 @@ export function createModules( { dispatch } ) {
 		 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 		 * @since 1.23.0 Introduced the ability to register an Icon component.
 		 * @since 1.35.0 Introduced a registry parameter for checkRequirements.
+		 * @since n.e.x.t Introduced dashboard effect components.
 		 *
-		 * @param {string}      slug                             Module slug.
-		 * @param {Object}      [settings]                       Optional. Module settings.
-		 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
-		 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
-		 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
-		 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
-		 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-		 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
-		 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
-		 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
+		 * @param {string}      slug                                      Module slug.
+		 * @param {Object}      [settings]                                Optional. Module settings.
+		 * @param {string}      [settings.name]                           Optional. Module name. Default is the slug.
+		 * @param {string}      [settings.description]                    Optional. Module description. Default empty string.
+		 * @param {WPComponent} [settings.Icon]                           Optional. React component to render module icon. Default none.
+		 * @param {number}      [settings.order]                          Optional. Numeric indicator for module order. Default 10.
+		 * @param {string}      [settings.homepage]                       Optional. Module homepage URL. Default empty string.
+		 * @param {WPComponent} [settings.SettingsEditComponent]          Optional. React component to render the settings edit panel. Default none.
+		 * @param {WPComponent} [settings.SettingsViewComponent]          Optional. React component to render the settings view panel. Default none.
+		 * @param {WPComponent} [settings.SetupComponent]                 Optional. React component to render the setup panel. Default none.
+		 * @param {WPComponent} [settings.DashboardMainEffectComponent]   Optional. React component to render the effects on main dashboard. Default none.
+		 * @param {WPComponent} [settings.DashboardEntityEffectComponent] Optional. React component to render the effects on entity dashboard. Default none.
 		 * @return {Promise} The dispatched action.
 		 */
 		registerModule: ( slug, settings ) => {
