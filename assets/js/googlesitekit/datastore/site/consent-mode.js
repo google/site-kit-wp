@@ -104,7 +104,6 @@ const fetchInstallActivateWPConsentAPI = createFetchStore( {
 
 		return response.json();
 	},
-
 	argsToParams: ( { nonce } ) => {
 		return {
 			nonce,
