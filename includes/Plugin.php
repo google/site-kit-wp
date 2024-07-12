@@ -10,12 +10,8 @@
 
 namespace Google\Site_Kit;
 
-use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Google\Site_Kit\Core\Storage\Encrypted_Options;
+use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\Remote_Features_Activation;
-use Google\Site_Kit\Core\Util\Remote_Features_Sync;
 
 /**
  * Main class for the plugin.
@@ -91,34 +87,10 @@ final class Plugin {
 			return;
 		}
 
-		$options         = new Core\Storage\Options( $this->context );
-		$remote_features = new Core\Util\Remote_Features( $options );
-		$remote_features->register();
+		$options = new Core\Storage\Options( $this->context );
 
-		( new Remote_Features_Activation( $remote_features ) )->register();
-
-		add_action(
-			'admin_init',
-			function () use ( $options, $remote_features ) {
-				$credentials = new Credentials( new Encrypted_Options( $options ) );
-
-				if ( ! $credentials->using_proxy() ) {
-					return;
-				}
-
-				$google_proxy   = new Google_Proxy( $this->context );
-				$fetch_features = static function () use ( $google_proxy, $credentials ) {
-					return $google_proxy->get_features( $credentials );
-				};
-
-				$remote_features_sync = new Remote_Features_Sync( $remote_features, $fetch_features );
-
-				$remote_features_sync->register();
-				$remote_features_sync->maybe_schedule_cron();
-				// Sync remote features when credentials change (e.g. during setup).
-				$credentials->on_change( array( $remote_features_sync, 'pull_remote_features' ) );
-			}
-		);
+		// Set up remote features before anything else.
+		( new Remote_Features_Provider( $this->context, $options ) )->register();
 
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
 		add_filter(
