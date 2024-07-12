@@ -163,11 +163,18 @@ class REST_Consent_Mode_Controller {
 								if ( ! function_exists( 'get_plugins' ) ) {
 									require_once ABSPATH . 'wp-admin/includes/plugin.php';
 								}
-								foreach ( get_plugins() as $plugin_file => $installed_plugin ) {
-									if ( $installed_plugin['PluginURI'] === $plugin_uri ) {
-										$plugin    = $plugin_file;
-										$installed = true;
-										break;
+
+								$plugins = get_plugins();
+
+								if ( array_key_exists( $plugin, $plugins ) ) {
+									$installed = true;
+								} else {
+									foreach ( $plugins as $plugin_file => $installed_plugin ) {
+										if ( $installed_plugin['PluginURI'] === $plugin_uri ) {
+											$plugin    = $plugin_file;
+											$installed = true;
+											break;
+										}
 									}
 								}
 
