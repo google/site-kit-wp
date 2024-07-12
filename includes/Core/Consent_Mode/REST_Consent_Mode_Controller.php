@@ -153,8 +153,7 @@ class REST_Consent_Mode_Controller {
 							$is_active  = function_exists( 'wp_set_consent' );
 							$installed  = $is_active;
 							$plugin_uri = 'https://wordpress.org/plugins/wp-consent-api';
-							$slug       = 'wp-consent-api';
-							$plugin     = "$slug/$slug.php";
+							$plugin     = 'wp-consent-api/wp-consent-api.php';
 
 							$response = array(
 								'hasConsentAPI' => $is_active,
@@ -177,7 +176,7 @@ class REST_Consent_Mode_Controller {
 									return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
 								};
 								$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
-								$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ), 'install-plugin_' . $slug );
+								$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
 
 								$response['wpConsentPlugin'] = array(
 									'installed'   => $installed,
