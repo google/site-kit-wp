@@ -1,17 +1,46 @@
 <?php
+/**
+ * Class Google\Site_Kit\Core\Remote_Features\Remote_Features_Activation
+ *
+ * @package   Google\Site_Kit
+ * @copyright 2024 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Remote_Features;
 
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+
+/**
+ * Class handling the application of remote feature activation.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
 class Remote_Features_Activation {
 	use Method_Proxy_Trait;
 
 	/**
+	 * Remote_Features instance.
+	 *
 	 * @var Remote_Features
 	 */
 	private $remote_features;
 
+	/**
+	 * Loaded features.
+	 *
+	 * @var array
+	 */
 	private $features;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param Remote_Features $remote_features Remote_Features instance.
+	 */
 	public function __construct( Remote_Features $remote_features ) {
 		$this->remote_features = $remote_features;
 	}
@@ -25,8 +54,13 @@ class Remote_Features_Activation {
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features' ), 10, 2 );
 	}
 
+	/**
+	 * Gets the current set of remote features.
+	 *
+	 * @return array|mixed
+	 */
 	private function get_features() {
-		if ( $this->features === null ) {
+		if ( null === $this->features ) {
 			$this->features = $this->remote_features->get();
 		}
 

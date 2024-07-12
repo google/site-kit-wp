@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\Remote_Features
+ * Class Google\Site_Kit\Core\Remote_Features\Remote_Features
  *
  * @package   Google\Site_Kit
  * @copyright 2024 Google LLC
@@ -8,15 +8,16 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Remote_Features;
 
+use Closure;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class handling the fetching of Site Kit's currently
- * enabled features remotely via the Site Kit service.
+ * Class handling the storage of remote features.
  *
  * @since 1.118.0
+ * @since n.e.x.t Changed to extend Setting
  * @access private
  * @ignore
  */
@@ -26,14 +27,29 @@ final class Remote_Features extends Setting {
 	 */
 	const OPTION = 'googlesitekitpersistent_remote_features';
 
+	/**
+	 * Gets the expected value type.
+	 *
+	 * @return string
+	 */
 	protected function get_type() {
 		return 'object';
 	}
 
+	/**
+	 * Gets the default value.
+	 *
+	 * @return array
+	 */
 	protected function get_default() {
 		return array();
 	}
 
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * @return Closure
+	 */
 	protected function get_sanitize_callback() {
 		return function ( $value ) {
 			if ( ! is_array( $value ) ) {
@@ -49,6 +65,4 @@ final class Remote_Features extends Setting {
 			return $new_value;
 		};
 	}
-
-
 }
