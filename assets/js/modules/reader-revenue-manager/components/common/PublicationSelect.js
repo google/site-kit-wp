@@ -25,16 +25,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { isValidPublicationID } from '../../utils/validation';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 
 /**
  * Publication Select component.
