@@ -72,11 +72,14 @@ export default function PublicationSelect( props ) {
 			: null
 	);
 
-	const publicationsLoaded = useSelect( ( select ) => {
-		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
-			'getPublications'
-		);
-	} );
+	const publicationsLoaded = useSelect(
+		( select ) =>
+			hasModuleAccess === false ||
+			isDisabled ||
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getPublications'
+			)
+	);
 
 	const onPublicationChange = useCallback(
 		( index, item ) => {
