@@ -23,7 +23,12 @@ import API from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	ONBOARDING_STATE_COMPLETE,
+	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
+} from './constants';
 
 /* eslint-disable sitekit/acronym-case */
 const fetchGetPublicationsStore = createFetchStore( {
@@ -119,6 +124,16 @@ const baseActions = {
 		yield registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.saveSettings( settings );
+
+		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
+		if ( onboardingState === ONBOARDING_STATE_COMPLETE ) {
+			yield registry
+				.dispatch( CORE_UI )
+				.setValue(
+					UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
+					true
+				);
+		}
 	},
 };
 

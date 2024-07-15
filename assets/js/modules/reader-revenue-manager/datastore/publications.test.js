@@ -30,7 +30,14 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_UNSPECIFIED,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
+	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
+} from './constants';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
@@ -94,7 +101,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				const settings = {
 					publicationID: publication.publicationId,
-					publicationOnboardingState: 'PENDING_VERIFICATION',
+					publicationOnboardingState:
+						ONBOARDING_STATE_PENDING_VERIFICATION,
 					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
@@ -102,7 +110,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					body: {
 						...settings,
 						publicationOnboardingState:
-							'ONBOARDING_STATE_UNSPECIFIED',
+							ONBOARDING_STATE_UNSPECIFIED,
 					},
 					status: 200,
 				} );
@@ -137,6 +145,52 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect(
 					updatedSettings.publicationOnboardingStateLastSyncedAtMs
 				).toBeGreaterThan( Date.now() - 5000 );
+			} );
+
+			it( 'should set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 3 ];
+
+				// Set the current settings.
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState: ONBOARDING_STATE_UNSPECIFIED,
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				fetchMock.post( settingsEndpoint, {
+					body: {
+						...settings,
+						publicationOnboardingState: ONBOARDING_STATE_COMPLETE,
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				const uiKeyBeforeAction = registry
+					.select( CORE_UI )
+					.getValue(
+						UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION
+					);
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				const uiKeyAfterAction = registry
+					.select( CORE_UI )
+					.getValue(
+						UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION
+					);
+
+				expect( uiKeyBeforeAction ).toBe( undefined );
+				expect( uiKeyAfterAction ).toBe( true );
 			} );
 		} );
 	} );
