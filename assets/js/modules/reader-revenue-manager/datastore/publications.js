@@ -154,6 +154,7 @@ const baseResolvers = {
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublications();
 		if ( publications === undefined ) {
+			yield baseActions.syncPublicationOnboardingState();
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
 		}
 	},
