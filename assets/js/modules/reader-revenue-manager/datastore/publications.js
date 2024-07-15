@@ -22,7 +22,10 @@
 import API from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATE,
+} from './constants';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -41,7 +44,37 @@ const baseInitialState = {
 	publications: undefined,
 };
 
-const baseActions = {};
+const baseActions = {
+	/**
+	 * Finds a matched publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object|null} Matched publication; `null` if none found.
+	 */
+	*findMatchedPublication() {
+		const { resolveSelect } = yield commonActions.getRegistry();
+		const publications = yield commonActions.await(
+			resolveSelect( MODULES_READER_REVENUE_MANAGER ).getPublications()
+		);
+
+		if ( publications.length === 0 ) {
+			return null;
+		}
+
+		if ( publications.length === 1 ) {
+			return publications[ 0 ];
+		}
+
+		const completedOnboardingPublication = publications.find(
+			( publication ) =>
+				publication.onboardingState ===
+				PUBLICATION_ONBOARDING_STATE.ONBOARDING_COMPLETE
+		);
+
+		return completedOnboardingPublication || publications[ 0 ];
+	},
+};
 
 const baseControls = {};
 
