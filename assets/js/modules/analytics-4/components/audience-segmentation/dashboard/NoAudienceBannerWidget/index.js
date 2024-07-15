@@ -24,17 +24,17 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useInViewSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import NoAudienceBanner from './NoAudienceBanner';
 
 function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
-	const availableAudiences = useInViewSelect( ( select ) => {
+	const availableAudiences = useSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
 	} );
-	const configuredAudiences = useInViewSelect( ( select ) =>
+	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 

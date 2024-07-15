@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 import whenActive from '../../../../../../util/when-active';
@@ -39,11 +39,11 @@ import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 
 function InfoNoticeWidget( { Widget, WidgetNull } ) {
-	const availableAudiences = useInViewSelect( ( select ) => {
+	const availableAudiences = useSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
 	} );
-	const configuredAudiences = useInViewSelect( ( select ) =>
+	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
