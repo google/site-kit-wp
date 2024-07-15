@@ -39,8 +39,8 @@ import {
 } from '../../../googlesitekit/datastore/user/constants';
 
 export default function DashboardSharingSettings() {
-	const hasRecoverableModules = useSelect(
-		( select ) => !! select( CORE_MODULES ).getRecoverableModules()
+	const hasRecoverableModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasRecoverableModules()
 	);
 
 	const hasMultipleAdmins = useSelect( ( select ) =>

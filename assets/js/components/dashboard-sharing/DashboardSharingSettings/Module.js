@@ -78,8 +78,8 @@ export default function Module( {
 
 	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
 
-	const hasRecoverableModules = useSelect(
-		( select ) => !! select( CORE_MODULES ).getRecoverableModules()
+	const hasRecoverableModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasRecoverableModules()
 	);
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
