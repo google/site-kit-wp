@@ -227,7 +227,7 @@ export default function Module( {
 					</WarningNotice>
 				) }
 
-				{ ! recoverable && ! hasSharingCapability && (
+				{ ! hasSharingCapability && ! recoverable && (
 					<p className="googlesitekit-dashboard-sharing-settings__note">
 						{ __(
 							'Contact managing user to manage view access',
