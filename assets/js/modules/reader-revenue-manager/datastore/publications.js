@@ -17,13 +17,15 @@
  */
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
 import API from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
+/* eslint-disable sitekit/acronym-case */
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
@@ -41,7 +43,84 @@ const baseInitialState = {
 	publications: undefined,
 };
 
-const baseActions = {};
+const baseActions = {
+	/**
+	 * Syncronizes the onboarding state of the publication with the API.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	*syncPublicationOnboardingState() {
+		const registry = yield commonActions.getRegistry();
+		const modules = registry.select( CORE_MODULES ).getModules();
+
+		if ( modules === undefined ) {
+			return;
+		}
+
+		const connected = registry
+			.select( CORE_MODULES )
+			.isModuleConnected( 'reader-revenue-manager' );
+
+		// If the module is not connected, do not attempt to sync the onboarding state.
+		if ( ! connected ) {
+			return;
+		}
+
+		const publicationID = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationID();
+
+		// If there is no publication ID, do not attempt to sync the onboarding state.
+		if ( publicationID === undefined ) {
+			return;
+		}
+
+		const publications = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublications();
+
+		// If there are no publications, do not attempt to sync the onboarding state.
+		if ( publications === undefined ) {
+			return;
+		}
+
+		const publication = publications.find(
+			( { publicationId } ) => publicationId === publicationID
+		);
+
+		const { onboardingState } = publication;
+		const currentOnboardingState = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationOnboardingState();
+
+		let settings = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getSettings();
+
+		if ( onboardingState !== currentOnboardingState ) {
+			settings = {
+				...settings,
+				publicationOnboardingState: onboardingState,
+			};
+		}
+
+		settings = {
+			...settings,
+			/* eslint-disable-next-line sitekit/no-direct-date */
+			publicationOnboardingStateLastSyncedAtMs: Date.now(),
+		};
+
+		yield registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setSettings( settings );
+
+		yield registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.saveSettings( settings );
+	},
+};
 
 const baseControls = {};
 

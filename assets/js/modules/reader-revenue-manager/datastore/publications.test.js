@@ -1,3 +1,4 @@
+/* eslint-disable sitekit/acronym-case */
 /**
  * `modules/reader-revenue-manager` data store: publications tests.
  *
@@ -23,8 +24,12 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	untilResolved,
+	provideModules,
+	provideUserInfo,
+	provideModuleRegistrations,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { enabledFeatures } from '../../../features';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 describe( 'modules/reader-revenue-manager publications', () => {
@@ -34,12 +39,106 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
 
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	);
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
 
 	beforeEach( () => {
+		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
+	} );
+
+	describe( 'actions', () => {
+		beforeEach( () => {
+			// Make sure the RRM module is active and connected.
+			const extraData = [
+				{
+					slug: 'reader-revenue-manager',
+					active: true,
+					connected: true,
+				},
+			];
+
+			provideUserInfo( registry );
+			provideModules( registry, extraData );
+			provideModuleRegistrations( registry, extraData );
+		} );
+
+		describe( 'syncPublicationOnboardingState', () => {
+			it( 'should return undefined when no publication ID is present', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {} );
+
+				const syncStatus = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				expect( syncStatus ).toBeUndefined();
+			} );
+
+			it( 'should update the settings and call saveSettings', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 0 ];
+
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState: 'PENDING_VERIFICATION',
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				fetchMock.post( settingsEndpoint, {
+					body: {
+						...settings,
+						publicationOnboardingState:
+							'ONBOARDING_STATE_UNSPECIFIED',
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				const updatedSettings = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getSettings();
+
+				expect( fetchMock ).toHaveFetched( settingsEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( updatedSettings.publicationID ).toBe( 'ABCDEFGH' );
+				expect( updatedSettings.publicationOnboardingState ).toBe(
+					'ONBOARDING_STATE_UNSPECIFIED'
+				);
+				expect(
+					updatedSettings.publicationOnboardingStateLastSyncedAtMs
+				).not.toBe( 0 );
+
+				// Ensure that date is within the last 5 seconds.
+				expect(
+					updatedSettings.publicationOnboardingStateLastSyncedAtMs
+				).toBeLessThanOrEqual( Date.now() );
+
+				expect(
+					updatedSettings.publicationOnboardingStateLastSyncedAtMs
+				).toBeGreaterThan( Date.now() - 5000 );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
