@@ -260,7 +260,6 @@ class AdSenseTest extends TestCase {
 
 		$this->assertStringContainsString( 'google-adsense-platform-domain', $output );
 		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output );
-
 	}
 
 	/**
@@ -421,7 +420,7 @@ class AdSenseTest extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() {
+			function () {
 				$response = new AdBlockingRecoveryTag();
 				$response->setTag( 'test-recovery-tag' );
 				$response->setErrorProtectionCode( 'test-error-protection-code' );
@@ -460,7 +459,7 @@ class AdSenseTest extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() {
+			function () {
 				$mock_alert_severe = new Alert();
 				$mock_alert_severe->setSeverity( 'SEVERE' );
 
@@ -503,7 +502,7 @@ class AdSenseTest extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() {
+			function () {
 				$mock_alert_severe = new Alert();
 				$mock_alert_severe->setSeverity( 'SEVERE' );
 

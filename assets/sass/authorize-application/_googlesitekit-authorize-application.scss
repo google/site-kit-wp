@@ -184,6 +184,14 @@ html[dir="rtl"] .googlesitekit-authorize-application__footer {
 	background-color: $c-authorize-application-sys-light-primary;
 	border: none;
 	color: $c-authorize-application-sys-light-on-primary;
+
+	&:hover {
+		box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset;
+	}
+
+	&:focus {
+		box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.12) inset;
+	}
 }
 
 #reject {
@@ -191,6 +199,14 @@ html[dir="rtl"] .googlesitekit-authorize-application__footer {
 	background-color: $c-authorize-application-sys-light-on-primary;
 	border: 1px solid $c-authorize-application-sys-light-outline;
 	color: $c-authorize-application-sys-light-primary;
+
+	&:hover {
+		box-shadow: 0 0 0 1000px rgba(11, 87, 208, 0.08) inset;
+	}
+
+	&:focus {
+		box-shadow: 0 0 0 1000px rgba(11, 87, 208, 0.12) inset;
+	}
 }
 
 #description-approve {

@@ -126,5 +126,4 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 		 */
 		do_action( "googlesitekit_{$this->module_slug}_init_tag", $this->tag_id );
 	}
-
 }

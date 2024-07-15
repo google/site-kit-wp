@@ -360,5 +360,4 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
 		$this->assertEquals( $expected, $this->settings->get() );
 	}
-
 }

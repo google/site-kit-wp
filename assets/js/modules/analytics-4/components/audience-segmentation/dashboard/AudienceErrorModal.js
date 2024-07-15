@@ -129,6 +129,7 @@ export default function AudienceErrorModal( {
 				handleConfirm={ onRetry }
 				confirmButton={ confirmButton }
 				handleDialog={ onCancel }
+				onClose={ onCancel }
 				danger
 				inProgress={ inProgress }
 			/>

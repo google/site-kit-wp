@@ -135,5 +135,4 @@ class REST_Dashboard_Sharing_Controller {
 			),
 		);
 	}
-
 }

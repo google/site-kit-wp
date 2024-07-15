@@ -492,7 +492,7 @@ class Google_ProxyTest extends TestCase {
 	 * @group ms-excluded
 	 */
 	public function test_get_platform() {
-		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText
 	}
 
 	/**
@@ -634,7 +634,7 @@ class Google_ProxyTest extends TestCase {
 	private function mock_http_failure( $request_url, $response_error ) {
 		add_filter(
 			'pre_http_request',
-			function( $response, $parsed_args, $url ) use ( $request_url, $response_error ) {
+			function ( $response, $parsed_args, $url ) use ( $request_url, $response_error ) {
 				if ( $url === $request_url ) {
 					return $response_error;
 				} else {
@@ -645,5 +645,4 @@ class Google_ProxyTest extends TestCase {
 			3
 		);
 	}
-
 }

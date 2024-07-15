@@ -25,7 +25,8 @@ use WP_Query;
  * @group Util
  */
 class Entity_FactoryTest extends TestCase {
-	use Fake_Site_Connection_Trait, FixWPCoreEntityRewriteTrait;
+	use Fake_Site_Connection_Trait;
+	use FixWPCoreEntityRewriteTrait;
 
 	private static $orig_permalink_structure;
 	private static $orig_show_on_front;
@@ -301,7 +302,7 @@ class Entity_FactoryTest extends TestCase {
 
 		add_filter(
 			'option_home',
-			function() {
+			function () {
 				return 'https://example.com';
 			}
 		);
