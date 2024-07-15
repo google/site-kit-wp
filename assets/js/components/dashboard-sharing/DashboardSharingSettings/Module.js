@@ -53,6 +53,8 @@ import {
 	PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
 	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
+import WarningNotice from '../../WarningNotice';
+import Link from '../../Link';
 
 const viewAccessOptions = [
 	{
@@ -65,14 +67,25 @@ const viewAccessOptions = [
 	},
 ];
 
-export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
+export default function Module( {
+	moduleSlug,
+	moduleName,
+	ownerUsername,
+	recoverable,
+} ) {
 	const viewContext = useViewContext();
 	const moduleRef = useRef();
 
 	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
+
+	const hasRecoverableModules = useSelect(
+		( select ) => !! select( CORE_MODULES ).getRecoverableModules()
+	);
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
+	const showManageColumn = hasRecoverableModules || hasMultipleAdmins;
+
 	const management = useSelect(
 		( select ) =>
 			select( CORE_MODULES ).getSharingManagement( moduleSlug ) ?? 'owner'
@@ -97,6 +110,12 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	);
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_MODULES ).isDoingSubmitSharingChanges()
+	);
+
+	const recoverableModuleSupportLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing-module-recovery'
+		)
 	);
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );
@@ -180,7 +199,35 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					/>
 				) }
 
-				{ ! hasSharingCapability && (
+				{ recoverable && (
+					<WarningNotice>
+						{ createInterpolateElement(
+							sprintf(
+								/* translators: 1: The warning message. 2: "Learn more" link. */
+								__(
+									'%1$s. <Link>%2$s</Link>',
+									'google-site-kit'
+								),
+								__(
+									'Managing user required to manage view access',
+									'google-site-kit'
+								),
+								__( 'Learn more', 'google-site-kit' )
+							),
+							{
+								Link: (
+									<Link
+										href={ recoverableModuleSupportLink }
+										external
+										hideExternalIndicator
+									/>
+								),
+							}
+						) }
+					</WarningNotice>
+				) }
+
+				{ ! recoverable && ! hasSharingCapability && (
 					<p className="googlesitekit-dashboard-sharing-settings__note">
 						{ __(
 							'Contact managing user to manage view access',
@@ -190,7 +237,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 				) }
 			</div>
 
-			{ hasMultipleAdmins && (
+			{ showManageColumn && (
 				<div className="googlesitekit-dashboard-sharing-settings__column--manage">
 					{ sharedOwnershipModule && (
 						<p className="googlesitekit-dashboard-sharing-settings__note">
