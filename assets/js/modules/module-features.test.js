@@ -25,10 +25,10 @@ import {
 	provideUserInfo,
 	provideModuleRegistrations,
 } from '../../../tests/js/utils';
-import { enabledFeatures } from '../features';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { enabledFeatures } from '../features';
 
-it( 'ensures all serviceURLs are properly constructed', () => {
+it( 'ensures all features are defined as expected.', () => {
 	const registry = createTestRegistry();
 	enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 
