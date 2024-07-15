@@ -57,7 +57,7 @@ class PopupMaker extends Conversion_Events_Provider {
 		$script = new Script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'          => $this->context->url( 'dist/assets/js/popup-maker.js' ),
+				'src'          => $this->context->url( 'dist/assets/js/googlesitekit-events-provider-popup-maker.js' ),
 				'dependencies' => array( 'popup-maker-site' ),
 				'execution'    => 'defer',
 			)

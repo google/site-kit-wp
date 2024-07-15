@@ -279,7 +279,7 @@ export const createSettingsStore = (
 		 * @since 1.6.0
 		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
 		 * @since 1.129.0 Changed the approach to use validateHaveSettingsChanged callback.
-		 * @since n.e.x.t Updated implementation to use safeSelector and dangerousSelector returned from createValidationSelector.
+		 * @since 1.131.0 Updated implementation to use safeSelector and dangerousSelector returned from createValidationSelector.
 		 *
 		 * @param {Object}     state Data store's state.
 		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.

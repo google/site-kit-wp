@@ -1,0 +1,90 @@
+/**
+ * Consent Mode Setup CTA styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *		 https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-consent-mode-setup-cta-widget {
+
+		.googlesitekit-setup-cta-banner__primary-cell {
+			padding: $grid-gap-phone + 4px $grid-gap-phone 0;
+
+			@media (min-width: $width-tablet + px) {
+				padding: $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__cells {
+			display: grid;
+			grid-template-columns: 1fr;
+
+			@media (min-width: $width-xlarge + 1 + px) {
+				gap: 48px;
+				grid-template-columns: 1fr 1fr;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__title {
+
+			@media (min-width: $width-tablet + px) {
+				font-size: $fs-headline-sm;
+				font-weight: $fw-normal;
+				letter-spacing: 0;
+				line-height: $lh-headline-sm;
+			}
+
+			@media (min-width: $width-xlarge + 1 + px) {
+				font-size: $fs-headline-md;
+				line-height: $lh-headline-md;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__description {
+			letter-spacing: $ls-xs;
+
+			@media (min-width: $width-tablet + px) {
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+			}
+
+			@media (min-width: $width-xlarge + 1 + px) {
+				letter-spacing: $ls-m;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__svg-wrapper {
+			min-height: 136px;
+
+			@media (min-width: $width-xsmall + 1 + px) {
+				min-height: 158px;
+			}
+
+			svg {
+				@media (min-width: $width-desktop + 1 + px) {
+					scale: 1;
+					top: 0;
+				}
+
+				@media (min-width: $width-xlarge + 1 + px) {
+					scale: 1.31;
+					top: 18px;
+				}
+			}
+		}
+	}
+}

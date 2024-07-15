@@ -20,7 +20,7 @@ use WP_REST_Response;
 /**
  * REST Authentication Controller Class.
  *
- * @since n.e.x.t
+ * @since 1.131.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ final class REST_Authentication_Controller {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 * @var Authentication
 	 */
 	protected $authentication;
@@ -36,7 +36,7 @@ final class REST_Authentication_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param Authentication $authentication Authentication instance.
 	 */
@@ -47,7 +47,7 @@ final class REST_Authentication_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 */
 	public function register() {
 		add_filter(
@@ -74,7 +74,7 @@ final class REST_Authentication_Controller {
 	 * Gets related REST routes.
 	 *
 	 * @since 1.3.0
-	 * @since n.e.x.t Moved to REST_Authentication_Controller class.
+	 * @since 1.131.0 Moved to REST_Authentication_Controller class.
 	 *
 	 * @return array List of REST_Route objects.
 	 */

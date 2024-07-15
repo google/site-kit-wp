@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
+use WP_Error;
 
 /**
  * Class for handling Consent Mode.
@@ -95,6 +96,10 @@ class REST_Consent_Mode_Controller {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
+		$can_update_plugins = function () {
+			return current_user_can( Permissions::UPDATE_PLUGINS );
+		};
+
 		return array(
 			new REST_Route(
 				'core/site/data/consent-mode',
@@ -150,11 +155,10 @@ class REST_Consent_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							$is_active  = function_exists( 'wp_set_consent' );
-							$installed  = $is_active;
-							$plugin_uri = 'https://wordpress.org/plugins/wp-consent-api';
-							$slug       = '';
-							$plugin     = '';
+							$is_active = function_exists( 'wp_set_consent' );
+							$installed = $is_active;
+							$slug      = 'wp-consent-api';
+							$plugin    = "$slug/$slug.php";
 
 							$response = array(
 								'hasConsentAPI' => $is_active,
@@ -164,18 +168,12 @@ class REST_Consent_Mode_Controller {
 								if ( ! function_exists( 'get_plugins' ) ) {
 									require_once ABSPATH . 'wp-admin/includes/plugin.php';
 								}
-								foreach ( get_plugins() as $plugin_file => $installed_plugin ) {
-									if ( $installed_plugin['PluginURI'] === $plugin_uri ) {
-										$slug      = $installed_plugin['TextDomain'];
-										$plugin    = $plugin_file;
+								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
+									if ( $installed_plugin === $plugin ) {
 										$installed = true;
 										break;
 									}
 								}
-
-								// If the plugin is not installed, set fallback slug and plugin objects.
-								$slug   = ! empty( $slug ) ? $slug : 'wp-consent-api';
-								$plugin = ! empty( $plugin ) ? $plugin : "$slug/$slug.php";
 
 								// Alternate wp_nonce_url without esc_html breaking query parameters.
 								$nonce_url = function ( $action_url, $action ) {
@@ -196,6 +194,29 @@ class REST_Consent_Mode_Controller {
 						'permission_callback' => $can_manage_options,
 					),
 				)
+			),
+			new REST_Route(
+				'core/site/data/consent-api-activate',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function () {
+							require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+							$slug      = 'wp-consent-api';
+							$plugin    = "$slug/$slug.php";
+
+							$activated = activate_plugin( $plugin );
+
+							if ( is_wp_error( $activated ) ) {
+								return new WP_Error( 'invalid_module_slug', $activated->get_error_message() );
+							}
+
+							return new WP_REST_Response( array( 'success' => true ) );
+						},
+						'permission_callback' => $can_update_plugins,
+					),
+				),
 			),
 		);
 	}

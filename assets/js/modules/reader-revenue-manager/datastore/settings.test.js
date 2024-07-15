@@ -24,6 +24,12 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	INVARIANT_INVALID_PUBLICATION_ID,
+	INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE,
+	validateCanSubmitChanges,
+} from './settings';
 
 describe( 'modules/reader-revenue-manager settings', () => {
 	let registry;
@@ -45,8 +51,52 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	describe( 'validateCanSubmitChanges', () => {
-		it( 'it validates', () => {
-			//  TODO: Implement tests as part of #8793.
+		it( 'should throw invariant error for invalid publication ID of type number', () => {
+			const settings = {
+				publicationID: 12345,
+				publicationOnboardingState: '',
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PUBLICATION_ID
+			);
+		} );
+
+		it( 'should throw invariant error for invalid publication ID with special chars', () => {
+			const settings = {
+				publicationID: 'ABCD&*12345',
+				publicationOnboardingState: 'ONBOARDING_ACTION_REQUIRED',
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PUBLICATION_ID
+			);
+		} );
+
+		it( 'should throw invariant error for invalid publication onboarding state', () => {
+			const settings = {
+				publicationID: 'ABCDEFGH',
+				publicationOnboardingState: 'invalid_state',
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE
+			);
 		} );
 	} );
 } );

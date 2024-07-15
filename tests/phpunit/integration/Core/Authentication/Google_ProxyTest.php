@@ -452,7 +452,7 @@ class Google_ProxyTest extends TestCase {
 			array(
 				'site_id'                => $site_id,
 				'site_secret'            => $site_secret,
-				'platform'               => is_multisite() ? 'wordpress-multisite/google-site-kit' : 'WordPress/google-site-kit',
+				'platform'               => is_multisite() ? 'wordpress-multisite/google-site-kit' : 'wordpress/google-site-kit',
 				'version'                => GOOGLESITEKIT_VERSION,
 				'platform_version'       => $wp_version,
 				'user_count'             => 5, // 1 default admin + 1 admin + 2 editors + 1 subscriber.
@@ -492,7 +492,7 @@ class Google_ProxyTest extends TestCase {
 	 * @group ms-excluded
 	 */
 	public function test_get_platform() {
-		$this->assertEquals( 'WordPress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText
 	}
 
 	/**
