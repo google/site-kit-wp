@@ -14,4 +14,24 @@
  * limitations under the License.
  */
 
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../constants';
+
 export const CORE_NOTIFICATIONS = 'core/notifications';
+
+export const NOTIFICATION_AREAS = {
+	ERRORS: 'notification-area-errors',
+	BANNERS_ABOVE_NAV: 'notification-area-banners-above-nav',
+	BANNERS_BELOW_NAV: 'notification-area-banners-below-nav',
+};
+
+export const NOTIFICATION_VIEW_CONTEXTS = [
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+];
