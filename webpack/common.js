@@ -117,6 +117,13 @@ exports.manifestArgs = ( mode ) => ( {
 				seedObj[ 'googlesitekit-components' ] =
 					seedObj[ 'googlesitekit-components' ] || [];
 
+				// Filter out any existing duplicate entries, when rebuilding during hot reload.
+				seedObj[ 'googlesitekit-components' ] = seedObj[
+					'googlesitekit-components'
+				].filter(
+					( existingEntry ) => existingEntry[ 0 ] !== file.path
+				);
+
 				seedObj[ 'googlesitekit-components' ].push(
 					entry( file.path, file.chunk.contentHash.javascript )
 				);
