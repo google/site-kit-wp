@@ -25,6 +25,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
+import { PublicationSelect } from '../common';
 
 export default function SetupMain() {
 	return (
@@ -41,7 +42,13 @@ export default function SetupMain() {
 				) }
 			</h2>
 
-			{ /* TODO: Add the rest of the setup steps */ }
+			<div>
+				<p>
+					This is just added as a placeholder component to assist with
+					testing.
+				</p>
+				<PublicationSelect />
+			</div>
 		</div>
 	);
 }
