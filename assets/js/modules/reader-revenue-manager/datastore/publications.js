@@ -58,20 +58,22 @@ const baseActions = {
 	 */
 	*syncPublicationOnboardingState() {
 		const registry = yield commonActions.getRegistry();
-		const modules = registry.select( CORE_MODULES ).getModules();
-
-		if ( modules === undefined ) {
-			return;
-		}
-
-		const connected = registry
-			.select( CORE_MODULES )
-			.isModuleConnected( 'reader-revenue-manager' );
+		const connected = yield commonActions.await(
+			registry
+				.resolveSelect( CORE_MODULES )
+				.isModuleConnected( 'reader-revenue-manager' )
+		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
 		if ( ! connected ) {
 			return;
 		}
+
+		yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getSettings()
+		);
 
 		const publicationID = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
@@ -85,11 +87,6 @@ const baseActions = {
 		const publications = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublications();
-
-		// If there are no publications, do not attempt to sync the onboarding state.
-		if ( publications === undefined ) {
-			return;
-		}
 
 		const publication = publications.find(
 			( { publicationId } ) => publicationId === publicationID
@@ -117,17 +114,16 @@ const baseActions = {
 			publicationOnboardingStateLastSyncedAtMs: Date.now(),
 		};
 
-		yield registry
+		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setSettings( settings );
 
-		yield registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.saveSettings( settings );
+		// Save the settings to the API.
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
 
 		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
 		if ( onboardingState === ONBOARDING_STATE_COMPLETE ) {
-			yield registry
+			registry
 				.dispatch( CORE_UI )
 				.setValue(
 					UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
@@ -154,8 +150,8 @@ const baseResolvers = {
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublications();
 		if ( publications === undefined ) {
-			yield baseActions.syncPublicationOnboardingState();
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
+			yield baseActions.syncPublicationOnboardingState();
 		}
 	},
 };
