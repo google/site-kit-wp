@@ -52,7 +52,7 @@ class Pointers {
 
 		$active_pointers = array_filter(
 			$pointers,
-			function( Pointer $pointer ) use ( $hook_suffix ) {
+			function ( Pointer $pointer ) use ( $hook_suffix ) {
 				return $pointer->is_active( $hook_suffix );
 			}
 		);
@@ -66,7 +66,7 @@ class Pointers {
 
 		add_action(
 			'admin_print_footer_scripts',
-			function() use ( $active_pointers ) {
+			function () use ( $active_pointers ) {
 				foreach ( $active_pointers as $pointer ) {
 					$this->print_pointer_script( $pointer );
 				}
@@ -93,7 +93,7 @@ class Pointers {
 
 		return array_filter(
 			$pointers,
-			function( $pointer ) {
+			function ( $pointer ) {
 				return $pointer instanceof Pointer;
 			}
 		);

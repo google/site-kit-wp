@@ -80,5 +80,4 @@ class Dashboard_Sharing {
 		$this->activity_metrics->register();
 		$this->view_only_pointer->register();
 	}
-
 }

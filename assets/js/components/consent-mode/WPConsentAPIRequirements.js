@@ -27,12 +27,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import InfoCircle from '../../../../assets/svg/icons/info-circle.svg';
 import Link from '../Link';
+import ErrorText from '../ErrorText';
 import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
@@ -53,6 +54,21 @@ export default function WPConsentAPIRequirements() {
 
 	const { hasConsentAPI, wpConsentPlugin } = useSelect( ( select ) =>
 		select( CORE_SITE ).getConsentAPIInfo()
+	);
+
+	const { installActivateWPConsentAPI, activateConsentAPI } =
+		useDispatch( CORE_SITE );
+
+	const isInstallingAndActivating = useSelect( ( select ) =>
+		select( CORE_SITE ).isApiFetching()
+	);
+
+	const isActivating = useSelect( ( select ) =>
+		select( CORE_SITE ).isFetchingActivateConsentAPI()
+	);
+
+	const apiInstallResponse = useSelect( ( select ) =>
+		select( CORE_SITE ).getApiInstallResponse()
 	);
 
 	const cellProps = {
@@ -132,42 +148,80 @@ export default function WPConsentAPIRequirements() {
 									{ ! hasConsentAPI && (
 										<Fragment>
 											{ wpConsentPlugin.installed && (
-												<Button
-													className="googlesitekit-settings-consent-mode-requirement__install-button"
-													href={
-														wpConsentPlugin.activateURL
-													}
-													onClick={ async () => {
-														await trackEvent(
-															`${ viewContext }_CoMo`,
-															'wp_consent_api_activate'
-														);
-													} }
-												>
-													{ __(
-														'Activate',
-														'google-site-kit'
+												<Fragment>
+													{ !! apiInstallResponse?.error && (
+														<ErrorText
+															message={
+																apiInstallResponse
+																	?.error
+																	?.message
+															}
+														/>
 													) }
-												</Button>
+													<SpinnerButton
+														className="googlesitekit-settings-consent-mode-requirement__install-button"
+														isSaving={
+															isActivating
+														}
+														disabled={
+															isActivating
+														}
+														onClick={ async () => {
+															activateConsentAPI();
+															await trackEvent(
+																`${ viewContext }_CoMo`,
+																'wp_consent_api_activate'
+															);
+														} }
+													>
+														{ !! apiInstallResponse?.error
+															? __(
+																	'Retry',
+																	'google-site-kit'
+															  )
+															: __(
+																	'Activate',
+																	'google-site-kit'
+															  ) }
+													</SpinnerButton>
+												</Fragment>
 											) }
 											{ ! wpConsentPlugin.installed && (
-												<Button
-													className="googlesitekit-settings-consent-mode-requirement__install-button"
-													href={
-														wpConsentPlugin.installURL
-													}
-													onClick={ async () => {
-														await trackEvent(
-															`${ viewContext }_CoMo`,
-															'wp_consent_api_install'
-														);
-													} }
-												>
-													{ __(
-														'Install',
-														'google-site-kit'
+												<Fragment>
+													{ !! apiInstallResponse?.error && (
+														<ErrorText
+															message={
+																apiInstallResponse.error
+															}
+														/>
 													) }
-												</Button>
+													<SpinnerButton
+														className="googlesitekit-settings-consent-mode-requirement__install-button"
+														isSaving={
+															isInstallingAndActivating
+														}
+														disabled={
+															isInstallingAndActivating
+														}
+														onClick={ async () => {
+															installActivateWPConsentAPI();
+															await trackEvent(
+																`${ viewContext }_CoMo`,
+																'wp_consent_api_install'
+															);
+														} }
+													>
+														{ !! apiInstallResponse?.error
+															? __(
+																	'Retry',
+																	'google-site-kit'
+															  )
+															: __(
+																	'Install',
+																	'google-site-kit'
+															  ) }
+													</SpinnerButton>
+												</Fragment>
 											) }
 										</Fragment>
 									) }

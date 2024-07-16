@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 import { useMount } from 'react-use';
 
 /**
@@ -69,15 +69,9 @@ import {
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import useViewOnly from '../hooks/useViewOnly';
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import {
-	EDIT_SCOPE,
-	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULES_ANALYTICS_4,
-} from '../modules/analytics-4/datastore/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
+import ModuleDashboardEffects from './ModuleDashboardEffects';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
@@ -95,26 +89,6 @@ export default function DashboardMainApp() {
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
 
-	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
-		select( CORE_SITE ).isKeyMetricsSetupCompleted()
-	);
-
-	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const hasAnalyticsEditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( EDIT_SCOPE )
-	);
-
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_CUSTOM_DIMENSIONS_CREATE,
-			'autoSubmit'
-		)
-	);
-
-	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const grantedScopes = useSelect( ( select ) =>
@@ -166,36 +140,6 @@ export default function DashboardMainApp() {
 		hasReceivedGrantedScopes,
 		setValues,
 		temporaryPersistedPermissionsError,
-	] );
-
-	const createDimensionsAndUpdateForm = useCallback( async () => {
-		await createCustomDimensions();
-		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-			isAutoCreatingCustomDimensions: false,
-		} );
-	}, [ createCustomDimensions, setValues ] );
-
-	useEffect( () => {
-		if (
-			isKeyMetricsSetupCompleted &&
-			isGA4Connected &&
-			hasAnalyticsEditScope &&
-			autoSubmit
-		) {
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				autoSubmit: false,
-				isAutoCreatingCustomDimensions: true,
-			} );
-			createDimensionsAndUpdateForm();
-		}
-	}, [
-		autoSubmit,
-		createCustomDimensions,
-		hasAnalyticsEditScope,
-		isKeyMetricsSetupCompleted,
-		isGA4Connected,
-		setValues,
-		createDimensionsAndUpdateForm,
 	] );
 
 	const viewableModules = useSelect( ( select ) => {
@@ -268,6 +212,7 @@ export default function DashboardMainApp() {
 	return (
 		<Fragment>
 			<ScrollEffect />
+			<ModuleDashboardEffects />
 
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />

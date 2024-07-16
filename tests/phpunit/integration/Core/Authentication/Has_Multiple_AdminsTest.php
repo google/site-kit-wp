@@ -49,5 +49,4 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->transients->delete( Has_Multiple_Admins::OPTION );
 		$this->assertTrue( $has_multiple_admins->get() );
 	}
-
 }

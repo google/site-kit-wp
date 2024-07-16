@@ -17,34 +17,6 @@
  */
 
 /**
- * Returns a copy of the provided Analytics report with all metric values replaced with zero.
- *
- * @since 1.95.0
- *
- * @param {Array<Object>} report Array containing Analytics report object(s).
- * @return {Array<Object>} Array containing zeroed Analytics report object(s).
- */
-export function replaceValuesInAnalyticsReportWithZeroData( report ) {
-	const zeroValues = ( { values } ) => ( {
-		values: values.map( () => 0 ),
-	} );
-
-	return report.map( ( single ) => ( {
-		...single,
-		data: {
-			...single.data,
-			totals: single.data.totals.map( zeroValues ),
-			maximums: single.data.maximums.map( zeroValues ),
-			minimums: single.data.minimums.map( zeroValues ),
-			rows: single.data.rows.map( ( { dimensions, metrics } ) => ( {
-				dimensions,
-				metrics: metrics.map( zeroValues ),
-			} ) ),
-		},
-	} ) );
-}
-
-/**
  * Returns a copy of the provided Analytics 4 report with all values removed,
  * matching the format of an empty report.
  *

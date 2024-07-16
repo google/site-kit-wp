@@ -1,5 +1,5 @@
 /**
- * Conversion event providers config webpack partial.
+ * Frontend modules config webpack partial.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -35,6 +35,10 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
+		// Consent Mode
+		'googlesitekit-consent-mode':
+			'./assets/js/consent-mode/consent-mode.js',
+		// Event Providers
 		'googlesitekit-events-provider-contact-form-7':
 			'./assets/js/event-providers/contact-form-7.js',
 		'googlesitekit-events-provider-easy-digital-downloads':
@@ -72,7 +76,16 @@ module.exports = ( mode ) => ( {
 							babelrc: false,
 							configFile: false,
 							cacheDirectory: true,
-							presets: [ '@wordpress/default' ],
+							presets: [
+								[
+									'@babel/preset-env',
+									{
+										targets: {
+											browsers: [ '> 0.25%', 'not dead' ],
+										},
+									},
+								],
+							],
 						},
 					},
 				],
@@ -82,7 +95,7 @@ module.exports = ( mode ) => ( {
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Conversion Providers',
+			name: 'Frontend Modules',
 			color: '#34dbeb',
 		} ),
 		new ManifestPlugin( {

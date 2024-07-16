@@ -50,17 +50,17 @@ final class REST_Routes {
 	public function register() {
 		add_action(
 			'rest_api_init',
-			function() {
+			function () {
 				$this->register_routes();
 			}
 		);
 
 		add_filter(
 			'do_parse_request',
-			function( $do_parse_request, $wp ) {
+			function ( $do_parse_request, $wp ) {
 				add_filter(
 					'query_vars',
-					function( $vars ) use ( $wp ) {
+					function ( $vars ) use ( $wp ) {
 						// Unsets standard public query vars to escape conflicts between WordPress core
 						// and Google Site Kit APIs which happen when WordPress incorrectly parses request
 						// arguments.

@@ -1,5 +1,5 @@
 /**
- * AudienceTileCollectingDataHideable component.
+ * AudienceTileCollectingData component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -30,31 +25,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../../components/Link';
-import VisibilityIcon from '../../../../../../../svg/icons/visibility.svg';
+import AudienceTileCollectingDataImage from '../../../../../../../../svg/graphics/audience-segmentation-collecting-data.svg';
 
-export default function AudienceTileCollectingDataHideable( { onHideTile } ) {
+export default function AudienceTileCollectingData() {
 	return (
 		<Fragment>
+			<AudienceTileCollectingDataImage className="googlesitekit-audience-segmentation-tile__zero-data-image" />
 			<p className="googlesitekit-audience-segmentation-tile__zero-data-description">
 				{ __(
-					'You can hide this group until data is available.',
+					'Site Kit is collecting data for this group.',
 					'google-site-kit'
 				) }
 			</p>
-			<Link
-				secondary
-				linkButton
-				className="googlesitekit-audience-segmentation-tile-hide-cta"
-				onClick={ onHideTile }
-				leadingIcon={ <VisibilityIcon width={ 22 } height={ 22 } /> }
-			>
-				{ __( 'Temporarily hide', 'google-site-kit' ) }
-			</Link>
 		</Fragment>
 	);
 }
-
-AudienceTileCollectingDataHideable.propTypes = {
-	onHideTile: PropTypes.func.isRequired,
-};

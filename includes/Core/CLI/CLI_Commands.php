@@ -51,5 +51,4 @@ class CLI_Commands {
 		WP_CLI::add_command( 'google-site-kit auth', new Authentication_CLI_Command( $this->context ) );
 		WP_CLI::add_command( 'google-site-kit reset', new Reset_CLI_Command( $this->context ) );
 	}
-
 }

@@ -24,7 +24,8 @@ use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
  * @ignore
  */
 class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interface, Setting_With_ViewOnly_Keys_Interface {
-	use Setting_With_Legacy_Keys_Trait, Setting_With_Owned_Keys_Trait;
+	use Setting_With_Legacy_Keys_Trait;
+	use Setting_With_Owned_Keys_Trait;
 
 	const OPTION = 'googlesitekit_adsense_settings';
 
@@ -213,7 +214,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return callable|null
 	 */
 	protected function get_sanitize_callback() {
-		return function( $option ) {
+		return function ( $option ) {
 			if ( is_array( $option ) ) {
 				if ( isset( $option['accountSetupComplete'] ) ) {
 					$option['accountSetupComplete'] = (bool) $option['accountSetupComplete'];

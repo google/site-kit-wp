@@ -56,9 +56,8 @@ trait User_Aware_Trait {
 
 		$this->user_id = (int) $user_id;
 
-		return function() use ( $prev_user_id ) {
+		return function () use ( $prev_user_id ) {
 			$this->user_id = $prev_user_id;
 		};
 	}
-
 }

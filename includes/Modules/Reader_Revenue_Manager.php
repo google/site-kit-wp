@@ -16,11 +16,18 @@ use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
 
@@ -31,8 +38,11 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Se
  * @access private
  * @ignore
  */
-final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity {
+final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 	use Module_With_Assets_Trait;
+	use Module_With_Data_Available_State_Trait;
+	use Module_With_Owner_Trait;
+	use Module_With_Settings_Trait;
 	use Module_With_Scopes_Trait;
 
 	/**
@@ -68,7 +78,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -81,9 +91,47 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
-	 * Checks if the current user has access to the current configured service entity.
+	 * Checks whether the module is connected.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$options = $this->get_settings()->get();
+
+		if ( ! empty( $options['publicationID'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
+	}
+
+	/**
+	 * Cleans up when the module is deactivated.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function on_deactivation() {
+		$this->get_settings()->delete();
+		$this->reset_data_available();
+	}
+
+	/**
+	 * Checks if the current user has access to the current configured service entity.
+	 *
+	 * @since 1.131.0
 	 *
 	 * @return boolean|WP_Error
 	 */
@@ -114,7 +162,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -127,7 +175,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -152,7 +200,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
@@ -189,7 +237,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Gets the filter for retrieving publications for the current site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return string Permutations for site hosts or URL.
 	 */
@@ -230,7 +278,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.131.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

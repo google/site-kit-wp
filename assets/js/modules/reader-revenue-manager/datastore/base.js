@@ -26,4 +26,10 @@ import { validateCanSubmitChanges } from './settings';
 export default Modules.createModuleStore( 'reader-revenue-manager', {
 	storeName: MODULES_READER_REVENUE_MANAGER,
 	validateCanSubmitChanges,
+	ownedSettingsSlugs: [ 'publicationID' ],
+	settingSlugs: [
+		'publicationID',
+		'publicationOnboardingState',
+		'publicationOnboardingStateLastSyncedAtMs',
+	],
 } );

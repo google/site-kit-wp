@@ -1,0 +1,37 @@
+/**
+ * Audience Segmentation NoAudienceBannerWidget styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-lean-cta-banner.googlesitekit-no-audience-banner {
+
+		.googlesitekit-lean-cta-banner__graphic {
+			padding-bottom: 26px;
+
+			svg {
+				max-height: 110px;
+			}
+
+			@media (min-width: $bp-nonTablet) {
+				padding-bottom: 20px;
+				padding-inline: 85px;
+				padding-top: 20px;
+			}
+		}
+	}
+}

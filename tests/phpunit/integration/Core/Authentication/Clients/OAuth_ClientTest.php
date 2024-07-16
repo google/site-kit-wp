@@ -577,8 +577,8 @@ class OAuth_ClientTest extends TestCase {
 			return $method->invoke( $client, $args );
 		};
 
-		$map_meta_cap = function( $user_id ) {
-			return function( $caps, $cap, $uid ) use ( $user_id ) {
+		$map_meta_cap = function ( $user_id ) {
+			return function ( $caps, $cap, $uid ) use ( $user_id ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap && $uid === $user_id ) {
 					return array( 'manage_options' );
 				}

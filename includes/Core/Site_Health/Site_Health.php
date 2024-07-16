@@ -85,5 +85,4 @@ class Site_Health {
 		$this->tag_placement->register();
 		$this->rest_controller->register();
 	}
-
 }
