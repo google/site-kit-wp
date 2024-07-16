@@ -99,7 +99,7 @@ jobs:
           cache: 'npm'
 
       - name: npm install
-        run: npm ci
+        run: npm i --legacy-peer-deps
 
       - name: Build
         run: npm run build:test

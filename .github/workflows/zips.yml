@@ -111,7 +111,7 @@ jobs:
           cache: 'npm'
       - name: npm install
         run: |
-          npm ci
+          npm i --legacy-peer-deps
       - name: Create destination directory and update file permissions
         run: |
           mkdir -p "${{ github.ref }}"
