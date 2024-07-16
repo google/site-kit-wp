@@ -50,7 +50,6 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
  * @return {JSX.Element}                   Publication Select component.
  */
 export default function PublicationSelect( props ) {
-	/* eslint-disable sitekit/acronym-case */
 	const {
 		isDisabled,
 		hasModuleAccess,
@@ -86,11 +85,14 @@ export default function PublicationSelect( props ) {
 			const newPublicationID = item.dataset.value;
 
 			const publication = publications.find(
+				// eslint-disable-next-line sitekit/acronym-case
 				( { publicationId } ) => publicationId === newPublicationID
 			);
 
+			// eslint-disable-next-line sitekit/acronym-case
 			const { publicationId, onboardingState } = publication;
 
+			// eslint-disable-next-line sitekit/acronym-case
 			setPublicationID( publicationId );
 			setPublicationOnboardingState( onboardingState );
 
@@ -104,9 +106,7 @@ export default function PublicationSelect( props ) {
 		]
 	);
 
-	if ( ! isValidPublicationID( publicationID ) ) {
-		return null;
-	} else if ( ! publicationsLoaded ) {
+	if ( ! publicationsLoaded ) {
 		// Display progress bar while publications are loading.
 		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
 	}
@@ -119,10 +119,7 @@ export default function PublicationSelect( props ) {
 	if ( hasModuleAccess === false ) {
 		return (
 			<Select
-				className={ classnames(
-					'googlesitekit-analytics-4__select-publication',
-					className
-				) }
+				className={ classnames( className ) }
 				label={ __( 'Publication', 'google-site-kit' ) }
 				value={ publicationID }
 				enhanced
@@ -136,13 +133,9 @@ export default function PublicationSelect( props ) {
 
 	return (
 		<Select
-			className={ classnames(
-				'googlesitekit-analytics-4__select-publication',
-				className,
-				{
-					'mdc-select--invalid': ! isValidSelection,
-				}
-			) }
+			className={ classnames( className, {
+				'mdc-select--invalid': ! isValidSelection,
+			} ) }
 			label={ __( 'Publication', 'google-site-kit' ) }
 			value={ publicationID }
 			onEnhancedChange={ onPublicationChange }
@@ -151,7 +144,9 @@ export default function PublicationSelect( props ) {
 			outlined
 		>
 			{ ( publications || [] ).map(
+				// eslint-disable-next-line sitekit/acronym-case
 				( { publicationId, displayName } ) => (
+					// eslint-disable-next-line sitekit/acronym-case
 					<Option key={ publicationId } value={ publicationId }>
 						{ displayName }
 					</Option>

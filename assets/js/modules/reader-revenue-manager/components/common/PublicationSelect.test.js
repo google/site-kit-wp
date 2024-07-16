@@ -1,5 +1,5 @@
 /**
- * GA4 Publicaion Select component tests.
+ * Publication Select component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -23,14 +23,12 @@ import PublicationSelect from './PublicationSelect';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
 import {
-	act,
 	createTestRegistry,
 	fireEvent,
 	render,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 
-/* eslint-disable sitekit/acronym-case */
 describe( 'PublicationSelect', () => {
 	let registry;
 
@@ -45,50 +43,30 @@ describe( 'PublicationSelect', () => {
 		);
 
 		dispatch( MODULES_READER_REVENUE_MANAGER ).setPublicationID(
+			// eslint-disable-next-line sitekit/acronym-case
 			publications[ 0 ].publicationId
 		);
 	} );
 
-	it( 'should return null if the publication ID is invalid.', async () => {
+	it( 'should render select if the publication ID is invalid.', async () => {
 		// Set the invalid publication ID.
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPublicationID( 'ABCD*&^' );
 
-		const { container, waitForRegistry } = render(
-			<PublicationSelect isDisabled={ false } />,
-			{
-				registry,
-			}
-		);
+		const { container, waitForRegistry } = render( <PublicationSelect />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 
-		// Component must return `null` for invalid publication ID.
-		expect( container.firstChild ).toBeNull();
-		expect( container ).toBeEmptyDOMElement();
-
-		act( () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.setPublicationID( publications[ 0 ].publicationId );
-		} );
-
 		// After we set a valid publication ID, the publication select should be visible.
-		expect(
-			container.querySelector(
-				'.googlesitekit-analytics-4__select-publication'
-			)
-		).toBeInTheDocument();
-
-		expect(
-			container.querySelector( '.mdc-select__selected-text' )
-		).toBeInTheDocument();
+		expect( container.querySelector( '.mdc-select' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render an option for each publication.', async () => {
 		const { getAllByRole, waitForRegistry } = render(
-			<PublicationSelect isDisabled={ false } />,
+			<PublicationSelect />,
 			{
 				registry,
 			}
@@ -100,12 +78,9 @@ describe( 'PublicationSelect', () => {
 		expect( listItems ).toHaveLength( publications.length );
 	} );
 
-	it( 'should disable the public select if the user does not have module access', async () => {
+	it( 'should disable the publication select if the user does not have module access', async () => {
 		const { container, getAllByRole, waitForRegistry } = render(
-			<PublicationSelect
-				isDisabled={ false }
-				hasModuleAccess={ false }
-			/>,
+			<PublicationSelect hasModuleAccess={ false } />,
 			{
 				registry,
 			}
@@ -116,35 +91,44 @@ describe( 'PublicationSelect', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
 
-		// Verify that the Publication select dropdown is disabled.
-		[
-			'.googlesitekit-analytics-4__select-publication',
-			'.mdc-select--disabled',
-		].forEach( ( className ) => {
-			expect( container.querySelector( className ) ).toBeInTheDocument();
-		} );
+		// Verify that the publication select dropdown is disabled.
+		expect(
+			container.querySelector( '.mdc-select--disabled' )
+		).toBeInTheDocument();
 	} );
 
-	it( 'should update publicationID in the store when a new item is selected', async () => {
-		const { container, getAllByRole, waitForRegistry } = render(
-			<PublicationSelect isDisabled={ false } />,
-			{
-				registry,
-			}
-		);
+	it.each( [
+		[ 'PQRSTUV', 'PENDING_VERIFICATION', 1 ],
+		[ 'IJKLMNOP', 'ONBOARDING_ACTION_REQUIRED', 2 ],
+	] )(
+		'should update publication ID to %s and onboarding state to %s in the store when a new item is selected with index %s',
+		async ( publicationID, onboardingState, index ) => {
+			const { container, getAllByRole, waitForRegistry } = render(
+				<PublicationSelect />,
+				{
+					registry,
+				}
+			);
 
-		await waitForRegistry();
+			await waitForRegistry();
 
-		const targetPublication = publications[ 1 ].publicationId;
+			// Click the label to expose the elements in the menu.
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			// Click this element to select it and fire the onChange event.
+			fireEvent.click(
+				getAllByRole( 'menuitem', { hidden: true } )[ index ]
+			);
 
-		// Click the label to expose the elements in the menu.
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+			const newPublicationID = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationID();
 
-		const newPublicationID = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublicationID();
-		expect( targetPublication ).toEqual( newPublicationID );
-	} );
+			const newOnboardingState = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationOnboardingState();
+
+			expect( publicationID ).toEqual( newPublicationID );
+			expect( onboardingState ).toEqual( newOnboardingState );
+		}
+	);
 } );
