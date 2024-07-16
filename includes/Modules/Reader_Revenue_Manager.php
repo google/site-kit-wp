@@ -25,9 +25,16 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
 
@@ -38,12 +45,13 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Se
  * @access private
  * @ignore
  */
-final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
+final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Owner, Module_With_Settings, Module_With_Tag {
 	use Module_With_Assets_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Owner_Trait;
-	use Module_With_Settings_Trait;
 	use Module_With_Scopes_Trait;
+	use Module_With_Settings_Trait;
+	use Module_With_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -57,6 +65,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		// Reader Revenue Manager tag placement logic.
+		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 	}
 
 	/**
@@ -302,5 +313,42 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			),
 		);
+	}
+
+	/**
+	 * Returns the Module_Tag_Matchers instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
+	 */
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
+	}
+
+	/**
+	 * Registers the Reader Revenue Manager tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register_tag() {
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		$tag = new Web_Tag( $settings['publicationID'], self::MODULE_SLUG );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $module_settings ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( ! $tag->can_register() ) {
+			return;
+		}
+
+		$tag->register();
 	}
 }
