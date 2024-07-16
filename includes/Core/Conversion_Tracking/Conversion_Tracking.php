@@ -143,7 +143,7 @@ class Conversion_Tracking {
 				window._googlesitekit.throttledEvents[ key ] = true;
 				setTimeout( () => {
 					delete window._googlesitekit.throttledEvents[ key ];
-				}, 20 );
+				}, 5 );
 
 				gtag( "event", name, { ...data, event_source: "site-kit" } );
 			}
