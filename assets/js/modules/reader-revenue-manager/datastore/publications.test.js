@@ -27,7 +27,7 @@ import {
 import * as fixtures from './__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATE,
+	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 
 describe( 'modules/reader-revenue-manager publications', () => {
@@ -155,7 +155,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					fixtures.publications.find(
 						( publication ) =>
 							publication.onboardingState ===
-							PUBLICATION_ONBOARDING_STATE.ONBOARDING_COMPLETE
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
 					);
 
 				registry
@@ -174,7 +174,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					( publication ) => ( {
 						...publication,
 						onboardingState:
-							PUBLICATION_ONBOARDING_STATE.PENDING_VERIFICATION,
+							PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
 					} )
 				);
 

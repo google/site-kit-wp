@@ -24,7 +24,7 @@ import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATE,
+	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 
 const fetchGetPublicationsStore = createFetchStore( {
@@ -69,7 +69,7 @@ const baseActions = {
 		const completedOnboardingPublication = publications.find(
 			( publication ) =>
 				publication.onboardingState ===
-				PUBLICATION_ONBOARDING_STATE.ONBOARDING_COMPLETE
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
 		);
 
 		return completedOnboardingPublication || publications[ 0 ];
