@@ -42,7 +42,7 @@ export const actions = {
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
 	 * @param {WPComponent}    [settings.Component]         React component used to display the contents of this notification.
-	 * @param {number}         [settings.priority]          Notification's priority for ordering (lower number is higher priority, like WordPress hooks). Ideally in increments of 10. Defaul 10.
+	 * @param {number}         [settings.priority]          Notification's priority for ordering (lower number is higher priority, like WordPress hooks). Ideally in increments of 10. Default 10.
 	 * @param {string}         [settings.areaSlug]          The slug of the area where the notification should be rendered, e.g. notification-area-banners-above-nav.
 	 * @param {Array.<string>} [settings.viewContexts]      Array of Site Kit contexts, e.g. VIEW_CONTEXT_MAIN_DASHBOARD.
 	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
