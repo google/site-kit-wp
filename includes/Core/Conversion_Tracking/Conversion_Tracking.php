@@ -137,15 +137,15 @@ class Conversion_Tracking {
 			window._googlesitekit.gtagEvent = (name, data) => {
 				var key = JSON.stringify( { name, data } );
 
-				if ( !!window._googlesitekit.throttledEvents[key] ) {
+				if ( !! window._googlesitekit.throttledEvents[ key ] ) {
 					return;
 				}
-				window._googlesitekit.throttledEvents[key] = true;
+				window._googlesitekit.throttledEvents[ key ] = true;
 				setTimeout( () => {
-					delete window._googlesitekit.throttledEvents[key];
-				}, 500 );
+					delete window._googlesitekit.throttledEvents[ key ];
+				}, 20 );
 
-				gtag("event", name, {...data, event_source: "site-kit" });
+				gtag( "event", name, { ...data, event_source: "site-kit" } );
 			}
 		';
 
