@@ -165,6 +165,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],
 	'googlesitekit-components': [ 'googlesitekit', 'components' ],
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
