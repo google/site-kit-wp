@@ -22,24 +22,21 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 
-function vrtHead() {
-	return fs.readFileSync(
-		path.resolve( __dirname, 'preview-head-vrt.html' ),
-		{
-			encoding: 'utf-8',
-		}
-	);
-}
+const vrtStyles = fs.readFileSync(
+	path.resolve( __dirname, 'preview-head-vrt.html' ),
+	{
+		encoding: 'utf-8',
+	}
+);
 
 module.exports = {
 	stories: [ '../stories/**/*.stories.js', '../assets/js/**/*.stories.js' ],
 	addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
-	previewHead: ( head ) => {
-		if ( process.env.VRT === '1' ) {
-			return `${ head }\n${ vrtHead() }`;
-		}
-
-		return head;
+	previewHead( head ) {
+		return process.env.VRT === '1' ? `${ head }\n${ vrtStyles }` : head;
 	},
 	staticDirs: [ '../dist' ],
+	core: {
+		disableTelemetry: true,
+	},
 };
