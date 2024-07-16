@@ -65,7 +65,7 @@ export default function SetupSuccess() {
 		dismissNotificationForUser().then( () => navigateTo( dashboardURL ) );
 	}
 
-	if ( isDismissed ) {
+	if ( isDismissed === undefined || isDismissed ) {
 		return null;
 	}
 

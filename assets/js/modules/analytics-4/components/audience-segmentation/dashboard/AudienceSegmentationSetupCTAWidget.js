@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,7 +41,6 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
-	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
@@ -92,10 +91,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
-	const hasAnalytics4EditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( EDIT_SCOPE )
-	);
-
 	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AUDIENCE_SEGMENTATION_SETUP_FORM,
@@ -103,22 +98,14 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const [ showErrorModal, setShowErrorModal ] = useState( false );
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			onError: () => {
 				setShowErrorModal( true );
 			},
 		} );
-
-	const [ showErrorModal, setShowErrorModal ] = useState( false );
-
-	// If the user ends up back on this component with the required scope granted,
-	// and already submitted the form, trigger the submit again.
-	useEffect( () => {
-		if ( hasAnalytics4EditScope && autoSubmit ) {
-			onEnableGroups();
-		}
-	}, [ hasAnalytics4EditScope, autoSubmit, onEnableGroups ] );
 
 	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
 		// We should call isGatheringData() within this component for completeness

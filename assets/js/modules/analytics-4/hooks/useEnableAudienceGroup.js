@@ -134,8 +134,8 @@ export default function useEnableAudienceGroup( {
 		onError,
 	] );
 
-	// If the user ends up back on this component with the required scope granted,
-	// and already submitted the form, trigger the submit again.
+	// If the user returns to the component using this hook with the required
+	// scope granted, and already submitted the form, trigger the submit again.
 	useEffect( () => {
 		if ( hasAnalytics4EditScope && autoSubmit ) {
 			onEnableGroups();

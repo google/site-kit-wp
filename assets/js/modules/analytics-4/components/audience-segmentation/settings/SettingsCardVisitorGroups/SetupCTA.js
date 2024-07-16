@@ -42,7 +42,7 @@ export default function SetupCTA() {
 		)
 	);
 
-	if ( isDismissed ) {
+	if ( isDismissed === undefined || isDismissed ) {
 		return null;
 	}
 
