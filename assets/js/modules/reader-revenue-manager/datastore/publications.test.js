@@ -42,6 +42,10 @@ import {
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
 
+	const getModulesEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/modules/data/list'
+	);
+
 	const publicationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
@@ -57,6 +61,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	beforeEach( () => {
 		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
+		provideUserInfo( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -69,8 +74,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					connected: true,
 				},
 			];
-
-			provideUserInfo( registry );
 			provideModules( registry, extraData );
 			provideModuleRegistrations( registry, extraData );
 		} );
@@ -196,10 +199,20 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	} );
 
 	describe( 'selectors', () => {
+		beforeEach( () => {
+			provideModules( registry );
+			provideModuleRegistrations( registry );
+		} );
+
 		describe( 'getPublications', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.get( publicationsEndpoint, {
 					body: fixtures.publications,
+					status: 200,
+				} );
+
+				fetchMock.get( getModulesEndpoint, {
+					body: undefined,
 					status: 200,
 				} );
 
