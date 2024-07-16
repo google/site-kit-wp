@@ -20,6 +20,7 @@
 import { CORE_NOTIFICATIONS } from './datastore/constants';
 
 export { registerStore } from './datastore';
+export { registerDefaults as registerNotifications } from './register-defaults';
 
 export function createNotifications( registry ) {
 	const { dispatch } = registry;
