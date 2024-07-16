@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation Get Help Link component.
+ * Audience Segmentation PartialDataBadge component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -24,30 +24,22 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Link from '../../../../../../components/Link';
+import InfoTooltip from '../../../../../../../components/InfoTooltip';
 
-export default function GetHelpLink( { linkURL } ) {
-	return createInterpolateElement(
-		__(
-			'Contact your administrator. Trouble getting access? <HelpLink />',
-			'google-site-kit'
-		),
-		{
-			HelpLink: (
-				<Link href={ linkURL } external hideExternalIndicator>
-					{ __( 'Get help', 'google-site-kit' ) }
-				</Link>
-			),
-		}
+export default function PartialDataBadge( { tooltipTitle } ) {
+	return (
+		<span className="googlesitekit-audience-segmentation-partial-data-badge">
+			{ __( 'Partial data', 'google-site-kit' ) }
+			{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
+		</span>
 	);
 }
 
-GetHelpLink.propTypes = {
-	linkURL: PropTypes.string.isRequired,
+PartialDataBadge.propTypes = {
+	tooltipTitle: PropTypes.node,
 };

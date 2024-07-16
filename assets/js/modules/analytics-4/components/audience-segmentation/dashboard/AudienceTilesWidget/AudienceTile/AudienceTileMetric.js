@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../../../../../../util';
+import { numFmt } from '../../../../../../../util';
 
 export default function AudienceTileMetric( {
 	TileIcon,

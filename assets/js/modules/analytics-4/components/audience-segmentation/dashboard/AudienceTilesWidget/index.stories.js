@@ -22,25 +22,25 @@
 import {
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+} from '../../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { getPreviousDate } from '../../../../../util';
+} from '../../../../datastore/constants';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { getPreviousDate } from '../../../../../../util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
-} from '../../../utils/data-mock';
+} from '../../../../utils/data-mock';
 import {
 	audiences as audiencesFixture,
 	availableAudiences,
-} from './../../../datastore/__fixtures__';
-import AudienceTilesWidget from './AudienceTilesWidget';
+} from '../../../../datastore/__fixtures__';
+import AudienceTilesWidget from './';
 
 function excludeAudienceFromReport( report, audienceResourceName ) {
 	const newRows = report.rows.filter(

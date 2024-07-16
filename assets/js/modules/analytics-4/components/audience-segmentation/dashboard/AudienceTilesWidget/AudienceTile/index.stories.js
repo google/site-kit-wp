@@ -19,20 +19,20 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import WithRegistrySetup from '../../../../../../../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from '../../../../../../../components/Root/ViewContextContext';
+import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+} from '../../../../../datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../googlesitekit/constants';
+} from '../../../../../../../googlesitekit/constants';
 import AudienceTile from '.';
-import { getPreviousDate } from '../../../../../../util';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { getPreviousDate } from '../../../../../../../util';
+import { withWidgetComponentProps } from '../../../../../../../googlesitekit/widgets/util';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
