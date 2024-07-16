@@ -64,7 +64,7 @@ jobs:
           cache: 'npm'
       - name: npm install
         run: |
-          npm i --legacy-peer-deps
+          npm ci
       - name: Build Storybook
         run: |
           npm run build:storybook
@@ -161,7 +161,7 @@ jobs:
           cache: 'npm'
       - name: npm install
         run: |
-          npm i --legacy-peer-deps
+          npm ci
       - name: Test Storybook
         run: |
           npm run test:storybook

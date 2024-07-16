@@ -46,7 +46,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - name: npm install
-        run: npm i --legacy-peer-deps
+        run: npm ci
       - name: Run Backstopjs
         run: npm run test:visualtest
       - name: Upload artifacts

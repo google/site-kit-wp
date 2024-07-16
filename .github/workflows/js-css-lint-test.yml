@@ -58,7 +58,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - name: npm install
-        run: npm i --legacy-peer-deps
+        run: npm ci
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       - name: CSS Lint
