@@ -38,6 +38,7 @@ import { enabledFeatures } from '../../../features';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
+	MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
@@ -72,7 +73,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			// Make sure the RRM module is active and connected.
 			const extraData = [
 				{
-					slug: 'reader-revenue-manager',
+					slug: MODULE_SLUG,
 					active: true,
 					connected: true,
 				},
@@ -98,7 +99,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( syncStatus ).toBeUndefined();
 			} );
 
-			it( 'should update the settings and call saveSettings', async () => {
+			it( 'should update the settings and call the saveSettings endpoint', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
@@ -130,14 +131,18 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.syncPublicationOnboardingState();
 
-				//expect( fetchMock ).toHaveFetched( settingsEndpoint );
+				// Set expectations for settings endpoint.
+				expect( fetchMock ).toHaveFetched( settingsEndpoint );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// Set expectations for publication ID.
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationID()
 				).toEqual( 'ABCDEFGH' );
 
+				// Set expectations for publication onboarding state.
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
@@ -148,6 +153,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getPublicationOnboardingStateLastSyncedAtMs();
 
+				// Ensure that the sync time is set.
 				expect( syncTimeMs ).not.toBe( 0 );
 
 				// Ensure that date is within the last 5 seconds.
@@ -201,6 +207,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION
 					);
 
+				// Ensure that the UI key is set to true.
 				expect( uiKeyBeforeAction ).toBe( undefined );
 				expect( uiKeyAfterAction ).toBe( true );
 			} );

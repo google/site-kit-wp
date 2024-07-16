@@ -20,23 +20,23 @@
  * Internal dependencies.
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { commonActions, combineStores } from 'googlesitekit-data';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
 	MODULES_READER_REVENUE_MANAGER,
+	MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
 
-/* eslint-disable sitekit/acronym-case */
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
 		API.get(
 			'modules',
-			'reader-revenue-manager',
+			MODULE_SLUG,
 			'publications',
 			{},
 			{ useCache: true }
@@ -51,6 +51,7 @@ const baseInitialState = {
 const baseActions = {
 	/**
 	 * Syncronizes the onboarding state of the publication with the API.
+	 * Updates the settings on server.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -61,7 +62,7 @@ const baseActions = {
 		const connected = yield commonActions.await(
 			registry
 				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( 'reader-revenue-manager' )
+				.isModuleConnected( MODULE_SLUG )
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
@@ -89,6 +90,7 @@ const baseActions = {
 			.getPublications();
 
 		const publication = publications.find(
+			// eslint-disable-next-line sitekit/acronym-case
 			( { publicationId } ) => publicationId === publicationID
 		);
 

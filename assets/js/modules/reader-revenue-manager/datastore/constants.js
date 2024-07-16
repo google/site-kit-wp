@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 
-export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
-
 export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
 
-export const UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION =
-	'show-rrm-publication-approved-notification';
+export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
+
+export const MODULE_SLUG = 'reader-revenue-manager';
 
 export const PUBLICATION_ONBOARDING_STATES = {
 	ONBOARDING_COMPLETE: 'ONBOARDING_COMPLETE',
@@ -29,3 +28,6 @@ export const PUBLICATION_ONBOARDING_STATES = {
 	PENDING_VERIFICATION: 'PENDING_VERIFICATION',
 	UNSPECIFIED: 'ONBOARDING_STATE_UNSPECIFIED',
 };
+
+export const UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION =
+	'show-rrm-publication-approved-notification';
