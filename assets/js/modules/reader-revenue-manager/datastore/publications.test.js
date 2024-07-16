@@ -38,9 +38,7 @@ import { enabledFeatures } from '../../../features';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	ONBOARDING_STATE_COMPLETE,
-	ONBOARDING_STATE_UNSPECIFIED,
-	ONBOARDING_STATE_PENDING_VERIFICATION,
+	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
 
@@ -110,7 +108,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				const settings = {
 					publicationID: publication.publicationId,
 					publicationOnboardingState:
-						ONBOARDING_STATE_PENDING_VERIFICATION,
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
 					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
@@ -118,7 +116,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					body: {
 						...settings,
 						publicationOnboardingState:
-							ONBOARDING_STATE_UNSPECIFIED,
+							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
 						publicationOnboardingStateLastSyncedAtMs: Date.now(),
 					},
 					status: 200,
@@ -144,7 +142,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
-				).toEqual( ONBOARDING_STATE_UNSPECIFIED );
+				).toEqual( PUBLICATION_ONBOARDING_STATES.UNSPECIFIED );
 
 				const syncTimeMs = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
@@ -168,14 +166,16 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				// Set the current settings.
 				const settings = {
 					publicationID: publication.publicationId,
-					publicationOnboardingState: ONBOARDING_STATE_UNSPECIFIED,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
 					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
 				fetchMock.post( settingsEndpoint, {
 					body: {
 						...settings,
-						publicationOnboardingState: ONBOARDING_STATE_COMPLETE,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 						publicationOnboardingStateLastSyncedAtMs: Date.now(),
 					},
 					status: 200,
@@ -203,6 +203,71 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				expect( uiKeyBeforeAction ).toBe( undefined );
 				expect( uiKeyAfterAction ).toBe( true );
+			} );
+		} );
+
+		describe( 'findMatchedPublication', () => {
+			it( 'should return null if there are no publications', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [] );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toBeNull();
+			} );
+
+			it( 'should return the publication if that is the only one in the list', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [ fixtures.publications[ 0 ] ] );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toEqual( fixtures.publications[ 0 ] );
+			} );
+
+			it( 'should return the publication with ONBOARDING_COMPLETE if more than one publication exists', async () => {
+				const completedOnboardingPublication =
+					fixtures.publications.find(
+						( publication ) =>
+							publication.onboardingState ===
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+					);
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toEqual( completedOnboardingPublication );
+			} );
+
+			it( 'should return the first publication if none have ONBOARDING_COMPLETE', async () => {
+				const publications = fixtures.publications.map(
+					( publication ) => ( {
+						...publication,
+						onboardingState:
+							PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					} )
+				);
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( publications );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toEqual( publications[ 0 ] );
 			} );
 		} );
 	} );

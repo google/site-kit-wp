@@ -26,7 +26,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	ONBOARDING_STATE_COMPLETE,
+	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
 
@@ -122,7 +122,10 @@ const baseActions = {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
 
 		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
-		if ( onboardingState === ONBOARDING_STATE_COMPLETE ) {
+		if (
+			onboardingState ===
+			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		) {
 			registry
 				.dispatch( CORE_UI )
 				.setValue(
@@ -130,6 +133,36 @@ const baseActions = {
 					true
 				);
 		}
+	},
+
+	/**
+	 * Finds a matched publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object|null} Matched publication; `null` if none found.
+	 */
+	*findMatchedPublication() {
+		const { resolveSelect } = yield commonActions.getRegistry();
+		const publications = yield commonActions.await(
+			resolveSelect( MODULES_READER_REVENUE_MANAGER ).getPublications()
+		);
+
+		if ( publications.length === 0 ) {
+			return null;
+		}
+
+		if ( publications.length === 1 ) {
+			return publications[ 0 ];
+		}
+
+		const completedOnboardingPublication = publications.find(
+			( publication ) =>
+				publication.onboardingState ===
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		);
+
+		return completedOnboardingPublication || publications[ 0 ];
 	},
 };
 
