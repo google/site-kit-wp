@@ -28,6 +28,21 @@ export const initialState = {
 };
 
 export const actions = {
+	/**
+	 * Registers a notification with a given `id` slug and settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}         id                           Notification's slug.
+	 * @param {Object}         settings                     Notification's settings.
+	 * @param {WPComponent}    [settings.Component]         React component used to display the contents of this notification.
+	 * @param {number}         [settings.priority]          Notification's priority for ordering (lower number is higher priority, like WordPress hooks).
+	 * @param {string}         [settings.areaSlug]          The slug of the area where the notification should be rendered, e.g. notification-area-banners-above-nav.
+	 * @param {Array.<string>} [settings.viewContexts]      Array of Site Kit contexts, e.g. VIEW_CONTEXT_MAIN_DASHBOARD.
+	 * @param {Function}       [settings.checkRequirements] Callback function to determine if the notification should be queued.
+	 * @param {boolean}        [settings.isDismissible]     Flag to check if the notification should be queued and is not dismissed.
+	 * @return {Object} Redux-style action.
+	 */
 	registerNotification(
 		id,
 		{
