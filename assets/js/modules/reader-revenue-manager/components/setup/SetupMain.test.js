@@ -16,13 +16,28 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
+import { muteFetch, render } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
 
 describe( 'SetupMain', () => {
+	const publicationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+	);
+
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	);
+
 	it( 'should render the component', () => {
+		muteFetch( settingsEndpoint );
+		muteFetch( publicationsEndpoint );
+
 		const { getByText } = render( <SetupMain /> );
 
-		expect( getByText( /Reader Revenue Manager/i ) ).toBeInTheDocument();
+		expect(
+			getByText(
+				/This is just added as a placeholder component to assist with testing./i
+			)
+		).toBeInTheDocument();
 	} );
 } );
