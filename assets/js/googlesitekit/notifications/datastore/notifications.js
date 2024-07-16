@@ -64,19 +64,18 @@ export const actions = {
 
 		const notificationAreas = Object.values( NOTIFICATION_AREAS );
 		invariant(
-			! notificationAreas.includes( areaSlug ),
+			notificationAreas.includes( areaSlug ),
 			`Notification area should be one of: ${ notificationAreas.join(
 				', '
 			) }, but "${ areaSlug }" was provided.`
 		);
 
 		invariant(
-			( Array.isArray( viewContexts ) &&
+			Array.isArray( viewContexts ) &&
 				viewContexts.some(
 					NOTIFICATION_VIEW_CONTEXTS.includes,
 					NOTIFICATION_VIEW_CONTEXTS
-				) ) ||
-				! Array.isArray( viewContexts ),
+				),
 			`Notification view context should be one of: ${ NOTIFICATION_VIEW_CONTEXTS.join(
 				', '
 			) }, but "${ viewContexts }" was provided.`
