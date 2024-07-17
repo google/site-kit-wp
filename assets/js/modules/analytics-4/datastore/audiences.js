@@ -173,6 +173,47 @@ const baseActions = {
 	},
 
 	/**
+	 * Syncs available audiences older than 1 hour.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	*maybeSyncAvailableAudiences() {
+		const registry = yield commonActions.getRegistry();
+		const { select, dispatch } = registry;
+
+		const availableAudiencesLastSyncedAt =
+			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
+
+		// Update the audience cache if the availableAudiencesLastSyncedAt is older than 1 hour.
+		if (
+			! availableAudiencesLastSyncedAt ||
+			availableAudiencesLastSyncedAt * 1000 <
+				// eslint-disable-next-line sitekit/no-direct-date
+				Date.now() - 1 * 60 * 60 * 1000
+		) {
+			const { response: availableAudiences } = yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
+
+			// Remove any configuredAudiences that are no longer available in availableAudiences.
+			const configuredAudiences =
+				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+
+			const newConfiguredAudiences = configuredAudiences?.filter(
+				( configuredAudience ) =>
+					availableAudiences?.some(
+						( { name } ) => name === configuredAudience
+					)
+			);
+			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
+				newConfiguredAudiences || []
+			);
+		}
+	},
+
+	/**
 	 * Populates the configured audiences with the top two user audiences and/or the Site Kit-created audiences,
 	 * depending on their availability and suitability (data over the last 90 days is required for user audiences).
 	 *

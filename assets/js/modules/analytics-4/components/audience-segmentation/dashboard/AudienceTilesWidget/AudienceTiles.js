@@ -59,7 +59,7 @@ const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 	return totalUsers === 0;
 };
 
-export default function AudienceTiles( { Widget } ) {
+export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -300,6 +300,7 @@ export default function AudienceTiles( { Widget } ) {
 	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
 
 	const loading =
+		widgetLoading ||
 		! reportLoaded ||
 		! totalPageviewsReportLoaded ||
 		! topCitiesReportLoaded ||
@@ -515,4 +516,5 @@ export default function AudienceTiles( { Widget } ) {
 
 AudienceTiles.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	widgetLoading: PropTypes.bool.isRequired,
 };
