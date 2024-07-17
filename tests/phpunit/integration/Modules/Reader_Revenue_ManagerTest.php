@@ -196,6 +196,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_template_redirect() {
 		$publication_id = 'ABCDEFGH';
 
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
 		remove_all_actions( 'template_redirect' );
 
 		$this->reader_revenue_manager->register();
