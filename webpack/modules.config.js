@@ -65,6 +65,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 			'googlesitekit-datastore-ui':
 				'./assets/js/googlesitekit-datastore-ui.js',
 			'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
+			'googlesitekit-notifications':
+				'./assets/js/googlesitekit-notifications.js',
 			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 			'googlesitekit-modules-ads':
 				'./assets/js/googlesitekit-modules-ads.js',
