@@ -24,9 +24,10 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Grid, Row, Cell } from '../../../../../material-components';
+import { Grid, Cell } from '../../../../../material-components';
 import { calculateChange } from '../../../../../util';
 import DataBlock from '../../../../../components/DataBlock';
+import DataBlockGroup from '../../../../../components/DataBlockGroup';
 
 function Overview( {
 	metrics,
@@ -46,75 +47,43 @@ function Overview( {
 
 	return (
 		<Grid>
-			<Row>
-				<Cell { ...cellProps }>
-					<DataBlock
-						stat={ 0 }
-						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
-						title={ metrics[ headers[ 0 ].name ] }
-						datapoint={ totals?.cells[ 0 ].value || 0 }
-						datapointUnit={ headers[ 0 ]?.currencyCode }
-						change={ calculateChange(
-							previousTotals?.cells[ 0 ].value || 0,
-							totals?.cells[ 0 ].value || 0
-						) }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 0 }
-						handleStatSelection={ handleStatsSelection }
-					/>
-				</Cell>
-				<Cell { ...cellProps }>
-					<DataBlock
-						stat={ 1 }
-						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
-						title={ metrics[ headers[ 1 ].name ] }
-						datapoint={ totals?.cells[ 1 ].value || 0 }
-						datapointUnit={ headers[ 1 ]?.currencyCode }
-						change={ calculateChange(
-							previousTotals?.cells[ 1 ].value || 0,
-							totals?.cells[ 1 ].value || 0
-						) }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 1 }
-						handleStatSelection={ handleStatsSelection }
-					/>
-				</Cell>
-				<Cell { ...cellProps }>
-					<DataBlock
-						stat={ 2 }
-						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-3"
-						title={ metrics[ headers[ 2 ].name ] }
-						datapoint={ totals?.cells[ 2 ].value || 0 }
-						change={ calculateChange(
-							previousTotals?.cells[ 2 ].value || 0,
-							totals?.cells[ 2 ].value || 0
-						) }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 2 }
-						handleStatSelection={ handleStatsSelection }
-					/>
-				</Cell>
-				<Cell { ...cellProps }>
-					<DataBlock
-						stat={ 3 }
-						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
-						title={ metrics[ headers[ 3 ].name ] }
-						datapoint={ totals?.cells[ 3 ].value || 0 }
-						datapointUnit="%"
-						change={ calculateChange(
-							previousTotals?.cells[ 3 ].value || 0,
-							totals?.cells[ 3 ].value || 0
-						) }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 3 }
-						handleStatSelection={ handleStatsSelection }
-					/>
-				</Cell>
-			</Row>
+			<DataBlockGroup className="mdc-layout-grid__inner">
+				{ headers?.map( ( headerData, index ) => {
+					let datapointUnit = null;
+					if ( index === 0 || index === 1 ) {
+						datapointUnit = headerData?.currencyCode;
+					}
+					if ( index === 3 ) {
+						datapointUnit = '%';
+					}
+					return (
+						<Cell
+							key={ metrics[ headers[ index ].name ] }
+							{ ...cellProps }
+						>
+							<DataBlock
+								stat={ index }
+								className={ `googlesitekit-data-block--${
+									index === 3 ? 'impression' : 'page-rpm'
+								} googlesitekit-data-block--button-${
+									index + 1
+								}` }
+								title={ metrics[ headerData.name ] }
+								datapoint={ totals?.cells[ index ].value || 0 }
+								datapointUnit={ datapointUnit }
+								change={ calculateChange(
+									previousTotals?.cells[ index ].value || 0,
+									totals?.cells[ index ].value || 0
+								) }
+								changeDataUnit="%"
+								context="button"
+								selected={ selectedStats === index }
+								handleStatSelection={ handleStatsSelection }
+							/>
+						</Cell>
+					);
+				} ) }
+			</DataBlockGroup>
 		</Grid>
 	);
 }
