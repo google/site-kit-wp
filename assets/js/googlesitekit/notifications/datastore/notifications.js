@@ -60,7 +60,10 @@ export const actions = {
 			isDismissible,
 		}
 	) {
-		invariant( Component, 'component is required to register a widget.' );
+		invariant(
+			Component,
+			'Component is required to register a notification.'
+		);
 
 		const notificationAreas = Object.values( NOTIFICATION_AREAS );
 		invariant(
