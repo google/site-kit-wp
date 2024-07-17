@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -28,6 +29,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\URL;
@@ -45,7 +47,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Se
  * @access private
  * @ignore
  */
-final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Owner, Module_With_Settings, Module_With_Tag {
+final class Reader_Revenue_Manager extends Module implements Module_With_Scopes, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Owner, Module_With_Settings, Module_With_Tag, Module_With_Debug_Fields {
 	use Module_With_Assets_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Owner_Trait;
@@ -350,5 +352,34 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		}
 
 		$tag->register();
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An array of all debug fields.
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'reader_revenue_manager_publication_id' => array(
+				'label' => __( 'Reader Revenue Manager publication ID', 'google-site-kit' ),
+				'value' => $settings['publicationID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['publicationID'] ),
+			),
+			'reader_revenue_manager_publication_onboarding_state' => array(
+				'label' => __( 'Reader Revenue Manager publication onboarding state', 'google-site-kit' ),
+				'value' => $settings['publicationOnboardingState'],
+				'debug' => $settings['publicationOnboardingState'],
+			),
+			'reader_revenue_manager_publication_onboarding_state_last_synced_at' => array(
+				'label' => __( 'Reader Revenue Manager publication onboarding state last synced at', 'google-site-kit' ),
+				'value' => $settings['publicationOnboardingStateLastSyncedAtMs'] ? gmdate( 'Y-m-d H:i:s', $settings['publicationOnboardingStateLastSyncedAtMs'] / 1000 ) : __( 'Never synced', 'google-site-kit' ),
+				'debug' => $settings['publicationOnboardingStateLastSyncedAtMs'],
+			),
+		);
 	}
 }

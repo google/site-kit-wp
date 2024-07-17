@@ -215,6 +215,19 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 	}
 
+	public function test_get_debug_fields() {
+		$this->reader_revenue_manager->get_settings()->register();
+
+		$this->assertEqualSets(
+			array(
+				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_publication_onboarding_state',
+				'reader_revenue_manager_publication_onboarding_state_last_synced_at',
+			),
+			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
+	}
+
 	public function get_module_with_settings() {
 		return $this->reader_revenue_manager;
 	}
