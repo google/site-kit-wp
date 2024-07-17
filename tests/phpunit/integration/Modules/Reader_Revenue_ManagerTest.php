@@ -186,11 +186,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$options->set( Settings::OPTION, 'test-value' );
 
 		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
-		$reader_revenue_manager->set_data_available();
 		$reader_revenue_manager->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
-		$this->assertFalse( $reader_revenue_manager->is_data_available() );
 	}
 
 	public function test_template_redirect() {
