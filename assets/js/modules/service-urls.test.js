@@ -76,6 +76,11 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 			'https://pagespeed.web.dev/foo-path',
 			'https://pagespeed.web.dev/foo-path?bar=baz',
 		],
+		'modules/reader-revenue-manager': [
+			'https://publishercenter.google.com/?utm_source=sitekit',
+			'https://publishercenter.google.com/foo-path?utm_source=sitekit',
+			'https://publishercenter.google.com/foo-path?bar=baz&utm_source=sitekit',
+		],
 		'modules/search-console': [
 			'https://search.google.com/search-console',
 			'https://search.google.com/search-console/foo-path',

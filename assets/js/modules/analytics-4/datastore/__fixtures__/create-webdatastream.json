@@ -4,7 +4,7 @@
 	"name": "properties/1000/dataStreams/2001",
 	"type": "WEB_DATA_STREAM",
 	"webStreamData": {
-		"measurementId": "1A2BCD345E",
+		"measurementId": "G-1A2BCD345E",
 		"defaultUri": "http://example.com"
 	},
 	"createTime": "2014-10-02T15:01:23Z",

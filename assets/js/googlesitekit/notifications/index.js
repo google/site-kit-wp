@@ -1,6 +1,4 @@
 /**
- * Audience Segmentation PartialDataBadge component.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,29 +15,21 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import InfoTooltip from '../../../../../components/InfoTooltip';
+import { CORE_NOTIFICATIONS } from './datastore/constants';
 
-export default function PartialDataBadge( { tooltipTitle } ) {
-	return (
-		<span className="googlesitekit-audience-segmentation-partial-data-badge">
-			{ __( 'Partial data', 'google-site-kit' ) }
-			{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
-		</span>
-	);
+export { registerStore } from './datastore';
+export { registerDefaults as registerNotifications } from './register-defaults';
+
+export function createNotifications( registry ) {
+	const { dispatch } = registry;
+
+	const Notifications = {
+		registerNotification( id, settings ) {
+			dispatch( CORE_NOTIFICATIONS ).registerNotification( id, settings );
+		},
+	};
+
+	return Notifications;
 }
-
-PartialDataBadge.propTypes = {
-	tooltipTitle: PropTypes.node,
-};

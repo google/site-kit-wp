@@ -35,23 +35,23 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../hooks/useBreakpoint';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import AudienceMetricIconVisitors from '../../../../../../../svg/icons/audience-metric-icon-visitors.svg';
-import AudienceMetricIconVisitsPerVisitor from '../../../../../../../svg/icons/audience-metric-icon-visits-per-visitor.svg';
-import AudienceMetricIconPagesPerVisit from '../../../../../../../svg/icons/audience-metric-icon-pages-per-visit.svg';
-import AudienceMetricIconPageviews from '../../../../../../../svg/icons/audience-metric-icon-pageviews.svg';
-import AudienceMetricIconCities from '../../../../../../../svg/icons/audience-metric-icon-cities.svg';
-import AudienceMetricIconTopContent from '../../../../../../../svg/icons/audience-metric-icon-top-content.svg';
+} from '../../../../../../../hooks/useBreakpoint';
+import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
+import AudienceMetricIconVisitors from '../../../../../../../../svg/icons/audience-metric-icon-visitors.svg';
+import AudienceMetricIconVisitsPerVisitor from '../../../../../../../../svg/icons/audience-metric-icon-visits-per-visitor.svg';
+import AudienceMetricIconPagesPerVisit from '../../../../../../../../svg/icons/audience-metric-icon-pages-per-visit.svg';
+import AudienceMetricIconPageviews from '../../../../../../../../svg/icons/audience-metric-icon-pageviews.svg';
+import AudienceMetricIconCities from '../../../../../../../../svg/icons/audience-metric-icon-cities.svg';
+import AudienceMetricIconTopContent from '../../../../../../../../svg/icons/audience-metric-icon-top-content.svg';
 import AudienceTileMetric from './AudienceTileMetric';
 import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
-import PreviewBlock from '../../../../../../components/PreviewBlock';
-import ChangeBadge from '../../../../../../components/ChangeBadge';
-import InfoTooltip from '../../../../../../components/InfoTooltip';
-import PartialDataBadge from '../PartialDataBadge';
-import PartialDataNotice from '../PartialDataNotice';
-import { numFmt } from '../../../../../../util';
+import PreviewBlock from '../../../../../../../components/PreviewBlock';
+import ChangeBadge from '../../../../../../../components/ChangeBadge';
+import InfoTooltip from '../../../../../../../components/InfoTooltip';
+import PartialDataBadge from './PartialDataBadge';
+import PartialDataNotice from './PartialDataNotice';
+import { numFmt } from '../../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
 

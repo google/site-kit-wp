@@ -601,7 +601,7 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should return a property object when a property is found', async () => {
-				const measurementID = '1A2BCD346E';
+				const measurementID = 'G-1A2BCD346E';
 				const matchedProperty = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchPropertyByMeasurementID( propertyIDs, measurementID );

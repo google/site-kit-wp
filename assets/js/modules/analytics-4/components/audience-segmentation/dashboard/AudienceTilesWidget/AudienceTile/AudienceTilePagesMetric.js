@@ -34,18 +34,18 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../hooks/useBreakpoint';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+} from '../../../../../../../hooks/useBreakpoint';
+import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+} from '../../../../../datastore/constants';
 import AudienceTileNoData from './AudienceTileNoData';
-import Link from '../../../../../../components/Link';
-import PartialDataBadge from '../PartialDataBadge';
-import PartialDataNotice from '../PartialDataNotice';
-import { numFmt } from '../../../../../../util';
-import useViewOnly from '../../../../../../hooks/useViewOnly';
+import Link from '../../../../../../../components/Link';
+import PartialDataBadge from './PartialDataBadge';
+import PartialDataNotice from './PartialDataNotice';
+import { numFmt } from '../../../../../../../util';
+import useViewOnly from '../../../../../../../hooks/useViewOnly';
 
 export default function AudienceTilePagesMetric( {
 	TileIcon,

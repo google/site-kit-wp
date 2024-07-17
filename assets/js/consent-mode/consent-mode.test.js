@@ -29,11 +29,18 @@ describe( 'Consent Mode', () => {
 		global._googlesitekitConsentCategoryMap = {
 			'test-category': [ 'test-parameter' ],
 		};
+		global.wp_consent_type = 'optin';
+		global.wp_has_consent = () => true;
+		global._googlesitekitConsents = {};
 	} );
 
 	afterEach( () => {
+		gtagMock.mockReset();
 		delete global.gtag;
 		delete global._googlesitekitConsentCategoryMap;
+		delete global.wp_consent_type;
+		delete global.wp_has_consent;
+		delete global._googlesitekitConsents;
 	} );
 
 	it( 'should call gtag with the correct parameters when wp_listen_for_consent_change event is triggered', () => {
@@ -68,5 +75,18 @@ describe( 'Consent Mode', () => {
 		expect( gtagMock ).toHaveBeenCalledWith( 'consent', 'update', {
 			'test-parameter': 'granted',
 		} );
+	} );
+
+	it( 'should not trigger duplicate calls to gtag if the consent parameter have not changed', () => {
+		document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+		document.dispatchEvent(
+			new CustomEvent( 'wp_consent_type_defined', {
+				detail: {
+					'test-category': 'allow',
+				},
+			} )
+		);
+
+		expect( gtagMock ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
