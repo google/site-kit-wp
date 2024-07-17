@@ -36,6 +36,7 @@ import {
 	numFmt,
 	getChartDifferenceArrow,
 	calculateDifferenceBetweenChartValues,
+	stringToDate,
 } from '../../../util';
 import { partitionAnalytics4Report } from './partition-report';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
@@ -108,7 +109,8 @@ export function extractAnalytics4DashboardData(
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( days * 2 > rowLength ) {
-		const date = new Date( referenceDate ); // eslint-disable-line sitekit/no-direct-date
+		const date = stringToDate( referenceDate );
+
 		for ( let i = 0; days > i; i++ ) {
 			const month = ( date.getMonth() + 1 ).toString();
 			const day = date.getDate().toString();
