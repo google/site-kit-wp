@@ -193,6 +193,28 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertFalse( $reader_revenue_manager->is_data_available() );
 	}
 
+	public function test_template_redirect() {
+		$publication_id = 'ABCDEFGH';
+
+		remove_all_actions( 'template_redirect' );
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => $publication_id,
+			)
+		);
+
+		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$footer_html = $this->capture_action( 'wp_footer' );
+
+		$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
+		$this->assertStringContainsString( 'script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js"></script>', $footer_html );
+		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
+	}
+
 	public function get_module_with_settings() {
 		return $this->reader_revenue_manager;
 	}
