@@ -28,51 +28,57 @@ import {
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { enabledFeatures } from '../features';
 
-it( 'ensures all features are defined as expected.', () => {
-	const registry = createTestRegistry();
-	enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
+describe( 'Module Features', () => {
+	let registry;
+	beforeAll( () => {
+		registry = createTestRegistry();
+		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 
-	provideUserInfo( registry );
-	provideModules( registry );
-	provideModuleRegistrations( registry );
+		provideUserInfo( registry );
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+	} );
 
-	// Define the expected features for each module.
-	const moduleFeatures = {
-		ads: [
-			'Tagging necessary for your ads campaigns to work',
-			'Conversion tracking for your ads campaigns',
+	it.each( [
+		[
+			'ads',
+			[
+				'Tagging necessary for your ads campaigns to work',
+				'Conversion tracking for your ads campaigns',
+			],
 		],
-		adsense: [
-			'Intelligent, automatic ad placement',
-			'Revenue from ads placed on your site',
-			'AdSense insights through Site Kit',
+		[
+			'adsense',
+			[
+				'Intelligent, automatic ad placement',
+				'Revenue from ads placed on your site',
+				'AdSense insights through Site Kit',
+			],
 		],
-		'analytics-4': [
-			'Audience overview',
-			'Top pages',
-			'Top acquisition channels',
+		[
+			'analytics-4',
+			[ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
 		],
-		'pagespeed-insights': [
-			'Website performance reports for mobile and desktop',
+		[
+			'pagespeed-insights',
+			[ 'Website performance reports for mobile and desktop' ],
 		],
-		'reader-revenue-manager': [
-			'Reader Revenue Manager publication tracking (your Reader Revenue Manager account will still remain active)',
+		[
+			'reader-revenue-manager',
+			[
+				'Reader Revenue Manager publication tracking (your Reader Revenue Manager account will still remain active)',
+			],
 		],
-		'search-console': [],
-		tagmanager: [ 'Create tags without updating code' ],
-	};
+		[ 'search-console', [] ],
+		[ 'tagmanager', [ 'Create tags without updating code' ] ],
+	] )(
+		'should return the correct features for %s module.',
+		( moduleSlug, expectedFeatures ) => {
+			const currentFeatures = registry
+				.select( CORE_MODULES )
+				.getModuleFeatures( moduleSlug );
 
-	/**
-	 * Iterate through each module slug and its features and compare
-	 * that module feature are equal to the expected module features.
-	 */
-	for ( const moduleSlug in moduleFeatures ) {
-		const currentFeatures = registry
-			.select( CORE_MODULES )
-			.getModuleFeatures( moduleSlug );
-		const expectedFeature = moduleFeatures[ moduleSlug ];
-
-		//  Compare the current features with the expected features.
-		expect( currentFeatures ).toEqual( expectedFeature );
-	}
+			expect( currentFeatures ).toEqual( expectedFeatures );
+		}
+	);
 } );
