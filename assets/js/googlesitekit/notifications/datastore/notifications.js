@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import { NOTIFICATION_AREAS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
@@ -151,7 +151,25 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 export const resolvers = {};
 
-export const selectors = {};
+export const selectors = {
+	/**
+	 * Determines whether a notification is dismissed or not.
+	 *
+	 * Currently, this selector simply forwards the call to the dismissed items API.
+	 * We can potentially add more notification-specific logic here in the future.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} id    Notification id.
+	 * @return {(boolean|undefined)} TRUE if dismissed, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	isNotificationDismissed: createRegistrySelector(
+		( select ) => ( state, id ) => {
+			return select( CORE_USER ).isItemDismissed( id );
+		}
+	),
+};
 
 export default {
 	initialState,
