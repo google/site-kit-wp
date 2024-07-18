@@ -1,7 +1,7 @@
 /**
- * `isValidDateRange` utility tests.
+ * Public Notifications API entrypoint.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,23 @@
 /**
  * Internal dependencies
  */
-import { isValidDateRange } from './is-valid-date-range';
+import Data from 'googlesitekit-data';
+import {
+	registerStore,
+	createNotifications,
+	registerNotifications,
+} from './googlesitekit/notifications';
 
-describe( 'isValidDateString', () => {
-	// [ dateRange, expectedReturnValue ]
-	const valuesToTest = [
-		[ 'last-1-days', true ],
-		[ 'last-7-days', true ],
-		[ 'last-28-days', true ],
-		[ 'last-1-day', false ],
-		[ 'invalid-range', false ],
-		[ 'invalid-date-range', false ],
-	];
+registerStore( Data );
 
-	it.each( valuesToTest )(
-		'with date range of %s should return %s',
-		( dateRange, expected ) => {
-			expect( isValidDateRange( dateRange ) ).toEqual( expected );
-		}
-	);
-} );
+const Notifications = createNotifications( Data );
+registerNotifications( Notifications );
+
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
+}
+
+global.googlesitekit.notifications = Notifications;
+
+// This is only exported for Jest and is not used in production.
+export default Notifications;

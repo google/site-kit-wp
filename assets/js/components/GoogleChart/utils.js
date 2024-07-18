@@ -25,8 +25,7 @@ import { cloneDeep, findLast, merge, set } from 'lodash';
  * Internal dependencies
  */
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
-import { getLocale } from '../../util';
-import { stringToDate } from '../../util/date-range/string-to-date';
+import { getLocale, stringToDate } from '../../util';
 
 /**
  * Returns the Google chart data, filtered by selected stats if present.

@@ -1,7 +1,5 @@
 /**
- * Date range constants.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +14,17 @@
  * limitations under the License.
  */
 
-export const INVALID_DATE_INSTANCE_ERROR =
-	'Date param must construct to a valid date instance or be a valid date instance itself.';
-export const INVALID_DATE_STRING_ERROR =
-	'Invalid dateString parameter, it must be a string.';
-export const INVALID_DATE_RANGE_ERROR =
-	'Invalid date range, it must be a string with the format "last-x-days".';
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from './constants';
+import notifications from './notifications';
 
-export const HOUR_IN_SECONDS = 3600;
-export const DAY_IN_SECONDS = 86400;
-export const WEEK_IN_SECONDS = 604800;
+const store = Data.combineStores( Data.commonStore, notifications );
+
+export const registerStore = ( registry ) => {
+	registry.registerStore( CORE_NOTIFICATIONS, store );
+};
+
+export default store;
