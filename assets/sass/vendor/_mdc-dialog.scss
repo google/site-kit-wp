@@ -139,6 +139,12 @@
 	}
 }
 
-.googlesitekit-settings-module--reader-revenue-manager .mdc-list-item__text {
-	white-space: normal;
+.googlesitekit-settings-module--reader-revenue-manager .mdc-dialog {
+	.mdc-list-item__text {
+		white-space: normal;
+	}
+
+	.mdc-dialog__title {
+		align-items: flex-start;
+	}
 }
