@@ -28,6 +28,7 @@ import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import { NOTIFICATION_AREAS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
+import { createValidatedAction } from '../../data/utils';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 
@@ -111,19 +112,29 @@ export const actions = {
 	 *
 	 * @param {string} id                         Notification id to dismiss.
 	 * @param {Object} options                    Dismiss notification options.
-	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal.
+	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
 	 * @return {Object} Generator instance.
 	 */
-	*dismissNotification( id, { expiresInSeconds } ) {
-		invariant(
-			id,
-			'A notification id is required to dismiss a notification.'
-		);
-		const registry = yield commonActions.getRegistry();
-		return yield registry
-			.dispatch( CORE_USER )
-			.dismissItem( id, { expiresInSeconds } );
-	},
+	dismissNotification: createValidatedAction(
+		( id, options = {} ) => {
+			invariant(
+				id,
+				'A notification id is required to dismiss a notification.'
+			);
+			const { expiresInSeconds = 0 } = options;
+			invariant(
+				Number.isInteger( expiresInSeconds ),
+				'expiresInSeconds must be an integer.'
+			);
+		},
+		function* ( id, options = {} ) {
+			const { expiresInSeconds = 0 } = options;
+			const registry = yield commonActions.getRegistry();
+			return yield registry
+				.dispatch( CORE_USER )
+				.dismissItem( id, { expiresInSeconds } );
+		}
+	),
 };
 
 export const controls = {};
