@@ -43,6 +43,7 @@ import {
 
 export default function useEnableAudienceGroup( {
 	redirectURL,
+	onSuccess,
 	onError,
 } = {} ) {
 	const isMounted = useMountedState();
@@ -105,6 +106,12 @@ export default function useEnableAudienceGroup( {
 		const { error, failedSiteKitAudienceSlugs } =
 			( await enableAudienceGroup( failedAudiences ) ) || {};
 
+		if ( !! error || !! failedSiteKitAudienceSlugs ) {
+			onError?.();
+		} else {
+			onSuccess?.();
+		}
+
 		if ( isMounted() ) {
 			if ( error ) {
 				setApiErrors( [ error ] );
@@ -115,10 +122,6 @@ export default function useEnableAudienceGroup( {
 			} else {
 				setApiErrors( [] );
 				setFailedAudiences( [] );
-			}
-
-			if ( !! error || !! failedSiteKitAudienceSlugs ) {
-				onError?.();
 			}
 
 			setIsSaving( false );
@@ -132,6 +135,7 @@ export default function useEnableAudienceGroup( {
 		setPermissionScopeError,
 		redirectURL,
 		onError,
+		onSuccess,
 	] );
 
 	// If the user returns to the component using this hook with the required

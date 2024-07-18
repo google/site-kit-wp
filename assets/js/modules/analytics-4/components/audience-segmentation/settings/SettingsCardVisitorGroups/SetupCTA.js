@@ -25,15 +25,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupCTAWidget';
+import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../../../components/Link';
 
 export default function SetupCTA() {
+	const { dismissItem } = useDispatch( CORE_USER );
+
 	const { isSaving, onEnableGroups } = useEnableAudienceGroup( {
 		redirectURL: global.location.href,
+		onSuccess: () => {
+			// Dismiss success notification in dashboard.
+			dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
+		},
 	} );
 
 	const isDismissed = useSelect( ( select ) =>

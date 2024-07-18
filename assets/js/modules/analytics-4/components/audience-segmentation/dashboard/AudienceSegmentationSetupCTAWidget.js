@@ -43,6 +43,7 @@ import {
 	MODULES_ANALYTICS_4,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
@@ -100,8 +101,16 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
+	const { dismissItem, dismissPrompt } = useDispatch( CORE_USER );
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
+			onSuccess: () => {
+				// Dismiss success notification in settings.
+				dismissItem(
+					SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
+				);
+			},
 			onError: () => {
 				setShowErrorModal( true );
 			},
@@ -117,7 +126,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
-	const { dismissPrompt } = useDispatch( CORE_USER );
 	const handleDismissClick = async () => {
 		showTooltip();
 
