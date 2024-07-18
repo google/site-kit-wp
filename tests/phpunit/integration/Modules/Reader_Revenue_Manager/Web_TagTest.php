@@ -30,7 +30,7 @@ class Web_TagTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-		$this->assertStringContainsString( 'script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js"></script>', $footer_html );
+		$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . self::PUBLICATION_ID . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 	}
 }

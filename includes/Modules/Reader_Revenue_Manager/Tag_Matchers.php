@@ -31,8 +31,8 @@ class Tag_Matchers extends Module_Tag_Matchers implements Tag_Matchers_Interface
 	 */
 	public function regex_matchers() {
 		return array(
-			"/<script\\s+[^>]*src=['|\"]https?:\\/\\/news\\.google\\.com\\/swg\\/js\\/v1\\/swg-basic\\.js['|\"][^>]*>",
-			'/\\(self\\.SWG_BASIC=self\\.SWG_BASIC\\|\\|\\[\\]\\)\\.push/',
+			"/<script\s+[^>]*src=['|\"]https?:\/\/news\.google\.com\/swg\/js\/v1\/swg-basic\.js['|\"][^>]*>/",
+			'/\(self\.SWG_BASIC=self\.SWG_BASIC\|\|\[\]\)\.push/',
 		);
 	}
 }
