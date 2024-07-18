@@ -1,6 +1,4 @@
 /**
- * `modules/reader-revenue-manager` data store constants.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +14,24 @@
  * limitations under the License.
  */
 
-export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../constants';
 
-export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
+export const CORE_NOTIFICATIONS = 'core/notifications';
 
-export const PUBLICATION_ONBOARDING_STATES = {
-	ONBOARDING_COMPLETE: 'ONBOARDING_COMPLETE',
-	ONBOARDING_ACTION_REQUIRED: 'ONBOARDING_ACTION_REQUIRED',
-	PENDING_VERIFICATION: 'PENDING_VERIFICATION',
+export const NOTIFICATION_AREAS = {
+	ERRORS: 'notification-area-errors',
+	BANNERS_ABOVE_NAV: 'notification-area-banners-above-nav',
+	BANNERS_BELOW_NAV: 'notification-area-banners-below-nav',
 };
+
+export const NOTIFICATION_VIEW_CONTEXTS = [
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+];

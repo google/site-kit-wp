@@ -1,7 +1,5 @@
 /**
- * `isValidDateInstance` utility.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +15,21 @@
  */
 
 /**
- * Asserts whether a given date instance is valid or invalid.
- *
- * @since 1.18.0
- *
- * @param {Date} date Date instance to be asserted against.
- * @return {boolean}  True if the given date instance is valid.
+ * Internal dependencies
  */
-export const isValidDateInstance = ( date ) => {
-	// type coercion provided by isNaN is preferred here over Number.isNaN
-	return date instanceof Date && ! isNaN( date );
-};
+import { CORE_NOTIFICATIONS } from './datastore/constants';
+
+export { registerStore } from './datastore';
+export { registerDefaults as registerNotifications } from './register-defaults';
+
+export function createNotifications( registry ) {
+	const { dispatch } = registry;
+
+	const Notifications = {
+		registerNotification( id, settings ) {
+			dispatch( CORE_NOTIFICATIONS ).registerNotification( id, settings );
+		},
+	};
+
+	return Notifications;
+}

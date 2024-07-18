@@ -25,7 +25,10 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from './constants';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
@@ -117,6 +120,73 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.getPublications();
 				expect( publications ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+	} );
+
+	describe( 'actions', () => {
+		describe( 'findMatchedPublication', () => {
+			it( 'should return null if there are no publications', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [] );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toBeNull();
+			} );
+
+			it( 'should return the publication if that is the only one in the list', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [ fixtures.publications[ 0 ] ] );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toEqual( fixtures.publications[ 0 ] );
+			} );
+
+			it( 'should return the publication with ONBOARDING_COMPLETE if more than one publication exists', async () => {
+				const completedOnboardingPublication =
+					fixtures.publications.find(
+						( publication ) =>
+							publication.onboardingState ===
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+					);
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toEqual( completedOnboardingPublication );
+			} );
+
+			it( 'should return the first publication if none have ONBOARDING_COMPLETE', async () => {
+				const publications = fixtures.publications.map(
+					( publication ) => ( {
+						...publication,
+						onboardingState:
+							PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					} )
+				);
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( publications );
+
+				const publication = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.findMatchedPublication();
+
+				expect( publication ).toEqual( publications[ 0 ] );
 			} );
 		} );
 	} );
