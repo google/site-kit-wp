@@ -157,7 +157,42 @@ describe( 'core/notifications Notifications', () => {
 			} );
 		} );
 		describe( 'dismissNotification', () => {
-			it( 'should dismiss a notification', async () => {
+			it( 'should require a valid id to be provided', () => {
+				expect( () =>
+					registry
+						.dispatch( CORE_NOTIFICATIONS )
+						.dismissNotification()
+				).toThrow(
+					'A notification id is required to dismiss a notification.'
+				);
+			} );
+			it( 'should dismiss a notification without a given expiry time', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'foo' ],
+				} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'foo' );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
+					body: {
+						data: {
+							slug: 'foo',
+							expiration: 0,
+						},
+					},
+				} );
+
+				const isNotificationDismissed = registry
+					.select( CORE_NOTIFICATIONS )
+					.isNotificationDismissed( 'foo' );
+				expect( isNotificationDismissed ).toBe( true );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+			it( 'should dismiss a notification with a given expiry time', async () => {
 				fetchMock.postOnce( fetchDismissItem, {
 					body: [ 'foo' ],
 				} );
