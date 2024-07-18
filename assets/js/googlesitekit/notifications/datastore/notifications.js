@@ -24,8 +24,10 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import { commonActions } from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import { NOTIFICATION_AREAS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
+import { CORE_USER } from '../../datastore/user/constants';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 
@@ -98,6 +100,29 @@ export const actions = {
 			},
 			type: REGISTER_NOTIFICATION,
 		};
+	},
+	/**
+	 * Dismisses the given notification by its id.
+	 *
+	 * Currently, this action simply dispatches the call to the dismissed items API.
+	 * We can potentially add more notification-specific dismissal logic here in the future.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id                         Notification id to dismiss.
+	 * @param {Object} options                    Dismiss notification options.
+	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal.
+	 * @return {Object} Generator instance.
+	 */
+	*dismissNotification( id, { expiresInSeconds } ) {
+		invariant(
+			id,
+			'A notification id is required to dismiss a notification.'
+		);
+		const registry = yield commonActions.getRegistry();
+		return yield registry
+			.dispatch( CORE_USER )
+			.dismissItem( id, { expiresInSeconds } );
 	},
 };
 
