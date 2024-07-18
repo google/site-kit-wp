@@ -157,7 +157,7 @@ describe( 'core/notifications Notifications', () => {
 			} );
 		} );
 		describe( 'dismissNotification', () => {
-			it( 'should save settings and return new dismissed items', async () => {
+			it( 'should dismiss a notification', async () => {
 				fetchMock.postOnce( fetchDismissItem, {
 					body: [ 'foo' ],
 				} );
