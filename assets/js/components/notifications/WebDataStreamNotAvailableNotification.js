@@ -29,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { getTimeInSeconds } from '../../util';
+import { MINUTE_IN_SECONDS } from '../../util';
 import { Cell, Grid, Row } from '../../material-components';
 
 export default function WebDataStreamNotAvailableNotification() {
@@ -86,7 +86,7 @@ export default function WebDataStreamNotAvailableNotification() {
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			// This is arbitrarily set to 55 minutes to ensure that the notification
 			// will become ready to be displayed again in an hour.
-			dismissExpires={ getTimeInSeconds( 'minute' ) * 55 }
+			dismissExpires={ MINUTE_IN_SECONDS * 55 }
 		/>
 	);
 }

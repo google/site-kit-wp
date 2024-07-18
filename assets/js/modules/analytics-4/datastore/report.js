@@ -38,7 +38,7 @@ import {
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { DAY_IN_SECONDS, stringifyObject } from '../../../util';
+import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
 import { normalizeReportOptions, isZeroReport } from '../utils';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 import { getSampleReportArgs } from '../utils/report-args';
@@ -123,8 +123,9 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 		}
 
 		// If the property was created within the last three days and has no data, assume it's still gathering data.
-		const now = select( CORE_USER ).getReferenceDate( { parsed: true } );
-		if ( propertyCreateTime > now.getTime() - DAY_IN_SECONDS * 3 * 1000 ) {
+		const now = select( CORE_USER ).getReferenceDate();
+		const threeDaysAgo = dateSub( now, 3 * DAY_IN_SECONDS );
+		if ( propertyCreateTime > threeDaysAgo.getTime() ) {
 			return false;
 		}
 
