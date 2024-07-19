@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager SetupMain component tests.
+ * RRM common components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,18 +16,4 @@
  * limitations under the License.
  */
 
-import { render, muteFetch } from '../../../../../../tests/js/test-utils';
-import SetupMain from './SetupMain';
-
-describe( 'SetupMain', () => {
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
-	);
-
-	it( 'should render the components', () => {
-		muteFetch( settingsEndpoint );
-		const { getByText } = render( <SetupMain /> );
-
-		expect( getByText( /Reader Revenue Manager/i ) ).toBeInTheDocument();
-	} );
-} );
+export { default as PublicationOnboardingStateNotice } from './PublicationOnboardingStateNotice';

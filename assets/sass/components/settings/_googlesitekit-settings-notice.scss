@@ -189,6 +189,18 @@
 	}
 }
 
+.googlesitekit-publication-onboarding-state-notice.googlesitekit-settings-notice--warning {
+	align-items: center;
+	color: $c-utility-on-warning-container;
+	max-width: none;
+
+	& .googlesitekit-cta-link.googlesitekit-cta-link--inverse {
+		background-color: $c-utility-on-warning-container;
+		border-radius: 100px;
+		padding: 6px 16px;
+	}
+}
+
 .googlesitekit-settings-notice-ua-cutoff-warning,
 .googlesitekit-settings-notice-adsense-status-migration {
 	max-width: none;

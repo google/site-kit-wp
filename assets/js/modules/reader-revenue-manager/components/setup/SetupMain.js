@@ -25,6 +25,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
+import PublicationOnboardingStateNotice from '../common/PublicationOnboardingStateNotice';
 
 export default function SetupMain() {
 	return (
@@ -41,7 +42,7 @@ export default function SetupMain() {
 				) }
 			</h2>
 
-			{ /* TODO: Add the rest of the setup steps */ }
+			<PublicationOnboardingStateNotice />
 		</div>
 	);
 }
