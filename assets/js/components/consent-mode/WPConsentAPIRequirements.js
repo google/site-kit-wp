@@ -39,6 +39,7 @@ import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();
@@ -59,6 +60,15 @@ export default function WPConsentAPIRequirements() {
 	const { installActivateWPConsentAPI, activateConsentAPI } =
 		useDispatch( CORE_SITE );
 
+	// Check for API errors in the user store, mostly to cover
+	// the case if user is offline, but also any other potential
+	// case that API fails to execute. As `installActivateWPConsentAPI`
+	// action will invoke fetch for nonce, and when offline this will fail
+	// and API error will be fed to the `CORE_USER` store.
+	const installWPConsentAPIError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrors()
+	);
+
 	const isInstallingAndActivating = useSelect( ( select ) =>
 		select( CORE_SITE ).isApiFetching()
 	);
@@ -70,6 +80,11 @@ export default function WPConsentAPIRequirements() {
 	const apiInstallResponse = useSelect( ( select ) =>
 		select( CORE_SITE ).getApiInstallResponse()
 	);
+
+	const apiInstallHasError =
+		( installWPConsentAPIError?.length
+			? installWPConsentAPIError[ 0 ].message
+			: null ) || apiInstallResponse?.error;
 
 	const cellProps = {
 		smSize: 4,
@@ -188,10 +203,10 @@ export default function WPConsentAPIRequirements() {
 											) }
 											{ ! wpConsentPlugin.installed && (
 												<Fragment>
-													{ !! apiInstallResponse?.error && (
+													{ apiInstallHasError && (
 														<ErrorText
 															message={
-																apiInstallResponse.error
+																apiInstallHasError
 															}
 														/>
 													) }
@@ -211,7 +226,7 @@ export default function WPConsentAPIRequirements() {
 															);
 														} }
 													>
-														{ !! apiInstallResponse?.error
+														{ apiInstallHasError
 															? __(
 																	'Retry',
 																	'google-site-kit'
