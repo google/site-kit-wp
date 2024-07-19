@@ -83,12 +83,14 @@ export default function SetupSuccess() {
 					) }
 				</p>
 			</div>
-			<Button tertiary onClick={ dismissNotificationForUser }>
-				{ __( 'Got it', 'google-site-kit' ) }
-			</Button>
-			<Button onClick={ scrollToWidgetArea }>
-				{ __( 'Show me', 'google-site-kit' ) }
-			</Button>
+			<div className="googlesitekit-subtle-notification__action">
+				<Button tertiary onClick={ dismissNotificationForUser }>
+					{ __( 'Got it', 'google-site-kit' ) }
+				</Button>
+				<Button onClick={ scrollToWidgetArea }>
+					{ __( 'Show me', 'google-site-kit' ) }
+				</Button>
+			</div>
 		</div>
 	);
 }
