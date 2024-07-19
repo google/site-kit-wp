@@ -61,8 +61,9 @@ export default function SetupSuccess() {
 		);
 	}
 
-	function scrollToWidgetArea() {
-		dismissNotificationForUser().then( () => navigateTo( dashboardURL ) );
+	async function scrollToWidgetArea() {
+		await dismissNotificationForUser();
+		navigateTo( dashboardURL );
 	}
 
 	if ( isDismissed === undefined || isDismissed ) {
