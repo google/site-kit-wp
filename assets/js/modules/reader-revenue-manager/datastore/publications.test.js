@@ -40,7 +40,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
-	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
 
 describe( 'modules/reader-revenue-manager publications', () => {
@@ -100,6 +100,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should update the settings and call the saveSettings endpoint', async () => {
+				const originalDateNow = Date.now;
+
+				// Mock the date to be an arbitrary time.
+				const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
+				Date.now = jest.fn( () => mockNow );
+
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
@@ -113,12 +119,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
-				fetchMock.post( settingsEndpoint, {
+				fetchMock.postOnce( settingsEndpoint, {
 					body: {
 						...settings,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+						publicationOnboardingStateLastSyncedAtMs: mockNow,
 					},
 					status: 200,
 				} );
@@ -153,13 +159,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getPublicationOnboardingStateLastSyncedAtMs();
 
+				// Restore Date.now method.
+				Date.now = originalDateNow;
+
 				// Ensure that the sync time is set.
 				expect( syncTimeMs ).not.toBe( 0 );
-
-				// Ensure that date is within the last 5 seconds.
-				expect( syncTimeMs ).toBeLessThanOrEqual( Date.now() );
-
-				expect( syncTimeMs ).toBeGreaterThan( Date.now() - 5000 );
+				expect( syncTimeMs ).toBe( mockNow );
 			} );
 
 			it( 'should set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store', async () => {
@@ -177,12 +182,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
-				fetchMock.post( settingsEndpoint, {
+				fetchMock.postOnce( settingsEndpoint, {
 					body: {
 						...settings,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+						publicationOnboardingStateLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
 					},
 					status: 200,
 				} );
@@ -191,25 +196,26 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( settings );
 
-				const uiKeyBeforeAction = registry
-					.select( CORE_UI )
-					.getValue(
-						UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION
-					);
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBeUndefined();
 
 				await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.syncPublicationOnboardingState();
 
-				const uiKeyAfterAction = registry
-					.select( CORE_UI )
-					.getValue(
-						UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION
-					);
-
 				// Ensure that the UI key is set to true.
-				expect( uiKeyBeforeAction ).toBe( undefined );
-				expect( uiKeyAfterAction ).toBe( true );
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBe( true );
 			} );
 		} );
 

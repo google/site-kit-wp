@@ -28,7 +28,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
-	UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
 
 const fetchGetPublicationsStore = createFetchStore( {
@@ -89,32 +89,36 @@ const baseActions = {
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublications();
 
+		// If there are no publications, do not attempt to sync the onboarding state.
+		if ( ! publications ) {
+			return;
+		}
+
 		const publication = publications.find(
 			// eslint-disable-next-line sitekit/acronym-case
 			( { publicationId } ) => publicationId === publicationID
 		);
+
+		// If the publications is not found, do not attempt to sync the onboarding state.
+		if ( ! publication ) {
+			return;
+		}
 
 		const { onboardingState } = publication;
 		const currentOnboardingState = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublicationOnboardingState();
 
-		let settings = registry
+		const settings = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getSettings();
 
 		if ( onboardingState !== currentOnboardingState ) {
-			settings = {
-				...settings,
-				publicationOnboardingState: onboardingState,
-			};
+			settings.publicationOnboardingState = onboardingState;
 		}
 
-		settings = {
-			...settings,
-			/* eslint-disable-next-line sitekit/no-direct-date */
-			publicationOnboardingStateLastSyncedAtMs: Date.now(),
-		};
+		// eslint-disable-next-line sitekit/no-direct-date
+		settings.publicationOnboardingStateLastSyncedAtMs = Date.now();
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -131,7 +135,7 @@ const baseActions = {
 			registry
 				.dispatch( CORE_UI )
 				.setValue(
-					UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION,
+					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 					true
 				);
 		}
