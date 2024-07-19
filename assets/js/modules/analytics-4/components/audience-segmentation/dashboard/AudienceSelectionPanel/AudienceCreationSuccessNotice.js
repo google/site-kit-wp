@@ -29,7 +29,7 @@ import CheckFill from '../../../../../../../svg/icons/check-fill.svg';
 
 export default function AudienceCreationSuccessNotice() {
 	return (
-		<div className="googlesitekit-subtle-notification googlesitekit-subtle-notification--square-corners">
+		<div className="googlesitekit-narrow-subtle-notification">
 			<div className="googlesitekit-subtle-notification__icon">
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
