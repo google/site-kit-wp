@@ -99,7 +99,7 @@ const baseActions = {
 			( { publicationId } ) => publicationId === publicationID
 		);
 
-		// If the publications is not found, do not attempt to sync the onboarding state.
+		// If the publication is not found, do not attempt to sync the onboarding state.
 		if ( ! publication ) {
 			return;
 		}
