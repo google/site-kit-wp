@@ -51,7 +51,7 @@ const baseInitialState = {
 const baseActions = {
 	/**
 	 * Syncronizes the onboarding state of the publication with the API.
-	 * Updates the settings on server.
+	 * Updates the settings on the server.
 	 *
 	 * @since n.e.x.t
 	 *
