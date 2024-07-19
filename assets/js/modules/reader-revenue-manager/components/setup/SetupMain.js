@@ -19,13 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
-import PublicationOnboardingStateNotice from '../common/PublicationOnboardingStateNotice';
+import { PublicationSelect, PublicationOnboardingStateNotice } from '../common';
 
 export default function SetupMain() {
 	return (
@@ -41,8 +42,19 @@ export default function SetupMain() {
 					'google-site-kit'
 				) }
 			</h2>
-
-			<PublicationOnboardingStateNotice />
+			<div>
+				<p>
+					This is just added as a placeholder component to assist with
+					testing.
+				</p>
+				<PublicationSelect />
+				<PublicationOnboardingStateNotice />
+			</div>
+			<div className="googlesitekit-setup-module__action">
+				<SpinnerButton>
+					{ __( 'Complete setup', 'google-site-kit' ) }
+				</SpinnerButton>
+			</div>
 		</div>
 	);
 }

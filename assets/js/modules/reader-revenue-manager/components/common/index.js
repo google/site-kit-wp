@@ -17,3 +17,4 @@
  */
 
 export { default as PublicationOnboardingStateNotice } from './PublicationOnboardingStateNotice';
+export { default as PublicationSelect } from './PublicationSelect';

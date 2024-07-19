@@ -17,21 +17,62 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { ProgressBar } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	MODULE_SLUG,
+} from '../../datastore/constants';
+import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
 
 export default function SettingsEdit() {
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
+	);
+
+	const hasModuleAccess = useSelect( ( select ) => {
+		const { hasModuleOwnershipOrAccess, getErrorForAction } =
+			select( CORE_MODULES );
+
+		const hasAccess = hasModuleOwnershipOrAccess( MODULE_SLUG );
+
+		if ( hasAccess ) {
+			return true;
+		}
+
+		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
+			MODULE_SLUG,
+		] );
+
+		// Return early if request is not completed yet.
+		if ( undefined === hasAccess && ! checkAccessError ) {
+			return undefined;
+		}
+
+		// Return false if RRM is connected and access is concretely missing.
+		if ( false === hasAccess ) {
+			return false;
+		}
+
+		if ( 'module_not_connected' === checkAccessError?.code ) {
+			return true;
+		}
+
+		// For any other error or case, the user does not have access to GA4.
+		return false;
+	} );
+
+	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
+		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } medium />;
+	}
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ __(
-					'Reader Revenue Manager Settings Edit',
-					'google-site-kit'
-				) }
-			</h2>
-
-			{ /* TODO: Add the rest of the settings steps */ }
+			<PublicationSelect hasAccess={ hasModuleAccess } />
+			<PublicationOnboardingStateNotice />
 		</div>
 	);
 }

@@ -72,6 +72,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'publicationID'                            => '',
 			'publicationOnboardingState'               => '',
 			'publicationOnboardingStateLastSyncedAtMs' => 0,
+			'ownerID'                                  => 0,
 		);
 	}
 
