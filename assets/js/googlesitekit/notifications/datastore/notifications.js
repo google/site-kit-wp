@@ -164,6 +164,17 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
+	 * Fetches all registered notifications from state, regardless of whether they are dismissed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Array of notification objects.
+	 */
+	getNotifications: ( state ) => {
+		return state.notifications;
+	},
+	/**
 	 * Determines whether a notification is dismissed or not.
 	 *
 	 * Currently, this selector simply forwards the call to the dismissed items API.
