@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import BannerNotification from '../BannerNotification';
 import ZeroStateIcon from '../../../../svg/graphics/zero-state-blue.svg';
-import { getTimeInSeconds, trackEvent } from '../../../util';
+import { DAY_IN_SECONDS, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 
 export default function ZeroDataNotification() {
@@ -69,7 +69,7 @@ export default function ZeroDataNotification() {
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			learnMoreURL={ notEnoughTrafficURL }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			dismissExpires={ getTimeInSeconds( 'day' ) }
+			dismissExpires={ DAY_IN_SECONDS }
 			SmallImageSVG={ ZeroStateIcon }
 			onView={ handleOnView }
 			onDismiss={ handleOnDismiss }

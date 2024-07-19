@@ -37,8 +37,7 @@ import { Menu, Button } from 'googlesitekit-components';
 import DateRangeIcon from '../../svg/icons/date-range.svg';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
-import { getAvailableDateRanges } from '../util/date-range';
-import { trackEvent } from '../util';
+import { getAvailableDateRanges, trackEvent } from '../util';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import useViewContext from '../hooks/useViewContext';
 

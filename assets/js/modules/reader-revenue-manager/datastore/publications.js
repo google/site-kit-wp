@@ -17,19 +17,26 @@
  */
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
 import API from 'googlesitekit-api';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	MODULE_SLUG,
+	PUBLICATION_ONBOARDING_STATES,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+} from './constants';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
 		API.get(
 			'modules',
-			'reader-revenue-manager',
+			MODULE_SLUG,
 			'publications',
 			{},
 			{ useCache: true }
@@ -41,7 +48,129 @@ const baseInitialState = {
 	publications: undefined,
 };
 
-const baseActions = {};
+const baseActions = {
+	/**
+	 * Syncronizes the onboarding state of the publication with the API.
+	 * Updates the settings on the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	*syncPublicationOnboardingState() {
+		const registry = yield commonActions.getRegistry();
+		const connected = yield commonActions.await(
+			registry
+				.resolveSelect( CORE_MODULES )
+				.isModuleConnected( MODULE_SLUG )
+		);
+
+		// If the module is not connected, do not attempt to sync the onboarding state.
+		if ( ! connected ) {
+			return;
+		}
+
+		yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getSettings()
+		);
+
+		const publicationID = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationID();
+
+		// If there is no publication ID, do not attempt to sync the onboarding state.
+		if ( publicationID === undefined ) {
+			return;
+		}
+
+		const publications = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublications();
+
+		// If there are no publications, do not attempt to sync the onboarding state.
+		if ( ! publications ) {
+			return;
+		}
+
+		const publication = publications.find(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId } ) => publicationId === publicationID
+		);
+
+		// If the publication is not found, do not attempt to sync the onboarding state.
+		if ( ! publication ) {
+			return;
+		}
+
+		const { onboardingState } = publication;
+		const currentOnboardingState = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationOnboardingState();
+
+		const settings = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getSettings();
+
+		if ( onboardingState !== currentOnboardingState ) {
+			settings.publicationOnboardingState = onboardingState;
+		}
+
+		// eslint-disable-next-line sitekit/no-direct-date
+		settings.publicationOnboardingStateLastSyncedAtMs = Date.now();
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setSettings( settings );
+
+		// Save the settings to the API.
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
+
+		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
+		if (
+			onboardingState ===
+			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		) {
+			registry
+				.dispatch( CORE_UI )
+				.setValue(
+					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+					true
+				);
+		}
+	},
+
+	/**
+	 * Finds a matched publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object|null} Matched publication; `null` if none found.
+	 */
+	*findMatchedPublication() {
+		const { resolveSelect } = yield commonActions.getRegistry();
+		const publications = yield commonActions.await(
+			resolveSelect( MODULES_READER_REVENUE_MANAGER ).getPublications()
+		);
+
+		if ( publications.length === 0 ) {
+			return null;
+		}
+
+		if ( publications.length === 1 ) {
+			return publications[ 0 ];
+		}
+
+		const completedOnboardingPublication = publications.find(
+			( publication ) =>
+				publication.onboardingState ===
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		);
+
+		return completedOnboardingPublication || publications[ 0 ];
+	},
+};
 
 const baseControls = {};
 
@@ -61,6 +190,7 @@ const baseResolvers = {
 			.getPublications();
 		if ( publications === undefined ) {
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
+			yield baseActions.syncPublicationOnboardingState();
 		}
 	},
 };
