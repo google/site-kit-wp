@@ -60,6 +60,10 @@
 		}
 	}
 
+	.googlesitekit-subtle-notification__content--no-margin {
+		margin: 0;
+	}
+
 	.mdc-button {
 		font-weight: $fw-medium;
 		margin: 0 auto;
@@ -99,5 +103,19 @@
 
 	p.googlesitekit-subtle-notification__secondary_description {
 		font-weight: $fw-normal;
+	}
+
+	p.googlesitekit-subtle-notification__secondary_description--small {
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
+	}
+}
+
+.googlesitekit-subtle-notification--square-corners {
+	border-radius: 0;
+	padding: 14px $grid-gap-phone;
+
+	@media (min-width: $bp-tablet) {
+		padding: 14px $grid-gap-desktop;
 	}
 }
