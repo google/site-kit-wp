@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import SettingsEdit from './SettingsEdit';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { publications } from '../../datastore/__fixtures__';
 
 function Template() {
 	return <SettingsEdit />;
@@ -27,8 +30,78 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit/Default',
+};
+
+export const PublicationSelected = Template.bind( {} );
+PublicationSelected.storyName = 'PublicationSelected';
+PublicationSelected.scenario = {
+	label: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit/PublicationSelected',
+};
+PublicationSelected.args = {
+	setupRegistry: ( registry ) => {
+		const publication = publications[ 0 ];
+		const {
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationId: publicationID,
+			onboardingState: publicationOnboardingState,
+		} = publication;
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID,
+				publicationOnboardingState,
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			} );
+	},
+};
+
+export const PublicationSelectedWithOnboardingStateNotice = Template.bind( {} );
+PublicationSelectedWithOnboardingStateNotice.storyName =
+	'PublicationSelectedWithOnboardingStateNotice';
+PublicationSelectedWithOnboardingStateNotice.scenario = {
+	label: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit/PublicationSelectedWithOnboardingStateNotice',
+};
+PublicationSelectedWithOnboardingStateNotice.args = {
+	setupRegistry: ( registry ) => {
+		const publication = publications[ 2 ];
+		const {
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationId: publicationID,
+			onboardingState: publicationOnboardingState,
+		} = publication;
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID,
+				publicationOnboardingState,
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			} );
+	},
+};
 
 export default {
-	title: 'Modules/ReaderRevenueManager/Settings/SettingsEdit',
-	component: SettingsEdit,
+	title: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit',
+	decorators: [
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( publications );
+
+				if ( args.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
