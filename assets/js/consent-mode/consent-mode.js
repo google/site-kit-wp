@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import { isEqual } from 'lodash';
+
 ( function () {
 	function actionConsentChange( event ) {
 		if ( event.detail ) {
@@ -37,7 +42,8 @@
 			}
 		}
 	}
-	document.addEventListener(
+
+	global.document.addEventListener(
 		'wp_listen_for_consent_change',
 		actionConsentChange
 	);
@@ -62,15 +68,22 @@
 				}
 			}
 		);
-		if ( hasConsentParameters ) {
+		if (
+			hasConsentParameters &&
+			// Prevent duplicate calls to gtag, only updating if the consent parameters have changed.
+			! isEqual( consentParameters, global._googlesitekitConsents )
+		) {
 			global.gtag( 'consent', 'update', consentParameters );
+			global._googlesitekitConsents = consentParameters;
 		}
 	}
-	document.addEventListener(
+
+	global.document.addEventListener(
 		'wp_consent_type_defined',
 		updateGrantedConsent
 	);
-	document.addEventListener( 'DOMContentLoaded', function () {
+
+	global.document.addEventListener( 'DOMContentLoaded', function () {
 		if ( ! global.waitfor_consent_hook ) {
 			updateGrantedConsent();
 		}

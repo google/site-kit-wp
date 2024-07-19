@@ -58,8 +58,7 @@ import {
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
-import { stringToDate, getDateString } from '../../util/date-range';
-import { getLocale } from '../../util';
+import { stringToDate, getDateString, getLocale } from '../../util';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 
 export default function GoogleChart( props ) {

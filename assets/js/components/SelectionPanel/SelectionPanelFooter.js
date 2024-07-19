@@ -37,9 +37,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import ErrorNotice from '../ErrorNotice';
 import { safelySort } from '../../util';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import PreviewBlock from '../PreviewBlock';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
@@ -57,6 +60,10 @@ export default function SelectionPanelFooter( {
 } ) {
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
 	const [ wasSaved, setWasSaved ] = useState( false );
+
+	const isLoading = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableAudiences()
+	);
 
 	const haveSettingsChanged = useMemo( () => {
 		// Arrays need to be sorted to match in `isEqual`.
@@ -118,6 +125,29 @@ export default function SelectionPanelFooter( {
 
 	const selectedItemCount = selectedItemSlugs?.length || 0;
 
+	const itemCountElement = isLoading ? (
+		<PreviewBlock width="89px" height="20px" />
+	) : (
+		<p className="googlesitekit-selection-panel-footer__item-count">
+			{ createInterpolateElement(
+				sprintf(
+					/* translators: 1: Number of selected items. 2: Maximum number of items that can be selected. */
+					__(
+						'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
+						'google-site-kit'
+					),
+					selectedItemCount,
+					maxSelectedItemCount
+				),
+				{
+					MaxCount: (
+						<span className="googlesitekit-selection-panel-footer__item-count--max-count" />
+					),
+				}
+			) }
+		</p>
+	);
+
 	return (
 		<footer className="googlesitekit-selection-panel-footer">
 			{ saveError && <ErrorNotice error={ saveError } /> }
@@ -133,24 +163,7 @@ export default function SelectionPanelFooter( {
 						}
 					/>
 				) : (
-					<p className="googlesitekit-selection-panel-footer__item-count">
-						{ createInterpolateElement(
-							sprintf(
-								/* translators: 1: Number of selected items. 2: Maximum number of items that can be selected. */
-								__(
-									'%1$d selected <MaxCount>(up to %2$d)</MaxCount>',
-									'google-site-kit'
-								),
-								selectedItemCount,
-								maxSelectedItemCount
-							),
-							{
-								MaxCount: (
-									<span className="googlesitekit-selection-panel-footer__item-count--max-count" />
-								),
-							}
-						) }
-					</p>
+					itemCountElement
 				) }
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button

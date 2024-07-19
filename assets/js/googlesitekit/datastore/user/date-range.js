@@ -31,7 +31,7 @@ import {
 	isValidDateString,
 	INVALID_DATE_RANGE_ERROR,
 	INVALID_DATE_STRING_ERROR,
-} from '../../../util/date-range';
+} from '../../../util';
 
 export const initialState = {
 	dateRange: 'last-28-days',
@@ -205,15 +205,12 @@ export const selectors = {
 	 * Returns the current reference date, typically today.
 	 *
 	 * @since 1.22.0
-	 * @since 1.130.0 Added options to allow getting the reference date as a Date instance.
 	 *
-	 * @param {Object} state            The current data store's state.
-	 * @param {Object} [options]        Options parameter. Default is: {}.
-	 * @param {number} [options.parsed] Number of days to offset. Default is: 0.
+	 * @param {Object} state The current data store's state.
 	 * @return {string} The current reference date as YYYY-MM-DD.
 	 */
-	getReferenceDate( state, { parsed = false } = {} ) {
-		return parsed ? new Date( state.referenceDate ) : state.referenceDate;
+	getReferenceDate( state ) {
+		return state.referenceDate;
 	},
 };
 

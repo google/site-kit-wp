@@ -49,7 +49,7 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import InProgressBanner from './InProgressBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
-import { getTimeInSeconds, trackEvent } from '../../../../../util';
+import { MONTH_IN_SECONDS, trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import {
 	isValidPropertyID,
@@ -127,7 +127,7 @@ function EnhancedMeasurementActivationBanner() {
 		dismissItem(
 			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 			{
-				expiresInSeconds: getTimeInSeconds( 'month' ),
+				expiresInSeconds: MONTH_IN_SECONDS,
 			}
 		);
 	}
