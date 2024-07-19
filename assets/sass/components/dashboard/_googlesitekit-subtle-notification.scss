@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-.googlesitekit-subtle-notification {
+@mixin googlesitekit-subtle-notification($bp-subtle-notification) {
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
@@ -25,7 +25,7 @@
 	gap: 10px;
 	padding: $grid-gap-phone;
 
-	@media (min-width: $bp-tablet) {
+	@media (min-width: $bp-subtle-notification) {
 		align-items: center;
 		flex-direction: row;
 		gap: $grid-gap-phone;
@@ -35,7 +35,7 @@
 	.googlesitekit-subtle-notification__icon {
 		display: none;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-subtle-notification) {
 			display: flex;
 		}
 	}
@@ -47,14 +47,14 @@
 		font-weight: $fw-medium;
 		line-height: $lh-title-lg;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-subtle-notification) {
 			flex: 1;
 			font-size: $fs-title-lg;
 		}
 
 		p {
 			margin: 0 0 10px;
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-subtle-notification) {
 				margin: 0;
 			}
 		}
@@ -74,7 +74,7 @@
 			color: $c-content-on-primary-container;
 		}
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-subtle-notification) {
 			margin: 0;
 		}
 
@@ -91,7 +91,7 @@
 		justify-content: center;
 		width: 100%;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-subtle-notification) {
 			justify-content: initial;
 			width: initial;
 		}
@@ -111,11 +111,17 @@
 	}
 }
 
-.googlesitekit-subtle-notification--square-corners {
+.googlesitekit-subtle-notification {
+	@include googlesitekit-subtle-notification($bp-tablet);
+}
+
+.googlesitekit-narrow-subtle-notification {
+	@include googlesitekit-subtle-notification($bp-xsmall);
+
 	border-radius: 0;
 	padding: 14px $grid-gap-phone;
 
-	@media (min-width: $bp-tablet) {
+	@media (min-width: $bp-xsmall) {
 		padding: 14px $grid-gap-desktop;
 	}
 }
