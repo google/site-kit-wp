@@ -31,9 +31,11 @@ import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
+const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
 
 export const initialState = {
 	notifications: {},
+	queuedNotifications: undefined,
 };
 
 export const actions = {
@@ -102,6 +104,14 @@ export const actions = {
 			type: REGISTER_NOTIFICATION,
 		};
 	},
+	receiveQueuedNotifications( queuedNotifications ) {
+		return {
+			payload: {
+				queuedNotifications,
+			},
+			type: RECEIVE_QUEUED_NOTIFICATIONS,
+		};
+	},
 	/**
 	 * Dismisses the given notification by its id.
 	 *
@@ -152,6 +162,11 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 				state.notifications[ id ] = { ...settings, id };
 			}
 
+			break;
+		}
+
+		case RECEIVE_QUEUED_NOTIFICATIONS: {
+			state.queuedNotifications = payload.queuedNotifications;
 			break;
 		}
 
