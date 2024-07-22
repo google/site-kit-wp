@@ -289,6 +289,67 @@ describe( 'core/notifications Notifications', () => {
 
 				expect( queuedNotifications ).toHaveLength( 2 );
 			} );
+
+			it( 'should return notifications filtered by their checkRequirements callback when specified', async () => {
+				// Setup a test store with a selector so we can verify the `getQueuedNotifications` selector
+				// passes the `registry` through to the notification's `checkRequirements` callback.
+				const TEST_STORE = 'test-store';
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						testActiveNotification: () => true,
+						testInactiveNotification: () => false,
+					},
+				} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-true', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						checkRequirements: ( { select } ) =>
+							select( TEST_STORE ).testActiveNotification(),
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-false', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						checkRequirements: ( { select } ) =>
+							select( TEST_STORE ).testInactiveNotification(),
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-undefined', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				expect( queuedNotifications ).toHaveLength( 2 );
+				expect( queuedNotifications[ 0 ].id ).toBe(
+					'check-requirements-true'
+				);
+				expect( queuedNotifications[ 1 ].id ).toBe(
+					'check-requirements-undefined'
+				);
+			} );
 		} );
 		describe( 'isNotificationDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
