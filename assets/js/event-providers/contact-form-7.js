@@ -15,13 +15,6 @@
  */
 
 global.document.addEventListener( 'wpcf7mailsent', ( event ) => {
-	// Prevent sending duplicate event with different names when Popup Maker is active.
-	// PUM also tracks submissions from CF7 as `submit_lead_form`, which is not throttled
-	// as key is going to differ due to the different event names.
-	if ( typeof PUM !== 'undefined' ) {
-		return;
-	}
-
 	global._googlesitekit?.gtagEvent?.( 'contact', {
 		// eslint-disable-next-line sitekit/acronym-case
 		event_category: event.detail.contactFormId,
