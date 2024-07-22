@@ -24,7 +24,8 @@ import PreviewBlock from '../../../../../../../components/PreviewBlock';
 export default function AudienceTileLoading() {
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-loading">
-			<PreviewBlock width="100%" height="14px" />
+			{ /* The first preview block is only visible on desktop to preview the header which is hidden on other screens. */ }
+			<PreviewBlock width="100%" height="20px" />
 			<PreviewBlock width="100%" height="52px" />
 			<PreviewBlock width="100%" height="52px" />
 			<PreviewBlock width="100%" height="52px" />

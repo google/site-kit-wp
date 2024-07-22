@@ -18,13 +18,32 @@
 
 .googlesitekit-plugin {
 	.googlesitekit-audience-segmentation-tile-loading {
-		margin: 24px 24px 28px;
+		margin: $grid-gap-phone $grid-gap-phone $grid-gap-phone + 4px;
+
+		@media (min-width: $bp-desktop) {
+			margin: $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop + 4px;
+		}
 
 		.googlesitekit-preview-block {
-			margin: 12px 0;
+			margin: 22px 0;
 
 			&:first-of-type {
-				margin-bottom: 24px;
+				display: none;
+			}
+
+			&:last-of-type {
+				// Match the no data height of the final metric block
+				// on tablet and desktop to minimize layout shift.
+				margin-bottom: 31px;
+			}
+
+			@media (min-width: $bp-desktop) {
+				margin: 24px 0;
+
+				&:first-of-type {
+					display: flex;
+					margin-bottom: 35px;
+				}
 			}
 		}
 	}
