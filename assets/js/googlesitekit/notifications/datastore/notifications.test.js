@@ -222,6 +222,15 @@ describe( 'core/notifications Notifications', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getQueuedNotifications', () => {
+			it( 'requires viewContext', () => {
+				expect( () => {
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.getQueuedNotifications();
+				} ).toThrow( 'viewContext is required.' );
+			} );
+		} );
 		describe( 'isNotificationDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
 				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
