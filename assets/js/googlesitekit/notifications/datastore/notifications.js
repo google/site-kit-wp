@@ -24,9 +24,16 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import Data, {
+	commonActions,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
-import { NOTIFICATION_AREAS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_VIEW_CONTEXTS,
+} from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 
@@ -175,7 +182,54 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 	}
 } );
 
-export const resolvers = {};
+export const resolvers = {
+	*getQueuedNotifications( viewContext ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const notifications = registry
+			.select( CORE_NOTIFICATIONS )
+			.getNotifications();
+
+		const filteredNotifications = Object.values( notifications ).filter(
+			( notification ) => {
+				if ( ! notification.viewContexts.includes( viewContext ) ) {
+					return false;
+				}
+
+				if (
+					!! notification.isDismissible &&
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.isNotificationDismissed( notification.id )
+				) {
+					return false;
+				}
+
+				return true;
+			}
+		);
+
+		const queuedNotifications = yield Data.commonActions.await(
+			Promise.all(
+				filteredNotifications.filter( ( notification ) => {
+					if (
+						typeof notification.checkRequirements === 'function'
+					) {
+						return notification.checkRequirements( registry );
+					}
+
+					return true;
+				} )
+			)
+		);
+
+		queuedNotifications.sort( ( a, b ) => {
+			return a.priority - b.priority;
+		} );
+
+		yield actions.receiveQueuedNotifications( queuedNotifications );
+	},
+};
 
 export const selectors = {
 	/**
