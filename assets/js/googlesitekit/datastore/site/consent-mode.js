@@ -15,6 +15,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -29,8 +35,8 @@ import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '../user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
-import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { actions as errorStoreActions } from '../../data/create-error-store';
+const { clearError, receiveError } = errorStoreActions;
 
 const { getRegistry } = commonActions;
 
@@ -172,6 +178,8 @@ const baseActions = {
 	*installActivateWPConsentAPI() {
 		const registry = yield getRegistry();
 
+		yield clearError( 'installActivateWPConsentAPI', [] );
+
 		yield {
 			type: INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING,
 			payload: true,
@@ -181,6 +189,25 @@ const baseActions = {
 			registry.resolveSelect( CORE_USER ).getNonces()
 		);
 		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
+
+		if ( nonce === undefined ) {
+			const error = registry
+				.select( CORE_USER )
+				.getErrorForSelector( 'getNonces' );
+
+			yield receiveError( error, 'installActivateWPConsentAPI', [] );
+
+			yield {
+				type: INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING,
+				payload: false,
+			};
+
+			registry
+				.dispatch( CORE_USER )
+				.invalidateResolution( 'getNonces', [] );
+
+			return;
+		}
 
 		const { response } =
 			yield fetchInstallActivateWPConsentAPI.actions.fetchInstallActivateWPConsentAPI(
