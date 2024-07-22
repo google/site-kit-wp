@@ -36,6 +36,7 @@ import {
 import { trackEvent } from '../../util';
 import Link from '../../components/Link';
 import useViewContext from '../../hooks/useViewContext';
+import { setItem } from '../../googlesitekit/api/cache';
 
 export default function Description() {
 	const viewContext = useViewContext();
@@ -65,6 +66,9 @@ export default function Description() {
 				'start_user_setup',
 				proxySetupURL ? 'proxy' : 'custom-oauth'
 			);
+			// Cache the start of the user setup journey.
+			// This will be used for event tracking logic after successful setup.
+			await setItem( 'start_user_setup', true );
 
 			navigateTo( proxySetupURL );
 		},
