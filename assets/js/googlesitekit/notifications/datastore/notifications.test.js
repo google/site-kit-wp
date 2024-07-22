@@ -22,12 +22,21 @@
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../constants';
+import { CORE_USER } from '../../datastore/user/constants';
 
 describe( 'core/notifications Notifications', () => {
+	const fetchGetDismissedItems = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
+	);
+	const fetchDismissItem = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
+
 	let registry;
 	let store;
 
@@ -145,6 +154,105 @@ describe( 'core/notifications Notifications', () => {
 				expect( store.getState().notifications[ id ].Component ).toBe(
 					NotificationOne
 				);
+			} );
+		} );
+		describe( 'dismissNotification', () => {
+			it( 'should require a valid id to be provided', () => {
+				expect( () =>
+					registry
+						.dispatch( CORE_NOTIFICATIONS )
+						.dismissNotification()
+				).toThrow(
+					'A notification id is required to dismiss a notification.'
+				);
+			} );
+			it( 'should dismiss a notification without a given expiry time', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'foo' ],
+				} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'foo' );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
+					body: {
+						data: {
+							slug: 'foo',
+							expiration: 0,
+						},
+					},
+				} );
+
+				const isNotificationDismissed = registry
+					.select( CORE_NOTIFICATIONS )
+					.isNotificationDismissed( 'foo' );
+				expect( isNotificationDismissed ).toBe( true );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+			it( 'should dismiss a notification with a given expiry time', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'foo' ],
+				} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'foo', { expiresInSeconds: 3 } );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
+					body: {
+						data: {
+							slug: 'foo',
+							expiration: 3,
+						},
+					},
+				} );
+
+				const isNotificationDismissed = registry
+					.select( CORE_NOTIFICATIONS )
+					.isNotificationDismissed( 'foo' );
+				expect( isNotificationDismissed ).toBe( true );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'isNotificationDismissed', () => {
+			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+				expect(
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.isNotificationDismissed( 'foo' )
+				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getDismissedItems();
+			} );
+
+			it( 'should return TRUE if the notification is dismissed', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [ 'foo', 'bar' ] );
+				expect(
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.isNotificationDismissed( 'foo' )
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE if the notification is not dismissed', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [ 'foo', 'bar' ] );
+				expect(
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.isNotificationDismissed( 'baz' )
+				).toBe( false );
 			} );
 		} );
 	} );

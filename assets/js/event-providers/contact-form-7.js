@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-document.addEventListener( 'wpcf7mailsent', ( event ) => {
+global.document.addEventListener( 'wpcf7mailsent', ( event ) => {
 	global._googlesitekit?.gtagEvent?.( 'contact', {
 		// eslint-disable-next-line sitekit/acronym-case
 		event_category: event.detail.contactFormId,
