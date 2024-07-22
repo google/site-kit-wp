@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
@@ -50,6 +51,22 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiences.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
 			};
 
 			return (
