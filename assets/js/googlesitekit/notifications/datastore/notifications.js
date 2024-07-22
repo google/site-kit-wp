@@ -244,6 +244,24 @@ export const selectors = {
 		return state.notifications;
 	},
 	/**
+	 * Fetches the queue of registered notifications which are filtered and sorted.
+	 *
+	 * Notifications are filtered and sorted in the corresponding resolver.
+	 * They are filtered based on the given `viewContext`, their dismissal state
+	 * and their `checkRequirements` callback. They are sorted by their `priority`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state       Data store's state.
+	 * @param {string} viewContext The viewContext to fetch notifications for.
+	 * @return {(Array|undefined)} Array of notification objects.
+	 */
+	getQueuedNotifications: ( state, viewContext ) => {
+		invariant( viewContext, 'viewContext is required.' );
+
+		return state.queuedNotifications;
+	},
+	/**
 	 * Determines whether a notification is dismissed or not.
 	 *
 	 * Currently, this selector simply forwards the call to the dismissed items API.
