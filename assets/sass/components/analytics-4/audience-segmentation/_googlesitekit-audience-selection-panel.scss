@@ -101,13 +101,13 @@
 			}
 		}
 
-		.googlesitekit-audience-selection-panel-audience-creation-notice {
+		.googlesitekit-audience-selection-panel__audience-creation-notice {
 			background-color: $c-surfaces-background;
 			border-radius: $br-xs;
 			margin: 5px $grid-gap-desktop;
 			padding: 20px 20px 6px;
 
-			.googlesitekit-audience-selection-panel-audience-creation-notice__header {
+			.googlesitekit-audience-selection-panel__audience-creation-notice-header {
 				display: flex;
 				justify-content: space-between;
 
@@ -121,7 +121,7 @@
 					margin: 0;
 				}
 
-				.googlesitekit-audience-selection-panel-audience-creation-notice__close {
+				.googlesitekit-audience-selection-panel__audience-creation-notice-close {
 					svg {
 						color: $c-surfaces-on-surface-variant;
 						height: 12px;
@@ -130,18 +130,18 @@
 				}
 			}
 
-			.googlesitekit-audience-selection-panel-audience-creation-notice__body {
+			.googlesitekit-audience-selection-panel__audience-creation-notice-body {
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
 
-				.googlesitekit-audience-selection-panel-audience-creation-notice-audience {
+				.googlesitekit-audience-selection-panel__audience-creation-notice-audience {
 
 					display: flex;
 					justify-content: space-between;
 					margin-bottom: 12px;
 					padding-top: 5px;
-					.googlesitekit-audience-selection-panel-audience-creation-notice-audience__details {
+					.googlesitekit-audience-selection-panel__audience-creation-notice-audience-details {
 						h3 {
 							color: $c-surfaces-on-background;
 							font-family: $f-primary;
@@ -162,7 +162,7 @@
 						}
 					}
 
-					.googlesitekit-audience-selection-panel-audience-creation-notice-audience__button {
+					.googlesitekit-audience-selection-panel__audience-creation-notice-audience-button {
 						align-items: center;
 						display: flex;
 
@@ -173,7 +173,7 @@
 						}
 					}
 
-					& + .googlesitekit-audience-selection-panel-audience-creation-notice-audience {
+					& + .googlesitekit-audience-selection-panel__audience-creation-notice-audience {
 						border-top: 1px solid $c-utility-divider-1;
 						padding-top: 12px;
 					}

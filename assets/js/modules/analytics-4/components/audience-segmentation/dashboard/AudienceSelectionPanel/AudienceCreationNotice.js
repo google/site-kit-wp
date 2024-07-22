@@ -1,5 +1,5 @@
 /**
- * AudienceCreationNotice component.
+ * Audience Selection Panel AudienceCreationNotice component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -63,13 +63,24 @@ export default function AudienceCreationNotice() {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( AUDIENCE_CREATION_NOTICE_SLUG )
+	);
+
 	const onCloseClick = () => {
 		dismissItem( AUDIENCE_CREATION_NOTICE_SLUG );
 	};
+	if (
+		! availableAudiences ||
+		availableAudiences.length === 0 ||
+		isDismissed
+	) {
+		return null;
+	}
 
 	return (
-		<div className="googlesitekit-audience-selection-panel-audience-creation-notice">
-			<div className="googlesitekit-audience-selection-panel-audience-creation-notice__header">
+		<div className="googlesitekit-audience-selection-panel__audience-creation-notice">
+			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-header">
 				<p>
 					{ __(
 						'Create groups suggested by Site Kit.',
@@ -78,21 +89,21 @@ export default function AudienceCreationNotice() {
 				</p>
 
 				<Link
-					className="googlesitekit-audience-selection-panel-audience-creation-notice__close"
+					className="googlesitekit-audience-selection-panel__audience-creation-notice-close"
 					onClick={ onCloseClick }
 					linkButton
 				>
 					<CloseIcon width="15" height="15" />
 				</Link>
 			</div>
-			<div className="googlesitekit-audience-selection-panel-audience-creation-notice__body">
+			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-body">
 				{ availableAudiences &&
 					availableAudiences.map( ( audience ) => (
 						<div
-							key={ audience.id }
-							className="googlesitekit-audience-selection-panel-audience-creation-notice-audience"
+							key={ audience.name }
+							className="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
 						>
-							<div className="googlesitekit-audience-selection-panel-audience-creation-notice-audience__details">
+							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details">
 								<h3>{ audience.displayName }</h3>
 								<p>
 									{
@@ -102,7 +113,7 @@ export default function AudienceCreationNotice() {
 									}
 								</p>
 							</div>
-							<div className="googlesitekit-audience-selection-panel-audience-creation-notice-audience__button">
+							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button">
 								<SpinnerButton
 									spinnerPosition={ SPINNER_POSITION.BEFORE }
 									onClick={ () => {
