@@ -27,7 +27,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '../googlesitekit/constants';
-import whenInViewContext from './when-in-view-context';
+import whenInViewContext from './whenInViewContext';
 
 describe( 'whenInViewContext', () => {
 	let registry;

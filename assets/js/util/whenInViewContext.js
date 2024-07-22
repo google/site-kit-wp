@@ -52,12 +52,12 @@ export default function whenInViewContext( {
 
 			invariant(
 				! ( !! allViewOnly && !! allNonViewOnly ),
-				'view only and non view only lists cannot both be true'
+				'Cannot allow both `allViewOnly` and `allNonViewOnly` contexts; if all contexts are allowed, remove this `whenInViewContext` wrapper.'
 			);
 
 			invariant(
 				! ( !! includeList && !! excludeList ),
-				'include and exclude lists cannot both be provided'
+				'Do not use both an include and exclude lists for `whenInViewContext`'
 			);
 
 			if ( allViewOnly && ! isViewOnly ) {

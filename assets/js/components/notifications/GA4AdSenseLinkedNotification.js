@@ -39,7 +39,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useDashboardType from '../../hooks/useDashboardType';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
-import whenInViewContext from '../../util/when-in-view-context';
+import whenInViewContext from '../../util/whenInViewContext';
 
 export const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'ga4_adsense_linked_notification';
