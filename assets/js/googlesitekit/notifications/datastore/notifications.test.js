@@ -230,6 +230,14 @@ describe( 'core/notifications Notifications', () => {
 						.getQueuedNotifications();
 				} ).toThrow( 'viewContext is required.' );
 			} );
+
+			it( 'should return undefined when no notifications have been registered', () => {
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+
+				expect( queuedNotifications ).toBeUndefined();
+			} );
 		} );
 		describe( 'isNotificationDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
