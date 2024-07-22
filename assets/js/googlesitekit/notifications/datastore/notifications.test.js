@@ -26,7 +26,10 @@ import {
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '../../constants';
 import { CORE_USER } from '../../datastore/user/constants';
 
 describe( 'core/notifications Notifications', () => {
@@ -222,6 +225,10 @@ describe( 'core/notifications Notifications', () => {
 	} );
 
 	describe( 'selectors', () => {
+		function TestNotificationComponent() {
+			return <div>Test notification!</div>;
+		}
+
 		describe( 'getQueuedNotifications', () => {
 			it( 'requires viewContext', () => {
 				expect( () => {
@@ -237,6 +244,50 @@ describe( 'core/notifications Notifications', () => {
 					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
 
 				expect( queuedNotifications ).toBeUndefined();
+			} );
+
+			it( 'should return registered notifications for a given viewContext', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification-1', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification-2', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_ENTITY_DASHBOARD ],
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification-3', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [
+							VIEW_CONTEXT_ENTITY_DASHBOARD,
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+						],
+					} );
+
+				expect(
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				expect( queuedNotifications ).toHaveLength( 2 );
 			} );
 		} );
 		describe( 'isNotificationDismissed', () => {
