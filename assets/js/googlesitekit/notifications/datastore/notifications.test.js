@@ -350,6 +350,78 @@ describe( 'core/notifications Notifications', () => {
 					'check-requirements-undefined'
 				);
 			} );
+
+			it( 'should return registered notifications filtered by their dismissal status when specified', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification(
+						'is-dismissible-true-and-dismissed',
+						{
+							Component: TestNotificationComponent,
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							isDismissible: true,
+						}
+					);
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification(
+						'is-dismissible-true-but-not-dismissed',
+						{
+							Component: TestNotificationComponent,
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							isDismissible: true,
+						}
+					);
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'is-dismissible-false', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: false,
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'is-dismissible-undefined', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [
+					'is-dismissible-true-and-dismissed',
+					'is-dismissible-false', // should not be checked nor filtered
+					'is-dismissible-undefined', // should not be checked nor filtered
+				] );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				expect( queuedNotifications ).toHaveLength( 3 );
+				expect( queuedNotifications[ 0 ].id ).toBe(
+					'is-dismissible-true-but-not-dismissed'
+				);
+				expect( queuedNotifications[ 1 ].id ).toBe(
+					'is-dismissible-false'
+				);
+				expect( queuedNotifications[ 2 ].id ).toBe(
+					'is-dismissible-undefined'
+				);
+			} );
 		} );
 		describe( 'isNotificationDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
