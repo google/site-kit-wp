@@ -44,7 +44,7 @@ import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Layout from '../layout/Layout';
 import { trackEvent } from '../../util';
-import { clearCache } from '../../googlesitekit/api/cache';
+import { clearCache, setItem } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
@@ -197,6 +197,9 @@ class SetupUsingGCP extends Component {
 			'start_user_setup',
 			'custom-oauth'
 		);
+		// Cache the start of the user setup journey.
+		// This will be used for event tracking logic after successful setup.
+		await setItem( 'start_user_setup', true );
 
 		if ( ! isSiteKitConnected ) {
 			await trackEvent(
@@ -204,6 +207,9 @@ class SetupUsingGCP extends Component {
 				'start_site_setup',
 				'custom-oauth'
 			);
+			// Cache the start of the user setup journey.
+			// This will be used for event tracking logic after successful setup.
+			await setItem( 'start_site_setup', true );
 		}
 
 		document.location = connectURL;
