@@ -24,8 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import { NOTIFICATION_AREAS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
+import { CORE_USER } from '../../datastore/user/constants';
+import { createValidatedAction } from '../../data/utils';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 
@@ -99,6 +102,39 @@ export const actions = {
 			type: REGISTER_NOTIFICATION,
 		};
 	},
+	/**
+	 * Dismisses the given notification by its id.
+	 *
+	 * Currently, this action simply dispatches the call to the dismissed items API.
+	 * We can potentially add more notification-specific dismissal logic here in the future.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id                         Notification id to dismiss.
+	 * @param {Object} options                    Dismiss notification options.
+	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
+	 * @return {Object} Generator instance.
+	 */
+	dismissNotification: createValidatedAction(
+		( id, options = {} ) => {
+			invariant(
+				id,
+				'A notification id is required to dismiss a notification.'
+			);
+			const { expiresInSeconds = 0 } = options;
+			invariant(
+				Number.isInteger( expiresInSeconds ),
+				'expiresInSeconds must be an integer.'
+			);
+		},
+		function* ( id, options = {} ) {
+			const { expiresInSeconds = 0 } = options;
+			const registry = yield commonActions.getRegistry();
+			return yield registry
+				.dispatch( CORE_USER )
+				.dismissItem( id, { expiresInSeconds } );
+		}
+	),
 };
 
 export const controls = {};
@@ -126,7 +162,25 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 export const resolvers = {};
 
-export const selectors = {};
+export const selectors = {
+	/**
+	 * Determines whether a notification is dismissed or not.
+	 *
+	 * Currently, this selector simply forwards the call to the dismissed items API.
+	 * We can potentially add more notification-specific logic here in the future.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} id    Notification id.
+	 * @return {(boolean|undefined)} TRUE if dismissed, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	isNotificationDismissed: createRegistrySelector(
+		( select ) => ( state, id ) => {
+			return select( CORE_USER ).isItemDismissed( id );
+		}
+	),
+};
 
 export default {
 	initialState,

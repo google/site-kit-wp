@@ -137,4 +137,14 @@
 			}
 		}
 	}
+
+	&.googlesitekit-settings-module__confirm-disconnect-modal {
+		.mdc-list-item__text {
+			white-space: normal;
+		}
+
+		.mdc-dialog__title {
+			align-items: flex-start;
+		}
+	}
 }
