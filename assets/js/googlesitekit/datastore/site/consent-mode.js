@@ -202,6 +202,10 @@ const baseActions = {
 				payload: false,
 			};
 
+			registry
+				.dispatch( CORE_USER )
+				.invalidateResolution( 'getNonces', [] );
+
 			return;
 		}
 
