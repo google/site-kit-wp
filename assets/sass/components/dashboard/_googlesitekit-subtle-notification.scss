@@ -74,6 +74,10 @@
 			color: $c-content-on-primary-container;
 		}
 
+		&.mdc-button--tertiary:hover:not(:disabled) {
+			background-color: $c-site-kit-sk-200;
+		}
+
 		@media (min-width: $bp-subtle-notification) {
 			margin: 0;
 		}
