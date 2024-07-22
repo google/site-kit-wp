@@ -270,9 +270,19 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 500,
 				} );
 
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
+				} );
+
 				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
 
 				expect( response ).toBeUndefined();
 				expect( error ).toEqual( errorResponse );
@@ -292,9 +302,19 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.get( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
+				} );
+
 				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
 
 				expect( response ).toEqual( availableAudiences );
 				expect( error ).toBeUndefined();
@@ -305,26 +325,80 @@ describe( 'modules/analytics-4 audiences', () => {
 						.getAvailableAudiences()
 				).toEqual( availableAudiences );
 			} );
+
+			it( 'should remove configured audiences which are no longer available', async () => {
+				const availableAudiencesSubset = [
+					availableAudiencesFixture[ 0 ],
+					availableAudiencesFixture[ 2 ],
+				];
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesSubset,
+					status: 200,
+				} );
+
+				const settings = {
+					configuredAudiences: availableAudiencesFixture.reduce(
+						( acc, { name } ) => [ ...acc, name ],
+						[]
+					),
+					isAudienceSegmentationWidgetHidden: false,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( settings );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					syncAvailableAudiencesEndpoint
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual(
+					availableAudiencesSubset.reduce(
+						( acc, { name } ) => [ ...acc, name ],
+						[]
+					)
+				);
+			} );
 		} );
 
 		describe( 'maybeSyncAvailableAudiences', () => {
 			it( 'should call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is undefined', async () => {
-				fetchMock.post( syncAvailableAudiencesEndpoint, {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiencesFixture,
 					status: 200,
+				} );
+
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
 				} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.maybeSyncAvailableAudiences();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
 			} );
 
-			it( 'should not call syncAvailableAudiences if the availableAudiencesLastSyncedAt is within the last hour', async () => {
+			it( 'should not call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is within the last hour', async () => {
 				fetchMock.post( syncAvailableAudiencesEndpoint, {
 					body: availableAudiencesFixture,
 					status: 200,
@@ -342,10 +416,18 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
 
-			it( 'should call syncAvailableAudiences if the availableAudiencesLastSyncedAt is not within the last hour', async () => {
-				fetchMock.post( syncAvailableAudiencesEndpoint, {
+			it( 'should call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is not within the last hour', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiencesFixture,
 					status: 200,
+				} );
+
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
 				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -357,53 +439,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.maybeSyncAvailableAudiences();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
-				);
-			} );
-
-			it( 'should remove configured audiences which are no longer available', async () => {
-				const availableAudiencesSubset = [
-					availableAudiencesFixture[ 0 ],
-					availableAudiencesFixture[ 2 ],
-				];
-
-				fetchMock.post( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesSubset,
-					status: 200,
-				} );
-
-				const settings = {
-					configuredAudiences: availableAudiencesFixture.reduce(
-						( acc, a ) => [ ...acc, a.name ],
-						[]
-					),
-					isAudienceSegmentationWidgetHidden: false,
-				};
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( settings );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.maybeSyncAvailableAudiences();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( fetchMock ).toHaveFetched(
-					syncAvailableAudiencesEndpoint
-				);
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
-				).toEqual(
-					availableAudiencesSubset.reduce(
-						( acc, a ) => [ ...acc, a.name ],
-						[]
-					)
 				);
 			} );
 		} );
@@ -1105,9 +1145,19 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 500,
 					} );
 
+					fetchMock.get( audienceSettingsEndpoint, {
+						body: {
+							data: {
+								configuredAudiences: [],
+							},
+						},
+					} );
+
 					const { response, error } = await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.enableAudienceGroup();
+
+					await waitForDefaultTimeouts();
 
 					expect( response ).toBeUndefined();
 					expect( error ).toEqual( errorResponse );

@@ -166,10 +166,37 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*syncAvailableAudiences() {
-		const { response, error } =
+		const { response: availableAudiences, error } =
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 
-		return { response, error };
+		if ( error ) {
+			return { response: availableAudiences, error };
+		}
+
+		const registry = yield commonActions.getRegistry();
+		const { select, dispatch } = registry;
+
+		// Remove any configuredAudiences that are no longer available in availableAudiences.
+		const configuredAudiences =
+			select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+		const newConfiguredAudiences = configuredAudiences?.filter(
+			( configuredAudience ) =>
+				availableAudiences?.some(
+					( { name } ) => name === configuredAudience
+				)
+		);
+
+		if (
+			configuredAudiences &&
+			newConfiguredAudiences &&
+			newConfiguredAudiences !== configuredAudiences
+		) {
+			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
+				newConfiguredAudiences || []
+			);
+		}
+
+		return { response: availableAudiences, error };
 	},
 
 	/**
@@ -186,29 +213,15 @@ const baseActions = {
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
 
-		// Update the audience cache if the availableAudiencesLastSyncedAt is older than 1 hour.
+		// Update the audience cache if the availableAudiencesLastSyncedAt setting is older than 1 hour.
 		if (
 			! availableAudiencesLastSyncedAt ||
 			availableAudiencesLastSyncedAt * 1000 <
 				// eslint-disable-next-line sitekit/no-direct-date
 				Date.now() - 1 * 60 * 60 * 1000
 		) {
-			const { response: availableAudiences } = yield commonActions.await(
+			yield commonActions.await(
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
-
-			// Remove any configuredAudiences that are no longer available in availableAudiences.
-			const configuredAudiences =
-				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
-
-			const newConfiguredAudiences = configuredAudiences?.filter(
-				( configuredAudience ) =>
-					availableAudiences?.some(
-						( { name } ) => name === configuredAudience
-					)
-			);
-			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
-				newConfiguredAudiences || []
 			);
 		}
 	},

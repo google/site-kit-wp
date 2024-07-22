@@ -248,7 +248,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		const visible = [];
 		const tempAudiences = configuredAudiences.slice();
 
-		while ( reportLoaded && tempAudiences.length > 0 ) {
+		while ( tempAudiences.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
 
 			const isDismissed = dismissedItems?.includes(
@@ -278,7 +278,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		}
 
 		return [ toClear, visible ];
-	}, [ configuredAudiences, dismissedItems, reportLoaded, report ] );
+	}, [ configuredAudiences, dismissedItems, report ] );
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
