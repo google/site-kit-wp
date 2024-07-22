@@ -143,8 +143,15 @@
 			white-space: normal;
 		}
 
+		/* stylelint-disable-next-line no-descending-specificity */
+		.mdc-list-item,
 		.mdc-dialog__title {
 			align-items: flex-start;
+		}
+
+		.mdc-list.mdc-list--underlined .mdc-list-item::before {
+			top: 15%;
+			transform: translateY(-15%);
 		}
 	}
 }
