@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
@@ -70,9 +75,13 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<PublicationSelect hasAccess={ hasModuleAccess } />
-			<PublicationOnboardingStateNotice />
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
+			{ hasModuleAccess && (
+				<Fragment>
+					<PublicationSelect hasModuleAccess />
+					<PublicationOnboardingStateNotice />
+				</Fragment>
+			) }
 		</div>
 	);
 }
