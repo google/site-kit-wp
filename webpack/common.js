@@ -117,6 +117,13 @@ exports.manifestArgs = ( mode ) => ( {
 				seedObj[ 'googlesitekit-components' ] =
 					seedObj[ 'googlesitekit-components' ] || [];
 
+				// Filter out any existing duplicate entries, when rebuilding during hot reload.
+				seedObj[ 'googlesitekit-components' ] = seedObj[
+					'googlesitekit-components'
+				].filter(
+					( existingEntry ) => existingEntry[ 0 ] !== file.path
+				);
+
 				seedObj[ 'googlesitekit-components' ].push(
 					entry( file.path, file.chunk.contentHash.javascript )
 				);
@@ -165,6 +172,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],
 	'googlesitekit-components': [ 'googlesitekit', 'components' ],
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };

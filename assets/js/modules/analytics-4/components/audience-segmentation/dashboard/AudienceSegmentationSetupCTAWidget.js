@@ -25,9 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,9 +41,9 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
-	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
@@ -52,7 +51,6 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
@@ -60,19 +58,18 @@ import {
 } from '../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../util';
+import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
 import AudienceErrorModal from './AudienceErrorModal';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
 
 function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
-	const [ isSaving, setIsSaving ] = useState( false );
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const showTooltip = useShowTooltip(
 		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 	);
@@ -91,14 +88,8 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
-
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
-	);
-
-	const hasAnalytics4EditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
 	const autoSubmit = useSelect( ( select ) =>
@@ -108,79 +99,22 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const redirectURL = addQueryArgs( global.location.href, {
-		notification: 'audience_segmentation',
-	} );
-
-	const [ apiErrors, setApiErrors ] = useState( [] );
-	const [ failedAudiences, setFailedAudiences ] = useState( [] );
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const onEnableGroups = useCallback( async () => {
-		setIsSaving( true );
+	const { dismissItem, dismissPrompt } = useDispatch( CORE_USER );
 
-		// If scope not granted, trigger scope error right away. These are
-		// typically handled automatically based on API responses, but
-		// this particular case has some special handling to improve UX.
-		if ( ! hasAnalytics4EditScope ) {
-			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-				autoSubmit: true,
-			} );
-
-			setPermissionScopeError( {
-				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-				message: __(
-					'Additional permissions are required to create new audiences in Analytics.',
-					'google-site-kit'
-				),
-				data: {
-					status: 403,
-					scopes: [ EDIT_SCOPE ],
-					skipModal: true,
-					skipDefaultErrorNotifications: true,
-					redirectURL,
-				},
-			} );
-
-			return;
-		}
-
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-			autoSubmit: false,
+	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
+		useEnableAudienceGroup( {
+			onSuccess: () => {
+				// Dismiss success notification in settings.
+				dismissItem(
+					SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
+				);
+			},
+			onError: () => {
+				setShowErrorModal( true );
+			},
 		} );
-
-		const { error, failedSiteKitAudienceSlugs } =
-			( await enableAudienceGroup( failedAudiences ) ) || {};
-
-		if ( error ) {
-			setApiErrors( [ error ] );
-			setFailedAudiences( [] );
-		} else if ( Array.isArray( failedSiteKitAudienceSlugs ) ) {
-			setFailedAudiences( failedSiteKitAudienceSlugs );
-			setApiErrors( [] );
-		} else {
-			setApiErrors( [] );
-			setFailedAudiences( [] );
-		}
-
-		setShowErrorModal( !! error || !! failedSiteKitAudienceSlugs );
-		setIsSaving( false );
-	}, [
-		hasAnalytics4EditScope,
-		setValues,
-		enableAudienceGroup,
-		failedAudiences,
-		setPermissionScopeError,
-		redirectURL,
-	] );
-
-	// If the user ends up back on this component with the required scope granted,
-	// and already submitted the form, trigger the submit again.
-	useEffect( () => {
-		if ( hasAnalytics4EditScope && autoSubmit ) {
-			onEnableGroups();
-		}
-	}, [ hasAnalytics4EditScope, autoSubmit, onEnableGroups ] );
 
 	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
 		// We should call isGatheringData() within this component for completeness
@@ -192,7 +126,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
-	const { dismissPrompt } = useDispatch( CORE_USER );
 	const handleDismissClick = async () => {
 		showTooltip();
 

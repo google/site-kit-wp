@@ -205,6 +205,7 @@ html[dir="rtl"] .googlesitekit-authorize-application__footer {
 	}
 
 	&:focus {
+		border: 1px solid $c-authorize-application-sys-light-primary;
 		box-shadow: 0 0 0 1000px rgba(11, 87, 208, 0.12) inset;
 	}
 }

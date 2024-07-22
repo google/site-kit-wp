@@ -72,8 +72,11 @@ import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
-import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 import { useFeature } from '../hooks/useFeature';
+import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
+import useQueryArg from '../hooks/useQueryArg';
+import { getContextScrollTop } from '../util/scroll';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -81,6 +84,10 @@ export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewOnlyDashboard = useViewOnly();
+
+	const breakpoint = useBreakpoint();
+
+	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -100,9 +107,23 @@ export default function DashboardMainApp() {
 		);
 
 	useMount( () => {
+		// Render the current survey portal in 5 seconds after the initial rendering.
 		if ( ! viewOnlyDashboard ) {
-			// Render the current survey portal in 5 seconds after the initial rendering.
 			setTimeout( () => setShowSurveyPortal( true ), 5000 );
+		}
+
+		// Scroll to a widget area if specified in the URL.
+		if ( widgetArea ) {
+			const widgetClass = `.googlesitekit-widget-area--${ widgetArea }`;
+
+			setTimeout( () => {
+				global.scrollTo( {
+					top: getContextScrollTop( widgetClass, breakpoint ),
+					behavior: 'smooth',
+				} );
+
+				setWidgetArea( undefined );
+			}, 100 );
 		}
 	} );
 
