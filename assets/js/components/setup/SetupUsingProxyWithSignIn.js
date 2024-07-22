@@ -64,6 +64,7 @@ import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
+import { setItem } from '../../googlesitekit/api/cache';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -157,10 +158,16 @@ export default function SetupUsingProxyWithSignIn() {
 
 			if ( proxySetupURL ) {
 				await trackEvent( viewContext, 'start_user_setup', 'proxy' );
+				// Cache the start of the user setup journey.
+				// This will be used for event tracking logic after successful setup.
+				await setItem( 'start_user_setup', true );
 			}
 
 			if ( proxySetupURL && ! isConnected ) {
 				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
+				// Cache the start of the user setup journey.
+				// This will be used for event tracking logic after successful setup.
+				await setItem( 'start_site_setup', true );
 			}
 
 			if ( moduleReauthURL && proxySetupURL ) {
