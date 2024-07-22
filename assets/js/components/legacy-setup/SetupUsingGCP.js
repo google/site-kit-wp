@@ -207,7 +207,7 @@ class SetupUsingGCP extends Component {
 				'start_site_setup',
 				'custom-oauth'
 			);
-			// Cache the start of the user setup journey.
+			// Cache the start of the site setup journey.
 			// This will be used for event tracking logic after successful setup.
 			await setItem( 'start_site_setup', true );
 		}
