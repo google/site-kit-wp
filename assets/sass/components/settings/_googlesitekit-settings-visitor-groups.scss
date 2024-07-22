@@ -1,4 +1,6 @@
 /**
+ * Settings Visitor Groups styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +16,32 @@
  * limitations under the License.
  */
 
-global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
-	if ( 'conversion' === detail.Analytics.type ) {
-		global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
-			campaignID: detail.Campaign.id,
-			campaignType: detail.Campaign.type,
-		} );
+.googlesitekit-plugin {
+
+	.googlesitekit-settings-visitor-groups__setup {
+
+		p {
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-top: 0;
+		}
+
+		.googlesitekit-cta-link {
+			font-weight: $fw-medium;
+			margin-top: 6px;
+		}
 	}
-} );
+
+	.googlesitekit-settings-visitor-groups__setup-progress {
+		margin-top: $grid-gap-phone;
+
+		p {
+			margin-bottom: 10px;
+		}
+	}
+
+	.googlesitekit-settings-visitor-groups__setup-success {
+		margin-bottom: 30px;
+	}
+}
