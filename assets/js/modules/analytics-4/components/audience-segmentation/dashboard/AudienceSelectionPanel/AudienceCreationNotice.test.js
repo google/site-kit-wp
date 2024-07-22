@@ -35,10 +35,6 @@ import { availableAudiences } from '../../../../datastore/__fixtures__';
 describe( 'AudienceCreationNotice', () => {
 	let registry;
 
-	const fetchGetDismissedItemsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-items'
-	);
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry );
@@ -51,12 +47,9 @@ describe( 'AudienceCreationNotice', () => {
 		] );
 		provideModuleRegistrations( registry );
 
-		// provideUserInfo( registry );
-		// provideModules( registry );
-		// provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
-		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'should render null if no audiences are available', () => {
