@@ -39,7 +39,6 @@ import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();
@@ -60,12 +59,12 @@ export default function WPConsentAPIRequirements() {
 	const { installActivateWPConsentAPI, activateConsentAPI } =
 		useDispatch( CORE_SITE );
 
-	// Check for `getNonces` errors in the user store, mostly to cover
+	// Check for `installActivateWPConsentAPIError` errors, mostly to cover
 	// the case if user is offline, but also any other potential
 	// case that nonces fetch fails. As `installActivateWPConsentAPI`
 	// action will invoke fetch for nonce, and when offline this will fail.
-	const fetNoncesAPIError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'getNonces' )
+	const installActivateWPConsentAPIError = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorForAction( 'installActivateWPConsentAPI' )
 	);
 
 	const isInstallingAndActivating = useSelect( ( select ) =>
@@ -81,8 +80,9 @@ export default function WPConsentAPIRequirements() {
 	);
 
 	const apiInstallHasError =
-		( fetNoncesAPIError ? fetNoncesAPIError.message : null ) ||
-		apiInstallResponse?.error;
+		( installActivateWPConsentAPIError
+			? installActivateWPConsentAPIError.message
+			: null ) || apiInstallResponse?.error;
 
 	const cellProps = {
 		smSize: 4,
