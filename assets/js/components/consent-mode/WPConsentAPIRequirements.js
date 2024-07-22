@@ -60,13 +60,12 @@ export default function WPConsentAPIRequirements() {
 	const { installActivateWPConsentAPI, activateConsentAPI } =
 		useDispatch( CORE_SITE );
 
-	// Check for API errors in the user store, mostly to cover
+	// Check for `getNonces` errors in the user store, mostly to cover
 	// the case if user is offline, but also any other potential
-	// case that API fails to execute. As `installActivateWPConsentAPI`
-	// action will invoke fetch for nonce, and when offline this will fail
-	// and API error will be fed to the `CORE_USER` store.
-	const installWPConsentAPIError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrors()
+	// case that nonces fetch fails. As `installActivateWPConsentAPI`
+	// action will invoke fetch for nonce, and when offline this will fail.
+	const fetNoncesAPIError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'getNonces' )
 	);
 
 	const isInstallingAndActivating = useSelect( ( select ) =>
@@ -82,9 +81,8 @@ export default function WPConsentAPIRequirements() {
 	);
 
 	const apiInstallHasError =
-		( installWPConsentAPIError?.length
-			? installWPConsentAPIError[ 0 ].message
-			: null ) || apiInstallResponse?.error;
+		( fetNoncesAPIError ? fetNoncesAPIError.message : null ) ||
+		apiInstallResponse?.error;
 
 	const cellProps = {
 		smSize: 4,
