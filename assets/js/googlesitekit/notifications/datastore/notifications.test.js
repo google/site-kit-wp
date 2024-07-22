@@ -422,6 +422,65 @@ describe( 'core/notifications Notifications', () => {
 					'is-dismissible-undefined'
 				);
 			} );
+
+			it( 'should return registered notifications ordered by priority', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'medium-2-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 25,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'lowest-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 30,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'medium-1-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 20,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'highest-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				expect( queuedNotifications ).toHaveLength( 4 );
+				expect( queuedNotifications[ 0 ].id ).toBe(
+					'highest-priority'
+				);
+				expect( queuedNotifications[ 1 ].id ).toBe(
+					'medium-1-priority'
+				);
+				expect( queuedNotifications[ 2 ].id ).toBe(
+					'medium-2-priority'
+				);
+				expect( queuedNotifications[ 3 ].id ).toBe( 'lowest-priority' );
+			} );
 		} );
 		describe( 'isNotificationDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
