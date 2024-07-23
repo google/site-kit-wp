@@ -55,7 +55,7 @@ export default function SubtleNotification( {
 					<Button tertiary onClick={ onDismiss }>
 						{ __( 'Got it', 'google-site-kit' ) }
 					</Button>
-					{ additionalCTA }
+					{ !! additionalCTA && additionalCTA }
 				</Cell>
 			</Row>
 		</Grid>
@@ -66,5 +66,5 @@ SubtleNotification.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	onDismiss: PropTypes.func.isRequired,
-	additionalCTA: PropTypes.oneOfType( PropTypes.elementType, PropTypes.bool ),
+	additionalCTA: PropTypes.oneOfType( [ PropTypes.node, PropTypes.bool ] ),
 };
