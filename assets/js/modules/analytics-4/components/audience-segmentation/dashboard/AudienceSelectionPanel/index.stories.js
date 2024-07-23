@@ -24,7 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
+import {
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
+} from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
@@ -201,6 +204,61 @@ UserCountError.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/UserCountError',
 };
 
+export const AudienceCreationNotice = Template.bind( {} );
+AudienceCreationNotice.storyName = 'Audience creation notice';
+AudienceCreationNotice.args = {
+	configuredAudiences: availableAudiences.reduce(
+		( acc, audience ) =>
+			audience.audienceType !== 'SITE_KIT_AUDIENCE'
+				? [ ...acc, audience.name ]
+				: acc,
+		[]
+	),
+	availableAudiences: availableAudiences.filter(
+		( audience ) => audience.audienceType !== 'SITE_KIT_AUDIENCE'
+	),
+};
+AudienceCreationNotice.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNotice',
+};
+
+export const AudienceCreationNoticeOneAdded = Template.bind( {} );
+AudienceCreationNoticeOneAdded.storyName =
+	'Audience creation notice with one audience created';
+AudienceCreationNoticeOneAdded.args = {
+	configuredAudiences: availableAudiences.reduce(
+		( acc, audience ) =>
+			audience.name !== 'properties/12345/audiences/3' // New visitors
+				? [ ...acc, audience.name ]
+				: acc,
+		[]
+	),
+	availableAudiences: availableAudiences.filter(
+		( audience ) => audience.name !== 'properties/12345/audiences/3' // New visitors
+	),
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+	},
+};
+AudienceCreationNoticeOneAdded.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNoticeOneAdded',
+};
+
+export const AudienceCreationSuccessNotice = Template.bind( {} );
+AudienceCreationSuccessNotice.storyName = 'Audience creation success notice';
+AudienceCreationSuccessNotice.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+	},
+};
+AudienceCreationSuccessNotice.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationSuccessNotice',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',
 	component: AudienceSelectionPanel,
@@ -211,7 +269,9 @@ export default {
 				startDate: '2024-02-29',
 				dimensions: [ { name: 'audienceResourceName' } ],
 				dimensionFilters: {
-					audienceResourceName: availableAudiences
+					audienceResourceName: (
+						args?.availableAudiences || availableAudiences
+					)
 						.filter(
 							( { audienceSlug } ) =>
 								'purchasers' !== audienceSlug
@@ -231,7 +291,7 @@ export default {
 				fetchMock.postOnce(
 					syncAvailableAudiencesEndpoint,
 					{
-						body: availableAudiences,
+						body: args?.availableAudiences || availableAudiences,
 						status: 200,
 					},
 					{ overwriteRoutes: false }
@@ -248,7 +308,9 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiences );
+					.setAvailableAudiences(
+						args?.availableAudiences || availableAudiences
+					);
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

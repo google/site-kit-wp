@@ -48,10 +48,6 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiences );
-
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				registry
@@ -67,6 +63,14 @@ export default {
 						customDimension: {},
 						property: {},
 					} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+					availableAudiences: [],
+				} );
 			};
 
 			return (

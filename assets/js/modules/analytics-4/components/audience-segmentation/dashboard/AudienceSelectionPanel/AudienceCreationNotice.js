@@ -20,13 +20,18 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { AUDIENCE_CREATION_NOTICE_SLUG } from './constants';
+import {
+	AUDIENCE_CREATION_NOTICE_SLUG,
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+} from './constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
@@ -38,7 +43,9 @@ import SpinnerButton, {
 } from '../../../../../../googlesitekit/components-gm2/SpinnerButton';
 
 export default function AudienceCreationNotice() {
-	const availableAudiences = useSelect( ( select ) => {
+	const [ isCreatingAudience, setIsCreatingAudience ] = useState( false );
+
+	const siteKitConfigurableAudiences = useSelect( ( select ) => {
 		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
 
 		const audiences = getConfigurableAudiences();
@@ -57,21 +64,63 @@ export default function AudienceCreationNotice() {
 	} );
 
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
 
-	const isDismissed = useSelect( ( select ) =>
+	const isItemDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( AUDIENCE_CREATION_NOTICE_SLUG )
+	);
+	const hasSuccessNotice = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG )
 	);
 
 	const onCloseClick = () => {
 		dismissItem( AUDIENCE_CREATION_NOTICE_SLUG );
 	};
-	if (
-		! availableAudiences ||
-		availableAudiences.length === 0 ||
-		isDismissed
-	) {
+
+	const { createAudience, syncAvailableAudiences } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	const handleCreateAudience = async ( audienceSlug ) => {
+		setIsCreatingAudience( audienceSlug );
+
+		const { error } = await createAudience(
+			SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
+		);
+
+		await syncAvailableAudiences();
+
+		setIsCreatingAudience( false );
+
+		if ( ! error ) {
+			setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+		}
+	};
+
+	// Show the notice if the user has no site kit audiences, or has just
+	// created one, and the user has not dismissed it.
+	const hasOneAudienceBeenCreated =
+		hasSuccessNotice && siteKitConfigurableAudiences?.length === 1;
+	const shouldShowNotice =
+		! isItemDismissed &&
+		( siteKitConfigurableAudiences?.length === 0 ||
+			hasOneAudienceBeenCreated );
+
+	if ( ! shouldShowNotice ) {
 		return null;
 	}
+
+	const siteKitAvailableAudiences = Object.keys(
+		SITE_KIT_AUDIENCE_DEFINITIONS
+	).reduce(
+		( acc, audienceSlug ) =>
+			siteKitConfigurableAudiences.find(
+				( configuredAudience ) =>
+					configuredAudience.audienceSlug === audienceSlug
+			)
+				? acc
+				: [ ...acc, audienceSlug ],
+		[]
+	);
 
 	return (
 		<div className="googlesitekit-audience-selection-panel__audience-creation-notice">
@@ -92,18 +141,24 @@ export default function AudienceCreationNotice() {
 				</Link>
 			</div>
 			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-body">
-				{ availableAudiences &&
-					availableAudiences.map( ( audience ) => (
+				{ siteKitAvailableAudiences &&
+					siteKitAvailableAudiences.map( ( audienceSlug ) => (
 						<div
-							key={ audience.name }
+							key={ audienceSlug }
 							className="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
 						>
 							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details">
-								<h3>{ audience.displayName }</h3>
+								<h3>
+									{
+										SITE_KIT_AUDIENCE_DEFINITIONS[
+											audienceSlug
+										].displayName
+									}
+								</h3>
 								<p className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description">
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
-											audience.audienceSlug
+											audienceSlug
 										].description
 									}
 								</p>
@@ -112,8 +167,11 @@ export default function AudienceCreationNotice() {
 								<SpinnerButton
 									spinnerPosition={ SPINNER_POSITION.BEFORE }
 									onClick={ () => {
-										// TODO: to be implemented in #8164
+										handleCreateAudience( audienceSlug );
 									} }
+									isSaving={
+										isCreatingAudience === audienceSlug
+									}
 								>
 									{ __( 'Create', 'google-site-kit' ) }
 								</SpinnerButton>

@@ -29,8 +29,12 @@ import {
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
-import { AUDIENCE_CREATION_NOTICE_SLUG } from './constants';
+import {
+	AUDIENCE_CREATION_NOTICE_SLUG,
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+} from './constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 describe( 'AudienceCreationNotice', () => {
 	let registry;
@@ -56,23 +60,6 @@ describe( 'AudienceCreationNotice', () => {
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should render null if there are 0 audiences available', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			availableAudiences: [],
-		} );
-
-		const { container, waitForRegistry } = render(
-			<AudienceCreationNotice />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -114,7 +101,7 @@ describe( 'AudienceCreationNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render the notice if the user has not dismissed the notice', async () => {
+	it( 'should render the notice if the user has not dismissed the notice and there are 2 available audiences', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -132,8 +119,47 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences,
+			availableAudiences: [],
 		} );
+
+		const { container, waitForRegistry } = render(
+			<AudienceCreationNotice />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the notice if the user has not dismissed the notice and there is 1 available audience', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID: '12345',
+			propertyID: '34567',
+			measurementID: '56789',
+			webDataStreamID: '78901',
+			availableAudiences: availableAudiences.filter(
+				( { displayName } ) => displayName !== 'Returning visitors'
+			),
+		} );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
 		const { container, waitForRegistry } = render(
 			<AudienceCreationNotice />,

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AudienceCreationNotice should render the notice if the user has not dismissed the notice 1`] = `
+exports[`AudienceCreationNotice should render the notice if the user has not dismissed the notice and there are 2 available audiences 1`] = `
 <div>
   <div
     class="googlesitekit-audience-selection-panel__audience-creation-notice"
@@ -68,6 +68,63 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
           <p
             class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
           >
+            People who have visited your site at least once before
+          </p>
+        </div>
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button"
+        >
+          <button
+            class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__before mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Create
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AudienceCreationNotice should render the notice if the user has not dismissed the notice and there is 1 available audience 1`] = `
+<div>
+  <div
+    class="googlesitekit-audience-selection-panel__audience-creation-notice"
+  >
+    <div
+      class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
+    >
+      <p>
+        Create groups suggested by Site Kit.
+      </p>
+      <button
+        class="googlesitekit-cta-link googlesitekit-audience-selection-panel__audience-creation-notice-close googlesitekit-cta-link--link-button"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          <svg />
+        </span>
+      </button>
+    </div>
+    <div
+      class="googlesitekit-audience-selection-panel__audience-creation-notice-body"
+    >
+      <div
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
+      >
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
+        >
+          <h3>
+            Returning visitors
+          </h3>
+          <p>
             People who have visited your site at least once before
           </p>
         </div>

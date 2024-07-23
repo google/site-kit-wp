@@ -21,6 +21,7 @@
  */
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
@@ -41,6 +42,7 @@ import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
 import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import AudienceSelectionPanel from '.';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
@@ -560,6 +562,188 @@ describe( 'AudienceSelectionPanel', () => {
 					/By adding another group to your dashboard, you will be able to compare them and understand which content brings back users from each group/i
 				)
 			).not.toBeInTheDocument();
+		} );
+	} );
+
+	describe( 'AudienceCreationNotice / AudienceCreationSuccess', () => {
+		it( 'should display an audience creation notice with both audiences', async () => {
+			const nonSiteKitConfiguredAudiences = [
+				'properties/12345/audiences/1',
+				'properties/12345/audiences/2',
+			];
+
+			const nonSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: availableAudiences
+						.filter(
+							( { audienceType } ) =>
+								audienceType !== 'SITE_KIT_AUDIENCE'
+						)
+						.map( ( { name } ) => name ),
+				},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences(
+					availableAudiences.filter(
+						( { audienceType } ) =>
+							audienceType !== 'SITE_KIT_AUDIENCE'
+					)
+				);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
+
+			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Create groups suggested by Site Kit./i )
+			).toBeInTheDocument();
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel__audience-creation-notice-audience .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
+				)
+				?.forEach( ( element, index ) => {
+					expect( element ).toHaveTextContent(
+						index === 0 ? 'New visitors' : 'Returning visitors'
+					);
+				} );
+		} );
+
+		it( 'should display an audience creation notice for a single audience', async () => {
+			const mixedConfiguredAudiences = [
+				'properties/12345/audiences/1',
+				'properties/12345/audiences/2',
+				'properties/12345/audiences/3', // New visitors Site Kit audience.
+			];
+
+			const mixedSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: availableAudiences
+						.filter( ( { name } ) =>
+							mixedConfiguredAudiences.includes( name )
+						)
+						.map( ( { name } ) => name ),
+				},
+			};
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences(
+					availableAudiences.filter( ( { name } ) =>
+						mixedConfiguredAudiences.includes( name )
+					)
+				);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( mixedConfiguredAudiences );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+
+			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Visitor group created successfully/i )
+			).toBeInTheDocument();
+			expect(
+				getByText( /Create groups suggested by Site Kit./i )
+			).toBeInTheDocument();
+			expect(
+				document.querySelector(
+					'.googlesitekit-audience-selection-panel__audience-creation-notice-audience  .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
+				)
+			).toHaveTextContent( 'Returning visitors' );
+			// New visitors should now be showed in the list of configured audiences checkboxes.
+			expect(
+				document.querySelectorAll(
+					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
+				)[ 2 ]
+			).toHaveTextContent( 'New visitors' );
+		} );
+
+		it( 'should display an audience creation success notice when both audiences are created', async () => {
+			const mixedConfiguredAudiences = [
+				'properties/12345/audiences/1',
+				'properties/12345/audiences/2',
+				'properties/12345/audiences/3', // New visitors Site Kit audience.
+				'properties/12345/audiences/4', // Returning visitors Site Kit audience.
+			];
+
+			const mixedSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: availableAudiences
+						.filter( ( { name } ) =>
+							mixedConfiguredAudiences.includes( name )
+						)
+						.map( ( { name } ) => name ),
+				},
+			};
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences(
+					availableAudiences.filter( ( { name } ) =>
+						mixedConfiguredAudiences.includes( name )
+					)
+				);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setConfiguredAudiences( mixedConfiguredAudiences );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+
+			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Visitor group created successfully/i )
+			).toBeInTheDocument();
+			// New visitors and Returning visitors should now be showed in the list of configured audiences checkboxes.
+			expect(
+				document.querySelectorAll(
+					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
+				)[ 2 ]
+			).toHaveTextContent( 'New visitors' );
+			expect(
+				document.querySelectorAll(
+					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
+				)[ 3 ]
+			).toHaveTextContent( 'Returning visitors' );
 		} );
 	} );
 
