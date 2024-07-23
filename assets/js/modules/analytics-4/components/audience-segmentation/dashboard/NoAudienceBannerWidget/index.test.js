@@ -61,29 +61,6 @@ describe( 'NoAudienceBannerWidget', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
-		muteFetch( audienceSettingsRegExp );
-
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when availableAudiences is not loaded', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/1' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should not render when configuredAudiences is not loaded', () => {
 		muteFetch( audienceSettingsRegExp );
 
@@ -115,7 +92,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when there is no configured audience.', () => {
+	it( 'should render when there is no configured audience.', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -129,7 +106,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			registry,
 		} );
 
-		expect( container ).toBeEmptyDOMElement();
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should not render when configured audience is matching available audiences', () => {

@@ -154,7 +154,7 @@ export const registerWidgets = ( widgets ) => {
 			isActive: ( select ) => {
 				const configuredAudiences =
 					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
-				return configuredAudiences?.length > 0;
+				return !! configuredAudiences;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
