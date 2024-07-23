@@ -27,7 +27,7 @@ import {
 } from '../../../tests/js/test-utils';
 import { useGlobalTrackingEffect } from './useGlobalTrackingEffect';
 import * as tracking from '../util/tracking';
-import { setItem, setStorageOrder } from '../googlesitekit/api/cache';
+import { getStorage, setItem } from '../googlesitekit/api/cache';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 
 const mockTrackEvent = jest
@@ -36,14 +36,12 @@ const mockTrackEvent = jest
 
 describe( 'useGlobalTrackingEffect', () => {
 	let registry;
+	let storage;
 
-	beforeAll( () => {
-		setStorageOrder( [ 'localStorage', 'sessionStorage' ] );
-	} );
-
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
 		mockTrackEvent.mockClear();
+		storage = await getStorage();
 
 		provideSiteInfo( registry );
 	} );
@@ -104,8 +102,8 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( localStorage.getItem ).toHaveBeenCalled();
-		expect( localStorage.removeItem ).toHaveBeenCalled();
+		expect( storage.getItem ).toHaveBeenCalled();
+		expect( storage.removeItem ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenCalled();
 	} );
 
@@ -119,7 +117,7 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( localStorage.removeItem ).toHaveBeenCalled();
+		expect( storage.removeItem ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup`,
@@ -142,7 +140,7 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( localStorage.removeItem ).toHaveBeenCalled();
+		expect( storage.removeItem ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup`,
