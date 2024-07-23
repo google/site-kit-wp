@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
-import { useLifecycles } from 'react-use';
+import { useMount, useUnmount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { useRef } from '@wordpress/element';
+import { useDebounce } from '../hooks/useDebounce';
 
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
@@ -109,15 +110,17 @@ export default function DataBlockGroup( { className, children } ) {
 		} );
 	};
 
-	useLifecycles(
-		() => {
-			adjustFontSize();
+	// Debounce the adjustFontSize function
+	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
 
-			global.addEventListener( 'resize', adjustFontSize );
-		},
-		() => {
-			global.removeEventListener( 'resize', adjustFontSize );
-		}
+	useMount( () => {
+		adjustFontSize();
+
+		global.addEventListener( 'resize', debouncedAdjustFontSize );
+	} );
+
+	useUnmount( () =>
+		global.removeEventListener( 'resize', debouncedAdjustFontSize )
 	);
 
 	return (
