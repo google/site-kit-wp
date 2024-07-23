@@ -192,24 +192,28 @@ class SetupUsingGCP extends Component {
 	async onButtonClick() {
 		const { isSiteKitConnected, connectURL } = this.state;
 
-		await trackEvent(
-			VIEW_CONTEXT_SPLASH,
-			'start_user_setup',
-			'custom-oauth'
-		);
-		// Cache the start of the user setup journey.
-		// This will be used for event tracking logic after successful setup.
-		await setItem( 'start_user_setup', true );
+		await Promise.all( [
+			// Cache the start of the user setup journey.
+			// This will be used for event tracking logic after successful setup.
+			setItem( 'start_user_setup', true ),
+			trackEvent(
+				VIEW_CONTEXT_SPLASH,
+				'start_user_setup',
+				'custom-oauth'
+			),
+		] );
 
 		if ( ! isSiteKitConnected ) {
-			await trackEvent(
-				VIEW_CONTEXT_SPLASH,
-				'start_site_setup',
-				'custom-oauth'
-			);
-			// Cache the start of the site setup journey.
-			// This will be used for event tracking logic after successful setup.
-			await setItem( 'start_site_setup', true );
+			await Promise.all( [
+				// Cache the start of the site setup journey.
+				// This will be used for event tracking logic after successful setup.
+				setItem( 'start_site_setup', true ),
+				trackEvent(
+					VIEW_CONTEXT_SPLASH,
+					'start_site_setup',
+					'custom-oauth'
+				),
+			] );
 		}
 
 		document.location = connectURL;
