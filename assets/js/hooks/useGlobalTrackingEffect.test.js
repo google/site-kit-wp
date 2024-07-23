@@ -27,33 +27,25 @@ import {
 } from '../../../tests/js/test-utils';
 import { useGlobalTrackingEffect } from './useGlobalTrackingEffect';
 import * as tracking from '../util/tracking';
-import * as apiCache from '../googlesitekit/api/cache';
+import { setItem, setStorageOrder } from '../googlesitekit/api/cache';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 
 const mockTrackEvent = jest
 	.spyOn( tracking, 'trackEvent' )
 	.mockImplementation( () => Promise.resolve() );
 
-const mockDeleteItem = jest
-	.spyOn( apiCache, 'deleteItem' )
-	.mockImplementation( () => {
-		return Promise.resolve( true );
-	} );
-
 describe( 'useGlobalTrackingEffect', () => {
 	let registry;
+
+	beforeAll( () => {
+		setStorageOrder( [ 'localStorage', 'sessionStorage' ] );
+	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		mockTrackEvent.mockClear();
 
 		provideSiteInfo( registry );
-
-		jest.spyOn( apiCache, 'getItem' ).mockImplementation( () => {
-			return Promise.resolve( {
-				value: true,
-			} );
-		} );
 	} );
 
 	it( 'should not track events if there is a setup error', async () => {
@@ -69,11 +61,13 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( mockDeleteItem ).not.toHaveBeenCalled();
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should not track events if isUsingProxy has not resolved', async () => {
+		await setItem( 'start_user_setup', true );
+		await setItem( 'start_site_setup', true );
+
 		provideSiteInfo( registry, {
 			usingProxy: undefined,
 		} );
@@ -85,17 +79,10 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( mockDeleteItem ).not.toHaveBeenCalled();
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should not track events if cached items are not present', async () => {
-		jest.spyOn( apiCache, 'getItem' ).mockImplementation( () => {
-			return Promise.resolve( {
-				value: undefined,
-			} );
-		} );
-
 		renderHook( () => useGlobalTrackingEffect(), {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -103,11 +90,13 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( mockDeleteItem ).not.toHaveBeenCalled();
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should track events and remove cached items', async () => {
+		await setItem( 'start_user_setup', true );
+		await setItem( 'start_site_setup', true );
+
 		renderHook( () => useGlobalTrackingEffect(), {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -115,22 +104,13 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( mockDeleteItem ).toHaveBeenCalled();
+		expect( localStorage.getItem ).toHaveBeenCalled();
+		expect( localStorage.removeItem ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenCalled();
 	} );
 
 	it( 'should track complete_user_setup event with correct data', async () => {
-		jest.spyOn( apiCache, 'getItem' ).mockImplementation( ( key ) => {
-			if ( key === 'start_user_setup' ) {
-				return Promise.resolve( {
-					value: true,
-				} );
-			}
-
-			return Promise.resolve( {
-				value: undefined,
-			} );
-		} );
+		await setItem( 'start_user_setup', true );
 
 		renderHook( () => useGlobalTrackingEffect(), {
 			registry,
@@ -139,7 +119,7 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( mockDeleteItem ).toHaveBeenCalled();
+		expect( localStorage.removeItem ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup`,
@@ -149,17 +129,7 @@ describe( 'useGlobalTrackingEffect', () => {
 	} );
 
 	it( 'should track complete_site_setup event with correct data', async () => {
-		jest.spyOn( apiCache, 'getItem' ).mockImplementation( ( key ) => {
-			if ( key === 'start_site_setup' ) {
-				return Promise.resolve( {
-					value: true,
-				} );
-			}
-
-			return Promise.resolve( {
-				value: undefined,
-			} );
-		} );
+		await setItem( 'start_site_setup', true );
 
 		provideSiteInfo( registry, {
 			usingProxy: false,
@@ -172,7 +142,7 @@ describe( 'useGlobalTrackingEffect', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( mockDeleteItem ).toHaveBeenCalled();
+		expect( localStorage.removeItem ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenCalled();
 		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup`,
