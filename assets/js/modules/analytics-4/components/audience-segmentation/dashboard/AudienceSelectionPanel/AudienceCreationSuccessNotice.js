@@ -29,19 +29,17 @@ import CheckFill from '../../../../../../../svg/icons/check-fill.svg';
 
 export default function AudienceCreationSuccessNotice() {
 	return (
-		<div className="googlesitekit-narrow-subtle-notification">
-			<div className="googlesitekit-subtle-notification__icon">
+		<div className="googlesitekit-audience-selection-panel__success-notice">
+			<div className="googlesitekit-audience-selection-panel__success-notice-icon">
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
-			<div className="googlesitekit-subtle-notification__content googlesitekit-subtle-notification__content--no-margin">
-				<p className="googlesitekit-subtle-notification__secondary_description googlesitekit-subtle-notification__secondary_description--small">
-					{ __(
-						'Visitor group created successfully!',
-						'google-site-kit'
-					) }
-				</p>
-			</div>
-			<div className="googlesitekit-subtle-notification__action">
+			<p className="googlesitekit-audience-selection-panel__success-notice-message">
+				{ __(
+					'Visitor group created successfully!',
+					'google-site-kit'
+				) }
+			</p>
+			<div className="googlesitekit-audience-selection-panel__success-notice-actions">
 				<Button tertiary>{ __( 'Got it', 'google-site-kit' ) }</Button>
 			</div>
 		</div>
