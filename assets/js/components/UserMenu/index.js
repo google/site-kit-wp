@@ -47,9 +47,11 @@ import Details from './Details';
 import Item from './Item';
 import DisconnectIcon from '../../../svg/icons/disconnect.svg';
 import ManageSitesIcon from '../../../svg/icons/manage-sites.svg';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE } from '../../modules/analytics-4/datastore/constants';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -68,6 +70,13 @@ export default function UserMenu() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
 			googlesitekit_context: 'revoked',
 		} )
+	);
+
+	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE,
+			'isAutoCreatingCustomDimensionsForAudience'
+		)
 	);
 
 	const [ dialogActive, toggleDialog ] = useState( false );
@@ -203,6 +212,7 @@ export default function UserMenu() {
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
 					text
 					onClick={ handleMenu }
+					disabled={ isAutoCreatingCustomDimensionsForAudience }
 					icon={
 						!! userPicture && (
 							<i
