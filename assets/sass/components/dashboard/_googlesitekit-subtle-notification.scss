@@ -66,22 +66,8 @@
 		min-height: 32px;
 		padding: 6px $grid-gap-phone;
 
-		&.mdc-button--tertiary {
-
-			@include mdc-button-ink-color( $c-content-on-primary-container );
-
-			&:hover {
-
-				@include mdc-button-filled-accessible( rgba($c-site-kit-sk-200, 0.6) );
-				@include mdc-button-ink-color( $c-content-on-primary-container );
-			}
-
-			&:active,
-			&:focus {
-
-				@include mdc-button-filled-accessible( $c-site-kit-sk-200 );
-				@include mdc-button-ink-color( $c-content-on-primary-container );
-			}
+		&.mdc-button--tertiary:not(:disabled) {
+			color: $c-content-on-primary-container;
 		}
 
 		@media (min-width: $bp-tablet) {
