@@ -35,7 +35,7 @@ import { enabledFeatures } from '../../../../features';
 describe( 'SetupMain', () => {
 	let registry;
 
-	beforeAll( () => {
+	beforeEach( () => {
 		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
 
