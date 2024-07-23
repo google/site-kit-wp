@@ -28,7 +28,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import {
 	EDIT_SCOPE,
-	AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE,
+	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 } from '../datastore/constants';
@@ -48,7 +48,7 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 
 	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE,
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 			'autoSubmit'
 		)
 	);
@@ -77,12 +77,12 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 			// Resync available custom dimensions to ensure the newly created custom dimension is available.
 			await fetchSyncAvailableCustomDimensions();
 
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE, {
+			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 				isAutoCreatingCustomDimensionsForAudience: false,
 			} );
 		}
 		if ( isGA4Connected && hasAnalyticsEditScope && autoSubmit ) {
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE, {
+			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 				autoSubmit: false,
 				isAutoCreatingCustomDimensionsForAudience: true,
 			} );
