@@ -42,6 +42,9 @@ describe( 'ErrorNotice', () => {
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	);
 
 	const reportOptions = {
 		endDate: '2024-03-27',
@@ -263,6 +266,14 @@ describe( 'ErrorNotice', () => {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
+				} );
+
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
 				} );
 
 				expect(
