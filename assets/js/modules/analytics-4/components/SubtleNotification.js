@@ -64,7 +64,7 @@ export default function SubtleNotification( {
 
 SubtleNotification.propTypes = {
 	title: PropTypes.string.isRequired,
-	description: PropTypes.string.isRequired,
+	description: PropTypes.node,
 	onDismiss: PropTypes.func.isRequired,
 	additionalCTA: PropTypes.oneOfType( [ PropTypes.node, PropTypes.bool ] ),
 };
