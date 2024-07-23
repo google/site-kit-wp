@@ -51,7 +51,7 @@ export const useGlobalTrackingEffect = () => {
 			const startUserSetup = await getItem( 'start_user_setup' );
 			const startSiteSetup = await getItem( 'start_site_setup' );
 
-			if ( startUserSetup.cacheHit === true ) {
+			if ( startUserSetup.cacheHit ) {
 				await deleteItem( 'start_user_setup' );
 				trackEvent(
 					`${ viewContext }_setup`,
@@ -60,7 +60,7 @@ export const useGlobalTrackingEffect = () => {
 				);
 			}
 
-			if ( startSiteSetup.cacheHit === true ) {
+			if ( startSiteSetup.cacheHit ) {
 				await deleteItem( 'start_site_setup' );
 				trackEvent(
 					`${ viewContext }_setup`,
