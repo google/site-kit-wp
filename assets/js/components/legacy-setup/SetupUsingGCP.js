@@ -44,7 +44,7 @@ import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Layout from '../layout/Layout';
 import { trackEvent } from '../../util';
-import { clearCache } from '../../googlesitekit/api/cache';
+import { clearCache, setItem } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
@@ -192,18 +192,28 @@ class SetupUsingGCP extends Component {
 	async onButtonClick() {
 		const { isSiteKitConnected, connectURL } = this.state;
 
-		await trackEvent(
-			VIEW_CONTEXT_SPLASH,
-			'start_user_setup',
-			'custom-oauth'
-		);
+		await Promise.all( [
+			// Cache the start of the user setup journey.
+			// This will be used for event tracking logic after successful setup.
+			setItem( 'start_user_setup', true ),
+			trackEvent(
+				VIEW_CONTEXT_SPLASH,
+				'start_user_setup',
+				'custom-oauth'
+			),
+		] );
 
 		if ( ! isSiteKitConnected ) {
-			await trackEvent(
-				VIEW_CONTEXT_SPLASH,
-				'start_site_setup',
-				'custom-oauth'
-			);
+			await Promise.all( [
+				// Cache the start of the site setup journey.
+				// This will be used for event tracking logic after successful setup.
+				setItem( 'start_site_setup', true ),
+				trackEvent(
+					VIEW_CONTEXT_SPLASH,
+					'start_site_setup',
+					'custom-oauth'
+				),
+			] );
 		}
 
 		document.location = connectURL;
