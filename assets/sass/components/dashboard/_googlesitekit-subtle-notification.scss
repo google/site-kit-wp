@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-@mixin googlesitekit-subtle-notification($bp-subtle-notification) {
+.googlesitekit-subtle-notification {
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
@@ -25,7 +25,7 @@
 	gap: 10px;
 	padding: $grid-gap-phone;
 
-	@media (min-width: $bp-subtle-notification) {
+	@media (min-width: $bp-tablet) {
 		align-items: center;
 		flex-direction: row;
 		gap: $grid-gap-phone;
@@ -35,7 +35,7 @@
 	.googlesitekit-subtle-notification__icon {
 		display: none;
 
-		@media (min-width: $bp-subtle-notification) {
+		@media (min-width: $bp-tablet) {
 			display: flex;
 		}
 	}
@@ -47,21 +47,17 @@
 		font-weight: $fw-medium;
 		line-height: $lh-title-lg;
 
-		@media (min-width: $bp-subtle-notification) {
+		@media (min-width: $bp-tablet) {
 			flex: 1;
 			font-size: $fs-title-lg;
 		}
 
 		p {
 			margin: 0 0 10px;
-			@media (min-width: $bp-subtle-notification) {
+			@media (min-width: $bp-tablet) {
 				margin: 0;
 			}
 		}
-	}
-
-	.googlesitekit-subtle-notification__content--no-margin {
-		margin: 0;
 	}
 
 	.mdc-button {
@@ -88,7 +84,7 @@
 			}
 		}
 
-		@media (min-width: $bp-subtle-notification) {
+		@media (min-width: $bp-tablet) {
 			margin: 0;
 		}
 
@@ -105,7 +101,7 @@
 		justify-content: center;
 		width: 100%;
 
-		@media (min-width: $bp-subtle-notification) {
+		@media (min-width: $bp-tablet) {
 			justify-content: initial;
 			width: initial;
 		}
@@ -117,25 +113,5 @@
 
 	p.googlesitekit-subtle-notification__secondary_description {
 		font-weight: $fw-normal;
-	}
-
-	p.googlesitekit-subtle-notification__secondary_description--small {
-		font-size: $fs-body-sm;
-		line-height: $lh-body-sm;
-	}
-}
-
-.googlesitekit-subtle-notification {
-	@include googlesitekit-subtle-notification($bp-tablet);
-}
-
-.googlesitekit-narrow-subtle-notification {
-	@include googlesitekit-subtle-notification($bp-xsmall);
-
-	border-radius: 0;
-	padding: 14px $grid-gap-phone;
-
-	@media (min-width: $bp-xsmall) {
-		padding: 14px $grid-gap-desktop;
 	}
 }
