@@ -23,7 +23,6 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-	muteFetch,
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
 import {
@@ -35,18 +34,6 @@ import { enabledFeatures } from '../../../../features';
 
 describe( 'SetupMain', () => {
 	let registry;
-
-	const listModulesEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/modules/data/list'
-	);
-
-	const publicationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
-	);
-
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
-	);
 
 	beforeAll( () => {
 		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
@@ -68,20 +55,19 @@ describe( 'SetupMain', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
 	} );
 
 	it( 'should render the component', async () => {
-		muteFetch( settingsEndpoint );
-		muteFetch( publicationsEndpoint );
-		muteFetch( listModulesEndpoint );
-
 		const { getByText, waitForRegistry } = render( <SetupMain />, {
 			registry,
 		} );
 
 		await waitForRegistry();
 
-		// To Do: Adjust the tests once #8800 is implemented.
+		// TODO: Adjust the tests once #8800 is implemented.
 		expect(
 			getByText(
 				/This is just added as a placeholder component to assist with testing./i
