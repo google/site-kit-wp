@@ -51,7 +51,7 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE } from '../../modules/analytics-4/datastore/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '../../modules/analytics-4/datastore/constants';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -74,7 +74,7 @@ export default function UserMenu() {
 
 	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE,
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 			'isAutoCreatingCustomDimensionsForAudience'
 		)
 	);

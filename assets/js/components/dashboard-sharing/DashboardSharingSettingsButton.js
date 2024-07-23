@@ -33,7 +33,7 @@ import { trackEvent } from '../../util';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE } from '../../modules/analytics-4/datastore/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '../../modules/analytics-4/datastore/constants';
 import { SETTINGS_DIALOG } from './DashboardSharingSettings/constants';
 import DashboardSharingDialog from './DashboardSharingDialog';
 
@@ -47,7 +47,7 @@ export default function DashboardSharingSettingsButton() {
 
 	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSIONS_CREATE,
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 			'isAutoCreatingCustomDimensionsForAudience'
 		)
 	);
