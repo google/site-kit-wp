@@ -16,13 +16,62 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserAuthentication,
+	provideUserInfo,
+	render,
+} from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
+import {
+	MODULE_SLUG,
+	MODULES_READER_REVENUE_MANAGER,
+} from '../../datastore/constants';
+import { publications } from '../../datastore/__fixtures__';
+import { enabledFeatures } from '../../../../features';
 
 describe( 'SetupMain', () => {
-	it( 'should render the component', () => {
-		const { getByText } = render( <SetupMain /> );
+	let registry;
 
-		expect( getByText( /Reader Revenue Manager/i ) ).toBeInTheDocument();
+	beforeEach( () => {
+		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
+		registry = createTestRegistry();
+
+		const extraData = [
+			{
+				slug: MODULE_SLUG,
+				active: true,
+				connected: true,
+				owner: { ID: 1 },
+			},
+		];
+		provideModules( registry, extraData );
+		provideModuleRegistrations( registry, extraData );
+		provideUserAuthentication( registry );
+		provideUserInfo( registry );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+	} );
+
+	it( 'should render the component', async () => {
+		const { getByText, waitForRegistry } = render( <SetupMain />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		// TODO: Adjust the tests once #8800 is implemented.
+		expect(
+			getByText(
+				/This is just added as a placeholder component to assist with testing./i
+			)
+		).toBeInTheDocument();
 	} );
 } );

@@ -86,8 +86,10 @@ import {
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
+	NoAudienceBannerWidget,
 } from './components/audience-segmentation/dashboard';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 
 export { registerStore } from './datastore';
 
@@ -97,6 +99,7 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
+		DashboardMainEffectComponent,
 		Icon: AnalyticsIcon,
 		features: [
 			__( 'Audience overview', 'google-site-kit' ),
@@ -135,6 +138,23 @@ export const registerWidgets = ( widgets ) => {
 				const configuredAudiences =
 					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
 				return configuredAudiences?.length > 0;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsNoAudienceBanner',
+		{
+			Component: NoAudienceBannerWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				const configuredAudiences =
+					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+				return !! configuredAudiences;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]

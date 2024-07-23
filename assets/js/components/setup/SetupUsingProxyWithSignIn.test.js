@@ -74,7 +74,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not render the Activate Analytics notice when the Analytics module is not available', () => {
+	it( 'should not render the Activate Analytics notice when the Analytics module is not available', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules(
@@ -83,13 +83,15 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				)
 			);
 
-		const { container, queryByText } = render(
+		const { waitForRegistry, container, queryByText } = render(
 			<SetupUsingProxyWithSignIn />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
 			}
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 

@@ -53,6 +53,9 @@ describe( 'modules/analytics-4 audiences', () => {
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	);
 
 	const audience = {
 		displayName: 'Recently active users',
@@ -267,9 +270,19 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 500,
 				} );
 
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
+				} );
+
 				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
 
 				expect( response ).toBeUndefined();
 				expect( error ).toEqual( errorResponse );
@@ -289,9 +302,19 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.get( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
+				} );
+
 				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
 
 				expect( response ).toEqual( availableAudiences );
 				expect( error ).toBeUndefined();
@@ -301,6 +324,127 @@ describe( 'modules/analytics-4 audiences', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
 				).toEqual( availableAudiences );
+			} );
+
+			it( 'should remove configured audiences which are no longer available', async () => {
+				const availableAudiencesSubset = [
+					availableAudiencesFixture[ 0 ],
+					availableAudiencesFixture[ 2 ],
+				];
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesSubset,
+					status: 200,
+				} );
+
+				const settings = {
+					configuredAudiences: availableAudiencesFixture.reduce(
+						( acc, { name } ) => [ ...acc, name ],
+						[]
+					),
+					isAudienceSegmentationWidgetHidden: false,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( settings );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					syncAvailableAudiencesEndpoint
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConfiguredAudiences()
+				).toEqual(
+					availableAudiencesSubset.reduce(
+						( acc, { name } ) => [ ...acc, name ],
+						[]
+					)
+				);
+			} );
+		} );
+
+		describe( 'maybeSyncAvailableAudiences', () => {
+			it( 'should call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is undefined', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.maybeSyncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched(
+					syncAvailableAudiencesEndpoint
+				);
+			} );
+
+			it( 'should not call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is within the last hour', async () => {
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiencesLastSyncedAt:
+						( Date.now() - 1000 ) / 1000, // Value expected to be a PHP date so divide by 1000.
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.maybeSyncAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
+
+			it( 'should call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is not within the last hour', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							configuredAudiences: [],
+						},
+					},
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiencesLastSyncedAt:
+						( Date.now() - 2 * 60 * 60 * 1000 ) / 1000, // Value expected to be a PHP date so divide by 1000.
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.maybeSyncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetched(
+					syncAvailableAudiencesEndpoint
+				);
 			} );
 		} );
 
@@ -407,10 +551,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 				};
 			}
-
-			const audienceSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
-			);
 
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
@@ -1005,9 +1145,19 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 500,
 					} );
 
+					fetchMock.get( audienceSettingsEndpoint, {
+						body: {
+							data: {
+								configuredAudiences: [],
+							},
+						},
+					} );
+
 					const { response, error } = await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.enableAudienceGroup();
+
+					await waitForDefaultTimeouts();
 
 					expect( response ).toBeUndefined();
 					expect( error ).toEqual( errorResponse );

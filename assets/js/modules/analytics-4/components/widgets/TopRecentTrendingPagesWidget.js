@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -32,7 +33,6 @@ import { compose } from '@wordpress/compose';
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../common';
 import { getPreviousDate, numFmt } from '../../../../util';
 import {
 	MetricTileTable,
@@ -48,49 +48,25 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 
 /**
- * Computes the dates for the last three days relative to today (reference date).
- *
- * Utilizing the current date, the function calculates the dates
- * for the previous day, two days ago, and three days ago.
- *
- * @since 1.113.0
- *
- * @param {Function} select Registry select.
- * @return {Object} An object containing the dates for yesterday,
- *                  two days ago, and three days ago.
- */
-export const getDates = ( select ) => {
-	const todayDateString = select( CORE_USER ).getReferenceDate();
-
-	const yesterday = getPreviousDate( todayDateString, 1 );
-	const twoDaysAgo = getPreviousDate( todayDateString, 2 );
-	const threeDaysAgo = getPreviousDate( todayDateString, 3 );
-
-	return {
-		yesterday,
-		twoDaysAgo,
-		threeDaysAgo,
-	};
-};
-
-/**
  * Returns the date range (eg. the `startDate` and `endDate`) for this widget's
  * reporting options.
  *
  * @since 1.113.0
+ * @since n.e.x.t Update the function to receive the reference date instead of the select function.
  *
- * @param {Function} select Registry select.
+ * @param {string} referenceDate The reference date.
  * @return {Object} An object containing the `startDate` and `endDate` for a
  * report.
  */
-export const getDateRange = ( select ) => {
-	const { yesterday, threeDaysAgo } = getDates( select );
+export function getDateRange( referenceDate ) {
+	const yesterday = getPreviousDate( referenceDate, 1 );
+	const threeDaysAgo = getPreviousDate( referenceDate, 3 );
 
 	return {
 		startDate: threeDaysAgo,
 		endDate: yesterday,
 	};
-};
+}
 
 /**
  * Generates the report options required for fetching data in
@@ -104,15 +80,18 @@ export const getDateRange = ( select ) => {
  * can use it.
  *
  * @since 1.113.0
+ * @since n.e.x.t Update the function to receive the reference date instead of the select function.
  *
- * @param {Function} select Registry select.
+ * @param {string} referenceDate The reference date.
  * @return {Object} The report options containing dimensions, filters,
  * metrics, and other parameters.
  */
-export const getReportOptions = ( select ) => {
-	const { yesterday, twoDaysAgo, threeDaysAgo } = getDates( select );
+export function getReportOptions( referenceDate ) {
+	const yesterday = getPreviousDate( referenceDate, 1 );
+	const twoDaysAgo = getPreviousDate( referenceDate, 2 );
+	const threeDaysAgo = getPreviousDate( referenceDate, 3 );
 
-	const dates = getDateRange( select );
+	const dates = getDateRange( referenceDate );
 
 	const reportOptions = {
 		...dates,
@@ -140,12 +119,25 @@ export const getReportOptions = ( select ) => {
 	};
 
 	return reportOptions;
-};
+}
+
+function CustomZeroDataMessage() {
+	return __(
+		'No data to display: either no pages were published in the last three days, or they haven’t received any visitors yet',
+		'google-site-kit'
+	);
+}
 
 function TopRecentTrendingPagesWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
-	const dates = useSelect( getDateRange );
-	const reportOptions = useSelect( getReportOptions );
+
+	const [ dates, reportOptions ] = useSelect( ( select ) => {
+		const referenceDate = select( CORE_USER ).getReferenceDate();
+		return [
+			getDateRange( referenceDate ),
+			getReportOptions( referenceDate ),
+		];
+	} );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -235,7 +227,7 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
-			ZeroState={ ZeroDataMessage }
+			ZeroState={ CustomZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>
@@ -252,6 +244,8 @@ export default compose(
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {
-		reportOptions: getReportOptions,
+		reportOptions( select ) {
+			return getReportOptions( select( CORE_USER ).getReferenceDate() );
+		},
 	} )
 )( TopRecentTrendingPagesWidget );

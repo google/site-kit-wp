@@ -57,7 +57,7 @@ class OptinMonster extends Conversion_Events_Provider {
 		$script = new Script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 			array(
-				'src'       => $this->context->url( 'dist/assets/js/optin-monster.js' ),
+				'src'       => $this->context->url( 'dist/assets/js/googlesitekit-events-provider-optin-monster.js' ),
 				'execution' => 'defer',
 			)
 		);

@@ -83,20 +83,12 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 						fixtures.defaultEnhancedMeasurementSettings
 					),
 				} );
-			} else if ( url.match( 'analytics/data/report?' ) ) {
-				request.respond( {
-					status: 200,
-					body: '[]',
-				} );
 			} else if ( url.match( 'analytics-4/data/report?' ) ) {
 				request.respond( {
 					status: 200,
 					body: '{}',
 				} );
-			} else if (
-				url.match( 'pagespeed-insights/data/pagespeed' ) ||
-				url.match( 'analytics/data/goals' )
-			) {
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'analytics-4/data/create-property' ) ) {
 				request.respond( {

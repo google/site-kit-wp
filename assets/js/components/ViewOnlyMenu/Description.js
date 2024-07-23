@@ -36,6 +36,7 @@ import {
 import { trackEvent } from '../../util';
 import Link from '../../components/Link';
 import useViewContext from '../../hooks/useViewContext';
+import { setItem } from '../../googlesitekit/api/cache';
 
 export default function Description() {
 	const viewContext = useViewContext();
@@ -60,11 +61,16 @@ export default function Description() {
 		async ( event ) => {
 			event.preventDefault();
 
-			await trackEvent(
-				`${ viewContext }_headerbar_viewonly`,
-				'start_user_setup',
-				proxySetupURL ? 'proxy' : 'custom-oauth'
-			);
+			await Promise.all( [
+				// Cache the start of the user setup journey.
+				// This will be used for event tracking logic after successful setup.
+				setItem( 'start_user_setup', true ),
+				trackEvent(
+					`${ viewContext }_headerbar_viewonly`,
+					'start_user_setup',
+					proxySetupURL ? 'proxy' : 'custom-oauth'
+				),
+			] );
 
 			navigateTo( proxySetupURL );
 		},

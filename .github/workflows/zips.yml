@@ -238,11 +238,11 @@ jobs:
       - name: Extract
         run: |
           unzip /tmp/google-site-kit.zip
-          echo .distignore > .distignore
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
         with:
           dry-run: ${{ inputs.dry_run }}
         env:
+          BUILD_DIR: ./google-site-kit
           SLUG: google-site-kit
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}

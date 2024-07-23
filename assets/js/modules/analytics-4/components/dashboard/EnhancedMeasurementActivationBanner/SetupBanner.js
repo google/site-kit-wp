@@ -41,7 +41,7 @@ import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import {
 	DAY_IN_SECONDS,
-	getTimeInSeconds,
+	MONTH_IN_SECONDS,
 	trackEvent,
 } from '../../../../../util';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
@@ -199,7 +199,7 @@ export default function SetupBanner( props ) {
 			format="small"
 			// Although the banner does handle its own dismiss state via a dismissable item, we still need to
 			// provide a value here to ensure BannerNotification's own dismiss state is expired.
-			dismissExpires={ getTimeInSeconds( 'month' ) }
+			dismissExpires={ MONTH_IN_SECONDS }
 			onDismiss={ handleDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
