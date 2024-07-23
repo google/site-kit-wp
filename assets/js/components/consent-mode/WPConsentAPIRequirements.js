@@ -59,6 +59,14 @@ export default function WPConsentAPIRequirements() {
 	const { installActivateWPConsentAPI, activateConsentAPI } =
 		useDispatch( CORE_SITE );
 
+	// Check for `installActivateWPConsentAPIError` errors, mostly to cover
+	// the case if user is offline, but also any other potential
+	// case that nonces fetch fails. As `installActivateWPConsentAPI`
+	// action will invoke fetch for nonce, and when offline this will fail.
+	const installActivateWPConsentAPIError = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorForAction( 'installActivateWPConsentAPI' )
+	);
+
 	const isInstallingAndActivating = useSelect( ( select ) =>
 		select( CORE_SITE ).isApiFetching()
 	);
@@ -70,6 +78,11 @@ export default function WPConsentAPIRequirements() {
 	const apiInstallResponse = useSelect( ( select ) =>
 		select( CORE_SITE ).getApiInstallResponse()
 	);
+
+	const apiInstallHasError =
+		( installActivateWPConsentAPIError
+			? installActivateWPConsentAPIError.message
+			: null ) || apiInstallResponse?.error;
 
 	const cellProps = {
 		smSize: 4,
@@ -188,10 +201,10 @@ export default function WPConsentAPIRequirements() {
 											) }
 											{ ! wpConsentPlugin.installed && (
 												<Fragment>
-													{ !! apiInstallResponse?.error && (
+													{ apiInstallHasError && (
 														<ErrorText
 															message={
-																apiInstallResponse.error
+																apiInstallHasError
 															}
 														/>
 													) }
@@ -211,7 +224,7 @@ export default function WPConsentAPIRequirements() {
 															);
 														} }
 													>
-														{ !! apiInstallResponse?.error
+														{ apiInstallHasError
 															? __(
 																	'Retry',
 																	'google-site-kit'
