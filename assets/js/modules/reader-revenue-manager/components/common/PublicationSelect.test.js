@@ -60,8 +60,10 @@ describe( 'PublicationSelect', () => {
 
 		await waitForRegistry();
 
-		// After we set a valid publication ID, the publication select should be visible.
 		expect( container.querySelector( '.mdc-select' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector( '.mdc-select--invalid' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render an option for each publication.', async () => {
@@ -76,6 +78,14 @@ describe( 'PublicationSelect', () => {
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( publications.length );
+
+		listItems.forEach( ( listItem, index ) => {
+			// Assert that data-value of listItem is equal to the publication ID.
+			expect( listItem.dataset.value ).toBe(
+				// eslint-disable-next-line sitekit/acronym-case
+				publications[ index ].publicationId
+			);
+		} );
 	} );
 
 	it( 'should disable the publication select if the user does not have module access', async () => {

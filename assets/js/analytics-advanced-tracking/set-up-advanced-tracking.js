@@ -48,7 +48,12 @@ export default function setUpAdvancedTracking(
 			}
 		};
 
-		document.addEventListener( eventConfig.on, handleDOMEvent, true );
+		global.document.addEventListener(
+			eventConfig.on,
+			handleDOMEvent,
+			true
+		);
+
 		toRemove.push( [ eventConfig.on, handleDOMEvent, true ] );
 	} );
 

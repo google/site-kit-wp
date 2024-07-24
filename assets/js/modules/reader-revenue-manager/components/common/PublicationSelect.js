@@ -36,19 +36,6 @@ import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { isValidPublicationID } from '../../utils/validation';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 
-/**
- * Publication Select component.
- * This component is responsible for rendering the publication select dropdown.
- *
- * @since n.e.x.t
- *
- * @param {Object}   props                 Component props.
- * @param {boolean}  props.isDisabled      Whether the select is disabled.
- * @param {boolean}  props.hasModuleAccess Whether the user has access to the module.
- * @param {string}   props.className       Additional class names to apply to the select.
- * @param {Function} props.onChange        Callback function to run when the select value changes.
- * @return {JSX.Element}                   Publication Select component.
- */
 export default function PublicationSelect( props ) {
 	const {
 		isDisabled,
@@ -83,18 +70,13 @@ export default function PublicationSelect( props ) {
 	const onPublicationChange = useCallback(
 		( index, item ) => {
 			const newPublicationID = item.dataset.value;
-
 			const publication = publications.find(
 				// eslint-disable-next-line sitekit/acronym-case
 				( { publicationId } ) => publicationId === newPublicationID
 			);
 
-			// eslint-disable-next-line sitekit/acronym-case
-			const { publicationId, onboardingState } = publication;
-
-			// eslint-disable-next-line sitekit/acronym-case
-			setPublicationID( publicationId );
-			setPublicationOnboardingState( onboardingState );
+			setPublicationID( newPublicationID );
+			setPublicationOnboardingState( publication.onboardingState );
 
 			onChange();
 		},

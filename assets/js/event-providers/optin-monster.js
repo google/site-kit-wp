@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
+global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
 	if ( 'conversion' === detail.Analytics.type ) {
 		global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
 			campaignID: detail.Campaign.id,

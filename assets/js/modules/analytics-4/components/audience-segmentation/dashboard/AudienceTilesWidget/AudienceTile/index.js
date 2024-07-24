@@ -46,7 +46,6 @@ import AudienceMetricIconTopContent from '../../../../../../../../svg/icons/audi
 import AudienceTileMetric from './AudienceTileMetric';
 import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
-import PreviewBlock from '../../../../../../../components/PreviewBlock';
 import ChangeBadge from '../../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../../components/InfoTooltip';
 import PartialDataBadge from './PartialDataBadge';
@@ -54,6 +53,7 @@ import PartialDataNotice from './PartialDataNotice';
 import { numFmt } from '../../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
+import AudienceTileLoading from './AudienceTileLoading';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
@@ -72,6 +72,7 @@ export default function AudienceTile( {
 	topContentTitles,
 	Widget,
 	audienceResourceName,
+	isLoading,
 	isZeroData,
 	isPartialData,
 	isTileHideable,
@@ -107,9 +108,17 @@ export default function AudienceTile( {
 		breakpoint
 	);
 
-	// TODO: Loading states will be implemented as part of https://github.com/google/site-kit-wp/issues/8145.
-	if ( ! loaded || isZeroData === undefined || isPartialData === undefined ) {
-		return <PreviewBlock width="100%" height="600px" />;
+	if (
+		! loaded ||
+		isLoading ||
+		isZeroData === undefined ||
+		isPartialData === undefined
+	) {
+		return (
+			<Widget noPadding>
+				<AudienceTileLoading />
+			</Widget>
+		);
 	}
 
 	if ( isPartialData && isZeroData ) {
@@ -283,6 +292,7 @@ AudienceTile.propTypes = {
 	topContentTitles: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
+	isLoading: PropTypes.bool,
 	isZeroData: PropTypes.bool,
 	isPartialData: PropTypes.bool,
 	isTileHideable: PropTypes.bool,

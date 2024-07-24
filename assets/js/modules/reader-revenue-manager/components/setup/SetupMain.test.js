@@ -18,12 +18,12 @@
 
 import {
 	createTestRegistry,
+	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-	muteFetch,
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
 import {
@@ -81,7 +81,7 @@ describe( 'SetupMain', () => {
 
 		await waitForRegistry();
 
-		// To Do: Adjust the tests once #8800 is implemented.
+		// TODO: Adjust the tests once #8800 is implemented.
 		expect(
 			getByText(
 				/This is just added as a placeholder component to assist with testing./i

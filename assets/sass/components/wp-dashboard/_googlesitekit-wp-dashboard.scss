@@ -51,39 +51,14 @@
 			}
 
 			&.googlesitekit-button-icon--spinner__before {
-				/**
-				 * TODO: Remove the fallback margin-{left|right} and html[dir="rtl"] specific
-				 * overrides from `.mdc-button__label` when `postcss-preset-env` is configured
-				 * to not polyfill `logical-properties-and-values`.
-				 * @see https://github.com/google/site-kit-wp/pull/8372#discussion_r1527263640
-				 * @see https://github.com/google/site-kit-wp/issues/8414
-				 */
 				.mdc-button__label {
 					margin-inline-start: 8px;
-					margin-left: 8px;
-
-					html[dir="rtl"] & {
-						margin-left: 0;
-					}
 				}
 			}
 
 			&.googlesitekit-button-icon--spinner__after {
-				/**
-				 * TODO: Remove the fallback margin-{left|right} and html[dir="rtl"] specific
-				 * overrides from `.mdc-button__label` when `postcss-preset-env` is configured
-				 * to not polyfill `logical-properties-and-values`.
-				 * @see https://github.com/google/site-kit-wp/pull/8372#discussion_r1527263640
-				 * @see https://github.com/google/site-kit-wp/issues/8414
-				 */
-				/* stylelint-disable-next-line no-descending-specificity */
 				.mdc-button__label {
 					margin-inline-end: 8px;
-					margin-right: 8px;
-
-					html[dir="rtl"] & {
-						margin-right: 0;
-					}
 				}
 			}
 		}

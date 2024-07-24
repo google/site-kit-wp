@@ -33,7 +33,7 @@ import {
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { Grid, Row, Cell } from '../../../../material-components/layout';
+import { Grid, Cell } from '../../../../material-components/layout';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
@@ -45,6 +45,7 @@ import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/Widg
 import useViewOnly from '../../../../hooks/useViewOnly';
 import useViewContext from '../../../../hooks/useViewContext';
 import NewBadge from '../../../../components/NewBadge';
+import DataBlockGroup from '../../../../components/DataBlockGroup';
 
 function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -234,7 +235,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
 			<Grid>
-				<Row>
+				<DataBlockGroup className="mdc-layout-grid__inner">
 					{ data.map(
 						( {
 							metric,
@@ -266,7 +267,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 							</Cell>
 						)
 					) }
-				</Row>
+				</DataBlockGroup>
 			</Grid>
 		</Widget>
 	);

@@ -31,10 +31,8 @@
 			);
 		},
 
-		actionSubmit( response ) {
-			global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
-				event_category: response.data.form_id,
-			} );
+		actionSubmit() {
+			global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
 		},
 	} );
 
