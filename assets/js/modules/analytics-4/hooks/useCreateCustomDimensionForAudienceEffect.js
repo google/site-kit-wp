@@ -60,6 +60,7 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		receiveIsCustomDimensionGatheringData,
 		fetchSyncAvailableCustomDimensions,
 	} = useDispatch( MODULES_ANALYTICS_4 );
+
 	useEffect( () => {
 		async function createDimensionsAndUpdateForm() {
 			await fetchCreateCustomDimension(
