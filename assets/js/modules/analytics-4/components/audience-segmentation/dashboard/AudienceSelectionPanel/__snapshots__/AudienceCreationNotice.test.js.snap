@@ -8,7 +8,9 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
     <div
       class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
     >
-      <p>
+      <p
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+      >
         Create groups suggested by Site Kit.
       </p>
       <button
@@ -33,7 +35,9 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
           <h3>
             New visitors
           </h3>
-          <p>
+          <p
+            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+          >
             People who visited the site for the first time
           </p>
         </div>
@@ -61,7 +65,9 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
           <h3>
             Returning visitors
           </h3>
-          <p>
+          <p
+            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+          >
             People who have visited your site at least once before
           </p>
         </div>
