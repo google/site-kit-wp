@@ -42,12 +42,10 @@ import {
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Layout from '../layout/Layout';
-import { trackEvent } from '../../util';
-import { clearCache, setItem } from '../../googlesitekit/api/cache';
+import { clearCache } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -97,21 +95,10 @@ class SetupUsingGCP extends Component {
 		} );
 	}
 
-	async completeSetup() {
+	completeSetup() {
 		this.setState( {
 			completeSetup: true,
 		} );
-
-		await Promise.all( [
-			// Cache the start of the site setup journey.
-			// This will be used for event tracking logic after successful setup.
-			setItem( 'start_site_setup', true ),
-			trackEvent(
-				VIEW_CONTEXT_SPLASH,
-				'start_site_setup',
-				'custom-oauth'
-			),
-		] );
 	}
 
 	siteConnectedSetup( status ) {
