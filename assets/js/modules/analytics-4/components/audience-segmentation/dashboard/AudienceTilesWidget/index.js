@@ -20,14 +20,16 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceTiles from './AudienceTiles';
+import { useInView } from '../../../../../../hooks/useInView';
 
 function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
@@ -38,15 +40,36 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
+	const [ availableAudiencesSynced, setAvailableAudiencesSynced ] =
+		useState( false );
+	const { maybeSyncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const inView = useInView();
+	useEffect( () => {
+		if ( inView && ! availableAudiencesSynced ) {
+			maybeSyncAvailableAudiences();
+			setAvailableAudiencesSynced( true );
+		}
+	}, [ inView, availableAudiencesSynced, maybeSyncAvailableAudiences ] );
+
 	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
 		availableAudiences?.includes( audience )
 	);
 
-	if ( hasMatchingAudience ) {
-		return <AudienceTiles Widget={ Widget } />;
+	if ( ! hasMatchingAudience ) {
+		return <WidgetNull />;
 	}
 
-	return <WidgetNull />;
+	return (
+		<AudienceTiles
+			Widget={ Widget }
+			widgetLoading={
+				! availableAudiencesSynced ||
+				! availableAudiences ||
+				! configuredAudiences
+			}
+		/>
+	);
 }
 
 AudienceTilesWidget.propTypes = {

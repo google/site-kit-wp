@@ -63,30 +63,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should have "googlesitekit-publication-onboarding-state-notice" class in the container', async () => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID: 'ABCDEFGH',
-				publicationOnboardingState: PENDING_VERIFICATION,
-				publicationOnboardingStateLastSyncedAtMs: 0,
-			} );
-
-		const { container, waitForRegistry } = render(
-			<PublicationOnboardingStateNotice />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container.firstChild ).toHaveClass(
-			'googlesitekit-publication-onboarding-state-notice'
-		);
-	} );
-
-	it( 'should render the "Complete publication setup" CTA with correct link', async () => {
+	it( 'should render the "Check publication status" CTA with correct link', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {
@@ -112,7 +89,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			} );
 
 		// Ensure that CTA is present and class name is correct.
-		expect( getByText( 'Complete publication setup' ) ).toBeInTheDocument();
+		expect( getByText( 'Check publication status' ) ).toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-settings-notice__button' )
 		).toBeInTheDocument();
@@ -122,6 +99,10 @@ describe( 'PublicationOnboardingStateNotice', () => {
 				'.googlesitekit-cta-link.googlesitekit-cta-link--inverse'
 			)
 		).toHaveAttribute( 'href', expectedServiceURL );
+
+		expect( container.firstChild ).toHaveClass(
+			'googlesitekit-publication-onboarding-state-notice'
+		);
 	} );
 
 	it.each( [

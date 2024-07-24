@@ -23,13 +23,6 @@
 	flex-direction: column;
 	margin: $grid-gap-phone;
 
-	/**
-	 * TODO: Remove fallback `right` inset and html[dir="rtl"] specific
-	 * overrides when `postcss-preset-env` is configured to not polyfill
-	 * `logical-properties-and-values`, so the `inset-inline-end` property
-	 * can be used directly without the need for the workaround.
-	 * @see https://github.com/google/site-kit-wp/issues/8414
-	 */
 	@media (min-width: $bp-tablet) {
 		bottom: 32px;
 		box-shadow: 0 8px $grid-gap-desktop 0 rgba(0, 0, 0, 0.25);
@@ -37,12 +30,7 @@
 		margin: 0;
 		max-width: 296px;
 		position: fixed;
-		right: 32px;
 		z-index: $z-index-sk-overlay-notification;
-
-		html[dir="rtl"] & {
-			right: unset;
-		}
 	}
 
 	@media (min-width: $bp-desktop) {

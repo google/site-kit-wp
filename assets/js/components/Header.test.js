@@ -43,11 +43,13 @@ describe( 'Header', () => {
 		render( <Header />, { registry } );
 	} );
 
-	it( 'can render a subheader', () => {
-		const { queryByTestID } = render(
+	it( 'can render a subheader', async () => {
+		const { waitForRegistry, queryByTestID } = render(
 			<Header subHeader={ <div data-testid="sub" /> } />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( queryByTestID( 'sub' ) ).toBeInTheDocument();
 	} );

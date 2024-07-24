@@ -61,44 +61,59 @@ describe( 'AudienceTilesWidget', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
+	it( 'should not render when availableAudiences and configuredAudiences are not loaded', async () => {
 		muteFetch( audienceSettingsRegExp );
 
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when availableAudiences is not loaded', () => {
+	it( 'should not render when availableAudiences is not loaded', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when configuredAudiences is not loaded', () => {
+	it( 'should not render when configuredAudiences is not loaded', async () => {
 		muteFetch( audienceSettingsRegExp );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when there is no available audience', () => {
+	it( 'should not render when there is no available audience', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
@@ -106,14 +121,19 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when there is no configured audience', () => {
+	it( 'should not render when there is no configured audience', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -123,14 +143,19 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when configuredAudiences is null (not set)', () => {
+	it( 'should not render when configuredAudiences is null (not set)', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -140,14 +165,19 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when there is no matching audience', () => {
+	it( 'should not render when there is no matching audience', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -157,14 +187,23 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render when configured audience is matching available audiences', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -183,10 +222,14 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
-		expect( container ).not.toBeEmptyDOMElement();
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should render when all configured audiences are matching available audiences', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -208,10 +251,14 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
-		expect( container ).not.toBeEmptyDOMElement();
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should render when some configured audiences are matching available audiences', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -233,6 +280,6 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
-		expect( container ).not.toBeEmptyDOMElement();
+		expect( container ).toMatchSnapshot();
 	} );
 } );

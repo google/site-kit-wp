@@ -24,9 +24,11 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import SettingsCardVisitorGroups from './SettingsCardVisitorGroups';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import SettingsCardVisitorGroups from './';
 
 function Template() {
 	return <SettingsCardVisitorGroups />;
@@ -38,11 +40,42 @@ Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups/Default',
 };
 
+export const WithSetupCTA = Template.bind( {} );
+WithSetupCTA.storyName = 'With setup CTA';
+WithSetupCTA.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+	},
+};
+WithSetupCTA.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups/WithSetupCTA',
+};
+
+export const WithSetupSuccessNotification = Template.bind( {} );
+WithSetupSuccessNotification.storyName = 'With setup success notification';
+WithSetupSuccessNotification.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	},
+};
+WithSetupSuccessNotification.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups/WithSetupSuccessNotification',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
+					] );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAudienceSettings( {

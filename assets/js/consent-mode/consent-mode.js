@@ -42,7 +42,8 @@ import { isEqual } from 'lodash';
 			}
 		}
 	}
-	document.addEventListener(
+
+	global.document.addEventListener(
 		'wp_listen_for_consent_change',
 		actionConsentChange
 	);
@@ -76,11 +77,13 @@ import { isEqual } from 'lodash';
 			global._googlesitekitConsents = consentParameters;
 		}
 	}
-	document.addEventListener(
+
+	global.document.addEventListener(
 		'wp_consent_type_defined',
 		updateGrantedConsent
 	);
-	document.addEventListener( 'DOMContentLoaded', function () {
+
+	global.document.addEventListener( 'DOMContentLoaded', function () {
 		if ( ! global.waitfor_consent_hook ) {
 			updateGrantedConsent();
 		}
