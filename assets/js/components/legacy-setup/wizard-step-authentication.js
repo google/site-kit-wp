@@ -50,9 +50,17 @@ class WizardStepAuthentication extends Component {
 			// Cache the start of the user setup journey.
 			// This will be used for event tracking logic after successful setup.
 			setItem( 'start_user_setup', true ),
+			// Cache the start of the site setup journey.
+			// This will be used for event tracking logic after successful setup.
+			setItem( 'start_site_setup', true ),
 			trackEvent(
 				VIEW_CONTEXT_SPLASH,
 				'start_user_setup',
+				'custom-oauth'
+			),
+			trackEvent(
+				VIEW_CONTEXT_SPLASH,
+				'start_site_setup',
 				'custom-oauth'
 			),
 		] );
