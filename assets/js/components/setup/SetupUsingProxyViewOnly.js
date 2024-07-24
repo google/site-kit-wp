@@ -44,6 +44,7 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { Grid, Row, Cell } from '../../material-components';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { setItem } from '../../googlesitekit/api/cache';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();
@@ -65,6 +66,7 @@ export default function SetupUsingProxyViewOnly() {
 		Promise.all( [
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
 			trackEvent( viewContext, 'confirm_viewonly' ),
+			setItem( 'start_user_setup', true ),
 		] ).finally( () => {
 			navigateTo( dashboardURL );
 		} );
