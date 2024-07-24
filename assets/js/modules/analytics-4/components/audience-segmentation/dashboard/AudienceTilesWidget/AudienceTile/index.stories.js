@@ -59,9 +59,12 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	);
 }
 
+const audienceResourceName = 'properties/12345/audiences/12345';
+
 // TODO: As part of #8484, update these stories to use the data-mock
 // functions to provide report data rather than hardcoding props.
 const readyProps = {
+	audienceResourceName,
 	title: 'New visitors',
 	toolTip: 'This is a tooltip',
 	loaded: true,
@@ -145,8 +148,6 @@ const readyProps = {
 	isZeroData: false,
 	isPartialData: false,
 };
-
-const audienceResourceName = 'properties/12345/audiences/12345';
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
