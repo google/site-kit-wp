@@ -30,7 +30,7 @@ import useViewOnly from '../hooks/useViewOnly';
 /**
  * Higher-Order Component to render wrapped components based on view context.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  *
  * @param {Object}  options                Options for enhancing function.
  * @param {boolean} options.allViewOnly    Render component when in view only context.

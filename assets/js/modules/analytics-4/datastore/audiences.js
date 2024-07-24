@@ -202,7 +202,7 @@ const baseActions = {
 	/**
 	 * Syncs available audiences older than 1 hour.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return {void}
 	 */

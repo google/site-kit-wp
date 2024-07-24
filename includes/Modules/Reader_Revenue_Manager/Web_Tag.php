@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	public function register() {
 		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_swg_script' ) );
@@ -54,7 +54,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Enqueues the Reader Revenue Manager (SWG) script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	protected function enqueue_swg_script() {
 		$locale = str_replace( '_', '-', get_locale() );
@@ -90,7 +90,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Add snippet comments around the tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param string $tag    The tag.
 	 * @param string $handle The script handle.
@@ -110,7 +110,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Outputs snippet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	protected function render() {
 		// Do nothing, script is enqueued.

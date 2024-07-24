@@ -34,7 +34,7 @@ export function isValidPublicationID( publicationID ) {
 /**
  * Checks if the given publication onboarding state is valid.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  *
  * @param {string} onboardingState Publication onboarding state.
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
