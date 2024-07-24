@@ -114,6 +114,25 @@ Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/Default',
 };
 
+export const DefaultWithMissingCustomDimension = Template.bind( {} );
+DefaultWithMissingCustomDimension.storyName =
+	'DefaultWithMissingCustomDimension';
+DefaultWithMissingCustomDimension.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: [],
+		} );
+	},
+};
+DefaultWithMissingCustomDimension.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/DefaultWithMissingCustomDimension',
+};
+
 export const DefaultWithZeroTile = Template.bind( {} );
 DefaultWithZeroTile.storyName = 'DefaultWithZeroTile';
 DefaultWithZeroTile.args = {
@@ -190,6 +209,24 @@ TwoTiles.args = {
 };
 TwoTiles.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTiles',
+};
+
+export const TwoTilesWithMissingCustomDimension = Template.bind( {} );
+TwoTilesWithMissingCustomDimension.storyName =
+	'TwoTilesWithMissingCustomDimension';
+TwoTilesWithMissingCustomDimension.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+	],
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: [],
+		} );
+	},
+};
+TwoTilesWithMissingCustomDimension.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTilesWithMissingCustomDimension',
 };
 
 export const TwoTilesWithZeroTile = Template.bind( {} );
@@ -411,6 +448,10 @@ export default {
 								},
 							},
 						} );
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 				} );
 
 				registry
