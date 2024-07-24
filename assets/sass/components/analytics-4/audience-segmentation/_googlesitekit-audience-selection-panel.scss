@@ -106,78 +106,79 @@
 			border-radius: $br-xs;
 			margin: 5px $grid-gap-desktop;
 			padding: 20px 20px 6px;
+		}
 
-			.googlesitekit-audience-selection-panel__audience-creation-notice-header {
-				display: flex;
-				justify-content: space-between;
+		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
+			display: flex;
+			justify-content: space-between;
+		}
 
-				p {
-					color: $c-surfaces-on-surface-variant;
-					font-family: $f-primary;
-					font-size: $fs-label-sm;
-					font-weight: $fw-medium;
-					letter-spacing: $ls-xs;
-					line-height: $lh-label-sm;
-					margin: 0;
-				}
+		p.googlesitekit-audience-selection-panel__audience-creation-notice-title {
+			color: $c-surfaces-on-surface-variant;
+			font-family: $f-primary;
+			font-size: $fs-label-sm;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
+			margin: 0;
+		}
 
-				.googlesitekit-audience-selection-panel__audience-creation-notice-close {
-					svg {
-						color: $c-surfaces-on-surface-variant;
-						height: 12px;
-						width: 12px;
-					}
-				}
+		.googlesitekit-audience-selection-panel__audience-creation-notice-close {
+			svg {
+				color: $c-surfaces-on-surface-variant;
+				height: 12px;
+				width: 12px;
 			}
+		}
 
-			.googlesitekit-audience-selection-panel__audience-creation-notice-body {
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
+		.googlesitekit-audience-selection-panel__audience-creation-notice-body {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
 
-				.googlesitekit-audience-selection-panel__audience-creation-notice-audience {
+		.googlesitekit-audience-selection-panel__audience-creation-notice-audience {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 12px;
+			padding-top: 5px;
 
-					display: flex;
-					justify-content: space-between;
-					margin-bottom: 12px;
-					padding-top: 5px;
-					.googlesitekit-audience-selection-panel__audience-creation-notice-audience-details {
-						h3 {
-							color: $c-surfaces-on-background;
-							font-family: $f-primary;
-							font-size: $fs-label-md;
-							font-weight: $fw-medium;
-							line-height: $lh-label-md;
-							margin-bottom: 1px;
-							margin-top: 7px;
-						}
-						p {
-							color: $c-surfaces-on-surface;
-							font-family: $f-primary;
-							font-size: $fs-body-sm;
-							font-weight: $fw-normal;
-							letter-spacing: $ls-xs;
-							line-height: $lh-body-sm;
-							margin: 0;
-						}
-					}
+			& + .googlesitekit-audience-selection-panel__audience-creation-notice-audience {
+				border-top: 1px solid $c-utility-divider-1;
+				padding-top: 12px;
+			}
+		}
 
-					.googlesitekit-audience-selection-panel__audience-creation-notice-audience-button {
-						align-items: center;
-						display: flex;
+		.googlesitekit-audience-selection-panel__audience-creation-notice-audience-details {
+			h3 {
+				color: $c-surfaces-on-background;
+				font-family: $f-primary;
+				font-size: $fs-label-md;
+				font-weight: $fw-medium;
+				line-height: $lh-label-md;
+				margin-bottom: 1px;
+				margin-top: 7px;
+			}
+		}
 
-						.mdc-button {
-							background-color: $c-surfaces-inverse-surface;
-							min-height: 32px;
-							padding: 6px 16px;
-						}
-					}
+		p.googlesitekit-audience-selection-panel__audience-creation-notice-audience-description {
+			color: $c-surfaces-on-surface;
+			font-family: $f-primary;
+			font-size: $fs-body-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin: 0;
+		}
 
-					& + .googlesitekit-audience-selection-panel__audience-creation-notice-audience {
-						border-top: 1px solid $c-utility-divider-1;
-						padding-top: 12px;
-					}
-				}
+		.googlesitekit-audience-selection-panel__audience-creation-notice-audience-button {
+			align-items: center;
+			display: flex;
+
+			.mdc-button {
+				background-color: $c-surfaces-inverse-surface;
+				min-height: 32px;
+				padding: 6px 16px;
 			}
 		}
 	}
