@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Core\Remote_Features;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Guards\Site_Connected_Guard;
+use Google\Site_Kit\Core\Authentication\Guards\Using_Proxy_Connection_Guard;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 
@@ -46,11 +48,18 @@ class Remote_Features_Provider {
 	private Remote_Features_Activation $activation;
 
 	/**
-	 * Remote_Features_Sync instance.
+	 * Remote_Features_Syncer instance.
 	 *
-	 * @var Remote_Features_Sync
+	 * @var Remote_Features_Syncer
 	 */
-	private Remote_Features_Sync $sync;
+	private Remote_Features_Syncer $syncer;
+
+	/**
+	 * Remote_Features_Cron instance.
+	 *
+	 * @var Remote_Features_Cron
+	 */
+	private Remote_Features_Cron $cron;
 
 	/**
 	 * Constructor.
@@ -64,10 +73,13 @@ class Remote_Features_Provider {
 		$this->credentials = new Credentials( new Encrypted_Options( $options ) );
 		$this->setting     = new Remote_Features( $options );
 		$this->activation  = new Remote_Features_Activation( $this->setting );
-		$this->sync        = new Remote_Features_Sync(
+		$this->syncer      = new Remote_Features_Syncer(
 			$this->setting,
-			fn() => ( new Google_Proxy( $context ) )->get_features( $this->credentials )
+			fn() => ( new Google_Proxy( $context ) )->get_features( $this->credentials ),
+			new Site_Connected_Guard( $this->credentials ),
+			new Using_Proxy_Connection_Guard( $this->credentials )
 		);
+		$this->cron        = new Remote_Features_Cron( $this->syncer );
 	}
 
 	/**
@@ -78,7 +90,7 @@ class Remote_Features_Provider {
 	public function register() {
 		$this->setting->register();
 		$this->activation->register();
-		$this->sync->register();
+		$this->cron->register();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
 	}
@@ -91,8 +103,8 @@ class Remote_Features_Provider {
 			return;
 		}
 
-		$this->sync->maybe_schedule_cron();
+		$this->cron->maybe_schedule_cron();
 		// Sync remote features when credentials change (e.g. during setup).
-		$this->credentials->on_change( array( $this->sync, 'pull_remote_features' ) );
+		$this->credentials->on_change( array( $this->syncer, 'pull_remote_features' ) );
 	}
 }

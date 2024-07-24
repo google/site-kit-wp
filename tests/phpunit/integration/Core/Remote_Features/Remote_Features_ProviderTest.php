@@ -13,8 +13,9 @@ namespace Google\Site_Kit\Tests\Core\Remote_Features;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features;
+use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
-use Google\Site_Kit\Core\Remote_Features\Remote_Features_Sync;
+use Google\Site_Kit\Core\Remote_Features\Remote_Features_Syncer;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
@@ -31,7 +32,7 @@ class Remote_Features_ProviderTest extends TestCase {
 		// Clean up side-effects from load in Plugin class.
 		remove_all_actions( 'admin_init' );
 		remove_all_filters( 'googlesitekit_is_feature_enabled' );
-		remove_all_actions( Remote_Features_Sync::CRON_ACTION );
+		remove_all_actions( Remote_Features_Cron::CRON_ACTION );
 		unregister_setting( Remote_Features::OPTION, Remote_Features::OPTION );
 	}
 
@@ -43,7 +44,7 @@ class Remote_Features_ProviderTest extends TestCase {
 
 		$this->assertSettingRegistered( Remote_Features::OPTION );
 		$this->assertTrue( has_action( 'admin_init' ) );
-		$this->assertTrue( has_action( Remote_Features_Sync::CRON_ACTION ) );
+		$this->assertTrue( has_action( Remote_Features_Cron::CRON_ACTION ) );
 		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
 	}
 
@@ -61,7 +62,7 @@ class Remote_Features_ProviderTest extends TestCase {
 		do_action( 'admin_init' );
 
 		$this->assertFalse(
-			wp_next_scheduled( Remote_Features_Sync::CRON_ACTION )
+			wp_next_scheduled( Remote_Features_Cron::CRON_ACTION )
 		);
 		// Simulate change to credentials.
 		list( $oauth2_client_id, $oauth2_client_secret ) = $this->get_fake_site_credentials();
@@ -86,7 +87,7 @@ class Remote_Features_ProviderTest extends TestCase {
 		do_action( 'admin_init' );
 
 		$this->assertNotEmpty(
-			wp_next_scheduled( Remote_Features_Sync::CRON_ACTION )
+			wp_next_scheduled( Remote_Features_Cron::CRON_ACTION )
 		);
 		// Simulate change to credentials.
 		list( $oauth2_client_id, $oauth2_client_secret ) = $this->get_fake_proxy_credentials();
