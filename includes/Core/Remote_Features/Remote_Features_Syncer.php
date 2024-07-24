@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Remote_Features\Remote_Features_Sync
+ * Class Google\Site_Kit\Core\Remote_Features\Remote_Features_Syncer
  *
  * @package   Google\Site_Kit
  * @copyright 2024 Google LLC
@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Remote_Features;
 
 use Closure;
+use Google\Site_Kit\Core\Guards\Guard_Interface;
 
 /**
  * Class handling the synchronization of remote features with local storage.
@@ -19,9 +20,7 @@ use Closure;
  * @access private
  * @ignore
  */
-class Remote_Features_Sync {
-
-	const CRON_ACTION = 'googlesitekit_cron_update_remote_features';
+class Remote_Features_Syncer {
 
 	/**
 	 * Remote_Features instance.
@@ -38,39 +37,29 @@ class Remote_Features_Sync {
 	private $fetch_features;
 
 	/**
+	 * Guard instances.
+	 *
+	 * @var Guard_Interface[]
+	 */
+	private array $guards;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Remote_Features $remote_features Remote_Features instance.
 	 * @param Closure         $fetch_features  Function which fetches features.
+	 * @param Guard_Interface ...$guards       Guard instances.
 	 */
 	public function __construct(
 		Remote_Features $remote_features,
-		Closure $fetch_features
+		Closure $fetch_features,
+		Guard_Interface ...$guards
 	) {
 		$this->remote_features = $remote_features;
 		$this->fetch_features  = $fetch_features;
-	}
-
-	/**
-	 * Registers functionality through WordPress hooks.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function register() {
-		add_action( self::CRON_ACTION, array( $this, 'pull_remote_features' ) );
-	}
-
-	/**
-	 * Schedules cron if not already set.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function maybe_schedule_cron() {
-		if ( ! wp_next_scheduled( self::CRON_ACTION ) && ! wp_installing() ) {
-			wp_schedule_event( time(), 'twicedaily', self::CRON_ACTION );
-		}
+		$this->guards          = $guards;
 	}
 
 	/**
@@ -79,6 +68,12 @@ class Remote_Features_Sync {
 	 * @since n.e.x.t
 	 */
 	public function pull_remote_features() {
+		foreach ( $this->guards as $guard ) {
+			if ( ! $guard->can_activate() ) {
+				return;
+			}
+		}
+
 		$features = call_user_func( $this->fetch_features );
 
 		if ( ! is_wp_error( $features ) && is_array( $features ) ) {
