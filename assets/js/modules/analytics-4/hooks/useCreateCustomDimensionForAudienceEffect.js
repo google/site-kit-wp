@@ -80,6 +80,7 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 
 			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 				isAutoCreatingCustomDimensionsForAudience: false,
+				isRetrying: false,
 			} );
 		}
 		if ( isGA4Connected && hasAnalyticsEditScope && autoSubmit ) {
