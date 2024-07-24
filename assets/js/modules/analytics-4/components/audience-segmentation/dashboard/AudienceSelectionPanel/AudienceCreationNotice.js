@@ -51,14 +51,9 @@ export default function AudienceCreationNotice() {
 			return [];
 		}
 
-		const siteKitAudiences = audiences.reduce( ( siteKit, audience ) => {
-			if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
-				siteKit.push( audience );
-			}
-			return siteKit;
-		}, [] );
-
-		return siteKitAudiences;
+		return audiences.filter(
+			( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+		);
 	} );
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -81,7 +76,7 @@ export default function AudienceCreationNotice() {
 	return (
 		<div className="googlesitekit-audience-selection-panel__audience-creation-notice">
 			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-header">
-				<p>
+				<p className="googlesitekit-audience-selection-panel__audience-creation-notice-title">
 					{ __(
 						'Create groups suggested by Site Kit.',
 						'google-site-kit'
@@ -105,7 +100,7 @@ export default function AudienceCreationNotice() {
 						>
 							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details">
 								<h3>{ audience.displayName }</h3>
-								<p>
+								<p className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description">
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
 											audience.audienceSlug
