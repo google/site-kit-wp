@@ -148,7 +148,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 				if ( ! error ) {
 					await trackEvent(
-						viewContext,
+						`${ viewContext }_setup`,
 						'start_setup_with_analytics'
 					);
 
