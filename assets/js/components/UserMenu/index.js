@@ -212,7 +212,6 @@ export default function UserMenu() {
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
 					text
 					onClick={ handleMenu }
-					disabled={ isAutoCreatingCustomDimensionsForAudience }
 					icon={
 						!! userPicture && (
 							<i
@@ -233,58 +232,69 @@ export default function UserMenu() {
 					aria-haspopup="menu"
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
-					aria-label={ __( 'Account', 'google-site-kit' ) }
+					aria-label={
+						isAutoCreatingCustomDimensionsForAudience
+							? ''
+							: __( 'Account', 'google-site-kit' )
+					}
 					tooltip
 					tooltipEnterDelayInMS={ 500 }
 					customizedTooltip={
-						<span aria-label={ accountLabel }>
-							<strong>
-								{ __( 'Google Account', 'google-site-kit' ) }
-							</strong>
-							<br />
-							<br />
-							{ userFullName }
-							{ userFullName && <br /> }
-							{ userEmail }
-						</span>
+						isAutoCreatingCustomDimensionsForAudience ? null : (
+							<span aria-label={ accountLabel }>
+								<strong>
+									{ __(
+										'Google Account',
+										'google-site-kit'
+									) }
+								</strong>
+								<br />
+								<br />
+								{ userFullName }
+								{ userFullName && <br /> }
+								{ userEmail }
+							</span>
+						)
 					}
 				/>
 
-				<Menu
-					className="googlesitekit-user-menu"
-					menuOpen={ menuOpen }
-					onSelected={ handleMenuItemSelect }
-					id="user-menu"
-				>
-					<li>
-						<Details />
-					</li>
-					{ !! proxyPermissionsURL && (
+				{ ! isAutoCreatingCustomDimensionsForAudience && (
+					<Menu
+						className="googlesitekit-user-menu"
+						menuOpen={ menuOpen }
+						onSelected={ handleMenuItemSelect }
+						id="user-menu"
+					>
+						<li>
+							<Details />
+						</li>
+						{ !! proxyPermissionsURL && (
+							<li
+								id="manage-sites"
+								className="mdc-list-item"
+								role="menuitem"
+							>
+								<Item
+									icon={ <ManageSitesIcon width="22" /> }
+									label={ __(
+										'Manage Sites',
+										'google-site-kit'
+									) }
+								/>
+							</li>
+						) }
 						<li
-							id="manage-sites"
+							id="disconnect"
 							className="mdc-list-item"
 							role="menuitem"
 						>
 							<Item
-								icon={ <ManageSitesIcon width="22" /> }
-								label={ __(
-									'Manage Sites',
-									'google-site-kit'
-								) }
+								icon={ <DisconnectIcon width="22" /> }
+								label={ __( 'Disconnect', 'google-site-kit' ) }
 							/>
 						</li>
-					) }
-					<li
-						id="disconnect"
-						className="mdc-list-item"
-						role="menuitem"
-					>
-						<Item
-							icon={ <DisconnectIcon width="22" /> }
-							label={ __( 'Disconnect', 'google-site-kit' ) }
-						/>
-					</li>
-				</Menu>
+					</Menu>
+				) }
 			</div>
 			<Portal>
 				<ModalDialog
