@@ -34,7 +34,6 @@ import { compose } from '@wordpress/compose';
 import { withSelect } from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { Button } from 'googlesitekit-components';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_SETUP,
@@ -48,6 +47,7 @@ import { clearCache, setItem } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
+import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -81,7 +81,6 @@ class SetupUsingGCP extends Component {
 		this.resetAndRestart = this.resetAndRestart.bind( this );
 		this.completeSetup = this.completeSetup.bind( this );
 		this.setErrorMessage = this.setErrorMessage.bind( this );
-		this.onButtonClick = this.onButtonClick.bind( this );
 	}
 
 	async resetAndRestart() {
@@ -98,10 +97,21 @@ class SetupUsingGCP extends Component {
 		} );
 	}
 
-	completeSetup() {
+	async completeSetup() {
 		this.setState( {
 			completeSetup: true,
 		} );
+
+		await Promise.all( [
+			// Cache the start of the site setup journey.
+			// This will be used for event tracking logic after successful setup.
+			setItem( 'start_site_setup', true ),
+			trackEvent(
+				VIEW_CONTEXT_SPLASH,
+				'start_site_setup',
+				'custom-oauth'
+			),
+		] );
 	}
 
 	siteConnectedSetup( status ) {
@@ -189,32 +199,8 @@ class SetupUsingGCP extends Component {
 		return '';
 	}
 
-	async onButtonClick() {
-		const { isSiteKitConnected, connectURL } = this.state;
-
-		await Promise.all( [
-			// Cache the start of the user setup journey.
-			// This will be used for event tracking logic after successful setup.
-			setItem( 'start_user_setup', true ),
-			trackEvent(
-				VIEW_CONTEXT_SPLASH,
-				'start_user_setup',
-				'custom-oauth'
-			),
-		] );
-
-		if ( ! isSiteKitConnected ) {
-			await Promise.all( [
-				// Cache the start of the site setup journey.
-				// This will be used for event tracking logic after successful setup.
-				setItem( 'start_site_setup', true ),
-				trackEvent(
-					VIEW_CONTEXT_SPLASH,
-					'start_site_setup',
-					'custom-oauth'
-				),
-			] );
-		}
+	onButtonClick() {
+		const { connectURL } = this.state;
 
 		document.location = connectURL;
 	}
