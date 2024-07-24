@@ -47,10 +47,12 @@ import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
 import SubtleNotifications from './notifications/SubtleNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
 
 function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
+	useGlobalTrackingEffect();
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
