@@ -65,7 +65,7 @@ class Remote_Features_ProviderTest extends TestCase {
 		);
 		// Simulate change to credentials.
 		list( $oauth2_client_id, $oauth2_client_secret ) = $this->get_fake_site_credentials();
-		( new Credentials( new Encrypted_Options( new Options( new Context( '' ) ) ) ) )->set(
+		( new Credentials( new Encrypted_Options( new Options( new Context( __FILE__ ) ) ) ) )->set(
 			compact( 'oauth2_client_id', 'oauth2_client_secret' )
 		);
 
@@ -90,7 +90,7 @@ class Remote_Features_ProviderTest extends TestCase {
 		);
 		// Simulate change to credentials.
 		list( $oauth2_client_id, $oauth2_client_secret ) = $this->get_fake_proxy_credentials();
-		( new Credentials( new Encrypted_Options( new Options( new Context( '' ) ) ) ) )->set(
+		( new Credentials( new Encrypted_Options( new Options( new Context( __FILE__ ) ) ) ) )->set(
 			compact( 'oauth2_client_id', 'oauth2_client_secret' )
 		);
 
