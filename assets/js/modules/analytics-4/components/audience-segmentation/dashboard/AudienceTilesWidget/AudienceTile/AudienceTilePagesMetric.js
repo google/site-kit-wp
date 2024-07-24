@@ -109,33 +109,44 @@ export default function AudienceTilePagesMetric( {
 	const { setPermissionScopeError, clearPermissionScopeError } =
 		useDispatch( CORE_USER );
 
-	const onCreateCustomDimension = useCallback( () => {
-		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-			autoSubmit: true,
-		} );
+	const isRetryingCustomDimensionCreate = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'isRetrying'
+		)
+	);
 
-		if ( ! hasAnalyticsEditScope ) {
-			setPermissionScopeError( {
-				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-				message: __(
-					'Additional permissions are required to create new audiences in Analytics.',
-					'google-site-kit'
-				),
-				data: {
-					status: 403,
-					scopes: [ EDIT_SCOPE ],
-					skipModal: true,
-					skipDefaultErrorNotifications: true,
-					redirectURL,
-				},
+	const onCreateCustomDimension = useCallback(
+		( { isRetrying } = {} ) => {
+			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
+				autoSubmit: true,
+				isRetrying,
 			} );
-		}
-	}, [
-		hasAnalyticsEditScope,
-		redirectURL,
-		setPermissionScopeError,
-		setValues,
-	] );
+
+			if ( ! hasAnalyticsEditScope ) {
+				setPermissionScopeError( {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: __(
+						'Additional permissions are required to create new audiences in Analytics.',
+						'google-site-kit'
+					),
+					data: {
+						status: 403,
+						scopes: [ EDIT_SCOPE ],
+						skipModal: true,
+						skipDefaultErrorNotifications: true,
+						redirectURL,
+					},
+				} );
+			}
+		},
+		[
+			hasAnalyticsEditScope,
+			redirectURL,
+			setPermissionScopeError,
+			setValues,
+		]
+	);
 
 	const onCancel = useCallback( () => {
 		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
@@ -182,7 +193,8 @@ export default function AudienceTilePagesMetric( {
 					onCreateCustomDimension={ onCreateCustomDimension }
 					isSaving={ isSaving }
 				/>
-				{ customDimensionError && (
+				{ ( ( customDimensionError && ! isSaving ) ||
+					isRetryingCustomDimensionCreate ) && (
 					<AudienceErrorModal
 						apiErrors={ [ customDimensionError ] }
 						title={ __(
@@ -193,7 +205,9 @@ export default function AudienceTilePagesMetric( {
 							'Oops! Something went wrong. Retry enabling the metric.',
 							'google-site-kit'
 						) }
-						onRetry={ onCreateCustomDimension }
+						onRetry={ () =>
+							onCreateCustomDimension( { isRetrying: true } )
+						}
 						onCancel={ onCancel }
 						inProgress={ isSaving }
 					/>
