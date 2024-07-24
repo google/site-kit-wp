@@ -51,7 +51,12 @@ class Remote_Features_Activation {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features' ), 10, 2 );
+		add_filter(
+			'googlesitekit_is_feature_enabled',
+			$this->get_method_proxy( 'enable_features' ),
+			10,
+			2
+		);
 	}
 
 	/**
@@ -76,7 +81,7 @@ class Remote_Features_Activation {
 	 * @param string  $feature_name    Feature name.
 	 * @return boolean State flag from options if it is available, otherwise the original value.
 	 */
-	private function filter_features( $feature_enabled, $feature_name ) {
+	private function enable_features( $feature_enabled, $feature_name ) {
 		$features = $this->get_features();
 
 		if ( isset( $features[ $feature_name ]['enabled'] ) ) {
