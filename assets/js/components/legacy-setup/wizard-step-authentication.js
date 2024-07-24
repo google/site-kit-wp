@@ -51,7 +51,7 @@ class WizardStepAuthentication extends Component {
 			// This will be used for event tracking logic after successful setup.
 			setItem( 'start_user_setup', true ),
 			trackEvent(
-				VIEW_CONTEXT_SPLASH,
+				`${ VIEW_CONTEXT_SPLASH }_setup`,
 				'start_user_setup',
 				'custom-oauth'
 			),
@@ -63,7 +63,7 @@ class WizardStepAuthentication extends Component {
 				// This will be used for event tracking logic after successful setup.
 				setItem( 'start_site_setup', true ),
 				trackEvent(
-					VIEW_CONTEXT_SPLASH,
+					`${ VIEW_CONTEXT_SPLASH }_setup`,
 					'start_site_setup',
 					'custom-oauth'
 				),
