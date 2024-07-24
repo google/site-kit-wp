@@ -163,10 +163,10 @@ export default function AudienceTilePagesMetricContent( {
 }
 
 AudienceTilePagesMetricContent.propTypes = {
-	topContentTitles: PropTypes.object.isRequired,
-	topContent: PropTypes.object.isRequired,
-	isTopContentPartialData: PropTypes.bool.isRequired,
-	hasCustomDimension: PropTypes.bool.isRequired,
-	onCreateCustomDimension: PropTypes.func.isRequired,
-	isSaving: PropTypes.bool.isRequired,
+	topContentTitles: PropTypes.object,
+	topContent: PropTypes.object,
+	isTopContentPartialData: PropTypes.bool,
+	hasCustomDimension: PropTypes.bool,
+	onCreateCustomDimension: PropTypes.func,
+	isSaving: PropTypes.bool,
 };
