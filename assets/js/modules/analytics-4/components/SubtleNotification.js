@@ -22,12 +22,16 @@
 import { __ } from '@wordpress/i18n';
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
 import CheckFill from '../../../../svg/icons/check-fill.svg';
 import { Grid, Cell, Row } from '../../../material-components';
-import PropTypes from 'prop-types';
 
 export default function SubtleNotification( {
 	title,
