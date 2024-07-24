@@ -182,7 +182,7 @@ export default function AudienceTilePagesMetric( {
 					onCreateCustomDimension={ onCreateCustomDimension }
 					isSaving={ isSaving }
 				/>
-				{ ! isSaving && customDimensionError && (
+				{ customDimensionError && (
 					<AudienceErrorModal
 						apiErrors={ [ customDimensionError ] }
 						title={ __(
