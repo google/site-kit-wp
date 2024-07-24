@@ -98,4 +98,12 @@
 			padding-top: 0;
 		}
 	}
+
+	&.googlesitekit--overlay-notification--reader-revenue-manager {
+		max-width: 348px;
+
+		.mdc-button--raised {
+			padding: 10px $grid-gap-phone;
+		}
+	}
 }
