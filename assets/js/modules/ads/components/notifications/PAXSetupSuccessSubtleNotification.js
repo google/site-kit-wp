@@ -71,11 +71,7 @@ export default function PAXSetupSuccessSubtleNotification() {
 			) }
 			onDismiss={ onDismiss }
 			additionalCTA={
-				<Button
-					onClick={ ( event ) => {
-						scrollToWidget( event );
-					} }
-				>
+				<Button onClick={ scrollToWidget }>
 					{ __( 'Show me', 'google-site-kit' ) }
 				</Button>
 			}
