@@ -53,7 +53,10 @@ export const registerModule = isRrmModuleEnabled( ( modules ) => {
 		SetupComponent: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
-			// TODO: Implement the features as part of #8845.
+			__(
+				'Reader Revenue Manager publication tracking (your Reader Revenue Manager account will still remain active)',
+				'google-site-kit'
+			),
 		],
 		checkRequirements: async ( registry ) => {
 			// Ensure the site info is resolved to get the home URL.

@@ -1,4 +1,6 @@
 /**
+ * RRM common components.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,29 +16,4 @@
  * limitations under the License.
  */
 
-( ( jQuery ) => {
-	// eslint-disable-next-line no-undef
-	if ( ! jQuery || ! Marionette || ! Backbone ) {
-		return;
-	}
-
-	// eslint-disable-next-line no-undef
-	const ninjaFormEventController = Marionette.Object.extend( {
-		initialize() {
-			this.listenTo(
-				// eslint-disable-next-line no-undef
-				Backbone.Radio.channel( 'forms' ),
-				'submit:response',
-				this.actionSubmit
-			);
-		},
-
-		actionSubmit() {
-			global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
-		},
-	} );
-
-	jQuery( document ).ready( function () {
-		new ninjaFormEventController();
-	} );
-} )( global.jQuery );
+export { default as PublicationSelect } from './PublicationSelect';

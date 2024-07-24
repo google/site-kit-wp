@@ -59,7 +59,7 @@ const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 	return totalUsers === 0;
 };
 
-export default function AudienceTiles( { Widget } ) {
+export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -248,7 +248,7 @@ export default function AudienceTiles( { Widget } ) {
 		const visible = [];
 		const tempAudiences = configuredAudiences.slice();
 
-		while ( reportLoaded && tempAudiences.length > 0 ) {
+		while ( tempAudiences.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
 
 			const isDismissed = dismissedItems?.includes(
@@ -278,7 +278,7 @@ export default function AudienceTiles( { Widget } ) {
 		}
 
 		return [ toClear, visible ];
-	}, [ configuredAudiences, dismissedItems, reportLoaded, report ] );
+	}, [ configuredAudiences, dismissedItems, report ] );
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
@@ -300,6 +300,7 @@ export default function AudienceTiles( { Widget } ) {
 	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
 
 	const loading =
+		widgetLoading ||
 		! reportLoaded ||
 		! totalPageviewsReportLoaded ||
 		! topCitiesReportLoaded ||
@@ -515,4 +516,5 @@ export default function AudienceTiles( { Widget } ) {
 
 AudienceTiles.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	widgetLoading: PropTypes.bool.isRequired,
 };

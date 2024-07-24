@@ -38,27 +38,19 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
-	const hasNoMatchingAudience =
-		configuredAudiences?.length &&
-		configuredAudiences.every(
-			( audience ) =>
-				Array.isArray( availableAudiences ) &&
-				! availableAudiences.includes( audience )
-		);
-
-	const configurableAudiences = availableAudiences?.filter(
-		( element ) =>
-			Array.isArray( configuredAudiences ) &&
-			! configuredAudiences.includes( element )
+	const hasNoMatchingAudience = configuredAudiences?.every(
+		( audience ) =>
+			Array.isArray( availableAudiences ) &&
+			! availableAudiences.includes( audience )
 	);
-
-	if ( hasNoMatchingAudience ) {
+	if (
+		!! configuredAudiences &&
+		( configuredAudiences?.length === 0 || hasNoMatchingAudience )
+	) {
 		return (
 			<Widget noPadding>
 				<NoAudienceBanner
-					hasConfigurableAudiences={
-						!! configurableAudiences?.length
-					}
+					hasConfigurableAudiences={ !! availableAudiences?.length }
 				/>
 			</Widget>
 		);
