@@ -24,7 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistryControl,
+	combineStores,
+} from 'googlesitekit-data';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
@@ -32,8 +36,6 @@ import {
 import { isValidAccountID, isValidClientID } from '../util';
 import { MODULES_ADSENSE } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-
-const { commonActions, createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_MISSING_ACCOUNT_STATUS =
@@ -273,7 +275,7 @@ export function validateCanSubmitChanges( select ) {
 	);
 }
 
-const store = Data.combineStores( {
+const store = combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,

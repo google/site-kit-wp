@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -41,7 +41,6 @@ import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
-const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -72,8 +71,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 				return;
 			}
 
-			const { select, __experimentalResolveSelect: resolveSelect } =
-				registry;
+			const { select, resolveSelect } = registry;
 			await resolveSelect( CORE_SITE ).getSiteInfo();
 			const adminURL = select( CORE_SITE ).getAdminURL(
 				'googlesitekit-dashboard',

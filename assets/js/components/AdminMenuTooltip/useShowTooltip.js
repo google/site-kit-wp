@@ -1,10 +1,8 @@
 import { useCallback } from '@wordpress/element';
 
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-
-const { useDispatch, useSelect } = Data;
 
 export function useShowTooltip( tooltipStateKey ) {
 	const { setValue } = useDispatch( CORE_UI );

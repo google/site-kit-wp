@@ -29,7 +29,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
@@ -47,7 +47,6 @@ import withCustomDimensions from '../../utils/withCustomDimensions';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import { numFmt } from '../../../../util';
-const { useSelect, useInViewSelect } = Data;
 
 /**
  * Gets the report options for the Popular Authors widget.
@@ -89,8 +88,9 @@ function PopularAuthorsWidget( props ) {
 	const { Widget } = props;
 
 	const reportOptions = useSelect( getPopularAuthorsWidgetReportOptions );
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+		[ reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>

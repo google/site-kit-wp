@@ -24,10 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-
-const { useSelect } = Data;
 
 export default function ModuleIcon( { slug, size, ...props } ) {
 	const ModuleIconComponent = useSelect( ( select ) =>

@@ -24,15 +24,19 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
 import { CORE_SITE } from './constants';
 
-const { createRegistrySelector } = Data;
-const { getRegistry } = Data.commonActions;
+const { getRegistry } = commonActions;
 
 const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
+const RESET_CONVERSION_TRACKING_SETTINGS = 'RESET_CONVERSION_TRACKING_SETTINGS';
 
 const settingsReducerCallback = createReducer( ( state, settings ) => {
 	state.conversionTracking.settings = settings;
@@ -104,6 +108,21 @@ const baseActions = {
 			payload: { enabled },
 		};
 	},
+
+	/**
+	 * Returns the current settings back to the current saved values.
+	 *
+	 * @since 1.129.0
+	 * @private
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetConversionTrackingSettings() {
+		return {
+			payload: {},
+			type: RESET_CONVERSION_TRACKING_SETTINGS,
+		};
+	},
 };
 
 const baseControls = {};
@@ -114,6 +133,11 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			state.conversionTracking.settings =
 				state.conversionTracking.settings || {};
 			state.conversionTracking.settings.enabled = !! payload.enabled;
+			break;
+
+		case RESET_CONVERSION_TRACKING_SETTINGS:
+			state.conversionTracking.settings =
+				state.conversionTracking.savedSettings;
 			break;
 
 		default:
@@ -177,7 +201,7 @@ const baseResolvers = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetConversionTrackingSettingsStore,
 	fetchSaveConversionTrackingSettingsStore,
 	{

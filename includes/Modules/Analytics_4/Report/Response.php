@@ -86,7 +86,7 @@ class Response extends Report {
 		// Add rows for the current date for each date range.
 		self::iterate_date_ranges(
 			$date_ranges,
-			function( $date ) use ( &$rows, $existing_rows, $ranges_count, $metric_headers, $multiple_ranges ) {
+			function ( $date ) use ( &$rows, $existing_rows, $ranges_count, $metric_headers, $multiple_ranges ) {
 				for ( $i = 0; $i < $ranges_count; $i++ ) {
 					// Copy the existing row if it is available, otherwise create a new zero-value row.
 					$key          = self::get_response_row_key( $date, $i );
@@ -148,7 +148,7 @@ class Response extends Report {
 		// Filter out all corrupted date ranges.
 		$date_ranges = array_filter(
 			$date_ranges,
-			function( $range ) {
+			function ( $range ) {
 				$start = strtotime( $range->getStartDate() );
 				$end   = strtotime( $range->getEndDate() );
 				return ! empty( $start ) && ! empty( $end );
@@ -159,7 +159,7 @@ class Response extends Report {
 		// the latest date range at the end.
 		uasort(
 			$date_ranges,
-			function( $a, $b ) {
+			function ( $a, $b ) {
 				$a_start = strtotime( $a->getStartDate() );
 				$b_start = strtotime( $b->getStartDate() );
 				return $a_start - $b_start;
@@ -185,7 +185,7 @@ class Response extends Report {
 
 		self::iterate_date_ranges(
 			$date_ranges,
-			function( $date, $range_index ) use ( &$sorted_rows, $ranges_count, $rows ) {
+			function ( $date, $range_index ) use ( &$sorted_rows, $ranges_count, $rows ) {
 				// First take the main date range row.
 				$key                 = self::get_response_row_key( $date, $range_index );
 				$sorted_rows[ $key ] = $rows[ $key ];
@@ -227,5 +227,4 @@ class Response extends Report {
 			} while ( $now <= $end );
 		}
 	}
-
 }

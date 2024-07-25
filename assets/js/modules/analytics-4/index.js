@@ -84,8 +84,12 @@ import {
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
 	AudienceTilesWidget,
+	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
+	NoAudienceBannerWidget,
 } from './components/audience-segmentation/dashboard';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 
 export { registerStore } from './datastore';
 
@@ -95,6 +99,7 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
+		DashboardMainEffectComponent,
 		Icon: AnalyticsIcon,
 		features: [
 			__( 'Audience overview', 'google-site-kit' ),
@@ -133,6 +138,50 @@ export const registerWidgets = ( widgets ) => {
 				const configuredAudiences =
 					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
 				return configuredAudiences?.length > 0;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsNoAudienceBanner',
+		{
+			Component: NoAudienceBannerWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				const configuredAudiences =
+					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+				return !! configuredAudiences;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'audienceConnectAnalyticsCTA',
+		{
+			Component: ConnectAnalyticsCTAWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				const isAnalyticsConnected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+				/**
+				 * TODO: This widget should be shown only if the audience group
+				 * is set up for the current user. This should be fixed once
+				 * the audience settings become accessible without `analytics-4`
+				 * module being connected.
+				 * See: https://github.com/google/site-kit-wp/issues/8810 for
+				 * more details.
+				 */
+
+				return ! isAnalyticsConnected;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]

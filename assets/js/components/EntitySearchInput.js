@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import VisuallyHidden from './VisuallyHidden';
 import MagnifyingGlass from '../../svg/icons/magnifying-glass.svg';
@@ -44,8 +44,6 @@ import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '../hooks/useDashboardType';
 import useViewContext from '../hooks/useViewContext';
-
-const { useSelect, useDispatch } = Data;
 
 function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );

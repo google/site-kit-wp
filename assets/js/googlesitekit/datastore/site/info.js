@@ -30,12 +30,10 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
 import { negateDefined } from '../../../util/negate';
-
-const { createRegistrySelector } = Data;
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -49,6 +47,7 @@ const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
 const SET_KEY_METRICS_SETUP_COMPLETED_BY = 'SET_KEY_METRICS_SETUP_COMPLETED_BY';
+const SET_SETUP_ERROR_CODE = 'SET_SETUP_ERROR_CODE';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -126,6 +125,27 @@ export const actions = {
 		return {
 			payload: { keyMetricsSetupCompletedBy },
 			type: SET_KEY_METRICS_SETUP_COMPLETED_BY,
+		};
+	},
+
+	/**
+	 * Sets `setupErrorCode` value.
+	 *
+	 * @since 1.131.0
+	 *
+	 * @param {string|null} setupErrorCode Error code from setup, or `null` if no error.
+	 * @return {Object} Redux-style action.
+	 */
+	setSetupErrorCode( setupErrorCode ) {
+		// setupErrorCode can be a string or null.
+		invariant(
+			typeof setupErrorCode === 'string' || setupErrorCode === null,
+			'setupErrorCode must be a string or null.'
+		);
+
+		return {
+			payload: { setupErrorCode },
+			type: SET_SETUP_ERROR_CODE,
 		};
 	},
 };
@@ -230,6 +250,16 @@ export const reducer = ( state, { payload, type } ) => {
 				},
 			};
 
+		case SET_SETUP_ERROR_CODE:
+			const { setupErrorCode } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					setupErrorCode,
+				},
+			};
+
 		default: {
 			return state;
 		}
@@ -238,7 +268,7 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_SITE ).getSiteInfo() ) {
 			return;

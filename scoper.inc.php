@@ -88,6 +88,11 @@ return array(
 			->name( '#^autoload.php$#' )
 			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services' ),
+		// Temporary SwG client.
+		Finder::create()
+		->files()
+		->name( '#\.php$#' )
+		->in( 'vendor/google/apiclient-services-subscribewithgoogle' ),
 
 		// Temporary support for `GoogleAnalyticsAdminV1alphaAdSenseLink` as it doesn't exist in the API client yet.
 		Finder::create()
@@ -101,7 +106,7 @@ return array(
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
 	),
 	'patchers'                   => array(
-		function( $file_path, $prefix, $contents ) {
+		function ( $file_path, $prefix, $contents ) {
 			// Avoid prefixing the `static` keyword in some places.
 			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
 

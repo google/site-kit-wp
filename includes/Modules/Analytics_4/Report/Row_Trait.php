@@ -63,5 +63,4 @@ trait Row_Trait {
 
 		return $row;
 	}
-
 }

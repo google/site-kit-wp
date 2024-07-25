@@ -132,25 +132,25 @@ class Debug_Data {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param string $string     Input string to redact.
+	 * @param string $input_string     Input string to redact.
 	 * @param int    $mask_start Starting position of redaction and length of preserved characters.
 	 *                             If positive, characters are redacted from the end, preserving the first X characters.
 	 *                             If negative, characters are redacted from the beginning preserving the last X characters.
 	 * @return string
 	 */
-	public static function redact_debug_value( $string, $mask_start = 4 ) {
-		if ( ! is_scalar( $string ) ) {
+	public static function redact_debug_value( $input_string, $mask_start = 4 ) {
+		if ( ! is_scalar( $input_string ) ) {
 			return '';
 		}
 
-		$string = (string) $string;
+		$input_string = (string) $input_string;
 		if ( $mask_start < 0 ) {
-			$redacted = substr( $string, 0, $mask_start );
-			$unmasked = substr( $string, $mask_start );
+			$redacted = substr( $input_string, 0, $mask_start );
+			$unmasked = substr( $input_string, $mask_start );
 			return str_repeat( '•', strlen( $redacted ) ) . $unmasked;
 		} else {
-			$redacted = substr( $string, $mask_start );
-			$unmasked = substr( $string, 0, $mask_start );
+			$redacted = substr( $input_string, $mask_start );
+			$unmasked = substr( $input_string, 0, $mask_start );
 			return $unmasked . str_repeat( '•', strlen( $redacted ) );
 		}
 	}
@@ -335,7 +335,6 @@ class Debug_Data {
 			'value' => __( 'Verified outside of Site Kit', 'google-site-kit' ),
 			'debug' => 'verified-non-site-kit',
 		);
-
 	}
 
 
@@ -457,7 +456,7 @@ class Debug_Data {
 		$wp_role_names     = wp_roles()->get_names();
 		$shared_role_names = array_filter(
 			$wp_role_names,
-			function( $key ) use ( $role_slugs ) {
+			function ( $key ) use ( $role_slugs ) {
 				return in_array( $key, $role_slugs, true );
 			},
 			ARRAY_FILTER_USE_KEY
@@ -643,5 +642,4 @@ class Debug_Data {
 			),
 		);
 	}
-
 }

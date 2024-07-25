@@ -31,13 +31,12 @@ import { useDebounce } from '../../../../hooks/useDebounce';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
-const { useSelect, useDispatch } = Data;
 
 export default function ConversionIDTextField( { helperText } ) {
 	const conversionID = useSelect( ( select ) =>

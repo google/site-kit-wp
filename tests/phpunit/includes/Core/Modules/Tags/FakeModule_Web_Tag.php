@@ -17,5 +17,4 @@ class FakeModule_Web_Tag extends Module_Web_Tag {
 	public function register() {}
 
 	protected function render() {}
-
 }

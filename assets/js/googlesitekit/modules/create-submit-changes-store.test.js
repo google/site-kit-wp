@@ -24,7 +24,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies.
  */
-import Data from 'googlesitekit-data';
+import { commonStore, combineStores } from 'googlesitekit-data';
 import { createErrorStore } from '../data/create-error-store';
 import { createSubmitChangesStore } from './create-submit-changes-store';
 
@@ -53,8 +53,8 @@ describe( 'createSubmitChangesStore', () => {
 				const registry = createRegistry();
 				registry.registerStore(
 					storeName,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createSubmitChangesStore( { submitChanges } ),
 						createErrorStore( storeName )
 					)
@@ -72,8 +72,8 @@ describe( 'createSubmitChangesStore', () => {
 				const registry = createRegistry();
 				registry.registerStore(
 					storeName,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createSubmitChangesStore( {
 							submitChanges: () => ( { error } ),
 						} ),
@@ -102,8 +102,8 @@ describe( 'createSubmitChangesStore', () => {
 				const registry = createRegistry();
 				registry.registerStore(
 					storeName,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createSubmitChangesStore( {
 							submitChanges: () => ( { error } ),
 						} ),
@@ -155,11 +155,15 @@ describe( 'createSubmitChangesStore', () => {
 		] )( '%s', ( selector ) => {
 			it( 'should use provided validateCanSubmitChanges function', () => {
 				const validateCanSubmitChanges = jest.fn();
-				const { selectors } = createSubmitChangesStore( {
+				const store = createSubmitChangesStore( {
 					validateCanSubmitChanges,
 				} );
 
-				selectors[ selector ]();
+				const registry = createRegistry();
+				registry.registerStore( storeName, store );
+
+				store.selectors[ selector ]();
+
 				expect( validateCanSubmitChanges ).toHaveBeenCalled();
 			} );
 		} );
@@ -178,8 +182,8 @@ describe( 'createSubmitChangesStore', () => {
 
 				registry.registerStore(
 					storeName,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createErrorStore( storeName ),
 						createSubmitChangesStore( {
 							submitChanges: () => {
@@ -202,8 +206,8 @@ describe( 'createSubmitChangesStore', () => {
 
 				registry.registerStore(
 					storeName,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createSubmitChangesStore( {
 							submitChanges: () => ( {} ),
 						} ),

@@ -33,7 +33,7 @@ trait Setting_With_Owned_Keys_ContractTests {
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
-			function( $caps, $cap ) {
+			function ( $caps, $cap ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap ) {
 					return array( 'manage_options' );
 				}
@@ -69,7 +69,7 @@ trait Setting_With_Owned_Keys_ContractTests {
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
-			function( $caps, $cap ) {
+			function ( $caps, $cap ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap ) {
 					return array( 'manage_options' );
 				}
@@ -121,5 +121,4 @@ trait Setting_With_Owned_Keys_ContractTests {
 			$testcase->assertNotEquals( $user_id, $options['ownerID'] );
 		}
 	}
-
 }

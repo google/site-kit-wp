@@ -37,7 +37,7 @@ import { arrowLeft, Icon } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -60,8 +60,6 @@ import ShareIcon from '../../../../svg/icons/share.svg';
 import Link from '../../Link';
 import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
-
-const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingDialog() {
 	const breakpoint = useBreakpoint();

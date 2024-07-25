@@ -32,7 +32,7 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../utils/data-mock';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS } from '../../../../../util';
+import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
@@ -249,15 +249,18 @@ EntityDashboardZeroData.args = {
 
 		// Set the property creation timestamp to two days ago, so that
 		// the property is not considered to be in the gathering data state.
-		const createTime = new Date(
-			Date.now() - DAY_IN_SECONDS * 3 * 1000
-		).toISOString();
+		const now = registry.select( CORE_USER ).getReferenceDate();
+		const createTime = dateSub( now, 3 * DAY_IN_SECONDS ).toISOString();
 
 		const property = {
 			...__fixtures__.properties[ 0 ],
 			createTime,
 		};
 		const propertyID = property._id;
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyCreateTime: createTime } );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

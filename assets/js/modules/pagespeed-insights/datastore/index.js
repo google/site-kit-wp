@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import report from './report';
 import service from './service';
 import baseModuleStore from './base';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
-const store = Data.combineStores( baseModuleStore, report, service );
+const store = combineStores( baseModuleStore, report, service );
 
 export const registerStore = ( registry ) => {
 	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, store );

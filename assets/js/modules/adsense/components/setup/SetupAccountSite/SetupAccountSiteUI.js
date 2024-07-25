@@ -29,13 +29,12 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { ErrorNotices } from '../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
-const { useSelect } = Data;
 export default function SetupAccountSiteUI( {
 	heading,
 	description,

@@ -29,9 +29,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useRegistry } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-const { useRegistry } = Data;
 import Warning from '../../../../svg/icons/warning.svg';
 import { Grid } from '../../../material-components';
 import { useChecks } from '../../../hooks/useChecks';

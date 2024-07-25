@@ -1,0 +1,196 @@
+{
+	"dimensionHeaders": [
+		{ "name": "city" },
+		{ "name": "audienceResourceName" }
+	],
+	"metricHeaders": [
+		{ "name": "screenPageViewsPerSession", "type": "TYPE_FLOAT" },
+		{ "name": "averageSessionDuration", "type": "TYPE_SECONDS" }
+	],
+	"pivotHeaders": [
+		{
+			"pivotDimensionHeaders": [
+				{
+					"dimensionValues": [
+						{ "value": "properties/12345/audiences/1" }
+					]
+				},
+				{
+					"dimensionValues": [
+						{ "value": "properties/12345/audiences/2" }
+					]
+				},
+				{
+					"dimensionValues": [
+						{ "value": "properties/12345/audiences/3" }
+					]
+				}
+			],
+			"rowCount": 3
+		},
+		{
+			"pivotDimensionHeaders": [
+				{ "dimensionValues": [ { "value": "Dublin" } ] },
+				{ "dimensionValues": [ { "value": "(not set)" } ] },
+				{ "dimensionValues": [ { "value": "Cork" } ] }
+			],
+			"rowCount": 3
+		}
+	],
+	"aggregates": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MIN" },
+				{ "value": "city" }
+			],
+			"metricValues": [
+				{ "value": "0.21675125462934375" },
+				{ "value": "45" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MIN" },
+				{ "value": "audienceResourceName" }
+			],
+			"metricValues": [
+				{ "value": "0.6551630264148116" },
+				{ "value": "48" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MAX" },
+				{ "value": "city" }
+			],
+			"metricValues": [
+				{ "value": "0.16770161758176982" },
+				{ "value": "13" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MAX" },
+				{ "value": "audienceResourceName" }
+			],
+			"metricValues": [
+				{ "value": "0.4477149748709053" },
+				{ "value": "20" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "city" }
+			],
+			"metricValues": [
+				{ "value": "0.2326529796700925" },
+				{ "value": "55" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "audienceResourceName" }
+			],
+			"metricValues": [
+				{ "value": "0.3812290767673403" },
+				{ "value": "40" }
+			]
+		}
+	],
+	"rows": [
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/1" },
+				{ "value": "(not set)" }
+			],
+			"metricValues": [
+				{ "value": "0.03756667533889413" },
+				{ "value": "8" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/2" },
+				{ "value": "Dublin" }
+			],
+			"metricValues": [
+				{ "value": "0.10197289939969778" },
+				{ "value": "44" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/1" },
+				{ "value": "Cork" }
+			],
+			"metricValues": [
+				{ "value": "0.17282110475935042" },
+				{ "value": "23" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/3" },
+				{ "value": "Dublin" }
+			],
+			"metricValues": [
+				{ "value": "0.2705660976935178" },
+				{ "value": "55" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/3" },
+				{ "value": "Cork" }
+			],
+			"metricValues": [
+				{ "value": "0.3845741776749492" },
+				{ "value": "43" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/1" },
+				{ "value": "Dublin" }
+			],
+			"metricValues": [
+				{ "value": "0.5493685828987509" },
+				{ "value": "8" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/3" },
+				{ "value": "(not set)" }
+			],
+			"metricValues": [
+				{ "value": "0.8528603634331376" },
+				{ "value": "32" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/2" },
+				{ "value": "(not set)" }
+			],
+			"metricValues": [
+				{ "value": "0.8865012191236019" },
+				{ "value": "37" }
+			]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "properties/12345/audiences/2" },
+				{ "value": "Cork" }
+			],
+			"metricValues": [
+				{ "value": "0.9724421766586602" },
+				{ "value": "4" }
+			]
+		}
+	],
+	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },
+	"kind": "analyticsData#runPivotReport"
+}

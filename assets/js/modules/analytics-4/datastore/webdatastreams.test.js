@@ -685,7 +685,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
 
 				expect( matchedProperties ).toEqual( {
-					1000: '1A2BCD345E',
+					1000: 'G-1A2BCD345E',
 				} );
 			} );
 		} );

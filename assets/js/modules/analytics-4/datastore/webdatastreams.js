@@ -26,7 +26,12 @@ import { pick, difference } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -35,7 +40,6 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
 } from '../utils/validation';
-const { createRegistryControl, createRegistrySelector } = Data;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -190,7 +194,7 @@ const baseActions = {
 	*matchWebDataStream( propertyID ) {
 		yield baseActions.waitForWebDataStreams( propertyID );
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		return registry
 			.select( MODULES_ANALYTICS_4 )
 			.getMatchingWebDataStreamByPropertyID( propertyID );
@@ -213,12 +217,12 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
+		( { resolveSelect } ) => {
 			return async ( { payload } ) => {
 				const { propertyID } = payload;
-				await __experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getWebDataStreams( propertyID );
+				await resolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreams(
+					propertyID
+				);
 			};
 		}
 	),
@@ -234,7 +238,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		// Only fetch web data streams if there are none in the store for the given property.
 		const webdatastreams = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -246,7 +250,7 @@ const baseResolvers = {
 		}
 	},
 	*getWebDataStreamsBatch( propertyIDs ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const webdatastreams =
 			registry
 				.select( MODULES_ANALYTICS_4 )
@@ -641,7 +645,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetWebDataStreamsStore,
 	fetchGetWebDataStreamsBatchStore,
 	fetchCreateWebDataStreamStore,

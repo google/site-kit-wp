@@ -20,19 +20,20 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ADS } from '../../datastore/constants';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 import { useFeature } from '../../../../hooks/useFeature';
 import DisplaySetting from '../../../../components/DisplaySetting';
-const { useSelect } = Data;
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Link from '../../../../components/Link';
 
 export default function SettingsForm() {
 	const iceEnabled = useFeature( 'conversionInfra' );
@@ -50,6 +51,12 @@ export default function SettingsForm() {
 		select( MODULES_ADS ).getExtCustomerID()
 	);
 
+	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'enhanced-conversion-tracking'
+		)
+	);
+
 	const conversionIDValue =
 		paxEnabled && paxConversionID ? paxConversionID : conversionID;
 
@@ -62,7 +69,28 @@ export default function SettingsForm() {
 
 				{ iceEnabled && (
 					<div className="googlesitekit-settings-module__meta-item">
-						<ConversionTrackingToggle />
+						<ConversionTrackingToggle>
+							{ createInterpolateElement(
+								__(
+									'Conversion tracking allows you to measure additional events on your site from other plugins that Site Kit integrates with to optimize your campaign performance. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										<Link
+											href={
+												conversionTrackingDocumentationURL
+											}
+											external
+											aria-label={ __(
+												'Learn more about conversion tracking',
+												'google-site-kit'
+											) }
+										/>
+									),
+								}
+							) }
+						</ConversionTrackingToggle>
 					</div>
 				) }
 

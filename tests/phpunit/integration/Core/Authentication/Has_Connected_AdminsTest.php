@@ -112,5 +112,4 @@ class Has_Connected_AdminsTest extends TestCase {
 		delete_option( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 	}
-
 }

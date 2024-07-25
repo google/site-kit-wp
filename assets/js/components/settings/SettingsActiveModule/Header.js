@@ -33,10 +33,11 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
+import { NEW_MODULES } from '../constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
 import ModuleIcon from '../../ModuleIcon';
@@ -48,7 +49,6 @@ import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
-const { useSelect } = Data;
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
@@ -181,7 +181,9 @@ export default function Header( { slug } ) {
 									hasLeftSpacing
 								/>
 							) }
-							{ slug === 'ads' && <NewBadge hasLeftSpacing /> }
+							{ NEW_MODULES.includes( slug ) && (
+								<NewBadge hasLeftSpacing />
+							) }
 						</div>
 					</Cell>
 

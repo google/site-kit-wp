@@ -60,5 +60,4 @@ class Tracking_Consent extends User_Setting {
 	protected function get_default() {
 		return false;
 	}
-
 }

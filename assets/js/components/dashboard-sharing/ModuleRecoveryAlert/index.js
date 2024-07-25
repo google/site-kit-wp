@@ -25,15 +25,13 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, ProgressBar } from 'googlesitekit-components';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { getTimeInSeconds } from '../../../util';
+import { DAY_IN_SECONDS } from '../../../util';
 import BannerNotification from '../../notifications/BannerNotification';
 import Errors from './Errors';
-
-const { useDispatch, useSelect } = Data;
 
 export default function ModuleRecoveryAlert() {
 	const [ checkboxes, setCheckboxes ] = useState( null );
@@ -263,7 +261,7 @@ export default function ModuleRecoveryAlert() {
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			isDismissible={ isDismissible }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			dismissExpires={ getTimeInSeconds( 'day' ) }
+			dismissExpires={ DAY_IN_SECONDS }
 		>
 			{ children }
 		</BannerNotification>

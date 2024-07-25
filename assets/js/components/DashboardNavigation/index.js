@@ -19,12 +19,11 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import LoadingWrapper from '../LoadingWrapper';
 import Navigation from './Navigation';
-const { useSelect } = Data;
 
 export default function DashboardNavigation() {
 	const viewOnlyDashboard = useViewOnly();

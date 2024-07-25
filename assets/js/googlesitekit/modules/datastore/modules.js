@@ -35,7 +35,12 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	createRegistrySelector,
+	createRegistryControl,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -46,8 +51,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
-
-const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -78,6 +81,8 @@ const moduleDefaults = {
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
 	checkRequirements: () => true,
+	DashboardMainEffectComponent: null,
+	DashboardEntityEffectComponent: null,
 };
 
 const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
@@ -338,6 +343,8 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
+	 * @param {WPComponent}    [settings.DashboardEntityEffectComponent]   Optional. React component to render the effects on entity dashboard. Default none.
 	 */
 	registerModule: createValidatedAction(
 		( slug ) => {
@@ -358,6 +365,8 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				DashboardMainEffectComponent,
+				DashboardEntityEffectComponent,
 			} = {}
 		) {
 			const settings = {
@@ -373,6 +382,8 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				DashboardMainEffectComponent,
+				DashboardEntityEffectComponent,
 			};
 
 			yield {
@@ -383,7 +394,7 @@ const baseActions = {
 				type: REGISTER_MODULE,
 			};
 
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
 			// As we can specify a custom checkRequirements function here, we're
 			// invalidating the resolvers for activation checks.
@@ -470,7 +481,7 @@ const baseActions = {
 			invariant( Array.isArray( slugs ), 'slugs must be an array' );
 		},
 		function* ( slugs ) {
-			const { dispatch, select } = yield Data.commonActions.getRegistry();
+			const { dispatch, select } = yield commonActions.getRegistry();
 			const { response } =
 				yield fetchRecoverModulesStore.actions.fetchRecoverModules(
 					slugs
@@ -486,7 +497,7 @@ const baseActions = {
 					select( CORE_MODULES ).getModuleStoreName( slug );
 
 				// Reload the module's settings from the server.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch( storeName ).fetchGetSettings()
 				);
 			}
@@ -503,7 +514,7 @@ const baseActions = {
 				);
 
 				// Refresh user capabilities from the server.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch( CORE_USER ).refreshCapabilities()
 				);
 			}
@@ -560,13 +571,11 @@ export const baseControls = {
 			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select, __experimentalResolveSelect } ) =>
+		( { select, resolveSelect } ) =>
 			async ( { payload } ) => {
 				const { slug } = payload;
 				// Ensure the module is loaded before selecting the store name.
-				await __experimentalResolveSelect( CORE_MODULES ).getModule(
-					slug
-				);
+				await resolveSelect( CORE_MODULES ).getModule( slug );
 
 				const storeName =
 					select( CORE_MODULES ).getModuleStoreName( slug );
@@ -577,9 +586,7 @@ export const baseControls = {
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
-					return await __experimentalResolveSelect(
-						storeName
-					).getAdminReauthURL();
+					return await resolveSelect( storeName ).getAdminReauthURL();
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -662,17 +669,14 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 function* waitForModules() {
-	const { __experimentalResolveSelect } =
-		yield Data.commonActions.getRegistry();
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-	yield Data.commonActions.await(
-		__experimentalResolveSelect( CORE_MODULES ).getModules()
-	);
+	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
 }
 
 const baseResolvers = {
 	*getModules() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingModules = registry.select( CORE_MODULES ).getModules();
 
@@ -682,10 +686,10 @@ const baseResolvers = {
 	},
 
 	*canActivateModule( slug ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const { select, __experimentalResolveSelect } = registry;
-		const module = yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
+		const registry = yield commonActions.getRegistry();
+		const { select, resolveSelect } = registry;
+		const module = yield commonActions.await(
+			resolveSelect( CORE_MODULES ).getModule( slug )
 		);
 		// At this point, all modules are loaded so we can safely select getModule below.
 
@@ -724,7 +728,7 @@ const baseResolvers = {
 			} );
 		} else {
 			try {
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					module.checkRequirements( registry )
 				);
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
@@ -735,7 +739,7 @@ const baseResolvers = {
 	},
 
 	*hasModuleAccess( slug ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingCheckAccess = registry
 			.select( CORE_MODULES )
@@ -749,9 +753,9 @@ const baseResolvers = {
 	},
 
 	*getRecoverableModules() {
-		const registry = yield Data.commonActions.getRegistry();
-		const modules = yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		const registry = yield commonActions.getRegistry();
+		const modules = yield commonActions.await(
+			registry.resolveSelect( CORE_MODULES ).getModules()
 		);
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
@@ -769,7 +773,7 @@ const baseResolvers = {
 	},
 
 	*getSharedOwnershipModules() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_MODULES ).getSharedOwnershipModules() ) {
 			return;
@@ -1387,7 +1391,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	fetchCheckModuleAccessStore,

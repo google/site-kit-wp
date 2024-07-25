@@ -24,10 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import CTA from '../../../../components/notifications/CTA';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
 
 export default function AdSenseLinkCTA( { onClick = () => {} } ) {
 	const supportURL = useSelect( ( select ) =>

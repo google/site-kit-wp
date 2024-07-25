@@ -33,13 +33,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
 import { trackEvent, trackEventOnce } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect } = Data;
 
 export default function AnalyticsUpdateError( props ) {
 	const { onRetry, error, infoTooltip, headerText } = props;

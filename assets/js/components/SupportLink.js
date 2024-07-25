@@ -22,10 +22,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import Link from './Link';
-const { useSelect } = Data;
 
 export default function SupportLink( props ) {
 	const { path, query, hash, ...otherProps } = props;

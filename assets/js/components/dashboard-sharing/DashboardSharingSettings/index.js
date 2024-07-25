@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Module from './Module';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -37,7 +37,6 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
 
 export default function DashboardSharingSettings() {
 	const hasMultipleAdmins = useSelect( ( select ) =>

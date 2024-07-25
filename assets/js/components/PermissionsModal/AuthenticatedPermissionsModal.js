@@ -25,7 +25,7 @@ import { useEffect, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import ModalDialog from '../ModalDialog';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -35,7 +35,6 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 import Portal from '../Portal';
-const { useSelect, useDispatch, useRegistry } = Data;
 
 function AuthenticatedPermissionsModal() {
 	const registry = useRegistry();
@@ -70,6 +69,8 @@ function AuthenticatedPermissionsModal() {
 		// If we have a datastores to snapshot before navigating away to the
 		// authorization page, do that first.
 		await snapshotAllStores( registry );
+
+		// Navigate to the authorization page.
 		navigateTo( connectURL );
 	}, [ registry, connectURL, navigateTo, permissionsError, setValues ] );
 

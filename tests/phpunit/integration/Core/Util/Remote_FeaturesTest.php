@@ -143,7 +143,7 @@ class Remote_FeaturesTest extends TestCase {
 		// Fake an unsuccessful response IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
-			function( $preempt, $args, $url ) use ( $google_proxy, &$proxy_server_requests ) {
+			function ( $preempt, $args, $url ) use ( $google_proxy, &$proxy_server_requests ) {
 				if ( $google_proxy->url( Google_Proxy::FEATURES_URI ) !== $url ) {
 					return $preempt;
 				}

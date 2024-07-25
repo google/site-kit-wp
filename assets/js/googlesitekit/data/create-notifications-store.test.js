@@ -25,7 +25,7 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import {
 	muteFetch,
 	subscribeUntil,
@@ -54,7 +54,7 @@ describe( 'createNotificationsStore store', () => {
 
 		store = registry.registerStore(
 			storeDefinition.STORE_NAME,
-			Data.combineStores( Data.commonStore, storeDefinition )
+			combineStores( commonStore, storeDefinition )
 		);
 
 		dispatch = registry.dispatch( storeDefinition.STORE_NAME );

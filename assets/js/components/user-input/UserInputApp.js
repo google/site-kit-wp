@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../../material-components';
@@ -34,7 +34,6 @@ import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 import Layout from '../layout/Layout';
-const { useSelect } = Data;
 
 export default function UserInputApp() {
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {

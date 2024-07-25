@@ -63,6 +63,7 @@ use Google\Site_Kit\Core\Tags\Guards\WP_Query_404_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use WP_Error;
 use WP_REST_Response;
 
@@ -73,8 +74,7 @@ use WP_REST_Response;
  * @access private
  * @ignore
  */
-final class AdSense extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
+final class AdSense extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -152,9 +152,12 @@ final class AdSense extends Module
 
 		// Reset AdSense link settings in Analytics when accountID changes.
 		$this->get_settings()->on_change(
-			function( $old_value, $new_value ) {
+			function ( $old_value, $new_value ) {
 				if ( $old_value['accountID'] !== $new_value['accountID'] ) {
 					$this->reset_analytics_adsense_linked_settings();
+				}
+				if ( ! empty( $new_value['accountSetupComplete'] ) && ! empty( $new_value['siteSetupComplete'] ) ) {
+					do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
 				}
 			}
 		);
@@ -288,7 +291,6 @@ final class AdSense extends Module
 				'debug' => $settings['adBlockingRecoverySetupStatus'],
 			),
 		);
-
 	}
 
 	/**
@@ -364,7 +366,7 @@ final class AdSense extends Module
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
 			case 'GET:notifications':
-				return function() {
+				return function () {
 					$settings = $this->get_settings()->get();
 
 					if ( empty( $settings['accountID'] ) ) {
@@ -378,7 +380,7 @@ final class AdSense extends Module
 					}
 					$alerts = array_filter(
 						$alerts,
-						function( Google_Service_Adsense_Alert $alert ) {
+						function ( Google_Service_Adsense_Alert $alert ) {
 							return 'SEVERE' === $alert->getSeverity();
 						}
 					);
@@ -1146,5 +1148,4 @@ final class AdSense extends Module
 			$dismissed_prompts->remove( 'ad-blocking-recovery-notification' );
 		}
 	}
-
 }

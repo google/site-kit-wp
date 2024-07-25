@@ -446,6 +446,9 @@ describe( 'MetricsSelectionPanel', () => {
 					slug: 'analytics-4',
 					active: true,
 					connected: true,
+					// Module is shareable after connected, but by default in fixtures it is false.
+					// This updates on the backend, but here value is pulled from fixtures.
+					shareable: true,
 				},
 			] );
 

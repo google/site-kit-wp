@@ -54,5 +54,4 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 	protected function get_option_name() {
 		return Connected_Proxy_URL::OPTION;
 	}
-
 }

@@ -11,8 +11,6 @@
 		<!-- Site Kit doesn't use base64 encoding functions to "obfuscate code" -->
 		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
 		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode"/>
-		<!-- Allow short ternary -->
-		<exclude name="WordPress.PHP.DisallowShortTernary" />
 		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->
 		<exclude name="WordPress.WP.TimezoneChange.DeprecatedSniff"/>
 	</rule>
@@ -49,6 +47,10 @@
 		<!-- This sniff flags unused exception variables which cannot be avoided -->
 		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable"/>
 	</rule>
+	<rule ref="Universal.Operators.DisallowShortTernary">
+		<!-- Allow short ternary -->
+		<exclude name="Universal.Operators.DisallowShortTernary.Found" />
+	</rule>
 
 	<!-- Show details about violated sniffs -->
 	<arg value="s"/>
@@ -56,6 +58,11 @@
 	<!-- Iterate over all PHP files by default -->
 	<arg name="extensions" value="php"/>
 	<file>.</file>
+
+	<!-- Temporarily disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped" />
+	</rule>
 
 	<!-- Test-specific exclusions -->
 	<rule ref="WordPress.DB.DirectDatabaseQuery">
@@ -90,6 +97,7 @@
 	<exclude-pattern>dist/*</exclude-pattern>
 	<exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>packages/apiclient-services-adsenselinks/*</exclude-pattern>
+	<exclude-pattern>packages/apiclient-services-subscribewithgoogle/*</exclude-pattern>
 	<exclude-pattern>third-party/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 

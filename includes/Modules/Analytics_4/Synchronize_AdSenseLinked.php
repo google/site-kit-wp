@@ -74,7 +74,7 @@ class Synchronize_AdSenseLinked {
 	public function register() {
 		add_action(
 			self::CRON_SYNCHRONIZE_ADSENSE_LINKED,
-			function() {
+			function () {
 				$this->synchronize_adsense_linked_data();
 			}
 		);
@@ -84,10 +84,16 @@ class Synchronize_AdSenseLinked {
 	 * Cron callback for synchronizing the adsense linked data.
 	 *
 	 * @since 1.123.0
+	 * @since 1.130.0 Added check for property ID, so it can return early if property ID is not set.
 	 */
 	protected function synchronize_adsense_linked_data() {
 		$owner_id     = $this->analytics_4->get_owner_id();
 		$restore_user = $this->user_options->switch_user( $owner_id );
+		$settings_ga4 = $this->analytics_4->get_settings()->get();
+
+		if ( empty( $settings_ga4['propertyID'] ) ) {
+			return;
+		}
 
 		if ( user_can( $owner_id, Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
 			$this->synchronize_adsense_linked_status();

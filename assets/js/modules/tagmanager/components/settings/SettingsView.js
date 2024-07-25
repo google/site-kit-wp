@@ -25,7 +25,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -33,7 +33,6 @@ import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { escapeURI } from '../../../../util/escape-uri';
-const { useSelect } = Data;
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>

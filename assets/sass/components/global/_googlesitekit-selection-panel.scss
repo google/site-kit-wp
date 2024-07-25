@@ -55,6 +55,22 @@
 		padding: 8px; // Tweak the padding to ensure the link is aligned in its focus state.
 	}
 
+	.googlesitekit-selection-panel__loading {
+		border-bottom: 2px solid $c-neutral-n-50;
+		display: flex;
+		justify-content: space-between;
+		margin: 8px $grid-gap-desktop 10px;
+		padding: 6px 0;
+
+		&:last-child {
+			border: none;
+		}
+	}
+
+	.googlesitekit-selection-panel__loading-item {
+		margin: 0 0 10px;
+	}
+
 	.googlesitekit-selection-panel-items {
 		overflow: auto;
 
@@ -80,15 +96,49 @@
 	}
 
 	.googlesitekit-selection-panel-item {
-		padding: 0 $grid-gap-desktop;
+		border-bottom: 2px solid $c-neutral-n-66;
+		display: flex;
+		margin: 0 $grid-gap-desktop;
+		outline: 1px solid $c-white;
+		outline-offset: -1px;
+
+		&:last-child {
+			border: none;
+		}
 
 		.googlesitekit-selection-panel-item-error {
 			color: $c-red-600;
 			padding-top: 10px;
 		}
 
-		&:last-child .googlesitekit-selection-box {
+		.googlesitekit-selection-box {
 			border: none;
+			flex: 1;
+			outline: none;
+		}
+
+		.googlesitekit-selection-box .mdc-checkbox__description {
+
+			&:has(.googlesitekit-selection-panel-item__subtitle) {
+				padding-top: 1px;
+			}
+		}
+
+		.googlesitekit-selection-panel-item__subtitle {
+			color: $c-surfaces-on-surface;
+			display: block;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin-bottom: 6px;
+		}
+
+		.googlesitekit-selection-panel-item__suffix {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-label-md;
+			font-weight: $fw-medium;
+			line-height: $lh-label-md;
+			padding: 15px 10px;
 		}
 	}
 
@@ -108,7 +158,6 @@
 		background-color: $c-surfaces-background;
 		margin-top: auto;
 		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
-		text-align: center;
 		width: 100%;
 
 		p {
@@ -143,7 +192,7 @@
 		align-items: center;
 		column-gap: $grid-gap-phone / 2;
 		display: flex;
-		justify-content: center;
+		justify-content: flex-end;
 
 		.googlesitekit-cta-link {
 			color: $c-surfaces-on-surface-variant;

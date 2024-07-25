@@ -189,7 +189,7 @@ class Setup_Test extends TestCase {
 		// Fake a WP_Error IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
-			function( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $has_credentials ) {
+			function ( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $has_credentials ) {
 				if ( ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
 					return $preempt;
 				}
@@ -250,7 +250,7 @@ class Setup_Test extends TestCase {
 
 		add_filter(
 			'pre_http_request',
-			function( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $redirect_url ) {
+			function ( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $redirect_url ) {
 				if ( ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
 					return $preempt;
 				}
@@ -488,5 +488,4 @@ class Setup_Test extends TestCase {
 			3
 		);
 	}
-
 }

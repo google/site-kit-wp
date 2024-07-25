@@ -32,7 +32,7 @@ import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -50,9 +50,7 @@ import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 import LoadingWrapper from '../LoadingWrapper';
 import CancelUserInputButton from './CancelUserInputButton';
-import { Row, Cell } from '../../material-components';
 import { hasErrorForAnswer } from './util/validation';
-const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
 	const {
@@ -129,22 +127,20 @@ export default function UserInputPreview( props ) {
 					</p>
 				) }
 				{ settingsView && (
-					<Row>
-						<Cell className="googlesitekit-settings-user-input__heading-container">
-							<LoadingWrapper
-								loading={ loading }
-								width="275px"
-								height="16px"
-							>
-								<p className="googlesitekit-settings-user-input__heading">
-									{ __(
-										'Edit your answers for more personalized metrics:',
-										'google-site-kit'
-									) }
-								</p>
-							</LoadingWrapper>
-						</Cell>
-					</Row>
+					<div className="googlesitekit-settings-user-input__heading-container">
+						<LoadingWrapper
+							loading={ loading }
+							width="275px"
+							height="16px"
+						>
+							<p className="googlesitekit-settings-user-input__heading">
+								{ __(
+									'Edit your answers for more personalized metrics:',
+									'google-site-kit'
+								) }
+							</p>
+						</LoadingWrapper>
+					</div>
 				) }
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }

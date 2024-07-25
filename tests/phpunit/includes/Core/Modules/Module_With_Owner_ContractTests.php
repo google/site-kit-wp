@@ -43,7 +43,7 @@ trait Module_With_Owner_ContractTests {
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
-			function( $caps, $cap ) {
+			function ( $caps, $cap ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap ) {
 					return array( 'manage_options' );
 				}
@@ -63,5 +63,4 @@ trait Module_With_Owner_ContractTests {
 
 		$this->assertEquals( $user_id, $module->get_owner_id() );
 	}
-
 }

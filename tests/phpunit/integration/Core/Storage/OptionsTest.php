@@ -122,5 +122,4 @@ class OptionsTest extends TestCase {
 
 		$this->assertFalse( get_network_option( null, 'test_option' ) );
 	}
-
 }

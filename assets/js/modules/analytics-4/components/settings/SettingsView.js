@@ -25,12 +25,11 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
-import { ProgressBar } from 'googlesitekit-components';
 import OptionalSettingsView from './OptionalSettingsView';
 import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -40,14 +39,8 @@ import DisplaySetting, {
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
-import { useFeature } from '../../../../hooks/useFeature';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
 
 export default function SettingsView() {
-	const iceEnabled = useFeature( 'conversionInfra' );
-
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -72,22 +65,8 @@ export default function SettingsView() {
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
 	);
 
-	const isMigratingAdsConversionID = useMigrateAdsConversionID();
-
-	const isConversionTrackingEnabled = useSelect( ( select ) => {
-		if ( ! iceEnabled ) {
-			return false;
-		}
-
-		return select( CORE_SITE ).isConversionTrackingEnabled();
-	} );
-
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
-	}
-
-	if ( isMigratingAdsConversionID ) {
-		return <ProgressBar />;
 	}
 
 	return (
@@ -203,25 +182,6 @@ export default function SettingsView() {
 			</div>
 
 			<SettingsEnhancedMeasurementView />
-
-			{ iceEnabled && (
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __(
-							'Enhanced Conversion Tracking',
-							'google-site-kit'
-						) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ isConversionTrackingEnabled &&
-							__( 'Enabled', 'google-site-kit' ) }
-						{ isConversionTrackingEnabled === false &&
-							__( 'Disabled', 'google-site-kit' ) }
-						{ isConversionTrackingEnabled === undefined &&
-							BLANK_SPACE }
-					</p>
-				</div>
-			) }
 
 			<OptionalSettingsView />
 		</div>

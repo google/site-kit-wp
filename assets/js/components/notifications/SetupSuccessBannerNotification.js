@@ -19,14 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
@@ -42,7 +42,6 @@ import { getContextScrollTop } from '../../util/scroll';
 import useViewContext from '../../hooks/useViewContext';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import Link from '../Link';
-const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const [ slug ] = useQueryArg( 'slug' );
@@ -56,12 +55,6 @@ function SetupSuccessBannerNotification() {
 	);
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
-	);
-	const hasMultipleAdmins = useSelect( ( select ) =>
-		select( CORE_SITE ).hasMultipleAdmins()
-	);
-	const isUsingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
 	);
 	const setupSuccessContent = useSelect( ( select ) => {
 		const storeName = modules?.[ slug ]?.storeName;
@@ -81,57 +74,6 @@ function SetupSuccessBannerNotification() {
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-
-	const [ completeUserSetupSent, setCompleteUserSetupSent ] =
-		useState( false );
-	const [ completeSiteSetup, setCompleteSiteSetup ] = useState( false );
-
-	useEffect( () => {
-		// Only trigger the GA events if the notification is visible and we haven't
-		// already sent these notifications.
-		if (
-			modules !== undefined &&
-			notification === 'authentication_success'
-		) {
-			// Only trigger these events if this is a site/plugin setup event,
-			// and not setup of an individual module (eg. AdSense, Analytics, etc.)
-			if ( slug === null && ! completeUserSetupSent ) {
-				trackEvent(
-					`${ viewContext }_authentication-success-notification`,
-					'complete_user_setup',
-					isUsingProxy ? 'proxy' : 'custom-oauth'
-				);
-
-				setCompleteUserSetupSent( true );
-			}
-
-			// If the site doesn't yet have multiple admins, this is the initial
-			// site setup so we can log the "site setup complete" event.
-			if (
-				slug === null &&
-				! completeSiteSetup &&
-				hasMultipleAdmins === false
-			) {
-				trackEvent(
-					`${ viewContext }_authentication-success-notification`,
-					'complete_site_setup',
-					isUsingProxy ? 'proxy' : 'custom-oauth'
-				);
-
-				setCompleteSiteSetup( true );
-			}
-		}
-	}, [
-		canManageOptions,
-		completeSiteSetup,
-		completeUserSetupSent,
-		hasMultipleAdmins,
-		isUsingProxy,
-		modules,
-		notification,
-		slug,
-		viewContext,
-	] );
 
 	const onView = useCallback( () => {
 		trackEvent(

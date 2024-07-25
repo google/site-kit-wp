@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
@@ -40,7 +40,6 @@ import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
-const { useSelect } = Data;
 
 export default function SettingsControls( props ) {
 	const { hasModuleAccess } = props;

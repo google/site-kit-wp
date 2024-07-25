@@ -29,11 +29,9 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import CTA from './notifications/CTA';
-
-const { useSelect } = Data;
 
 export default function ReportZero( { moduleSlug } ) {
 	const module = useSelect( ( select ) =>

@@ -19,13 +19,11 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../googlesitekit/datastore/user/constants';
 import WarningNotice from '../WarningNotice';
 import AdBlockerWarning from './AdBlockerWarning';
-
-const { useSelect } = Data;
 
 export default function ModuleSettingsWarning( { slug } ) {
 	const error = useSelect( ( select ) =>

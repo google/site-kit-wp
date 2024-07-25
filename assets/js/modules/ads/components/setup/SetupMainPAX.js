@@ -36,7 +36,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
@@ -44,7 +44,11 @@ import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
+import {
+	ADWORDS_SCOPE,
+	MODULES_ADS,
+	SUPPORT_CONTENT_SCOPE,
+} from '../../datastore/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -53,7 +57,6 @@ import {
 	PAX_SETUP_STEP,
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
-const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
@@ -74,7 +77,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
 		} );
 		return select( CORE_USER ).getConnectURL( {
-			additionalScopes: [ ADWORDS_SCOPE ],
+			additionalScopes: [ ADWORDS_SCOPE, SUPPORT_CONTENT_SCOPE ],
 			redirectURL,
 		} );
 	} );
@@ -128,7 +131,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
 		// Encapsulate dependencies to avoid function changing after launch.
-		const { select, __experimentalResolveSelect: resolveSelect } = registry;
+		const { select, resolveSelect } = registry;
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 		const redirectURL = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-dashboard',

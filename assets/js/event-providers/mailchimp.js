@@ -20,7 +20,7 @@
 	}
 
 	mc4wp.forms.on( 'subscribed', () => {
-		global._googlesitekit?.trackEvent?.( 'submit_lead_form', {
+		global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
 			event_category: 'mailchimp',
 		} );
 	} );

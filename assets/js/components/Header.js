@@ -32,7 +32,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
 import ErrorNotifications from './notifications/ErrorNotifications';
@@ -47,12 +47,12 @@ import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
 import SubtleNotifications from './notifications/SubtleNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-
-const { useSelect } = Data;
+import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
 
 function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
+	useGlobalTrackingEffect();
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )

@@ -26,11 +26,14 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-const { createRegistrySelector } = Data;
 
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
@@ -182,12 +185,12 @@ const baseActions = {
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
-			const { select, dispatch, __experimentalResolveSelect } =
-				yield Data.commonActions.getRegistry();
+			const { select, dispatch, resolveSelect } =
+				yield commonActions.getRegistry();
 
 			// Wait for user authentication state to be available before selecting.
-			yield Data.commonActions.await(
-				__experimentalResolveSelect( CORE_USER ).getAuthentication()
+			yield commonActions.await(
+				resolveSelect( CORE_USER ).getAuthentication()
 			);
 
 			if ( ! select( CORE_USER ).isAuthenticated() ) {
@@ -195,8 +198,8 @@ const baseActions = {
 			}
 
 			// Await for surveys to be resolved before checking timeouts.
-			yield Data.commonActions.await(
-				__experimentalResolveSelect( CORE_USER ).getSurveyTimeouts()
+			yield commonActions.await(
+				resolveSelect( CORE_USER ).getSurveyTimeouts()
 			);
 
 			const isTimedOut =
@@ -224,7 +227,7 @@ const baseActions = {
 						setTimeout( resolve, 30000 );
 					} );
 
-					yield Data.commonActions.await(
+					yield commonActions.await(
 						dispatch( CORE_USER ).setSurveyTimeout( triggerID, ttl )
 					);
 				}
@@ -243,7 +246,7 @@ const baseActions = {
 	 * @since 1.34.0
 	 *
 	 * @param {string} eventID   Event ID for the survey.
-	 * @param {Object} eventData Event Data.
+	 * @param {Object} eventData Event data.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	sendSurveyEvent: createValidatedAction(
@@ -259,7 +262,7 @@ const baseActions = {
 		},
 		function* ( eventID, eventData = {} ) {
 			const event = { [ eventID ]: eventData };
-			const { select } = yield Data.commonActions.getRegistry();
+			const { select } = yield commonActions.getRegistry();
 			const session = select( CORE_USER ).getCurrentSurveySession();
 			if ( session ) {
 				const { response, error } =
@@ -275,7 +278,7 @@ const baseActions = {
 
 const baseResolvers = {
 	*getCurrentSurvey() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
 		if ( currentSurvey === undefined ) {
 			yield fetchGetSurveyStore.actions.fetchGetSurvey();
@@ -283,7 +286,7 @@ const baseResolvers = {
 	},
 
 	*getSurveyTimeouts() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 		const surveyTimeouts = select( CORE_USER ).getSurveyTimeouts();
 		if ( surveyTimeouts === undefined ) {
 			yield fetchGetSurveyTimeoutsStore.actions.fetchGetSurveyTimeouts();
@@ -402,7 +405,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchTriggerSurveyStore,
 	fetchSendSurveyEventStore,
 	fetchGetSurveyTimeoutsStore,

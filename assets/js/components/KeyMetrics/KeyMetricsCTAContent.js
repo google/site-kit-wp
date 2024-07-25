@@ -31,7 +31,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
@@ -39,8 +39,6 @@ import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { Cell, Grid, Row } from '../../material-components';
 import GhostCardsSVG from './GhostCards';
-
-const { useDispatch, useSelect } = Data;
 
 export default function KeyMetricsCTAContent( {
 	className,

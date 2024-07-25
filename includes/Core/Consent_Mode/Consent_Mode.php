@@ -11,8 +11,11 @@
 namespace Google\Site_Kit\Core\Consent_Mode;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Plugin_Upgrader;
+use Plugin_Installer_Skin;
 
 /**
  * Class for handling Consent Mode.
@@ -23,6 +26,14 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  */
 class Consent_Mode {
 	use Method_Proxy_Trait;
+
+	/**
+	 * Context instance.
+	 *
+	 * @since 1.132.0
+	 * @var Context
+	 */
+	protected $context;
 
 	/**
 	 * Consent_Mode_Settings instance.
@@ -49,6 +60,7 @@ class Consent_Mode {
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, Options $options = null ) {
+		$this->context               = $context;
 		$options                     = $options ?: new Options( $context );
 		$this->consent_mode_settings = new Consent_Mode_Settings( $options );
 		$this->rest_controller       = new REST_Consent_Mode_Controller( $this->consent_mode_settings );
@@ -73,9 +85,11 @@ class Consent_Mode {
 			// The `wp_head` action is used to ensure the snippets are printed in the head on the front-end only, not admin pages.
 			add_action(
 				'wp_head',
-				$this->get_method_proxy( 'render_gtag_consent_snippet' ),
+				$this->get_method_proxy( 'render_gtag_consent_data_layer_snippet' ),
 				1 // Set priority to 1 to ensure the snippet is printed with top priority in the head.
 			);
+
+			add_action( 'wp_enqueue_scripts', fn () => $this->register_and_enqueue_script() );
 		}
 
 		add_filter(
@@ -86,14 +100,91 @@ class Consent_Mode {
 		);
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+
+		add_action( 'wp_ajax_install_activate_wp_consent_api', array( $this, 'install_activate_wp_consent_api' ) );
+	}
+
+	/**
+	 * AJAX callback that installs and activates the WP Consent API plugin.
+	 *
+	 * This function utilizes an AJAX approach instead of the standardized REST approach
+	 * due to the requirement of the Plugin_Upgrader class, which relies on functions
+	 * from `admin.php` among others. These functions are properly loaded during the
+	 * AJAX callback, ensuring the installation and activation processes can execute correctly.
+	 *
+	 * @since 1.132.0
+	 */
+	public function install_activate_wp_consent_api() {
+		check_ajax_referer( 'updates' );
+
+		$slug   = 'wp-consent-api';
+		$plugin = "$slug/$slug.php";
+
+		if ( ! current_user_can( 'activate_plugin', $plugin ) ) {
+			wp_send_json( array( 'error' => __( 'You do not have permission to activate plugins on this site.', 'google-site-kit' ) ) );
+		}
+
+		/** WordPress Administration Bootstrap */
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php'; // For Plugin_Upgrader and Plugin_Installer_Skin.
+		require_once ABSPATH . 'wp-admin/includes/plugin-install.php'; // For plugins_api.
+
+		$api = plugins_api(
+			'plugin_information',
+			array(
+				'slug'   => $slug,
+				'fields' => array(
+					'sections' => false,
+				),
+			)
+		);
+
+		if ( is_wp_error( $api ) ) {
+			wp_send_json( array( 'error' => $api->get_error_message() ) );
+		}
+
+		$title = '';
+		$nonce = 'install-plugin_' . $plugin;
+		$url   = 'update.php?action=install-plugin&plugin=' . rawurlencode( $plugin );
+
+		$upgrader       = new Plugin_Upgrader( new Plugin_Installer_Skin( compact( 'title', 'url', 'nonce', 'plugin', 'api' ) ) );
+		$install_plugin = $upgrader->install( $api->download_link );
+
+		if ( is_wp_error( $install_plugin ) ) {
+			wp_send_json( array( 'error' => $install_plugin->get_error_message() ) );
+		}
+
+		$activated = activate_plugin( $plugin );
+
+		if ( is_wp_error( $activated ) ) {
+			wp_send_json( array( 'error' => $activated->get_error_message() ) );
+		}
+
+		wp_send_json( array( 'success' => true ) );
+	}
+
+	/**
+	 * Registers and Enqueues the consent mode script.
+	 *
+	 * @since 1.132.0
+	 */
+	protected function register_and_enqueue_script() {
+		$consent_mode_script = new Script(
+			'googlesitekit-consent-mode',
+			array(
+				'src' => $this->context->url( 'dist/assets/js/googlesitekit-consent-mode.js' ),
+			)
+		);
+		$consent_mode_script->register( $this->context );
+		$consent_mode_script->enqueue();
 	}
 
 	/**
 	 * Prints the gtag consent snippet.
 	 *
 	 * @since 1.122.0
+	 * @since 1.132.0 Refactored core script to external js file transpiled with webpack.
 	 */
-	protected function render_gtag_consent_snippet() {
+	protected function render_gtag_consent_data_layer_snippet() {
 		/**
 		 * Filters the consent mode defaults.
 		 *
@@ -106,15 +197,18 @@ class Consent_Mode {
 		$consent_defaults = apply_filters(
 			'googlesitekit_consent_defaults',
 			array(
-				'ad_personalization' => 'denied',
-				'ad_storage'         => 'denied',
-				'ad_user_data'       => 'denied',
-				'analytics_storage'  => 'denied',
+				'ad_personalization'      => 'denied',
+				'ad_storage'              => 'denied',
+				'ad_user_data'            => 'denied',
+				'analytics_storage'       => 'denied',
+				'functionality_storage'   => 'denied',
+				'security_storage'        => 'denied',
+				'personalization_storage' => 'denied',
 				// TODO: The value for `region` should be retrieved from $this->consent_mode_settings->get_regions(),
 				// but we'll need to migrate/clean up the incorrect values that were set from the initial release.
 				// See https://github.com/google/site-kit-wp/issues/8444.
-				'region'             => Regions::get_regions(),
-				'wait_for_update'    => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
+				'region'                  => Regions::get_regions(),
+				'wait_for_update'         => 500, // Allow 500ms for Consent Management Platforms (CMPs) to update the consent status.
 			)
 		);
 
@@ -128,77 +222,24 @@ class Consent_Mode {
 		$consent_category_map = apply_filters(
 			'googlesitekit_consent_category_map',
 			array(
-				'statistics' => array( 'analytics_storage' ),
-				'marketing'  => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
+				'statistics'  => array( 'analytics_storage' ),
+				'marketing'   => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
+				'functional'  => array( 'functionality_storage', 'security_storage' ),
+				'preferences' => array( 'personalization_storage' ),
 			)
 		);
-		// TODO: We may want to extract some of this JS so it can be transpiled and rewrite it using modern language features.
+
+		// The core Consent Mode code is in assets/js/consent-mode/consent-mode.js.
+		// Only code that passes data from PHP to JS should be in this file.
 		?>
-<!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
-<script id='google_gtagjs-js-consent-mode'>
+<!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ); ?> -->
+<script id='google_gtagjs-js-consent-mode-data-layer'>
 window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
 gtag('consent', 'default', <?php echo wp_json_encode( $consent_defaults ); ?>);
 window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
-( function () {
-	document.addEventListener(
-		'wp_listen_for_consent_change',
-		function ( event ) {
-			if ( event.detail ) {
-				var consentParameters = {};
-				var hasConsentParameters = false;
-				for ( var category in event.detail ) {
-					if ( window._googlesitekitConsentCategoryMap[ category ] ) {
-						var status = event.detail[ category ];
-						var mappedStatus =
-							status === 'allow' ? 'granted' : 'denied';
-						var parameters =
-							window._googlesitekitConsentCategoryMap[ category ];
-						for ( var i = 0; i < parameters.length; i++ ) {
-							consentParameters[ parameters[ i ] ] = mappedStatus;
-						}
-						hasConsentParameters = !! parameters.length;
-					}
-				}
-				if ( hasConsentParameters ) {
-					gtag( 'consent', 'update', consentParameters );
-				}
-			}
-		}
-	);
-
-	function updateGrantedConsent() {
-		if ( ! ( window.wp_consent_type || window.wp_fallback_consent_type ) ) {
-			return;
-		}
-		var consentParameters = {};
-		var hasConsentParameters = false;
-		for ( var category in window._googlesitekitConsentCategoryMap ) {
-			if ( window.wp_has_consent && window.wp_has_consent( category ) ) {
-				var parameters =
-					window._googlesitekitConsentCategoryMap[ category ];
-				for ( var i = 0; i < parameters.length; i++ ) {
-					consentParameters[ parameters[ i ] ] = 'granted';
-				}
-				hasConsentParameters =
-					hasConsentParameters || !! parameters.length;
-			}
-		}
-		if ( hasConsentParameters ) {
-			gtag( 'consent', 'update', consentParameters );
-		}
-	}
-	document.addEventListener(
-		'wp_consent_type_defined',
-		updateGrantedConsent
-	);
-	document.addEventListener( 'DOMContentLoaded', function () {
-		if ( ! window.waitfor_consent_hook ) {
-			updateGrantedConsent();
-		}
-	} );
-} )();
+window._googlesitekitConsents = <?php echo wp_json_encode( $consent_defaults ); ?>
 </script>
-<!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode snippet added by Site Kit', 'google-site-kit' ); ?> -->
+<!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php
 	}
 

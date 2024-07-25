@@ -35,7 +35,7 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
@@ -64,7 +64,7 @@ import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
-const { useSelect, useDispatch } = Data;
+import { setItem } from '../../googlesitekit/api/cache';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -148,7 +148,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 				if ( ! error ) {
 					await trackEvent(
-						viewContext,
+						`${ viewContext }_setup`,
 						'start_setup_with_analytics'
 					);
 
@@ -157,11 +157,29 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 
 			if ( proxySetupURL ) {
-				await trackEvent( viewContext, 'start_user_setup', 'proxy' );
+				await Promise.all( [
+					// Cache the start of the user setup journey.
+					// This will be used for event tracking logic after successful setup.
+					setItem( 'start_user_setup', true ),
+					trackEvent(
+						`${ viewContext }_setup`,
+						'start_user_setup',
+						'proxy'
+					),
+				] );
 			}
 
 			if ( proxySetupURL && ! isConnected ) {
-				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
+				await Promise.all( [
+					// Cache the start of the site setup journey.
+					// This will be used for event tracking logic after successful setup.
+					setItem( 'start_site_setup', true ),
+					trackEvent(
+						`${ viewContext }_setup`,
+						'start_site_setup',
+						'proxy'
+					),
+				] );
 			}
 
 			if ( moduleReauthURL && proxySetupURL ) {

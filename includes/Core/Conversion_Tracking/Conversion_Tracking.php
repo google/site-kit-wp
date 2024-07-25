@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Easy_Digital_Downloads;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Ninja_Forms;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\OptinMonster;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMaker;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
@@ -57,11 +59,14 @@ class Conversion_Tracking {
 	 * Supported conversion event providers.
 	 *
 	 * @since 1.126.0
+	 * @since 1.130.0 Added Ninja Forms class.
 	 * @var array
 	 */
 	public static $providers = array(
 		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
+		Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG => Easy_Digital_Downloads::class,
 		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG      => Mailchimp::class,
+		Ninja_Forms::CONVERSION_EVENT_PROVIDER_SLUG    => Ninja_Forms::class,
 		OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG   => OptinMonster::class,
 		PopupMaker::CONVERSION_EVENT_PROVIDER_SLUG     => PopupMaker::class,
 		WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG    => WooCommerce::class,
@@ -93,6 +98,15 @@ class Conversion_Tracking {
 		$this->rest_conversion_tracking_controller->register();
 
 		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
+
+		$active_providers = $this->get_active_providers();
+
+		array_walk(
+			$active_providers,
+			function ( Conversion_Events_Provider $active_provider ) {
+				$active_provider->register_hooks();
+			}
+		);
 	}
 
 	/**
@@ -111,14 +125,31 @@ class Conversion_Tracking {
 
 		array_walk(
 			$active_providers,
-			function( Conversion_Events_Provider $active_provider ) {
+			function ( Conversion_Events_Provider $active_provider ) {
 				$script_asset = $active_provider->register_script();
 				$script_asset->enqueue();
 			}
 		);
 
-		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit = window._googlesitekit || {};' );
-		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit.trackEvent = (name, data) => gtag("event", name, {...data, _source: "site-kit" });' );
+		$gtag_event = '
+			window._googlesitekit = window._googlesitekit || {};
+			window._googlesitekit.throttledEvents = [];
+			window._googlesitekit.gtagEvent = (name, data) => {
+				var key = JSON.stringify( { name, data } );
+
+				if ( !! window._googlesitekit.throttledEvents[ key ] ) {
+					return;
+				}
+				window._googlesitekit.throttledEvents[ key ] = true;
+				setTimeout( () => {
+					delete window._googlesitekit.throttledEvents[ key ];
+				}, 5 );
+
+				gtag( "event", name, { ...data, event_source: "site-kit" } );
+			}
+		';
+
+		wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
 	}
 
 	/**
@@ -173,5 +204,4 @@ class Conversion_Tracking {
 
 		return $active_providers;
 	}
-
 }

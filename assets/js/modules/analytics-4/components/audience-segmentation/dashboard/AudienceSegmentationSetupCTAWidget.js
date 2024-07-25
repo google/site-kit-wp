@@ -31,42 +31,45 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
+import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
+import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import whenActive from '../../../../../util/when-active';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
+	AUDIENCE_SEGMENTATION_SETUP_FORM,
 } from '../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { WEEK_IN_SECONDS, getPreviousDate } from '../../../../../util';
-import whenActive from '../../../../../util/when-active';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
-import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
-import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
 	useTooltipState,
 } from '../../../../../components/AdminMenuTooltip';
-
-const { useSelect, useDispatch } = Data;
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { WEEK_IN_SECONDS } from '../../../../../util';
+import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
+import AudienceErrorModal from './AudienceErrorModal';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
 
 function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
-	const [ isSaving, setIsSaving ] = useState( false );
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
+	const { setValues } = useDispatch( CORE_FORMS );
 	const showTooltip = useShowTooltip(
 		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 	);
@@ -85,36 +88,44 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
-
-	const onEnableGroups = useCallback( async () => {
-		setIsSaving( true );
-
-		await enableAudienceGroup();
-	}, [ enableAudienceGroup ] );
-
 	const configuredAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
 	);
 
-	const hasDataWithinPast90Days = useSelect( ( select ) => {
-		const endDate = select( CORE_USER ).getReferenceDate();
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_SEGMENTATION_SETUP_FORM,
+			'autoSubmit'
+		)
+	);
 
-		const startDate = getPreviousDate(
-			endDate,
-			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-		);
+	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-		const args = {
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
+	const { dismissItem, dismissPrompt } = useDispatch( CORE_USER );
 
-		return select( MODULES_ANALYTICS_4 ).hasZeroData( args ) === false;
+	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
+		useEnableAudienceGroup( {
+			onSuccess: () => {
+				// Dismiss success notification in settings.
+				dismissItem(
+					SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
+				);
+			},
+			onError: () => {
+				setShowErrorModal( true );
+			},
+		} );
+
+	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		// We should call isGatheringData() within this component for completeness
+		// as we do not want to rely on it being called in other components.
+		// This selector makes report requests which, if they return data, then the
+		// `data-available` transients are set. These transients are prefetched as
+		// a global on the next page load.
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
-	const { dismissPrompt } = useDispatch( CORE_USER );
 	const handleDismissClick = async () => {
 		showTooltip();
 
@@ -129,6 +140,24 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION );
 		}
 	};
+
+	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+
+	const onCancel = useCallback( () => {
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+		clearPermissionScopeError();
+		setSetupErrorCode( null );
+		setShowErrorModal( false );
+	}, [ clearPermissionScopeError, setSetupErrorCode, setValues ] );
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
 	if ( isTooltipVisible ) {
 		return (
@@ -153,8 +182,9 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
-		configuredAudiences !== null ||
-		! hasDataWithinPast90Days ||
+		configuredAudiences === undefined ||
+		configuredAudiences?.length ||
+		! analyticsIsDataAvailableOnLoad ||
 		isDismissed
 	) {
 		return null;
@@ -263,6 +293,19 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 					</Cell>
 				</Row>
 			</Grid>
+			{ ( showErrorModal || hasOAuthError ) && (
+				<AudienceErrorModal
+					hasOAuthError={ hasOAuthError }
+					apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
+					onRetry={ onEnableGroups }
+					inProgress={ isSaving }
+					onCancel={
+						hasOAuthError
+							? onCancel
+							: () => setShowErrorModal( false )
+					}
+				/>
+			) }
 		</div>
 	);
 }

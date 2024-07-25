@@ -122,4 +122,3 @@ final class Options implements Options_Interface {
 		return delete_option( $option );
 	}
 }
-

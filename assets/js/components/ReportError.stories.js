@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import ReportError from './ReportError';
 import {
 	createTestRegistry,
@@ -35,8 +35,6 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
-
-const { useSelect } = Data;
 
 function ReportErrorWrapper( { ...args } ) {
 	const error = useSelect( ( select ) =>
