@@ -202,17 +202,9 @@ export default function Module( {
 				{ recoverable && (
 					<WarningNotice>
 						{ createInterpolateElement(
-							sprintf(
-								/* translators: 1: The warning message. 2: "Learn more" link. */
-								__(
-									'%1$s. <Link>%2$s</Link>',
-									'google-site-kit'
-								),
-								__(
-									'Managing user required to manage view access',
-									'google-site-kit'
-								),
-								__( 'Learn more', 'google-site-kit' )
+							__(
+								'Managing user required to manage view access. <Link>Learn more</Link>',
+								'google-site-kit'
 							),
 							{
 								Link: (
