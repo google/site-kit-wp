@@ -55,7 +55,6 @@ const Button = forwardRef(
 			hideTooltipTitle = false,
 			tooltipEnterDelayInMS = 100,
 			tertiary = false,
-			diableTooltipButton = false,
 			...extraProps
 		},
 		ref
@@ -123,7 +122,7 @@ const Button = forwardRef(
 			: null;
 
 		if (
-			( tooltip && tooltipTitle ) ||
+			( tooltip && tooltipTitle && ! disabled ) ||
 			( icon && tooltipTitle && children === undefined )
 		) {
 			return (
@@ -131,11 +130,7 @@ const Button = forwardRef(
 					title={ tooltipTitle }
 					enterDelay={ tooltipEnterDelayInMS }
 				>
-					{ diableTooltipButton ? (
-						<span>{ ButtonComponent }</span>
-					) : (
-						ButtonComponent
-					) }
+					{ ButtonComponent }
 				</Tooltip>
 			);
 		}
@@ -161,7 +156,6 @@ Button.propTypes = {
 	tooltip: PropTypes.bool,
 	inverse: PropTypes.bool,
 	hideTooltipTitle: PropTypes.bool,
-	diableTooltipButton: PropTypes.bool,
 };
 
 Button.defaultProps = {
