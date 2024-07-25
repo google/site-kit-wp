@@ -101,7 +101,7 @@ export default function PublicationSelect( props ) {
 	if ( hasModuleAccess === false ) {
 		return (
 			<Select
-				className={ classnames( className ) }
+				className={ classnames( className, 'mdc-select--wide' ) }
 				label={ __( 'Publication', 'google-site-kit' ) }
 				value={ publicationID }
 				enhanced
@@ -115,7 +115,7 @@ export default function PublicationSelect( props ) {
 
 	return (
 		<Select
-			className={ classnames( className, {
+			className={ classnames( className, 'mdc-select--wider', {
 				'mdc-select--invalid': ! isValidSelection,
 			} ) }
 			label={ __( 'Publication', 'google-site-kit' ) }

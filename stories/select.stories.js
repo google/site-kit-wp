@@ -107,10 +107,24 @@ storiesOf( 'Global', module ).add(
 						] }
 					/>
 				</div>
-				<div style={ { marginBottom: '250px' } }>
+				<div style={ { marginBottom: '50px' } }>
 					<Select
 						name="select"
 						label={ __( 'Basic Select', 'google-site-kit' ) }
+						options={ [
+							'Demo Option 1',
+							'Demo Option 2',
+							'Demo Option 3',
+						] }
+						value="Demo Option 1"
+						outlined
+					/>
+				</div>
+				<div style={ { marginBottom: '250px' } }>
+					<Select
+						className="mdc-select--wide"
+						name="select"
+						label={ __( 'Wide Select', 'google-site-kit' ) }
 						options={ [
 							'Demo Option 1',
 							'Demo Option 2',

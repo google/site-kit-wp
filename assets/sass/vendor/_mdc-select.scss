@@ -90,4 +90,8 @@
 	.mdc-select--minimal.mdc-select--focused .mdc-select__dropdown-icon {
 		transform: rotate(180deg) translateY(0);
 	}
+
+	.mdc-select--wide {
+		min-width: 300px;
+	}
 }
