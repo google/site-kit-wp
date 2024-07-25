@@ -101,6 +101,10 @@
 		color: $c-disabled;
 		text-decoration: none;
 	}
+
+	&.googlesitekit-cta-link--no-flex {
+		display: inline;
+	}
 }
 
 /**
