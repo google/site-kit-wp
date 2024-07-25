@@ -24,28 +24,31 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../../../hooks/useBreakpoint';
+import { CORE_FORMS } from '../../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
-	DATE_RANGE_OFFSET,
+	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+	CUSTOM_DIMENSION_DEFINITIONS,
+	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../../datastore/constants';
-import AudienceTileNoData from './AudienceTileNoData';
-import Link from '../../../../../../../components/Link';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../../../util/errors';
 import PartialDataBadge from './PartialDataBadge';
-import PartialDataNotice from './PartialDataNotice';
-import { numFmt } from '../../../../../../../util';
-import useViewOnly from '../../../../../../../hooks/useViewOnly';
+import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
+import AudienceErrorModal from '../../AudienceErrorModal';
 
 export default function AudienceTilePagesMetric( {
 	TileIcon,
@@ -55,58 +58,115 @@ export default function AudienceTilePagesMetric( {
 	isTopContentPartialData,
 } ) {
 	const breakpoint = useBreakpoint();
-	const viewOnlyDashboard = useViewOnly();
 
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+	const postTypeDimension =
+		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
+
+	const hasMissingCustomDimension = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				postTypeDimension
+			)
 	);
 
-	const validDimensionValues =
-		topContent?.dimensionValues?.filter( Boolean ) || [];
-	const hasDimensionValues = !! validDimensionValues.length;
+	const hasAnalyticsEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
 
-	function ContentLinkComponent( { content } ) {
-		const pageTitle = topContentTitles[ content?.value ];
-		const url = content?.value;
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'audience_segmentation',
+	} );
 
-		const serviceURL = useSelect( ( select ) => {
-			return ! viewOnlyDashboard
-				? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
-						'all-pages-and-screens',
-						{
-							filters: {
-								unifiedPagePathScreen: url,
-							},
-							dates,
-						}
-				  )
-				: null;
+	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'isAutoCreatingCustomDimensionsForAudience'
+		)
+	);
+
+	const isCreatingCustomDimension = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
+			postTypeDimension
+		)
+	);
+
+	const isSyncingAvailableCustomDimensions = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
+	);
+
+	const customDimensionError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
+			postTypeDimension
+		)
+	);
+
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+
+	const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setPermissionScopeError, clearPermissionScopeError } =
+		useDispatch( CORE_USER );
+
+	const isRetryingCustomDimensionCreate = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'isRetrying'
+		)
+	);
+
+	const onCreateCustomDimension = useCallback(
+		( { isRetrying } = {} ) => {
+			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
+				autoSubmit: true,
+				isRetrying,
+			} );
+
+			if ( ! hasAnalyticsEditScope ) {
+				setPermissionScopeError( {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: __(
+						'Additional permissions are required to create new audiences in Analytics.',
+						'google-site-kit'
+					),
+					data: {
+						status: 403,
+						scopes: [ EDIT_SCOPE ],
+						skipModal: true,
+						skipDefaultErrorNotifications: true,
+						redirectURL,
+					},
+				} );
+			}
+		},
+		[
+			hasAnalyticsEditScope,
+			redirectURL,
+			setPermissionScopeError,
+			setValues,
+		]
+	);
+
+	const onCancel = useCallback( () => {
+		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
+			autoSubmit: false,
 		} );
-
-		if ( viewOnlyDashboard ) {
-			return (
-				<div className="googlesitekit-audience-segmentation-tile__top-content-metric-name">
-					{ pageTitle }
-				</div>
-			);
-		}
-		return (
-			<Link
-				href={ serviceURL }
-				title={ pageTitle }
-				external
-				hideExternalIndicator
-			>
-				{ pageTitle }
-			</Link>
-		);
-	}
+		clearPermissionScopeError();
+		clearError( 'createCustomDimension', [
+			propertyID,
+			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+		] );
+	}, [ clearError, clearPermissionScopeError, propertyID, setValues ] );
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
+
+	const isSaving =
+		isAutoCreatingCustomDimensionsForAudience ||
+		isCreatingCustomDimension ||
+		isSyncingAvailableCustomDimensions;
 
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content">
@@ -125,34 +185,33 @@ export default function AudienceTilePagesMetric( {
 						/>
 					) }
 				</div>
-				<div className="googlesitekit-audience-segmentation-tile-metric__content">
-					{ ! hasDimensionValues && <AudienceTileNoData /> }
-					{ hasDimensionValues &&
-						validDimensionValues.map( ( content, index ) => {
-							return (
-								<div
-									key={ content?.value }
-									className="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
-								>
-									<ContentLinkComponent content={ content } />
-									<div className="googlesitekit-audience-segmentation-tile-metric__page-metric-value">
-										{ numFmt(
-											topContent?.metricValues[ index ]
-												?.value
-										) }
-									</div>
-								</div>
-							);
-						} ) }
-					{ isMobileBreakpoint && isTopContentPartialData && (
-						<PartialDataNotice
-							content={ __(
-								'Still collecting full data for this timeframe, partial data is displayed for this metric',
-								'google-site-kit'
-							) }
-						/>
-					) }
-				</div>
+				<AudienceTilePagesMetricContent
+					topContentTitles={ topContentTitles }
+					topContent={ topContent }
+					isTopContentPartialData={ isTopContentPartialData }
+					hasCustomDimension={ ! hasMissingCustomDimension }
+					onCreateCustomDimension={ onCreateCustomDimension }
+					isSaving={ isSaving }
+				/>
+				{ ( ( customDimensionError && ! isSaving ) ||
+					isRetryingCustomDimensionCreate ) && (
+					<AudienceErrorModal
+						apiErrors={ [ customDimensionError ] }
+						title={ __(
+							'Failed to enable metric',
+							'google-site-kit'
+						) }
+						description={ __(
+							'Oops! Something went wrong. Retry enabling the metric.',
+							'google-site-kit'
+						) }
+						onRetry={ () =>
+							onCreateCustomDimension( { isRetrying: true } )
+						}
+						onCancel={ onCancel }
+						inProgress={ isSaving }
+					/>
+				) }
 			</div>
 		</div>
 	);
