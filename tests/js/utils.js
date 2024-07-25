@@ -477,8 +477,6 @@ export const registerAllStoresOn = ( registry ) => {
 	);
 };
 
-const unsubscribes = [];
-
 /**
  * Returns an object that returns hasFinishedResolution selectors for each key
  * that are bound to the given registry and store name.
@@ -518,13 +516,6 @@ export const subscribeUntil = ( registry, predicates ) => {
 			}
 		} );
 	} );
-};
-
-export const unsubscribeFromAll = () => {
-	let unsubscribe;
-	while ( ( unsubscribe = unsubscribes.shift() ) ) {
-		unsubscribe();
-	}
 };
 
 /**
