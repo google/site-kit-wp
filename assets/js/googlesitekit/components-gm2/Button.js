@@ -122,8 +122,9 @@ const Button = forwardRef(
 			: null;
 
 		if (
-			( tooltip && tooltipTitle && ! disabled ) ||
-			( icon && tooltipTitle && children === undefined )
+			! disabled &&
+			( ( tooltip && tooltipTitle ) ||
+				( icon && tooltipTitle && children === undefined ) )
 		) {
 			return (
 				<Tooltip
