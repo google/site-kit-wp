@@ -225,9 +225,6 @@ TwoTilesWithMissingCustomDimension.args = {
 		} );
 	},
 };
-TwoTilesWithMissingCustomDimension.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTilesWithMissingCustomDimension',
-};
 
 export const TwoTilesWithZeroTile = Template.bind( {} );
 TwoTilesWithZeroTile.storyName = 'TwoTilesWithZeroTile';
