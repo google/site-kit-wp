@@ -25,7 +25,6 @@ import {
 	muteFetch,
 	provideUserAuthentication,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
@@ -73,9 +72,7 @@ describe( 'core/user user-input-settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		beforeEach( () => {

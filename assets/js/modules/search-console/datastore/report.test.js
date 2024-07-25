@@ -26,7 +26,6 @@ import {
 	freezeFetch,
 	muteFetch,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
@@ -67,9 +66,7 @@ describe( 'modules/search-console report', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

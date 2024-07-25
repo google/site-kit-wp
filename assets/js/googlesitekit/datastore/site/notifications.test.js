@@ -21,10 +21,7 @@
  */
 import { actions, selectors } from './index';
 
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site notifications', () => {
@@ -38,9 +35,7 @@ describe( 'core/site notifications', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'fetchMarkNotification', () => {

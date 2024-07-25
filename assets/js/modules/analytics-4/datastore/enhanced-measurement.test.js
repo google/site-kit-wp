@@ -23,7 +23,6 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -60,9 +59,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 		};
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'setEnhancedMeasurementSettings', () => {

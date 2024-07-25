@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
@@ -49,9 +48,7 @@ describe( 'Ad Blocking Recovery Existing Tag store', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'fetchGetExistingAdBlockingRecoveryTag', () => {

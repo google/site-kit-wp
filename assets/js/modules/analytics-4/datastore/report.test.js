@@ -25,7 +25,6 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 	freezeFetch,
 	subscribeUntil,
 	muteFetch,
@@ -46,9 +45,7 @@ describe( 'modules/analytics-4 report', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

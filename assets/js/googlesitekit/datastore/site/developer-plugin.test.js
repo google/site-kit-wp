@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
@@ -47,9 +46,7 @@ describe( 'core/site developer plugin state', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

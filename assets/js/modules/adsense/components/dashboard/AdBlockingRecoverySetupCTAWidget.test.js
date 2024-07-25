@@ -34,7 +34,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-	unsubscribeFromAll,
 	waitFor,
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
@@ -99,9 +98,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'widget rendering', () => {
 		const shouldRender = {

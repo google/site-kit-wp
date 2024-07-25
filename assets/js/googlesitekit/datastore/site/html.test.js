@@ -22,7 +22,6 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
@@ -42,9 +41,7 @@ describe( 'core/site html', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'resetHTMLForURL', () => {

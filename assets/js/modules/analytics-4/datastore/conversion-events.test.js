@@ -24,7 +24,6 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -39,9 +38,7 @@ describe( 'modules/analytics-4 conversion-events', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

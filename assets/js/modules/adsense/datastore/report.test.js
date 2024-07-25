@@ -24,7 +24,6 @@ import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { getAdSenseMockResponse } from '../util/data-mock';
@@ -44,9 +43,7 @@ describe( 'modules/adsense report', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {} );
 

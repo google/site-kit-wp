@@ -20,10 +20,7 @@
  *
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_TAGMANAGER } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
@@ -44,9 +41,7 @@ describe( 'module/tagmanager service store', () => {
 		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 	} );
 
-	afterAll( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterAll( () => {} );
 
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {

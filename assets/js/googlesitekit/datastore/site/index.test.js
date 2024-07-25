@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { CORE_SITE } from './constants';
 
@@ -35,9 +32,7 @@ describe( 'core/site store', () => {
 		store = registry.stores[ CORE_SITE ].store;
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'reducer', () => {
 		it( 'has the appropriate initial state', () => {

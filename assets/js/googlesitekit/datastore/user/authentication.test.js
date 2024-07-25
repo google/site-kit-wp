@@ -24,7 +24,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
@@ -72,9 +71,7 @@ describe( 'core/user authentication', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		test( 'fetchGetAuthentication not to require any params', () => {

@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_WIDGETS } from './constants';
 import Null from '../../../components/Null';
@@ -36,9 +33,7 @@ describe( 'core/widgets Widgets', () => {
 		store = registry.stores[ CORE_WIDGETS ].store;
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'assignWidget', () => {

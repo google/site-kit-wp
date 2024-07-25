@@ -25,7 +25,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
-	unsubscribeFromAll,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { parseLiveContainerVersionIDs as parseIDs } from './__factories__/utils';
@@ -47,9 +46,7 @@ describe( 'modules/tagmanager versions', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'receiveGetLiveContainerVersion', () => {

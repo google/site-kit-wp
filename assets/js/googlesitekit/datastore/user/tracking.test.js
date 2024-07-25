@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
@@ -47,9 +46,7 @@ describe( 'core/user tracking settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'setTrackingEnabled', () => {

@@ -25,7 +25,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
@@ -56,9 +55,7 @@ describe( 'modules/tagmanager containers', () => {
 			.receiveGetSettings( defaultSettings );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

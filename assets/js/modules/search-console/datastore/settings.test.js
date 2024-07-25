@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	validateCanSubmitChanges,
@@ -42,9 +39,7 @@ describe( 'modules/search-console settings', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

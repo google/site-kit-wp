@@ -25,7 +25,6 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 
@@ -42,9 +41,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

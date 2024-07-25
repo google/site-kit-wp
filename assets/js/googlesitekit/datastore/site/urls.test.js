@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site urls', () => {
@@ -32,9 +29,7 @@ describe( 'core/site urls', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'selectors', () => {
 		describe( 'getGoogleLocaleAwareURL', () => {

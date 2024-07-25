@@ -24,7 +24,6 @@ import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
@@ -44,9 +43,7 @@ describe( 'modules/pagespeed-insights report', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'fetchGetReport', () => {

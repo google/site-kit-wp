@@ -25,7 +25,6 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserInfo,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE } from './constants';
@@ -51,9 +50,7 @@ describe( 'module/search-console service store', () => {
 		provideSiteInfo( registry );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {

@@ -24,7 +24,6 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-	unsubscribeFromAll,
 } from '../../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -51,9 +50,7 @@ describe( 'Footer', () => {
 		] );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
 		registry

@@ -38,7 +38,6 @@ import {
 	render,
 	provideModules,
 	provideUserCapabilities,
-	unsubscribeFromAll,
 	muteFetch,
 } from '../../../../../tests/js/test-utils';
 import {
@@ -111,9 +110,7 @@ describe( 'WidgetAreaRenderer', () => {
 		muteFetch( fetchGetExpiredItems );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	it( 'should return the same number of elements as widgets from a selector', async () => {
 		createWidgets( registry, areaName, [

@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import * as fixtures from './__fixtures__';
@@ -39,9 +38,7 @@ describe( 'modules/search-console properties', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

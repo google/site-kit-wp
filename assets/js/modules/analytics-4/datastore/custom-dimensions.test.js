@@ -30,7 +30,6 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import {
@@ -70,9 +69,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	afterAll( () => {
 		API.setUsingCache( true );

@@ -29,7 +29,6 @@ import { combineStores, commonStore } from 'googlesitekit-data';
 import {
 	muteFetch,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createNotificationsStore } from './create-notifications-store';
@@ -65,9 +64,7 @@ describe( 'createNotificationsStore store', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'name', () => {
 		it( 'returns the correct default store name', () => {

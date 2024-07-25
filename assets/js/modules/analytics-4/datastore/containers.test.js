@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
@@ -41,9 +40,7 @@ describe( 'modules/analytics-4 containers', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'selectors', () => {
 		describe( 'getGoogleTagContainer', () => {

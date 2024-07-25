@@ -24,10 +24,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../tests/js/utils';
 import { createInfoStore } from './create-info-store';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
@@ -42,9 +39,7 @@ describe( 'createInfoStore store', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'storeName', () => {
 		it( 'throws an error if storeName is not passed', () => {

@@ -26,7 +26,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -91,9 +90,7 @@ describe( 'core/user key metrics', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		const settingID = 'test-setting';

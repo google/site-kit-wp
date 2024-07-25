@@ -23,7 +23,6 @@ import { CORE_SITE } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
@@ -38,9 +37,7 @@ describe( 'core/site urls', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'setShowAdminBar', () => {

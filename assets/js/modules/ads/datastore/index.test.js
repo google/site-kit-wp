@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ADS } from './constants';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'modules/ads properties', () => {
 	let registry;
@@ -32,9 +29,7 @@ describe( 'modules/ads properties', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'store', () => {
 		it( 'is registered correctly', () => {

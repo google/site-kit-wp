@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
@@ -45,9 +44,7 @@ describe( 'core/notifications Notifications', () => {
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'actions', () => {
 		describe( 'registerNotification', () => {

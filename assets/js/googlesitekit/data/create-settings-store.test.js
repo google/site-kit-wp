@@ -28,7 +28,6 @@ import API from 'googlesitekit-api';
 import {
 	muteFetch,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
@@ -64,9 +63,7 @@ describe( 'createSettingsStore store', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
+	afterEach( () => {} );
 
 	describe( 'name', () => {
 		it( 'returns the correct default store name', () => {
