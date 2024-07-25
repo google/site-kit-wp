@@ -130,7 +130,7 @@ const Button = forwardRef(
 					title={ tooltipTitle }
 					enterDelay={ tooltipEnterDelayInMS }
 				>
-					{ ButtonComponent }
+					<span>{ ButtonComponent }</span>
 				</Tooltip>
 			);
 		}
