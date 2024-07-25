@@ -33,7 +33,7 @@ import { trackEvent } from '../util';
 /**
  * Tracks the successful user and site setup.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  */
 export const useGlobalTrackingEffect = () => {
 	const viewContext = useViewContext();

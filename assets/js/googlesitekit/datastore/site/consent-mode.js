@@ -173,7 +173,7 @@ const baseActions = {
 	/**
 	 * Installs and activates the WP Consent API Plugin on the backend.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	*installActivateWPConsentAPI() {
 		const registry = yield getRegistry();
@@ -231,7 +231,7 @@ const baseActions = {
 	/**
 	 * Activates the WP Consent API Plugin on the backend.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	*activateConsentAPI() {
 		const response =
@@ -310,7 +310,7 @@ const baseSelectors = {
 	/**
 	 * Gets the WP Consent API Install/Activate Response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} WP Consent Mode API response, or `undefined` if not loaded.
@@ -322,7 +322,7 @@ const baseSelectors = {
 	/**
 	 * Gets the WP Consent API Install/Activate isApiFetching value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} Gets the value if WP Consent Mode API is currently fetching, or `undefined` if not loaded.

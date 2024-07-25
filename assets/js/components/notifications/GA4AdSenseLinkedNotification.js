@@ -31,11 +31,9 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-import CheckFill from '../../../svg/icons/check-fill.svg';
-import { Button } from 'googlesitekit-components';
-import { Grid, Cell, Row } from '../../material-components';
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import SubtleNotification from '../../modules/analytics-4/components/SubtleNotification';
 import useDashboardType from '../../hooks/useDashboardType';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
@@ -184,36 +182,17 @@ function GA4AdSenseLinkedNotification() {
 	}
 
 	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className="googlesitekit-subtle-notification"
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
-					</div>
-					<div className="googlesitekit-subtle-notification__content">
-						<p>
-							{ __(
-								'Your AdSense and Analytics accounts are linked.',
-								'google-site-kit'
-							) }
-						</p>
-						<p>
-							{ __(
-								'We’ll let you know as soon as there’s enough data available.',
-								'google-site-kit'
-							) }
-						</p>
-					</div>
-					<Button tertiary onClick={ dismissNotificationForUser }>
-						{ __( 'Got it', 'google-site-kit' ) }
-					</Button>
-				</Cell>
-			</Row>
-		</Grid>
+		<SubtleNotification
+			title={ __(
+				'Your AdSense and Analytics accounts are linked.',
+				'google-site-kit'
+			) }
+			description={ __(
+				'We’ll let you know as soon as there’s enough data available.',
+				'google-site-kit'
+			) }
+			onDismiss={ dismissNotificationForUser }
+		/>
 	);
 }
 

@@ -148,7 +148,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 				if ( ! error ) {
 					await trackEvent(
-						viewContext,
+						`${ viewContext }_setup`,
 						'start_setup_with_analytics'
 					);
 
@@ -161,7 +161,11 @@ export default function SetupUsingProxyWithSignIn() {
 					// Cache the start of the user setup journey.
 					// This will be used for event tracking logic after successful setup.
 					setItem( 'start_user_setup', true ),
-					trackEvent( viewContext, 'start_user_setup', 'proxy' ),
+					trackEvent(
+						`${ viewContext }_setup`,
+						'start_user_setup',
+						'proxy'
+					),
 				] );
 			}
 
@@ -170,7 +174,11 @@ export default function SetupUsingProxyWithSignIn() {
 					// Cache the start of the site setup journey.
 					// This will be used for event tracking logic after successful setup.
 					setItem( 'start_site_setup', true ),
-					trackEvent( viewContext, 'start_site_setup', 'proxy' ),
+					trackEvent(
+						`${ viewContext }_setup`,
+						'start_site_setup',
+						'proxy'
+					),
 				] );
 			}
 
