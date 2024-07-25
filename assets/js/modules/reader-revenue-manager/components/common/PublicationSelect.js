@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -101,7 +101,7 @@ export default function PublicationSelect( props ) {
 	if ( hasModuleAccess === false ) {
 		return (
 			<Select
-				className={ classnames( className, 'mdc-select--wide' ) }
+				className={ classnames( className ) }
 				label={ __( 'Publication', 'google-site-kit' ) }
 				value={ publicationID }
 				enhanced
@@ -115,7 +115,7 @@ export default function PublicationSelect( props ) {
 
 	return (
 		<Select
-			className={ classnames( className, 'mdc-select--wider', {
+			className={ classnames( className, {
 				'mdc-select--invalid': ! isValidSelection,
 			} ) }
 			label={ __( 'Publication', 'google-site-kit' ) }
@@ -130,10 +130,13 @@ export default function PublicationSelect( props ) {
 				( { publicationId, displayName } ) => (
 					// eslint-disable-next-line sitekit/acronym-case
 					<Option key={ publicationId } value={ publicationId }>
-						{
+						{ sprintf(
+							/* translators: 1: Publication display name, 2: Publication ID */
+							__( '%1$s (%2$s)', 'google-site-kit' ),
+							displayName,
 							// eslint-disable-next-line sitekit/acronym-case
-							`${ displayName } (${ publicationId })`
-						}
+							publicationId
+						) }
 					</Option>
 				)
 			) }
