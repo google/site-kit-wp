@@ -133,7 +133,7 @@ export default function PublicationApprovedOverlayNotification() {
 					inverse
 					linkButton
 				>
-					{ __( 'Enable Features', 'google-site-kit' ) }
+					{ __( 'Enable features', 'google-site-kit' ) }
 				</Link>
 			</div>
 		</OverlayNotification>
