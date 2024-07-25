@@ -53,7 +53,7 @@ const baseActions = {
 	 * Syncronizes the onboarding state of the publication with the API.
 	 * Updates the settings on the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return {void}
 	 */
@@ -144,7 +144,7 @@ const baseActions = {
 	/**
 	 * Finds a matched publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return {Object|null} Matched publication; `null` if none found.
 	 */
@@ -199,7 +199,7 @@ const baseSelectors = {
 	/**
 	 * Gets list of publications associated with the account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An array of publications; `undefined` if not loaded.

@@ -1,5 +1,5 @@
 /**
- * AudienceSelectionPanel components - constants.
+ * Audience Creation Success Notice Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,14 +16,22 @@
  * limitations under the License.
  */
 
-export const AUDIENCE_ADD_GROUP_NOTICE_SLUG =
-	'audience-segmentation-add-group-notice';
-export const AUDIENCE_SELECTION_PANEL_OPENED_KEY =
-	'googlesitekit-audience-selection-panel-opened';
-export const AUDIENCE_SELECTION_FORM = 'audience-selection-form';
-export const AUDIENCE_SELECTED = 'audience-selected';
-export const AUDIENCE_SELECTION_CHANGED = 'audience-selection-changed';
-export const AUDIENCE_CREATION_NOTICE_SLUG =
-	'audience-segmentation-creation-notice';
-export const MIN_SELECTED_AUDIENCES_COUNT = 1;
-export const MAX_SELECTED_AUDIENCES_COUNT = 3;
+/**
+ * Internal dependencies
+ */
+import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
+
+function Template() {
+	return <AudienceCreationSuccessNotice />;
+}
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationSuccessNotice/Default',
+};
+
+export default {
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationSuccessNotice',
+	component: AudienceCreationSuccessNotice,
+};

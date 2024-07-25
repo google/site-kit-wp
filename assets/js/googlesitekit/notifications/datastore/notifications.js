@@ -40,7 +40,7 @@ export const actions = {
 	/**
 	 * Registers a notification with a given `id` slug and settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
@@ -108,7 +108,7 @@ export const actions = {
 	 * Currently, this action simply dispatches the call to the dismissed items API.
 	 * We can potentially add more notification-specific dismissal logic here in the future.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {string} id                         Notification id to dismiss.
 	 * @param {Object} options                    Dismiss notification options.
@@ -169,7 +169,7 @@ export const selectors = {
 	 * Currently, this selector simply forwards the call to the dismissed items API.
 	 * We can potentially add more notification-specific logic here in the future.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} id    Notification id.

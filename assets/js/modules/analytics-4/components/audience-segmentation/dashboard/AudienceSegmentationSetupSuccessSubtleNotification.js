@@ -27,9 +27,8 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
-import CheckFill from '../../../../../../svg/icons/check-fill.svg';
 import { Button } from 'googlesitekit-components';
-import { Grid, Cell, Row } from '../../../../../material-components';
+import SubtleNotification from '../../SubtleNotification';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
@@ -84,38 +83,21 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 	}
 
 	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className="googlesitekit-subtle-notification"
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
-					</div>
-					<div className="googlesitekit-subtle-notification__content">
-						<p>
-							{ __(
-								'Success! Visitor groups added to your dashboard',
-								'google-site-kit'
-							) }
-						</p>
-						<p className="googlesitekit-subtle-notification__secondary_description">
-							{ __(
-								'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long.',
-								'google-site-kit'
-							) }
-						</p>
-					</div>
-					<Button tertiary onClick={ dismissNotificationForUser }>
-						{ __( 'Got it', 'google-site-kit' ) }
-					</Button>
-					<Button onClick={ scrollToWidgetArea }>
-						{ __( 'Show me', 'google-site-kit' ) }
-					</Button>
-				</Cell>
-			</Row>
-		</Grid>
+		<SubtleNotification
+			title={ __(
+				'Success! Visitor groups added to your dashboard',
+				'google-site-kit'
+			) }
+			description={ __(
+				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long.',
+				'google-site-kit'
+			) }
+			onDismiss={ dismissNotificationForUser }
+			additionalCTA={
+				<Button onClick={ scrollToWidgetArea }>
+					{ __( 'Show me', 'google-site-kit' ) }
+				</Button>
+			}
+		/>
 	);
 }
