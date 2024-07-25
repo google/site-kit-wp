@@ -214,18 +214,22 @@ export const resolvers = {
 			}
 		);
 
-		const queuedNotifications = yield Data.commonActions.await(
+		const checkRequirementsResults = yield Data.commonActions.await(
 			Promise.all(
-				filteredNotifications.filter( ( notification ) => {
+				filteredNotifications.map( ( notification ) => {
 					if (
 						typeof notification.checkRequirements === 'function'
 					) {
 						return notification.checkRequirements( registry );
 					}
 
-					return true;
+					return Promise.resolve( true );
 				} )
 			)
+		);
+
+		const queuedNotifications = filteredNotifications.filter(
+			( _, i ) => !! checkRequirementsResults[ i ]
 		);
 
 		queuedNotifications.sort( ( a, b ) => {
