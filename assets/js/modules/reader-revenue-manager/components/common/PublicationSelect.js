@@ -130,7 +130,10 @@ export default function PublicationSelect( props ) {
 				( { publicationId, displayName } ) => (
 					// eslint-disable-next-line sitekit/acronym-case
 					<Option key={ publicationId } value={ publicationId }>
-						{ displayName }
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							`${ displayName } (${ publicationId })`
+						}
 					</Option>
 				)
 			) }
