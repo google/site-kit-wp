@@ -190,6 +190,11 @@ export const resolvers = {
 			.select( CORE_NOTIFICATIONS )
 			.getNotifications();
 
+		// Wait for all dismissed items to be available before filtering.
+		yield Data.commonActions.await(
+			registry.resolveSelect( CORE_USER ).getDismissedItems()
+		);
+
 		const filteredNotifications = Object.values( notifications ).filter(
 			( notification ) => {
 				if ( ! notification.viewContexts.includes( viewContext ) ) {

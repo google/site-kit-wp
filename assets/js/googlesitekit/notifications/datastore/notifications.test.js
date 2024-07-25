@@ -230,6 +230,14 @@ describe( 'core/notifications Notifications', () => {
 		}
 
 		describe( 'getQueuedNotifications', () => {
+			beforeEach( () => {
+				// `getQueuedNotifications` requires `getDismissedItems()` to be resolved
+				// before filtering notifications to be queued.
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [ 'some-test-dismissed-item' ] );
+			} );
+
 			it( 'requires viewContext', () => {
 				expect( () => {
 					registry
