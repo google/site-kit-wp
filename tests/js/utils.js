@@ -478,11 +478,6 @@ export const registerAllStoresOn = ( registry ) => {
 };
 
 const unsubscribes = [];
-export const subscribeWithUnsubscribe = ( registry, ...args ) => {
-	const unsubscribe = registry.subscribe( ...args );
-	unsubscribes.push( unsubscribe );
-	return unsubscribe;
-};
 
 /**
  * Returns an object that returns hasFinishedResolution selectors for each key
@@ -516,8 +511,9 @@ export const subscribeUntil = ( registry, predicates ) => {
 	predicates = castArray( predicates );
 
 	return new Promise( ( resolve ) => {
-		subscribeWithUnsubscribe( registry, () => {
+		const unsubscribe = registry.subscribe( () => {
 			if ( predicates.every( ( predicate ) => predicate() ) ) {
+				unsubscribe();
 				resolve();
 			}
 		} );
@@ -582,7 +578,7 @@ export const createWaitForRegistry = ( registry ) => {
 	const updates = [];
 	const listener = () =>
 		updates.push( new Promise( ( resolve ) => resolve() ) );
-	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
+	const unsubscribe = registry.subscribe( listener );
 
 	// Return a function that:
 	// - Waits until the next tick for updates.
