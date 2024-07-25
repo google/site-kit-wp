@@ -240,9 +240,6 @@ export default function UserMenu() {
 					}
 					tooltip
 					tooltipEnterDelayInMS={ 500 }
-					diableTooltipButton={
-						isAutoCreatingCustomDimensionsForAudience
-					}
 					customizedTooltip={
 						isAutoCreatingCustomDimensionsForAudience ? null : (
 							<span aria-label={ accountLabel }>
