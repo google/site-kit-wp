@@ -307,6 +307,11 @@ describe( 'core/notifications Notifications', () => {
 					selectors: {
 						testActiveNotification: () => true,
 						testInactiveNotification: () => false,
+						testErroredInactiveNotification: () => {
+							throw new Error(
+								'Check requirements threw an error.'
+							);
+						},
 					},
 				} );
 
@@ -328,6 +333,18 @@ describe( 'core/notifications Notifications', () => {
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						checkRequirements: ( { select } ) =>
 							select( TEST_STORE ).testInactiveNotification(),
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-errored-false', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						checkRequirements: ( { select } ) =>
+							select(
+								TEST_STORE
+							).testErroredInactiveNotification(),
 					} );
 
 				registry
