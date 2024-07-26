@@ -216,14 +216,16 @@ export const resolvers = {
 
 		const checkRequirementsResults = yield Data.commonActions.await(
 			Promise.all(
-				filteredNotifications.map( ( notification ) => {
-					if (
-						typeof notification.checkRequirements === 'function'
-					) {
-						return notification.checkRequirements( registry );
+				filteredNotifications.map( async ( { checkRequirements } ) => {
+					if ( typeof checkRequirements === 'function' ) {
+						try {
+							return await checkRequirements( registry );
+						} catch ( e ) {
+							return false; // Prevent `Promise.all()` from being rejected for a single failed promise.
+						}
 					}
 
-					return Promise.resolve( true );
+					return true;
 				} )
 			)
 		);
