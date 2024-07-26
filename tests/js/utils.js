@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { castArray, mapValues } from 'lodash';
+import { mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -505,9 +505,17 @@ export const untilResolved = ( registry, storeName ) => {
 	);
 };
 
-export const subscribeUntil = ( registry, predicates ) => {
-	predicates = castArray( predicates );
-
+/**
+ * Subscribes to the given registry until all predicates are satisfied.
+ *
+ * @since 1.11.0
+ * @private
+ *
+ * @param {Object}      registry   WP data registry instance.
+ * @param {...Function} predicates Predicate functions.
+ * @return {Promise} Promise that resolves once all predicates are satisfied.
+ */
+export const subscribeUntil = ( registry, ...predicates ) => {
 	return new Promise( ( resolve ) => {
 		const unsubscribe = registry.subscribe( () => {
 			if ( predicates.every( ( predicate ) => predicate() ) ) {
