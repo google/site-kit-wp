@@ -38,7 +38,7 @@ import { enabledFeatures } from '../../../features';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
@@ -73,7 +73,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			// Make sure the RRM module is active and connected.
 			const extraData = [
 				{
-					slug: MODULE_SLUG,
+					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 					active: true,
 					connected: true,
 				},

@@ -26,7 +26,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
 import {
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
@@ -41,7 +41,7 @@ describe( 'SetupMain', () => {
 
 		const extraData = [
 			{
-				slug: MODULE_SLUG,
+				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 				active: true,
 				connected: true,
 				owner: { ID: 1 },
