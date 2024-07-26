@@ -31,7 +31,6 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Modules/ReaderRevenueManager/Setup/SetupMain/Default',
-	delay: 250,
 };
 
 export default {
