@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import SetupMain from './SetupMain';
 
@@ -42,16 +39,16 @@ export default {
 	component: SetupMain,
 	decorators: [
 		( Story ) => {
-			const registry = createTestRegistry();
-
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetPublications( [] );
+			function setupRegistry( registry ) {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [] );
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],
