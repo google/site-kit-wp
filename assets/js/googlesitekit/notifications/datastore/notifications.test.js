@@ -26,7 +26,10 @@ import {
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '../../constants';
 import { CORE_USER } from '../../datastore/user/constants';
 
 describe( 'core/notifications Notifications', () => {
@@ -222,6 +225,288 @@ describe( 'core/notifications Notifications', () => {
 	} );
 
 	describe( 'selectors', () => {
+		function TestNotificationComponent() {
+			return <div>Test notification!</div>;
+		}
+
+		describe( 'getQueuedNotifications', () => {
+			beforeEach( () => {
+				// `getQueuedNotifications` requires `getDismissedItems()` to be resolved
+				// before filtering notifications to be queued.
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [ 'some-test-dismissed-item' ] );
+			} );
+
+			it( 'requires viewContext', () => {
+				expect( () => {
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.getQueuedNotifications();
+				} ).toThrow( 'viewContext is required.' );
+			} );
+
+			it( 'should return undefined when no notifications have been registered', () => {
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+
+				expect( queuedNotifications ).toBeUndefined();
+			} );
+
+			it( 'should return registered notifications for a given viewContext', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification-1', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification-2', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_ENTITY_DASHBOARD ],
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification-3', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [
+							VIEW_CONTEXT_ENTITY_DASHBOARD,
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+						],
+					} );
+
+				expect(
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				expect( queuedNotifications ).toHaveLength( 2 );
+			} );
+
+			it( 'should return notifications filtered by their checkRequirements callback when specified', async () => {
+				// Setup a test store with a selector so we can verify the `getQueuedNotifications` selector
+				// passes the `registry` through to the notification's `checkRequirements` callback.
+				const TEST_STORE = 'test-store';
+				registry.registerStore( TEST_STORE, {
+					reducer: ( state ) => state,
+					selectors: {
+						testActiveNotification: () => true,
+						testInactiveNotification: () => false,
+						testErroredInactiveNotification: () => {
+							throw new Error(
+								'Check requirements threw an error.'
+							);
+						},
+					},
+				} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-true', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						checkRequirements: ( { select } ) =>
+							select( TEST_STORE ).testActiveNotification(),
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-false', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						checkRequirements: ( { select } ) =>
+							select( TEST_STORE ).testInactiveNotification(),
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-errored-false', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						checkRequirements: ( { select } ) =>
+							select(
+								TEST_STORE
+							).testErroredInactiveNotification(),
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'check-requirements-undefined', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				expect( queuedNotifications ).toHaveLength( 2 );
+				expect( queuedNotifications[ 0 ].id ).toBe(
+					'check-requirements-true'
+				);
+				expect( queuedNotifications[ 1 ].id ).toBe(
+					'check-requirements-undefined'
+				);
+			} );
+
+			it( 'should return registered notifications filtered by their dismissal status when specified', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification(
+						'is-dismissible-true-and-dismissed',
+						{
+							Component: TestNotificationComponent,
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							isDismissible: true,
+						}
+					);
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification(
+						'is-dismissible-true-but-not-dismissed',
+						{
+							Component: TestNotificationComponent,
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							isDismissible: true,
+						}
+					);
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'is-dismissible-false', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: false,
+					} );
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'is-dismissible-undefined', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [
+					'is-dismissible-true-and-dismissed',
+					'is-dismissible-false', // should not be checked nor filtered
+					'is-dismissible-undefined', // should not be checked nor filtered
+				] );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				expect( queuedNotifications ).toHaveLength( 3 );
+				expect( queuedNotifications[ 0 ].id ).toBe(
+					'is-dismissible-true-but-not-dismissed'
+				);
+				expect( queuedNotifications[ 1 ].id ).toBe(
+					'is-dismissible-false'
+				);
+				expect( queuedNotifications[ 2 ].id ).toBe(
+					'is-dismissible-undefined'
+				);
+			} );
+
+			it( 'should return registered notifications ordered by priority', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'medium-2-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 25,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'lowest-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 30,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'medium-1-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 20,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'highest-priority', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					} );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				expect( queuedNotifications ).toHaveLength( 4 );
+				expect( queuedNotifications[ 0 ].id ).toBe(
+					'highest-priority'
+				);
+				expect( queuedNotifications[ 1 ].id ).toBe(
+					'medium-1-priority'
+				);
+				expect( queuedNotifications[ 2 ].id ).toBe(
+					'medium-2-priority'
+				);
+				expect( queuedNotifications[ 3 ].id ).toBe( 'lowest-priority' );
+			} );
+		} );
 		describe( 'isNotificationDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
 				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
