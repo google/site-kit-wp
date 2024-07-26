@@ -30,7 +30,7 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Modules/ReaderRevenueManager/Setup/SetupMain/Default',
+	// No parameters are needed for this scenario, but we still need to define the scenario object to include the story in the VRT suite.
 };
 
 export default {
