@@ -19,6 +19,11 @@
 /**
  * Internal dependencies
  */
+import {
+	createTestRegistry,
+	WithTestRegistry,
+} from '../../../../../../tests/js/utils';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import SetupMain from './SetupMain';
 
 function Template() {
@@ -27,8 +32,27 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Modules/ReaderRevenueManager/Setup/SetupMain/Default',
+	delay: 250,
+};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMain',
 	component: SetupMain,
+	decorators: [
+		( Story ) => {
+			const registry = createTestRegistry();
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetPublications( [] );
+
+			return (
+				<WithTestRegistry registry={ registry }>
+					<Story />
+				</WithTestRegistry>
+			);
+		},
+	],
 };
