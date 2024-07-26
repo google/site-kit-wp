@@ -97,8 +97,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'createWebDataStream', () => {
 			it( 'should create a web datastream and add it to the store', async () => {

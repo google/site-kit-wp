@@ -32,8 +32,6 @@ describe( 'core/site reset', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'fetchReset', () => {
 			it( 'sets isDoingReset ', () => {

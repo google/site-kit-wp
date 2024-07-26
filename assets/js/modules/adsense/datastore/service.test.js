@@ -52,8 +52,6 @@ describe( 'module/adsense service store', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterAll( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			beforeEach( () => {

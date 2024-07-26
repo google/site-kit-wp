@@ -69,8 +69,6 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

@@ -64,8 +64,6 @@ describe( 'createExistingTagStore store', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'fetchGetExistingTag', () => {
 			it( 'does not require any params', () => {

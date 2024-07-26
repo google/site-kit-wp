@@ -38,8 +38,6 @@ describe( 'modules/analytics-4 conversion-events', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

@@ -53,8 +53,6 @@ describe( 'module/analytics-4 service store', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', () => {

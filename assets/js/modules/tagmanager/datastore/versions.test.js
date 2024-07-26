@@ -46,8 +46,6 @@ describe( 'modules/tagmanager versions', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'receiveGetLiveContainerVersion', () => {
 			const validContainerVersion = {};

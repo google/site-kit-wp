@@ -42,8 +42,6 @@ describe( 'modules/adsense Ad Units', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getAdUnits', () => {
 			it( 'uses a resolver to make a network request', async () => {

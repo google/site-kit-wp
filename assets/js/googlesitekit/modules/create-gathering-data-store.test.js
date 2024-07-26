@@ -34,8 +34,6 @@ const STORE_NAME = `modules/${ MODULE_SLUG }`;
 describe( 'createGatheringDataStore', () => {
 	let registry;
 
-	afterEach( () => {} );
-
 	describe( 'args', () => {
 		it( 'should throw an error if no module slug is provided', () => {
 			expect( () => {

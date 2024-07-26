@@ -44,8 +44,6 @@ describe( 'core/notifications Notifications', () => {
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'registerNotification', () => {
 			const id = 'test-notification-id';

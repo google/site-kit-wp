@@ -39,8 +39,6 @@ describe( 'modules/search-console settings', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

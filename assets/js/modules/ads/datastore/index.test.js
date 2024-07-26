@@ -29,8 +29,6 @@ describe( 'modules/ads properties', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'store', () => {
 		it( 'is registered correctly', () => {
 			const selectors = registry.select( MODULES_ADS );

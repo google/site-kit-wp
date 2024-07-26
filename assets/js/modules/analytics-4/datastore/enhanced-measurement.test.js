@@ -59,8 +59,6 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 		};
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'setEnhancedMeasurementSettings', () => {
 			it( 'should require a valid propertyID', () => {

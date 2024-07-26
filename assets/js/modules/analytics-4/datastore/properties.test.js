@@ -95,8 +95,6 @@ describe( 'modules/analytics-4 properties', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'should create a property and add it to the store', async () => {

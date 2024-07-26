@@ -45,8 +45,6 @@ describe( 'modules/analytics-4 report', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

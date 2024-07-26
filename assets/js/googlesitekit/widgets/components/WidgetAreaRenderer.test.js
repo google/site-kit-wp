@@ -110,8 +110,6 @@ describe( 'WidgetAreaRenderer', () => {
 		muteFetch( fetchGetExpiredItems );
 	} );
 
-	afterEach( () => {} );
-
 	it( 'should return the same number of elements as widgets from a selector', async () => {
 		createWidgets( registry, areaName, [
 			{

@@ -39,8 +39,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

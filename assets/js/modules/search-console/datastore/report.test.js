@@ -66,8 +66,6 @@ describe( 'modules/search-console report', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

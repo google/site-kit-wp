@@ -55,8 +55,6 @@ describe( 'modules/tagmanager containers', () => {
 			.receiveGetSettings( defaultSettings );
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

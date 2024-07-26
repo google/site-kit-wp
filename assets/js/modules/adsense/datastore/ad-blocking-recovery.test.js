@@ -48,8 +48,6 @@ describe( 'Ad Blocking Recovery Existing Tag store', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'fetchGetExistingAdBlockingRecoveryTag', () => {
 			it( 'does not require any params', () => {

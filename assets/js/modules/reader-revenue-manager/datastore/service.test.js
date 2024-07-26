@@ -39,8 +39,6 @@ describe( 'modules/reader-revenue-manager service store', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterAll( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			beforeEach( () => {

@@ -41,8 +41,6 @@ describe( 'modules/tagmanager existing-tag', () => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

@@ -33,8 +33,6 @@ describe( 'core/widgets Widgets', () => {
 		store = registry.stores[ CORE_WIDGETS ].store;
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'assignWidget', () => {
 			it( 'should assign widgets to a widget area', () => {

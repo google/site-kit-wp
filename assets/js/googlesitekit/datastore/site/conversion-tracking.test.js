@@ -45,8 +45,6 @@ describe( 'core/site Conversion Tracking', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'saveConversionTrackingSettings', () => {
 			it( 'saves the settings and returns the response', async () => {

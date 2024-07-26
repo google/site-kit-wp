@@ -46,8 +46,6 @@ describe( 'core/site developer plugin state', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

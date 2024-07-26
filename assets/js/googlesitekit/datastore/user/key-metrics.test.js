@@ -90,8 +90,6 @@ describe( 'core/user key metrics', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		const settingID = 'test-setting';
 		const settingValue = 'test-value';

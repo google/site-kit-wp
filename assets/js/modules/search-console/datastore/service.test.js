@@ -50,8 +50,6 @@ describe( 'module/search-console service store', () => {
 		provideSiteInfo( registry );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', () => {

@@ -35,8 +35,6 @@ describe( 'core/site notifications', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'fetchMarkNotification', () => {
 			it.each( [

@@ -43,8 +43,6 @@ describe( 'modules/pagespeed-insights report', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'fetchGetReport', () => {
 			it( 'fetches and returns a report as response', async () => {

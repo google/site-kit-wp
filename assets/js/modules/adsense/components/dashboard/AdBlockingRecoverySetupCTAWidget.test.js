@@ -98,8 +98,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'widget rendering', () => {
 		const shouldRender = {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,

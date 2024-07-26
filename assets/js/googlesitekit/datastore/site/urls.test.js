@@ -29,8 +29,6 @@ describe( 'core/site urls', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getGoogleLocaleAwareURL', () => {
 			it( 'should return the correct URL', () => {

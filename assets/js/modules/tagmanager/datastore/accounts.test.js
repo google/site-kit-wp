@@ -74,8 +74,6 @@ describe( 'modules/tagmanager accounts', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'resetAccounts', () => {
 			it( 'sets accounts and related values back to their initial values', async () => {

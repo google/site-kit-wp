@@ -61,8 +61,6 @@ describe( 'modules/analytics-4 accounts', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'createAccount', () => {
 			const accountTicketID = 'abc123';

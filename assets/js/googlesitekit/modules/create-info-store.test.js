@@ -39,8 +39,6 @@ describe( 'createInfoStore store', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'storeName', () => {
 		it( 'throws an error if storeName is not passed', () => {
 			expect( () => {

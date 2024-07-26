@@ -55,8 +55,6 @@ describe( 'core/site connection', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'fetchGetConnection', () => {
 			it( 'does not require any params', () => {

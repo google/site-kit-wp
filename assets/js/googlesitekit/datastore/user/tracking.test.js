@@ -46,8 +46,6 @@ describe( 'core/user tracking settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'setTrackingEnabled', () => {
 			it.each( [

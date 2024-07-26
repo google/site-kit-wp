@@ -60,8 +60,6 @@ describe( 'createModuleStore store', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'name', () => {
 		it( 'returns the correct default store name', () => {
 			expect( storeDefinition.STORE_NAME ).toEqual( TEST_STORE_NAME );

@@ -41,8 +41,6 @@ describe( 'core/site html', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'resetHTMLForURL', () => {
 			it( 'invalidates the resolver for getHTMLForURL', async () => {

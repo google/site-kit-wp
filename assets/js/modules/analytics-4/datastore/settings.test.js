@@ -82,8 +82,6 @@ describe( 'modules/analytics-4 settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			beforeEach( () => {

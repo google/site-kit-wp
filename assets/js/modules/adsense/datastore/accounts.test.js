@@ -43,8 +43,6 @@ describe( 'modules/adsense accounts', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {} );
 
 	describe( 'selectors', () => {

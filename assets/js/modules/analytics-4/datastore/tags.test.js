@@ -44,8 +44,6 @@ describe( 'modules/analytics tags', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
 			const expectedTag = 'G-2B7M8YQ1K6';

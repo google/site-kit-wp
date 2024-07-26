@@ -32,8 +32,6 @@ describe( 'core/site store', () => {
 		store = registry.stores[ CORE_SITE ].store;
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'reducer', () => {
 		it( 'has the appropriate initial state', () => {
 			const state = store.getState();

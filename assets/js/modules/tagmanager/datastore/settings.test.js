@@ -110,8 +110,6 @@ describe( 'modules/tagmanager settings', () => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
-	afterEach( () => {} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );

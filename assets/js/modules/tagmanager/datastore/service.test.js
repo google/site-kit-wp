@@ -41,8 +41,6 @@ describe( 'module/tagmanager service store', () => {
 		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 	} );
 
-	afterAll( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', () => {

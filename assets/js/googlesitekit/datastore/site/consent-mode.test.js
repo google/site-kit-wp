@@ -46,8 +46,6 @@ describe( 'core/site Consent Mode', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'saveConsentModeSettings', () => {
 			it( 'saves the settings and returns the response', async () => {

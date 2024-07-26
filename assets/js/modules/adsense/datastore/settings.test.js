@@ -61,8 +61,6 @@ describe( 'modules/adsense settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {

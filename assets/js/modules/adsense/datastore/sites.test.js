@@ -49,8 +49,6 @@ describe( 'modules/adsense sites', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {} );
 
 	describe( 'selectors', () => {

@@ -72,8 +72,6 @@ describe( 'core/user user-input-settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		beforeEach( () => {
 			registry

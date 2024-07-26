@@ -37,8 +37,6 @@ describe( 'core/site urls', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'setShowAdminBar', () => {
 			beforeEach( () => {

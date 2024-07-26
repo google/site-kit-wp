@@ -71,8 +71,6 @@ describe( 'core/user authentication', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		test( 'fetchGetAuthentication not to require any params', () => {
 			muteFetch( coreUserDataEndpointRegExp );

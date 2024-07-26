@@ -40,8 +40,6 @@ describe( 'modules/analytics-4 containers', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'selectors', () => {
 		describe( 'getGoogleTagContainer', () => {
 			const measurementID = 'G-2B7M8YQ1K6';

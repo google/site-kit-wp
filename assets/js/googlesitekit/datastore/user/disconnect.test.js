@@ -35,8 +35,6 @@ describe( 'core/user disconnect', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'disconnect', () => {
 		it( 'does not require any params', () => {
 			expect( () => {

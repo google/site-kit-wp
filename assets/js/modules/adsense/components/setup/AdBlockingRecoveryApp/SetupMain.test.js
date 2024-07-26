@@ -76,8 +76,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		getByRole = renderResult.getByRole;
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'Place Tag step', () => {
 		it( 'Should fire the event tracking when rendered', () => {
 			expect( container ).toHaveTextContent(

@@ -33,8 +33,6 @@ describe( 'core/widgets Widget areas', () => {
 		store = registry.stores[ CORE_WIDGETS ].store;
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'assignWidgetArea', () => {
 			it( 'should implicitly create a context when assigning a widget area, if one does not exist', () => {

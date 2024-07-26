@@ -93,8 +93,6 @@ describe( 'createFetchStore store', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		it( 'includes the expected actions', () => {
 			const fetchStoreDefinition = createFetchStore( {

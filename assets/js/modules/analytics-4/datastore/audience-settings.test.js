@@ -79,8 +79,6 @@ describe( 'modules/analytics-4 audience settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		describe( 'setConfiguredAudiences', () => {
 			it( 'should throw an error if the provided audiences are not an array', () => {

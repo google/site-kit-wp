@@ -30,8 +30,6 @@ describe( 'core/site client side cache', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {
 		beforeEach( async () => {
 			await clearCache();

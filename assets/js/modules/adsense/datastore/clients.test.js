@@ -43,8 +43,6 @@ describe( 'modules/adsense clients', () => {
 		API.setUsingCache( true );
 	} );
 
-	afterEach( () => {} );
-
 	describe( 'actions', () => {} );
 
 	describe( 'selectors', () => {

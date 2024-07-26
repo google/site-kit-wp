@@ -50,8 +50,6 @@ describe( 'Footer', () => {
 		] );
 	} );
 
-	afterEach( () => {} );
-
 	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
