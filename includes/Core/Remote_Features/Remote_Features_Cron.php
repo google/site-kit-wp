@@ -22,20 +22,21 @@ class Remote_Features_Cron {
 	const CRON_ACTION = 'googlesitekit_cron_update_remote_features';
 
 	/**
-	 * Remote_Features_Syncer instance.
+	 * Cron callback reference.
 	 *
-	 * @var Remote_Features_Syncer
+	 * @var callable
 	 */
-	private Remote_Features_Syncer $syncer;
+	private $cron_callback;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
-	 * @param Remote_Features_Syncer $syncer Syncer instance.
+	 *
+	 * @param callable $callback Function to call on the cron action.
 	 */
-	public function __construct( Remote_Features_Syncer $syncer ) {
-		$this->syncer = $syncer;
+	public function __construct( callable $callback ) {
+		$this->cron_callback = $callback;
 	}
 
 	/**
@@ -44,7 +45,7 @@ class Remote_Features_Cron {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( self::CRON_ACTION, array( $this->syncer, 'pull_remote_features' ) );
+		add_action( self::CRON_ACTION, $this->cron_callback );
 	}
 
 	/**

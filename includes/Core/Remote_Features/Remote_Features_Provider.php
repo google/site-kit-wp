@@ -79,7 +79,7 @@ class Remote_Features_Provider {
 			new Site_Connected_Guard( $this->credentials ),
 			new Using_Proxy_Connection_Guard( $this->credentials )
 		);
-		$this->cron        = new Remote_Features_Cron( $this->syncer );
+		$this->cron        = new Remote_Features_Cron( array( $this->syncer, 'pull_remote_features' ) );
 	}
 
 	/**
