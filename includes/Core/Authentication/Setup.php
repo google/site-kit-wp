@@ -86,9 +86,9 @@ class Setup {
 	 *
 	 * @since 1.48.0
 	 *
-	 * @param Context         $context         Context instance.
-	 * @param User_Options    $user_options    User_Options instance.
-	 * @param Authentication  $authentication  Authentication instance.
+	 * @param Context        $context        Context instance.
+	 * @param User_Options   $user_options   User_Options instance.
+	 * @param Authentication $authentication Authentication instance.
 	 */
 	public function __construct(
 		Context $context,
