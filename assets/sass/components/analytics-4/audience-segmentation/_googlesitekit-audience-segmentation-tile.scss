@@ -198,6 +198,23 @@
 					.googlesitekit-audience-segmentation-partial-data-notice {
 						margin-top: 10px;
 					}
+
+					.googlesitekit-audience-segmentation-tile-metric__no-data {
+						p {
+							color: $c-surfaces-on-surface;
+							font-size: $fs-body-sm;
+							font-weight: $fw-normal;
+							line-height: 16px;
+							margin: 0;
+						}
+
+						.mdc-button {
+							font-weight: $fw-medium;
+							margin-top: 8px;
+							min-height: 32px;
+							padding: 6px $grid-gap-phone;
+						}
+					}
 				}
 			}
 		}

@@ -30,7 +30,7 @@ class Consent_Mode {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 * @var Context
 	 */
 	protected $context;
@@ -112,7 +112,7 @@ class Consent_Mode {
 	 * from `admin.php` among others. These functions are properly loaded during the
 	 * AJAX callback, ensuring the installation and activation processes can execute correctly.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	public function install_activate_wp_consent_api() {
 		check_ajax_referer( 'updates' );
@@ -165,7 +165,7 @@ class Consent_Mode {
 	/**
 	 * Registers and Enqueues the consent mode script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	protected function register_and_enqueue_script() {
 		$consent_mode_script = new Script(
@@ -182,7 +182,7 @@ class Consent_Mode {
 	 * Prints the gtag consent snippet.
 	 *
 	 * @since 1.122.0
-	 * @since n.e.x.t Refactored core script to external js file transpiled with webpack.
+	 * @since 1.132.0 Refactored core script to external js file transpiled with webpack.
 	 */
 	protected function render_gtag_consent_data_layer_snippet() {
 		/**

@@ -33,10 +33,48 @@ import { Component } from '@wordpress/element';
 import { Button } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../material-components';
 import OptIn from '../OptIn';
+import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
+import { setItem } from '../../googlesitekit/api/cache';
+import { trackEvent } from '../../util';
 
 class WizardStepAuthentication extends Component {
+	constructor( props ) {
+		super( props );
+		this.onButtonClick = this.onButtonClick.bind( this );
+	}
+
+	async onButtonClick() {
+		const { connectURL, isSiteKitConnected } = this.props;
+
+		await Promise.all( [
+			// Cache the start of the user setup journey.
+			// This will be used for event tracking logic after successful setup.
+			setItem( 'start_user_setup', true ),
+			trackEvent(
+				`${ VIEW_CONTEXT_SPLASH }_setup`,
+				'start_user_setup',
+				'custom-oauth'
+			),
+		] );
+
+		if ( ! isSiteKitConnected ) {
+			await Promise.all( [
+				// Cache the start of the site setup journey.
+				// This will be used for event tracking logic after successful setup.
+				setItem( 'start_site_setup', true ),
+				trackEvent(
+					`${ VIEW_CONTEXT_SPLASH }_setup`,
+					'start_site_setup',
+					'custom-oauth'
+				),
+			] );
+		}
+
+		document.location = connectURL;
+	}
+
 	render() {
-		const { connectURL, needReauthenticate, resetAndRestart } = this.props;
+		const { needReauthenticate, resetAndRestart } = this.props;
 
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--two">
@@ -69,11 +107,7 @@ class WizardStepAuthentication extends Component {
 								</p>
 							) }
 							<p>
-								<Button
-									onClick={ () => {
-										document.location = connectURL;
-									} }
-								>
+								<Button onClick={ this.onButtonClick }>
 									{ __(
 										'Sign in with Google',
 										'google-site-kit'

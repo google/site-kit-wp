@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
 /**
  * Class for the Reader Revenue Manager tag guard.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Determines whether the guarded tag can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */

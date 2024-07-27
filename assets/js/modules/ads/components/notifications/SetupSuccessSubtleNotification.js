@@ -24,9 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CheckFill from '../../../../../svg/icons/check-fill.svg';
-import { Button } from 'googlesitekit-components';
-import { Grid, Cell, Row } from '../../../../material-components';
+import SubtleNotification from '../../../analytics-4/components/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 
 export default function SetupSuccessSubtleNotification() {
@@ -45,35 +43,16 @@ export default function SetupSuccessSubtleNotification() {
 	}
 
 	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className="googlesitekit-subtle-notification"
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
-					</div>
-					<div className="googlesitekit-subtle-notification__content">
-						<p>
-							{ __(
-								'Success! Your Conversion Tracking ID was added to your site',
-								'google-site-kit'
-							) }
-						</p>
-						<p className="googlesitekit-subtle-notification__secondary_description">
-							{ __(
-								'You can now track conversions for your Ads campaigns',
-								'google-site-kit'
-							) }
-						</p>
-					</div>
-					<Button tertiary onClick={ onDismiss }>
-						{ __( 'Got it', 'google-site-kit' ) }
-					</Button>
-				</Cell>
-			</Row>
-		</Grid>
+		<SubtleNotification
+			title={ __(
+				'Success! Your Conversion Tracking ID was added to your site',
+				'google-site-kit'
+			) }
+			description={ __(
+				'You can now track conversions for your Ads campaigns',
+				'google-site-kit'
+			) }
+			onDismiss={ onDismiss }
+		/>
 	);
 }

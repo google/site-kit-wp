@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.6
 Requires PHP:      7.4
-Stable tag:        1.131.0
+Stable tag:        1.132.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,28 +109,34 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.131.0 =
+= 1.132.0 =
 
 **Enhanced**
 
-* Update margins for the Audience Segmentation widget's title. See [#8862](https://github.com/google/site-kit-wp/issues/8862).
-* Improve margins between "New" badge and text. See [#8861](https://github.com/google/site-kit-wp/issues/8861).
-* Add Reader Revenue Manager API functionality to retrieve publications. See [#8791](https://github.com/google/site-kit-wp/issues/8791).
-* Update the `useInViewSelect` hook to use dependencies. See [#8789](https://github.com/google/site-kit-wp/issues/8789).
-* Add Reader Revenue Module setup and settings view foundations. See [#8786](https://github.com/google/site-kit-wp/issues/8786).
-* Update Consent Mode to support additional consent types out of the box. See [#8385](https://github.com/google/site-kit-wp/issues/8385).
-* Detect WP Consent API plugin even when it's installed in a non-standard folder name. See [#8307](https://github.com/google/site-kit-wp/issues/8307).
-* Implement the loading state for the audience selection panel. See [#8162](https://github.com/google/site-kit-wp/issues/8162).
-* If an error occurs while loading the Audience Selection Panel, show it an an error state, with a notice that allows the data loading to be retried. See [#8161](https://github.com/google/site-kit-wp/issues/8161).
-* Handle errors in the Audience Segmentation setup flow, showing an error modal allowing the setup to be retried, or relevant permissions to be requested. See [#8134](https://github.com/google/site-kit-wp/issues/8134).
-
-**Changed**
-
-* Update `@wordpress/data` to version `4.27.3`, including a patch to avoid breaking changes. See [#8826](https://github.com/google/site-kit-wp/issues/8826).
+* Implement the dismiss functionality for the new notifications infrastructure. See [#8974](https://github.com/google/site-kit-wp/issues/8974).
+* Add Reader Revenue Manager data store functionality to get service URL. See [#8848](https://github.com/google/site-kit-wp/issues/8848).
+* Populate the feature list in the Reader Revenue Manager disconnection confirmation modal. See [#8845](https://github.com/google/site-kit-wp/issues/8845).
+* Include the Subscribe with Google external JavaScript file and configure it for the Reader Revenue Manager service. See [#8844](https://github.com/google/site-kit-wp/issues/8844).
+* Provide the Settings UI to allow a user to select a publication in the Reader Revenue Manager module. See [#8837](https://github.com/google/site-kit-wp/issues/8837).
+* Add infrastructure for synchronizing the onboarding state of a publication in the Reader Revenue Manager module. See [#8796](https://github.com/google/site-kit-wp/issues/8796).
+* Add Reader Revenue Manager data store functionality to find a matching publication. See [#8795](https://github.com/google/site-kit-wp/issues/8795).
+* Add Reader Revenue Manager data store functionality to list available publications. See [#8794](https://github.com/google/site-kit-wp/issues/8794).
+* Add Reader Revenue Manager module settings infrastructure. See [#8793](https://github.com/google/site-kit-wp/issues/8793).
+* Improve Authorize Application screen action button styling. See [#8584](https://github.com/google/site-kit-wp/issues/8584).
+* Allow users to install Consent Mode plugin from Site Kit Settings. See [#8521](https://github.com/google/site-kit-wp/issues/8521).
+* Update Consent Mode to prevent enqueuing duplicate consent commands on page load. See [#8387](https://github.com/google/site-kit-wp/issues/8387).
+* Update the Consent Mode Setup CTA banner not to be shown if the user toggles the consent mode via settings. See [#8386](https://github.com/google/site-kit-wp/issues/8386).
+* Extract inline consent mode JS to external script. See [#8384](https://github.com/google/site-kit-wp/issues/8384).
+* Update the layout of the graphic on the Consent Mode Setup CTA banner. See [#8376](https://github.com/google/site-kit-wp/issues/8376).
+* Improve the "Top recent trending pages" empty state when no posts have been recently published. See [#8315](https://github.com/google/site-kit-wp/issues/8315).
+* Update module infrastructure to add proper support for dashboard effects. See [#8211](https://github.com/google/site-kit-wp/issues/8211).
+* Provide the ability to set up the Audience Segmentation feature from the Settings screen. See [#8178](https://github.com/google/site-kit-wp/issues/8178).
+* Implement the Audience Segmentation "no audiences" banner. See [#8155](https://github.com/google/site-kit-wp/issues/8155).
+* Show a loading state with placeholders for the content while data is being retrieved for an Audience Tile. See [#8145](https://github.com/google/site-kit-wp/issues/8145).
 
 **Fixed**
 
-* Fix bug that prevented Event Provider JavaScript files from loading. See [#8955](https://github.com/google/site-kit-wp/issues/8955).
-* Add a "Learn more" link for Enhanced Conversion Tracking. See [#8941](https://github.com/google/site-kit-wp/issues/8941).
+* Fix measurement of successful setup completion events. See [#9039](https://github.com/google/site-kit-wp/issues/9039).
+* Ensure WP Forms events are only sent once when Popup Maker plugin is installed. See [#8944](https://github.com/google/site-kit-wp/issues/8944).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
