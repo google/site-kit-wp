@@ -107,7 +107,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 
 	it.each( [
 		[
-			'Your publication requires further setup in Reader Revenue Manager.',
+			'Your publication requires further setup in Reader Revenue Manager',
 			ONBOARDING_ACTION_REQUIRED,
 		],
 		[
