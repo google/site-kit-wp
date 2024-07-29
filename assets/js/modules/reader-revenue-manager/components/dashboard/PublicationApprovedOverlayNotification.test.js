@@ -73,10 +73,10 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			)
 		).toBeInTheDocument();
 
-		// Make sure that `googlesitekit--overlay-notification--reader-revenue-manager` class is present for the component wrapper.
+		// Make sure that `googlesitekit-reader-revenue-manager-publication-approved-notification` class is present for the component wrapper.
 		expect(
 			document.querySelector(
-				'.googlesitekit--overlay-notification--reader-revenue-manager'
+				'.googlesitekit-reader-revenue-manager-publication-approved-notification'
 			)
 		).toBeInTheDocument();
 	} );
