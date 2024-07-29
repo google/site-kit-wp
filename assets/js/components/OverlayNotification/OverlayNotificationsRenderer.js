@@ -28,11 +28,11 @@ import { useFeature } from '../../hooks/useFeature';
 import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
-import PublicationApprovedOverlayNotification from '../../modules/reader-revenue-manager/components/PublicationApprovedOverlayNotification';
+import PublicationApprovedOverlayNotification from '../../modules/reader-revenue-manager/components/dashboard/PublicationApprovedOverlayNotification';
 
 export default function OverlayNotificationsRenderer() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-	const readerRevenueEnabled = useFeature( 'rrmModule' );
+	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
 
 	return (
 		<Fragment>
@@ -41,7 +41,7 @@ export default function OverlayNotificationsRenderer() {
 			{ audienceSegmentationEnabled && (
 				<AudienceSegmentationIntroductoryOverlayNotification />
 			) }
-			{ readerRevenueEnabled && (
+			{ readerRevenueManagerEnabled && (
 				<PublicationApprovedOverlayNotification />
 			) }
 		</Fragment>

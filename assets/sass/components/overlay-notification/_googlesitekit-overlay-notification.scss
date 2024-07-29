@@ -98,18 +98,4 @@
 			padding-top: 0;
 		}
 	}
-
-	&.googlesitekit--overlay-notification--reader-revenue-manager {
-		max-width: 348px;
-
-		.mdc-button--raised {
-			@extend .mdc-button--raised;
-			font-weight: $fw-medium;
-			padding: 10px $grid-gap-phone;
-		}
-
-		.googlesitekit-cta-link:hover {
-			text-decoration: none;
-		}
-	}
 }

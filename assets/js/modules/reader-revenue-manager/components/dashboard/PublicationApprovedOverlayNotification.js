@@ -24,21 +24,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import OverlayNotification from '../../../components/OverlayNotification/OverlayNotification';
-import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
-import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
-import useViewOnly from '../../../hooks/useViewOnly';
-import useDashboardType from '../../../hooks/useDashboardType';
-import Link from '../../../components/Link';
+import OverlayNotification from '../../../../components/OverlayNotification/OverlayNotification';
+import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
+import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import useDashboardType from '../../../../hooks/useDashboardType';
+import ExternalIcon from '../../../../../svg/icons/external.svg';
 import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-} from '../datastore/constants';
+} from '../../datastore/constants';
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';
@@ -91,13 +91,13 @@ export default function PublicationApprovedOverlayNotification() {
 		);
 	};
 
-	if ( isDismissed || isDismissing ) {
+	if ( isDismissing ) {
 		return null;
 	}
 
 	return (
 		<OverlayNotification
-			classNames="googlesitekit--overlay-notification--reader-revenue-manager"
+			className="googlesitekit-reader-revenue-manager-publication-approved-notification"
 			GraphicDesktop={ ReaderRevenueManagerIntroductoryGraphicDesktop }
 			GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
 			shouldShowNotification={ shouldShowNotification }
@@ -126,15 +126,13 @@ export default function PublicationApprovedOverlayNotification() {
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
 
-				<Link
-					className="mdc-button mdc-button--raised mdc-ripple-upgraded"
-					external
+				<Button
 					href={ serviceURL }
-					inverse
-					linkButton
+					trailingIcon={ <ExternalIcon width={ 14 } height={ 14 } /> }
+					target="_blank"
 				>
 					{ __( 'Enable features', 'google-site-kit' ) }
-				</Link>
+				</Button>
 			</div>
 		</OverlayNotification>
 	);

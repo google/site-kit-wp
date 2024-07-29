@@ -19,28 +19,25 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { render } from '../../../../../tests/js/test-utils';
+import { createTestRegistry } from '../../../../../../tests/js/utils';
+import { render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
-} from './PublicationApprovedOverlayNotification';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+} from '../dashboard/PublicationApprovedOverlayNotification';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../components/Root/ViewContextContext';
-import { UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION } from '../datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+} from '../../../../googlesitekit/constants';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 describe( 'PublicationApprovedOverlayNotification', () => {
 	let registry;
 
-	beforeAll( () => {
-		registry = createTestRegistry();
-	} );
-
 	beforeEach( () => {
+		registry = createTestRegistry();
 		registry
 			.dispatch( CORE_UI )
 			.setValue(
@@ -115,9 +112,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			] );
 
 		const { container, waitForRegistry } = render(
-			<ViewContextProvider
-				value={ VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
-			>
+			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
 				<PublicationApprovedOverlayNotification />
 			</ViewContextProvider>,
 			{

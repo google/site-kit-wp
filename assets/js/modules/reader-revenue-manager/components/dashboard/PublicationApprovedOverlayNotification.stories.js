@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import PublicationApprovedOverlayNotification from './PublicationApprovedOverlayNotification';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION } from '../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../components/Root/ViewContextContext';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION } from '../../datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 
 function Template() {
 	return (

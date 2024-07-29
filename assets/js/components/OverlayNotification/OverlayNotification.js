@@ -36,7 +36,7 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
 export default function OverlayNotification( {
-	classNames = '',
+	className = '',
 	children,
 	GraphicDesktop,
 	GraphicMobile,
@@ -74,7 +74,7 @@ export default function OverlayNotification( {
 
 	const classes = classnames(
 		'googlesitekit-overlay-notification',
-		classNames
+		className
 	);
 
 	if ( breakpoint === BREAKPOINT_SMALL ) {
