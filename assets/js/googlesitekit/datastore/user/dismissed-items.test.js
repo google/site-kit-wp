@@ -133,6 +133,7 @@ describe( 'core/user dismissed-items', () => {
 				const dismissedItems = registry
 					.select( CORE_USER )
 					.getDismissedItems();
+
 				expect( dismissedItems ).toEqual( [ 'baz' ] );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -178,6 +179,7 @@ describe( 'core/user dismissed-items', () => {
 				await registry
 					.dispatch( CORE_USER )
 					.removeDismissedItems( 'foo' );
+
 				expect(
 					registry
 						.select( CORE_USER )
@@ -185,6 +187,7 @@ describe( 'core/user dismissed-items', () => {
 							[ 'foo' ],
 						] )
 				).toMatchObject( response );
+
 				expect( console ).toHaveErrored();
 			} );
 		} );
