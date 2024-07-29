@@ -17,3 +17,4 @@
  */
 
 export { default as PublicationSelect } from './PublicationSelect';
+export { default as PublicationCreate } from './PublicationCreate';
