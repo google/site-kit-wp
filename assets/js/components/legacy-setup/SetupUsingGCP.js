@@ -34,7 +34,6 @@ import { compose } from '@wordpress/compose';
 import { withSelect } from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { Button } from 'googlesitekit-components';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_SETUP,
@@ -43,8 +42,7 @@ import {
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Layout from '../layout/Layout';
-import { trackEvent } from '../../util';
-import { clearCache, setItem } from '../../googlesitekit/api/cache';
+import { clearCache } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
@@ -189,32 +187,8 @@ class SetupUsingGCP extends Component {
 		return '';
 	}
 
-	async onButtonClick() {
-		const { isSiteKitConnected, connectURL } = this.state;
-
-		await Promise.all( [
-			// Cache the start of the user setup journey.
-			// This will be used for event tracking logic after successful setup.
-			setItem( 'start_user_setup', true ),
-			trackEvent(
-				VIEW_CONTEXT_SPLASH,
-				'start_user_setup',
-				'custom-oauth'
-			),
-		] );
-
-		if ( ! isSiteKitConnected ) {
-			await Promise.all( [
-				// Cache the start of the site setup journey.
-				// This will be used for event tracking logic after successful setup.
-				setItem( 'start_site_setup', true ),
-				trackEvent(
-					VIEW_CONTEXT_SPLASH,
-					'start_site_setup',
-					'custom-oauth'
-				),
-			] );
-		}
+	onButtonClick() {
+		const { connectURL } = this.state;
 
 		document.location = connectURL;
 	}

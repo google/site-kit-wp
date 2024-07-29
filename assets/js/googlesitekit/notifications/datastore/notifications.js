@@ -24,23 +24,32 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import Data, {
+	commonActions,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
-import { NOTIFICATION_AREAS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_VIEW_CONTEXTS,
+} from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
+const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
 
 export const initialState = {
 	notifications: {},
+	queuedNotifications: undefined,
 };
 
 export const actions = {
 	/**
 	 * Registers a notification with a given `id` slug and settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
@@ -102,13 +111,21 @@ export const actions = {
 			type: REGISTER_NOTIFICATION,
 		};
 	},
+	receiveQueuedNotifications( queuedNotifications ) {
+		return {
+			payload: {
+				queuedNotifications,
+			},
+			type: RECEIVE_QUEUED_NOTIFICATIONS,
+		};
+	},
 	/**
 	 * Dismisses the given notification by its id.
 	 *
 	 * Currently, this action simply dispatches the call to the dismissed items API.
 	 * We can potentially add more notification-specific dismissal logic here in the future.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {string} id                         Notification id to dismiss.
 	 * @param {Object} options                    Dismiss notification options.
@@ -155,21 +172,113 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			break;
 		}
 
+		case RECEIVE_QUEUED_NOTIFICATIONS: {
+			state.queuedNotifications = payload.queuedNotifications;
+			break;
+		}
+
 		default:
 			break;
 	}
 } );
 
-export const resolvers = {};
+export const resolvers = {
+	*getQueuedNotifications( viewContext ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const notifications = registry
+			.select( CORE_NOTIFICATIONS )
+			.getNotifications();
+
+		// Wait for all dismissed items to be available before filtering.
+		yield Data.commonActions.await(
+			registry.resolveSelect( CORE_USER ).getDismissedItems()
+		);
+
+		const filteredNotifications = Object.values( notifications ).filter(
+			( notification ) => {
+				if ( ! notification.viewContexts.includes( viewContext ) ) {
+					return false;
+				}
+
+				if (
+					!! notification.isDismissible &&
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.isNotificationDismissed( notification.id )
+				) {
+					return false;
+				}
+
+				return true;
+			}
+		);
+
+		const checkRequirementsResults = yield Data.commonActions.await(
+			Promise.all(
+				filteredNotifications.map( async ( { checkRequirements } ) => {
+					if ( typeof checkRequirements === 'function' ) {
+						try {
+							return await checkRequirements( registry );
+						} catch ( e ) {
+							return false; // Prevent `Promise.all()` from being rejected for a single failed promise.
+						}
+					}
+
+					return true;
+				} )
+			)
+		);
+
+		const queuedNotifications = filteredNotifications.filter(
+			( _, i ) => !! checkRequirementsResults[ i ]
+		);
+
+		queuedNotifications.sort( ( a, b ) => {
+			return a.priority - b.priority;
+		} );
+
+		yield actions.receiveQueuedNotifications( queuedNotifications );
+	},
+};
 
 export const selectors = {
+	/**
+	 * Fetches all registered notifications from state, regardless of whether they are dismissed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Array of notification objects.
+	 */
+	getNotifications: ( state ) => {
+		return state.notifications;
+	},
+	/**
+	 * Fetches the queue of registered notifications which are filtered and sorted.
+	 *
+	 * Notifications are filtered and sorted in the corresponding resolver.
+	 * They are filtered based on the given `viewContext`, their dismissal state
+	 * and their `checkRequirements` callback. They are sorted by their `priority`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state       Data store's state.
+	 * @param {string} viewContext The viewContext to fetch notifications for.
+	 * @return {(Array|undefined)} Array of notification objects.
+	 */
+	getQueuedNotifications: ( state, viewContext ) => {
+		invariant( viewContext, 'viewContext is required.' );
+
+		return state.queuedNotifications;
+	},
 	/**
 	 * Determines whether a notification is dismissed or not.
 	 *
 	 * Currently, this selector simply forwards the call to the dismissed items API.
 	 * We can potentially add more notification-specific logic here in the future.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} id    Notification id.

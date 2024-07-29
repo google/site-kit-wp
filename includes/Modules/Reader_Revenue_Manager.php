@@ -104,7 +104,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Checks whether the module is connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -121,7 +121,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -132,7 +132,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -317,7 +317,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
@@ -328,7 +328,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Registers the Reader Revenue Manager tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	public function register_tag() {
 		$module_settings = $this->get_settings();
@@ -354,7 +354,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return array An array of all debug fields.
 	 */

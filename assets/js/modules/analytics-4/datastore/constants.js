@@ -212,6 +212,9 @@ export const SITE_KIT_AUDIENCE_DEFINITIONS = {
 
 export const AUDIENCE_SEGMENTATION_SETUP_FORM = 'audiencePermissionsSetup';
 
+export const AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE =
+	'audienceTileCustomDimensionCreate';
+
 export const AUDIENCE_TYPE_SORT_ORDER = {
 	USER_AUDIENCE: 0,
 	SITE_KIT_AUDIENCE: 1,
