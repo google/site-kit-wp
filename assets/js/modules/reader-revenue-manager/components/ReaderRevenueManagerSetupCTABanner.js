@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -42,6 +42,7 @@ import useActivateModuleCallback from '../../../hooks/useActivateModuleCallback'
 import whenInactive from '../../../util/when-inactive';
 import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
@@ -50,6 +51,7 @@ import { Cell, Grid, Row } from '../../../material-components';
 import SetupSVG from '../../../../svg/graphics/reader-revenue-manager-setup.svg';
 import SetupTabletSVG from '../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
+import Link from '../../../components/Link';
 
 function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 	const breakpoint = useBreakpoint();
@@ -72,6 +74,10 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		// For the second dismissal, dismiss permanently.
 		await dismissItem( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY );
 	}, [ dismissItem ] );
+
+	const readerRevenueManagerDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'reader-revenue-manager' )
+	);
 
 	if ( isDismissed || isDismissed === undefined ) {
 		return <WidgetNull />;
@@ -101,9 +107,25 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 											) }
 										</h4>
 										<p className="googlesitekit-setup-cta-banner__description">
-											{ __(
-												'Turn casual visitors into loyal readers and earn more from your content with subscriptions, contributions, ad optimization and reader insight tools.',
-												'google-site-kit'
+											{ createInterpolateElement(
+												__(
+													'Turn casual visitors into loyal readers and earn more from your content with subscriptions, contributions, ad optimization and reader insight tools. <a>Learn more</a>',
+													'google-site-kit'
+												),
+												{
+													a: (
+														<Link
+															href={
+																readerRevenueManagerDocumentationURL
+															}
+															external
+															aria-label={ __(
+																'Learn more about reader revenue manager',
+																'google-site-kit'
+															) }
+														/>
+													),
+												}
 											) }
 										</p>
 
