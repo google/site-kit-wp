@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -130,7 +130,13 @@ export default function PublicationSelect( props ) {
 				( { publicationId, displayName } ) => (
 					// eslint-disable-next-line sitekit/acronym-case
 					<Option key={ publicationId } value={ publicationId }>
-						{ displayName }
+						{ sprintf(
+							/* translators: 1: Publication display name, 2: Publication ID */
+							__( '%1$s (%2$s)', 'google-site-kit' ),
+							displayName,
+							// eslint-disable-next-line sitekit/acronym-case
+							publicationId
+						) }
 					</Option>
 				)
 			) }

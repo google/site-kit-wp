@@ -25,7 +25,7 @@ import { NOTIFICATION_AREAS } from './datastore/constants';
 /**
  * Registers notifications not specific to any one particular module.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  *
  * @param {Object} notificationsAPI Notifications API.
  */

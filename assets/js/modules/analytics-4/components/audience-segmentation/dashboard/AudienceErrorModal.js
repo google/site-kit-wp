@@ -42,6 +42,8 @@ export default function AudienceErrorModal( {
 	apiErrors,
 	hasOAuthError,
 	inProgress,
+	title,
+	description,
 	onCancel = () => {},
 	onRetry = () => {},
 } ) {
@@ -71,11 +73,11 @@ export default function AudienceErrorModal( {
 		isInsufficientPermissionsError( error )
 	);
 
-	let title, description, confirmButton, buttonLink;
+	let errorTitle, errorDescription, confirmButton, buttonLink;
 
 	if ( hasOAuthError ) {
-		title = __( 'Analytics update failed', 'google-site-kit' );
-		description = createInterpolateElement(
+		errorTitle = __( 'Analytics update failed', 'google-site-kit' );
+		errorDescription = createInterpolateElement(
 			__(
 				'Setup was interrupted because you did not grant the necessary permissions. <HelpLink />',
 				'google-site-kit'
@@ -94,8 +96,8 @@ export default function AudienceErrorModal( {
 		);
 		confirmButton = __( 'Retry', 'google-site-kit' );
 	} else if ( hasInsufficientPermissionsError ) {
-		title = __( 'Insufficient permissions', 'google-site-kit' );
-		description = createInterpolateElement(
+		errorTitle = __( 'Insufficient permissions', 'google-site-kit' );
+		errorDescription = createInterpolateElement(
 			__(
 				'You’ll need to contact your administrator. Trouble getting access? <HelpLink />',
 				'google-site-kit'
@@ -111,11 +113,14 @@ export default function AudienceErrorModal( {
 		confirmButton = __( 'Request access', 'google-site-kit' );
 		buttonLink = requestAccessURL;
 	} else {
-		title = __( 'Failed to set up visitor groups', 'google-site-kit' );
-		description = __(
-			'Oops! Something went wrong. Retry enabling groups.',
-			'google-site-kit'
-		);
+		errorTitle =
+			title || __( 'Failed to set up visitor groups', 'google-site-kit' );
+		errorDescription =
+			description ||
+			__(
+				'Oops! Something went wrong. Retry enabling groups.',
+				'google-site-kit'
+			);
 		confirmButton = __( 'Retry', 'google-site-kit' );
 	}
 
@@ -124,8 +129,8 @@ export default function AudienceErrorModal( {
 			<ModalDialog
 				dialogActive
 				buttonLink={ buttonLink }
-				title={ title }
-				subtitle={ description }
+				title={ errorTitle }
+				subtitle={ errorDescription }
 				handleConfirm={ onRetry }
 				confirmButton={ confirmButton }
 				handleDialog={ onCancel }

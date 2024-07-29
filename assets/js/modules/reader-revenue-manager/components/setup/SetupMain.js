@@ -46,8 +46,10 @@ export default function SetupMain() {
 
 			<div>
 				<p>
-					This is just added as a placeholder component to assist with
-					testing.
+					{ __(
+						'Select your preferred publication to connect with Site Kit',
+						'google-site-kit'
+					) }
 				</p>
 				<PublicationSelect />
 				<PublicationOnboardingStateNotice />

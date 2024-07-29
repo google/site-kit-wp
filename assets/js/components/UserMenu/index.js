@@ -47,9 +47,11 @@ import Details from './Details';
 import Item from './Item';
 import DisconnectIcon from '../../../svg/icons/disconnect.svg';
 import ManageSitesIcon from '../../../svg/icons/manage-sites.svg';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '../../modules/analytics-4/datastore/constants';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -68,6 +70,13 @@ export default function UserMenu() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
 			googlesitekit_context: 'revoked',
 		} )
+	);
+
+	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'isAutoCreatingCustomDimensionsForAudience'
+		)
 	);
 
 	const [ dialogActive, toggleDialog ] = useState( false );
@@ -199,6 +208,7 @@ export default function UserMenu() {
 				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 			>
 				<Button
+					disabled={ isAutoCreatingCustomDimensionsForAudience }
 					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
 					text
@@ -223,20 +233,29 @@ export default function UserMenu() {
 					aria-haspopup="menu"
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
-					aria-label={ __( 'Account', 'google-site-kit' ) }
+					aria-label={
+						isAutoCreatingCustomDimensionsForAudience
+							? undefined
+							: __( 'Account', 'google-site-kit' )
+					}
 					tooltip
 					tooltipEnterDelayInMS={ 500 }
 					customizedTooltip={
-						<span aria-label={ accountLabel }>
-							<strong>
-								{ __( 'Google Account', 'google-site-kit' ) }
-							</strong>
-							<br />
-							<br />
-							{ userFullName }
-							{ userFullName && <br /> }
-							{ userEmail }
-						</span>
+						isAutoCreatingCustomDimensionsForAudience ? null : (
+							<span aria-label={ accountLabel }>
+								<strong>
+									{ __(
+										'Google Account',
+										'google-site-kit'
+									) }
+								</strong>
+								<br />
+								<br />
+								{ userFullName }
+								{ userFullName && <br /> }
+								{ userEmail }
+							</span>
+						)
 					}
 				/>
 
