@@ -130,7 +130,7 @@ const baseActions = {
 	),
 
 	/**
-	 * Removes dismissed items by slug.
+	 * Removes dismissed items by their slugs.
 	 *
 	 * @since n.e.x.t
 	 *
