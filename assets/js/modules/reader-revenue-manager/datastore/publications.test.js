@@ -217,6 +217,52 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						)
 				).toBe( true );
 			} );
+
+			it( 'should not set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION when publication status is already complete', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 3 ];
+
+				// Set the current settings.
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: settings,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBeUndefined();
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				// Ensure that the UI key is not set.
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBeUndefined();
+			} );
 		} );
 
 		describe( 'findMatchedPublication', () => {

@@ -129,8 +129,9 @@ const baseActions = {
 
 		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
 		if (
+			onboardingState !== currentOnboardingState &&
 			onboardingState ===
-			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
 		) {
 			registry
 				.dispatch( CORE_UI )
