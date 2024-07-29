@@ -283,6 +283,137 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( publication ).toEqual( publications[ 0 ] );
 			} );
 		} );
+
+		describe( 'maybeSyncPublicationOnboardingState', () => {
+			it( 'should not sync publication onboarding state when last sync was less than an hour ago', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 0 ];
+
+				const lastSyncedMS = Date.now();
+
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					publicationOnboardingStateLastSyncedAtMs: lastSyncedMS,
+				};
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: {
+						...settings,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.maybeSyncPublicationOnboardingState();
+
+				expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateLastSyncedAtMs()
+				).toBe( lastSyncedMS );
+			} );
+
+			it( 'should sync publication onboarding state when last sync was more than an hour agp', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 0 ];
+
+				const lastSyncedMS = Date.now() - 1000 * 60 * 60 - 1;
+
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					publicationOnboardingStateLastSyncedAtMs: lastSyncedMS,
+				};
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: {
+						...settings,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.maybeSyncPublicationOnboardingState();
+
+				expect( fetchMock ).toHaveFetched( settingsEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateLastSyncedAtMs()
+				).not.toBe( lastSyncedMS );
+			} );
+
+			it( 'should sync publication onboarding state when `publicationOnboardingStateLastSyncedAtMs` is 0', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 0 ];
+
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: {
+						...settings,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.maybeSyncPublicationOnboardingState();
+
+				expect( fetchMock ).toHaveFetched( settingsEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateLastSyncedAtMs()
+				).not.toBe( 0 );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
