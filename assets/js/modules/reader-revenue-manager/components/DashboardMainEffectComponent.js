@@ -26,14 +26,19 @@ import { useMount } from 'react-use';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '../datastore/constants';
+import useViewOnly from '../../../hooks/useViewOnly';
 
 export default function DashboardMainEffectComponent() {
+	const viewOnlyDashboard = useViewOnly();
+
 	const { maybeSyncPublicationOnboardingState } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
 
 	useMount( () => {
-		maybeSyncPublicationOnboardingState();
+		if ( ! viewOnlyDashboard ) {
+			maybeSyncPublicationOnboardingState();
+		}
 	} );
 
 	return null;
