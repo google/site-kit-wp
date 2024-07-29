@@ -21,8 +21,8 @@
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import PublicationCreate from './PublicationCreate';
 import { publications } from '../../datastore/__fixtures__';
+import PublicationCreate from './PublicationCreate';
 
 function Template() {
 	return <PublicationCreate onCompleteSetup={ () => {} } />;

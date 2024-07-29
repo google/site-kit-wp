@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-export { default as PublicationSelect } from './PublicationSelect';
 export { default as PublicationCreate } from './PublicationCreate';
+export { default as PublicationSelect } from './PublicationSelect';
