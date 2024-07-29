@@ -30,8 +30,6 @@ import { NOTIFICATION_AREAS } from './datastore/constants';
  * @param {Object} notificationsAPI Notifications API.
  */
 export function registerDefaults( notificationsAPI ) {
-	// TODO: This file and the below code is pure scaffolding and for test QA purposes.
-	// It will be modified in issue #8976 that registers the first refactored notification.
 	notificationsAPI.registerNotification( 'gathering-data-notification', {
 		Component() {
 			return <h1>TODO: Use a valid notification component here.</h1>;
