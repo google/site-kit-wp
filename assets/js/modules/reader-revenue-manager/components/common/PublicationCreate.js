@@ -60,7 +60,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 	};
 
 	return (
-		<div className="googlesitekit-setup-module__publication-screen">
+		<div className="googlesitekit-setup-module__publication-create-screen">
 			{ ! hasPublication && (
 				<Fragment>
 					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
