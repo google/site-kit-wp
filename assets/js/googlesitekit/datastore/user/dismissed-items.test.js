@@ -103,7 +103,7 @@ describe( 'core/user dismissed-items', () => {
 					},
 					{
 						headers: {
-							// @wordpress/api-fetch middleware uses this header to tunnel DELETE requests via POST.
+							// The @wordpress/api-fetch middleware uses this header to tunnel DELETE requests via POST.
 							// See https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/api-fetch/src/middlewares/http-v1.js#L36
 							'X-HTTP-Method-Override': 'DELETE',
 						},
