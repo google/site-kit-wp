@@ -19,16 +19,38 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
+import { useRefocus } from '../../../../hooks/useRefocus';
 import { PublicationSelect } from '../common';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 
 export default function SetupMain() {
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	);
+
+	const { resetPublications } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+
+	const reset = useCallback( () => {
+		// Do not reset if the publication ID is already set.
+		if ( publicationID !== undefined ) {
+			return;
+		}
+
+		resetPublications();
+	}, [ publicationID, resetPublications ] );
+
+	// Reset publication data when user re-focuses window.
+	useRefocus( reset, 15000 );
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
 			<div className="googlesitekit-setup-module__logo">

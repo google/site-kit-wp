@@ -30,6 +30,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -169,6 +170,23 @@ const baseActions = {
 		);
 
 		return completedOnboardingPublication || publications[ 0 ];
+	},
+
+	/**
+	 * Resets the publications data in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} A resolution object.
+	 */
+	*resetPublications() {
+		const registry = yield commonActions.getRegistry();
+
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		return registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.invalidateResolutionForStoreSelector( 'getPublications' );
 	},
 };
 
