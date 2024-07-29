@@ -38,6 +38,7 @@ import {
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
 
@@ -65,8 +66,16 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSavingAudienceSettings()
 	);
+	const hiddenTileDismissedItems = useSelect( ( select ) => {
+		const dismissedItems = select( CORE_USER ).getDismissedItems();
+
+		return dismissedItems?.filter( ( item ) =>
+			item.startsWith( 'audience-tile-' )
+		);
+	} );
 
 	const { saveAudienceSettings } = useDispatch( MODULES_ANALYTICS_4 );
+	const { removeDismissedItems } = useDispatch( CORE_USER );
 
 	const selectedItemsCount = selectedItems?.length || 0;
 	let itemLimitError;
@@ -94,13 +103,32 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 
 	const saveSettings = useCallback(
 		async ( configuredAudiences ) => {
-			const { error } = await saveAudienceSettings( {
+			let { error } = await saveAudienceSettings( {
 				configuredAudiences,
 			} );
 
+			if ( ! error ) {
+				const unselectedHiddenTileDismissedItems =
+					hiddenTileDismissedItems?.filter( ( item ) => {
+						const audienceResourceName = item.replace(
+							'audience-tile-',
+							''
+						);
+						return ! configuredAudiences.includes(
+							audienceResourceName
+						);
+					} );
+
+				if ( unselectedHiddenTileDismissedItems?.length > 0 ) {
+					( { error } = await removeDismissedItems(
+						...unselectedHiddenTileDismissedItems
+					) );
+				}
+			}
+
 			return { error };
 		},
-		[ saveAudienceSettings ]
+		[ hiddenTileDismissedItems, removeDismissedItems, saveAudienceSettings ]
 	);
 
 	return (
