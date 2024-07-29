@@ -71,7 +71,7 @@ export default function PublicationOnboardingStateNotice() {
 					'google-site-kit'
 			  )
 			: __(
-					'Your publication requires further setup in Reader Revenue Manager.',
+					'Your publication requires further setup in Reader Revenue Manager',
 					'google-site-kit'
 			  );
 
