@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -101,8 +101,12 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		);
 	}
 
+	const [ dismissedItemsError, setDismissedItemsError ] = useState( null );
+
 	const saveSettings = useCallback(
 		async ( configuredAudiences ) => {
+			setDismissedItemsError( null );
+
 			let { error } = await saveAudienceSettings( {
 				configuredAudiences,
 			} );
@@ -123,6 +127,10 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 					( { error } = await removeDismissedItems(
 						...unselectedHiddenTileDismissedItems
 					) );
+
+					if ( error ) {
+						setDismissedItemsError( error );
+					}
 				}
 			}
 
@@ -136,7 +144,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			savedItemSlugs={ savedItemSlugs }
 			selectedItemSlugs={ selectedItems }
 			saveSettings={ saveSettings }
-			saveError={ saveError }
+			saveError={ saveError || dismissedItemsError }
 			itemLimitError={ itemLimitError }
 			minSelectedItemCount={ MIN_SELECTED_AUDIENCES_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_AUDIENCES_COUNT }
