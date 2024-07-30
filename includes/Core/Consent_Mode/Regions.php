@@ -29,6 +29,7 @@ class Regions {
 		'AT',
 		'BE',
 		'BG',
+		'CH',
 		'CY',
 		'CZ',
 		'DE',
@@ -67,15 +68,6 @@ class Regions {
 	 * @return array<string> List of regions.
 	 */
 	public static function get_regions() {
-		// Include Switzerland (CH) in the consent mode regions if the current date
-		// is on or after 31 July 2024.
-		if (
-			time() >= strtotime( '2024-07-31' ) ||
-			Feature_Flags::enabled( 'consentModeSwitzerland' )
-		) {
-			return array_merge( self::EU_USER_CONSENT_POLICY, array( 'CH' ) );
-		}
-
 		return self::EU_USER_CONSENT_POLICY;
 	}
 }

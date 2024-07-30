@@ -85,6 +85,11 @@ describe( 'PublicationSelect', () => {
 				// eslint-disable-next-line sitekit/acronym-case
 				publications[ index ].publicationId
 			);
+
+			expect( listItem.textContent ).toEqual(
+				// eslint-disable-next-line sitekit/acronym-case
+				`${ publications[ index ].displayName } (${ publications[ index ].publicationId })`
+			);
 		} );
 	} );
 
