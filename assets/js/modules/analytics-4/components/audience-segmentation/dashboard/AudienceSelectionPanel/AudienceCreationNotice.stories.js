@@ -42,11 +42,36 @@ Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice/Default',
 };
 
+export const WithOneAudience = Template.bind( {} );
+WithOneAudience.storyName = 'WithOneAudience';
+WithOneAudience.args = {
+	setupRegistry: ( registry ) => {
+		const configuredAudiences = availableAudiences.reduce(
+			( acc, audience ) =>
+				audience.name !== 'properties/12345/audiences/3' // New visitors
+					? [ ...acc, audience.name ]
+					: acc,
+			[]
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences(
+			availableAudiences.filter(
+				( audience ) => audience.name !== 'properties/12345/audiences/3' // New visitors
+			)
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setConfiguredAudiences( configuredAudiences );
+	},
+};
+WithOneAudience.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice/WithOneAudience',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice',
 	component: AudienceCreationNotice,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -71,6 +96,8 @@ export default {
 					webDataStreamID: '78901',
 					availableAudiences: [],
 				} );
+
+				args?.setupRegistry?.( registry );
 			};
 
 			return (
