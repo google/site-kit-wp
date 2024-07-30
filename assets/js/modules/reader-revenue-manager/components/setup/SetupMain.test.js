@@ -18,7 +18,6 @@
 
 import {
 	createTestRegistry,
-	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -35,10 +34,6 @@ import { enabledFeatures } from '../../../../features';
 
 describe( 'SetupMain', () => {
 	let registry;
-
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
-	);
 
 	beforeEach( () => {
 		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
@@ -66,7 +61,6 @@ describe( 'SetupMain', () => {
 	} );
 
 	it( 'should render the component', async () => {
-		muteFetch( settingsEndpoint );
 		const { getByText, waitForRegistry } = render( <SetupMain />, {
 			registry,
 		} );
