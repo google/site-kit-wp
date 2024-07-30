@@ -49,7 +49,7 @@ export default function SetupMain() {
 	}, [ publicationID, resetPublications ] );
 
 	// Reset publication data when user re-focuses window.
-	useRefocus( reset, 2000 );
+	useRefocus( reset, 15000 );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
