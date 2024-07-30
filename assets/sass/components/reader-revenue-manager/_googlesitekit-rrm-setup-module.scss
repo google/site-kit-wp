@@ -19,23 +19,23 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-setup-module__publication-create-screen {
+
+		.googlesitekit-setup-module__title,
+		.googlesitekit-setup-module__description {
+			font-family: $f-primary;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+		}
+
 		.googlesitekit-setup-module__title {
 			color: $c-surfaces-on-surface;
-			font-family: $f-primary;
-			font-size: $fs-body-lg;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-m;
-			line-height: $lh-body-lg;
 			margin-bottom: 0;
 		}
 
 		.googlesitekit-setup-module__description {
 			color: $c-surfaces-on-background-variant;
-			font-family: $f-primary;
-			font-size: $fs-body-md;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-s;
-			line-height: $lh-link-md;
 			margin-top: 0;
 		}
 
