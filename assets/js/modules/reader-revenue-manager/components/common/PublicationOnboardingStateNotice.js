@@ -33,11 +33,11 @@ import {
 import SettingsNotice from '../../../../components/SettingsNotice';
 import { useSelect } from '@wordpress/data';
 
-export default function PublicationOnboardingStateNotice() {
-	const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
-		PUBLICATION_ONBOARDING_STATES;
+const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
+	PUBLICATION_ONBOARDING_STATES;
 
-	const onboardingstate = useSelect( ( select ) =>
+export default function PublicationOnboardingStateNotice() {
+	const onboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
 
@@ -58,16 +58,16 @@ export default function PublicationOnboardingStateNotice() {
 	);
 
 	if (
-		! onboardingstate ||
-		! actionableOnboardingStates.includes( onboardingstate )
+		! onboardingState ||
+		! actionableOnboardingStates.includes( onboardingState )
 	) {
 		return null;
 	}
 
 	const noticeText =
-		PENDING_VERIFICATION === onboardingstate
+		PENDING_VERIFICATION === onboardingState
 			? __(
-					'Your publication is still awaiting review. you can check its status in Reader Revenue Manager.',
+					'Your publication is still awaiting review. You can check its status in Reader Revenue Manager.',
 					'google-site-kit'
 			  )
 			: __(
@@ -76,7 +76,7 @@ export default function PublicationOnboardingStateNotice() {
 			  );
 
 	const buttonText =
-		PENDING_VERIFICATION === onboardingstate
+		PENDING_VERIFICATION === onboardingState
 			? __( 'Check publication status', 'google-site-kit' )
 			: __( 'Complete publication setup', 'google-site-kit' );
 
