@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	fireEvent,
 	render,
 	provideUserInfo,
 } from '../../../../../../tests/js/test-utils';
@@ -96,5 +97,33 @@ describe( 'PublicationCreate', () => {
 				name: /complete setup/i,
 			} )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should call onCompleteSetup when clicking the "Complete setup" button', async () => {
+		const onCompleteSetupMock = jest.fn();
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+
+		const { getByRole, waitForRegistry } = render(
+			<PublicationCreate onCompleteSetup={ onCompleteSetupMock } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const completeSetupButton = getByRole( 'button', {
+			name: /complete setup/i,
+		} );
+
+		expect( completeSetupButton ).toBeInTheDocument();
+
+		fireEvent.click( completeSetupButton );
+
+		// Verify the onCompleteSetup function was called.
+		expect( onCompleteSetupMock ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
