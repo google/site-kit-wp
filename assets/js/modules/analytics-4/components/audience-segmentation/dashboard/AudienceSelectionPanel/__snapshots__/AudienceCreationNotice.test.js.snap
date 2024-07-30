@@ -11,7 +11,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
       <p
         class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
       >
-        Create groups suggested by Site Kit.
+        Create groups suggested by Site Kit
       </p>
       <button
         class="googlesitekit-cta-link googlesitekit-audience-selection-panel__audience-creation-notice-close googlesitekit-cta-link--link-button"
@@ -102,7 +102,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
       <p
         class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
       >
-        Create groups suggested by Site Kit.
+        Create groups suggested by Site Kit
       </p>
       <button
         class="googlesitekit-cta-link googlesitekit-audience-selection-panel__audience-creation-notice-close googlesitekit-cta-link--link-button"

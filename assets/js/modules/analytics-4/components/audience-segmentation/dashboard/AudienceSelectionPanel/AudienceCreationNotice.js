@@ -117,7 +117,7 @@ export default function AudienceCreationNotice() {
 			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-header">
 				<p className="googlesitekit-audience-selection-panel__audience-creation-notice-title">
 					{ __(
-						'Create groups suggested by Site Kit.',
+						'Create groups suggested by Site Kit',
 						'google-site-kit'
 					) }
 				</p>

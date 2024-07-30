@@ -609,7 +609,7 @@ describe( 'AudienceSelectionPanel', () => {
 			await waitForRegistry();
 
 			expect(
-				getByText( /Create groups suggested by Site Kit./i )
+				getByText( /Create groups suggested by Site Kit/i )
 			).toBeInTheDocument();
 			document
 				.querySelectorAll(
@@ -670,7 +670,7 @@ describe( 'AudienceSelectionPanel', () => {
 				getByText( /Visitor group created successfully/i )
 			).toBeInTheDocument();
 			expect(
-				getByText( /Create groups suggested by Site Kit./i )
+				getByText( /Create groups suggested by Site Kit/i )
 			).toBeInTheDocument();
 			expect(
 				document.querySelector(
