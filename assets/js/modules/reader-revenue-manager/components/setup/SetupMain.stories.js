@@ -19,6 +19,8 @@
 /**
  * Internal dependencies
  */
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import SetupMain from './SetupMain';
 
 function Template() {
@@ -27,8 +29,26 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.scenario = {
+	// No parameters are needed for this scenario, but we still need to define the scenario object to include the story in the VRT suite.
+};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMain',
 	component: SetupMain,
+	decorators: [
+		( Story ) => {
+			function setupRegistry( registry ) {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [] );
+			}
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
