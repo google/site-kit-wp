@@ -63,9 +63,6 @@ WithOneAudience.args = {
 			.setConfiguredAudiences( configuredAudiences );
 	},
 };
-WithOneAudience.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice/WithOneAudience',
-};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice',
