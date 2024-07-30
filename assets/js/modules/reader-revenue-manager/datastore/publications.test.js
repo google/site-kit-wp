@@ -32,10 +32,12 @@ import {
 	provideModules,
 	provideUserInfo,
 	provideModuleRegistrations,
+	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { RRM_PUBLICATIONS_READ_SCOPE } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG,
@@ -66,6 +68,9 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
 		provideUserInfo( registry );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ RRM_PUBLICATIONS_READ_SCOPE ],
+		} );
 	} );
 
 	describe( 'actions', () => {
