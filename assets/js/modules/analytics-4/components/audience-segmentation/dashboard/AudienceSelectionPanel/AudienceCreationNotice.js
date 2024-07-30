@@ -69,9 +69,6 @@ export default function AudienceCreationNotice() {
 	const isItemDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( AUDIENCE_CREATION_NOTICE_SLUG )
 	);
-	const hasSuccessNotice = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG )
-	);
 
 	const onCloseClick = () => {
 		dismissItem( AUDIENCE_CREATION_NOTICE_SLUG );
@@ -96,14 +93,10 @@ export default function AudienceCreationNotice() {
 		}
 	};
 
-	// Show the notice if the user has no site kit audiences, or has just
+	// Show the notice if the user has no site kit audiences, or has
 	// created one, and the user has not dismissed it.
-	const hasOneAudienceBeenCreated =
-		hasSuccessNotice && siteKitConfigurableAudiences?.length === 1;
 	const shouldShowNotice =
-		! isItemDismissed &&
-		( siteKitConfigurableAudiences?.length === 0 ||
-			hasOneAudienceBeenCreated );
+		! isItemDismissed && siteKitConfigurableAudiences?.length < 2;
 
 	if ( ! shouldShowNotice ) {
 		return null;
