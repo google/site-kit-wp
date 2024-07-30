@@ -39,7 +39,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 			MODULE_SLUG,
 			'publications',
 			{},
-			{ useCache: true }
+			{ useCache: false }
 		),
 	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
 } );
