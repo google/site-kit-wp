@@ -129,13 +129,13 @@ describe( 'core/user dismissed-items', () => {
 						},
 					}
 				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const dismissedItems = registry
 					.select( CORE_USER )
 					.getDismissedItems();
 
 				expect( dismissedItems ).toEqual( [ 'baz' ] );
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it( 'requires one or more valid slugs as arguments', () => {
