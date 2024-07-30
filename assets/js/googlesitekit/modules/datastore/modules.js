@@ -1320,6 +1320,25 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Checks if there are any recoverable modules for dashboard sharing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if there are recoverable modules.
+	 * 								 `false` if there are none.
+	 * 								 `undefined` if not loaded.
+	 */
+	hasRecoverableModules: ( state ) => {
+		// Return `undefined` if recoverableModules haven't been loaded yet.
+		if ( state.recoverableModules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( state.recoverableModules ).length > 0;
+	},
+
+	/**
 	 * Gets the list of shared ownership modules for dashboard sharing.
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
