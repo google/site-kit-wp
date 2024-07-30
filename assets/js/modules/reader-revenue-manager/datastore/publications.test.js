@@ -32,12 +32,10 @@ import {
 	provideModules,
 	provideUserInfo,
 	provideModuleRegistrations,
-	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { RRM_PUBLICATIONS_READ_SCOPE } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG,
@@ -68,9 +66,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
 		provideUserInfo( registry );
-		provideUserAuthentication( registry, {
-			grantedScopes: [ RRM_PUBLICATIONS_READ_SCOPE ],
-		} );
 	} );
 
 	describe( 'actions', () => {
@@ -306,7 +301,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			it( 'should reset the publications data in the store', async () => {
 				const response = fixtures.publications.slice( 0, 2 );
 				fetchMock.getOnce( publicationsEndpoint, {
-					body: JSON.stringify( response ),
+					body: response,
 					status: 200,
 				} );
 
@@ -314,17 +309,30 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
 
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {} );
+
 				await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.resetPublications();
 
-				const publications = registry
+				registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getPublications();
 
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublications();
+
 				expect( fetchMock ).toHaveFetched();
 
-				expect( publications ).toEqual( response );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				).toEqual( response );
 			} );
 		} );
 	} );

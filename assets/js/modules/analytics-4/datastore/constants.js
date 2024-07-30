@@ -50,9 +50,6 @@ export const PROVISIONING_SCOPE =
 	'https://www.googleapis.com/auth/analytics.provision';
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 
-export const RRM_PUBLICATIONS_READ_SCOPE =
-	'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly';
-
 // Dashboard widget constants.
 export const UI_DIMENSION_NAME = 'dashboardAllTrafficWidgetDimensionName';
 export const UI_DIMENSION_COLOR = 'dashboardAllTrafficWidgetDimensionColor';
