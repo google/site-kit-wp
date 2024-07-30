@@ -29,12 +29,8 @@ import {
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
-import {
-	AUDIENCE_CREATION_NOTICE_SLUG,
-	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
-} from './constants';
+import { AUDIENCE_CREATION_NOTICE_SLUG } from './constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 describe( 'AudienceCreationNotice', () => {
 	let registry;
@@ -156,10 +152,6 @@ describe( 'AudienceCreationNotice', () => {
 				( { displayName } ) => displayName !== 'Returning visitors'
 			),
 		} );
-
-		registry
-			.dispatch( CORE_UI )
-			.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
 		const { container, waitForRegistry } = render(
 			<AudienceCreationNotice />,
