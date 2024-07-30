@@ -72,7 +72,7 @@ export function createModules( { dispatch } ) {
 		 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 		 * @since 1.23.0 Introduced the ability to register an Icon component.
 		 * @since 1.35.0 Introduced a registry parameter for checkRequirements.
-		 * @since n.e.x.t Introduced dashboard effect components.
+		 * @since 1.132.0 Introduced dashboard effect components.
 		 *
 		 * @param {string}      slug                                      Module slug.
 		 * @param {Object}      [settings]                                Optional. Module settings.

@@ -201,7 +201,7 @@ export function isValidDateRange( dateRange ) {
 /**
  * Subtracts duration from the prodived date and returns it.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  *
  * @param {Date|string} relativeDate Date string (YYYY-MM-DD) or date object to subtract duration from.
  * @param {number}      duration     The duration in seconds to subtract from relativeDate.

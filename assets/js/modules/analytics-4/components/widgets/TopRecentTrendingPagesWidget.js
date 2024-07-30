@@ -52,7 +52,7 @@ import {
  * reporting options.
  *
  * @since 1.113.0
- * @since n.e.x.t Update the function to receive the reference date instead of the select function.
+ * @since 1.132.0 Update the function to receive the reference date instead of the select function.
  *
  * @param {string} referenceDate The reference date.
  * @return {Object} An object containing the `startDate` and `endDate` for a
@@ -80,7 +80,7 @@ export function getDateRange( referenceDate ) {
  * can use it.
  *
  * @since 1.113.0
- * @since n.e.x.t Update the function to receive the reference date instead of the select function.
+ * @since 1.132.0 Update the function to receive the reference date instead of the select function.
  *
  * @param {string} referenceDate The reference date.
  * @return {Object} The report options containing dimensions, filters,

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../../../../tests/js/WithRegistrySetup';
+import { provideUserAuthentication } from '../../../../../../../../../tests/js/utils';
 import { Provider as ViewContextProvider } from '../../../../../../../components/Root/ViewContextContext';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
@@ -38,8 +39,17 @@ const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
+	const setupRegistryCallback = ( registry ) => {
+		provideUserAuthentication( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: [ 'googlesitekit_post_type' ],
+		} );
+		setupRegistry( registry );
+	};
+
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistryCallback }>
 			<ViewContextProvider
 				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
 			>
@@ -49,9 +59,12 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	);
 }
 
+const audienceResourceName = 'properties/12345/audiences/12345';
+
 // TODO: As part of #8484, update these stories to use the data-mock
 // functions to provide report data rather than hardcoding props.
 const readyProps = {
+	audienceResourceName,
 	title: 'New visitors',
 	toolTip: 'This is a tooltip',
 	loaded: true,
@@ -135,8 +148,6 @@ const readyProps = {
 	isZeroData: false,
 	isPartialData: false,
 };
-
-const audienceResourceName = 'properties/12345/audiences/12345';
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -228,6 +239,20 @@ NoData.args = {
 };
 NoData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/NoData',
+};
+
+export const MissingCustomDimension = Template.bind( {} );
+MissingCustomDimension.storyName = 'MissingCustomDimension';
+MissingCustomDimension.args = {
+	...readyProps,
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: [],
+		} );
+	},
+};
+MissingCustomDimension.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/MissingCustomDimension',
 };
 
 export const AudiencePartialData = Template.bind( {} );

@@ -27,14 +27,14 @@
 export function isValidPublicationID( publicationID ) {
 	return (
 		typeof publicationID === 'string' &&
-		/^[A-Za-z0-9_-]+$/.test( publicationID )
+		/^[a-zA-Z0-9_-]+$/.test( publicationID )
 	);
 }
 
 /**
  * Checks if the given publication onboarding state is valid.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  *
  * @param {string} onboardingState Publication onboarding state.
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.

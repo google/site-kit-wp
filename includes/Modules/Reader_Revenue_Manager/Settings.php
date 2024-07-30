@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for RRM settings.
  *
- * @since n.e.x.t
+ * @since 1.132.0
  * @access private
  * @ignore
  */
@@ -41,7 +41,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 */
 	public function register() {
 		parent::register();
@@ -52,7 +52,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Returns keys for owned settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
@@ -63,7 +63,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return array
 	 */
@@ -78,7 +78,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Returns keys for view-only settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return array An array of keys for view-only settings.
 	 */
@@ -89,14 +89,14 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.132.0
 	 *
 	 * @return callable|null
 	 */
 	protected function get_sanitize_callback() {
 		return function ( $option ) {
 			if ( isset( $option['publicationID'] ) ) {
-				if ( ! preg_match( '/^[a-zA-Z0-9]+$/', $option['publicationID'] ) ) {
+				if ( ! preg_match( '/^[a-zA-Z0-9_-]+$/', $option['publicationID'] ) ) {
 					$option['publicationID'] = '';
 				}
 			}

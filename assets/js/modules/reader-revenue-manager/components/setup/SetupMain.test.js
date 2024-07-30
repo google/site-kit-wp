@@ -76,7 +76,7 @@ describe( 'SetupMain', () => {
 		// TODO: Adjust the tests once #8800 is implemented.
 		expect(
 			getByText(
-				/This is just added as a placeholder component to assist with testing./i
+				/Select your preferred publication to connect with Site Kit/i
 			)
 		).toBeInTheDocument();
 	} );
