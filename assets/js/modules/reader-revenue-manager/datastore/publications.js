@@ -40,7 +40,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 			MODULE_SLUG,
 			'publications',
 			{},
-			{ useCache: true }
+			{ useCache: false }
 		),
 	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
 } );
@@ -176,15 +176,17 @@ const baseActions = {
 	 * Resets the publications data in the store.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @return {Object} A resolution object.
 	 */
 	*resetPublications() {
 		const registry = yield commonActions.getRegistry();
 
+		yield {
+			type: 'RESET_PUBLICATIONS',
+		};
+
 		yield errorStoreActions.clearErrors( 'getPublications' );
 
-		return registry
+		yield registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.invalidateResolutionForStoreSelector( 'getPublications' );
 	},
@@ -194,6 +196,11 @@ const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case 'RESET_PUBLICATIONS':
+			return {
+				...state,
+				publications: baseInitialState.publications,
+			};
 		default:
 			return state;
 	}

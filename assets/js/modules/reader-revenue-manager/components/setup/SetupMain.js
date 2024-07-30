@@ -41,7 +41,7 @@ export default function SetupMain() {
 
 	const reset = useCallback( () => {
 		// Do not reset if the publication ID is already set.
-		if ( publicationID !== undefined ) {
+		if ( publicationID !== '' ) {
 			return;
 		}
 
@@ -49,7 +49,7 @@ export default function SetupMain() {
 	}, [ publicationID, resetPublications ] );
 
 	// Reset publication data when user re-focuses window.
-	useRefocus( reset, 15000 );
+	useRefocus( reset, 2000 );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
