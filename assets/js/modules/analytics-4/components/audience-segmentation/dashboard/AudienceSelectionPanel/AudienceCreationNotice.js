@@ -104,15 +104,12 @@ export default function AudienceCreationNotice() {
 
 	const siteKitAvailableAudiences = Object.keys(
 		SITE_KIT_AUDIENCE_DEFINITIONS
-	).reduce(
-		( acc, audienceSlug ) =>
-			siteKitConfigurableAudiences.find(
+	).filter(
+		( audienceSlug ) =>
+			! siteKitConfigurableAudiences.some(
 				( configuredAudience ) =>
 					configuredAudience.audienceSlug === audienceSlug
 			)
-				? acc
-				: [ ...acc, audienceSlug ],
-		[]
 	);
 
 	return (
