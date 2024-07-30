@@ -26,7 +26,7 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
-	AUDIENCE_CREATION_NOTICE_SLUG,
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
@@ -78,7 +78,7 @@ export default function AudienceSelectionPanel() {
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
 			setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, false );
-			setValue( AUDIENCE_CREATION_NOTICE_SLUG, false );
+			setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, false );
 		}
 	}, [ setValue, isOpen ] );
 
