@@ -283,6 +283,45 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( publication ).toEqual( publications[ 0 ] );
 			} );
 		} );
+
+		describe( 'resetPublications', () => {
+			it( 'should not throw any error', () => {
+				expect( async () => {
+					fetchMock.getOnce( publicationsEndpoint, {
+						body: JSON.stringify( fixtures.publications ),
+						status: 200,
+					} );
+
+					await registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.resetPublications();
+				} ).not.toThrow();
+			} );
+
+			it( 'should reset the publications data in the store', async () => {
+				const response = fixtures.publications.slice( 0, 2 );
+				fetchMock.getOnce( publicationsEndpoint, {
+					body: JSON.stringify( response ),
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.resetPublications();
+
+				const publications = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublications();
+
+				expect( fetchMock ).toHaveFetched();
+
+				expect( publications ).toEqual( response );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
