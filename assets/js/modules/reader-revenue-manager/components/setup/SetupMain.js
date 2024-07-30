@@ -17,46 +17,45 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
-import { PublicationSelect } from '../common';
+import SetupForm from './SetupForm';
 
-export default function SetupMain() {
+export default function SetupMain( { finishSetup = () => {} } ) {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
-			<div className="googlesitekit-setup-module__logo">
-				<ReaderRevenueManagerIcon width="33" height="33" />
-			</div>
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<ReaderRevenueManagerIcon width="40" height="40" />
+				</div>
 
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x(
-					'Reader Revenue Manager',
-					'Service name',
-					'google-site-kit'
-				) }
-			</h2>
-
-			<div>
-				<p>
-					{ __(
-						'Select your preferred publication to connect with Site Kit',
+				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ _x(
+						'Reader Revenue Manager',
+						'Service name',
 						'google-site-kit'
 					) }
-				</p>
-				<PublicationSelect />
+				</h2>
 			</div>
-			<div className="googlesitekit-setup-module__action">
-				<SpinnerButton>
-					{ __( 'Complete setup', 'google-site-kit' ) }
-				</SpinnerButton>
+
+			<div className="googlesitekit-setup-module__step">
+				<SetupForm finishSetup={ finishSetup } />
 			</div>
 		</div>
 	);
 }
+
+SetupMain.propTypes = {
+	finishSetup: PropTypes.func,
+};
