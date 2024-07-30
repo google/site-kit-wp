@@ -71,7 +71,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		],
 		[
 			PENDING_VERIFICATION,
-			'Your publication is still awaiting review. you can check its status in Reader Revenue Manager.',
+			'Your publication is still awaiting review. You can check its status in Reader Revenue Manager.',
 			'Check publication status',
 		],
 	] )(
