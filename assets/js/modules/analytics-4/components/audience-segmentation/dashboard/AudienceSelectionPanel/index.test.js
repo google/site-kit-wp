@@ -688,11 +688,7 @@ describe( 'AudienceSelectionPanel', () => {
 			const mixedSiteKitReportOptions = {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: availableAudiences
-						.filter( ( { name } ) =>
-							mixedConfiguredAudiences.includes( name )
-						)
-						.map( ( { name } ) => name ),
+					audienceResourceName: mixedConfiguredAudiences,
 				},
 			};
 			registry
