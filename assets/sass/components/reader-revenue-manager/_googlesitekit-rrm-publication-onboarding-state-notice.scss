@@ -1,19 +1,24 @@
 .googlesitekit-publication-onboarding-state-notice.googlesitekit-settings-notice--warning {
 	align-items: center;
 	color: $c-utility-on-warning-container;
+	font-size: $fs-label-md;
+	gap: 10px;
+	line-height: $lh-label-md;
 	max-width: none;
+
+	.googlesitekit-settings-notice__icon {
+		margin-right: 0;
+	}
 
 	& .googlesitekit-cta-link.googlesitekit-cta-link--inverse {
 		background-color: $c-utility-on-warning-container;
 		border-radius: 100px;
 		padding: 6px 16px;
+		white-space: nowrap;
 	}
 
 	@media (max-width: $bp-tablet) {
 		align-items: flex-start;
 		flex-direction: column;
-		font-size: 14px;
-		gap: 10px;
-		line-height: 20px;
 	}
 }
