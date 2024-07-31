@@ -1,6 +1,6 @@
 <?php
 /**
- * Remote_Features_CronTest
+ * Remote_Features_ActivationTest
  *
  * @package   Google\Site_Kit\Tests\Core\Remote_Features
  * @copyright 2024 Google LLC
