@@ -24,10 +24,22 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { Button } from 'googlesitekit-components';
 import CheckFill from '../../../../../../../svg/icons/check-fill.svg';
+import { AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG } from './constants';
 
 export default function AudienceCreationSuccessNotice() {
+	const { setValue } = useDispatch( CORE_UI );
+	const showSuccessNotice = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG )
+	);
+
+	if ( ! showSuccessNotice ) {
+		return null;
+	}
+
 	return (
 		<div className="googlesitekit-audience-selection-panel__success-notice">
 			<div className="googlesitekit-audience-selection-panel__success-notice-icon">
@@ -40,7 +52,17 @@ export default function AudienceCreationSuccessNotice() {
 				) }
 			</p>
 			<div className="googlesitekit-audience-selection-panel__success-notice-actions">
-				<Button tertiary>{ __( 'Got it', 'google-site-kit' ) }</Button>
+				<Button
+					tertiary
+					onClick={ () => {
+						setValue(
+							AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+							false
+						);
+					} }
+				>
+					{ __( 'Got it', 'google-site-kit' ) }
+				</Button>
 			</div>
 		</div>
 	);
