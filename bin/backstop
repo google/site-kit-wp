@@ -25,7 +25,7 @@ docker image inspect $IMAGE -f "{{.Id}}" >/dev/null 2>&1 ||
 	docker build -t $IMAGE --build-arg BACKSTOPJS_VERSION=$VERSION $ROOT_DIR/docker/backstopjs
 
 # Run the backstopjs command.
-docker run --rm -t --mount type=bind,source="$ROOT_DIR",target="/src" $IMAGE $1 --config=/src/tests/backstop/config.js
+docker run --rm -t --mount type=bind,source="$ROOT_DIR",target="/src" --env SHARD=$2 $IMAGE $1 --config=/src/tests/backstop/config.js
 
 DOCKER_EXIT_CODE=$?
 

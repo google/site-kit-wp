@@ -16,8 +16,20 @@
  * limitations under the License.
  */
 
+const shardConfig = process.env.SHARD;
+
 const scenarios = require( './scenarios' );
 const viewports = require( './viewports' );
+
+let shardedScenarios = scenarios;
+if ( shardConfig ) {
+	const [ shard, totalShards ] = shardConfig.split( '-' );
+	const total = scenarios.length;
+	const chunkSize = Math.ceil( total / parseInt( totalShards ) );
+	const start = ( parseInt( shard ) - 1 ) * chunkSize;
+	const end = start + chunkSize;
+	shardedScenarios = scenarios.slice( start, end );
+}
 
 module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
@@ -39,7 +51,7 @@ module.exports = {
 		ci_report: 'tests/backstop/ci_report',
 	},
 	report: [ 'browser' ],
-	scenarios,
+	scenarios: shardedScenarios,
 	viewports,
 	misMatchThreshold: 0,
 	delay: 1000, // Default delay to ensure components render complete.
