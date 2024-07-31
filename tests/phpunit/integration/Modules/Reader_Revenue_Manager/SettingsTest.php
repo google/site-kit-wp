@@ -71,10 +71,10 @@ class SettingsTest extends SettingsTestCase {
 
 	public function data_publication_settings() {
 		return array(
-			'publicationID is valid string'                => array( 'publicationID', 'ABCD1234', 'ABCD1234' ),
+			'publicationID is valid string'                => array( 'publicationID', 'ABCD_123-4', 'ABCD_123-4' ),
 			'publicationOnboardingState is valid string'   => array( 'publicationOnboardingState', 'PENDING_VERIFICATION', 'PENDING_VERIFICATION' ),
 			'publicationOnboardingStateLastSyncedAtMs is valid' => array( 'publicationOnboardingStateLastSyncedAtMs', 0, 0 ),
-			'publicationID is invalid string'              => array( 'publicationID', 'ABCD1234&^##', '' ),
+			'publicationID is invalid string'              => array( 'publicationID', 'ABCD_123-4&^##', '' ),
 			'publicationOnboardingState is invalid string' => array( 'publicationOnboardingState', 'INVALID_STATE', '' ),
 			'publicationOnboardingStateLastSyncedAtMs is invalid' => array( 'publicationOnboardingStateLastSyncedAtMs', 0.87686, 0 ),
 		);

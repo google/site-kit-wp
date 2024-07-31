@@ -1,0 +1,50 @@
+/**
+ * Reader Revenue Manager Setup styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-setup-module__publication-create-screen {
+
+		.googlesitekit-setup-module__title,
+		.googlesitekit-setup-module__description {
+			font-family: $f-primary;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+		}
+
+		.googlesitekit-setup-module__title {
+			color: $c-surfaces-on-surface;
+			margin-bottom: 0;
+		}
+
+		.googlesitekit-setup-module__description {
+			color: $c-surfaces-on-background-variant;
+			margin-top: 3px;
+		}
+
+		.googlesitekit-setup-module__action {
+			margin-top: 40px;
+
+			svg {
+				margin-left: 6px;
+			}
+		}
+	}
+}
