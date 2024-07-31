@@ -63,79 +63,20 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should have "googlesitekit-publication-onboarding-state-notice" class in the container', async () => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID: 'ABCDEFGH',
-				publicationOnboardingState: PENDING_VERIFICATION,
-				publicationOnboardingStateLastSyncedAtMs: 0,
-			} );
-
-		const { container, waitForRegistry } = render(
-			<PublicationOnboardingStateNotice />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container.firstChild ).toHaveClass(
-			'googlesitekit-publication-onboarding-state-notice'
-		);
-	} );
-
-	it( 'should render the "Complete publication setup" CTA with correct link', async () => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID: 'ABCDEFGH',
-				publicationOnboardingState: PENDING_VERIFICATION,
-				publicationOnboardingStateLastSyncedAtMs: 0,
-			} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<PublicationOnboardingStateNotice />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		const expectedServiceURL = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getServiceURL( {
-				path: '/reader-revenue-manager',
-				publicationID: 'ABCDEFGH',
-			} );
-
-		// Ensure that CTA is present and class name is correct.
-		expect( getByText( 'Complete publication setup' ) ).toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-settings-notice__button' )
-		).toBeInTheDocument();
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-cta-link.googlesitekit-cta-link--inverse'
-			)
-		).toHaveAttribute( 'href', expectedServiceURL );
-	} );
-
 	it.each( [
 		[
-			'Your publication requires further setup in Reader Revenue Manager.',
 			ONBOARDING_ACTION_REQUIRED,
+			'Your publication requires further setup in Reader Revenue Manager',
+			'Complete publication setup',
 		],
 		[
-			'Your publication is still awaiting review. you can check its status in Reader Revenue Manager.',
 			PENDING_VERIFICATION,
+			'Your publication is still awaiting review. You can check its status in Reader Revenue Manager.',
+			'Check publication status',
 		],
 	] )(
-		'should render the component text "%s" when state is %s',
-		async ( expectedText, publicationState ) => {
+		'should render the appropriate notice when the onboarding state is %s',
+		async ( publicationState, expectedText, ctaText ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
@@ -144,7 +85,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 					publicationOnboardingStateLastSyncedAtMs: 0,
 				} );
 
-			const { getByText, waitForRegistry } = render(
+			const { container, getByText, waitForRegistry } = render(
 				<PublicationOnboardingStateNotice />,
 				{
 					registry,
@@ -154,6 +95,31 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			await waitForRegistry();
 
 			expect( getByText( expectedText ) ).toBeInTheDocument();
+
+			const expectedServiceURL = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getServiceURL( {
+					path: '/reader-revenue-manager',
+					publicationID: 'ABCDEFGH',
+				} );
+
+			// Ensure that CTA is present and class name is correct.
+			expect( getByText( ctaText ) ).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-settings-notice__button'
+				)
+			).toBeInTheDocument();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-cta-link.googlesitekit-cta-link--inverse'
+				)
+			).toHaveAttribute( 'href', expectedServiceURL );
+
+			expect( container.firstChild ).toHaveClass(
+				'googlesitekit-publication-onboarding-state-notice'
+			);
 		}
 	);
 } );

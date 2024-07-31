@@ -1,5 +1,5 @@
 /**
- * Publication onboarding state notice component.
+ * Reader Revenue Manager PublicationOnboardingStateNotice component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -26,66 +26,67 @@ import { __ } from '@wordpress/i18n';
  */
 import InfoIcon from '../../../../../svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
-import { PUBLICATION_ONBOARDING_STATES } from '../../datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '../../datastore/constants';
 import SettingsNotice from '../../../../components/SettingsNotice';
 import { useSelect } from '@wordpress/data';
 
-export default function PublicationOnboardingStateNotice() {
-	// Destructure the onboarding states from the constant.
-	const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
-		PUBLICATION_ONBOARDING_STATES;
+const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
+	PUBLICATION_ONBOARDING_STATES;
 
-	// Get the onboarding state from the store.
-	const onboardingstate = useSelect( ( select ) =>
-		select(
-			'modules/reader-revenue-manager'
-		).getPublicationOnboardingState( 'reader-revenue-manager' )
+export default function PublicationOnboardingStateNotice() {
+	const onboardingState = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
 
-	// States for which the notice should be displayed.
 	const actionableOnboardingStates = [
 		PENDING_VERIFICATION,
 		ONBOARDING_ACTION_REQUIRED,
 	];
 
 	const publicationID = useSelect( ( select ) =>
-		select( 'modules/reader-revenue-manager' ).getPublicationID()
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
 	const serviceURL = useSelect( ( select ) =>
-		select( 'modules/reader-revenue-manager' ).getServiceURL( {
+		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
 			path: '/reader-revenue-manager',
 			publicationID,
 		} )
 	);
 
-	// If the onboarding state is not present or is not actionable, return null.
 	if (
-		! onboardingstate ||
-		! actionableOnboardingStates.includes( onboardingstate )
+		! onboardingState ||
+		! actionableOnboardingStates.includes( onboardingState )
 	) {
 		return null;
 	}
 
-	const noticeCTA = () => {
-		// Get the service URL from the store.
-		return (
-			<Link href={ serviceURL } external inverse>
-				{ __( 'Complete publication setup', 'google-site-kit' ) }
-			</Link>
-		);
-	};
-
 	const noticeText =
-		PENDING_VERIFICATION === onboardingstate
+		PENDING_VERIFICATION === onboardingState
 			? __(
-					'Your publication is still awaiting review. you can check its status in Reader Revenue Manager.',
+					'Your publication is still awaiting review. You can check its status in Reader Revenue Manager.',
 					'google-site-kit'
 			  )
 			: __(
-					'Your publication requires further setup in Reader Revenue Manager.',
+					'Your publication requires further setup in Reader Revenue Manager',
 					'google-site-kit'
 			  );
+
+	const buttonText =
+		PENDING_VERIFICATION === onboardingState
+			? __( 'Check publication status', 'google-site-kit' )
+			: __( 'Complete publication setup', 'google-site-kit' );
+
+	const noticeCTA = () => {
+		return (
+			<Link href={ serviceURL } external inverse>
+				{ buttonText }
+			</Link>
+		);
+	};
 
 	return (
 		<SettingsNotice

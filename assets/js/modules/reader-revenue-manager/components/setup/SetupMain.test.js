@@ -48,7 +48,7 @@ describe( 'SetupMain', () => {
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
 
-	beforeAll( () => {
+	beforeEach( () => {
 		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
 
