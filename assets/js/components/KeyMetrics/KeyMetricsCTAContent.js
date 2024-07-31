@@ -34,11 +34,18 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import {
+	// BREAKPOINT_SMALL,
+	BREAKPOINT_DESKTOP,
+	useBreakpoint,
+	BREAKPOINT_XLARGE,
+	BREAKPOINT_TABLET,
+} from '../../hooks/useBreakpoint';
 import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { Cell, Grid, Row } from '../../material-components';
-import GhostCardsSVG from './GhostCards';
+import KeyMetricsSetupDesktopSVG from './KeyMetricsSetupDesktopSVG';
+import KeyMetricsSetupTabletSVG from './KeyMetricsSetupTabletSVG';
 
 export default function KeyMetricsCTAContent( {
 	className,
@@ -50,7 +57,10 @@ export default function KeyMetricsCTAContent( {
 	const trackingRef = useRef();
 	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
-	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	// const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
+	const isDesktopBreakpoint =
+		breakpoint === BREAKPOINT_DESKTOP || breakpoint === BREAKPOINT_XLARGE;
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
@@ -99,30 +109,35 @@ export default function KeyMetricsCTAContent( {
 		>
 			<Grid>
 				<Row>
-					<Cell smSize={ 6 } mdSize={ 5 } lgSize={ 6 }>
+					<Cell
+						smSize={ 6 }
+						mdSize={ 5 }
+						lgSize={ 6 }
+						className="googlesitekit-widget-key-metrics-content__wrapper"
+					>
 						<div className="googlesitekit-widget-key-metrics-text__wrapper">
 							<h3 className="googlesitekit-publisher-win__title">
 								{ title }
 							</h3>
 							<p>{ description }</p>
 						</div>
-						{ isMobileBreakpoint && (
-							<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
-								<GhostCardsSVG />
-							</Cell>
-						) }
 						<div className="googlesitekit-widget-key-metrics-actions__wrapper">
 							{ actions }
 						</div>
+						{ isTabletBreakpoint && (
+							<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
+								<KeyMetricsSetupTabletSVG />
+							</Cell>
+						) }
 					</Cell>
-					{ ! isMobileBreakpoint && (
+					{ isDesktopBreakpoint && (
 						<Cell
 							className="googlesitekit-widget-key-metrics-svg__wrapper"
 							smSize={ 6 }
 							mdSize={ 3 }
 							lgSize={ 6 }
 						>
-							<GhostCardsSVG />
+							<KeyMetricsSetupDesktopSVG />
 						</Cell>
 					) }
 				</Row>
