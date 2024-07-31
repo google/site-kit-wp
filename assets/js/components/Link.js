@@ -59,6 +59,7 @@ const Link = forwardRef( ( props, ref ) => {
 		hideExternalIndicator = false,
 		href = '',
 		inverse = false,
+		noFlex = false,
 		onClick,
 		small = false,
 		standalone = false,
@@ -186,6 +187,7 @@ const Link = forwardRef( ( props, ref ) => {
 				'googlesitekit-cta-link--disabled': disabled,
 				'googlesitekit-cta-link--standalone': standalone,
 				'googlesitekit-cta-link--link-button': linkButton,
+				'googlesitekit-cta-link--no-flex': !! noFlex,
 			} ) }
 			disabled={ disabled }
 			href={
@@ -231,6 +233,7 @@ Link.propTypes = {
 	inverse: PropTypes.bool,
 	leadingIcon: PropTypes.node,
 	linkButton: PropTypes.bool,
+	noFlex: PropTypes.bool,
 	onClick: PropTypes.func,
 	small: PropTypes.bool,
 	standalone: PropTypes.bool,
