@@ -91,10 +91,6 @@ export default function PublicationApprovedOverlayNotification() {
 		);
 	};
 
-	if ( isDismissing ) {
-		return null;
-	}
-
 	return (
 		<OverlayNotification
 			className="googlesitekit-reader-revenue-manager-publication-approved-notification"
@@ -127,8 +123,9 @@ export default function PublicationApprovedOverlayNotification() {
 				</Button>
 
 				<Button
+					disabled={ isDismissing }
 					href={ serviceURL }
-					trailingIcon={ <ExternalIcon width={ 14 } height={ 14 } /> }
+					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
 					target="_blank"
 				>
 					{ __( 'Enable features', 'google-site-kit' ) }

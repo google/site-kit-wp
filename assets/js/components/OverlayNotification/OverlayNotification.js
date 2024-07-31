@@ -36,7 +36,7 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
 export default function OverlayNotification( {
-	className = '',
+	className,
 	children,
 	GraphicDesktop,
 	GraphicMobile,
@@ -99,6 +99,7 @@ export default function OverlayNotification( {
 }
 
 OverlayNotification.propTypes = {
+	className: PropTypes.string,
 	children: PropTypes.node,
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,

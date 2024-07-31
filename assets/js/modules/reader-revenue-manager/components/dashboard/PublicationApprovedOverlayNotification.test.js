@@ -23,7 +23,7 @@ import { createTestRegistry } from '../../../../../../tests/js/utils';
 import { render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
-} from '../dashboard/PublicationApprovedOverlayNotification';
+} from './PublicationApprovedOverlayNotification';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
