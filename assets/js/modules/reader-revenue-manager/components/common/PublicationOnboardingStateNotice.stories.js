@@ -19,10 +19,6 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 import {
@@ -33,16 +29,8 @@ import {
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
 
-function Template( { setupRegistry = async () => {}, ...args } ) {
-	const setupRegistryCallback = async ( registry ) => {
-		await setupRegistry( registry );
-	};
-
-	return (
-		<WithRegistrySetup func={ setupRegistryCallback }>
-			<PublicationOnboardingStateNotice { ...args } />
-		</WithRegistrySetup>
-	);
+function Template() {
+	return <PublicationOnboardingStateNotice />;
 }
 
 export const PendingVerification = Template.bind( {} );
@@ -54,9 +42,6 @@ PendingVerification.args = {
 			.setPublicationOnboardingState( PENDING_VERIFICATION );
 	},
 };
-PendingVerification.scenario = {
-	label: 'Modules/ReaderRevenueManager/Common/PublicationOnboardingStateNotice/PendingVerification',
-};
 
 export const ActionRequired = Template.bind( {} );
 ActionRequired.storyName = 'ActionRequired';
@@ -67,20 +52,15 @@ ActionRequired.args = {
 			.setPublicationOnboardingState( ONBOARDING_ACTION_REQUIRED );
 	},
 };
-ActionRequired.scenario = {
-	label: 'Modules/ReaderRevenueManager/Common/PublicationOnboardingStateNotice/ActionRequired',
-};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Common/PublicationOnboardingStateNotice',
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-
+		( Story, { args } ) => {
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ args.setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

@@ -1,0 +1,19 @@
+.googlesitekit-publication-onboarding-state-notice.googlesitekit-settings-notice--warning {
+	align-items: center;
+	color: $c-utility-on-warning-container;
+	max-width: none;
+
+	& .googlesitekit-cta-link.googlesitekit-cta-link--inverse {
+		background-color: $c-utility-on-warning-container;
+		border-radius: 100px;
+		padding: 6px 16px;
+	}
+
+	@media (max-width: $bp-tablet) {
+		align-items: flex-start;
+		flex-direction: column;
+		font-size: 14px;
+		gap: 10px;
+		line-height: 20px;
+	}
+}
