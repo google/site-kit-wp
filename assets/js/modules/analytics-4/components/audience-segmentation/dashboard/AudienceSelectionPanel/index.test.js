@@ -567,31 +567,23 @@ describe( 'AudienceSelectionPanel', () => {
 
 	describe( 'AudienceCreationNotice / AudienceCreationSuccess', () => {
 		it( 'should display an audience creation notice with both audiences', async () => {
-			const nonSiteKitConfiguredAudiences = [
-				'properties/12345/audiences/1',
-				'properties/12345/audiences/2',
-			];
+			const nonSiteKitAvailableAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			);
+
+			const nonSiteKitConfiguredAudiences =
+				nonSiteKitAvailableAudiences.map( ( { name } ) => name );
 
 			const nonSiteKitReportOptions = {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: availableAudiences
-						.filter(
-							( { audienceType } ) =>
-								audienceType !== 'SITE_KIT_AUDIENCE'
-						)
-						.map( ( { name } ) => name ),
+					audienceResourceName: nonSiteKitConfiguredAudiences,
 				},
 			};
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableAudiences(
-					availableAudiences.filter(
-						( { audienceType } ) =>
-							audienceType !== 'SITE_KIT_AUDIENCE'
-					)
-				);
+				.setAvailableAudiences( nonSiteKitAvailableAudiences );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
