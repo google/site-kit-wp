@@ -21,6 +21,10 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../constants';
 import { NOTIFICATION_AREAS } from './datastore/constants';
+import { CORE_USER } from '../datastore/user/constants';
+import { CORE_MODULES } from '../modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
 /**
  * Registers notifications not specific to any one particular module.
@@ -40,7 +44,60 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: () => false,
+		checkRequirements: ( { select } ) => {
+			const isAnalyticsConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const canViewSharedAnalytics =
+				select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+			const canViewSharedSearchConsole =
+				select( CORE_USER ).canViewSharedModule( 'search-console' );
+
+			const showRecoverableAnalytics = () => {
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
+
+				if ( recoverableModules === undefined ) {
+					return undefined;
+				}
+
+				return Object.keys( recoverableModules ).includes(
+					'analytics-4'
+				);
+			};
+			const showRecoverableSearchConsole = () => {
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
+
+				if ( recoverableModules === undefined ) {
+					return undefined;
+				}
+
+				return Object.keys( recoverableModules ).includes(
+					'search-console'
+				);
+			};
+
+			const analyticsGatheringData =
+				isAnalyticsConnected &&
+				canViewSharedAnalytics &&
+				false === showRecoverableAnalytics
+					? select( MODULES_ANALYTICS_4 ).isGatheringData()
+					: false;
+			const searchConsoleGatheringData =
+				canViewSharedSearchConsole &&
+				false === showRecoverableSearchConsole &&
+				select( MODULES_SEARCH_CONSOLE ).isGatheringData();
+
+			if (
+				analyticsGatheringData === undefined ||
+				searchConsoleGatheringData === undefined
+			) {
+				return false;
+			}
+
+			return analyticsGatheringData || searchConsoleGatheringData;
+		},
 		isDismissible: true,
 	} );
 }
