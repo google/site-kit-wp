@@ -17,6 +17,7 @@
  */
 
 import {
+	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../constants';
@@ -44,16 +45,35 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: ( { select } ) => {
+		checkRequirements: ( { select }, viewContext ) => {
+			const viewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
 			const isAnalyticsConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-			const canViewSharedAnalytics =
-				select( CORE_USER ).canViewSharedModule( 'analytics-4' );
-			const canViewSharedSearchConsole =
-				select( CORE_USER ).canViewSharedModule( 'search-console' );
+			const canViewSharedAnalytics = () => {
+				if ( ! viewOnly ) {
+					return true;
+				}
+
+				return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+			};
+			const canViewSharedSearchConsole = () => {
+				if ( ! viewOnly ) {
+					return true;
+				}
+
+				return select( CORE_USER ).canViewSharedModule(
+					'search-console'
+				);
+			};
 
 			const showRecoverableAnalytics = () => {
+				if ( ! viewOnly ) {
+					return false;
+				}
+
 				const recoverableModules =
 					select( CORE_MODULES ).getRecoverableModules();
 
@@ -66,6 +86,10 @@ export function registerDefaults( notificationsAPI ) {
 				);
 			};
 			const showRecoverableSearchConsole = () => {
+				if ( ! viewOnly ) {
+					return false;
+				}
+
 				const recoverableModules =
 					select( CORE_MODULES ).getRecoverableModules();
 
