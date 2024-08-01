@@ -96,6 +96,22 @@
 		"owner": null
 	},
 	{
+		"slug": "reader-revenue-manager",
+		"name": "Reader Revenue Manager",
+		"description": "Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities",
+		"homepage": "https://readerrevenue.withgoogle.com/",
+		"internal": false,
+		"order": 5,
+		"forceActive": false,
+		"recoverable": false,
+		"shareable": false,
+		"active": false,
+		"connected": false,
+		"dependencies": [],
+		"dependants": [],
+		"owner": null
+	},
+	{
 		"slug": "tagmanager",
 		"name": "Tag Manager",
 		"description": "Tag Manager creates an easy to manage way to create tags on your site without updating code",
