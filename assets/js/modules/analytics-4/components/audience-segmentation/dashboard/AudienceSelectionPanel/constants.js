@@ -25,5 +25,7 @@ export const AUDIENCE_SELECTED = 'audience-selected';
 export const AUDIENCE_SELECTION_CHANGED = 'audience-selection-changed';
 export const AUDIENCE_CREATION_NOTICE_SLUG =
 	'audience-segmentation-creation-notice';
+export const AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG =
+	'audience-segmentation-creation-success-notice';
 export const MIN_SELECTED_AUDIENCES_COUNT = 1;
 export const MAX_SELECTED_AUDIENCES_COUNT = 3;

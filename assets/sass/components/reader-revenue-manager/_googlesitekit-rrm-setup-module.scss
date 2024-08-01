@@ -27,4 +27,34 @@
 			line-height: $lh-title-md;
 		}
 	}
+
+	.googlesitekit-setup-module__publication-create-screen {
+
+		.googlesitekit-setup-module__title,
+		.googlesitekit-setup-module__description {
+			font-family: $f-primary;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+		}
+
+		.googlesitekit-setup-module__title {
+			color: $c-surfaces-on-surface;
+			margin-bottom: 0;
+		}
+
+		.googlesitekit-setup-module__description {
+			color: $c-surfaces-on-background-variant;
+			margin-top: 3px;
+		}
+
+		.googlesitekit-setup-module__action {
+			margin-top: 40px;
+
+			svg {
+				margin-left: 6px;
+			}
+		}
+	}
 }
