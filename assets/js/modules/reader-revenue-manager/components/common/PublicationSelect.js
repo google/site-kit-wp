@@ -44,9 +44,11 @@ export default function PublicationSelect( props ) {
 		onChange = () => {},
 	} = props;
 
-	const { setPublicationID, setPublicationOnboardingState } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	);
+	const {
+		setPublicationID,
+		setPublicationOnboardingState,
+		setPublicationOnboardingStateLastSyncedAtMs,
+	} = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
@@ -78,13 +80,19 @@ export default function PublicationSelect( props ) {
 			setPublicationID( newPublicationID );
 			setPublicationOnboardingState( publication.onboardingState );
 
+			// The "last synced" value should reflect the real time this action
+			// was performed, so we don't use the reference date here.
+			// eslint-disable-next-line sitekit/no-direct-date
+			setPublicationOnboardingStateLastSyncedAtMs( Date.now() );
+
 			onChange();
 		},
 		[
-			onChange,
+			publications,
 			setPublicationID,
 			setPublicationOnboardingState,
-			publications,
+			setPublicationOnboardingStateLastSyncedAtMs,
+			onChange,
 		]
 	);
 
