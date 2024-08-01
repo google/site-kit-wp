@@ -81,7 +81,7 @@ import { getContextScrollTop } from '../util/scroll';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-	const readerRevennueManagerEnabled = useFeature( 'rrmModule' );
+	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
@@ -234,7 +234,7 @@ export default function DashboardMainApp() {
 
 			{ ! viewOnlyDashboard && (
 				<Fragment>
-					{ readerRevennueManagerEnabled && (
+					{ readerRevenueManagerEnabled && (
 						<ReaderRevenueManagerSetupCTABanner />
 					) }
 				</Fragment>

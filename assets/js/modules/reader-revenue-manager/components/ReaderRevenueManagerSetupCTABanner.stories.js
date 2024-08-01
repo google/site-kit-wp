@@ -1,5 +1,5 @@
 /**
- * ReaderRevenueManagerSetupCTABanner Component Stories.
+ * Reader Revenue Manager Setup CTA Banner Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -25,24 +25,23 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { provideModules } from '../../../../../tests/js/utils';
+import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'readerRevenueManagerSetupCTABanner'
+)( ReaderRevenueManagerSetupCTABanner );
+
 function Template() {
-	return <ReaderRevenueManagerSetupCTABanner />;
+	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
-	},
-};
 Default.scenario = {
-	label: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABanner/Default',
 	delay: 250,
 };
 
@@ -58,7 +57,11 @@ export default {
 					},
 				] );
 
-				args?.setupRegistry( registry );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				if ( args?.setupRegistry ) {
+					args?.setupRegistry( registry );
+				}
 
 				fetchMock.postOnce(
 					new RegExp(
@@ -72,17 +75,9 @@ export default {
 			};
 
 			return (
-				<div
-					style={ {
-						minHeight: '200px',
-						display: 'flex',
-						alignItems: 'center',
-					} }
-				>
-					<WithRegistrySetup func={ setupRegistry }>
-						<Story />
-					</WithRegistrySetup>
-				</div>
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
 			);
 		},
 	],

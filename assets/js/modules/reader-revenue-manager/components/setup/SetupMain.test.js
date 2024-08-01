@@ -26,8 +26,8 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
 import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
 import { enabledFeatures } from '../../../../features';

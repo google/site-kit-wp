@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager Setup Banner component.
+ * Reader Revenue Manager Setup CTA Banner component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -71,12 +71,13 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onDismiss = useCallback( async () => {
-		// For the second dismissal, dismiss permanently.
 		await dismissItem( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY );
 	}, [ dismissItem ] );
 
 	const readerRevenueManagerDocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'reader-revenue-manager' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			READER_REVENUE_MANAGER_MODULE_SLUG
+		)
 	);
 
 	if ( isDismissed || isDismissed === undefined ) {
