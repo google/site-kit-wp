@@ -20,11 +20,8 @@
 
 	.googlesitekit-setup-module--reader-revenue-manager {
 
-		.googlesitekit-setup-module__text {
-			font-size: $fs-title-md;
+		form > .googlesitekit-cta-link {
 			font-weight: $fw-medium;
-			letter-spacing: $ls-xxs;
-			line-height: $lh-title-md;
 		}
 	}
 

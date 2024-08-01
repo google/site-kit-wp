@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,32 +35,74 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
+import Link from '../../../../components/Link';
 import { PublicationSelect } from '../common';
+import { SpinnerButton } from 'googlesitekit-components';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
-export default function SetupForm( { finishSetup = () => {} } ) {
+export default function SetupForm( { onCompleteSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).canSubmitChanges()
 	);
 	const isSaving = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
 	);
+	const publications = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublications()
+	);
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	);
+	const serviceURL = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
+	);
 
-	const { submitChanges } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const {
+		findMatchedPublication,
+		setPublicationID,
+		setPublicationOnboardingState,
+		setPublicationOnboardingStateLastSyncedAtMs,
+	} = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const submitForm = useCallback(
-		async ( event ) => {
+		( event ) => {
 			event.preventDefault();
-
-			const { error } = await submitChanges();
-
-			if ( ! error ) {
-				finishSetup();
-			}
+			onCompleteSetup();
 		},
-		[ finishSetup, submitChanges ]
+		[ onCompleteSetup ]
 	);
+
+	// Automatically pre-select a publication.
+	useEffect( () => {
+		const autoSelectPublication = async () => {
+			const matchedPublication = await findMatchedPublication();
+
+			if ( matchedPublication ) {
+				// `publicationId` is the identifier used by the API.
+				// eslint-disable-next-line sitekit/acronym-case
+				setPublicationID( matchedPublication.publicationId );
+
+				setPublicationOnboardingState(
+					matchedPublication.onboardingState
+				);
+
+				// The "last synced" value should reflect the real time this action
+				// was performed, so we don't use the reference date here.
+				// eslint-disable-next-line sitekit/no-direct-date
+				setPublicationOnboardingStateLastSyncedAtMs( Date.now() );
+			}
+		};
+
+		if ( ! publicationID ) {
+			autoSelectPublication();
+		}
+	}, [
+		findMatchedPublication,
+		publicationID,
+		setPublicationID,
+		setPublicationOnboardingState,
+		setPublicationOnboardingStateLastSyncedAtMs,
+	] );
 
 	return (
 		<form onSubmit={ submitForm }>
@@ -68,13 +110,23 @@ export default function SetupForm( { finishSetup = () => {} } ) {
 				moduleSlug={ MODULE_SLUG }
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
-			<p className="googlesitekit-setup-module__text">
-				{ __(
-					'Select your preferred publication to connect with Site Kit',
-					'google-site-kit'
-				) }
+			<p className="googlesitekit-margin-bottom-0">
+				{ publications.length === 1
+					? __(
+							'Site Kit will connect your existing publication',
+							'google-site-kit'
+					  )
+					: __(
+							'Select your preferred publication to connect with Site Kit',
+							'google-site-kit'
+					  ) }
 			</p>
-			<PublicationSelect />
+			<div className="googlesitekit-setup-module__inputs">
+				<PublicationSelect />
+			</div>
+			<Link external href={ serviceURL }>
+				{ __( 'Create new publication', 'google-site-kit' ) }
+			</Link>
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
 					disabled={ ! canSubmitChanges || isSaving }
@@ -88,5 +140,5 @@ export default function SetupForm( { finishSetup = () => {} } ) {
 }
 
 SetupForm.propTypes = {
-	finishSetup: PropTypes.func,
+	onCompleteSetup: PropTypes.func.isRequired,
 };

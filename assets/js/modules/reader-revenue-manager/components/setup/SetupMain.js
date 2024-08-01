@@ -24,15 +24,82 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback, useEffect } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '../../datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
+import { PublicationCreate } from '../common';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
 import SetupForm from './SetupForm';
 
 export default function SetupMain( { finishSetup = () => {} } ) {
+	const publications = useSelect(
+		( select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPublications() || []
+	);
+	const hasResolvedPublications = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+			'getPublications'
+		)
+	);
+	const publicationCreateShown = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			SHOW_PUBLICATION_CREATE
+		)
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { submitChanges } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+
+	// Show the publication create form if no publications exist.
+	useEffect( () => {
+		if (
+			! publicationCreateShown &&
+			hasResolvedPublications &&
+			! publications.length
+		) {
+			setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ SHOW_PUBLICATION_CREATE ]: true,
+			} );
+		}
+	}, [
+		hasResolvedPublications,
+		publicationCreateShown,
+		publications.length,
+		setValues,
+	] );
+
+	const onCompleteSetup = useCallback( async () => {
+		const { error } = await submitChanges();
+
+		if ( ! error ) {
+			finishSetup();
+		}
+	}, [ finishSetup, submitChanges ] );
+
+	let viewComponent;
+
+	if ( ! hasResolvedPublications ) {
+		viewComponent = <ProgressBar />;
+	} else if ( publicationCreateShown ) {
+		viewComponent = (
+			<PublicationCreate onCompleteSetup={ onCompleteSetup } />
+		);
+	} else {
+		viewComponent = <SetupForm onCompleteSetup={ onCompleteSetup } />;
+	}
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
 			<div className="googlesitekit-setup-module__step">
@@ -50,7 +117,7 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			</div>
 
 			<div className="googlesitekit-setup-module__step">
-				<SetupForm finishSetup={ finishSetup } />
+				{ viewComponent }
 			</div>
 		</div>
 	);
