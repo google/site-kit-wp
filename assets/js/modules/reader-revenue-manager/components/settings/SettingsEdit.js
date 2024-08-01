@@ -66,7 +66,6 @@ export default function SettingsEdit() {
 			return true;
 		}
 
-		// For any other error or case, the user does not have access to GA4.
 		return false;
 	} );
 
