@@ -19,10 +19,15 @@
 /**
  * Internal dependencies
  */
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import SettingsEdit from './SettingsEdit';
+import { provideModuleRegistrations } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	MODULE_SLUG,
+} from '../../datastore/constants';
+import { enabledFeatures } from '../../../../features';
 
 function Template() {
 	return <SettingsEdit />;
@@ -30,56 +35,36 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit/Default',
-};
+Default.scenario = {};
 
 export const PublicationSelected = Template.bind( {} );
 PublicationSelected.storyName = 'PublicationSelected';
-PublicationSelected.scenario = {
-	label: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit/PublicationSelected',
-};
+PublicationSelected.scenario = {};
 PublicationSelected.args = {
 	setupRegistry: ( registry ) => {
 		const publication = publications[ 0 ];
-		const {
-			// eslint-disable-next-line sitekit/acronym-case
-			publicationId: publicationID,
-			onboardingState: publicationOnboardingState,
-		} = publication;
-
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID,
-				publicationOnboardingState,
-				publicationOnboardingStateLastSyncedAtMs: 0,
-			} );
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
 	},
 };
 
 export const PublicationSelectedWithOnboardingStateNotice = Template.bind( {} );
 PublicationSelectedWithOnboardingStateNotice.storyName =
 	'PublicationSelectedWithOnboardingStateNotice';
-PublicationSelectedWithOnboardingStateNotice.scenario = {
-	label: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit/PublicationSelectedWithOnboardingStateNotice',
-};
+PublicationSelectedWithOnboardingStateNotice.scenario = {};
 PublicationSelectedWithOnboardingStateNotice.args = {
 	setupRegistry: ( registry ) => {
-		const publication = publications[ 2 ];
-		const {
-			// eslint-disable-next-line sitekit/acronym-case
-			publicationId: publicationID,
-			onboardingState: publicationOnboardingState,
-		} = publication;
-
+		const publication = publications[ 1 ];
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID,
-				publicationOnboardingState,
-				publicationOnboardingStateLastSyncedAtMs: 0,
-			} );
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationOnboardingState( publication.onboardingState );
 	},
 };
 
@@ -88,11 +73,34 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				enabledFeatures.add( 'rrmModule' );
+				const extraData = [
+					{
+						slug: MODULE_SLUG,
+						active: true,
+						connected: true,
+					},
+				];
+
+				provideModuleRegistrations( registry, extraData );
+
+				const settings = {
+					ownerID: 1,
+					// eslint-disable-next-line sitekit/acronym-case
+					publicationID: '',
+					publicationOnboardingState: '',
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( publications );
 
-				if ( args.setupRegistry ) {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
 			};

@@ -23,7 +23,6 @@ import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
-	provideUserAuthentication,
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
@@ -39,7 +38,7 @@ describe( 'SettingsEdit', () => {
 	let registry;
 
 	beforeAll( () => {
-		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
+		enabledFeatures.add( 'rrmModule' );
 		registry = createTestRegistry();
 
 		const extraData = [
@@ -52,7 +51,6 @@ describe( 'SettingsEdit', () => {
 		];
 		provideModules( registry, extraData );
 		provideModuleRegistrations( registry, extraData );
-		provideUserAuthentication( registry );
 		provideUserInfo( registry );
 
 		registry
