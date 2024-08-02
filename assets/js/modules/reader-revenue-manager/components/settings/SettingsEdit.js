@@ -70,7 +70,7 @@ export default function SettingsEdit() {
 	} );
 
 	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
-		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } medium />;
+		return <ProgressBar />;
 	}
 
 	return (

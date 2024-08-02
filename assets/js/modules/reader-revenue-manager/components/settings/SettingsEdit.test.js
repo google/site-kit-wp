@@ -37,7 +37,7 @@ import { enabledFeatures } from '../../../../features';
 describe( 'SettingsEdit', () => {
 	let registry;
 
-	beforeAll( () => {
+	beforeEach( () => {
 		enabledFeatures.add( 'rrmModule' );
 		registry = createTestRegistry();
 
@@ -80,19 +80,19 @@ describe( 'SettingsEdit', () => {
 			// eslint-disable-next-line sitekit/acronym-case
 			.setPublicationID( publication.publicationId );
 
-		const { container, waitForRegistry } = render( <SettingsEdit />, {
-			registry,
-		} );
+		const { getByRole, getByText, waitForRegistry } = render(
+			<SettingsEdit />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
 		// Ensure publication select is rendered.
-		expect( container.querySelector( '.mdc-select' ) ).toBeInTheDocument();
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-publication-onboarding-state-notice'
-			)
-		).toBeInTheDocument();
+		expect( getByRole( 'menu', { hidden: true } ) ).toBeInTheDocument();
+		getByText(
+			'Your publication requires further setup in Reader Revenue Manager'
+		);
 	} );
 } );

@@ -18,7 +18,6 @@
 
 import {
 	createTestRegistry,
-	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -36,20 +35,8 @@ import { enabledFeatures } from '../../../../features';
 describe( 'SetupMain', () => {
 	let registry;
 
-	const listModulesEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/modules/data/list'
-	);
-
-	const publicationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
-	);
-
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
-	);
-
 	beforeEach( () => {
-		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
+		enabledFeatures.add( 'rrmModule' );
 		registry = createTestRegistry();
 
 		const extraData = [
@@ -57,7 +44,6 @@ describe( 'SetupMain', () => {
 				slug: MODULE_SLUG,
 				active: true,
 				connected: true,
-				owner: { ID: 1 },
 			},
 		];
 		provideModules( registry, extraData );
@@ -70,10 +56,14 @@ describe( 'SetupMain', () => {
 			.receiveGetPublications( publications );
 	} );
 
-	it( 'should render the component', async () => {
-		muteFetch( settingsEndpoint );
-		muteFetch( publicationsEndpoint );
-		muteFetch( listModulesEndpoint );
+	it( 'should render the componenst', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
 
 		const { getByText, waitForRegistry } = render( <SetupMain />, {
 			registry,

@@ -27,7 +27,6 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG,
 } from '../../datastore/constants';
-import { enabledFeatures } from '../../../../features';
 
 function Template() {
 	return <SettingsEdit />;
@@ -50,11 +49,11 @@ PublicationSelected.args = {
 	},
 };
 
-export const PublicationSelectedWithOnboardingStateNotice = Template.bind( {} );
-PublicationSelectedWithOnboardingStateNotice.storyName =
+export const PublicationSelectedPendingVerification = Template.bind( {} );
+PublicationSelectedPendingVerification.storyName =
 	'PublicationSelectedWithOnboardingStateNotice';
-PublicationSelectedWithOnboardingStateNotice.scenario = {};
-PublicationSelectedWithOnboardingStateNotice.args = {
+PublicationSelectedPendingVerification.scenario = {};
+PublicationSelectedPendingVerification.args = {
 	setupRegistry: ( registry ) => {
 		const publication = publications[ 1 ];
 		registry
@@ -68,12 +67,32 @@ PublicationSelectedWithOnboardingStateNotice.args = {
 	},
 };
 
+export const PublicationSelectedActionRequired = Template.bind( {} );
+PublicationSelectedActionRequired.storyName =
+	'PublicationSelectedWithOnboardingStateNotice';
+PublicationSelectedActionRequired.scenario = {};
+PublicationSelectedActionRequired.args = {
+	setupRegistry: ( registry ) => {
+		const publication = publications[ 2 ];
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationOnboardingState( publication.onboardingState );
+	},
+};
+
 export default {
-	title: 'Modules/ReaderRevenueManager/Components/Settings/SettingsEdit',
+	title: 'Modules/ReaderRevenueManager/Settings/SettingsEdit',
+	parameters: {
+		features: [ 'rrmModule' ],
+	},
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				enabledFeatures.add( 'rrmModule' );
 				const extraData = [
 					{
 						slug: MODULE_SLUG,
