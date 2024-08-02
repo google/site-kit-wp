@@ -36,7 +36,7 @@ import {
 } from '../../datastore/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
-import { PublicationSelect } from '../common';
+import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
 import { SpinnerButton } from 'googlesitekit-components';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
@@ -104,6 +104,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationSelect />
 			</div>
+			<PublicationOnboardingStateNotice />
 			<Link external href={ serviceURL }>
 				{ __( 'Create new publication', 'google-site-kit' ) }
 			</Link>

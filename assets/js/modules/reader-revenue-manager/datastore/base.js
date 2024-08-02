@@ -28,6 +28,7 @@ export default Modules.createModuleStore( 'reader-revenue-manager', {
 	validateCanSubmitChanges,
 	ownedSettingsSlugs: [ 'publicationID' ],
 	settingSlugs: [
+		'ownerID',
 		'publicationID',
 		'publicationOnboardingState',
 		'publicationOnboardingStateLastSyncedAtMs',
