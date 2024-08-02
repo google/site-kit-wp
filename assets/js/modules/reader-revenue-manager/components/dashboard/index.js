@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager styles.
+ * RRM dashboard components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-rrm-overlay-notification";
-@import "googlesitekit-rrm-setup-module";
-@import "googlesitekit-rrm-publication-onboarding-state-notice";
+export { default as PublicationApprovedOverlayNotification } from './PublicationApprovedOverlayNotification';

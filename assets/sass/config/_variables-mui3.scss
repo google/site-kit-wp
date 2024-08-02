@@ -187,6 +187,15 @@ $c-interactive-secondary-press: rgba($c-neutral-n-900, 0.24);
 $c-interactive-tertiary-hover: rgba($c-neutral-n-900, 0.08);
 $c-interactive-tertiary-focus: rgba($c-neutral-n-900, 0.26);
 $c-interactive-tertiary-press: rgba($c-neutral-n-900, 0.16);
+$c-interactive-callout-primary-hover: rgba($c-site-kit-sk-200, 0.6);
+$c-interactive-callout-primary-focus: $c-site-kit-sk-200;
+$c-interactive-callout-primary-disabled: rgba($c-site-kit-sk-600, 0.4);
+$c-interactive-callout-warning-hover: rgba($c-yellow-y-200, 0.6);
+$c-interactive-callout-warning-focus: $c-yellow-y-200;
+$c-interactive-callout-warning-disabled: rgba($c-yellow-y-700, 0.4);
+$c-interactive-callout-error-hover: rgba($c-red-r-100, 0.6);
+$c-interactive-callout-error-focus: $c-red-r-100;
+$c-interactive-callout-error-disabled: rgba($c-red-r-700, 0.4);
 
 // Custom color not from palette.
 $c-content-primary-hover: #2e5f41;

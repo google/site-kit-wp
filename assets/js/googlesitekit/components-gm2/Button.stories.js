@@ -76,6 +76,55 @@ IconButton.args = {
 	className: 'googlesitekit-button--icon',
 };
 
+export const CalloutButton = Template.bind( {} );
+CalloutButton.storyName = 'Callout Button';
+CalloutButton.args = {
+	children: 'Callout Button',
+	callout: true,
+};
+
+export const DisabledCalloutButton = Template.bind( {} );
+DisabledCalloutButton.storyName = 'Disabled Callout Button';
+DisabledCalloutButton.args = {
+	children: 'Disabled Callout Button',
+	callout: true,
+	disabled: true,
+};
+
+export const CalloutWarningButton = Template.bind( {} );
+CalloutWarningButton.storyName = 'Callout Warning Button';
+CalloutWarningButton.args = {
+	children: 'Callout Warning',
+	callout: true,
+	calloutStyle: 'warning',
+};
+
+export const DisabledCalloutWarningButton = Template.bind( {} );
+DisabledCalloutWarningButton.storyName = 'Disabled Callout Warning Button';
+DisabledCalloutWarningButton.args = {
+	children: 'Disabled Warning Callout Button',
+	callout: true,
+	calloutStyle: 'warning',
+	disabled: true,
+};
+
+export const CalloutErrorButton = Template.bind( {} );
+CalloutErrorButton.storyName = 'Callout Error Button';
+CalloutErrorButton.args = {
+	children: 'Callout Error Button',
+	callout: true,
+	calloutStyle: 'error',
+};
+
+export const DisabledCalloutErrorButton = Template.bind( {} );
+DisabledCalloutErrorButton.storyName = 'Disabled Callout Error Button';
+DisabledCalloutErrorButton.args = {
+	children: 'Disabled Error Callout Button',
+	callout: true,
+	calloutStyle: 'error',
+	disabled: true,
+};
+
 export function VRTStory() {
 	return (
 		<div>
@@ -93,6 +142,28 @@ export function VRTStory() {
 			</p>
 			<p>
 				<TertiaryButton { ...TertiaryButton.args } />
+			</p>
+			<p>
+				<CalloutButton { ...CalloutButton.args } />
+			</p>
+			<p>
+				<CalloutWarningButton { ...CalloutWarningButton.args } />
+			</p>
+			<p>
+				<CalloutErrorButton { ...CalloutErrorButton.args } />
+			</p>
+			<p>
+				<DisabledCalloutButton { ...DisabledCalloutButton.args } />
+			</p>
+			<p>
+				<DisabledCalloutWarningButton
+					{ ...DisabledCalloutWarningButton.args }
+				/>
+			</p>
+			<p>
+				<DisabledCalloutErrorButton
+					{ ...DisabledCalloutErrorButton.args }
+				/>
 			</p>
 			<p>
 				<IconButton { ...IconButton.args } />
