@@ -248,7 +248,7 @@ const baseActions = {
 		function* ( { publicationId: publicationID, onboardingState } ) {
 			const registry = yield commonActions.getRegistry();
 
-			return yield registry
+			return registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setSettings( {
 					publicationID,
