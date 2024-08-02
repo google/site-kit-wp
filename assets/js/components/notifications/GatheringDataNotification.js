@@ -26,12 +26,12 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import BannerNotification from '../BannerNotification';
-import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS, trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
-import useModuleGatheringZeroData from '../../../hooks/useModuleGatheringZeroData';
+import BannerNotification from './BannerNotification';
+import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 
 export default function GatheringDataNotification() {
 	const viewContext = useViewContext();

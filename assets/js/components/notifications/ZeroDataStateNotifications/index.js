@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import useViewOnly from '../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
-import GatheringDataNotification from './GatheringDataNotification';
+import GatheringDataNotification from '../GatheringDataNotification';
 import ZeroDataNotification from './ZeroDataNotification';
 
 export default function ZeroDataStateNotifications() {
