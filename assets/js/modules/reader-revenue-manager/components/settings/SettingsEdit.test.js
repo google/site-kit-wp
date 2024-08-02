@@ -46,7 +46,6 @@ describe( 'SettingsEdit', () => {
 				slug: MODULE_SLUG,
 				active: true,
 				connected: true,
-				owner: { ID: 1 },
 			},
 		];
 		provideModules( registry, extraData );
