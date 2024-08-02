@@ -158,7 +158,7 @@ command_exists() {
 # Calls docker-compose with common options.
 ##
 dc() {
-	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS "$@"
+	docker compose $DOCKER_COMPOSE_FILE_OPTIONS "$@"
 }
 
 ##
