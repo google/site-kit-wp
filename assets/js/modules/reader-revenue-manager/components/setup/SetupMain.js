@@ -37,6 +37,7 @@ import {
 	SHOW_PUBLICATION_CREATE,
 } from '../../datastore/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useRefocus } from '../../../../hooks/useRefocus';
 import { ProgressBar } from 'googlesitekit-components';
 import { PublicationCreate } from '../common';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
@@ -58,9 +59,26 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			SHOW_PUBLICATION_CREATE
 		)
 	);
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { submitChanges } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const { resetPublications, submitChanges } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
+	const reset = useCallback( () => {
+		// Do not reset if the publication ID is already set.
+		if ( publicationID !== '' ) {
+			return;
+		}
+
+		resetPublications();
+	}, [ publicationID, resetPublications ] );
+
+	// Reset publication data when user re-focuses window.
+	useRefocus( reset, 15000 );
 
 	// Show the publication create form if no publications exist.
 	useEffect( () => {

@@ -37,6 +37,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { HOUR_IN_SECONDS } from '../../../util';
 
 const fetchGetPublicationsStore = createFetchStore( {
@@ -222,6 +223,27 @@ const baseActions = {
 	},
 
 	/**
+	 * Resets the publications data in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} The dispatched action results.
+	 */
+	*resetPublications() {
+		const registry = yield commonActions.getRegistry();
+
+		yield {
+			type: 'RESET_PUBLICATIONS',
+		};
+
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		return registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.invalidateResolutionForStoreSelector( 'getPublications' );
+	},
+
+	/**
 	 * Sets the given publication in the store.
 	 *
 	 * @since n.e.x.t
@@ -266,6 +288,11 @@ const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case 'RESET_PUBLICATIONS':
+			return {
+				...state,
+				publications: baseInitialState.publications,
+			};
 		default:
 			return state;
 	}

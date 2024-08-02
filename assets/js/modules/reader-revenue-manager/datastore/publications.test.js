@@ -415,6 +415,45 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 		} );
 
+		describe( 'resetPublications', () => {
+			it( 'should reset the publications data in the store', async () => {
+				const response = fixtures.publications.slice( 0, 2 );
+				fetchMock.getOnce( publicationsEndpoint, {
+					body: response,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.resetPublications();
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublications();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublications();
+
+				expect( fetchMock ).toHaveFetched();
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				).toEqual( response );
+			} );
+		} );
+
 		describe( 'selectPublication', () => {
 			it( 'should throw an error if a publication object is not provided', () => {
 				expect( () =>
