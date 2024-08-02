@@ -51,6 +51,7 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
 import ga4ReportingTour from '../../../../../../feature-tours/ga4-reporting';
+import DataBlockGroup from '../../../../../../components/DataBlockGroup';
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	return {
@@ -338,7 +339,7 @@ export default function Overview( props ) {
 		<Grid>
 			<Row>
 				<Cell { ...dataBlockWrapperCellProps[ dataBlocks.length ] }>
-					<Row>
+					<DataBlockGroup className="mdc-layout-grid__inner">
 						{ dataBlocks.map( ( dataBlock, index ) => (
 							<Cell
 								key={ dataBlock.id }
@@ -372,7 +373,7 @@ export default function Overview( props ) {
 								/>
 							</Cell>
 						) ) }
-					</Row>
+					</DataBlockGroup>
 				</Cell>
 
 				<OptionalCells

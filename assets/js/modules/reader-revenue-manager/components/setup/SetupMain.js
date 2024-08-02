@@ -29,8 +29,8 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
 import { useRefocus } from '../../../../hooks/useRefocus';
-import { PublicationSelect } from '../common';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { PublicationSelect, PublicationOnboardingStateNotice } from '../common';
 
 export default function SetupMain() {
 	const publicationID = useSelect( ( select ) =>
@@ -64,7 +64,6 @@ export default function SetupMain() {
 					'google-site-kit'
 				) }
 			</h2>
-
 			<div>
 				<p>
 					{ __(
@@ -73,6 +72,7 @@ export default function SetupMain() {
 					) }
 				</p>
 				<PublicationSelect />
+				<PublicationOnboardingStateNotice />
 			</div>
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton>

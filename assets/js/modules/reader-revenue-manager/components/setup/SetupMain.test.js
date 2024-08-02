@@ -36,7 +36,7 @@ describe( 'SetupMain', () => {
 	let registry;
 
 	beforeEach( () => {
-		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
+		enabledFeatures.add( 'rrmModule' );
 		registry = createTestRegistry();
 
 		const extraData = [
@@ -44,7 +44,6 @@ describe( 'SetupMain', () => {
 				slug: MODULE_SLUG,
 				active: true,
 				connected: true,
-				owner: { ID: 1 },
 			},
 		];
 		provideModules( registry, extraData );
@@ -55,12 +54,17 @@ describe( 'SetupMain', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
 	} );
 
 	it( 'should render the component', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+
 		const { getByText, waitForRegistry } = render( <SetupMain />, {
 			registry,
 		} );

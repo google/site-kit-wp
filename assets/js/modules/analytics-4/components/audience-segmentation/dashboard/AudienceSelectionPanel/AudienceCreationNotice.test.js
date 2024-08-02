@@ -60,23 +60,6 @@ describe( 'AudienceCreationNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render null if there are 0 audiences available', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			availableAudiences: [],
-		} );
-
-		const { container, waitForRegistry } = render(
-			<AudienceCreationNotice />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should render null if the user has dismissed the notice', async () => {
 		registry
 			.dispatch( CORE_USER )
@@ -114,7 +97,7 @@ describe( 'AudienceCreationNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render the notice if the user has not dismissed the notice', async () => {
+	it( 'should render the notice if the user has not dismissed the notice and there are 2 available audiences', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -132,7 +115,42 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences,
+			availableAudiences: [],
+		} );
+
+		const { container, waitForRegistry } = render(
+			<AudienceCreationNotice />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the notice if the user has not dismissed the notice and there is 1 available audience', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID: '12345',
+			propertyID: '34567',
+			measurementID: '56789',
+			webDataStreamID: '78901',
+			availableAudiences: availableAudiences.filter(
+				( { displayName } ) => displayName !== 'Returning visitors'
+			),
 		} );
 
 		const { container, waitForRegistry } = render(

@@ -92,6 +92,8 @@
 
 				// For mobile remove the border radius on the top corners so the tile fits seamlessly with the tabs above.
 				& > .googlesitekit-widget {
+					overflow: hidden;
+
 					@media (max-width: $bp-desktop) {
 						border-top-left-radius: 0;
 						border-top-right-radius: 0;
