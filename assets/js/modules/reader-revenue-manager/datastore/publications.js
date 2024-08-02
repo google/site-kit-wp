@@ -307,7 +307,6 @@ const baseResolvers = {
 			.getPublications();
 		if ( publications === undefined ) {
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
-			yield baseActions.syncPublicationOnboardingState();
 		}
 	},
 };
