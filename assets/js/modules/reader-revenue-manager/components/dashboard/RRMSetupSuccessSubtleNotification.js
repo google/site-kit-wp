@@ -128,6 +128,7 @@ function RRMSetupSuccessSubtleNotification() {
 					'google-site-kit'
 				) }
 				isCTALinkExternal
+				variant="warning"
 			/>
 		);
 	}
