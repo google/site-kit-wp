@@ -154,7 +154,7 @@ const baseActions = {
 		const connected = yield commonActions.await(
 			registry
 				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( MODULE_SLUG )
+				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
