@@ -176,6 +176,8 @@ const baseActions = {
 	 * Resets the publications data in the store.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return {Object} The dispatched action results.
 	 */
 	*resetPublications() {
 		const registry = yield commonActions.getRegistry();
@@ -186,7 +188,7 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getPublications' );
 
-		yield registry
+		return registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.invalidateResolutionForStoreSelector( 'getPublications' );
 	},

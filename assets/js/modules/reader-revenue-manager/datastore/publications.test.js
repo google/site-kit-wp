@@ -285,19 +285,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'resetPublications', () => {
-			it( 'should not throw any error', () => {
-				expect( async () => {
-					fetchMock.getOnce( publicationsEndpoint, {
-						body: JSON.stringify( fixtures.publications ),
-						status: 200,
-					} );
-
-					await registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.resetPublications();
-				} ).not.toThrow();
-			} );
-
 			it( 'should reset the publications data in the store', async () => {
 				const response = fixtures.publications.slice( 0, 2 );
 				fetchMock.getOnce( publicationsEndpoint, {
