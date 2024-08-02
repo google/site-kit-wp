@@ -22,15 +22,15 @@ IMAGE=googlesitekit/vrt:$VERSION
 
 # Build the backstopjs image if it doesn't exist yet.
 docker image inspect $IMAGE -f "{{.Id}}" >/dev/null 2>&1 ||
-	docker build -t $IMAGE --build-arg BACKSTOPJS_VERSION=$VERSION $ROOT_DIR/docker/backstopjs
+	docker build -t $IMAGE --build-arg BACKSTOPJS_VERSION=$VERSION "$ROOT_DIR/docker/backstopjs"
 
 # Run the backstopjs command.
-docker run --rm -t --mount type=bind,source="$ROOT_DIR",target="/src" $IMAGE $1 --config=/src/tests/backstop/config.js
+docker run --rm -t --mount type=bind,source="$ROOT_DIR",target="/src" $IMAGE "$1" --config=/src/tests/backstop/config.js
 
 DOCKER_EXIT_CODE=$?
 
 # Display a link to the report only after the "test" command.
-if [ $1 == "test" ]; then
+if [ "$1" == "test" ]; then
 	echo ""
 	echo "To see the VRT report open this URL in your browser: file://$ROOT_DIR/tests/backstop/html_report/index.html"
 fi
