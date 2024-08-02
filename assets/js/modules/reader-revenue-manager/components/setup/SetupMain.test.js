@@ -56,7 +56,7 @@ describe( 'SetupMain', () => {
 			.receiveGetPublications( publications );
 	} );
 
-	it( 'should render the componenst', async () => {
+	it( 'should render the component', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {} );
