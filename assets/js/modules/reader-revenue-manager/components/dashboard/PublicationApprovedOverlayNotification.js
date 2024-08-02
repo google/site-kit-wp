@@ -125,6 +125,7 @@ export default function PublicationApprovedOverlayNotification() {
 				<Button
 					disabled={ isDismissing }
 					href={ serviceURL }
+					onClick={ dismissNotification }
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
 					target="_blank"
 				>
