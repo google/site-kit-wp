@@ -1,5 +1,5 @@
 /**
- * RRM common components.
+ * Reader Revenue Manager common components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,4 +16,6 @@
  * limitations under the License.
  */
 
+export { default as PublicationOnboardingStateNotice } from './PublicationOnboardingStateNotice';
+export { default as PublicationCreate } from './PublicationCreate';
 export { default as PublicationSelect } from './PublicationSelect';
