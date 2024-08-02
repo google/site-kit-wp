@@ -57,12 +57,9 @@ export default function SetupForm( { onCompleteSetup } ) {
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
-	const {
-		findMatchedPublication,
-		setPublicationID,
-		setPublicationOnboardingState,
-		setPublicationOnboardingStateLastSyncedAtMs,
-	} = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const { findMatchedPublication, selectPublication } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
 
 	const submitForm = useCallback(
 		( event ) => {
@@ -78,31 +75,14 @@ export default function SetupForm( { onCompleteSetup } ) {
 			const matchedPublication = await findMatchedPublication();
 
 			if ( matchedPublication ) {
-				// `publicationId` is the identifier used by the API.
-				// eslint-disable-next-line sitekit/acronym-case
-				setPublicationID( matchedPublication.publicationId );
-
-				setPublicationOnboardingState(
-					matchedPublication.onboardingState
-				);
-
-				// The "last synced" value should reflect the real time this action
-				// was performed, so we don't use the reference date here.
-				// eslint-disable-next-line sitekit/no-direct-date
-				setPublicationOnboardingStateLastSyncedAtMs( Date.now() );
+				selectPublication( matchedPublication );
 			}
 		};
 
 		if ( ! publicationID ) {
 			autoSelectPublication();
 		}
-	}, [
-		findMatchedPublication,
-		publicationID,
-		setPublicationID,
-		setPublicationOnboardingState,
-		setPublicationOnboardingStateLastSyncedAtMs,
-	] );
+	}, [ findMatchedPublication, publicationID, selectPublication ] );
 
 	return (
 		<form onSubmit={ submitForm }>
