@@ -187,7 +187,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 
 ReaderRevenueManagerSetupCTABanner.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType,
+	WidgetNull: PropTypes.elementType.isRequired,
 };
 
 export default compose(

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import { provideModules } from '../../../../../tests/js/utils';
@@ -41,14 +36,12 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	delay: 250,
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABanner',
 	decorators: [
-		( Story, { args } ) => {
+		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -58,20 +51,6 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-				if ( args?.setupRegistry ) {
-					args?.setupRegistry( registry );
-				}
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/user/data/dismiss-items'
-					),
-					{
-						body: [],
-						status: 200,
-					}
-				);
 			};
 
 			return (
