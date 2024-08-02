@@ -31,9 +31,11 @@ import {
 	PAXSetupSuccessSubtleNotification,
 } from '../../modules/ads/components/notifications/';
 import { useFeature } from '../../hooks/useFeature';
+import RRMSetupSuccessSubtleNotificationStories from '../../modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification.stories';
 
 export default function SubtleNotifications() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
+	const rrmModuleEnabled = useFeature( 'rrmModule' );
 
 	// Each notification component rendered here has its own logic to determine
 	// whether it should be displayed; in most cases none of these components
@@ -49,6 +51,7 @@ export default function SubtleNotifications() {
 			) }
 			<GA4AdSenseLinkedNotification />
 			<SetupSuccessSubtleNotification />
+			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotificationStories /> }
 			<PAXSetupSuccessSubtleNotification />
 		</Fragment>
 	);
