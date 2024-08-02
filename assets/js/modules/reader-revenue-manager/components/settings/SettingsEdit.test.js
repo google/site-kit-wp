@@ -90,6 +90,8 @@ describe( 'SettingsEdit', () => {
 
 		// Ensure publication select is rendered.
 		expect( getByRole( 'menu', { hidden: true } ) ).toBeInTheDocument();
+
+		// Ensure the publication onboarding state notice is displayed.
 		getByText(
 			'Your publication requires further setup in Reader Revenue Manager'
 		);
