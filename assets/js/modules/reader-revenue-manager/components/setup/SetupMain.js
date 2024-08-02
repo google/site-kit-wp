@@ -26,7 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
-import { PublicationSelect } from '../common';
+import { PublicationSelect, PublicationOnboardingStateNotice } from '../common';
 
 export default function SetupMain() {
 	return (
@@ -42,7 +42,6 @@ export default function SetupMain() {
 					'google-site-kit'
 				) }
 			</h2>
-
 			<div>
 				<p>
 					{ __(
@@ -51,6 +50,7 @@ export default function SetupMain() {
 					) }
 				</p>
 				<PublicationSelect />
+				<PublicationOnboardingStateNotice />
 			</div>
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton>
