@@ -36,7 +36,7 @@ export const VARIANTS = {
 	WARNING: 'warning',
 };
 
-export default function SubtleNotification( {
+function SubtleNotification( {
 	title,
 	description,
 	Icon,
@@ -124,3 +124,5 @@ SubtleNotification.propTypes = {
 	onDismiss: PropTypes.func,
 	variant: PropTypes.oneOf( Object.values( VARIANTS ) ),
 };
+
+export default SubtleNotification;
