@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import BannerNotification from '../BannerNotification';
-import ZeroStateIcon from '../../../../svg/graphics/zero-state-blue.svg';
-import { DAY_IN_SECONDS, trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
-import useModuleGatheringZeroData from '../../../hooks/useModuleGatheringZeroData';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import BannerNotification from './BannerNotification';
+import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 
 export default function ZeroDataNotification() {
 	const viewContext = useViewContext();
