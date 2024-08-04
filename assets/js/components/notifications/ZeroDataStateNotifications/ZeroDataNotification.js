@@ -31,6 +31,7 @@ import BannerNotification from '../BannerNotification';
 import ZeroStateIcon from '../../../../svg/graphics/zero-state-blue.svg';
 import { DAY_IN_SECONDS, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
+import useModuleGatheringZeroData from '../../../hooks/useModuleGatheringZeroData';
 
 export default function ZeroDataNotification() {
 	const viewContext = useViewContext();
@@ -53,6 +54,13 @@ export default function ZeroDataNotification() {
 			'not-enough-traffic'
 		);
 	} );
+
+	const { analyticsHasZeroData, searchConsoleHasZeroData } =
+		useModuleGatheringZeroData();
+
+	if ( ! analyticsHasZeroData && ! searchConsoleHasZeroData ) {
+		return null;
+	}
 
 	return (
 		<BannerNotification
