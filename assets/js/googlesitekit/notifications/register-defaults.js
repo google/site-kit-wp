@@ -48,31 +48,22 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: ( { select }, viewContext ) => {
+		checkRequirements: ( { select, resolveSelect }, viewContext ) => {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
 			const isAnalyticsConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-			const canViewSharedAnalytics = () => {
-				if ( ! viewOnly ) {
-					return true;
-				}
+			const canViewSharedAnalytics = ! viewOnly
+				? true
+				: select( CORE_USER ).canViewSharedModule( 'analytics-4' );
 
-				return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
-			};
-			const canViewSharedSearchConsole = () => {
-				if ( ! viewOnly ) {
-					return true;
-				}
+			const canViewSharedSearchConsole = ! viewOnly
+				? true
+				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-				return select( CORE_USER ).canViewSharedModule(
-					'search-console'
-				);
-			};
-
-			const showRecoverableAnalytics = () => {
+			const showRecoverableAnalytics = ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
@@ -87,8 +78,8 @@ export function registerDefaults( notificationsAPI ) {
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
-			};
-			const showRecoverableSearchConsole = () => {
+			} )();
+			const showRecoverableSearchConsole = ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
@@ -103,28 +94,21 @@ export function registerDefaults( notificationsAPI ) {
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
 				);
-			};
+			} )();
 
 			const analyticsGatheringData =
 				isAnalyticsConnected &&
 				canViewSharedAnalytics &&
 				false === showRecoverableAnalytics
-					? select( MODULES_ANALYTICS_4 ).isGatheringData()
+					? resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData()
 					: false;
 			const searchConsoleGatheringData =
 				canViewSharedSearchConsole &&
 				false === showRecoverableSearchConsole &&
-				select( MODULES_SEARCH_CONSOLE ).isGatheringData();
-
-			if (
-				analyticsGatheringData === undefined ||
-				searchConsoleGatheringData === undefined
-			) {
-				return false;
-			}
+				resolveSelect( MODULES_SEARCH_CONSOLE ).isGatheringData();
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
-		isDismissible: true,
+		isDismissible: false,
 	} );
 }
