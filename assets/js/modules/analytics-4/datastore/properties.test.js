@@ -31,7 +31,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
@@ -94,10 +93,6 @@ describe( 'modules/analytics-4 properties', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

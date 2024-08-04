@@ -19,11 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-	muteFetch,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user disconnect', () => {
@@ -37,10 +33,6 @@ describe( 'core/user disconnect', () => {
 		// The return value is irrelevant to the test.
 		muteFetch( coreUserDataDisconnectEndpointRegExp );
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'disconnect', () => {

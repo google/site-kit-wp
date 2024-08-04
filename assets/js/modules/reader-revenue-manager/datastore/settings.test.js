@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_INVALID_PUBLICATION_ID,
@@ -40,10 +37,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {

@@ -19,20 +19,15 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'modules/reader-revenue-manager properties', () => {
+	// TEMPORARY IGNORE – REMOVE THIS LINE
+	// eslint-disable-next-line no-unused-vars
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'store', () => {

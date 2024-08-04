@@ -24,7 +24,6 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -37,10 +36,6 @@ describe( 'modules/analytics-4 pivotReport', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {

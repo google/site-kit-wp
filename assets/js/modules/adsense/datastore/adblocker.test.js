@@ -25,7 +25,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideModules,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
@@ -40,7 +39,6 @@ describe( 'modules/adsense adblocker', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		mockDetectAnyAdblocker.mockReset();
 	} );
 

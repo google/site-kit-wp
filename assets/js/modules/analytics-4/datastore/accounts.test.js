@@ -28,7 +28,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
@@ -60,10 +59,6 @@ describe( 'modules/analytics-4 accounts', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

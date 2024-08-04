@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	untilResolved,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
@@ -43,10 +42,6 @@ describe( 'modules/analytics tags', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'selectors', () => {

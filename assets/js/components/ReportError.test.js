@@ -24,7 +24,6 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
-	unsubscribeFromAll,
 } from '../../../tests/js/utils';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
@@ -92,7 +91,6 @@ describe( 'ReportError', () => {
 
 	afterEach( () => {
 		invalidateResolutionSpy.mockReset();
-		unsubscribeFromAll( registry );
 	} );
 
 	it( 'renders the error message', () => {

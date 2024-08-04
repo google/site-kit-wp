@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { MODULES_ADS } from './constants';
@@ -44,7 +43,6 @@ describe( 'modules/ads module data', () => {
 
 	afterEach( () => {
 		delete global[ baseModulesGlobalName ];
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

@@ -26,7 +26,6 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
-	unsubscribeFromAll,
 } from '../../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
@@ -57,7 +56,6 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		jest.clearAllMocks();
 	} );
 

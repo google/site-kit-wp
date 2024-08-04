@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
@@ -56,7 +55,6 @@ describe( 'core/user userInfo', () => {
 
 	afterEach( () => {
 		delete global[ userDataGlobal ];
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

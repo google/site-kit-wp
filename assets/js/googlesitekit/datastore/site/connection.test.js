@@ -24,7 +24,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
@@ -54,10 +53,6 @@ describe( 'core/site connection', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

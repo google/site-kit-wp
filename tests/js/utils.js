@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { castArray, mapValues } from 'lodash';
+import { mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -477,13 +477,6 @@ export const registerAllStoresOn = ( registry ) => {
 	);
 };
 
-const unsubscribes = [];
-export const subscribeWithUnsubscribe = ( registry, ...args ) => {
-	const unsubscribe = registry.subscribe( ...args );
-	unsubscribes.push( unsubscribe );
-	return unsubscribe;
-};
-
 /**
  * Returns an object that returns hasFinishedResolution selectors for each key
  * that are bound to the given registry and store name.
@@ -512,23 +505,25 @@ export const untilResolved = ( registry, storeName ) => {
 	);
 };
 
-export const subscribeUntil = ( registry, predicates ) => {
-	predicates = castArray( predicates );
-
+/**
+ * Subscribes to the given registry until all predicates are satisfied.
+ *
+ * @since 1.11.0
+ * @private
+ *
+ * @param {Object}      registry   WP data registry instance.
+ * @param {...Function} predicates Predicate functions.
+ * @return {Promise} Promise that resolves once all predicates are satisfied.
+ */
+export const subscribeUntil = ( registry, ...predicates ) => {
 	return new Promise( ( resolve ) => {
-		subscribeWithUnsubscribe( registry, () => {
+		const unsubscribe = registry.subscribe( () => {
 			if ( predicates.every( ( predicate ) => predicate() ) ) {
+				unsubscribe();
 				resolve();
 			}
 		} );
 	} );
-};
-
-export const unsubscribeFromAll = () => {
-	let unsubscribe;
-	while ( ( unsubscribe = unsubscribes.shift() ) ) {
-		unsubscribe();
-	}
 };
 
 /**
@@ -582,7 +577,7 @@ export const createWaitForRegistry = ( registry ) => {
 	const updates = [];
 	const listener = () =>
 		updates.push( new Promise( ( resolve ) => resolve() ) );
-	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
+	const unsubscribe = registry.subscribe( listener );
 
 	// Return a function that:
 	// - Waits until the next tick for updates.

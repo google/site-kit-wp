@@ -21,7 +21,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	provideModules,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -45,10 +44,6 @@ describe( 'core/site Consent Mode', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

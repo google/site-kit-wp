@@ -31,7 +31,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -96,10 +95,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
