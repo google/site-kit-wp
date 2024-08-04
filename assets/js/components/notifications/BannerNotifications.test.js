@@ -37,6 +37,7 @@ import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import BannerNotifications from './BannerNotifications';
 import Header from '../Header';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 describe( 'BannerNotifications', () => {
 	mockLocation();
@@ -94,6 +95,7 @@ describe( 'BannerNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [] );
 		registry.dispatch( CORE_USER ).receiveNonces( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( [] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveHasMismatchGoogleTagID( false );
@@ -107,6 +109,7 @@ describe( 'BannerNotifications', () => {
 			<BannerNotifications />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -127,6 +130,7 @@ describe( 'BannerNotifications', () => {
 			<BannerNotifications />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -157,6 +161,7 @@ describe( 'BannerNotifications', () => {
 			<Header subHeader={ <BannerNotifications /> } />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -193,6 +198,7 @@ describe( 'BannerNotifications', () => {
 			<BannerNotifications />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
