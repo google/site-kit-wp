@@ -83,10 +83,7 @@ export default function AddGroupNotice() {
 		// reset the value. Otherwise `twoOrMoreAudiencesSelected` always remains `true`.
 		// We are checking if selection panel is closed to do that, so notice is not re-surfaced
 		// while selection panel is still open.
-		if (
-			! isSelectionPanelOpen &&
-			( ! selectedAudiences.length || selectedAudiences.length === 1 )
-		) {
+		if ( ! isSelectionPanelOpen && selectedAudiences?.length === 1 ) {
 			setTwoOrMoreAudiencesSelected( false );
 		}
 	}, [
