@@ -46,10 +46,20 @@ export default function SurveyTerms() {
 				),
 				{
 					privacy: (
-						<Link href={ privacy } external hideExternalIndicator />
+						<Link
+							href={ privacy }
+							external
+							hideExternalIndicator
+							noFlex
+						/>
 					),
 					terms: (
-						<Link href={ terms } external hideExternalIndicator />
+						<Link
+							href={ terms }
+							external
+							hideExternalIndicator
+							noFlex
+						/>
 					),
 				}
 			) }

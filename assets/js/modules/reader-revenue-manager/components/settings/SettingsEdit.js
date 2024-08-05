@@ -19,19 +19,68 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { ProgressBar } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	MODULE_SLUG,
+} from '../../datastore/constants';
+import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
 
 export default function SettingsEdit() {
-	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ __(
-					'Reader Revenue Manager Settings Edit',
-					'google-site-kit'
-				) }
-			</h2>
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
+	);
 
-			{ /* TODO: Add the rest of the settings steps */ }
+	const hasModuleAccess = useSelect( ( select ) => {
+		const { hasModuleOwnershipOrAccess, getErrorForAction } =
+			select( CORE_MODULES );
+
+		const hasAccess = hasModuleOwnershipOrAccess( MODULE_SLUG );
+
+		if ( hasAccess ) {
+			return true;
+		}
+
+		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
+			MODULE_SLUG,
+		] );
+
+		// Return early if request is not completed yet.
+		if ( undefined === hasAccess && ! checkAccessError ) {
+			return undefined;
+		}
+
+		// Return false if RRM is connected and access is concretely missing.
+		if ( false === hasAccess ) {
+			return false;
+		}
+
+		if ( 'module_not_connected' === checkAccessError?.code ) {
+			return true;
+		}
+
+		return false;
+	} );
+
+	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
+		return <ProgressBar />;
+	}
+
+	return (
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
+			{ hasModuleAccess && (
+				<Fragment>
+					<PublicationSelect hasModuleAccess={ hasModuleAccess } />
+					<PublicationOnboardingStateNotice />
+				</Fragment>
+			) }
 		</div>
 	);
 }
