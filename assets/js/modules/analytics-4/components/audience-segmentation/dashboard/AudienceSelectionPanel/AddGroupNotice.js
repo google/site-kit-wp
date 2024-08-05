@@ -92,9 +92,16 @@ export default function AddGroupNotice() {
 		setTwoOrMoreAudiencesSelected,
 	] );
 
-	// Do not render the notice if the slection panel is dismissed, has two or more
-	// audiences selected, or the items are showing as preview blocks - re-syncing is still in progress.
-	if ( isDismissed || twoOrMoreAudiencesSelected || isLoading ) {
+	if (
+		// Do not render the notice if the slection panel is dismissed.
+		isDismissed ||
+		// Has two or more audiences selected.
+		twoOrMoreAudiencesSelected ||
+		// Items are showing as preview blocks - re-syncing is still in progress.
+		isLoading ||
+		// There is no audience selected.
+		! selectedAudiences?.length
+	) {
 		return null;
 	}
 
