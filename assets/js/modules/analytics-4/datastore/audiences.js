@@ -690,6 +690,64 @@ const baseSelectors = {
 			] );
 		}
 	),
+
+	getSiteKitAudiencesUserCountReportOptions: createRegistrySelector(
+		( select ) => () => {
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+			return {
+				...dateRangeDates,
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				dimensions: [ { name: 'newVsReturning' } ],
+			};
+		}
+	),
+
+	hasAudiencePartialData: createRegistrySelector(
+		( select ) => ( state, audiences ) => {
+			return ( audiences || [] ).some( ( { name } ) => {
+				return ! select( CORE_USER ).hasDateRangeData( {
+					type: 'audience',
+					identifier: name,
+				} );
+			} );
+		}
+	),
+
+	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
+		( select ) => () => {
+			const audiences =
+				select( MODULES_ANALYTICS_4 ).getConfigurableAudiences();
+
+			if ( undefined === audiences ) {
+				return undefined;
+			}
+
+			if ( ! audiences.length ) {
+				return [];
+			}
+
+			const [ siteKitAudiences, otherAudiences ] = audiences.reduce(
+				( [ siteKit, other ], audience ) => {
+					if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
+						siteKit.push( audience );
+					} else {
+						other.push( audience );
+					}
+					return [ siteKit, other ];
+				},
+				[ [], [] ] // Initial values.
+			);
+
+			return [ siteKitAudiences, otherAudiences ];
+		}
+	),
 };
 
 const store = combineStores(
