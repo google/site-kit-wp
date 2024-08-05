@@ -17,10 +17,20 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../../tests/js/utils';
-import { render } from '../../../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	waitForDefaultTimeouts,
+} from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';
@@ -35,6 +45,10 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 describe( 'PublicationApprovedOverlayNotification', () => {
 	let registry;
+
+	const dismissItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -126,5 +140,36 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 		// Component should return null.
 		expect( container.firstChild ).toBeNull();
+	} );
+
+	it( 'should get dismissed when "Enable features" CTA is clicked', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		fetchMock.postOnce( dismissItemsEndpoint, {
+			body: {
+				data: {
+					slug: RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
+					expiration: 0,
+				},
+			},
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+				<PublicationApprovedOverlayNotification />
+			</ViewContextProvider>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: /Enable features/i } ) );
+
+		await act( waitForDefaultTimeouts );
+
+		expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
 	} );
 } );

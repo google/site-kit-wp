@@ -16,7 +16,7 @@ export COMPOSE_PROJECT_NAME='googlesitekit-e2e'
 if [ -t 0 ]; then
 	COMPOSE_EXEC_ARGS=""
 else
-	COMPOSE_EXEC_ARGS="-T" # Disable pseudo-tty allocation. By default `docker-compose exec` allocates a TTY.
+	COMPOSE_EXEC_ARGS="-T" # Disable pseudo-tty allocation. By default `docker compose exec` allocates a TTY.
 fi
 
 ##
@@ -155,10 +155,10 @@ command_exists() {
 ##
 # Docker Compose helper
 #
-# Calls docker-compose with common options.
+# Calls `docker compose` with common options.
 ##
 dc() {
-	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS "$@"
+	docker compose $DOCKER_COMPOSE_FILE_OPTIONS "$@"
 }
 
 ##

@@ -135,5 +135,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: e2e-screenshots
-          path: tests/e2e/screenshots
+          name: e2e-debugging-run[${{ github.run_attempt }}]-wp[${{ matrix.wp_version }}]-amp[${{ matrix.amp_version }}]
+          path: |
+            ~/.npm/_logs/
+            tests/e2e/screenshots/
