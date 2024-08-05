@@ -30,15 +30,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '../../../../components/Link';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import {
 	MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import Link from '../../../../components/Link';
 import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
-import { SpinnerButton } from 'googlesitekit-components';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 export default function SetupForm( { onCompleteSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>

@@ -47,9 +47,7 @@ NoPublications.args = {
 			.receiveGetPublications( [] );
 	},
 };
-NoPublications.scenario = {
-	// No parameters are needed for this scenario, but we still need to define the scenario object to include the story in the VRT suite.
-};
+NoPublications.scenario = {};
 
 export const PublicationCreated = Template.bind( {} );
 PublicationCreated.storyName = 'Publication created';
@@ -66,9 +64,7 @@ PublicationCreated.args = {
 			} );
 	},
 };
-PublicationCreated.scenario = {
-	// No parameters are needed for this scenario, but we still need to define the scenario object to include the story in the VRT suite.
-};
+PublicationCreated.scenario = {};
 
 export const OnePublication = Template.bind( {} );
 OnePublication.storyName = 'One publication';
@@ -79,9 +75,7 @@ OnePublication.args = {
 			.receiveGetPublications( [ publications[ 0 ] ] );
 	},
 };
-OnePublication.scenario = {
-	// No parameters are needed for this scenario, but we still need to define the scenario object to include the story in the VRT suite.
-};
+OnePublication.scenario = {};
 
 export const MultiplePublications = Template.bind( {} );
 MultiplePublications.storyName = 'Multiple publications';
@@ -92,9 +86,7 @@ MultiplePublications.args = {
 			.receiveGetPublications( publications );
 	},
 };
-MultiplePublications.scenario = {
-	// No parameters are needed for this scenario, but we still need to define the scenario object to include the story in the VRT suite.
-};
+MultiplePublications.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMain',

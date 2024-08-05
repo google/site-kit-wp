@@ -44,8 +44,6 @@ export default function PublicationSelect( props ) {
 		onChange = () => {},
 	} = props;
 
-	const { selectPublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
-
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
@@ -64,6 +62,8 @@ export default function PublicationSelect( props ) {
 				'getPublications'
 			)
 	);
+
+	const { selectPublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const onPublicationChange = useCallback(
 		( index, item ) => {
