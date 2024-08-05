@@ -712,10 +712,9 @@ const baseSelectors = {
 	hasAudiencePartialData: createRegistrySelector(
 		( select ) => ( state, audiences ) => {
 			return ( audiences || [] ).some( ( { name } ) => {
-				return ! select( CORE_USER ).hasDateRangeData( {
-					type: 'audience',
-					identifier: name,
-				} );
+				return ! select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					name
+				);
 			} );
 		}
 	),
@@ -729,7 +728,7 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			if ( ! audiences.length ) {
+			if ( ! audiences?.length ) {
 				return [];
 			}
 
