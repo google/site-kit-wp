@@ -697,41 +697,46 @@ const baseSelectors = {
 				  ] )
 				: undefined;
 
-			const otherUserCountReportError = getErrorForSelector(
-				'getReport',
-				[ getAudiencesUserCountReportOptions( otherAudiences ) ]
-			);
+			const otherUserCountReportError =
+				! isSiteKitAudiencePartialData || otherAudiences?.length !== 0
+					? getErrorForSelector( 'getReport', [
+							getAudiencesUserCountReportOptions(
+								otherAudiences
+							),
+					  ] )
+					: undefined;
 
 			return [ otherUserCountReportError, siteKitUserCountReportError ];
 		}
 	),
 
 	getSiteKitAudiencesUserCountReportOptions: createRegistrySelector(
-		( select ) => () => {
-			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+		( select ) =>
+			( state, { startDate, endDate } = {} ) => {
+				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
 
-			return {
-				...dateRangeDates,
-				metrics: [
-					{
-						name: 'totalUsers',
-					},
-				],
-				dimensions: [ { name: 'newVsReturning' } ],
-			};
-		}
+				return {
+					startDate: startDate || dateRangeDates.startDate,
+					endDate: endDate || dateRangeDates.endDate,
+					metrics: [
+						{
+							name: 'totalUsers',
+						},
+					],
+					dimensions: [ { name: 'newVsReturning' } ],
+				};
+			}
 	),
 
 	hasAudiencePartialData: createRegistrySelector(
-		( select ) => ( state, audiences ) => {
-			return ( audiences || [] ).some( ( { name } ) => {
-				return ! select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+		( select ) => ( state, audiences ) =>
+			( audiences || [] ).some( ( { name } ) => {
+				return select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
 					name
 				);
-			} );
-		}
+			} )
 	),
 
 	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
