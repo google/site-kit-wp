@@ -20,11 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from '@wordpress/data';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { PublicationOnboardingStateNotice } from '../common';
