@@ -19,6 +19,10 @@
 /**
  * Internal dependencies
  */
+import { provideModuleRegistrations } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
 
 function Template() {
@@ -27,8 +31,79 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.scenario = {};
+
+export const WithPendingVerificationNotice = Template.bind( {} );
+WithPendingVerificationNotice.storyName = 'WithPendingVerificationNotice';
+WithPendingVerificationNotice.args = {
+	setupRegistry: ( registry ) => {
+		const publication = publications[ 1 ];
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationOnboardingState( publication.onboardingState );
+	},
+};
+WithPendingVerificationNotice.scenario = {};
+
+export const WithActionRequiredNotice = Template.bind( {} );
+WithActionRequiredNotice.storyName = 'WithActionRequiredNotice';
+WithActionRequiredNotice.args = {
+	setupRegistry: ( registry ) => {
+		const publication = publications[ 2 ];
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationOnboardingState( publication.onboardingState );
+	},
+};
+WithActionRequiredNotice.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Settings/SettingsView',
 	component: SettingsView,
+	decorators: [
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				provideModuleRegistrations( registry, [
+					{
+						slug: 'reader-revenue-manager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const settings = {
+					ownerID: 1,
+					publicationID: 'ABCDEFGH',
+					publicationOnboardingState: '',
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( publications );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
