@@ -40,9 +40,11 @@ export default function ErrorNotice() {
 			'syncAvailableAudiences'
 		)
 	);
-	const userCountReportError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
-	);
+	const [ otherUserCountReportError, siteKitUserCountReportError ] =
+		useSelect( ( select ) =>
+			select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
+		) || [];
+
 	const helpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
 			code: 'analytics-4_insufficient_permissions',
@@ -63,8 +65,12 @@ export default function ErrorNotice() {
 		errors.push( syncAvailableAudiencesError );
 	}
 
-	if ( userCountReportError ) {
-		errors.push( userCountReportError );
+	if ( otherUserCountReportError ) {
+		errors.push( otherUserCountReportError );
+	}
+
+	if ( siteKitUserCountReportError ) {
+		errors.push( siteKitUserCountReportError );
 	}
 
 	if ( ! errors.length ) {
@@ -99,7 +105,7 @@ export default function ErrorNotice() {
 					: __( 'Data loading failed', 'google-site-kit' ) }
 			</p>
 			<div className="googlesitekit-audience-selection-panel__error-notice-actions">
-				{ hasInsufficientPermissionsError || userCountReportError ? (
+				{ hasInsufficientPermissionsError ? (
 					<ReportErrorActions
 						moduleSlug="analytics-4"
 						error={ errors }
