@@ -464,9 +464,17 @@ describe( 'AudienceSelectionPanel', () => {
 
 	describe( 'AddGroupNotice', () => {
 		it( 'should display notice when there is a saved selection of one group', async () => {
+			const selectedAudiences = [ 'properties/12345/audiences/3' ];
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
+				.setConfiguredAudiences( selectedAudiences );
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( AUDIENCE_SELECTION_FORM, {
+					[ AUDIENCE_SELECTED ]: selectedAudiences,
+					[ AUDIENCE_SELECTION_CHANGED ]: true,
+				} );
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
