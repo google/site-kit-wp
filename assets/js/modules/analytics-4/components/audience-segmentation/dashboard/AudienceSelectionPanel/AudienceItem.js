@@ -53,9 +53,20 @@ export default function AudienceItem( {
 			AUDIENCE_SELECTED
 		)
 	);
-	const userCountReportError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudiencesUserCountReportError()
-	);
+	const [ otherUserCountReportError, siteKitUserCountReportError ] =
+		useSelect( ( select ) =>
+			select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
+		);
+
+	const errors = [];
+
+	if ( otherUserCountReportError ) {
+		errors.push( otherUserCountReportError );
+	}
+
+	if ( siteKitUserCountReportError ) {
+		errors.push( siteKitUserCountReportError );
+	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -86,7 +97,7 @@ export default function AudienceItem( {
 			description={ description }
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
-			suffix={ userCountReportError ? '-' : numFmt( userCount ) }
+			suffix={ errors.length ? '-' : numFmt( userCount ) }
 		/>
 	);
 }

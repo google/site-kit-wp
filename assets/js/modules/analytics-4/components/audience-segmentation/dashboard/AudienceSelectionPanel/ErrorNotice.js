@@ -41,7 +41,7 @@ export default function ErrorNotice() {
 		)
 	);
 	const userCountReportError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudiencesUserCountReportError()
+		select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
 	);
 	const helpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {

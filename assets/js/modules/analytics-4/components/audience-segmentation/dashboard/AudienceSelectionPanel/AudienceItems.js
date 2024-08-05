@@ -99,18 +99,6 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		const [ siteKitAudiences, otherAudiences ] =
 			getConfiguredSiteKitAndOtherAudiences();
 
-		const siteKitAudiencesPartialData = siteKitAudiences.map(
-			( audience ) =>
-				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					audience.name
-				)
-		);
-
-		// If any of the Site Kit audiences' partial data state is still loading, return undefined.
-		if ( siteKitAudiencesPartialData.includes( undefined ) ) {
-			return undefined;
-		}
-
 		const isSiteKitAudiencePartialData =
 			hasAudiencePartialData( siteKitAudiences );
 

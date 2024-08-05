@@ -668,12 +668,15 @@ const baseSelectors = {
 	 *
 	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 	 */
-	getAudiencesUserCountReportError: createRegistrySelector(
+	getAudienceUserCountReportErrors: createRegistrySelector(
 		( select ) => () => {
 			const {
-				getAudiencesUserCountReportOptions,
 				getConfigurableAudiences,
+				getAudiencesUserCountReportOptions,
+				getSiteKitAudiencesUserCountReportOptions,
 				getErrorForSelector,
+				getConfiguredSiteKitAndOtherAudiences,
+				hasAudiencePartialData,
 			} = select( MODULES_ANALYTICS_4 );
 
 			const configurableAudiences = getConfigurableAudiences();
@@ -682,12 +685,24 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			const audiencesUserCountReportOptions =
-				getAudiencesUserCountReportOptions( configurableAudiences );
+			const [ siteKitAudiences, otherAudiences ] =
+				getConfiguredSiteKitAndOtherAudiences();
 
-			return getErrorForSelector( 'getReport', [
-				audiencesUserCountReportOptions,
-			] );
+			const isSiteKitAudiencePartialData =
+				hasAudiencePartialData( siteKitAudiences );
+
+			const siteKitUserCountReportError = isSiteKitAudiencePartialData
+				? getErrorForSelector( 'getReport', [
+						getSiteKitAudiencesUserCountReportOptions(),
+				  ] )
+				: undefined;
+
+			const otherUserCountReportError = getErrorForSelector(
+				'getReport',
+				[ getAudiencesUserCountReportOptions( otherAudiences ) ]
+			);
+
+			return [ otherUserCountReportError, siteKitUserCountReportError ];
 		}
 	),
 

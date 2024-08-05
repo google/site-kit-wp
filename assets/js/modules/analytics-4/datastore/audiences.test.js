@@ -1810,7 +1810,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 		} );
 
-		describe( 'getAudiencesUserCountReportError', () => {
+		describe( 'getAudienceUserCountReportErrors', () => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -1841,7 +1841,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				const userCountReportError = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getAudiencesUserCountReportError();
+					.getAudienceUserCountReportErrors();
 
 				expect( userCountReportError ).toBeUndefined();
 			} );
@@ -1853,7 +1853,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				const userCountReportError = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getAudiencesUserCountReportError();
+					.getAudienceUserCountReportErrors();
 
 				expect( userCountReportError ).toBeUndefined();
 			} );
@@ -1865,7 +1865,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				const {
 					getAudiencesUserCountReportOptions,
 					getConfigurableAudiences,
-					getAudiencesUserCountReportError,
+					getAudienceUserCountReportErrors,
 				} = registry.select( MODULES_ANALYTICS_4 );
 
 				receiveGetSettings( {
@@ -1878,7 +1878,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					),
 				] );
 
-				const userCountReportError = getAudiencesUserCountReportError();
+				const userCountReportError = getAudienceUserCountReportErrors();
 
 				expect( userCountReportError ).toEqual( error );
 			} );
