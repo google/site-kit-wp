@@ -24,6 +24,7 @@ import {
 	fireEvent,
 	render,
 	provideUserInfo,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
@@ -99,7 +100,7 @@ describe( 'PublicationCreate', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should call onCompleteSetup when clicking the "Complete setup" button', async () => {
+	it( 'should set publication in state and call onCompleteSetup when clicking the "Complete setup" button', async () => {
 		const onCompleteSetupMock = jest.fn();
 
 		registry
@@ -122,8 +123,15 @@ describe( 'PublicationCreate', () => {
 		expect( completeSetupButton ).toBeInTheDocument();
 
 		fireEvent.click( completeSetupButton );
+		// Verify that the publication was set in state.
+		expect(
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+			// eslint-disable-next-line sitekit/acronym-case
+		).toBe( publications[ 0 ].publicationId );
 
 		// Verify the onCompleteSetup function was called.
-		expect( onCompleteSetupMock ).toHaveBeenCalledTimes( 1 );
+		await waitFor( () => {
+			expect( onCompleteSetupMock ).toHaveBeenCalledTimes( 1 );
+		} );
 	} );
 } );

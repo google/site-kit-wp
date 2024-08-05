@@ -16,51 +16,49 @@
  * limitations under the License.
  */
 
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import {
+	act,
 	createTestRegistry,
-	provideModuleRegistrations,
+	fireEvent,
+	freezeFetch,
+	muteFetch,
 	provideModules,
-	provideUserAuthentication,
-	provideUserInfo,
 	render,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
-import SetupMain from './SetupMain';
-import {
-	MODULE_SLUG,
-	MODULES_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
-import { enabledFeatures } from '../../../../features';
+import SetupMain from './SetupMain';
 
 describe( 'SetupMain', () => {
 	let registry;
 
+	const publicationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+	);
+	const rrmSettingsRegExp = new RegExp(
+		'/reader-revenue-manager/data/settings'
+	);
+
 	beforeEach( () => {
-		enabledFeatures.add( 'rrmModule' );
 		registry = createTestRegistry();
 
-		const extraData = [
-			{
-				slug: MODULE_SLUG,
-				active: true,
-				connected: true,
-			},
-		];
-		provideModules( registry, extraData );
-		provideModuleRegistrations( registry, extraData );
-		provideUserAuthentication( registry );
-		provideUserInfo( registry );
+		provideModules( registry );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetPublications( publications );
-	} );
-
-	it( 'should render the component', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {} );
+	} );
 
+	it( 'should render the loading state when publications are being loaded', () => {
+		freezeFetch( publicationsEndpoint );
+
+		const { getByRole } = render( <SetupMain />, { registry } );
+
+		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the publication create state when no publications are available', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [] );
@@ -71,11 +69,60 @@ describe( 'SetupMain', () => {
 
 		await waitForRegistry();
 
-		// TODO: Adjust the tests once #8800 is implemented.
 		expect(
 			getByText(
-				/Select your preferred publication to connect with Site Kit/i
+				'To complete your Reader Revenue Manager account setup you will need to create a publication.'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render the setup form when publications are available', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+
+		const { getByText, waitForRegistry } = render( <SetupMain />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Select your preferred publication to connect with Site Kit'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should setup module when the CTA is clicked', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+
+		const finishSetup = jest.fn();
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupMain finishSetup={ finishSetup } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		muteFetch( rrmSettingsRegExp );
+
+		act( () => {
+			fireEvent.click(
+				getByRole( 'button', { name: /Complete setup/i } )
+			);
+		} );
+
+		await waitForRegistry();
+		await act( waitForDefaultTimeouts );
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, rrmSettingsRegExp );
+
+		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
 	} );
 } );

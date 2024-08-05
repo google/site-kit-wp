@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies.
  */
 import API from 'googlesitekit-api';
@@ -24,6 +30,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG,
@@ -235,6 +242,46 @@ const baseActions = {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.invalidateResolutionForStoreSelector( 'getPublications' );
 	},
+
+	/**
+	 * Sets the given publication in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} publication The publiation object.
+	 * @return {Object} A Generator function.
+	 */
+	selectPublication: createValidatedAction(
+		( publication ) => {
+			invariant(
+				isPlainObject( publication ),
+				'A valid publication object is required.'
+			);
+
+			[ 'publicationId', 'onboardingState' ].forEach( ( key ) => {
+				invariant(
+					publication.hasOwnProperty( key ),
+					`The publication object must contain ${ key }`
+				);
+			} );
+		},
+		// `publicationId` is the identifier used by the API.
+		// eslint-disable-next-line sitekit/acronym-case
+		function* ( { publicationId: publicationID, onboardingState } ) {
+			const registry = yield commonActions.getRegistry();
+
+			return registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( {
+					publicationID,
+					publicationOnboardingState: onboardingState,
+					// The "last synced" value should reflect the real time this action
+					// was performed, so we don't use the reference date here.
+					// eslint-disable-next-line sitekit/no-direct-date
+					publicationOnboardingStateLastSyncedAtMs: Date.now(),
+				} );
+		}
+	),
 };
 
 const baseControls = {};
@@ -260,7 +307,6 @@ const baseResolvers = {
 			.getPublications();
 		if ( publications === undefined ) {
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
-			yield baseActions.syncPublicationOnboardingState();
 		}
 	},
 };

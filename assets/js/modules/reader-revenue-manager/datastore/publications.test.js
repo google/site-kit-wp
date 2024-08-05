@@ -453,6 +453,87 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toEqual( response );
 			} );
 		} );
+
+		describe( 'selectPublication', () => {
+			it( 'should throw an error if a publication object is not provided', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.selectPublication()
+				).toThrow( 'A valid publication object is required.' );
+			} );
+
+			it.each( [ 'publicationId', 'onboardingState' ] )(
+				'should throw an error if the publication object does not contain %s',
+				( key ) => {
+					const publication = {
+						publicationPredicates: {},
+						verifiedDomains: [],
+					};
+
+					switch ( key ) {
+						case 'publicationId':
+							publication.onboardingState = '';
+							break;
+						case 'onboardingState':
+							publication.publicationId = '';
+							break;
+					}
+
+					expect( () =>
+						registry
+							.dispatch( MODULES_READER_REVENUE_MANAGER )
+							.selectPublication( publication )
+					).toThrow( `The publication object must contain ${ key }` );
+				}
+			);
+
+			it( 'should set the given publication in state', () => {
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationID()
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingState()
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateLastSyncedAtMs()
+				).toBeUndefined();
+
+				const [ publicationId, onboardingState ] = [
+					'publication-id',
+					'onboarding-state',
+				];
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId,
+						onboardingState,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationID()
+				).toEqual( publicationId );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingState()
+				).toEqual( onboardingState );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateLastSyncedAtMs()
+				).toBeGreaterThan( 0 );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
