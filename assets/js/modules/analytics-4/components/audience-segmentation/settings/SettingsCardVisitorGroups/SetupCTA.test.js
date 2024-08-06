@@ -73,7 +73,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 			propertyID: '123456789',
 		} );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
