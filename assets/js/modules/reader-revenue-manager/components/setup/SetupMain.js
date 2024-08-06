@@ -17,27 +17,56 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { useCallback, useEffect } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
-import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '../../datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useRefocus } from '../../../../hooks/useRefocus';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import { PublicationSelect, PublicationOnboardingStateNotice } from '../common';
+import { ProgressBar } from 'googlesitekit-components';
+import { PublicationCreate } from '../common';
+import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
+import SetupForm from './SetupForm';
 
-export default function SetupMain() {
+export default function SetupMain( { finishSetup = () => {} } ) {
+	const publications = useSelect(
+		( select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPublications() || []
+	);
+	const hasResolvedPublications = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+			'getPublications'
+		)
+	);
+	const publicationCreateShown = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			SHOW_PUBLICATION_CREATE
+		)
+	);
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
-	const { resetPublications } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { resetPublications, submitChanges } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
 
 	const reset = useCallback( () => {
 		// Do not reset if the publication ID is already set.
@@ -51,34 +80,67 @@ export default function SetupMain() {
 	// Reset publication data when user re-focuses window.
 	useRefocus( reset, 15000 );
 
+	// Show the publication create form if no publications exist.
+	useEffect( () => {
+		if (
+			! publicationCreateShown &&
+			hasResolvedPublications &&
+			! publications.length
+		) {
+			setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ SHOW_PUBLICATION_CREATE ]: true,
+			} );
+		}
+	}, [
+		hasResolvedPublications,
+		publicationCreateShown,
+		publications.length,
+		setValues,
+	] );
+
+	const onCompleteSetup = useCallback( async () => {
+		const { error } = await submitChanges();
+
+		if ( ! error ) {
+			finishSetup();
+		}
+	}, [ finishSetup, submitChanges ] );
+
+	let viewComponent;
+
+	if ( ! hasResolvedPublications ) {
+		viewComponent = <ProgressBar />;
+	} else if ( publicationCreateShown ) {
+		viewComponent = (
+			<PublicationCreate onCompleteSetup={ onCompleteSetup } />
+		);
+	} else {
+		viewComponent = <SetupForm onCompleteSetup={ onCompleteSetup } />;
+	}
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
-			<div className="googlesitekit-setup-module__logo">
-				<ReaderRevenueManagerIcon width="33" height="33" />
-			</div>
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<ReaderRevenueManagerIcon width="40" height="40" />
+				</div>
 
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x(
-					'Reader Revenue Manager',
-					'Service name',
-					'google-site-kit'
-				) }
-			</h2>
-			<div>
-				<p>
-					{ __(
-						'Select your preferred publication to connect with Site Kit',
+				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ _x(
+						'Reader Revenue Manager',
+						'Service name',
 						'google-site-kit'
 					) }
-				</p>
-				<PublicationSelect />
-				<PublicationOnboardingStateNotice />
+				</h2>
 			</div>
-			<div className="googlesitekit-setup-module__action">
-				<SpinnerButton>
-					{ __( 'Complete setup', 'google-site-kit' ) }
-				</SpinnerButton>
+
+			<div className="googlesitekit-setup-module__step">
+				{ viewComponent }
 			</div>
 		</div>
 	);
 }
+
+SetupMain.propTypes = {
+	finishSetup: PropTypes.func,
+};

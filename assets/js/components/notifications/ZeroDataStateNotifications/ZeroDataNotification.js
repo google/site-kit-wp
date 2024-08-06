@@ -19,13 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import BannerNotification from '../BannerNotification';
 import ZeroStateIcon from '../../../../svg/graphics/zero-state-blue.svg';

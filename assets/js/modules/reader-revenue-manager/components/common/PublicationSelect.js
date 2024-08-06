@@ -44,10 +44,6 @@ export default function PublicationSelect( props ) {
 		onChange = () => {},
 	} = props;
 
-	const { setPublicationID, setPublicationOnboardingState } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	);
-
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
@@ -67,6 +63,8 @@ export default function PublicationSelect( props ) {
 			)
 	);
 
+	const { selectPublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+
 	const onPublicationChange = useCallback(
 		( index, item ) => {
 			const newPublicationID = item.dataset.value;
@@ -75,17 +73,11 @@ export default function PublicationSelect( props ) {
 				( { publicationId } ) => publicationId === newPublicationID
 			);
 
-			setPublicationID( newPublicationID );
-			setPublicationOnboardingState( publication.onboardingState );
+			selectPublication( publication );
 
 			onChange();
 		},
-		[
-			onChange,
-			setPublicationID,
-			setPublicationOnboardingState,
-			publications,
-		]
+		[ publications, selectPublication, onChange ]
 	);
 
 	if ( ! publicationsLoaded ) {

@@ -34,3 +34,8 @@ export const UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATIO
 
 export const READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY =
 	'rrm_module_setup_banner_dismissed_key';
+
+export const READER_REVENUE_MANAGER_SETUP_FORM =
+	'readerRevenueManagerSetupForm';
+
+export const SHOW_PUBLICATION_CREATE = 'showPublicationCreate';

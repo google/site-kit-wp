@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SetupForm should render the form correctly 1`] = `
+<div>
+  <form>
+    <p
+      class="googlesitekit-margin-bottom-0"
+    >
+      Select your preferred publication to connect with Site Kit
+    </p>
+    <div
+      class="googlesitekit-setup-module__inputs"
+    >
+      <div
+        class="mdc-select mdc-select--outlined"
+      >
+        <i
+          class="mdc-select__dropdown-icon"
+        />
+        <input
+          name="enhanced-select"
+          type="hidden"
+          value="QRSTUVWX"
+        />
+        <div
+          aria-disabled="false"
+          class="mdc-select__selected-text"
+          tabindex="0"
+        >
+          Test Publication 4 (QRSTUVWX)
+        </div>
+        <div
+          class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+        >
+          <div
+            class="mdc-notched-outline__leading"
+          />
+          <div
+            class="mdc-notched-outline__notch"
+          >
+            <label
+              class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-0"
+              style=""
+            >
+              Publication
+            </label>
+          </div>
+          <div
+            class="mdc-notched-outline__trailing"
+          />
+        </div>
+      </div>
+    </div>
+    <a
+      aria-label="Create new publication (opens in a new tab)"
+      class="googlesitekit-cta-link"
+      href=""
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      <span
+        class="googlesitekit-cta-link__contents"
+      >
+        Create new publication
+      </span>
+      <span
+        class="googlesitekit-icon-wrapper"
+        style="margin-left: 5px;"
+      >
+        <svg />
+      </span>
+    </a>
+    <div
+      class="googlesitekit-setup-module__action"
+    >
+      <button
+        class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Complete setup
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+`;
