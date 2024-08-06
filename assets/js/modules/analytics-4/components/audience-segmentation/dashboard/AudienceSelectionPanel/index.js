@@ -91,7 +91,7 @@ export default function AudienceSelectionPanel() {
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
-			<AddGroupNotice savedItemSlugs={ savedItemSlugs } />
+			<AddGroupNotice />
 			<AudienceCreationNotice />
 			<LearnMoreLink />
 			<ErrorNotice />
