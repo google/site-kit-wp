@@ -45,6 +45,7 @@ OnboardingComplete.parameters = {
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
+OnboardingComplete.scenario = {};
 
 export const PendingVerification = Template.bind( {} );
 PendingVerification.storyName = 'Pending Verification';
@@ -56,6 +57,7 @@ PendingVerification.parameters = {
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
 };
+PendingVerification.scenario = {};
 
 export const OnboardingActionRequired = Template.bind( {} );
 OnboardingActionRequired.storyName = 'Onboarding Action Required';
@@ -67,6 +69,7 @@ OnboardingActionRequired.parameters = {
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_ACTION_REQUIRED,
 };
+OnboardingActionRequired.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Dashboard/RRMSetupSuccessSubtleNotification',
