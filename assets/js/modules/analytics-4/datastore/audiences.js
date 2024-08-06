@@ -191,7 +191,7 @@ const baseActions = {
 			newConfiguredAudiences &&
 			newConfiguredAudiences !== configuredAudiences
 		) {
-			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
+			dispatch( CORE_USER ).setConfiguredAudiences(
 				newConfiguredAudiences || []
 			);
 		}
@@ -435,9 +435,7 @@ const baseActions = {
 			);
 		}
 
-		dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
-			configuredAudiences
-		);
+		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
 			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings()
