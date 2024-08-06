@@ -124,7 +124,11 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		const audienceResourceNameReport =
 			! isSiteKitAudiencePartialData || otherAudiences?.length !== 0
 				? getReport(
-						getAudiencesUserCountReportOptions( otherAudiences )
+						getAudiencesUserCountReportOptions(
+							isSiteKitAudiencePartialData
+								? otherAudiences
+								: audiences
+						)
 				  )
 				: {};
 

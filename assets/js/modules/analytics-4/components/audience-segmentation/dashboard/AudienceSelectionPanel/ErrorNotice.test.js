@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
@@ -57,15 +52,13 @@ describe( 'ErrorNotice', () => {
 		metrics: [ { name: 'totalUsers' } ],
 	};
 
-	const otherAudiences = availableAudiences.filter(
-		( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
-	);
-
 	const reportOptions = {
 		...baseReportOptions,
 		dimensions: [ { name: 'audienceResourceName' } ],
 		dimensionFilters: {
-			audienceResourceName: otherAudiences.map( ( { name } ) => name ),
+			audienceResourceName: availableAudiences.map(
+				( { name } ) => name
+			),
 		},
 	};
 

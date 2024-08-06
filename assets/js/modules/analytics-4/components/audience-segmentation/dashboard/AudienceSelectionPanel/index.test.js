@@ -53,15 +53,13 @@ describe( 'AudienceSelectionPanel', () => {
 		metrics: [ { name: 'totalUsers' } ],
 	};
 
-	const otherAudiences = availableAudiences.filter(
-		( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
-	);
-
 	const reportOptions = {
 		...baseReportOptions,
 		dimensions: [ { name: 'audienceResourceName' } ],
 		dimensionFilters: {
-			audienceResourceName: otherAudiences.map( ( { name } ) => name ),
+			audienceResourceName: availableAudiences.map(
+				( { name } ) => name
+			),
 		},
 	};
 
@@ -187,7 +185,7 @@ describe( 'AudienceSelectionPanel', () => {
 			provideAnalytics4MockReport( registry, {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: otherAudiences
+					audienceResourceName: availableAudiences
 						.filter(
 							( { audienceSlug } ) =>
 								'purchasers' !== audienceSlug
@@ -624,21 +622,10 @@ describe( 'AudienceSelectionPanel', () => {
 				'properties/12345/audiences/3', // New visitors Site Kit audience.
 			];
 
-			const otherAudienceReportOptions = {
+			const mixedSiteKitReportOptions = {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: mixedConfiguredAudiences.filter(
-						( name ) => name !== 'properties/12345/audiences/3'
-					),
-				},
-			};
-
-			const mixedSiteKitAudienceReportOptions = {
-				...reportOptions,
-				dimensionFilters: {
-					audienceResourceName: mixedConfiguredAudiences.filter(
-						( name ) => name === 'properties/12345/audiences/3'
-					),
+					audienceResourceName: mixedConfiguredAudiences,
 				},
 			};
 
@@ -658,11 +645,7 @@ describe( 'AudienceSelectionPanel', () => {
 				.dispatch( CORE_UI )
 				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
-			provideAnalytics4MockReport( registry, otherAudienceReportOptions );
-			provideAnalytics4MockReport(
-				registry,
-				mixedSiteKitAudienceReportOptions
-			);
+			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -700,26 +683,10 @@ describe( 'AudienceSelectionPanel', () => {
 				'properties/12345/audiences/4', // Returning visitors Site Kit audience.
 			];
 
-			const skAudiences = [
-				'properties/12345/audiences/3',
-				'properties/12345/audiences/4',
-			];
-
-			const otherAudienceReportOptions = {
+			const mixedSiteKitReportOptions = {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: mixedConfiguredAudiences.filter(
-						( name ) => ! skAudiences.includes( name )
-					),
-				},
-			};
-
-			const mixedSiteKitAudienceReportOptions = {
-				...reportOptions,
-				dimensionFilters: {
-					audienceResourceName: mixedConfiguredAudiences.filter(
-						( name ) => skAudiences.includes( name )
-					),
+					audienceResourceName: mixedConfiguredAudiences,
 				},
 			};
 
@@ -739,11 +706,7 @@ describe( 'AudienceSelectionPanel', () => {
 				.dispatch( CORE_UI )
 				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
-			provideAnalytics4MockReport( registry, otherAudienceReportOptions );
-			provideAnalytics4MockReport(
-				registry,
-				mixedSiteKitAudienceReportOptions
-			);
+			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,

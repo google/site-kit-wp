@@ -1840,7 +1840,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.receiveIsGatheringData( false );
 			} );
 
-			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
+			it( 'should returns `undefined` if the configurable audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
@@ -1886,7 +1886,9 @@ describe( 'modules/analytics-4 audiences', () => {
 					getConfiguredSiteKitAndOtherAudiences() || [];
 
 				receiveError( error, 'getReport', [
-					getAudiencesUserCountReportOptions( otherAudiences ),
+					getAudiencesUserCountReportOptions(
+						availableAudiencesFixture
+					),
 				] );
 
 				const [

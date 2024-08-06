@@ -685,11 +685,16 @@ const baseSelectors = {
 				return undefined;
 			}
 
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const [ siteKitAudiences, otherAudiences ] =
 				getConfiguredSiteKitAndOtherAudiences();
 
 			const isSiteKitAudiencePartialData =
 				hasAudiencePartialData( siteKitAudiences );
+
+			if ( undefined === isSiteKitAudiencePartialData ) {
+				return undefined;
+			}
 
 			const siteKitUserCountReportError = isSiteKitAudiencePartialData
 				? getErrorForSelector( 'getReport', [
@@ -701,7 +706,9 @@ const baseSelectors = {
 				! isSiteKitAudiencePartialData || otherAudiences?.length !== 0
 					? getErrorForSelector( 'getReport', [
 							getAudiencesUserCountReportOptions(
-								otherAudiences
+								isSiteKitAudiencePartialData
+									? otherAudiences
+									: configurableAudiences
 							),
 					  ] )
 					: undefined;
