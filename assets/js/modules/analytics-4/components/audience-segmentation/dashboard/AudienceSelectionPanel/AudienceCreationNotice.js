@@ -46,22 +46,21 @@ export default function AudienceCreationNotice() {
 	const [ isCreatingAudience, setIsCreatingAudience ] = useState( false );
 
 	const siteKitConfigurableAudiences = useSelect( ( select ) => {
-		const { getConfiguredSiteKitAndOtherAudiences } =
-			select( MODULES_ANALYTICS_4 );
+		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
 
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return, no-unused-vars
-		const [ siteKitAudiences, otherAudiences ] =
-			getConfiguredSiteKitAndOtherAudiences();
+		const audiences = getConfigurableAudiences();
 
-		if ( undefined === siteKitAudiences ) {
+		if ( undefined === audiences ) {
 			return undefined;
 		}
 
-		if ( ! siteKitAudiences.length ) {
+		if ( ! audiences.length ) {
 			return [];
 		}
 
-		return siteKitAudiences;
+		return audiences.filter(
+			( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+		);
 	} );
 
 	const { dismissItem } = useDispatch( CORE_USER );
