@@ -31,6 +31,7 @@ Success.args = {
 	title: 'Success! Your Conversion Tracking ID was added to your site',
 	dismissLabel: 'Ok, got it',
 };
+Success.scenario = {};
 
 export const SuccessWithDescription = Template.bind( {} );
 SuccessWithDescription.storyName = 'Success - With Description';
@@ -39,6 +40,7 @@ SuccessWithDescription.args = {
 	description: 'You can now track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 };
+SuccessWithDescription.scenario = {};
 
 export const SuccessWithCTA = Template.bind( {} );
 SuccessWithCTA.storyName = 'Success - With CTA';
@@ -48,6 +50,7 @@ SuccessWithCTA.args = {
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
 };
+SuccessWithCTA.scenario = {};
 
 export const SuccessWithExternalCTA = Template.bind( {} );
 SuccessWithExternalCTA.storyName = 'Success - With External CTA';
@@ -59,6 +62,7 @@ SuccessWithExternalCTA.args = {
 	ctaLink: 'https://sitekit.withgoogle.com/documentation',
 	isCTALinkExternal: true,
 };
+SuccessWithExternalCTA.scenario = {};
 
 export const Warning = Template.bind( {} );
 Warning.storyName = 'Warning';
@@ -67,6 +71,7 @@ Warning.args = {
 	dismissLabel: 'Ok, got it',
 	variant: 'warning',
 };
+Warning.scenario = {};
 
 export const WarningWithDescription = Template.bind( {} );
 WarningWithDescription.storyName = 'Warning - With Description';
@@ -76,6 +81,7 @@ WarningWithDescription.args = {
 	dismissLabel: 'Ok, got it',
 	variant: 'warning',
 };
+WarningWithDescription.scenario = {};
 
 export const WarningWithCTA = Template.bind( {} );
 WarningWithCTA.storyName = 'Warning - With CTA';
@@ -86,6 +92,7 @@ WarningWithCTA.args = {
 	ctaLabel: 'Learn more',
 	variant: 'warning',
 };
+WarningWithCTA.scenario = {};
 
 export const WarningWithExternalCTA = Template.bind( {} );
 WarningWithExternalCTA.storyName = 'Warning - With External CTA';
@@ -98,6 +105,7 @@ WarningWithExternalCTA.args = {
 	isCTALinkExternal: true,
 	variant: 'warning',
 };
+WarningWithExternalCTA.scenario = {};
 
 export default {
 	title: 'Components/Notifications/SubtleNotification',

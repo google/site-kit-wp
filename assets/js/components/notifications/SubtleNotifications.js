@@ -24,14 +24,14 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import {
-	SetupSuccessSubtleNotification,
-	PAXSetupSuccessSubtleNotification,
-} from '../../modules/ads/components/notifications/';
 import { useFeature } from '../../hooks/useFeature';
-import RRMSetupSuccessSubtleNotificationStories from '../../modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification.stories';
+import {
+	PAXSetupSuccessSubtleNotification,
+	SetupSuccessSubtleNotification,
+} from '../../modules/ads/components/notifications/';
+import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
+import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
+import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 
 export default function SubtleNotifications() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -51,7 +51,7 @@ export default function SubtleNotifications() {
 			) }
 			<GA4AdSenseLinkedNotification />
 			<SetupSuccessSubtleNotification />
-			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotificationStories /> }
+			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
 			<PAXSetupSuccessSubtleNotification />
 		</Fragment>
 	);
