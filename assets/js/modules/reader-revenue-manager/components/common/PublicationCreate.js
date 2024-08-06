@@ -24,17 +24,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-
-/**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
@@ -43,21 +39,27 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublications()
 	);
-
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
-	if ( publications === undefined ) {
-		return null;
-	}
+	const { selectPublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const hasPublication = publications && publications.length > 0;
 
-	const handleCompleteSetupClick = () => {
-		// TODO: Track event for completing setup.
+	const handleCompleteSetupClick = useCallback( async () => {
+		if ( ! hasPublication ) {
+			return;
+		}
+
+		await selectPublication( publications[ 0 ] );
+
 		onCompleteSetup();
-	};
+	}, [ hasPublication, onCompleteSetup, publications, selectPublication ] );
+
+	if ( publications === undefined ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-setup-module__publication-create-screen">

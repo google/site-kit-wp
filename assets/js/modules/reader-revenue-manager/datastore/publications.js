@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies.
  */
 import API from 'googlesitekit-api';
@@ -24,12 +30,14 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { HOUR_IN_SECONDS } from '../../../util';
 
 const fetchGetPublicationsStore = createFetchStore( {
@@ -40,7 +48,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 			MODULE_SLUG,
 			'publications',
 			{},
-			{ useCache: true }
+			{ useCache: false }
 		),
 	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
 } );
@@ -213,12 +221,78 @@ const baseActions = {
 
 		return completedOnboardingPublication || publications[ 0 ];
 	},
+
+	/**
+	 * Resets the publications data in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} The dispatched action results.
+	 */
+	*resetPublications() {
+		const registry = yield commonActions.getRegistry();
+
+		yield {
+			type: 'RESET_PUBLICATIONS',
+		};
+
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		return registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.invalidateResolutionForStoreSelector( 'getPublications' );
+	},
+
+	/**
+	 * Sets the given publication in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} publication The publiation object.
+	 * @return {Object} A Generator function.
+	 */
+	selectPublication: createValidatedAction(
+		( publication ) => {
+			invariant(
+				isPlainObject( publication ),
+				'A valid publication object is required.'
+			);
+
+			[ 'publicationId', 'onboardingState' ].forEach( ( key ) => {
+				invariant(
+					publication.hasOwnProperty( key ),
+					`The publication object must contain ${ key }`
+				);
+			} );
+		},
+		// `publicationId` is the identifier used by the API.
+		// eslint-disable-next-line sitekit/acronym-case
+		function* ( { publicationId: publicationID, onboardingState } ) {
+			const registry = yield commonActions.getRegistry();
+
+			return registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( {
+					publicationID,
+					publicationOnboardingState: onboardingState,
+					// The "last synced" value should reflect the real time this action
+					// was performed, so we don't use the reference date here.
+					// eslint-disable-next-line sitekit/no-direct-date
+					publicationOnboardingStateLastSyncedAtMs: Date.now(),
+				} );
+		}
+	),
 };
 
 const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case 'RESET_PUBLICATIONS':
+			return {
+				...state,
+				publications: baseInitialState.publications,
+			};
 		default:
 			return state;
 	}
@@ -233,7 +307,6 @@ const baseResolvers = {
 			.getPublications();
 		if ( publications === undefined ) {
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
-			yield baseActions.syncPublicationOnboardingState();
 		}
 	},
 };

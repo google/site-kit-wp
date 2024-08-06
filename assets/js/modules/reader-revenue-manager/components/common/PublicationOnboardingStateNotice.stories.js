@@ -42,7 +42,6 @@ PendingVerification.args = {
 			.setPublicationOnboardingState( PENDING_VERIFICATION );
 	},
 };
-PendingVerification.scenario = {};
 
 export const ActionRequired = Template.bind( {} );
 ActionRequired.storyName = 'ActionRequired';
@@ -53,7 +52,6 @@ ActionRequired.args = {
 			.setPublicationOnboardingState( ONBOARDING_ACTION_REQUIRED );
 	},
 };
-ActionRequired.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Common/PublicationOnboardingStateNotice',

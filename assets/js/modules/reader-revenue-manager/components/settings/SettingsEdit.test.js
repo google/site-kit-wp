@@ -16,15 +16,84 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
+/**
+ * Internal dependencies
+ */
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
+	render,
+} from '../../../../../../tests/js/test-utils';
 import SettingsEdit from './SettingsEdit';
+import { publications } from '../../datastore/__fixtures__';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	MODULE_SLUG,
+} from '../../datastore/constants';
+import { enabledFeatures } from '../../../../features';
 
 describe( 'SettingsEdit', () => {
-	it( 'should render the component', () => {
-		const { getByText } = render( <SettingsEdit /> );
+	let registry;
 
-		expect(
-			getByText( /Reader Revenue Manager Settings Edit/i )
-		).toBeInTheDocument();
+	beforeEach( () => {
+		enabledFeatures.add( 'rrmModule' );
+		registry = createTestRegistry();
+
+		const extraData = [
+			{
+				slug: MODULE_SLUG,
+				active: true,
+				connected: true,
+			},
+		];
+		provideModules( registry, extraData );
+		provideModuleRegistrations( registry, extraData );
+		provideUserInfo( registry );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+	} );
+
+	it( 'should render the "SettingsEdit" component', async () => {
+		const publication = publications[ 2 ];
+		const {
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationId: publicationID,
+			onboardingState: publicationOnboardingState,
+		} = publication;
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID,
+				publicationOnboardingState,
+				publicationOnboardingStateLastSyncedAtMs: 0,
+				ownerID: 1,
+			} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
+
+		const { getByRole, getByText, waitForRegistry } = render(
+			<SettingsEdit />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// Ensure publication select is rendered.
+		expect( getByRole( 'menu', { hidden: true } ) ).toBeInTheDocument();
+
+		// Ensure the publication onboarding state notice is displayed.
+		getByText(
+			'Your publication requires further setup in Reader Revenue Manager'
+		);
 	} );
 } );
