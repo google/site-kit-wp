@@ -1818,6 +1818,8 @@ describe( 'modules/analytics-4 audiences', () => {
 			};
 
 			beforeEach( () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveResourceDataAvailabilityDates( {
@@ -1832,6 +1834,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						customDimension: {},
 						property: {},
 					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
 			} );
 
 			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
@@ -1839,11 +1845,13 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
 
-				const userCountReportError = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudienceUserCountReportErrors();
+				const [ siteKitAudiences, otherAudiences ] =
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudienceUserCountReportErrors() || [];
 
-				expect( userCountReportError ).toBeUndefined();
+				expect( siteKitAudiences ).toBeUndefined();
+				expect( otherAudiences ).toBeUndefined();
 			} );
 
 			it( 'should return `undefined` if there is no user count report error', () => {
@@ -1851,11 +1859,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
-				const userCountReportError = registry
+				const [ siteKitAudiences, otherAudiences ] = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudienceUserCountReportErrors();
 
-				expect( userCountReportError ).toBeUndefined();
+				expect( siteKitAudiences ).toBeUndefined();
+				expect( otherAudiences ).toBeUndefined();
 			} );
 
 			it( 'should return error object if there is a user count report error', () => {
@@ -1863,8 +1872,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					registry.dispatch( MODULES_ANALYTICS_4 );
 
 				const {
+					getConfiguredSiteKitAndOtherAudiences,
 					getAudiencesUserCountReportOptions,
-					getConfigurableAudiences,
 					getAudienceUserCountReportErrors,
 				} = registry.select( MODULES_ANALYTICS_4 );
 
@@ -1872,15 +1881,21 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
+				// eslint-disable-next-line no-unused-vars
+				const [ siteKitAudiences, otherAudiences ] =
+					getConfiguredSiteKitAndOtherAudiences() || [];
+
 				receiveError( error, 'getReport', [
-					getAudiencesUserCountReportOptions(
-						getConfigurableAudiences()
-					),
+					getAudiencesUserCountReportOptions( otherAudiences ),
 				] );
 
-				const userCountReportError = getAudienceUserCountReportErrors();
+				const [
+					otherUserCountReportError,
+					// eslint-disable-next-line no-unused-vars
+					siteKitUserCountReportError,
+				] = getAudienceUserCountReportErrors();
 
-				expect( userCountReportError ).toEqual( error );
+				expect( otherUserCountReportError ).toEqual( error );
 			} );
 		} );
 	} );

@@ -48,18 +48,20 @@ describe( 'AudienceSelectionPanel', () => {
 	let registry;
 
 	const baseReportOptions = {
-		endDate: '2024-03-27',
 		startDate: '2024-02-29',
+		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
 	};
+
+	const otherAudiences = availableAudiences.filter(
+		( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+	);
 
 	const reportOptions = {
 		...baseReportOptions,
 		dimensions: [ { name: 'audienceResourceName' } ],
 		dimensionFilters: {
-			audienceResourceName: availableAudiences.map(
-				( { name } ) => name
-			),
+			audienceResourceName: otherAudiences.map( ( { name } ) => name ),
 		},
 	};
 
@@ -185,7 +187,7 @@ describe( 'AudienceSelectionPanel', () => {
 			provideAnalytics4MockReport( registry, {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: availableAudiences
+					audienceResourceName: otherAudiences
 						.filter(
 							( { audienceSlug } ) =>
 								'purchasers' !== audienceSlug
@@ -260,6 +262,7 @@ describe( 'AudienceSelectionPanel', () => {
 				const newVisitorsAudience = availableAudiences[ 2 ];
 				const returningVisitorsAudience = availableAudiences[ 3 ];
 
+				// eslint-disable-next-line no-shadow
 				const otherAudiences = availableAudiences.filter(
 					( { name } ) =>
 						! [
@@ -621,12 +624,24 @@ describe( 'AudienceSelectionPanel', () => {
 				'properties/12345/audiences/3', // New visitors Site Kit audience.
 			];
 
-			const mixedSiteKitReportOptions = {
+			const otherAudienceReportOptions = {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: mixedConfiguredAudiences,
+					audienceResourceName: mixedConfiguredAudiences.filter(
+						( name ) => name !== 'properties/12345/audiences/3'
+					),
 				},
 			};
+
+			const mixedSiteKitAudienceReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: mixedConfiguredAudiences.filter(
+						( name ) => name === 'properties/12345/audiences/3'
+					),
+				},
+			};
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences(
@@ -643,7 +658,11 @@ describe( 'AudienceSelectionPanel', () => {
 				.dispatch( CORE_UI )
 				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
-			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
+			provideAnalytics4MockReport( registry, otherAudienceReportOptions );
+			provideAnalytics4MockReport(
+				registry,
+				mixedSiteKitAudienceReportOptions
+			);
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -681,12 +700,29 @@ describe( 'AudienceSelectionPanel', () => {
 				'properties/12345/audiences/4', // Returning visitors Site Kit audience.
 			];
 
-			const mixedSiteKitReportOptions = {
+			const skAudiences = [
+				'properties/12345/audiences/3',
+				'properties/12345/audiences/4',
+			];
+
+			const otherAudienceReportOptions = {
 				...reportOptions,
 				dimensionFilters: {
-					audienceResourceName: mixedConfiguredAudiences,
+					audienceResourceName: mixedConfiguredAudiences.filter(
+						( name ) => ! skAudiences.includes( name )
+					),
 				},
 			};
+
+			const mixedSiteKitAudienceReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: mixedConfiguredAudiences.filter(
+						( name ) => skAudiences.includes( name )
+					),
+				},
+			};
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences(
@@ -703,7 +739,11 @@ describe( 'AudienceSelectionPanel', () => {
 				.dispatch( CORE_UI )
 				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
-			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
+			provideAnalytics4MockReport( registry, otherAudienceReportOptions );
+			provideAnalytics4MockReport(
+				registry,
+				mixedSiteKitAudienceReportOptions
+			);
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
