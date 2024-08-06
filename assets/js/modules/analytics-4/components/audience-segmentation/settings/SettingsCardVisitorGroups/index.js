@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { Switch } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../../../../../material-components';
 import Layout from '../../../../../../components/layout/Layout';
@@ -38,7 +39,7 @@ export default function SettingsCardVisitorGroups() {
 		select( MODULES_ANALYTICS_4 ).isAudienceSegmentationWidgetHidden()
 	);
 	const configuredAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	const { setAudienceSegmentationWidgetHidden, saveAudienceSettings } =

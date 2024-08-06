@@ -178,7 +178,7 @@ const baseActions = {
 
 		// Remove any configuredAudiences that are no longer available in availableAudiences.
 		const configuredAudiences =
-			select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+			select( CORE_USER ).getConfiguredAudiences();
 		const newConfiguredAudiences = configuredAudiences?.filter(
 			( configuredAudience ) =>
 				availableAudiences?.some(
@@ -368,7 +368,7 @@ const baseActions = {
 			}
 
 			const existingConfiguredAudiences =
-				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || [];
+				select( CORE_USER ).getConfiguredAudiences() || [];
 
 			configuredAudiences.push( ...existingConfiguredAudiences );
 

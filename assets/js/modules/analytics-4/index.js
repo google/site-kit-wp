@@ -136,7 +136,7 @@ export const registerWidgets = ( widgets ) => {
 			modules: [ 'analytics-4' ],
 			isActive: ( select ) => {
 				const configuredAudiences =
-					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+					select( CORE_USER ).getConfiguredAudiences();
 				return configuredAudiences?.length > 0;
 			},
 		},
@@ -153,7 +153,7 @@ export const registerWidgets = ( widgets ) => {
 			modules: [ 'analytics-4' ],
 			isActive: ( select ) => {
 				const configuredAudiences =
-					select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+					select( CORE_USER ).getConfiguredAudiences();
 				return !! configuredAudiences;
 			},
 		},
