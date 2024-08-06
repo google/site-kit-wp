@@ -29,8 +29,8 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from './constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { CORE_USER } from './constants';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
