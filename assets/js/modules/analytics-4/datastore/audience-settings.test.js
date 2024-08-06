@@ -74,7 +74,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry );
-		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+		store = registry.stores[ CORE_USER ].store;
 	} );
 
 	afterAll( () => {
@@ -280,7 +280,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				} );
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+					registry.select( CORE_USER ).getAudienceSettings()
 				).toMatchObject( audienceSettingsResponse );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -337,7 +337,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 				expect(
 					registry
-						.select( MODULES_ANALYTICS_4 )
+						.select( CORE_USER )
 						.isAudienceSegmentationWidgetHidden()
 				).toBeUndefined();
 

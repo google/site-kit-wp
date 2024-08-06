@@ -60,7 +60,7 @@ describe( 'InfoNoticeWidget', () => {
 	)( InfoNoticeWidget );
 
 	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {

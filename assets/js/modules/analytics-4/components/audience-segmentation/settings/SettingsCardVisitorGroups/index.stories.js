@@ -83,7 +83,7 @@ export default {
 				// Mock the audience-settings endpoint to allow toggling the switch.
 				fetchMock.post(
 					RegExp(
-						'google-site-kit/v1/modules/analytics-4/data/audience-settings'
+						'google-site-kit/v1/core/user/data/audience-settings'
 					),
 					( url, { body } ) => {
 						const { data } = JSON.parse( body );
