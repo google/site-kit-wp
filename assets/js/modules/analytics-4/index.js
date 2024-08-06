@@ -88,7 +88,6 @@ import {
 	InfoNoticeWidget,
 	NoAudienceBannerWidget,
 } from './components/audience-segmentation/dashboard';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 
 export { registerStore } from './datastore';
@@ -169,19 +168,15 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
 			isActive: ( select ) => {
-				const isAnalyticsConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+				const configuredAudiences =
+					select( CORE_USER ).getConfiguredAudiences();
+				const isAudienceSegmentationWidgetHidden =
+					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
-				/**
-				 * TODO: This widget should be shown only if the audience group
-				 * is set up for the current user. This should be fixed once
-				 * the audience settings become accessible without `analytics-4`
-				 * module being connected.
-				 * See: https://github.com/google/site-kit-wp/issues/8810 for
-				 * more details.
-				 */
-
-				return ! isAnalyticsConnected;
+				return (
+					configuredAudiences?.length > 0 &&
+					isAudienceSegmentationWidgetHidden === false
+				);
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
