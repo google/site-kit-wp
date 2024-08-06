@@ -43,6 +43,7 @@ import {
 	availableAudiences as availableAudiencesFixture,
 } from './__fixtures__';
 import fetchMock from 'fetch-mock';
+import { provideAnalytics4MockReport } from '../utils/data-mock';
 
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
@@ -1898,6 +1899,73 @@ describe( 'modules/analytics-4 audiences', () => {
 				] = getAudienceUserCountReportErrors();
 
 				expect( otherUserCountReportError ).toEqual( error );
+			} );
+
+			it( 'should return error object if there is a user count report error for partial site kit audiences', () => {
+				const { receiveError, receiveGetSettings } =
+					registry.dispatch( MODULES_ANALYTICS_4 );
+
+				const {
+					getConfiguredSiteKitAndOtherAudiences,
+					getAudienceUserCountReportErrors,
+					getSiteKitAudiencesUserCountReportOptions,
+				} = registry.select( MODULES_ANALYTICS_4 );
+
+				const baseReportOptions = {
+					startDate: '2024-02-29',
+					endDate: '2024-03-27',
+					metrics: [ { name: 'totalUsers' } ],
+				};
+
+				const siteKitAudiencesReportOptions = {
+					...baseReportOptions,
+					dimensions: [ { name: 'newVsReturning' } ],
+				};
+
+				// Simulate no data available state for "Purchasers".
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiencesFixture.reduce(
+							( acc, { name, audienceType } ) => {
+								if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
+									acc[ name ] = 20240405; // Set SK audience as partial.
+								} else {
+									acc[ name ] = 20201220;
+								}
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				// eslint-disable-next-line no-unused-vars
+				const [ siteKitAudiences, otherAudiences ] =
+					getConfiguredSiteKitAndOtherAudiences() || [];
+
+				provideAnalytics4MockReport(
+					registry,
+					siteKitAudiencesReportOptions
+				);
+
+				receiveError( error, 'getReport', [
+					getSiteKitAudiencesUserCountReportOptions(),
+				] );
+
+				const [
+					// eslint-disable-next-line no-unused-vars
+					otherUserCountReportError,
+					siteKitUserCountReportError,
+				] = getAudienceUserCountReportErrors() || [];
+
+				expect( siteKitUserCountReportError ).toEqual( error );
 			} );
 		} );
 	} );
