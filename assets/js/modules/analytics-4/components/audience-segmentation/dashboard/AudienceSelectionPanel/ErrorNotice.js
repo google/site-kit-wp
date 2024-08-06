@@ -77,6 +77,11 @@ export default function ErrorNotice() {
 		return null;
 	}
 
+	const userCountError = [
+		otherUserCountReportError,
+		siteKitUserCountReportError,
+	].some( ( error ) => !! error );
+
 	const hasInsufficientPermissionsError = errors.some( ( error ) =>
 		isInsufficientPermissionsError( error )
 	);
@@ -105,7 +110,7 @@ export default function ErrorNotice() {
 					: __( 'Data loading failed', 'google-site-kit' ) }
 			</p>
 			<div className="googlesitekit-audience-selection-panel__error-notice-actions">
-				{ hasInsufficientPermissionsError ? (
+				{ hasInsufficientPermissionsError || userCountError ? (
 					<ReportErrorActions
 						moduleSlug="analytics-4"
 						error={ errors }

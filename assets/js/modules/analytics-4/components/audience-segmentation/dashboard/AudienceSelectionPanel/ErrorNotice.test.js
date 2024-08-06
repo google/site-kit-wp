@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
@@ -46,15 +51,21 @@ describe( 'ErrorNotice', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 	);
 
-	const reportOptions = {
-		endDate: '2024-03-27',
+	const baseReportOptions = {
 		startDate: '2024-02-29',
+		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
+	};
+
+	const otherAudiences = availableAudiences.filter(
+		( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+	);
+
+	const reportOptions = {
+		...baseReportOptions,
 		dimensions: [ { name: 'audienceResourceName' } ],
 		dimensionFilters: {
-			audienceResourceName: availableAudiences.map(
-				( { name } ) => name
-			),
+			audienceResourceName: otherAudiences.map( ( { name } ) => name ),
 		},
 	};
 
@@ -71,6 +82,10 @@ describe( 'ErrorNotice', () => {
 		provideUserInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -102,10 +117,12 @@ describe( 'ErrorNotice', () => {
 		invalidateResolutionSpy.mockReset();
 	} );
 
-	it( 'should not render if there are no errors', () => {
-		const { container } = render( <ErrorNotice />, {
+	it( 'should not render if there are no errors', async () => {
+		const { container, waitForRegistry } = render( <ErrorNotice />, {
 			registry,
 		} );
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
