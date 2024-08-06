@@ -55,8 +55,18 @@ export default function ZeroDataNotification() {
 		);
 	} );
 
-	const { analyticsHasZeroData, searchConsoleHasZeroData } =
-		useModuleGatheringZeroData();
+	const {
+		analyticsGatheringData,
+		searchConsoleGatheringData,
+		analyticsHasZeroData,
+		searchConsoleHasZeroData,
+	} = useModuleGatheringZeroData();
+
+	// Ensure this notification is only rendered if any module is not in the
+	// gathering data state which would trigger the now standalone GatheringDataNotification.
+	if ( analyticsGatheringData || searchConsoleGatheringData ) {
+		return null;
+	}
 
 	if ( ! analyticsHasZeroData && ! searchConsoleHasZeroData ) {
 		return null;

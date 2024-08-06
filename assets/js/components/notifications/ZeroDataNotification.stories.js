@@ -19,6 +19,9 @@
 /**
  * Internal dependencies
  */
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import ZeroDataNotification from './ZeroDataNotification';
 
 function Template( {} ) {
@@ -30,4 +33,22 @@ Default.storyName = 'ZeroDataNotification';
 
 export default {
 	title: 'Components/Notifications/ZeroDataNotification',
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
