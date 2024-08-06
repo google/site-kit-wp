@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	provideModules,
-	provideSiteInfo,
 	render,
 } from '../../../../tests/js/test-utils';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
@@ -53,7 +52,7 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 		expect(
 			getByText(
-				/Disabling consent mode may affect your ability in the European Economic Area and the United Kingdom to/i
+				/Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to:/i
 			)
 		).toBeInTheDocument();
 	} );
@@ -77,60 +76,7 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 		expect(
 			getByText(
-				/Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom/i
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'should display appropriate subtitle with Ads not connected and Switzerland included in list of consent mode regions', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: false, connected: false },
-		] );
-
-		provideSiteInfo( registry, { consentModeRegions: [ 'CH' ] } );
-
-		const { getByText, waitForRegistry } = render(
-			<ConfirmDisableConsentModeDialog
-				onConfirm={ () => {} }
-				onCancel={ () => {} }
-			/>,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText(
-				/Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to/i
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'should display appropriate subtitle with Ads connected and Switzerland included in list of consent mode regions', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
-		] );
-
-		provideSiteInfo( registry, { consentModeRegions: [ 'CH' ] } );
-
-		const { getByText, waitForRegistry } = render(
-			<ConfirmDisableConsentModeDialog
-				onConfirm={ () => {} }
-				onCancel={ () => {} }
-			/>,
-			{
-				registry,
-				features: [ 'consentModeSwitzerland' ],
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText(
-				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland/i
+				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:/i
 			)
 		).toBeInTheDocument();
 	} );

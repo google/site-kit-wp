@@ -50,6 +50,32 @@ const fetchGetDismissedItemsStore = createFetchStore( {
 	reducerCallback,
 } );
 
+const fetchRemoveDismissedItemsStore = createFetchStore( {
+	baseName: 'removeDismissedItems',
+	controlCallback: ( { slugs } ) => {
+		return API.set(
+			'core',
+			'user',
+			'dismissed-items',
+			{
+				slugs,
+			},
+			{ method: 'DELETE' }
+		);
+	},
+	reducerCallback,
+	argsToParams: ( slugs ) => {
+		return { slugs };
+	},
+	validateParams: ( { slugs } ) => {
+		invariant( Array.isArray( slugs ), 'slugs must be an array.' );
+		invariant(
+			slugs.every( ( slug ) => typeof slug === 'string' ),
+			'All slugs must be strings.'
+		);
+	},
+} );
+
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
 	controlCallback: ( { slug, expiresInSeconds } ) =>
@@ -99,6 +125,32 @@ const baseActions = {
 			return yield fetchDismissItemStore.actions.fetchDismissItem(
 				slug,
 				expiresInSeconds
+			);
+		}
+	),
+
+	/**
+	 * Removes dismissed items by their slugs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {...string} slugs Dismissed item slugs to remove.
+	 * @return {Object} Redux-style action.
+	 */
+	removeDismissedItems: createValidatedAction(
+		( ...slugs ) => {
+			invariant(
+				slugs.length > 0,
+				'At least one slug must be provided.'
+			);
+			invariant(
+				slugs.every( ( slug ) => typeof slug === 'string' ),
+				'All slugs must be strings.'
+			);
+		},
+		function ( ...slugs ) {
+			return fetchRemoveDismissedItemsStore.actions.fetchRemoveDismissedItems(
+				slugs
 			);
 		}
 	),
@@ -169,7 +221,8 @@ export const {
 		selectors: baseSelectors,
 	},
 	fetchDismissItemStore,
-	fetchGetDismissedItemsStore
+	fetchGetDismissedItemsStore,
+	fetchRemoveDismissedItemsStore
 );
 
 export default {

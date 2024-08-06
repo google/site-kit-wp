@@ -24,10 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CheckFill from '../../../../../svg/icons/check-fill.svg';
 import { Button } from 'googlesitekit-components';
-import { Grid, Cell, Row } from '../../../../material-components';
 import { getContextScrollTop } from '../../../../util/scroll';
+import SubtleNotification from '../../../analytics-4/components/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
@@ -61,44 +60,21 @@ export default function PAXSetupSuccessSubtleNotification() {
 	}
 
 	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className="googlesitekit-subtle-notification"
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
-					</div>
-					<div className="googlesitekit-subtle-notification__content">
-						<p>
-							{ __(
-								'Your Ads campaign was successfully set up!',
-								'google-site-kit'
-							) }
-						</p>
-						<p className="googlesitekit-subtle-notification__secondary_description">
-							{ __(
-								'Track your conversions, measure your campaign results and make the most of your ad spend',
-								'google-site-kit'
-							) }
-						</p>
-					</div>
-					<div className="googlesitekit-subtle-notification__action">
-						<Button tertiary onClick={ onDismiss }>
-							{ __( 'Got it', 'google-site-kit' ) }
-						</Button>
-						<Button
-							onClick={ ( event ) => {
-								scrollToWidget( event );
-							} }
-						>
-							{ __( 'Show me', 'google-site-kit' ) }
-						</Button>
-					</div>
-				</Cell>
-			</Row>
-		</Grid>
+		<SubtleNotification
+			title={ __(
+				'Your Ads campaign was successfully set up!',
+				'google-site-kit'
+			) }
+			description={ __(
+				'Track your conversions, measure your campaign results and make the most of your ad spend',
+				'google-site-kit'
+			) }
+			onDismiss={ onDismiss }
+			additionalCTA={
+				<Button onClick={ scrollToWidget }>
+					{ __( 'Show me', 'google-site-kit' ) }
+				</Button>
+			}
+		/>
 	);
 }
