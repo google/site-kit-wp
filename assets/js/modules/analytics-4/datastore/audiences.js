@@ -438,7 +438,7 @@ const baseActions = {
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings()
+			dispatch( CORE_USER ).saveAudienceSettings()
 		);
 
 		if ( error ) {

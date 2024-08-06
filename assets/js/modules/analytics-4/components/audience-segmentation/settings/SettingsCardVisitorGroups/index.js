@@ -43,7 +43,7 @@ export default function SettingsCardVisitorGroups() {
 	);
 
 	const { setAudienceSegmentationWidgetHidden, saveAudienceSettings } =
-		useDispatch( MODULES_ANALYTICS_4 );
+		useDispatch( CORE_USER );
 
 	const handleKeyMetricsToggle = useCallback( async () => {
 		await setAudienceSegmentationWidgetHidden(

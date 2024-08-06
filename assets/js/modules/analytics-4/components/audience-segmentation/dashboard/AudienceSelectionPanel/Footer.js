@@ -53,21 +53,18 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		select( CORE_USER ).getAudienceSettings()
 	);
 	const saveError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForAction(
-			'saveAudienceSettings',
-			[
-				{
-					...audienceSettings,
-					configuredAudiences: selectedItems,
-				},
-			]
-		)
+		select( CORE_USER ).getErrorForAction( 'saveAudienceSettings', [
+			{
+				...audienceSettings,
+				configuredAudiences: selectedItems,
+			},
+		] )
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSavingAudienceSettings()
 	);
 
-	const { saveAudienceSettings } = useDispatch( MODULES_ANALYTICS_4 );
+	const { saveAudienceSettings } = useDispatch( CORE_USER );
 
 	const selectedItemsCount = selectedItems?.length || 0;
 	let itemLimitError;
