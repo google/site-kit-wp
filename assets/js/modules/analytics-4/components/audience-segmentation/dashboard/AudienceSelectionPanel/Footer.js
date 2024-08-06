@@ -38,6 +38,7 @@ import {
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
 
@@ -49,7 +50,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		)
 	);
 	const audienceSettings = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+		select( CORE_USER ).getAudienceSettings()
 	);
 	const saveError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForAction(
