@@ -1,0 +1,90 @@
+/**
+ * Reader Revenue Manager Setup CTA banner styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-reader-revenue-manager-setup-cta-widget {
+		.googlesitekit-setup-cta-banner__primary-cell {
+			padding: $grid-gap-desktop - 4 $grid-gap-phone 0;
+
+			@media (min-width: $width-tablet + 1 + px) {
+				padding: $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__title {
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-headline-sm;
+				line-height: $lh-headline-sm;
+			}
+
+			@media (min-width: $width-xlarge + px) {
+				font-size: $fs-headline-md;
+				line-height: $lh-headline-md;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__description {
+
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-body-md;
+				line-height: $lh-body-md;
+			}
+
+			@media (min-width: $width-xlarge + 1 + px) {
+				font-size: $fs-body-lg;
+				line-height: $lh-body-lg;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__actions-wrapper {
+			gap: 4px;
+			margin-bottom: 27px;
+
+			@media (min-width: $width-desktop + 1 + px) {
+				gap: 10px;
+				margin-bottom: 0;
+				padding: 10px 0;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__svg-wrapper {
+
+			svg {
+				max-height: 143px;
+
+				// Increase the SVG size via scale in order to achieve the desired clipping effect
+				// in conjunction with the parent's overflow: hidden.
+				scale: 1;
+
+				@media (min-width: $width-desktop + 1 + px) {
+					max-height: 272px;
+					right: 70px;
+					scale: 1.6;
+					top: 10px;
+					width: 65%;
+				}
+
+				@media (min-width: $width-xlarge + px) {
+					right: 50px;
+					scale: 1.1;
+					width: unset;
+				}
+			}
+		}
+	}
+}
