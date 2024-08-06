@@ -1922,7 +1922,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					dimensions: [ { name: 'newVsReturning' } ],
 				};
 
-				// Simulate no data available state for "Purchasers".
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveResourceDataAvailabilityDates( {
