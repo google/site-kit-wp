@@ -52,12 +52,8 @@ exports[`SetupForm should render the form correctly 1`] = `
         </div>
       </div>
     </div>
-    <a
-      aria-label="Create new publication (opens in a new tab)"
+    <button
       class="googlesitekit-cta-link"
-      href=""
-      rel="noopener noreferrer"
-      target="_blank"
     >
       <span
         class="googlesitekit-cta-link__contents"
@@ -70,7 +66,7 @@ exports[`SetupForm should render the form correctly 1`] = `
       >
         <svg />
       </span>
-    </a>
+    </button>
     <div
       class="googlesitekit-setup-module__action"
     >

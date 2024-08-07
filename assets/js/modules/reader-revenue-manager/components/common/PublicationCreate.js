@@ -32,7 +32,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	RESET_PUBLICATIONS,
+} from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
@@ -43,9 +48,16 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
+	const { setValues } = useDispatch( CORE_FORMS );
 	const { selectPublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const hasPublication = publications && publications.length > 0;
+
+	const handleLinkClick = useCallback( () => {
+		setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+			[ RESET_PUBLICATIONS ]: true,
+		} );
+	}, [ setValues ] );
 
 	const handleCompleteSetupClick = useCallback( async () => {
 		if ( ! hasPublication ) {
@@ -84,6 +96,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 							trailingIcon={
 								<ExternalIcon width={ 14 } height={ 14 } />
 							}
+							onClick={ handleLinkClick }
 						>
 							{ __( 'Create publication', 'google-site-kit' ) }
 						</Button>

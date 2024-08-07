@@ -64,7 +64,7 @@ describe( 'SetupForm', () => {
 
 		expect( getByText( 'Publication' ) ).toBeInTheDocument();
 		expect(
-			getByRole( 'link', { name: /create new publication/i } )
+			getByRole( 'button', { name: /create new publication/i } )
 		).toBeInTheDocument();
 	} );
 
