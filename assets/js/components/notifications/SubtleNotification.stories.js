@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import SubtleNotification from './SubtleNotification';
+import CustomCheckSVG from '../../../svg/icons/check_circle.svg';
+import CustomWarningSVG from '../../../svg/icons/warning-v2.svg';
 
 function Template( { ...args } ) {
 	return <SubtleNotification { ...args } />;
@@ -34,7 +36,7 @@ Success.args = {
 Success.scenario = {};
 
 export const SuccessWithDescription = Template.bind( {} );
-SuccessWithDescription.storyName = 'Success - With Description';
+SuccessWithDescription.storyName = 'Success With Description';
 SuccessWithDescription.args = {
 	title: 'Success! Your Conversion Tracking ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
@@ -43,7 +45,7 @@ SuccessWithDescription.args = {
 SuccessWithDescription.scenario = {};
 
 export const SuccessWithCTA = Template.bind( {} );
-SuccessWithCTA.storyName = 'Success - With CTA';
+SuccessWithCTA.storyName = 'Success With CTA';
 SuccessWithCTA.args = {
 	title: 'Success! Your Conversion Tracking ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
@@ -53,7 +55,7 @@ SuccessWithCTA.args = {
 SuccessWithCTA.scenario = {};
 
 export const SuccessWithExternalCTA = Template.bind( {} );
-SuccessWithExternalCTA.storyName = 'Success - With External CTA';
+SuccessWithExternalCTA.storyName = 'Success With External CTA';
 SuccessWithExternalCTA.args = {
 	title: 'Success! Your Conversion Tracking ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
@@ -63,6 +65,19 @@ SuccessWithExternalCTA.args = {
 	isCTALinkExternal: true,
 };
 SuccessWithExternalCTA.scenario = {};
+
+export const SuccessWithCustomIcon = Template.bind( {} );
+SuccessWithExternalCTA.storyName = 'Success With Custom Icon';
+SuccessWithCustomIcon.args = {
+	title: 'Success! Your Conversion Tracking ID was added to your site',
+	description: 'You can now track conversions for your Ads campaigns',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+	Icon: CustomCheckSVG,
+};
+SuccessWithCustomIcon.scenario = {};
 
 export const Warning = Template.bind( {} );
 Warning.storyName = 'Warning';
@@ -74,7 +89,7 @@ Warning.args = {
 Warning.scenario = {};
 
 export const WarningWithDescription = Template.bind( {} );
-WarningWithDescription.storyName = 'Warning - With Description';
+WarningWithDescription.storyName = 'Warning With Description';
 WarningWithDescription.args = {
 	title: 'Warning! Your Conversion Tracking ID was not added to your site',
 	description: 'You cannot track conversions for your Ads campaigns',
@@ -84,7 +99,7 @@ WarningWithDescription.args = {
 WarningWithDescription.scenario = {};
 
 export const WarningWithCTA = Template.bind( {} );
-WarningWithCTA.storyName = 'Warning - With CTA';
+WarningWithCTA.storyName = 'Warning With CTA';
 WarningWithCTA.args = {
 	title: 'Warning! Your Conversion Tracking ID was not added to your site',
 	description: 'You cannot track conversions for your Ads campaigns',
@@ -95,7 +110,7 @@ WarningWithCTA.args = {
 WarningWithCTA.scenario = {};
 
 export const WarningWithExternalCTA = Template.bind( {} );
-WarningWithExternalCTA.storyName = 'Warning - With External CTA';
+WarningWithExternalCTA.storyName = 'Warning With External CTA';
 WarningWithExternalCTA.args = {
 	title: 'Warning! Your Conversion Tracking ID was not added to your site',
 	description: 'You cannot track conversions for your Ads campaigns',
@@ -107,7 +122,21 @@ WarningWithExternalCTA.args = {
 };
 WarningWithExternalCTA.scenario = {};
 
+export const WarningWithCustomIcon = Template.bind( {} );
+WarningWithCustomIcon.storyName = 'Warning With Custom Icon';
+WarningWithCustomIcon.args = {
+	title: 'Warning! Your Conversion Tracking ID was not added to your site',
+	description: 'You cannot track conversions for your Ads campaigns',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+	Icon: CustomWarningSVG,
+	variant: 'warning',
+};
+WarningWithCustomIcon.scenario = {};
+
 export default {
-	title: 'Components/Notifications/SubtleNotification',
+	title: 'Components/SubtleNotification',
 	component: SubtleNotification,
 };
