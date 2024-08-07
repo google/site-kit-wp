@@ -29,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
 
@@ -42,14 +42,16 @@ export default function SettingsEdit() {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
 
-		const hasAccess = hasModuleOwnershipOrAccess( MODULE_SLUG );
+		const hasAccess = hasModuleOwnershipOrAccess(
+			READER_REVENUE_MANAGER_MODULE_SLUG
+		);
 
 		if ( hasAccess ) {
 			return true;
 		}
 
 		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
-			MODULE_SLUG,
+			READER_REVENUE_MANAGER_MODULE_SLUG,
 		] );
 
 		// Return early if request is not completed yet.

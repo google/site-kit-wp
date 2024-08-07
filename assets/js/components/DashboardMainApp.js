@@ -46,6 +46,7 @@ import {
 	AudienceSegmentationSetupCTAWidget,
 	AudienceSelectionPanel,
 } from '../modules/analytics-4/components/audience-segmentation/dashboard';
+import ReaderRevenueManagerSetupCTABanner from '../modules/reader-revenue-manager/components/ReaderRevenueManagerSetupCTABanner';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
@@ -80,6 +81,7 @@ import { getContextScrollTop } from '../util/scroll';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
+	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
@@ -227,6 +229,14 @@ export default function DashboardMainApp() {
 						<AudienceSegmentationSetupCTAWidget />
 					) }
 					<ConsentModeSetupCTAWidget />
+				</Fragment>
+			) }
+
+			{ ! viewOnlyDashboard && (
+				<Fragment>
+					{ readerRevenueManagerEnabled && (
+						<ReaderRevenueManagerSetupCTABanner />
+					) }
 				</Fragment>
 			) }
 
