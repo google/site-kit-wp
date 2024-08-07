@@ -37,20 +37,20 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../hooks/useBreakpoint';
-import useActivateModuleCallback from '../../../hooks/useActivateModuleCallback';
-import whenInactive from '../../../util/when-inactive';
-import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+} from '../../../../hooks/useBreakpoint';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import whenInactive from '../../../../util/when-inactive';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-} from '../datastore/constants';
-import { Cell, Grid, Row } from '../../../material-components';
-import SetupSVG from '../../../../svg/graphics/reader-revenue-manager-setup.svg';
-import SetupTabletSVG from '../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
-import SetupMobileSVG from '../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
-import Link from '../../../components/Link';
+} from '../../datastore/constants';
+import { Cell, Grid, Row } from '../../../../material-components';
+import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
+import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
+import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
+import Link from '../../../../components/Link';
 
 function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 	const breakpoint = useBreakpoint();

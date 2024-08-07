@@ -31,16 +31,16 @@ import {
 	fireEvent,
 	provideModules,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
-import { getWidgetComponentProps } from '../../../googlesitekit/widgets/util';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+} from '../../../../../../tests/js/test-utils';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-} from '../datastore/constants';
-import useActivateModuleCallback from '../../../hooks/useActivateModuleCallback';
+} from '../../datastore/constants';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 
-jest.mock( '../../../hooks/useActivateModuleCallback' );
+jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
