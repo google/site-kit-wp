@@ -99,12 +99,7 @@ const baseActions = {
 			registry
 				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
 				.getPublications()
-		);
-
-		// If there are no publications, do not attempt to sync the onboarding state.
-		if ( ! publications ) {
-			return;
-		}
+		) || [];
 
 		const publication = publications.find(
 			// eslint-disable-next-line sitekit/acronym-case
