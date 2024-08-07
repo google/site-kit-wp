@@ -21,18 +21,18 @@
 		.googlesitekit-setup-cta-banner__primary-cell {
 			padding: $grid-gap-desktop - 4 $grid-gap-phone 0;
 
-			@media (min-width: $width-tablet + 1 + px) {
+			@media (min-width: $bp-nonMobile) {
 				padding: $grid-gap-desktop;
 			}
 		}
 
 		.googlesitekit-setup-cta-banner__title {
-			@media (min-width: $width-tablet + 1 + px) {
+			@media (min-width: $bp-nonMobile) {
 				font-size: $fs-headline-sm;
 				line-height: $lh-headline-sm;
 			}
 
-			@media (min-width: $width-xlarge + px) {
+			@media (min-width: $bp-xlarge) {
 				font-size: $fs-headline-md;
 				line-height: $lh-headline-md;
 			}
@@ -40,7 +40,7 @@
 
 		.googlesitekit-setup-cta-banner__description {
 
-			@media (min-width: $width-tablet + 1 + px) {
+			@media (min-width: $bp-nonMobile) {
 				font-size: $fs-body-md;
 				line-height: $lh-body-md;
 			}
@@ -55,7 +55,7 @@
 			gap: 4px;
 			margin-bottom: 27px;
 
-			@media (min-width: $width-desktop + 1 + px) {
+			@media (min-width: $bp-nonTablet) {
 				gap: 10px;
 				margin-bottom: 0;
 				padding: 10px 0;
@@ -71,7 +71,7 @@
 				// in conjunction with the parent's overflow: hidden.
 				scale: 1;
 
-				@media (min-width: $width-desktop + 1 + px) {
+				@media (min-width: $bp-nonTablet) {
 					max-height: 272px;
 					right: 70px;
 					scale: 1.6;
@@ -79,7 +79,7 @@
 					width: 65%;
 				}
 
-				@media (min-width: $width-xlarge + px) {
+				@media (min-width: $bp-xlarge) {
 					right: 50px;
 					scale: 1.1;
 					width: unset;
