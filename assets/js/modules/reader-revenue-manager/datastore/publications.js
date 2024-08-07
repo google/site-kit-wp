@@ -59,7 +59,7 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
-	 * Syncronizes the onboarding state of the publication with the API.
+	 * Synchronizes the onboarding state of the publication with the API.
 	 * Updates the settings on the server.
 	 *
 	 * @since 1.132.0
@@ -79,29 +79,38 @@ const baseActions = {
 			return;
 		}
 
-		yield commonActions.await(
+		// Ensure settings are loaded before checking for changed state below.
+		const settings = yield commonActions.await(
 			registry
 				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
 				.getSettings()
 		);
 
-		const publicationID = registry
+		const hasPublicationIDChanged = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublicationID();
+			.hasSettingChanged( 'publicationID' );
+
+		// Do not attempt to sync the onboarding state if the publication ID
+		// in state is not the "saved" publication ID.
+		if ( hasPublicationIDChanged ) {
+			return;
+		}
+
+		const {
+			publicationID,
+			publicationOnboardingState: currentOnboardingState,
+		} = settings;
 
 		// If there is no publication ID, do not attempt to sync the onboarding state.
 		if ( publicationID === undefined ) {
 			return;
 		}
 
-		const publications = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublications();
-
-		// If there are no publications, do not attempt to sync the onboarding state.
-		if ( ! publications ) {
-			return;
-		}
+		const publications = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getPublications()
+		) || [];
 
 		const publication = publications.find(
 			// eslint-disable-next-line sitekit/acronym-case
@@ -113,33 +122,23 @@ const baseActions = {
 			return;
 		}
 
-		const { onboardingState } = publication;
-		const currentOnboardingState = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublicationOnboardingState();
+		const { onboardingState: newOnboardingState } = publication;
 
-		const settings = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getSettings();
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			publicationOnboardingState: newOnboardingState,
+			// The "last synced" value should reflect the real time this action
+			// was performed, so we don't use the reference date here.
+			// eslint-disable-next-line sitekit/no-direct-date
+			publicationOnboardingStateLastSyncedAtMs: Date.now(),
+		} );
 
-		if ( onboardingState !== currentOnboardingState ) {
-			settings.publicationOnboardingState = onboardingState;
-		}
-
-		// eslint-disable-next-line sitekit/no-direct-date
-		settings.publicationOnboardingStateLastSyncedAtMs = Date.now();
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setSettings( settings );
-
-		// Save the settings to the API.
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
 
-		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
+		// If the onboarding state changes to complete, set the key in CORE_UI to trigger the notification.
 		if (
-			onboardingState ===
-			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+			newOnboardingState !== currentOnboardingState &&
+			newOnboardingState ===
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
 		) {
 			registry
 				.dispatch( CORE_UI )
@@ -151,7 +150,7 @@ const baseActions = {
 	},
 
 	/**
-	 * Syncronizes the onboarding state of the publication based on the last synced time.
+	 * Synchronizes the onboarding state of the publication based on the last synced time.
 	 *
 	 * @since n.e.x.t
 	 *
