@@ -246,7 +246,7 @@ export const selectors = {
 	/**
 	 * Fetches all registered notifications from state, regardless of whether they are dismissed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of notification objects.
@@ -261,7 +261,7 @@ export const selectors = {
 	 * They are filtered based on the given `viewContext`, their dismissal state
 	 * and their `checkRequirements` callback. They are sorted by their `priority`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} viewContext The viewContext to fetch notifications for.

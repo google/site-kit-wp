@@ -141,7 +141,7 @@ const baseActions = {
 	/**
 	 * Synchronizes the onboarding state of the publication based on the last synced time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @return {void}
 	 */
@@ -213,7 +213,7 @@ const baseActions = {
 	/**
 	 * Resets the publications data in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 */
 	*resetPublications() {
 		const registry = yield commonActions.getRegistry();
@@ -234,7 +234,7 @@ const baseActions = {
 	/**
 	 * Sets the given publication in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param {Object} publication The publiation object.
 	 * @return {Object} A Generator function.
