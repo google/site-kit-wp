@@ -167,7 +167,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( syncTimeMs ).toBe( mockNow );
 			} );
 
-			it( 'should set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store', async () => {
+			it( 'should set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store if onboarding state changes to complete', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
@@ -216,6 +216,57 @@ describe( 'modules/reader-revenue-manager publications', () => {
 							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
 						)
 				).toBe( true );
+			} );
+
+			it( 'should not set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store if onboarding state does not change', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 3 ];
+
+				// Set the current settings.
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: {
+						...settings,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBeUndefined();
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				// Ensure that the UI key is set to true.
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBeUndefined();
 			} );
 		} );
 
@@ -328,7 +379,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toBe( lastSyncedMS );
 			} );
 
-			it( 'should sync publication onboarding state when last sync was more than an hour agp', async () => {
+			it( 'should sync publication onboarding state when last sync was more than an hour ago', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
