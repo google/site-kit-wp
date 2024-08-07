@@ -24,7 +24,7 @@ import CustomCheckSVG from '../../../svg/icons/check_circle.svg';
 import CustomWarningSVG from '../../../svg/icons/warning-v2.svg';
 
 function Template( { ...args } ) {
-	return <SubtleNotification { ...args } />;
+	return <SubtleNotification onDismiss={ () => {} } { ...args } />;
 }
 
 export const Success = Template.bind( {} );
