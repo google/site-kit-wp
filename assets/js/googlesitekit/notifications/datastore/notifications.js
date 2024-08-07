@@ -219,7 +219,10 @@ export const resolvers = {
 				filteredNotifications.map( async ( { checkRequirements } ) => {
 					if ( typeof checkRequirements === 'function' ) {
 						try {
-							return await checkRequirements( registry );
+							return await checkRequirements(
+								registry,
+								viewContext
+							);
 						} catch ( e ) {
 							return false; // Prevent `Promise.all()` from being rejected for a single failed promise.
 						}

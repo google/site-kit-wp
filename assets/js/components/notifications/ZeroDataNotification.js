@@ -26,11 +26,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import BannerNotification from '../BannerNotification';
-import ZeroStateIcon from '../../../../svg/graphics/zero-state-blue.svg';
-import { DAY_IN_SECONDS, trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import BannerNotification from './BannerNotification';
+import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 
 export default function ZeroDataNotification() {
 	const viewContext = useViewContext();
@@ -53,6 +54,23 @@ export default function ZeroDataNotification() {
 			'not-enough-traffic'
 		);
 	} );
+
+	const {
+		analyticsGatheringData,
+		searchConsoleGatheringData,
+		analyticsHasZeroData,
+		searchConsoleHasZeroData,
+	} = useModuleGatheringZeroData();
+
+	// Ensure this notification is only rendered if any module is not in the
+	// gathering data state which would trigger the now standalone GatheringDataNotification.
+	if ( analyticsGatheringData || searchConsoleGatheringData ) {
+		return null;
+	}
+
+	if ( ! analyticsHasZeroData && ! searchConsoleHasZeroData ) {
+		return null;
+	}
 
 	return (
 		<BannerNotification
