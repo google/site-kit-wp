@@ -26,6 +26,7 @@ import fetchMock from 'fetch-mock';
  */
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 import {
+	act,
 	render,
 	createTestRegistry,
 	fireEvent,
@@ -34,6 +35,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
@@ -106,7 +108,11 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
-		const { getByRole, waitForRegistry } = render(
+		registry
+			.dispatch( CORE_MODULES )
+			.finishResolution( 'canActivateModule', [] );
+
+		const { container, getByRole, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABanner
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
@@ -118,11 +124,18 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click(
-			getByRole( 'button', { name: /Set up Reader Revenue Manager/i } )
-		);
+		expect( container ).not.toBeEmptyDOMElement();
 
-		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: /Set up Reader Revenue Manager/i,
+				} )
+			);
+		} );
+
+		expect( activateModuleMock ).toHaveBeenCalledTimes( 3 );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
