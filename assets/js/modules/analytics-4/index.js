@@ -89,6 +89,7 @@ import {
 	NoAudienceBannerWidget,
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -168,6 +169,8 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'analytics-4' ],
 			isActive: ( select ) => {
+				const isAnalyticsConnected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 				const isAudienceSegmentationWidgetHidden =
@@ -175,7 +178,8 @@ export const registerWidgets = ( widgets ) => {
 
 				return (
 					configuredAudiences?.length > 0 &&
-					isAudienceSegmentationWidgetHidden === false
+					isAudienceSegmentationWidgetHidden === false &&
+					! isAnalyticsConnected
 				);
 			},
 		},
