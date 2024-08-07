@@ -136,10 +136,11 @@ const baseActions = {
 		// Save the settings to the API.
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
 
-		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
+		// If the onboarding state changes to complete, set the key in CORE_UI to trigger the notification.
 		if (
+			onboardingState !== currentOnboardingState &&
 			onboardingState ===
-			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
 		) {
 			registry
 				.dispatch( CORE_UI )
