@@ -31,6 +31,7 @@ import whenActive from '../../../../util/when-active';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 
 function RRMSetupSuccessSubtleNotification() {
@@ -58,7 +59,7 @@ function RRMSetupSuccessSubtleNotification() {
 
 	if (
 		'authentication_success' !== notification ||
-		slug !== 'reader-revenue-manager' ||
+		slug !== READER_REVENUE_MANAGER_MODULE_SLUG ||
 		publicationOnboardingState === undefined
 	) {
 		return null;
@@ -136,6 +137,6 @@ function RRMSetupSuccessSubtleNotification() {
 	return null;
 }
 
-export default whenActive( { moduleName: 'reader-revenue-manager' } )(
+export default whenActive( { moduleName: READER_REVENUE_MANAGER_MODULE_SLUG } )(
 	RRMSetupSuccessSubtleNotification
 );

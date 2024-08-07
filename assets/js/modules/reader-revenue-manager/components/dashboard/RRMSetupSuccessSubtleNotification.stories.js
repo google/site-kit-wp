@@ -28,6 +28,7 @@ import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotificati
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
@@ -40,7 +41,7 @@ OnboardingComplete.storyName = 'Onboarding Complete';
 OnboardingComplete.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: 'reader-revenue-manager',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
@@ -52,7 +53,7 @@ PendingVerification.storyName = 'Pending Verification';
 PendingVerification.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: 'reader-revenue-manager',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
@@ -64,7 +65,7 @@ OnboardingActionRequired.storyName = 'Onboarding Action Required';
 OnboardingActionRequired.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: 'reader-revenue-manager',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_ACTION_REQUIRED,
@@ -80,7 +81,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'reader-revenue-manager',
+						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 						active: true,
 						connected: true,
 					},
