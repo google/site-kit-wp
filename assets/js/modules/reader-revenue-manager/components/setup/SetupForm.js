@@ -34,9 +34,12 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
 import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
 
@@ -57,9 +60,16 @@ export default function SetupForm( { onCompleteSetup } ) {
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
+	const { setValues } = useDispatch( CORE_FORMS );
 	const { findMatchedPublication, selectPublication } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
+
+	const resetPublications = useCallback( () => {
+		setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+			[ RESET_PUBLICATIONS ]: true,
+		} );
+	}, [ setValues ] );
 
 	const submitForm = useCallback(
 		( event ) => {
@@ -84,6 +94,10 @@ export default function SetupForm( { onCompleteSetup } ) {
 		}
 	}, [ findMatchedPublication, publicationID, selectPublication ] );
 
+	if ( ! publications ) {
+		return null;
+	}
+
 	return (
 		<form onSubmit={ submitForm }>
 			<StoreErrorNotices
@@ -105,7 +119,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 				<PublicationSelect />
 			</div>
 			<PublicationOnboardingStateNotice />
-			<Link external href={ serviceURL }>
+			<Link external href={ serviceURL } onClick={ resetPublications }>
 				{ __( 'Create new publication', 'google-site-kit' ) }
 			</Link>
 			<div className="googlesitekit-setup-module__action">
