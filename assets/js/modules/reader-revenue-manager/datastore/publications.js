@@ -68,6 +68,12 @@ const baseActions = {
 	 */
 	*syncPublicationOnboardingState() {
 		const registry = yield commonActions.getRegistry();
+		// Ensure settings are loaded before checking for changed state below.
+		const settings = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getSettings()
+		);
 
 		const hasPublicationIDChanged = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
@@ -78,12 +84,6 @@ const baseActions = {
 		if ( hasPublicationIDChanged ) {
 			return;
 		}
-
-		const settings = yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getSettings()
-		);
 
 		const {
 			publicationID,
