@@ -73,7 +73,7 @@ OnboardingActionRequired.parameters = {
 OnboardingActionRequired.scenario = {};
 
 export default {
-	title: 'Modules/ReaderRevenueManager/Dashboard/RRMSetupSuccessSubtleNotification',
+	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
 	component: RRMSetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,

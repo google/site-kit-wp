@@ -52,7 +52,7 @@ function RRMSetupSuccessSubtleNotification() {
 		} )
 	);
 
-	const onDismiss = () => {
+	const handleDismiss = () => {
 		setNotification( undefined );
 		setSlug( undefined );
 	};
@@ -79,10 +79,11 @@ function RRMSetupSuccessSubtleNotification() {
 					'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
 					'google-site-kit'
 				) }
-				onDismiss={ onDismiss }
+				onDismiss={ handleDismiss }
 				dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-				ctaLink={ serviceURL }
 				ctaLabel={ __( 'Customize settings', 'google-site-kit' ) }
+				ctaLink={ serviceURL }
+				onCTAClick={ handleDismiss }
 				isCTALinkExternal
 			/>
 		);
@@ -102,10 +103,11 @@ function RRMSetupSuccessSubtleNotification() {
 					'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
 					'google-site-kit'
 				) }
-				onDismiss={ onDismiss }
+				onDismiss={ handleDismiss }
 				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				ctaLink={ serviceURL }
 				ctaLabel={ __( 'Check publication status', 'google-site-kit' ) }
+				ctaLink={ serviceURL }
+				onCTAClick={ handleDismiss }
 				isCTALinkExternal
 			/>
 		);
@@ -121,13 +123,14 @@ function RRMSetupSuccessSubtleNotification() {
 					'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
 					'google-site-kit'
 				) }
-				onDismiss={ onDismiss }
+				onDismiss={ handleDismiss }
 				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				ctaLink={ serviceURL }
 				ctaLabel={ __(
 					'Complete publication setup',
 					'google-site-kit'
 				) }
+				ctaLink={ serviceURL }
+				onCTAClick={ handleDismiss }
 				isCTALinkExternal
 				variant="warning"
 			/>
