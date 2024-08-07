@@ -67,7 +67,7 @@ SuccessWithExternalCTA.args = {
 SuccessWithExternalCTA.scenario = {};
 
 export const SuccessWithCustomIcon = Template.bind( {} );
-SuccessWithExternalCTA.storyName = 'Success With Custom Icon';
+SuccessWithCustomIcon.storyName = 'Success With Custom Icon';
 SuccessWithCustomIcon.args = {
 	title: 'Success! Your Conversion Tracking ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
