@@ -53,7 +53,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 
 	const hasPublication = publications && publications.length > 0;
 
-	const resetPublications = useCallback( () => {
+	const handleLinkClick = useCallback( () => {
 		setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
 			[ RESET_PUBLICATIONS ]: true,
 		} );
@@ -96,7 +96,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 							trailingIcon={
 								<ExternalIcon width={ 14 } height={ 14 } />
 							}
-							onClick={ resetPublications }
+							onClick={ handleLinkClick }
 						>
 							{ __( 'Create publication', 'google-site-kit' ) }
 						</Button>

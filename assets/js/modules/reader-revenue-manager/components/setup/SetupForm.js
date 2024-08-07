@@ -65,7 +65,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 		MODULES_READER_REVENUE_MANAGER
 	);
 
-	const resetPublications = useCallback( () => {
+	const handleLinkClick = useCallback( () => {
 		setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
 			[ RESET_PUBLICATIONS ]: true,
 		} );
@@ -119,7 +119,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 				<PublicationSelect />
 			</div>
 			<PublicationOnboardingStateNotice />
-			<Link external href={ serviceURL } onClick={ resetPublications }>
+			<Link external href={ serviceURL } onClick={ handleLinkClick }>
 				{ __( 'Create new publication', 'google-site-kit' ) }
 			</Link>
 			<div className="googlesitekit-setup-module__action">
