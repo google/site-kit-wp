@@ -33,7 +33,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
@@ -45,7 +45,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 	controlCallback: () =>
 		API.get(
 			'modules',
-			MODULE_SLUG,
+			READER_REVENUE_MANAGER_MODULE_SLUG,
 			'publications',
 			{},
 			{ useCache: false }
@@ -71,7 +71,7 @@ const baseActions = {
 		const connected = yield commonActions.await(
 			registry
 				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( MODULE_SLUG )
+				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
@@ -162,7 +162,7 @@ const baseActions = {
 		const connected = yield commonActions.await(
 			registry
 				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( MODULE_SLUG )
+				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.

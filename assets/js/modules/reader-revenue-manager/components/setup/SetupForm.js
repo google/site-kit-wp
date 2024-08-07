@@ -35,7 +35,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import {
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
@@ -87,7 +87,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 	return (
 		<form onSubmit={ submitForm }>
 			<StoreErrorNotices
-				moduleSlug={ MODULE_SLUG }
+				moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
 			<p className="googlesitekit-margin-bottom-0">

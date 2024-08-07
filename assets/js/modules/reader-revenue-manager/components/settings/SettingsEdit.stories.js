@@ -25,7 +25,7 @@ import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 
 function Template() {
@@ -95,7 +95,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				const extraData = [
 					{
-						slug: MODULE_SLUG,
+						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 						active: true,
 						connected: true,
 					},
