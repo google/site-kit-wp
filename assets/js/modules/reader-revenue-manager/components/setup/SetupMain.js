@@ -34,6 +34,7 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
+	RESET_PUBLICATIONS,
 	SHOW_PUBLICATION_CREATE,
 } from '../../datastore/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
@@ -59,8 +60,11 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			SHOW_PUBLICATION_CREATE
 		)
 	);
-	const publicationID = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	const shouldResetPublications = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			RESET_PUBLICATIONS
+		)
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -68,14 +72,17 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 		MODULES_READER_REVENUE_MANAGER
 	);
 
-	const reset = useCallback( () => {
-		// Do not reset if the publication ID is already set.
-		if ( publicationID !== '' ) {
+	const reset = useCallback( async () => {
+		if ( ! shouldResetPublications ) {
 			return;
 		}
 
+		await setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+			[ RESET_PUBLICATIONS ]: false,
+		} );
+
 		resetPublications();
-	}, [ publicationID, resetPublications ] );
+	}, [ resetPublications, setValues, shouldResetPublications ] );
 
 	// Reset publication data when user re-focuses window.
 	useRefocus( reset, 15000 );

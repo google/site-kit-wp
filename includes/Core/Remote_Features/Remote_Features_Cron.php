@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Remote_Features;
 /**
  * Class providing cron implementation for remote features.
  *
- * @since n.e.x.t
+ * @since 1.133.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Remote_Features_Cron {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param callable $callback Function to call on the cron action.
 	 */
@@ -42,7 +42,7 @@ class Remote_Features_Cron {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 */
 	public function register() {
 		add_action( self::CRON_ACTION, $this->cron_callback );
@@ -51,7 +51,7 @@ class Remote_Features_Cron {
 	/**
 	 * Schedules cron if not already set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 */
 	public function maybe_schedule_cron() {
 		if ( ! wp_next_scheduled( self::CRON_ACTION ) && ! wp_installing() ) {
