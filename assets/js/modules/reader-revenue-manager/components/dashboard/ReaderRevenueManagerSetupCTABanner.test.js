@@ -166,7 +166,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		} );
 	} );
 
-	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements does not meet', async () => {
+	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements do not meet', async () => {
 		// Throw error from checkRequirements to simulate a module setup error.
 		provideModules( registry, [
 			{
