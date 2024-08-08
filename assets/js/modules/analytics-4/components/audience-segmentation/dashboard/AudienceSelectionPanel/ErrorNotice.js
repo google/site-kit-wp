@@ -40,7 +40,7 @@ export default function ErrorNotice() {
 			'syncAvailableAudiences'
 		)
 	);
-	const [ otherUserCountReportError, siteKitUserCountReportError ] =
+	const [ siteKitUserCountReportError, otherUserCountReportError ] =
 		useSelect( ( select ) =>
 			select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
 		) || [];
