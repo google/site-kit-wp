@@ -703,7 +703,8 @@ const baseSelectors = {
 				: undefined;
 
 			const otherUserCountReportError =
-				! isSiteKitAudiencePartialData || otherAudiences?.length !== 0
+				isSiteKitAudiencePartialData === false ||
+				otherAudiences?.length > 0
 					? getErrorForSelector( 'getReport', [
 							getAudiencesUserCountReportOptions(
 								isSiteKitAudiencePartialData
@@ -713,39 +714,65 @@ const baseSelectors = {
 					  ] )
 					: undefined;
 
-			return [ otherUserCountReportError, siteKitUserCountReportError ];
+			return [ siteKitUserCountReportError, otherUserCountReportError ];
 		}
 	),
 
+	/**
+	 * Gets the report options for the Site Kit audiences user count report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Returns the report options for the Site Kit audiences user count report.
+	 */
 	getSiteKitAudiencesUserCountReportOptions: createRegistrySelector(
-		( select ) =>
-			( state, { startDate, endDate } = {} ) => {
-				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-				} );
+		( select ) => () => {
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
 
-				return {
-					startDate: startDate || dateRangeDates.startDate,
-					endDate: endDate || dateRangeDates.endDate,
-					metrics: [
-						{
-							name: 'totalUsers',
-						},
-					],
-					dimensions: [ { name: 'newVsReturning' } ],
-				};
-			}
+			return {
+				startDate: dateRangeDates.startDate,
+				endDate: dateRangeDates.endDate,
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				dimensions: [ { name: 'newVsReturning' } ],
+			};
+		}
 	),
 
+	/**
+	 * Checks if any of the provided audiences is in partial data state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} audiences Array of audiences to check.
+	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences are undefined.
+	 */
 	hasAudiencePartialData: createRegistrySelector(
-		( select ) => ( state, audiences ) =>
-			( audiences || [] ).some( ( { name } ) => {
+		( select ) => ( state, audiences ) => {
+			if ( undefined === audiences ) {
+				return undefined;
+			}
+
+			return ( audiences || [] ).some( ( { name } ) => {
 				return select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
 					name
 				);
-			} )
+			} );
+		}
 	),
 
+	/**
+	 * Gets the configured Site Kit and other (non Site Kit) audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array} Array of Site Kit and other audiences.
+	 */
 	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
 		( select ) => () => {
 			const audiences =

@@ -34,7 +34,6 @@ import {
 	render,
 } from '../../../../../../../../tests/js/test-utils';
 import ErrorNotice from './ErrorNotice';
-import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
 
 describe( 'ErrorNotice', () => {
 	let registry;
@@ -298,53 +297,69 @@ describe( 'ErrorNotice', () => {
 		}
 	);
 
-	it( 'should render the error message when partial site kit audience returns error', async () => {
-		const error = {
-			code: 'test_error',
-			message: 'Error message.',
-			data: {},
-		};
+	describe( 'when a Site Kit audience is in the partial data state, and the special case `newVsReturning` report returns an error', () => {
+		beforeEach( () => {
+			const error = {
+				code: 'test_error',
+				message: 'Error message.',
+				data: {},
+			};
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
-				audience: availableAudiences.reduce(
-					( acc, { name, audienceType } ) => {
-						if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
-							acc[ name ] = 20240405; // Set SK audience as partial.
-						} else {
-							acc[ name ] = 20201220;
-						}
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveResourceDataAvailabilityDates( {
+					audience: availableAudiences.reduce(
+						( acc, { name, audienceType } ) => {
+							if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
+								acc[ name ] = 20240405; // Set Site Kit audiences to be in the partial data state.
+							} else {
+								acc[ name ] = 20201220;
+							}
 
-						return acc;
-					},
-					{}
-				),
-				customDimension: {},
-				property: {},
-			} );
+							return acc;
+						},
+						{}
+					),
+					customDimension: {},
+					property: {},
+				} );
 
-		const siteKitAudiencesReportOptions = {
-			...baseReportOptions,
-			dimensions: [ { name: 'newVsReturning' } ],
-		};
-
-		provideAnalytics4MockReport( registry, siteKitAudiencesReportOptions );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getSiteKitAudiencesUserCountReportOptions(),
-			] );
-
-		const { getByText, waitForRegistry } = render( <ErrorNotice />, {
-			registry,
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveError( error, 'getReport', [
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteKitAudiencesUserCountReportOptions(),
+				] );
 		} );
 
-		await waitForRegistry();
+		it( 'should render the error notice', async () => {
+			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
+				registry,
+			} );
 
-		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+			await waitForRegistry();
+
+			expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+		} );
+
+		it( 'should render a "Retry" button', async () => {
+			const { getByText, getByRole, waitForRegistry } = render(
+				<ErrorNotice />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( /retry/i ) ).toBeInTheDocument();
+
+			expect( invalidateResolutionSpy ).not.toHaveBeenCalled();
+
+			fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+			expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 1 );
+		} );
 	} );
 } );

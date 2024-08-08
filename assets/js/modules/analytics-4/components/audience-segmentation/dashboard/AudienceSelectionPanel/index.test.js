@@ -260,7 +260,6 @@ describe( 'AudienceSelectionPanel', () => {
 				const newVisitorsAudience = availableAudiences[ 2 ];
 				const returningVisitorsAudience = availableAudiences[ 3 ];
 
-				// eslint-disable-next-line no-shadow
 				const otherAudiences = availableAudiences.filter(
 					( { name } ) =>
 						! [

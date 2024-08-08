@@ -1841,18 +1841,21 @@ describe( 'modules/analytics-4 audiences', () => {
 					.receiveIsGatheringData( false );
 			} );
 
-			it( 'should returns `undefined` if the configurable audiences are not loaded', () => {
+			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
 
-				const [ siteKitAudiences, otherAudiences ] =
+				const [
+					siteKitUserCountReportError,
+					otherUserCountReportError,
+				] =
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getAudienceUserCountReportErrors() || [];
 
-				expect( siteKitAudiences ).toBeUndefined();
-				expect( otherAudiences ).toBeUndefined();
+				expect( siteKitUserCountReportError ).toBeUndefined();
+				expect( otherUserCountReportError ).toBeUndefined();
 			} );
 
 			it( 'should return `undefined` if there is no user count report error', () => {
@@ -1860,12 +1863,15 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
-				const [ siteKitAudiences, otherAudiences ] = registry
+				const [
+					siteKitUserCountReportError,
+					otherUserCountReportError,
+				] = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudienceUserCountReportErrors();
 
-				expect( siteKitAudiences ).toBeUndefined();
-				expect( otherAudiences ).toBeUndefined();
+				expect( siteKitUserCountReportError ).toBeUndefined();
+				expect( otherUserCountReportError ).toBeUndefined();
 			} );
 
 			it( 'should return error object if there is a user count report error', () => {
@@ -1873,7 +1879,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					registry.dispatch( MODULES_ANALYTICS_4 );
 
 				const {
-					getConfiguredSiteKitAndOtherAudiences,
 					getAudiencesUserCountReportOptions,
 					getAudienceUserCountReportErrors,
 				} = registry.select( MODULES_ANALYTICS_4 );
@@ -1882,31 +1887,23 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
-				// eslint-disable-next-line no-unused-vars
-				const [ siteKitAudiences, otherAudiences ] =
-					getConfiguredSiteKitAndOtherAudiences() || [];
-
 				receiveError( error, 'getReport', [
 					getAudiencesUserCountReportOptions(
 						availableAudiencesFixture
 					),
 				] );
 
-				const [
-					otherUserCountReportError,
-					// eslint-disable-next-line no-unused-vars
-					siteKitUserCountReportError,
-				] = getAudienceUserCountReportErrors();
+				const [ , otherUserCountReportError ] =
+					getAudienceUserCountReportErrors();
 
 				expect( otherUserCountReportError ).toEqual( error );
 			} );
 
-			it( 'should return error object if there is a user count report error for partial site kit audiences', () => {
+			it( 'should return an error object if a Site Kit audience is in the partial data state, and the special case `newVsReturning` report returns an error', () => {
 				const { receiveError, receiveGetSettings } =
 					registry.dispatch( MODULES_ANALYTICS_4 );
 
 				const {
-					getConfiguredSiteKitAndOtherAudiences,
 					getAudienceUserCountReportErrors,
 					getSiteKitAudiencesUserCountReportOptions,
 				} = registry.select( MODULES_ANALYTICS_4 );
@@ -1945,10 +1942,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
-				// eslint-disable-next-line no-unused-vars
-				const [ siteKitAudiences, otherAudiences ] =
-					getConfiguredSiteKitAndOtherAudiences() || [];
-
 				provideAnalytics4MockReport(
 					registry,
 					siteKitAudiencesReportOptions
@@ -1958,11 +1951,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					getSiteKitAudiencesUserCountReportOptions(),
 				] );
 
-				const [
-					// eslint-disable-next-line no-unused-vars
-					otherUserCountReportError,
-					siteKitUserCountReportError,
-				] = getAudienceUserCountReportErrors() || [];
+				const [ siteKitUserCountReportError ] =
+					getAudienceUserCountReportErrors();
 
 				expect( siteKitUserCountReportError ).toEqual( error );
 			} );
