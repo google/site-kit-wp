@@ -1913,7 +1913,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { name, audienceType } ) => {
 								if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
-									acc[ name ] = 20240405; // Set SK audience as partial.
+									acc[ name ] = 20240405; // Ensure Site Kit audiences are in the partial data state.
 								} else {
 									acc[ name ] = 20201220;
 								}
