@@ -47,8 +47,10 @@ function SubtleNotification( {
 	Icon,
 	ctaLink,
 	ctaLabel,
+	className,
 	onCTAClick,
 	isCTALinkExternal,
+	isDismissable = true,
 	dismissLabel = __( 'Ok, got it', 'google-site-kit' ),
 	onDismiss,
 	variant = VARIANTS.SUCCESS,
@@ -66,7 +68,8 @@ function SubtleNotification( {
 								variant === VARIANTS.SUCCESS,
 							'googlesitekit-subtle-notification--warning':
 								variant === VARIANTS.WARNING,
-						}
+						},
+						className
 					) }
 				>
 					<div className="googlesitekit-subtle-notification__icon">
@@ -87,9 +90,11 @@ function SubtleNotification( {
 						) }
 					</div>
 					<div className="googlesitekit-subtle-notification__action">
-						<Button tertiary onClick={ onDismiss }>
-							{ dismissLabel }
-						</Button>
+						{ isDismissable && (
+							<Button tertiary onClick={ onDismiss }>
+								{ dismissLabel }
+							</Button>
+						) }
 						{ ctaLabel && (
 							<Button
 								className="googlesitekit-subtle-notification__cta"
@@ -123,10 +128,23 @@ SubtleNotification.propTypes = {
 	Icon: PropTypes.elementType,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
+	className: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	isCTALinkExternal: PropTypes.bool,
+	isDismissable: PropTypes.bool,
 	dismissLabel: PropTypes.string,
-	onDismiss: PropTypes.func.isRequired,
+	onDismiss: ( props, propName ) => {
+		if ( props.isDismissable === true ) {
+			if (
+				! props[ propName ] ||
+				typeof props[ propName ] !== 'function'
+			) {
+				return new Error(
+					`The prop \`${ propName }\` is required when \`isDismissable\` is true and must be a function.`
+				);
+			}
+		}
+	},
 	variant: PropTypes.oneOf( Object.values( VARIANTS ) ),
 };
 

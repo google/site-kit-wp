@@ -105,21 +105,12 @@ describe( 'PublicationOnboardingStateNotice', () => {
 
 			// Ensure that CTA is present and class name is correct.
 			expect( getByText( ctaText ) ).toBeInTheDocument();
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-notice__button'
-				)
-			).toBeInTheDocument();
 
 			expect(
 				container.querySelector(
-					'.googlesitekit-cta-link.googlesitekit-cta-link--inverse'
+					'.googlesitekit-subtle-notification__cta'
 				)
 			).toHaveAttribute( 'href', expectedServiceURL );
-
-			expect( container.firstChild ).toHaveClass(
-				'googlesitekit-publication-onboarding-state-notice'
-			);
 		}
 	);
 } );
