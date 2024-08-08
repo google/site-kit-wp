@@ -49,7 +49,7 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: ( { select, resolveSelect }, viewContext ) => {
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
@@ -101,12 +101,16 @@ export function registerDefaults( notificationsAPI ) {
 				isAnalyticsConnected &&
 				canViewSharedAnalytics &&
 				false === showRecoverableAnalytics
-					? resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData()
+					? await resolveSelect(
+							MODULES_ANALYTICS_4
+					  ).isGatheringData()
 					: false;
 			const searchConsoleGatheringData =
 				canViewSharedSearchConsole &&
 				false === showRecoverableSearchConsole &&
-				resolveSelect( MODULES_SEARCH_CONSOLE ).isGatheringData();
+				( await resolveSelect(
+					MODULES_SEARCH_CONSOLE
+				).isGatheringData() );
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
