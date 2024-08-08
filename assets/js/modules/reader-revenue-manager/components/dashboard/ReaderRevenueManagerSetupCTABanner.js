@@ -77,13 +77,13 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 	const readerRevenueManagerDocumentationURL =
 		'https://readerrevenue.withgoogle.com';
 
-	const canActivate = useSelect( ( select ) =>
+	const canActivateRRMModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).canActivateModule(
 			READER_REVENUE_MANAGER_MODULE_SLUG
 		)
 	);
 
-	if ( isDismissed || isDismissed === undefined || ! canActivate ) {
+	if ( isDismissed || isDismissed === undefined || ! canActivateRRMModule ) {
 		return <WidgetNull />;
 	}
 
