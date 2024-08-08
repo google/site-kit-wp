@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '../../../../../../tests/js/utils';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'readerRevenueManagerSetupCTABanner'
