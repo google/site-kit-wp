@@ -46,10 +46,14 @@ describe( 'ErrorNotice', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 	);
 
-	const reportOptions = {
-		endDate: '2024-03-27',
+	const baseReportOptions = {
 		startDate: '2024-02-29',
+		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
+	};
+
+	const reportOptions = {
+		...baseReportOptions,
 		dimensions: [ { name: 'audienceResourceName' } ],
 		dimensionFilters: {
 			audienceResourceName: availableAudiences.map(
@@ -71,6 +75,10 @@ describe( 'ErrorNotice', () => {
 		provideUserInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -102,10 +110,12 @@ describe( 'ErrorNotice', () => {
 		invalidateResolutionSpy.mockReset();
 	} );
 
-	it( 'should not render if there are no errors', () => {
-		const { container } = render( <ErrorNotice />, {
+	it( 'should not render if there are no errors', async () => {
+		const { container, waitForRegistry } = render( <ErrorNotice />, {
 			registry,
 		} );
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -286,4 +296,70 @@ describe( 'ErrorNotice', () => {
 			}
 		}
 	);
+
+	describe( 'when a Site Kit audience is in the partial data state, and the special case `newVsReturning` report returns an error', () => {
+		beforeEach( () => {
+			const error = {
+				code: 'test_error',
+				message: 'Error message.',
+				data: {},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveResourceDataAvailabilityDates( {
+					audience: availableAudiences.reduce(
+						( acc, { name, audienceType } ) => {
+							if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
+								acc[ name ] = 20240405; // Ensure Site Kit audiences are in the partial data state.
+							} else {
+								acc[ name ] = 20201220;
+							}
+
+							return acc;
+						},
+						{}
+					),
+					customDimension: {},
+					property: {},
+				} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveError( error, 'getReport', [
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteKitAudiencesUserCountReportOptions(),
+				] );
+		} );
+
+		it( 'should render the error notice', async () => {
+			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+		} );
+
+		it( 'should render a "Retry" button', async () => {
+			const { getByText, getByRole, waitForRegistry } = render(
+				<ErrorNotice />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( /retry/i ) ).toBeInTheDocument();
+
+			expect( invalidateResolutionSpy ).not.toHaveBeenCalled();
+
+			fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+			expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
 } );
