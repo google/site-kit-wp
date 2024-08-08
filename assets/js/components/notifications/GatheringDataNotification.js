@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -31,16 +26,14 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import BannerNotification from '../BannerNotification';
-import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS, trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
+import BannerNotification from './BannerNotification';
+import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 
-export default function GatheringDataNotification( {
-	title,
-	gatheringDataWaitTimeInHours,
-} ) {
+export default function GatheringDataNotification() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_gathering-data-notification`;
 	const handleOnView = useCallback( () => {
@@ -57,6 +50,32 @@ export default function GatheringDataNotification( {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
 
+	const { analyticsGatheringData, searchConsoleGatheringData } =
+		useModuleGatheringZeroData();
+
+	let gatheringDataTitle;
+	// Analytics requires up to 72 hours to gather data.
+	let gatheringDataWaitTimeInHours = 72;
+	if ( analyticsGatheringData && searchConsoleGatheringData ) {
+		gatheringDataTitle = __(
+			'Search Console and Analytics are gathering data',
+			'google-site-kit'
+		);
+	} else if ( analyticsGatheringData ) {
+		gatheringDataTitle = __(
+			'Analytics is gathering data',
+			'google-site-kit'
+		);
+	} else if ( searchConsoleGatheringData ) {
+		// If only Search Console is gathering data, show a lower wait
+		// time, since it only requires 48 hours.
+		gatheringDataWaitTimeInHours = 48;
+		gatheringDataTitle = __(
+			'Search Console is gathering data',
+			'google-site-kit'
+		);
+	}
+
 	if ( ! gatheringDataWaitTimeInHours ) {
 		return null;
 	}
@@ -64,7 +83,7 @@ export default function GatheringDataNotification( {
 	return (
 		<BannerNotification
 			id="gathering-data-notification"
-			title={ title }
+			title={ gatheringDataTitle }
 			description={ sprintf(
 				/* translators: %s: the number of hours the site can be in a gathering data state */
 				_n(
@@ -88,8 +107,3 @@ export default function GatheringDataNotification( {
 		/>
 	);
 }
-
-GatheringDataNotification.propTypes = {
-	title: PropTypes.string,
-	gatheringDataWaitTimeInHours: PropTypes.number,
-};
