@@ -36,6 +36,7 @@ import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util'
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
+	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
@@ -167,16 +168,17 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements do not meet', async () => {
-		// Throw error from checkRequirements to simulate a module setup error.
+		// Throw error from checkRequirements to simulate non-HTTPS site error.
 		provideModules( registry, [
 			{
 				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 				active: false,
 				checkRequirements: () => {
 					throw {
-						code: 'test_error_code',
-						message: 'Module setup error message',
-						data: {},
+						code: ERROR_CODE_NON_HTTPS_SITE,
+						message:
+							'The site should use HTTPS to set up Reader Revenue Manager',
+						data: null,
 					};
 				},
 			},
