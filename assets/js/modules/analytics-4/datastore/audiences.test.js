@@ -43,7 +43,6 @@ import {
 	availableAudiences as availableAudiencesFixture,
 } from './__fixtures__';
 import fetchMock from 'fetch-mock';
-import { provideAnalytics4MockReport } from '../utils/data-mock';
 
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
@@ -1908,17 +1907,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					getSiteKitAudiencesUserCountReportOptions,
 				} = registry.select( MODULES_ANALYTICS_4 );
 
-				const baseReportOptions = {
-					startDate: '2024-02-29',
-					endDate: '2024-03-27',
-					metrics: [ { name: 'totalUsers' } ],
-				};
-
-				const siteKitAudiencesReportOptions = {
-					...baseReportOptions,
-					dimensions: [ { name: 'newVsReturning' } ],
-				};
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveResourceDataAvailabilityDates( {
@@ -1941,11 +1929,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				receiveGetSettings( {
 					availableAudiences: availableAudiencesFixture,
 				} );
-
-				provideAnalytics4MockReport(
-					registry,
-					siteKitAudiencesReportOptions
-				);
 
 				receiveError( error, 'getReport', [
 					getSiteKitAudiencesUserCountReportOptions(),
