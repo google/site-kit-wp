@@ -97,7 +97,7 @@
 				letter-spacing: $ls-xs;
 				line-height: $lh-body-sm;
 				min-height: 32px;
-				padding-left: 10px;
+				padding: 6px 0 6px 10px;
 
 				&::before {
 					background-color: $c-surfaces-on-surface;
@@ -106,8 +106,7 @@
 					height: 4px;
 					left: 0;
 					position: absolute;
-					top: 50%;
-					transform: translateY(-50%);
+					top: 14.3px; // Ensure the bullet point is vertically centered to the first line of text.
 					width: 4px;
 				}
 			}
