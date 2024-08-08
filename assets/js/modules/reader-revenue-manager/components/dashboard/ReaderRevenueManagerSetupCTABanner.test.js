@@ -26,7 +26,6 @@ import fetchMock from 'fetch-mock';
  */
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 import {
-	act,
 	render,
 	createTestRegistry,
 	fireEvent,
@@ -128,14 +127,11 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		expect( container ).not.toBeEmptyDOMElement();
 
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			fireEvent.click(
-				getByRole( 'button', {
-					name: /Set up Reader Revenue Manager/i,
-				} )
-			);
-		} );
+		fireEvent.click(
+			getByRole( 'button', {
+				name: /Set up Reader Revenue Manager/i,
+			} )
+		);
 
 		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
 	} );
