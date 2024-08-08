@@ -83,18 +83,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const hasResolved = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasFinishedResolution( 'canActivateModule', [
-			READER_REVENUE_MANAGER_MODULE_SLUG,
-		] )
-	);
-
-	if (
-		! hasResolved ||
-		isDismissed ||
-		isDismissed === undefined ||
-		! canActivate
-	) {
+	if ( isDismissed || isDismissed === undefined || ! canActivate ) {
 		return <WidgetNull />;
 	}
 

@@ -110,7 +110,9 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
 		registry
 			.dispatch( CORE_MODULES )
-			.finishResolution( 'canActivateModule', [] );
+			.receiveCheckRequirementsSuccess(
+				READER_REVENUE_MANAGER_MODULE_SLUG
+			);
 
 		const { container, getByRole, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABanner
@@ -135,7 +137,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 		} );
 
-		expect( activateModuleMock ).toHaveBeenCalledTimes( 3 );
+		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
@@ -166,5 +168,49 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		await waitFor( () => {
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
+	} );
+
+	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements does not meet', async () => {
+		// Throw error from checkRequirements to simulate a module setup error.
+		provideModules( registry, [
+			{
+				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				active: false,
+				checkRequirements: () => {
+					throw {
+						code: 'test_error_code',
+						message: 'Module setup error message',
+						data: {},
+					};
+				},
+			},
+		] );
+
+		const error = {
+			code: 'test_error_code',
+			message: 'Module setup error message',
+			data: {},
+		};
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckRequirementsError(
+				READER_REVENUE_MANAGER_MODULE_SLUG,
+				error
+			);
+
+		const { container, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABanner
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
