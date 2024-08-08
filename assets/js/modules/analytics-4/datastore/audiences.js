@@ -745,7 +745,7 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Checks if any of the provided audiences is in partial data state.
+	 * Checks if any of the provided audiences are in the partial data state.
 	 *
 	 * @since n.e.x.t
 	 *
