@@ -311,7 +311,7 @@ describe( 'ErrorNotice', () => {
 					audience: availableAudiences.reduce(
 						( acc, { name, audienceType } ) => {
 							if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
-								acc[ name ] = 20240405; // Set Site Kit audiences to be in the partial data state.
+								acc[ name ] = 20240405; // Ensure Site Kit audiences are in the partial data state.
 							} else {
 								acc[ name ] = 20201220;
 							}
