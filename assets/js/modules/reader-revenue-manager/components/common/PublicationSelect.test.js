@@ -127,6 +127,14 @@ describe( 'PublicationSelect', () => {
 
 			await waitForRegistry();
 
+			// Verify that the onboarding state last synced timestamp is
+			// not set at this point.
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationOnboardingStateLastSyncedAtMs()
+			).toBeUndefined();
+
 			// Click the label to expose the elements in the menu.
 			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 			// Click this element to select it and fire the onChange event.
@@ -144,6 +152,14 @@ describe( 'PublicationSelect', () => {
 
 			expect( publicationID ).toEqual( newPublicationID );
 			expect( onboardingState ).toEqual( newOnboardingState );
+
+			// Verify that the onboarding state last synced timestamp is
+			// set to a positive integer after selection.
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationOnboardingStateLastSyncedAtMs()
+			).toBeGreaterThan( 0 );
 		}
 	);
 } );

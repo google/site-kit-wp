@@ -38,7 +38,7 @@ import { enabledFeatures } from '../../../features';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
@@ -73,7 +73,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			// Make sure the RRM module is active and connected.
 			const extraData = [
 				{
-					slug: MODULE_SLUG,
+					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 					active: true,
 					connected: true,
 				},
@@ -167,7 +167,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( syncTimeMs ).toBe( mockNow );
 			} );
 
-			it( 'should set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store', async () => {
+			it( 'should set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store if onboarding state changes to complete', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
@@ -216,6 +216,57 @@ describe( 'modules/reader-revenue-manager publications', () => {
 							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
 						)
 				).toBe( true );
+			} );
+
+			it( 'should not set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store if onboarding state does not change', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				const publication = fixtures.publications[ 3 ];
+
+				// Set the current settings.
+				const settings = {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: {
+						...settings,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBeUndefined();
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				// Ensure that the UI key is set to true.
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue(
+							UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+						)
+				).toBeUndefined();
 			} );
 		} );
 
@@ -328,7 +379,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toBe( lastSyncedMS );
 			} );
 
-			it( 'should sync publication onboarding state when last sync was more than an hour agp', async () => {
+			it( 'should sync publication onboarding state when last sync was more than an hour ago', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
@@ -451,6 +502,87 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublications()
 				).toEqual( response );
+			} );
+		} );
+
+		describe( 'selectPublication', () => {
+			it( 'should throw an error if a publication object is not provided', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.selectPublication()
+				).toThrow( 'A valid publication object is required.' );
+			} );
+
+			it.each( [ 'publicationId', 'onboardingState' ] )(
+				'should throw an error if the publication object does not contain %s',
+				( key ) => {
+					const publication = {
+						publicationPredicates: {},
+						verifiedDomains: [],
+					};
+
+					switch ( key ) {
+						case 'publicationId':
+							publication.onboardingState = '';
+							break;
+						case 'onboardingState':
+							publication.publicationId = '';
+							break;
+					}
+
+					expect( () =>
+						registry
+							.dispatch( MODULES_READER_REVENUE_MANAGER )
+							.selectPublication( publication )
+					).toThrow( `The publication object must contain ${ key }` );
+				}
+			);
+
+			it( 'should set the given publication in state', () => {
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationID()
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingState()
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateLastSyncedAtMs()
+				).toBeUndefined();
+
+				const [ publicationId, onboardingState ] = [
+					'publication-id',
+					'onboarding-state',
+				];
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId,
+						onboardingState,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationID()
+				).toEqual( publicationId );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingState()
+				).toEqual( onboardingState );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateLastSyncedAtMs()
+				).toBeGreaterThan( 0 );
 			} );
 		} );
 	} );

@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
 import InfoIcon from '../../../../../svg/icons/info-circle.svg';
 import Link from '../../../../components/Link';
 import {
@@ -31,7 +32,6 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
 import SettingsNotice from '../../../../components/SettingsNotice';
-import { useSelect } from '@wordpress/data';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;

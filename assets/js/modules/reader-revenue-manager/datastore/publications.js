@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies.
  */
 import API from 'googlesitekit-api';
@@ -24,9 +30,10 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
@@ -38,7 +45,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 	controlCallback: () =>
 		API.get(
 			'modules',
-			MODULE_SLUG,
+			READER_REVENUE_MANAGER_MODULE_SLUG,
 			'publications',
 			{},
 			{ useCache: false }
@@ -52,7 +59,7 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
-	 * Syncronizes the onboarding state of the publication with the API.
+	 * Synchronizes the onboarding state of the publication with the API.
 	 * Updates the settings on the server.
 	 *
 	 * @since 1.132.0
@@ -64,7 +71,7 @@ const baseActions = {
 		const connected = yield commonActions.await(
 			registry
 				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( MODULE_SLUG )
+				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
@@ -72,29 +79,38 @@ const baseActions = {
 			return;
 		}
 
-		yield commonActions.await(
+		// Ensure settings are loaded before checking for changed state below.
+		const settings = yield commonActions.await(
 			registry
 				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
 				.getSettings()
 		);
 
-		const publicationID = registry
+		const hasPublicationIDChanged = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublicationID();
+			.hasSettingChanged( 'publicationID' );
+
+		// Do not attempt to sync the onboarding state if the publication ID
+		// in state is not the "saved" publication ID.
+		if ( hasPublicationIDChanged ) {
+			return;
+		}
+
+		const {
+			publicationID,
+			publicationOnboardingState: currentOnboardingState,
+		} = settings;
 
 		// If there is no publication ID, do not attempt to sync the onboarding state.
 		if ( publicationID === undefined ) {
 			return;
 		}
 
-		const publications = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublications();
-
-		// If there are no publications, do not attempt to sync the onboarding state.
-		if ( ! publications ) {
-			return;
-		}
+		const publications = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getPublications()
+		) || [];
 
 		const publication = publications.find(
 			// eslint-disable-next-line sitekit/acronym-case
@@ -106,33 +122,23 @@ const baseActions = {
 			return;
 		}
 
-		const { onboardingState } = publication;
-		const currentOnboardingState = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublicationOnboardingState();
+		const { onboardingState: newOnboardingState } = publication;
 
-		const settings = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getSettings();
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			publicationOnboardingState: newOnboardingState,
+			// The "last synced" value should reflect the real time this action
+			// was performed, so we don't use the reference date here.
+			// eslint-disable-next-line sitekit/no-direct-date
+			publicationOnboardingStateLastSyncedAtMs: Date.now(),
+		} );
 
-		if ( onboardingState !== currentOnboardingState ) {
-			settings.publicationOnboardingState = onboardingState;
-		}
-
-		// eslint-disable-next-line sitekit/no-direct-date
-		settings.publicationOnboardingStateLastSyncedAtMs = Date.now();
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setSettings( settings );
-
-		// Save the settings to the API.
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
 
-		// If the onboarding state is complete, set the key in CORE_UI to trigger the notification.
+		// If the onboarding state changes to complete, set the key in CORE_UI to trigger the notification.
 		if (
-			onboardingState ===
-			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+			newOnboardingState !== currentOnboardingState &&
+			newOnboardingState ===
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
 		) {
 			registry
 				.dispatch( CORE_UI )
@@ -144,9 +150,9 @@ const baseActions = {
 	},
 
 	/**
-	 * Syncronizes the onboarding state of the publication based on the last synced time.
+	 * Synchronizes the onboarding state of the publication based on the last synced time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @return {void}
 	 */
@@ -155,7 +161,7 @@ const baseActions = {
 		const connected = yield commonActions.await(
 			registry
 				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( MODULE_SLUG )
+				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
@@ -218,23 +224,63 @@ const baseActions = {
 	/**
 	 * Resets the publications data in the store.
 	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} The dispatched action results.
+	 * @since 1.133.0
 	 */
 	*resetPublications() {
 		const registry = yield commonActions.getRegistry();
 
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		yield commonActions.await(
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.invalidateResolutionForStoreSelector( 'getPublications' )
+		);
+
 		yield {
 			type: 'RESET_PUBLICATIONS',
 		};
-
-		yield errorStoreActions.clearErrors( 'getPublications' );
-
-		return registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.invalidateResolutionForStoreSelector( 'getPublications' );
 	},
+
+	/**
+	 * Sets the given publication in the store.
+	 *
+	 * @since 1.133.0
+	 *
+	 * @param {Object} publication The publiation object.
+	 * @return {Object} A Generator function.
+	 */
+	selectPublication: createValidatedAction(
+		( publication ) => {
+			invariant(
+				isPlainObject( publication ),
+				'A valid publication object is required.'
+			);
+
+			[ 'publicationId', 'onboardingState' ].forEach( ( key ) => {
+				invariant(
+					publication.hasOwnProperty( key ),
+					`The publication object must contain ${ key }`
+				);
+			} );
+		},
+		// `publicationId` is the identifier used by the API.
+		// eslint-disable-next-line sitekit/acronym-case
+		function* ( { publicationId: publicationID, onboardingState } ) {
+			const registry = yield commonActions.getRegistry();
+
+			return registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( {
+					publicationID,
+					publicationOnboardingState: onboardingState,
+					// The "last synced" value should reflect the real time this action
+					// was performed, so we don't use the reference date here.
+					// eslint-disable-next-line sitekit/no-direct-date
+					publicationOnboardingStateLastSyncedAtMs: Date.now(),
+				} );
+		}
+	),
 };
 
 const baseControls = {};
@@ -260,7 +306,6 @@ const baseResolvers = {
 			.getPublications();
 		if ( publications === undefined ) {
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
-			yield baseActions.syncPublicationOnboardingState();
 		}
 	},
 };
