@@ -186,19 +186,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			},
 		] );
 
-		const error = {
-			code: 'test_error_code',
-			message: 'Module setup error message',
-			data: {},
-		};
-
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckRequirementsError(
-				READER_REVENUE_MANAGER_MODULE_SLUG,
-				error
-			);
-
 		const { container, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABanner
 				Widget={ Widget }
