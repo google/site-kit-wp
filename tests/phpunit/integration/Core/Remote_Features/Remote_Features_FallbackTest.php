@@ -12,13 +12,8 @@ namespace Google\Site_Kit\Tests\Core\Remote_Features;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Remote_Features\Remote_Features;
-use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Fallback;
-use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
-use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
