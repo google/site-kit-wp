@@ -25,7 +25,11 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -52,15 +56,27 @@ import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.s
 import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
 import Link from '../../../../components/Link';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 
 function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
-	const onSetupCallback = useActivateModuleCallback(
+	const onSetupActivate = useActivateModuleCallback(
 		READER_REVENUE_MANAGER_MODULE_SLUG
 	);
+
+	const onSetupCallback = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_rrm-setup-notification`,
+			'confirm_notification'
+		).finally( () => {
+			onSetupActivate();
+		} );
+	}, [ onSetupActivate, viewContext ] );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -70,9 +86,16 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const onDismiss = useCallback( async () => {
-		await dismissItem( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY );
-	}, [ dismissItem ] );
+	const onDismiss = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_rrm-setup-notification`,
+			'dismiss_notification'
+		).finally( async () => {
+			await dismissItem(
+				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+			);
+		} );
+	}, [ dismissItem, viewContext ] );
 
 	const readerRevenueManagerDocumentationURL =
 		'https://readerrevenue.withgoogle.com';
@@ -82,6 +105,15 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 			READER_REVENUE_MANAGER_MODULE_SLUG
 		)
 	);
+
+	useEffect( () => {
+		if ( isDismissed === false && canActivateRRMModule ) {
+			trackEvent(
+				`${ viewContext }_rrm-setup-notification`,
+				'view_notification'
+			);
+		}
+	}, [ canActivateRRMModule, isDismissed, viewContext ] );
 
 	if ( isDismissed || isDismissed === undefined || ! canActivateRRMModule ) {
 		return <WidgetNull />;

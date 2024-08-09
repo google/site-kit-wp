@@ -30,7 +30,6 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
-	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -40,7 +39,13 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import * as tracking from '../../../../util/tracking';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import { act } from 'react-dom/test-utils';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
@@ -53,8 +58,9 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	);
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
-		activateModuleMock = jest.fn();
+		activateModuleMock = jest.fn( () => jest.fn() );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -76,10 +82,16 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			/>,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
+			'view_notification'
+		);
 
 		expect(
 			getByText( /Grow your revenue and deepen reader engagement/ )
@@ -99,12 +111,14 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			/>,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
@@ -121,6 +135,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			/>,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -135,6 +150,18 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
+			'view_notification'
+		);
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
+			'confirm_notification'
+		);
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
@@ -155,16 +182,30 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			/>,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
 
-		fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
-
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
 		} );
+
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
+			'view_notification'
+		);
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
+			'dismiss_notification'
+		);
 	} );
 
 	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements do not meet', async () => {
@@ -191,11 +232,13 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			/>,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 } );
