@@ -31,16 +31,18 @@ import {
 	fireEvent,
 	provideModules,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
-import { getWidgetComponentProps } from '../../../googlesitekit/widgets/util';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+} from '../../../../../../tests/js/test-utils';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
+	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-} from '../datastore/constants';
-import useActivateModuleCallback from '../../../hooks/useActivateModuleCallback';
+} from '../../datastore/constants';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 
-jest.mock( '../../../hooks/useActivateModuleCallback' );
+jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
@@ -106,7 +108,13 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
-		const { getByRole, waitForRegistry } = render(
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckRequirementsSuccess(
+				READER_REVENUE_MANAGER_MODULE_SLUG
+			);
+
+		const { container, getByRole, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABanner
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
@@ -118,8 +126,12 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		await waitForRegistry();
 
+		expect( container ).not.toBeEmptyDOMElement();
+
 		fireEvent.click(
-			getByRole( 'button', { name: /Set up Reader Revenue Manager/i } )
+			getByRole( 'button', {
+				name: /Set up Reader Revenue Manager/i,
+			} )
 		);
 
 		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
@@ -153,5 +165,37 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		await waitFor( () => {
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
+	} );
+
+	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements do not meet', async () => {
+		// Throw error from checkRequirements to simulate non-HTTPS site error.
+		provideModules( registry, [
+			{
+				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				active: false,
+				checkRequirements: () => {
+					throw {
+						code: ERROR_CODE_NON_HTTPS_SITE,
+						message:
+							'The site should use HTTPS to set up Reader Revenue Manager',
+						data: null,
+					};
+				},
+			},
+		] );
+
+		const { container, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABanner
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

@@ -668,12 +668,15 @@ const baseSelectors = {
 	 *
 	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 	 */
-	getAudiencesUserCountReportError: createRegistrySelector(
+	getAudienceUserCountReportErrors: createRegistrySelector(
 		( select ) => () => {
 			const {
-				getAudiencesUserCountReportOptions,
 				getConfigurableAudiences,
+				getAudiencesUserCountReportOptions,
+				getSiteKitAudiencesUserCountReportOptions,
 				getErrorForSelector,
+				getConfiguredSiteKitAndOtherAudiences,
+				hasAudiencePartialData,
 			} = select( MODULES_ANALYTICS_4 );
 
 			const configurableAudiences = getConfigurableAudiences();
@@ -682,12 +685,120 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			const audiencesUserCountReportOptions =
-				getAudiencesUserCountReportOptions( configurableAudiences );
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const [ siteKitAudiences, otherAudiences ] =
+				getConfiguredSiteKitAndOtherAudiences();
 
-			return getErrorForSelector( 'getReport', [
-				audiencesUserCountReportOptions,
-			] );
+			const isSiteKitAudiencePartialData =
+				hasAudiencePartialData( siteKitAudiences );
+
+			if ( undefined === isSiteKitAudiencePartialData ) {
+				return undefined;
+			}
+
+			const siteKitUserCountReportError = isSiteKitAudiencePartialData
+				? getErrorForSelector( 'getReport', [
+						getSiteKitAudiencesUserCountReportOptions(),
+				  ] )
+				: undefined;
+
+			const otherUserCountReportError =
+				isSiteKitAudiencePartialData === false ||
+				otherAudiences?.length > 0
+					? getErrorForSelector( 'getReport', [
+							getAudiencesUserCountReportOptions(
+								isSiteKitAudiencePartialData
+									? otherAudiences
+									: configurableAudiences
+							),
+					  ] )
+					: undefined;
+
+			return [ siteKitUserCountReportError, otherUserCountReportError ];
+		}
+	),
+
+	/**
+	 * Gets the report options for the Site Kit audiences user count report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Returns the report options for the Site Kit audiences user count report.
+	 */
+	getSiteKitAudiencesUserCountReportOptions: createRegistrySelector(
+		( select ) => () => {
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+			return {
+				startDate: dateRangeDates.startDate,
+				endDate: dateRangeDates.endDate,
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				dimensions: [ { name: 'newVsReturning' } ],
+			};
+		}
+	),
+
+	/**
+	 * Checks if any of the provided audiences are in the partial data state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} audiences Array of audiences to check.
+	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences are undefined.
+	 */
+	hasAudiencePartialData: createRegistrySelector(
+		( select ) => ( state, audiences ) => {
+			if ( undefined === audiences ) {
+				return undefined;
+			}
+
+			return ( audiences || [] ).some( ( { name } ) => {
+				return select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					name
+				);
+			} );
+		}
+	),
+
+	/**
+	 * Gets the configured Site Kit and other (non Site Kit) audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array} Array of Site Kit and other audiences.
+	 */
+	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
+		( select ) => () => {
+			const audiences =
+				select( MODULES_ANALYTICS_4 ).getConfigurableAudiences();
+
+			if ( undefined === audiences ) {
+				return undefined;
+			}
+
+			if ( ! audiences?.length ) {
+				return [];
+			}
+
+			const [ siteKitAudiences, otherAudiences ] = audiences.reduce(
+				( [ siteKit, other ], audience ) => {
+					if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
+						siteKit.push( audience );
+					} else {
+						other.push( audience );
+					}
+					return [ siteKit, other ];
+				},
+				[ [], [] ] // Initial values.
+			);
+
+			return [ siteKitAudiences, otherAudiences ];
 		}
 	),
 };

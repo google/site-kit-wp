@@ -17,4 +17,5 @@
  */
 
 export { default as PublicationApprovedOverlayNotification } from './PublicationApprovedOverlayNotification';
+export { default as ReaderRevenueManagerSetupCTABanner } from './ReaderRevenueManagerSetupCTABanner';
 export { default as RRMSetupSuccessSubtleNotification } from './RRMSetupSuccessSubtleNotification';
