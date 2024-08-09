@@ -30,13 +30,6 @@ class Remote_Features_Syncer {
 	private $remote_features;
 
 	/**
-	 * Remote_Features_Last_Sync instance.
-	 *
-	 * @var Remote_Features_Last_Sync
-	 */
-	private $remote_features_last_sync;
-
-	/**
 	 * Function which fetches features.
 	 *
 	 * @var Closure
@@ -55,21 +48,18 @@ class Remote_Features_Syncer {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Remote_Features           $remote_features           Remote_Features instance.
-	 * @param Remote_Features_Last_Sync $remote_features_last_sync Remote_Features_Last_Sync instance.
-	 * @param Closure                   $fetch_features            Function which fetches features.
-	 * @param Guard_Interface           ...$guards                 Guard instances.
+	 * @param Remote_Features $remote_features Remote_Features instance.
+	 * @param Closure         $fetch_features  Function which fetches features.
+	 * @param Guard_Interface ...$guards       Guard instances.
 	 */
 	public function __construct(
 		Remote_Features $remote_features,
-		Remote_Features_Last_Sync $remote_features_last_sync,
 		Closure $fetch_features,
 		Guard_Interface ...$guards
 	) {
-		$this->remote_features           = $remote_features;
-		$this->remote_features_last_sync = $remote_features_last_sync;
-		$this->fetch_features            = $fetch_features;
-		$this->guards                    = $guards;
+		$this->remote_features = $remote_features;
+		$this->fetch_features  = $fetch_features;
+		$this->guards          = $guards;
 	}
 
 	/**
@@ -87,21 +77,7 @@ class Remote_Features_Syncer {
 		$features = ( $this->fetch_features )();
 
 		if ( ! is_wp_error( $features ) && is_array( $features ) ) {
-			$this->remote_features->set( $features );
-			$this->remote_features_last_sync->set( time() );
+			$this->remote_features->update( $features );
 		}
-	}
-
-	/**
-	 * Calls the CRON action.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function pull_remote_features_fallback() {
-		check_ajax_referer( 'remote_features_fallback' );
-
-		do_action( Remote_Features_Cron::CRON_ACTION );
-
-		wp_send_json_success();
 	}
 }

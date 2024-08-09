@@ -46,6 +46,16 @@ final class Remote_Features extends Setting {
 	}
 
 	/**
+	 * Includes the current timestamp to the setting and updates it.
+	 *
+	 * @param array $features features array.
+	 */
+	public function update( $features ) {
+		$features['last_updated_at'] = time();
+		$this->set( $features );
+	}
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @return Closure
@@ -59,7 +69,11 @@ final class Remote_Features extends Setting {
 			$new_value = array();
 
 			foreach ( $value as $feature => $meta ) {
-				$new_value[ $feature ] = array( 'enabled' => ! empty( $meta['enabled'] ) );
+				if ( 'last_updated_at' === $feature ) {
+					$new_value[ $feature ] = is_int( $meta ) ? $meta : 0;
+				} else {
+					$new_value[ $feature ] = array( 'enabled' => ! empty( $meta['enabled'] ) );
+				}
 			}
 
 			return $new_value;
