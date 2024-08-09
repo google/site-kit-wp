@@ -154,7 +154,9 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => (
-				<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+				<KeyMetricsCTAFooter
+					onActionClick={ openMetricsSelectionPanel }
+				/>
 			) }
 		>
 			<KeyMetricsCTAContent
@@ -176,11 +178,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						>
 							{ __( 'Get tailored metrics', 'google-site-kit' ) }
 						</Button>
-						<Button tertiary onClick={ openMetricsSelectionPanel }>
-							{ __(
-								'I’ll pick metrics myself',
-								'google-site-kit'
-							) }
+						<Button tertiary onClick={ dismissCallback }>
+							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 					</Fragment>
 				}

@@ -20,71 +20,30 @@
 
 	.googlesitekit-setup__wrapper--key-metrics-setup-cta {
 
-		.googlesitekit-widget-key-metrics-text__wrapper {
-			text-align: center;
+		.mdc-layout-grid {
+			padding: 0;
+		}
 
-			@media (min-width: $bp-nonMobile) {
-				margin: 5px 10px 0 5px;
-				text-align: initial;
-			}
+		.googlesitekit-widget-key-metrics-content__wrapper {
+			padding: 34px 24px 43px;
 		}
 
 		.googlesitekit-widget-key-metrics-svg__wrapper {
-			align-items: center;
-			display: flex;
-			justify-content: center;
-			padding: 18px 0;
-
-			@media (min-width: $bp-nonMobile) {
-				padding: 0;
-			}
-
-			@media (min-width: $width-desktop + 1 + px) {
-				justify-content: flex-end;
-			}
-		}
-
-		.googlesitekit-ghost-cards {
-			display: grid;
-
 			svg {
-				width: 100%;
-			}
-		}
-
-		.googlesitekit-ghost-cards--three-horizontal {
-			gap: 2%;
-			grid-auto-flow: column;
-
-			svg {
-				max-height: 120px;
-			}
-		}
-
-		.googlesitekit-ghost-cards--two-horizontal {
-			gap: 3%;
-			grid-auto-flow: column;
-
-			svg {
-				max-height: 150px;
-			}
-		}
-
-		.googlesitekit-ghost-cards--two-vertical {
-			gap: 10%;
-			grid-auto-flow: row;
-			margin-bottom: 3%;
-
-			svg {
-				max-height: 75px;
+				@media (min-width: $bp-nonTablet) {
+					max-height: 235px;
+					position: absolute;
+					right: 32px;
+				}
 			}
 		}
 
 		.googlesitekit-publisher-win__title {
+			color: $c-surfaces-on-background;
 			display: grid;
-			font-size: $fs-title-md;
-			font-weight: $fw-medium;
-			line-height: $lh-title-md;
+			font-size: $fs-headline-md;
+			font-weight: $fw-normal;
+			line-height: $lh-headline-md;
 			margin: 0;
 			place-content: center;
 
@@ -94,9 +53,11 @@
 		}
 
 		p {
+			color: $c-surfaces-on-background;
 			display: grid;
-			font-size: $fs-body-sm;
-			line-height: $lh-body-sm;
+			font-size: $fs-title-md;
+			letter-spacing: $ls-m;
+			line-height: $lh-title-md;
 			margin: 5px 0;
 			place-content: center;
 
@@ -136,10 +97,29 @@
 		}
 	}
 
-	.googlesitekit-widget-key-metrics-footer {
+	.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary {
 
-		button.googlesitekit-cta-link {
-			color: $c-surfaces-on-background-variant;
+		.mdc-layout-grid__inner {
+			grid-template-columns: 1fr;
+
+			// @media (min-width: $bp-nonMobile) {
+			// }
+		}
+
+		div.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
+			display: none;
+			div.googlesitekit-widget-key-metrics-footer__cta-wrapper {
+				gap: 6px;
+				grid-template-columns: 1fr 1fr;
+
+				p {
+					margin: 0;
+				}
+
+				.googlesitekit-cta-link {
+					color: $c-content-secondary;
+				}
+			}
 		}
 	}
 
