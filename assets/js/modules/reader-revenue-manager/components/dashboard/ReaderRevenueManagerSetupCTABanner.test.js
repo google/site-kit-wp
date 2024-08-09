@@ -26,6 +26,7 @@ import fetchMock from 'fetch-mock';
  */
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 import {
+	act,
 	render,
 	createTestRegistry,
 	fireEvent,
@@ -42,7 +43,6 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import * as tracking from '../../../../util/tracking';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { act } from 'react-dom/test-utils';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
