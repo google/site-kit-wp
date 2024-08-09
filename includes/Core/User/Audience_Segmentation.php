@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\User\User
+ * Class Google\Site_Kit\Core\User\Audience_Segmentation
  *
  * @package   Google\Site_Kit\Core\User
  * @copyright 2024 Google LLC
@@ -19,15 +19,23 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @access private
  * @ignore
  */
-class User {
+class Audience_Segmentation {
 
 	/**
-	 * Audience_Segmentation instance.
+	 * Audience_Settings instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Audience_Segmentation
+	 * @var Audience_Settings
 	 */
-	private $audience_segmentation;
+	private $audience_settings;
+
+	/**
+	 * REST_Audience_Settings_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Audience_Settings_Controller
+	 */
+	private $rest_controller;
 
 	/**
 	 * Constructor.
@@ -37,7 +45,8 @@ class User {
 	 * @param User_Options $user_options User_Options instance.
 	 */
 	public function __construct( User_Options $user_options ) {
-		$this->audience_segmentation = new Audience_Segmentation( $user_options );
+		$this->audience_settings = new Audience_Settings( $user_options );
+		$this->rest_controller   = new REST_Audience_Settings_Controller( $this->audience_settings );
 	}
 
 	/**
@@ -46,6 +55,7 @@ class User {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$this->audience_segmentation->register();
+		$this->audience_settings->register();
+		$this->rest_controller->register();
 	}
 }
