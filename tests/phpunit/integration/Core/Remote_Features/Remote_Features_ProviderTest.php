@@ -43,8 +43,9 @@ class Remote_Features_ProviderTest extends TestCase {
 		$provider->register();
 
 		$this->assertSettingRegistered( Remote_Features::OPTION );
-		$this->assertTrue( has_action( 'wp_ajax_nopriv_pull_remote_features_fallback' ) );
+		$this->assertTrue( has_action( 'wp_ajax_sk_pull_remote_features_fallback' ) );
 		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'admin_footer' ) );
 		$this->assertTrue( has_action( Remote_Features_Cron::CRON_ACTION ) );
 		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
 	}

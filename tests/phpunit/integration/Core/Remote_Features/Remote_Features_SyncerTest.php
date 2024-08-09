@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests\Core\Remote_Features;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features;
-use Google\Site_Kit\Core\Remote_Features\Remote_Features_Last_Sync;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Syncer;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
@@ -25,18 +24,14 @@ class Remote_Features_SyncerTest extends TestCase {
 
 	private Remote_Features $setting;
 
-	private Remote_Features_Last_Sync $remote_features_last_sync;
-
 	public function set_up() {
 		parent::set_up();
-		$this->setting                   = new Remote_Features( new Options( new Context( __FILE__ ) ) );
-		$this->remote_features_last_sync = new Remote_Features_Last_Sync( new Options( new Context( __FILE__ ) ) );
+		$this->setting = new Remote_Features( new Options( new Context( __FILE__ ) ) );
 	}
 
 	public function test_pull_remote_features() {
 		$syncer = new Remote_Features_Syncer(
 			$this->setting,
-			$this->remote_features_last_sync,
 			fn () => array( 'testFeature' => array( 'enabled' => true ) )
 		);
 
@@ -45,7 +40,10 @@ class Remote_Features_SyncerTest extends TestCase {
 		$syncer->pull_remote_features();
 
 		$this->assertEquals(
-			array( 'testFeature' => array( 'enabled' => true ) ),
+			array(
+				'testFeature'     => array( 'enabled' => true ),
+				'last_updated_at' => time(),
+			),
 			$this->setting->get()
 		);
 	}
@@ -56,7 +54,6 @@ class Remote_Features_SyncerTest extends TestCase {
 		$returns->b = false;
 		$syncer     = new Remote_Features_Syncer(
 			$this->setting,
-			$this->remote_features_last_sync,
 			fn () => array( 'testFeature' => array( 'enabled' => true ) ),
 			new TestGuard( fn () => $returns->a ),
 			new TestGuard( fn () => $returns->b ),
@@ -76,7 +73,10 @@ class Remote_Features_SyncerTest extends TestCase {
 		$syncer->pull_remote_features();
 
 		$this->assertEquals(
-			array( 'testFeature' => array( 'enabled' => true ) ),
+			array(
+				'testFeature'     => array( 'enabled' => true ),
+				'last_updated_at' => time(),
+			),
 			$this->setting->get()
 		);
 	}
