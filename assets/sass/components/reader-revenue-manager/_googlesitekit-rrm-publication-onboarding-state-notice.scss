@@ -19,19 +19,9 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-publication-onboarding-state-notice {
+
 		.googlesitekit-subtle-notification__icon {
 			display: flex;
-		}
-
-		@media (max-width: $bp-tablet) {
-			align-items: flex-start;
-			flex-direction: column;
-		}
-
-		@media (max-width: $bp-mobileOnly) {
-			.googlesitekit-subtle-notification__action {
-				display: inline-block;
-			}
 		}
 	}
 }

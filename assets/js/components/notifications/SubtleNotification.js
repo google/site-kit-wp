@@ -50,9 +50,9 @@ function SubtleNotification( {
 	className,
 	onCTAClick,
 	isCTALinkExternal,
-	isDismissable = true,
+	isDismissible = true,
 	dismissLabel = __( 'Ok, got it', 'google-site-kit' ),
-	onDismiss,
+	onDismiss = () => {},
 	variant = VARIANTS.SUCCESS,
 } ) {
 	return (
@@ -90,7 +90,7 @@ function SubtleNotification( {
 						) }
 					</div>
 					<div className="googlesitekit-subtle-notification__action">
-						{ isDismissable && (
+						{ isDismissible && (
 							<Button tertiary onClick={ onDismiss }>
 								{ dismissLabel }
 							</Button>
@@ -131,20 +131,9 @@ SubtleNotification.propTypes = {
 	className: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	isCTALinkExternal: PropTypes.bool,
-	isDismissable: PropTypes.bool,
+	isDismissible: PropTypes.bool,
 	dismissLabel: PropTypes.string,
-	onDismiss: ( props, propName ) => {
-		if ( props.isDismissable === true ) {
-			if (
-				! props[ propName ] ||
-				typeof props[ propName ] !== 'function'
-			) {
-				return new Error(
-					`The prop \`${ propName }\` is required when \`isDismissable\` is true and must be a function.`
-				);
-			}
-		}
-	},
+	onDismiss: PropTypes.func,
 	variant: PropTypes.oneOf( Object.values( VARIANTS ) ),
 };
 

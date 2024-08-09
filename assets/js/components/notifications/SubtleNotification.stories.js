@@ -136,9 +136,9 @@ WarningWithCustomIcon.args = {
 };
 WarningWithCustomIcon.scenario = {};
 
-export const nonDismissable = Template.bind( {} );
-nonDismissable.storyName = 'Non dismissable';
-nonDismissable.args = {
+export const NonDismissible = Template.bind( {} );
+NonDismissible.storyName = 'Non dismissable';
+NonDismissible.args = {
 	title: 'Success! Your Conversion Tracking ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
 	isDismissable: false,

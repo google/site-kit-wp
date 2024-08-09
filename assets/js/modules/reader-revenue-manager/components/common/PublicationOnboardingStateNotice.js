@@ -85,7 +85,7 @@ export default function PublicationOnboardingStateNotice() {
 			ctaLabel={ buttonText }
 			ctaLink={ serviceURL }
 			isCTALinkExternal
-			isDismissable={ false }
+			isDismissible={ false }
 			variant="warning"
 		/>
 	);
