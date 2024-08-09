@@ -76,7 +76,7 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module-edit googlesitekit-setup-module--reader-revenue-manager">
 			{ hasModuleAccess && (
 				<Fragment>
 					<PublicationSelect hasModuleAccess={ hasModuleAccess } />
