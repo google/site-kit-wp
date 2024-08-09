@@ -35,7 +35,7 @@ export default function SettingsView() {
 	);
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module-view googlesitekit-setup-module--reader-revenue-manager">
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-margin-bottom-0">
 					<h5 className="googlesitekit-settings-module__meta-item-type">

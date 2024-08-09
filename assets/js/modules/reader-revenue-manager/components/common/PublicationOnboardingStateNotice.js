@@ -25,7 +25,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Cell, Grid, Row } from '../../../../material-components';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -80,20 +79,14 @@ export default function PublicationOnboardingStateNotice() {
 			: __( 'Complete publication setup', 'google-site-kit' );
 
 	return (
-		<Grid>
-			<Row>
-				<Cell alignMiddle size={ 12 }>
-					<SubtleNotification
-						className="googlesitekit-publication-onboarding-state-notice"
-						title={ noticeText }
-						ctaLabel={ buttonText }
-						ctaLink={ serviceURL }
-						isCTALinkExternal
-						isDismissible={ false }
-						variant="warning"
-					/>
-				</Cell>
-			</Row>
-		</Grid>
+		<SubtleNotification
+			className="googlesitekit-publication-onboarding-state-notice"
+			title={ noticeText }
+			ctaLabel={ buttonText }
+			ctaLink={ serviceURL }
+			isCTALinkExternal
+			isDismissible={ false }
+			variant="warning"
+		/>
 	);
 }

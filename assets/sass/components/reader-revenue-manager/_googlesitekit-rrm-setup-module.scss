@@ -27,6 +27,13 @@
 		.googlesitekit-publication-onboarding-state-notice {
 			margin-bottom: 40px;
 		}
+
+		&.googlesitekit-setup-module-edit {
+
+			.googlesitekit-publication-onboarding-state-notice {
+				margin-top: 16px;
+			}
+		}
 	}
 
 	.googlesitekit-setup-module__publication-create-screen {
