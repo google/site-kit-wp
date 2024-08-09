@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Authentication\Guards\Site_Connected_Guard;
 use Google\Site_Kit\Core\Authentication\Guards\Using_Proxy_Connection_Guard;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\Transients;
 
 /**
  * Class providing the integration of remote features.
@@ -28,21 +27,12 @@ use Google\Site_Kit\Core\Storage\Transients;
  */
 class Remote_Features_Provider {
 
-	const RETRY_GUARD_TRANSIENT = 'googlesitekit_remote_features_retry_guard';
-
 	/**
 	 * Credentials instance.
 	 *
 	 * @var Credentials
 	 */
 	private Credentials $credentials;
-
-	/**
-	 * Transients instance.
-	 *
-	 * @var Transients
-	 */
-	protected $transients;
 
 	/**
 	 * Remote_Features instance.
@@ -89,7 +79,6 @@ class Remote_Features_Provider {
 	 */
 	public function __construct( Context $context, Options $options ) {
 		$this->credentials = new Credentials( new Encrypted_Options( $options ) );
-		$this->transients  = new Transients( $context );
 		$this->setting     = new Remote_Features( $options );
 		$this->activation  = new Remote_Features_Activation( $this->setting );
 		$this->syncer      = new Remote_Features_Syncer(
