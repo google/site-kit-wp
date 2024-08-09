@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../material-components';
 import CheckFillSVG from '../../../svg/icons/check-fill.svg';
 import ExternalSVG from '../../../svg/icons/external.svg';
 import WarningSVG from '../../../svg/icons/warning.svg';
@@ -56,69 +55,58 @@ function SubtleNotification( {
 	variant = VARIANTS.SUCCESS,
 } ) {
 	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className={ classnames(
-						'googlesitekit-subtle-notification',
-						{
-							'googlesitekit-subtle-notification--success':
-								variant === VARIANTS.SUCCESS,
-							'googlesitekit-subtle-notification--warning':
-								variant === VARIANTS.WARNING,
-						},
-						className
-					) }
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						{ Icon && <Icon width={ 24 } height={ 24 } /> }
-						{ ! Icon && variant === VARIANTS.SUCCESS && (
-							<CheckFillSVG width={ 24 } height={ 24 } />
-						) }
-						{ ! Icon && variant === VARIANTS.WARNING && (
-							<WarningSVG width={ 24 } height={ 24 } />
-						) }
-					</div>
-					<div className="googlesitekit-subtle-notification__content">
-						<p>{ title }</p>
-						{ description && (
-							<p className="googlesitekit-subtle-notification__secondary_description">
-								{ description }
-							</p>
-						) }
-					</div>
-					<div className="googlesitekit-subtle-notification__action">
-						{ isDismissible && (
-							<Button tertiary onClick={ onDismiss }>
-								{ dismissLabel }
-							</Button>
-						) }
-						{ ctaLabel && (
-							<Button
-								className="googlesitekit-subtle-notification__cta"
-								href={ ctaLink }
-								onClick={ onCTAClick }
-								target={
-									isCTALinkExternal ? '_blank' : '_self'
-								}
-								trailingIcon={
-									isCTALinkExternal ? (
-										<ExternalSVG
-											width={ 14 }
-											height={ 14 }
-										/>
-									) : undefined
-								}
-							>
-								{ ctaLabel }
-							</Button>
-						) }
-					</div>
-				</Cell>
-			</Row>
-		</Grid>
+		<div
+			className={ classnames(
+				'googlesitekit-subtle-notification',
+				{
+					'googlesitekit-subtle-notification--success':
+						variant === VARIANTS.SUCCESS,
+					'googlesitekit-subtle-notification--warning':
+						variant === VARIANTS.WARNING,
+				},
+				className
+			) }
+		>
+			<div className="googlesitekit-subtle-notification__icon">
+				{ Icon && <Icon width={ 24 } height={ 24 } /> }
+				{ ! Icon && variant === VARIANTS.SUCCESS && (
+					<CheckFillSVG width={ 24 } height={ 24 } />
+				) }
+				{ ! Icon && variant === VARIANTS.WARNING && (
+					<WarningSVG width={ 24 } height={ 24 } />
+				) }
+			</div>
+			<div className="googlesitekit-subtle-notification__content">
+				<p>{ title }</p>
+				{ description && (
+					<p className="googlesitekit-subtle-notification__secondary_description">
+						{ description }
+					</p>
+				) }
+			</div>
+			<div className="googlesitekit-subtle-notification__action">
+				{ isDismissible && (
+					<Button tertiary onClick={ onDismiss }>
+						{ dismissLabel }
+					</Button>
+				) }
+				{ ctaLabel && (
+					<Button
+						className="googlesitekit-subtle-notification__cta"
+						href={ ctaLink }
+						onClick={ onCTAClick }
+						target={ isCTALinkExternal ? '_blank' : '_self' }
+						trailingIcon={
+							isCTALinkExternal ? (
+								<ExternalSVG width={ 14 } height={ 14 } />
+							) : undefined
+						}
+					>
+						{ ctaLabel }
+					</Button>
+				) }
+			</div>
+		</div>
 	);
 }
 
