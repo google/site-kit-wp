@@ -39,7 +39,6 @@ import {
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
 
 export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
@@ -50,21 +49,18 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		)
 	);
 	const audienceSettings = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+		select( CORE_USER ).getAudienceSettings()
 	);
 	const saveError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForAction(
-			'saveAudienceSettings',
-			[
-				{
-					...audienceSettings,
-					configuredAudiences: selectedItems,
-				},
-			]
-		)
+		select( CORE_USER ).getErrorForAction( 'saveAudienceSettings', [
+			{
+				...audienceSettings,
+				configuredAudiences: selectedItems,
+			},
+		] )
 	);
 	const isSavingSettings = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isSavingAudienceSettings()
+		select( CORE_USER ).isSavingAudienceSettings()
 	);
 	const hiddenTileDismissedItems = useSelect( ( select ) => {
 		const dismissedItems = select( CORE_USER ).getDismissedItems();
@@ -74,8 +70,8 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		);
 	} );
 
-	const { saveAudienceSettings } = useDispatch( MODULES_ANALYTICS_4 );
-	const { removeDismissedItems } = useDispatch( CORE_USER );
+	const { saveAudienceSettings, removeDismissedItems } =
+		useDispatch( CORE_USER );
 
 	const selectedItemsCount = selectedItems?.length || 0;
 	let itemLimitError;

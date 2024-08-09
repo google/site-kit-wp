@@ -54,7 +54,7 @@ describe( 'modules/analytics-4 audiences', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	const audience = {
@@ -346,7 +346,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				};
 
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( settings );
 
 				await registry
@@ -359,9 +359,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				);
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
+					registry.select( CORE_USER ).getConfiguredAudiences()
 				).toEqual(
 					availableAudiencesSubset.reduce(
 						( acc, { name } ) => [ ...acc, name ],
@@ -592,12 +590,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {
-						configuredAudiences: null,
-						isAudienceSegmentationWidgetHidden,
-					} );
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					configuredAudiences: null,
+					isAudienceSegmentationWidgetHidden,
+				} );
 			} );
 
 			it( 'syncs `availableAudiences`', async () => {
@@ -747,9 +743,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					);
 
 					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.getConfiguredAudiences()
+						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toEqual( expectedConfiguredAudiences );
 				}
 			);
@@ -846,9 +840,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					);
 
 					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.getConfiguredAudiences()
+						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toEqual( expectedConfiguredAudiences );
 				}
 			);
@@ -1010,9 +1002,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				);
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
+					registry.select( CORE_USER ).getConfiguredAudiences()
 				).toEqual( expectedConfiguredAudiences );
 			} );
 
@@ -1202,9 +1192,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					// Ensuring no configured audiences are set when all creation attempts fail.
 					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.getConfiguredAudiences()
+						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toBeNull();
 
 					expect( console ).toHaveErrored();
@@ -1259,9 +1247,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					// Ensure no configured audiences are set when one creation attempt fails.
 					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.getConfiguredAudiences()
+						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toBeNull();
 
 					// Ensuring the API calls were made as expected
@@ -1415,9 +1401,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					);
 
 					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.getConfiguredAudiences()
+						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toEqual( expectedConfiguredAudiences );
 				} );
 			} );

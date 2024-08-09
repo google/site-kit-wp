@@ -400,7 +400,7 @@ export default {
 					.setAvailableAudiences( availableAudiences );
 
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setConfiguredAudiences( configuredAudiences );
 
 				provideAnalytics4MockReport( registry, reportOptions );

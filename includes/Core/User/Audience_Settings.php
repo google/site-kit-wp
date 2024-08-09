@@ -1,22 +1,22 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics_4\Audience_Settings
+ * Class Google\Site_Kit\Core\User\Audience_Settings
  *
- * @package   Google\Site_Kit\Modules\Analytics_4
+ * @package   Google\Site_Kit\Core\User
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Modules\Analytics_4;
+namespace Google\Site_Kit\Core\User;
 
 use Google\Site_Kit\Core\Storage\User_Setting;
 use Google\Site_Kit\Core\Util\Sanitize;
 
 /**
- * Class for Analytics 4 audience settings.
+ * Class for audience settings.
  *
- * @since 1.124.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
