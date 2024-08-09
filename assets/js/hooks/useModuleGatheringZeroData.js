@@ -1,7 +1,7 @@
 /**
- * ZeroDataStateNotifications component.
+ * `useModuleGatheringZeroData` hook.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,29 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import useViewOnly from '../../../hooks/useViewOnly';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
-import GatheringDataNotification from './GatheringDataNotification';
-import ZeroDataNotification from './ZeroDataNotification';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
+import useViewOnly from './useViewOnly';
 
-export default function ZeroDataStateNotifications() {
+/**
+ * Determines if either Search Console or Analytics is in gathering or zero data states.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} Individual boolean|undefined values for Gathering and Zero data states for both modules.
+ */
+export default function useModuleGatheringZeroData() {
 	const viewOnly = useViewOnly();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
+
 	const canViewSharedAnalytics = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
@@ -53,6 +54,7 @@ export default function ZeroDataStateNotifications() {
 
 		return select( CORE_USER ).canViewSharedModule( 'search-console' );
 	} );
+
 	const showRecoverableAnalytics = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return false;
@@ -102,6 +104,7 @@ export default function ZeroDataStateNotifications() {
 			select( MODULES_SEARCH_CONSOLE ).isGatheringData(),
 		[ canViewSharedSearchConsole, showRecoverableSearchConsole ]
 	);
+
 	const analyticsHasZeroData = useInViewSelect(
 		( select ) =>
 			isAnalyticsConnected &&
@@ -123,60 +126,10 @@ export default function ZeroDataStateNotifications() {
 		[ canViewSharedSearchConsole, showRecoverableSearchConsole ]
 	);
 
-	// If any of the checks for gathering data or zero data states have
-	// not finished loading, we don't show any notifications. This
-	// prevents one notification from briefly showing while the other
-	// notification loads and then replaces the first one.
-	// See: https://github.com/google/site-kit-wp/issues/5008
-	if (
-		analyticsGatheringData === undefined ||
-		searchConsoleGatheringData === undefined ||
-		analyticsHasZeroData === undefined ||
-		searchConsoleHasZeroData === undefined
-	) {
-		return null;
-	}
-
-	if (
-		! analyticsGatheringData &&
-		! searchConsoleGatheringData &&
-		! analyticsHasZeroData &&
-		! searchConsoleHasZeroData
-	) {
-		return null;
-	}
-
-	let gatheringDataTitle;
-	// Analytics requires up to 72 hours to gather data.
-	let gatheringDataWaitTimeInHours = 72;
-	if ( analyticsGatheringData && searchConsoleGatheringData ) {
-		gatheringDataTitle = __(
-			'Search Console and Analytics are gathering data',
-			'google-site-kit'
-		);
-	} else if ( analyticsGatheringData ) {
-		gatheringDataTitle = __(
-			'Analytics is gathering data',
-			'google-site-kit'
-		);
-	} else if ( searchConsoleGatheringData ) {
-		// If only Search Console is gathering data, show a lower wait
-		// time, since it only requires 48 hours.
-		gatheringDataWaitTimeInHours = 48;
-		gatheringDataTitle = __(
-			'Search Console is gathering data',
-			'google-site-kit'
-		);
-	}
-
-	if ( analyticsGatheringData || searchConsoleGatheringData ) {
-		return (
-			<GatheringDataNotification
-				title={ gatheringDataTitle }
-				gatheringDataWaitTimeInHours={ gatheringDataWaitTimeInHours }
-			/>
-		);
-	}
-
-	return <ZeroDataNotification />;
+	return {
+		analyticsGatheringData,
+		searchConsoleGatheringData,
+		analyticsHasZeroData,
+		searchConsoleHasZeroData,
+	};
 }

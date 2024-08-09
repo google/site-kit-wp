@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\Setting;
  * Class handling the storage of remote features.
  *
  * @since 1.118.0
- * @since n.e.x.t Changed to extend Setting
+ * @since 1.133.0 Changed to extend Setting
  * @access private
  * @ignore
  */

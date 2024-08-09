@@ -132,7 +132,7 @@ const baseActions = {
 	/**
 	 * Removes dismissed items by their slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param {...string} slugs Dismissed item slugs to remove.
 	 * @return {Object} Redux-style action.

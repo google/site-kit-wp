@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import {
 	act,
 	createTestRegistry,
@@ -24,11 +23,18 @@ import {
 	freezeFetch,
 	muteFetch,
 	provideModules,
+	provideModuleRegistrations,
+	provideUserAuthentication,
+	provideUserInfo,
 	render,
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
-import { publications } from '../../datastore/__fixtures__';
 import SetupMain from './SetupMain';
+import {
+	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULES_READER_REVENUE_MANAGER,
+} from '../../datastore/constants';
+import { publications } from '../../datastore/__fixtures__';
 
 describe( 'SetupMain', () => {
 	let registry;
@@ -42,8 +48,17 @@ describe( 'SetupMain', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		provideModules( registry );
+		const extraData = [
+			{
+				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				active: true,
+				connected: true,
+			},
+		];
+		provideModules( registry, extraData );
+		provideModuleRegistrations( registry, extraData );
+		provideUserAuthentication( registry );
+		provideUserInfo( registry );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )

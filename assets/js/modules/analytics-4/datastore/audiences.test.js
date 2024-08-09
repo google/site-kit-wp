@@ -1794,7 +1794,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 		} );
 
-		describe( 'getAudiencesUserCountReportError', () => {
+		describe( 'getAudienceUserCountReportErrors', () => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -1802,6 +1802,8 @@ describe( 'modules/analytics-4 audiences', () => {
 			};
 
 			beforeEach( () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveResourceDataAvailabilityDates( {
@@ -1816,6 +1818,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						customDimension: {},
 						property: {},
 					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
 			} );
 
 			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
@@ -1823,11 +1829,16 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
 
-				const userCountReportError = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiencesUserCountReportError();
+				const [
+					siteKitUserCountReportError,
+					otherUserCountReportError,
+				] =
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudienceUserCountReportErrors() || [];
 
-				expect( userCountReportError ).toBeUndefined();
+				expect( siteKitUserCountReportError ).toBeUndefined();
+				expect( otherUserCountReportError ).toBeUndefined();
 			} );
 
 			it( 'should return `undefined` if there is no user count report error', () => {
@@ -1835,11 +1846,15 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
-				const userCountReportError = registry
+				const [
+					siteKitUserCountReportError,
+					otherUserCountReportError,
+				] = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getAudiencesUserCountReportError();
+					.getAudienceUserCountReportErrors();
 
-				expect( userCountReportError ).toBeUndefined();
+				expect( siteKitUserCountReportError ).toBeUndefined();
+				expect( otherUserCountReportError ).toBeUndefined();
 			} );
 
 			it( 'should return error object if there is a user count report error', () => {
@@ -1848,8 +1863,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				const {
 					getAudiencesUserCountReportOptions,
-					getConfigurableAudiences,
-					getAudiencesUserCountReportError,
+					getAudienceUserCountReportErrors,
 				} = registry.select( MODULES_ANALYTICS_4 );
 
 				receiveGetSettings( {
@@ -1858,13 +1872,56 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				receiveError( error, 'getReport', [
 					getAudiencesUserCountReportOptions(
-						getConfigurableAudiences()
+						availableAudiencesFixture
 					),
 				] );
 
-				const userCountReportError = getAudiencesUserCountReportError();
+				const [ , otherUserCountReportError ] =
+					getAudienceUserCountReportErrors();
 
-				expect( userCountReportError ).toEqual( error );
+				expect( otherUserCountReportError ).toEqual( error );
+			} );
+
+			it( 'should return an error object if a Site Kit audience is in the partial data state, and the special case `newVsReturning` report returns an error', () => {
+				const { receiveError, receiveGetSettings } =
+					registry.dispatch( MODULES_ANALYTICS_4 );
+
+				const {
+					getAudienceUserCountReportErrors,
+					getSiteKitAudiencesUserCountReportOptions,
+				} = registry.select( MODULES_ANALYTICS_4 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiencesFixture.reduce(
+							( acc, { name, audienceType } ) => {
+								if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
+									acc[ name ] = 20240405; // Ensure Site Kit audiences are in the partial data state.
+								} else {
+									acc[ name ] = 20201220;
+								}
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				receiveGetSettings( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+
+				receiveError( error, 'getReport', [
+					getSiteKitAudiencesUserCountReportOptions(),
+				] );
+
+				const [ siteKitUserCountReportError ] =
+					getAudienceUserCountReportErrors();
+
+				expect( siteKitUserCountReportError ).toEqual( error );
 			} );
 		} );
 	} );

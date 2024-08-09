@@ -25,7 +25,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
@@ -35,7 +35,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { publications } from '../../datastore/__fixtures__';
 
 function Template() {
-	return <ModuleSetup moduleSlug={ MODULE_SLUG } />;
+	return <ModuleSetup moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG } />;
 }
 
 export const NoPublications = Template.bind( {} );
@@ -95,7 +95,7 @@ export default {
 			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: MODULE_SLUG,
+						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 						active: true,
 						connected: false,
 					},

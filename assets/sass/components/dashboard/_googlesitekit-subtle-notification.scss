@@ -100,4 +100,29 @@
 	p.googlesitekit-subtle-notification__secondary_description {
 		font-weight: $fw-normal;
 	}
+
+	.googlesitekit-subtle-notification__cta {
+		svg {
+			margin-inline-start: 6px;
+		}
+	}
+
+	&.googlesitekit-subtle-notification--warning {
+		background-color: $c-utility-warning-container;
+
+		.googlesitekit-subtle-notification__content {
+			color: $c-utility-on-warning-container;
+		}
+
+		.mdc-button {
+
+			&.googlesitekit-subtle-notification__cta {
+				@include mdc-button-filled-accessible($c-utility-on-warning-container);
+			}
+
+			&.mdc-button--tertiary:not(:disabled) {
+				color: $c-utility-on-warning-container;
+			}
+		}
+	}
 }

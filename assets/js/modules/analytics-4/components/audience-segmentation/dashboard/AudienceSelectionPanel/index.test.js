@@ -48,8 +48,8 @@ describe( 'AudienceSelectionPanel', () => {
 	let registry;
 
 	const baseReportOptions = {
-		endDate: '2024-03-27',
 		startDate: '2024-02-29',
+		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
 	};
 
@@ -635,6 +635,7 @@ describe( 'AudienceSelectionPanel', () => {
 					audienceResourceName: mixedConfiguredAudiences,
 				},
 			};
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences(
@@ -695,6 +696,7 @@ describe( 'AudienceSelectionPanel', () => {
 					audienceResourceName: mixedConfiguredAudiences,
 				},
 			};
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences(
