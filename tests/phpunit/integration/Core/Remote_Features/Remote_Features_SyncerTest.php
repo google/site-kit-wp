@@ -34,12 +34,16 @@ class Remote_Features_SyncerTest extends TestCase {
 			$this->setting,
 			fn () => array( 'testFeature' => array( 'enabled' => true ) )
 		);
+
 		$this->assertEquals( array(), $this->setting->get() );
 
 		$syncer->pull_remote_features();
 
 		$this->assertEquals(
-			array( 'testFeature' => array( 'enabled' => true ) ),
+			array(
+				'testFeature'     => array( 'enabled' => true ),
+				'last_updated_at' => time(),
+			),
 			$this->setting->get()
 		);
 	}
@@ -69,7 +73,10 @@ class Remote_Features_SyncerTest extends TestCase {
 		$syncer->pull_remote_features();
 
 		$this->assertEquals(
-			array( 'testFeature' => array( 'enabled' => true ) ),
+			array(
+				'testFeature'     => array( 'enabled' => true ),
+				'last_updated_at' => time(),
+			),
 			$this->setting->get()
 		);
 	}

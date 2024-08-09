@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Storage\Options;
  * @ignore
  */
 class Remote_Features_Provider {
+
 	/**
 	 * Credentials instance.
 	 *
@@ -62,6 +63,13 @@ class Remote_Features_Provider {
 	private Remote_Features_Cron $cron;
 
 	/**
+	 * Remote_Features_Fallback instance.
+	 *
+	 * @var Remote_Features_Fallback
+	 */
+	private Remote_Features_Fallback $fallback;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.133.0
@@ -80,6 +88,7 @@ class Remote_Features_Provider {
 			new Using_Proxy_Connection_Guard( $this->credentials )
 		);
 		$this->cron        = new Remote_Features_Cron( array( $this->syncer, 'pull_remote_features' ) );
+		$this->fallback    = new Remote_Features_Fallback( $context, $options, $this->credentials );
 	}
 
 	/**
@@ -91,8 +100,10 @@ class Remote_Features_Provider {
 		$this->setting->register();
 		$this->activation->register();
 		$this->cron->register();
+		$this->fallback->register();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
+		add_action( 'admin_footer', array( $this->fallback, 'remote_features_sync_fallback' ) );
 	}
 
 	/**
