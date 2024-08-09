@@ -76,7 +76,7 @@ class REST_Dismissals_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.37.0
-	 * @since n.e.x.t Added the `DELETE dismissed-items` route.
+	 * @since 1.133.0 Added the `DELETE dismissed-items` route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Analytics_4\Audience_SettingsTest
+ * Class Google\Site_Kit\Tests\Core\User\Audience_SettingsTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Analytics_4
  * @copyright 2024 Google LLC
@@ -8,11 +8,11 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Modules\Analytics_4;
+namespace Google\Site_Kit\Tests\Core\User;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Core\User\Audience_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 class Audience_SettingsTest extends TestCase {

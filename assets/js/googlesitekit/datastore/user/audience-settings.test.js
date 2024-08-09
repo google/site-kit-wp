@@ -29,14 +29,15 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { CORE_USER } from './constants';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
 	let store;
 
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	const audienceSettingsResponse = {
@@ -73,7 +74,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry );
-		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+		store = registry.stores[ CORE_USER ].store;
 	} );
 
 	afterAll( () => {
@@ -89,22 +90,20 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should throw an error if the provided audiences are not an array', () => {
 				expect( () => {
 					registry
-						.dispatch( MODULES_ANALYTICS_4 )
+						.dispatch( CORE_USER )
 						.setConfiguredAudiences( 'audienceA' );
 				} ).toThrow( 'Configured audiences should be an array.' );
 			} );
 
 			it( 'should set the provided audiences in the store', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setConfiguredAudiences(
 						audienceSettingsResponse.configuredAudiences
 					);
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
+					registry.select( CORE_USER ).getConfiguredAudiences()
 				).toEqual( audienceSettingsResponse.configuredAudiences );
 			} );
 		} );
@@ -113,7 +112,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should throw an error if the provided value is not a boolean', () => {
 				expect( () => {
 					registry
-						.dispatch( MODULES_ANALYTICS_4 )
+						.dispatch( CORE_USER )
 						.setAudienceSegmentationWidgetHidden( 'audienceA' );
 				} ).toThrow(
 					'Audience segmentation widget visibility should be a boolean.'
@@ -122,12 +121,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 			it( 'should set the audience segmentation widget visibility in the store', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setAudienceSegmentationWidgetHidden( true );
 
 				expect(
 					registry
-						.select( MODULES_ANALYTICS_4 )
+						.select( CORE_USER )
 						.isAudienceSegmentationWidgetHidden()
 				).toEqual( true );
 			} );
@@ -139,12 +138,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setConfiguredAudiences(
 						audienceSettingsResponse.configuredAudiences
 					);
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setAudienceSegmentationWidgetHidden(
 						audienceSettingsResponse.isAudienceSegmentationWidgetHidden
 					);
@@ -156,9 +155,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 200,
 				} );
 
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.saveAudienceSettings();
+				await registry.dispatch( CORE_USER ).saveAudienceSettings();
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
@@ -189,13 +186,11 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 500,
 				} );
 
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.saveAudienceSettings();
+				await registry.dispatch( CORE_USER ).saveAudienceSettings();
 
 				expect(
 					registry
-						.select( MODULES_ANALYTICS_4 )
+						.select( CORE_USER )
 						.getErrorForAction( 'saveAudienceSettings', [] )
 				).toMatchObject( response );
 
@@ -213,11 +208,9 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 200,
 				} );
 
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.saveAudienceSettings( {
-						isAudienceSegmentationWidgetHidden: true,
-					} );
+				await registry.dispatch( CORE_USER ).saveAudienceSettings( {
+					isAudienceSegmentationWidgetHidden: true,
+				} );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
@@ -244,7 +237,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				freezeFetch( audienceSettingsEndpoint );
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+					registry.select( CORE_USER ).getAudienceSettings()
 				).toBeUndefined();
 
 				await waitForDefaultTimeouts();
@@ -252,14 +245,14 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 			it( 'should not make a network request if audience settings exist', async () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( audienceSettingsResponse );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+				registry.select( CORE_USER ).getAudienceSettings();
 
 				await untilResolved(
 					registry,
-					MODULES_ANALYTICS_4
+					CORE_USER
 				).getAudienceSettings();
 
 				expect( fetchMock ).not.toHaveFetched(
@@ -273,11 +266,11 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 200,
 				} );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+				registry.select( CORE_USER ).getAudienceSettings();
 
 				await untilResolved(
 					registry,
-					MODULES_ANALYTICS_4
+					CORE_USER
 				).getAudienceSettings();
 
 				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
@@ -287,7 +280,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				} );
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+					registry.select( CORE_USER ).getAudienceSettings()
 				).toMatchObject( audienceSettingsResponse );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -299,9 +292,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				freezeFetch( audienceSettingsEndpoint );
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
+					registry.select( CORE_USER ).getConfiguredAudiences()
 				).toBeUndefined();
 
 				await waitForDefaultTimeouts();
@@ -314,20 +305,16 @@ describe( 'modules/analytics-4 audience settings', () => {
 				} );
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
+					registry.select( CORE_USER ).getConfiguredAudiences()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
-					MODULES_ANALYTICS_4
+					CORE_USER
 				).getAudienceSettings();
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
+					registry.select( CORE_USER ).getConfiguredAudiences()
 				).toEqual( audienceSettingsResponse.configuredAudiences );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -335,13 +322,11 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 			it( 'should return the configured audiences from the audience settings', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( audienceSettingsResponse );
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
+					registry.select( CORE_USER ).getConfiguredAudiences()
 				).toEqual( audienceSettingsResponse.configuredAudiences );
 			} );
 		} );
@@ -352,7 +337,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 				expect(
 					registry
-						.select( MODULES_ANALYTICS_4 )
+						.select( CORE_USER )
 						.isAudienceSegmentationWidgetHidden()
 				).toBeUndefined();
 
@@ -367,18 +352,18 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 				expect(
 					registry
-						.select( MODULES_ANALYTICS_4 )
+						.select( CORE_USER )
 						.isAudienceSegmentationWidgetHidden()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
-					MODULES_ANALYTICS_4
+					CORE_USER
 				).getAudienceSettings();
 
 				expect(
 					registry
-						.select( MODULES_ANALYTICS_4 )
+						.select( CORE_USER )
 						.isAudienceSegmentationWidgetHidden()
 				).toEqual(
 					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
@@ -389,12 +374,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( audienceSettingsResponse );
 
 				expect(
 					registry
-						.select( MODULES_ANALYTICS_4 )
+						.select( CORE_USER )
 						.isAudienceSegmentationWidgetHidden()
 				).toEqual(
 					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
@@ -405,22 +390,22 @@ describe( 'modules/analytics-4 audience settings', () => {
 		describe( 'haveConfiguredAudiencesChanged', () => {
 			it( 'should compare the current configured audiences with the saved ones', () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( audienceSettingsResponse );
 
 				const hasChanged = registry
-					.select( MODULES_ANALYTICS_4 )
+					.select( CORE_USER )
 					.haveConfiguredAudiencesChanged();
 
 				expect( hasChanged ).toBe( false );
 
 				// Change the settings.
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setConfiguredAudiences( [ 'audienceC' ] );
 
 				const hasChangedAfterSet = registry
-					.select( MODULES_ANALYTICS_4 )
+					.select( CORE_USER )
 					.haveConfiguredAudiencesChanged();
 
 				expect( hasChangedAfterSet ).toBe( true );
@@ -430,9 +415,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 		describe( 'isSavingAudienceSettings', () => {
 			it( 'should return false if audience settings are not being saved', () => {
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isSavingAudienceSettings()
+					registry.select( CORE_USER ).isSavingAudienceSettings()
 				).toBe( false );
 			} );
 
@@ -440,21 +423,17 @@ describe( 'modules/analytics-4 audience settings', () => {
 				muteFetch( audienceSettingsEndpoint );
 
 				const promise = registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.fetchSaveAudienceSettings( audienceSettingsResponse );
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isSavingAudienceSettings()
+					registry.select( CORE_USER ).isSavingAudienceSettings()
 				).toBe( true );
 
 				await promise;
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isSavingAudienceSettings()
+					registry.select( CORE_USER ).isSavingAudienceSettings()
 				).toBe( false );
 			} );
 		} );

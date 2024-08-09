@@ -67,7 +67,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	// An array of audience resource names.
 	const configuredAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 	const audiences = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();

@@ -89,7 +89,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const configuredAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	const autoSubmit = useSelect( ( select ) =>

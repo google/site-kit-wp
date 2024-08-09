@@ -46,7 +46,7 @@ import {
 	AudienceSegmentationSetupCTAWidget,
 	AudienceSelectionPanel,
 } from '../modules/analytics-4/components/audience-segmentation/dashboard';
-import ReaderRevenueManagerSetupCTABanner from '../modules/reader-revenue-manager/components/ReaderRevenueManagerSetupCTABanner';
+import ReaderRevenueManagerSetupCTABanner from '../modules/reader-revenue-manager/components/dashboard/ReaderRevenueManagerSetupCTABanner';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
