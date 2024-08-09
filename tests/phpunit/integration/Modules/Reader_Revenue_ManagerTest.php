@@ -80,7 +80,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_magic_methods() {
 		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug );
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name );
-		$this->assertEquals( 'https://readerrevenue.withgoogle.com/', $this->reader_revenue_manager->homepage );
+		$this->assertEquals( 'https://publishercenter.google.com', $this->reader_revenue_manager->homepage );
 		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description );
 		$this->assertEquals( 5, $this->reader_revenue_manager->order );
 	}
