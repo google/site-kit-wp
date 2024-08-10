@@ -109,6 +109,6 @@ export function registerDefaults( notificationsAPI ) {
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
-		isDismissible: false,
+		isDismissible: true,
 	} );
 }
