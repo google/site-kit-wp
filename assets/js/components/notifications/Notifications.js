@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 const { useSelect } = Data;
 
 export default function Notifications( { viewContext, areaSlug } ) {
@@ -35,7 +36,8 @@ export default function Notifications( { viewContext, areaSlug } ) {
 		return null;
 	}
 
-	const { Component: ActiveNotification } = queuedNotifications[ 0 ];
+	const { id, Component: ActiveNotification } = queuedNotifications[ 0 ];
+	const props = { id, ...getNotificationComponentProps( id ) };
 
-	return <ActiveNotification />;
+	return <ActiveNotification { ...props } />;
 }
