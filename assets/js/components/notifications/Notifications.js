@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -41,3 +46,8 @@ export default function Notifications( { viewContext, areaSlug } ) {
 
 	return <ActiveNotification { ...props } />;
 }
+
+Notifications.propTypes = {
+	viewContext: PropTypes.string,
+	areaSlug: PropTypes.string,
+};
