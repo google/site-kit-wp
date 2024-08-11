@@ -662,7 +662,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$datapoints['POST:save-resource-data-availability-date'] = array(
 				'service' => '',
 			);
-			$datapoints['POST:sync-audiences']                       = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:sync-audiences']                       = array(
+				'service'   => 'analyticsaudiences',
+				'shareable' => true,
+			);
 		}
 
 		return $datapoints;

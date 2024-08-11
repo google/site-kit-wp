@@ -1,5 +1,5 @@
 /**
- * DashboardMainEffectComponent component.
+ * `useMaybeSyncAvailableAudiencesEffect` hook.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,18 +17,26 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * Internal dependencies
  */
-import useCreateCustomDimensionForAudienceEffect from '../hooks/useCreateCustomDimensionForAudienceEffect';
-import useCreateCustomDimensionsEffect from '../hooks/useCreateCustomDimensionsEffect';
-import useMaybeSyncAvailableAudiencesEffect from '../hooks/useMaybeSyncAvailableAudiencesEffect';
-import useSyncGoogleTagEffect from '../hooks/useSyncGoogleTagEffect';
+import { useDispatch } from '../../../googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { useFeature } from '../../../hooks/useFeature';
 
-export default function DashboardMainEffectComponent() {
-	useCreateCustomDimensionForAudienceEffect();
-	useCreateCustomDimensionsEffect();
-	useSyncGoogleTagEffect();
-	useMaybeSyncAvailableAudiencesEffect();
+export default function useMaybeSyncAvailableAudiencesEffect() {
+	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
+	const { maybeSyncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
+
+	useMount( () => {
+		if ( audienceSegmentationEnabled ) {
+			maybeSyncAvailableAudiences();
+		}
+	} );
 
 	return null;
 }
