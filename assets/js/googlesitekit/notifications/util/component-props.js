@@ -52,3 +52,32 @@ function withNotificationID( id ) {
 		return WithNotificationID;
 	};
 }
+
+/**
+ * Gets the props and passes them to the notification's component through a HOC.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} id The id of the notification.
+ * @return {Function} Enhancing function that adds the getNotificationComponentProps to the passed component.
+ */
+export const withNotificationComponentProps = ( id ) => {
+	const notificationComponentProps = getNotificationComponentProps( id );
+	return ( WrappedComponent ) => {
+		function DecoratedComponent( props ) {
+			return (
+				<WrappedComponent
+					{ ...props }
+					{ ...notificationComponentProps }
+				/>
+			);
+		}
+		DecoratedComponent.displayName = 'WithWidgetComponentProps';
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			DecoratedComponent.displayName += `(${
+				WrappedComponent.displayName || WrappedComponent.name
+			})`;
+		}
+		return DecoratedComponent;
+	};
+};
