@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -98,3 +103,8 @@ export default function GatheringDataNotification( { id, Notification } ) {
 		</Notification>
 	);
 }
+
+GatheringDataNotification.propTypes = {
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
+};
