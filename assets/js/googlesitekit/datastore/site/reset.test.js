@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
@@ -31,10 +30,6 @@ describe( 'core/site reset', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

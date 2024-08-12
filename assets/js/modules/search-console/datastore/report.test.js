@@ -26,7 +26,6 @@ import {
 	freezeFetch,
 	muteFetch,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
@@ -65,10 +64,6 @@ describe( 'modules/search-console report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {

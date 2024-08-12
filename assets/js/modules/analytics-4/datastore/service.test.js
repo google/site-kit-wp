@@ -25,7 +25,6 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserInfo,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import {
 	REPORT_ARGS_DATA_FILTERS_KEY,
@@ -52,10 +51,6 @@ describe( 'module/analytics-4 service store', () => {
 		provideUserInfo( registry, userData );
 		provideSiteInfo( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'selectors', () => {
