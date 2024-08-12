@@ -24,7 +24,6 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import ZeroDataNotification from './ZeroDataNotification';
 import Notifications from './Notifications';
 import useViewContext from '../../hooks/useViewContext';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
@@ -38,11 +37,6 @@ export default function EntityBannerNotifications() {
 				viewContext={ viewContext }
 				areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
 			/>
-			{ /* Temporary hack to give priority to the `GatheringDataNotification` component queued by `Notifications`.
-			This happens because `hasZeroData` selectors return true within `ZeroDataNotification` even if a module is
-			still gathering data. `ZeroDataNotification` should be refactored next which will make `Notifications`
-			the last component to be rendered. */ }
-			<ZeroDataNotification />
 		</Fragment>
 	);
 }

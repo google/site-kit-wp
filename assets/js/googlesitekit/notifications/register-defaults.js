@@ -29,6 +29,7 @@ import { CORE_MODULES } from '../modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
+import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 
 /**
  * Registers notifications not specific to any one particular module.
@@ -48,7 +49,7 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: ( { select, resolveSelect }, viewContext ) => {
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
@@ -100,15 +101,113 @@ export function registerDefaults( notificationsAPI ) {
 				isAnalyticsConnected &&
 				canViewSharedAnalytics &&
 				false === showRecoverableAnalytics
-					? resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData()
+					? await resolveSelect(
+							MODULES_ANALYTICS_4
+					  ).isGatheringData()
 					: false;
 			const searchConsoleGatheringData =
 				canViewSharedSearchConsole &&
 				false === showRecoverableSearchConsole &&
-				resolveSelect( MODULES_SEARCH_CONSOLE ).isGatheringData();
+				( await resolveSelect(
+					MODULES_SEARCH_CONSOLE
+				).isGatheringData() );
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
 		isDismissible: true,
+	} );
+
+	notificationsAPI.registerNotification( 'zero-data-notification', {
+		Component: ZeroDataNotification,
+		priority: 310,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+		],
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const viewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			const isAnalyticsConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const canViewSharedAnalytics = ! viewOnly
+				? true
+				: select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+
+			const canViewSharedSearchConsole = ! viewOnly
+				? true
+				: select( CORE_USER ).canViewSharedModule( 'search-console' );
+
+			const showRecoverableAnalytics = ( () => {
+				if ( ! viewOnly ) {
+					return false;
+				}
+
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
+
+				if ( recoverableModules === undefined ) {
+					return undefined;
+				}
+
+				return Object.keys( recoverableModules ).includes(
+					'analytics-4'
+				);
+			} )();
+			const showRecoverableSearchConsole = ( () => {
+				if ( ! viewOnly ) {
+					return false;
+				}
+
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
+
+				if ( recoverableModules === undefined ) {
+					return undefined;
+				}
+
+				return Object.keys( recoverableModules ).includes(
+					'search-console'
+				);
+			} )();
+
+			const analyticsGatheringData =
+				isAnalyticsConnected &&
+				canViewSharedAnalytics &&
+				false === showRecoverableAnalytics
+					? await resolveSelect(
+							MODULES_ANALYTICS_4
+					  ).isGatheringData()
+					: false;
+			const searchConsoleGatheringData =
+				canViewSharedSearchConsole &&
+				false === showRecoverableSearchConsole &&
+				( await resolveSelect(
+					MODULES_SEARCH_CONSOLE
+				).isGatheringData() );
+
+			if ( analyticsGatheringData || searchConsoleGatheringData ) {
+				return false;
+			}
+
+			const analyticsHasZeroData =
+				isAnalyticsConnected &&
+				canViewSharedAnalytics &&
+				false === showRecoverableAnalytics
+					? select( MODULES_ANALYTICS_4 ).hasZeroData()
+					: false;
+
+			const searchConsoleHasZeroData =
+				canViewSharedSearchConsole &&
+				false === showRecoverableSearchConsole &&
+				select( MODULES_SEARCH_CONSOLE ).hasZeroData();
+
+			return analyticsHasZeroData || searchConsoleHasZeroData;
+		},
+		isDismissible: false,
 	} );
 }
