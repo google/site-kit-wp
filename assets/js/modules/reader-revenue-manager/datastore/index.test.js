@@ -16,20 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-
 describe( 'modules/reader-revenue-manager properties', () => {
-	// TEMPORARY IGNORE – REMOVE THIS LINE
-	// eslint-disable-next-line no-unused-vars
-	let registry;
-
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
 	describe( 'store', () => {
 		it( 'is registered correctly', () => {
 			//  TODO: Implement tests as part of #8793.
