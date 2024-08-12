@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
@@ -46,3 +51,9 @@ export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 
 	return null;
 }
+
+ViewedStateObserver.propTypes = {
+	id: PropTypes.string,
+	observeRef: PropTypes.object,
+	threshold: PropTypes.number,
+};
