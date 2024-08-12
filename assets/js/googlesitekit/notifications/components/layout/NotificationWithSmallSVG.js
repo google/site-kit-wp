@@ -18,7 +18,8 @@
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../../../material-components';
-import { sanitizeHTML } from '../../../../util';
+import Description from '../common/Description';
+import Title from '../common/Title';
 
 export default function NotificationWithSmallSVG( {
 	title,
@@ -42,28 +43,9 @@ export default function NotificationWithSmallSVG( {
 					lgSize={ 11 }
 					className="googlesitekit-publisher-win__content"
 				>
-					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-						{ title }
-					</h3>
+					<Title title={ title }></Title>
 
-					<div className="googlesitekit-publisher-win__desc">
-						<p>
-							<span
-								dangerouslySetInnerHTML={ sanitizeHTML(
-									description,
-									{
-										ALLOWED_TAGS: [
-											'strong',
-											'em',
-											'br',
-											'a',
-										],
-										ALLOWED_ATTR: [ 'href' ],
-									}
-								) }
-							/>
-						</p>
-					</div>
+					<Description description={ description }></Description>
 
 					{ actions }
 				</Cell>
