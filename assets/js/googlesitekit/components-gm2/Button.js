@@ -55,6 +55,8 @@ const Button = forwardRef(
 			hideTooltipTitle = false,
 			tooltipEnterDelayInMS = 100,
 			tertiary = false,
+			callout,
+			calloutStyle,
 			...extraProps
 		},
 		ref
@@ -96,10 +98,15 @@ const Button = forwardRef(
 		const ButtonComponent = (
 			<SemanticButton
 				className={ classnames( 'mdc-button', className, {
-					'mdc-button--raised': ! text && ! tertiary,
+					'mdc-button--raised': ! text && ! tertiary && ! callout,
 					'mdc-button--danger': danger,
 					'mdc-button--inverse': inverse,
 					'mdc-button--tertiary': tertiary,
+					'mdc-button--callout': callout,
+					'mdc-button--callout-primary':
+						callout || calloutStyle === 'primary',
+					'mdc-button--callout-warning': calloutStyle === 'warning',
+					'mdc-button--callout-error': calloutStyle === 'error',
 				} ) }
 				href={ disabled ? undefined : href }
 				ref={ mergedRefs }
@@ -157,6 +164,8 @@ Button.propTypes = {
 	tooltip: PropTypes.bool,
 	inverse: PropTypes.bool,
 	hideTooltipTitle: PropTypes.bool,
+	callout: PropTypes.bool,
+	calloutStyle: PropTypes.oneOf( [ 'primary', 'warning', 'error' ] ),
 };
 
 Button.defaultProps = {
@@ -172,6 +181,8 @@ Button.defaultProps = {
 	customizedTooltip: null,
 	tooltip: false,
 	inverse: false,
+	calloutStyle: null,
+	callout: null,
 };
 
 export default Button;

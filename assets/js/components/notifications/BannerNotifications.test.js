@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	muteFetch,
 	provideModules,
@@ -37,6 +38,11 @@ import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import BannerNotifications from './BannerNotifications';
 import Header from '../Header';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+} from '../../googlesitekit/notifications/datastore/constants';
 
 describe( 'BannerNotifications', () => {
 	mockLocation();
@@ -94,6 +100,7 @@ describe( 'BannerNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [] );
 		registry.dispatch( CORE_USER ).receiveNonces( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( [] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveHasMismatchGoogleTagID( false );
@@ -107,6 +114,7 @@ describe( 'BannerNotifications', () => {
 			<BannerNotifications />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -127,6 +135,7 @@ describe( 'BannerNotifications', () => {
 			<BannerNotifications />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -138,6 +147,23 @@ describe( 'BannerNotifications', () => {
 	} );
 
 	it( 'prioritizes errors over alerts and regular notifications', async () => {
+		// Trigger the gathering data notification using the new registration process
+		act( () => {
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( 'gathering-data-notification', {
+					Component() {
+						return (
+							<div className="googlesitekit-publisher-win">
+								Test notification!
+							</div>
+						);
+					},
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				} );
+		} );
+
 		// Trigger the error notification.
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
@@ -157,6 +183,7 @@ describe( 'BannerNotifications', () => {
 			<Header subHeader={ <BannerNotifications /> } />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -178,6 +205,23 @@ describe( 'BannerNotifications', () => {
 	} );
 
 	it( 'prioritizes alerts over regular notifications', async () => {
+		// Trigger the gathering data notification using the new registration process
+		act( () => {
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( 'gathering-data-notification', {
+					Component() {
+						return (
+							<div className="googlesitekit-publisher-win">
+								Test notification!
+							</div>
+						);
+					},
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				} );
+		} );
+
 		// Ensure setup completed notification is added.
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?notification=authentication_success';
@@ -193,6 +237,7 @@ describe( 'BannerNotifications', () => {
 			<BannerNotifications />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
