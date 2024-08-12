@@ -38,11 +38,9 @@ export default function Dismiss( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismiss = async () => {
-		await Promise.all( [
-			trackEvents.dismiss(),
-			dismissNotification( id, { expiresInSeconds: dismissExpires } ),
-		] );
+	const handleDismiss = () => {
+		trackEvents.dismiss();
+		dismissNotification( id, { expiresInSeconds: dismissExpires } );
 	};
 
 	return (
