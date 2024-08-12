@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useMemo, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -61,11 +62,14 @@ function RRMSetupSuccessSubtleNotification() {
 		} )
 	);
 
-	const targetOnboardingStates = [
-		ONBOARDING_COMPLETE,
-		PENDING_VERIFICATION,
-		ONBOARDING_ACTION_REQUIRED,
-	];
+	const targetOnboardingStates = useMemo(
+		() => [
+			ONBOARDING_COMPLETE,
+			PENDING_VERIFICATION,
+			ONBOARDING_ACTION_REQUIRED,
+		],
+		[]
+	);
 
 	const skipDisplay =
 		'authentication_success' !== notification ||
@@ -101,6 +105,24 @@ function RRMSetupSuccessSubtleNotification() {
 
 		handleDismiss();
 	};
+
+	useEffect( () => {
+		if (
+			! skipDisplay &&
+			targetOnboardingStates.includes( publicationOnboardingState )
+		) {
+			trackEvent(
+				`${ viewContext }_rrm-setup-success-notification`,
+				'view_notification',
+				publicationOnboardingState
+			);
+		}
+	}, [
+		publicationOnboardingState,
+		skipDisplay,
+		targetOnboardingStates,
+		viewContext,
+	] );
 
 	if ( skipDisplay ) {
 		return null;
