@@ -42,7 +42,9 @@ final class Remote_Features extends Setting {
 	 * @return array
 	 */
 	protected function get_default() {
-		return array();
+		return array(
+			'last_updated_at' => 0,
+		);
 	}
 
 	/**
