@@ -25,7 +25,7 @@ class Remote_FeaturesTest extends SettingsTestCase {
 		$setting->register();
 
 		$this->assertSame(
-			array(),
+			array( 'last_updated_at' => 0 ),
 			$this->get_option()
 		);
 	}
