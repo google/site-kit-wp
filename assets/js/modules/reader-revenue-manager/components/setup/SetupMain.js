@@ -45,9 +45,8 @@ import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue
 import SetupForm from './SetupForm';
 
 export default function SetupMain( { finishSetup = () => {} } ) {
-	const publications = useSelect(
-		( select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getPublications() || []
+	const publications = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublications()
 	);
 	const hasResolvedPublications = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
@@ -92,6 +91,7 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 		if (
 			! publicationCreateShown &&
 			hasResolvedPublications &&
+			undefined !== publications &&
 			! publications.length
 		) {
 			setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
@@ -101,7 +101,7 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 	}, [
 		hasResolvedPublications,
 		publicationCreateShown,
-		publications.length,
+		publications,
 		setValues,
 	] );
 
