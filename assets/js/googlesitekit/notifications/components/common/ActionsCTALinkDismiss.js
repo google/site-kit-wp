@@ -71,6 +71,7 @@ export default function ActionsCTALinkDismiss( {
 			</SpinnerButton>
 
 			<Dismiss
+				id={ id }
 				primary={ false }
 				dismissLabel={ dismissLabel }
 				dismissExpires={ dismissExpires }
