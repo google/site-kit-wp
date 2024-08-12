@@ -36,6 +36,7 @@ import { createValidatedAction } from '../../data/utils';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
+const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 
 export const initialState = {
 	notifications: {},
@@ -144,6 +145,13 @@ export const actions = {
 		function* ( id, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
 			const registry = yield commonActions.getRegistry();
+
+			// Remove the notification from the queue of notifications in state.
+			yield {
+				type: DISMISS_NOTIFICATION,
+				payload: { id },
+			};
+
 			return yield registry
 				.dispatch( CORE_USER )
 				.dismissItem( id, { expiresInSeconds } );
@@ -171,6 +179,22 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 		case RECEIVE_QUEUED_NOTIFICATIONS: {
 			state.queuedNotifications = payload.queuedNotifications;
+			break;
+		}
+
+		case DISMISS_NOTIFICATION: {
+			const { id } = payload;
+			const dismissedNotificationIndex =
+				state.queuedNotifications.findIndex(
+					( notification ) => notification.id === id
+				);
+
+			if ( dismissedNotificationIndex >= 0 ) {
+				state.queuedNotifications.splice(
+					dismissedNotificationIndex,
+					1
+				);
+			}
 			break;
 		}
 
