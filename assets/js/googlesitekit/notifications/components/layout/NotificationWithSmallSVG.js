@@ -15,14 +15,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { Cell } from '../../../../material-components';
+import { Cell, Grid, Row } from '../../../../material-components';
 import { sanitizeHTML } from '../../../../util';
 
 export default function NotificationWithSmallSVG( {
@@ -32,40 +27,47 @@ export default function NotificationWithSmallSVG( {
 	SmallImageSVG,
 } ) {
 	return (
-		<Fragment>
-			<Cell
-				size={ 1 }
-				className="googlesitekit-publisher-win__small-media"
-			>
-				<SmallImageSVG />
-			</Cell>
+		<Grid>
+			<Row>
+				<Cell
+					size={ 1 }
+					className="googlesitekit-publisher-win__small-media"
+				>
+					<SmallImageSVG />
+				</Cell>
 
-			<Cell
-				smSize={ 3 }
-				mdSize={ 7 }
-				lgSize={ 11 }
-				className="googlesitekit-publisher-win__content"
-			>
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
-				</h3>
+				<Cell
+					smSize={ 3 }
+					mdSize={ 7 }
+					lgSize={ 11 }
+					className="googlesitekit-publisher-win__content"
+				>
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
+					</h3>
 
-				<div className="googlesitekit-publisher-win__desc">
-					<p>
-						<span
-							dangerouslySetInnerHTML={ sanitizeHTML(
-								description,
-								{
-									ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
-									ALLOWED_ATTR: [ 'href' ],
-								}
-							) }
-						/>
-					</p>
-				</div>
+					<div className="googlesitekit-publisher-win__desc">
+						<p>
+							<span
+								dangerouslySetInnerHTML={ sanitizeHTML(
+									description,
+									{
+										ALLOWED_TAGS: [
+											'strong',
+											'em',
+											'br',
+											'a',
+										],
+										ALLOWED_ATTR: [ 'href' ],
+									}
+								) }
+							/>
+						</p>
+					</div>
 
-				{ actions }
-			</Cell>
-		</Fragment>
+					{ actions }
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }

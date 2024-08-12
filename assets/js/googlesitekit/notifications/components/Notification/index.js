@@ -25,7 +25,6 @@ import { useEffect, useRef } from '@wordpress/element';
 import ViewedStateObserver from './ViewedStateObserver';
 import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
-import { Grid, Row } from '../../../../material-components';
 
 export default function Notification( { id, children } ) {
 	const ref = useRef();
@@ -41,9 +40,7 @@ export default function Notification( { id, children } ) {
 
 	return (
 		<section id={ id } className="googlesitekit-publisher-win" ref={ ref }>
-			<Grid>
-				<Row>{ children }</Row>
-			</Grid>
+			{ children }
 
 			{ /* Encapsulate observer to dispose when no longer needed. */ }
 			{ ! viewed && (
