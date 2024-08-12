@@ -47,7 +47,11 @@ export default function Notification( { id, children } ) {
 
 			{ /* Encapsulate observer to dispose when no longer needed. */ }
 			{ ! viewed && (
-				<ViewedStateObserver observeRef={ ref } threshold={ 0.5 } />
+				<ViewedStateObserver
+					id={ id }
+					observeRef={ ref }
+					threshold={ 0.5 }
+				/>
 			) }
 		</section>
 	);
