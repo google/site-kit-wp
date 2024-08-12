@@ -24,10 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data, {
-	commonActions,
-	createRegistrySelector,
-} from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
@@ -184,14 +181,14 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getQueuedNotifications( viewContext ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const notifications = registry
 			.select( CORE_NOTIFICATIONS )
 			.getNotifications();
 
 		// Wait for all dismissed items to be available before filtering.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			registry.resolveSelect( CORE_USER ).getDismissedItems()
 		);
 
@@ -214,7 +211,7 @@ export const resolvers = {
 			}
 		);
 
-		const checkRequirementsResults = yield Data.commonActions.await(
+		const checkRequirementsResults = yield commonActions.await(
 			Promise.all(
 				filteredNotifications.map( async ( { checkRequirements } ) => {
 					if ( typeof checkRequirements === 'function' ) {
