@@ -88,7 +88,7 @@ class Remote_Features_Provider {
 			new Using_Proxy_Connection_Guard( $this->credentials )
 		);
 		$this->cron        = new Remote_Features_Cron( array( $this->syncer, 'pull_remote_features' ) );
-		$this->fallback    = new Remote_Features_Fallback( $context, $options, $this->credentials );
+		$this->fallback    = new Remote_Features_Fallback( $this->syncer, $this->setting );
 	}
 
 	/**
@@ -100,10 +100,32 @@ class Remote_Features_Provider {
 		$this->setting->register();
 		$this->activation->register();
 		$this->cron->register();
-		$this->fallback->register();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
-		add_action( 'admin_footer', array( $this->fallback, 'remote_features_sync_fallback' ) );
+		add_action(
+			'heartbeat_tick',
+			fn ( $response, $screen_id ) => $this->on_heartbeat_tick( $response, $screen_id ),
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Handles the heartbeat AJAX callback.
+	 *
+	 * @param array  $response  The Heartbeat response.
+	 * @param string $screen_id The screen ID.
+	 */
+	protected function on_heartbeat_tick( $response, $screen_id ) {
+		if ( ! $this->credentials->has() || ! $this->credentials->using_proxy() ) {
+			return;
+		}
+
+		if ( 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
+			return;
+		}
+
+		$this->fallback->remote_features_sync_fallback();
 	}
 
 	/**
