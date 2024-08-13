@@ -38,7 +38,6 @@ import {
 	render,
 	provideModules,
 	provideUserCapabilities,
-	unsubscribeFromAll,
 	muteFetch,
 } from '../../../../../tests/js/test-utils';
 import {
@@ -109,10 +108,6 @@ describe( 'WidgetAreaRenderer', () => {
 			'^/google-site-kit/v1/core/user/data/expirable-items'
 		);
 		muteFetch( fetchGetExpiredItems );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	it( 'should return the same number of elements as widgets from a selector', async () => {

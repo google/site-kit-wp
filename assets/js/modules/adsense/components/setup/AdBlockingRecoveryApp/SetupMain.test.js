@@ -35,7 +35,6 @@ import {
 	muteFetch,
 	provideModules,
 	provideSiteInfo,
-	unsubscribeFromAll,
 } from '../../../../../../../tests/js/utils';
 import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '../../../../../googlesitekit/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -75,10 +74,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 
 		container = renderResult.container;
 		getByRole = renderResult.getByRole;
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'Place Tag step', () => {
