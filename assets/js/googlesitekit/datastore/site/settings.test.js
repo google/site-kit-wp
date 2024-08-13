@@ -23,7 +23,6 @@ import { CORE_SITE } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
@@ -36,10 +35,6 @@ describe( 'core/site urls', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

@@ -24,7 +24,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -81,10 +80,6 @@ describe( 'modules/analytics-4 settings', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

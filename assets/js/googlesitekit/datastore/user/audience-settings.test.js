@@ -25,7 +25,6 @@ import {
 	freezeFetch,
 	muteFetch,
 	provideModules,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -79,10 +78,6 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

@@ -33,7 +33,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
@@ -136,7 +135,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		jest.clearAllMocks();
 	} );
 
