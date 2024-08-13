@@ -43,10 +43,10 @@ import {
 	BREAKPOINT_TABLET,
 	BREAKPOINT_SMALL,
 } from '../../../hooks/useBreakpoint';
-import ErrorHandler from '../../../components/ErrorHandler';
 import InViewProvider from '../../../components/InViewProvider';
 import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
+import WidgetErrorHandler from '../../../components/WidgetErrorHandler';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
 import useLatestIntersection from '../../../hooks/useLatestIntersection';
@@ -207,7 +207,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 			key={ `${ widget.slug }-wrapper` }
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
-			<ErrorHandler>
+			<WidgetErrorHandler slug={ widget.slug }>
 				<WidgetRenderer
 					OverrideComponent={
 						overrideComponents[ i ]
@@ -220,7 +220,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 					}
 					slug={ widget.slug }
 				/>
-			</ErrorHandler>
+			</WidgetErrorHandler>
 		</WidgetCellWrapper>
 	) );
 
