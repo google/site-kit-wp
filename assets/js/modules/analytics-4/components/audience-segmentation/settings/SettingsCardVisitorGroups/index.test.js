@@ -44,7 +44,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	it( 'should render the setup CTA if groups are not configured', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -60,7 +60,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 	it( 'should render the setup success notification once groups are configured', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -75,7 +75,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	it( 'should render the visitor groups switch correctly', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -95,7 +95,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 	it( 'should toggle the switch on click and save the audience settings', async () => {
 		const audienceSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			'^/google-site-kit/v1/core/user/data/audience-settings'
 		);
 
 		const availableAudiences = [
@@ -119,7 +119,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: true,
 		} );

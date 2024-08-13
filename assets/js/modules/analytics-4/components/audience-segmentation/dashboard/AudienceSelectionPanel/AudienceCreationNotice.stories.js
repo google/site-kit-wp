@@ -54,7 +54,7 @@ WithOneAudience.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiencesWithoutNewVisitors );
 		registry
-			.dispatch( MODULES_ANALYTICS_4 )
+			.dispatch( CORE_USER )
 			.setConfiguredAudiences(
 				availableAudiencesWithoutNewVisitors.map( ( { name } ) => name )
 			);

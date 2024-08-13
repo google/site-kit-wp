@@ -34,6 +34,7 @@ import {
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AddGroupNotice from './AddGroupNotice';
 import AudienceItems from './AudienceItems';
@@ -50,8 +51,8 @@ export default function AudienceSelectionPanel() {
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 	const savedItemSlugs = useSelect( ( select ) => {
-		const { getConfigurableAudiences, getConfiguredAudiences } =
-			select( MODULES_ANALYTICS_4 );
+		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
+		const { getConfiguredAudiences } = select( CORE_USER );
 
 		const configuredAudiences = getConfiguredAudiences() || [];
 		const configurableAudiences = getConfigurableAudiences() || [];
@@ -91,7 +92,7 @@ export default function AudienceSelectionPanel() {
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
-			<AddGroupNotice savedItemSlugs={ savedItemSlugs } />
+			<AddGroupNotice />
 			<AudienceCreationNotice />
 			<LearnMoreLink />
 			<ErrorNotice />

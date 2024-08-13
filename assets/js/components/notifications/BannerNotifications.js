@@ -38,16 +38,19 @@ import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
-import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import useViewContext from '../../hooks/useViewContext';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import Notifications from './Notifications';
 
 export default function BannerNotifications() {
 	const viewOnly = useViewOnly();
+	const viewContext = useViewContext();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -90,7 +93,14 @@ export default function BannerNotifications() {
 	const [ slug ] = useQueryArg( 'slug' );
 
 	if ( viewOnly ) {
-		return <ZeroDataStateNotifications />;
+		return (
+			<Fragment>
+				<Notifications
+					viewContext={ viewContext }
+					areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
+				/>
+			</Fragment>
+		);
 	}
 
 	return (
@@ -117,7 +127,10 @@ export default function BannerNotifications() {
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
-			<ZeroDataStateNotifications />
+			<Notifications
+				viewContext={ viewContext }
+				areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
+			/>
 		</Fragment>
 	);
 }

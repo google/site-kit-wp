@@ -33,7 +33,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
@@ -65,7 +64,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	);
 
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	const reportEndpoint = new RegExp(
@@ -106,7 +105,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -136,7 +135,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		jest.clearAllMocks();
 	} );
 
@@ -179,7 +177,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.receiveIsDataAvailableOnLoad( true );
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
 			const { getByText, waitForRegistry } = render(
@@ -217,7 +215,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.receiveIsDataAvailableOnLoad( false );
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
 			const { queryByText, waitForRegistry } = render(
@@ -253,7 +251,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.receiveIsDataAvailableOnLoad( true );
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
 			const { queryByText, waitForRegistry } = render(
@@ -441,7 +439,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.receiveIsDataAvailableOnLoad( true );
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
 			fetchMock.post( syncAvailableAudiencesEndpoint, {
@@ -523,7 +521,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.receiveIsDataAvailableOnLoad( true );
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
 			// Set autoSubmit to true.
@@ -615,7 +613,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					.receiveIsDataAvailableOnLoad( true );
 
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( settings );
 
 				// eslint-disable-next-line require-await

@@ -67,7 +67,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	// An array of audience resource names.
 	const configuredAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 	const audiences = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
@@ -357,9 +357,21 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						return null;
 					}
 
-					// TODO: as part of #8484, this data manipulation should be removed and the relevant
-					// pivot report rows should be passed directly to the AudienceTile component.
-					const metricIndexBase = index * 2;
+					const currentMetricValues = rows.find( ( row ) => {
+						return (
+							row.dimensionValues[ 0 ]?.value ===
+								audienceResourceName &&
+							row.dimensionValues[ 1 ]?.value === 'date_range_0'
+						);
+					} )?.metricValues;
+
+					const previousMetricValues = rows.find( ( row ) => {
+						return (
+							row.dimensionValues[ 0 ]?.value ===
+								audienceResourceName &&
+							row.dimensionValues[ 1 ]?.value === 'date_range_1'
+						);
+					} )?.metricValues;
 
 					const audienceName =
 						audiences?.filter(
@@ -372,44 +384,24 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						)?.[ 0 ]?.audienceSlug || '';
 
 					const visitors =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 0 ]?.value
-						) || 0;
+						Number( currentMetricValues?.[ 0 ]?.value ) || 0;
 					const prevVisitors =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 0 ]
-								?.value
-						) || 0;
+						Number( previousMetricValues?.[ 0 ]?.value ) || 0;
 
 					const visitsPerVisitors =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 1 ]?.value
-						) || 0;
+						Number( currentMetricValues?.[ 1 ]?.value ) || 0;
 					const prevVisitsPerVisitors =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 1 ]
-								?.value
-						) || 0;
+						Number( previousMetricValues?.[ 1 ]?.value ) || 0;
 
 					const pagesPerVisit =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 2 ]?.value
-						) || 0;
+						Number( currentMetricValues?.[ 2 ]?.value ) || 0;
 					const prevPagesPerVisit =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 2 ]
-								?.value
-						) || 0;
+						Number( previousMetricValues?.[ 2 ]?.value ) || 0;
 
 					const pageviews =
-						Number(
-							rows[ metricIndexBase ]?.metricValues?.[ 3 ]?.value
-						) || 0;
+						Number( currentMetricValues?.[ 3 ]?.value ) || 0;
 					const prevPageviews =
-						Number(
-							rows[ metricIndexBase + 1 ]?.metricValues?.[ 3 ]
-								?.value
-						) || 0;
+						Number( previousMetricValues?.[ 3 ]?.value ) || 0;
 
 					const topCities = topCitiesReport?.[ index ];
 

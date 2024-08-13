@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
@@ -69,7 +68,6 @@ describe( 'core/site site info', () => {
 	afterEach( () => {
 		delete global[ baseInfoVar ];
 		delete global[ entityInfoVar ];
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

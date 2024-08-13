@@ -50,12 +50,14 @@ export default function KeyMetricsNewBadge() {
 		}
 	}, [ initialKeyMetricsSetupCompleted, isKeyMetricsSetupCompleted ] );
 
+	if ( ! isNew ) {
+		return null;
+	}
+
 	return (
-		isNew && (
-			<Badge
-				className="googlesitekit-new-badge"
-				label={ __( 'New', 'google-site-kit' ) }
-			/>
-		)
+		<Badge
+			className="googlesitekit-new-badge"
+			label={ __( 'New', 'google-site-kit' ) }
+		/>
 	);
 }
