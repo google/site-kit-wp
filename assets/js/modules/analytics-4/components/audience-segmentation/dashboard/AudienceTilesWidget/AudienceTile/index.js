@@ -36,6 +36,7 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../../../hooks/useBreakpoint';
+import useViewOnly from '../../../../../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
 import AudienceMetricIconVisitors from '../../../../../../../../svg/icons/audience-metric-icon-visitors.svg';
 import AudienceMetricIconVisitsPerVisitor from '../../../../../../../../svg/icons/audience-metric-icon-visits-per-visitor.svg';
@@ -79,6 +80,7 @@ export default function AudienceTile( {
 	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
+	const isViewOnly = useViewOnly();
 
 	const isPropertyPartialData = useSelect( ( select ) => {
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -104,6 +106,12 @@ export default function AudienceTile( {
 			)
 	);
 
+	const postTypeDimensionExists = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+			'googlesitekit_post_type'
+		)
+	);
+
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
@@ -111,6 +119,7 @@ export default function AudienceTile( {
 	if (
 		! loaded ||
 		isLoading ||
+		postTypeDimensionExists === undefined ||
 		isZeroData === undefined ||
 		isPartialData === undefined
 	) {
@@ -262,16 +271,19 @@ export default function AudienceTile( {
 						topCities={ topCities }
 					/>
 
-					<AudienceTilePagesMetric
-						TileIcon={ AudienceMetricIconTopContent }
-						title={ __(
-							'Top content by pageviews',
-							'google-site-kit'
-						) }
-						topContentTitles={ topContentTitles }
-						topContent={ topContent }
-						isTopContentPartialData={ isTopContentPartialData }
-					/>
+					{ ( ( postTypeDimensionExists && isViewOnly ) ||
+						! isViewOnly ) && (
+						<AudienceTilePagesMetric
+							TileIcon={ AudienceMetricIconTopContent }
+							title={ __(
+								'Top content by pageviews',
+								'google-site-kit'
+							) }
+							topContentTitles={ topContentTitles }
+							topContent={ topContent }
+							isTopContentPartialData={ isTopContentPartialData }
+						/>
+					) }
 				</div>
 			</div>
 		</Widget>

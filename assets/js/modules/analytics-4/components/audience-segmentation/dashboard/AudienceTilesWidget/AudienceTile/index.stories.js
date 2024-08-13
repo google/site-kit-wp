@@ -323,6 +323,21 @@ TopContentPartialData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/TopContentPartialData',
 };
 
+export const viewOnlyNoDimensions = Template.bind( {} );
+viewOnlyNoDimensions.storyName =
+	"Top content hidden when dimension doesn't exist for view only user";
+viewOnlyNoDimensions.args = {
+	...readyProps,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableAudiences: null,
+			availableCustomDimensions: [],
+			propertyID: '123456789',
+		} );
+	},
+};
+
 export const ZeroDataHideable = Template.bind( {} );
 ZeroDataHideable.storyName = 'ZeroDataHideable';
 ZeroDataHideable.args = {
