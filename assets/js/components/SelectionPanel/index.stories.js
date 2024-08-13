@@ -128,6 +128,30 @@ WithSavedItems.scenario = {
 	label: 'Components/SelectionPanel/WithSavedItems',
 };
 
+export const withZeroUnsavedItems = Template.bind( {} );
+withZeroUnsavedItems.storyName = 'With zero unsaved items';
+withZeroUnsavedItems.args = {
+	availableSavedItems: Array.from(
+		{ length: 24 },
+		( _, index ) => index + 1
+	).reduce( ( acc, current ) => {
+		const slug = `item-${ current }`;
+
+		return {
+			...acc,
+			[ slug ]: {
+				slug,
+				title: `Item ${ current }`,
+				description: `Description for item ${ current }`,
+			},
+		};
+	}, {} ),
+	savedItemSlugs: Array.from(
+		{ length: 24 },
+		( _, index ) => `item-${ index + 1 }`
+	),
+};
+
 export default {
 	title: 'Components/Selection Panel',
 	component: SelectionPanel,
