@@ -34,9 +34,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/WidgetErrorHandler',
-};
 
 export default {
 	title: 'Components/WidgetErrorHandler',
