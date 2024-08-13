@@ -151,6 +151,7 @@ withZeroUnsavedItems.args = {
 		( _, index ) => `item-${ index + 1 }`
 	),
 };
+withZeroUnsavedItems.scenario = {};
 
 export default {
 	title: 'Components/Selection Panel',
