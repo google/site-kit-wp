@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -65,23 +66,22 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			RESET_PUBLICATIONS
 		)
 	);
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { resetPublications, submitChanges } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
 
-	const reset = useCallback( async () => {
+	const reset = useCallback( () => {
 		if ( ! shouldResetPublications ) {
 			return;
 		}
 
-		await setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-			[ RESET_PUBLICATIONS ]: false,
-		} );
-
 		resetPublications();
-	}, [ resetPublications, setValues, shouldResetPublications ] );
+	}, [ resetPublications, shouldResetPublications ] );
 
 	// Reset publication data when user re-focuses window.
 	useRefocus( reset, 15000 );
@@ -103,6 +103,26 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 		publicationCreateShown,
 		publications,
 		setValues,
+	] );
+
+	const previousPublicationID = usePrevious( publicationID );
+
+	// Do not attempt to reset publication data again once the publication
+	// selection changes.
+	useEffect( () => {
+		if (
+			previousPublicationID !== publicationID &&
+			shouldResetPublications
+		) {
+			setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ RESET_PUBLICATIONS ]: false,
+			} );
+		}
+	}, [
+		previousPublicationID,
+		publicationID,
+		setValues,
+		shouldResetPublications,
 	] );
 
 	const onCompleteSetup = useCallback( async () => {
