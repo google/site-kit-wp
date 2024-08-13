@@ -64,12 +64,9 @@ export default function SelectionPanelItems( {
 							{ renderItems( availableSavedItems ) }
 						</div>
 						{ availableUnsavedItemsCount > 0 && (
-							<Fragment>
-								<p className="googlesitekit-selection-panel-items__subheading">
-									{ availableItemsTitle }
-								</p>
-								{ renderItems( availableUnsavedItems ) }
-							</Fragment>
+							<p className="googlesitekit-selection-panel-items__subheading">
+								{ availableItemsTitle }
+							</p>
 						) }
 					</Fragment>
 				)
