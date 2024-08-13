@@ -337,6 +337,7 @@ viewOnlyNoDimensions.args = {
 		} );
 	},
 };
+viewOnlyNoDimensions.scenario = {};
 
 export const ZeroDataHideable = Template.bind( {} );
 ZeroDataHideable.storyName = 'ZeroDataHideable';

@@ -54,7 +54,9 @@ describe( 'AudienceTilesWidget', () => {
 			},
 		] );
 		provideModuleRegistrations( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: [ 'googlesitekit_post_type' ],
+		} );
 	} );
 
 	afterEach( () => {
