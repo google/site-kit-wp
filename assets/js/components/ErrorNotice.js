@@ -37,6 +37,7 @@ import ErrorText from './ErrorText';
 
 export default function ErrorNotice( {
 	error,
+	hasButton = false,
 	storeName,
 	message = error.message,
 	noPrefix = false,
@@ -63,7 +64,8 @@ export default function ErrorNotice( {
 		return null;
 	}
 
-	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
+	const shouldDisplayRetry =
+		hasButton && isErrorRetryable( error, selectorData );
 
 	return (
 		<Fragment>
@@ -88,6 +90,7 @@ ErrorNotice.propTypes = {
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
+	hasButton: PropTypes.bool,
 	storeName: PropTypes.string,
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
