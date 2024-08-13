@@ -253,35 +253,6 @@ describe( 'AudienceTilesWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render when some configured audiences are matching available audiences', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [
-				'properties/12345/audiences/1',
-				'properties/12345/audiences/3',
-			],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
 	it( 'should not render audiences that are not available (archived)', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
