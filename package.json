@@ -63,7 +63,7 @@
 		}
 	},
 	"lint-staged": {
-		"*.js": [
+		"!(blocks/build/**/*)*.js": [
 			"eslint"
 		],
 		"assets/sass/**/*.scss": [
@@ -72,7 +72,7 @@
 		".storybook/assets/sass/**/*.scss": [
 			"stylelint"
 		],
-		"*.php": [
+		"!(blocks/build/**/*)*.php": [
 			"./vendor/bin/phpcs"
 		]
 	},
