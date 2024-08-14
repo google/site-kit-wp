@@ -34,10 +34,16 @@ class Remote_FeaturesTest extends SettingsTestCase {
 		$setting = new Remote_Features( new Options( new Context( __FILE__ ) ) );
 		$setting->register();
 
-		$setting->update( array( 'testFeature' => array( 'enabled' => false ) ) );
+		$this->assertSame(
+			array( 'last_updated_at' => 0 ),
+			$this->get_option()
+		);
+
+		$update = $setting->update( array( 'testFeature' => array( 'enabled' => false ) ) );
 
 		$this->assertEquals( array( 'enabled' => false ), $setting->get()['testFeature'] );
 		$this->assertEqualsWithDelta( time(), $setting->get()['last_updated_at'], 2 );
+		$this->assertTrue( $update );
 	}
 
 	/**
