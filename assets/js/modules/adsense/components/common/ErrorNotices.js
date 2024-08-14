@@ -21,9 +21,18 @@
  */
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import PropTypes from 'prop-types';
 
-export default function ErrorNotices() {
+export default function ErrorNotices( { hasButton = false } ) {
 	return (
-		<StoreErrorNotices moduleSlug="adsense" storeName={ MODULES_ADSENSE } />
+		<StoreErrorNotices
+			hasButton={ hasButton }
+			moduleSlug="adsense"
+			storeName={ MODULES_ADSENSE }
+		/>
 	);
 }
+
+ErrorNotices.propTypes = {
+	hasButton: PropTypes.bool,
+};
