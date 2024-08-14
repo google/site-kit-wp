@@ -46,6 +46,10 @@ export default function SelectionPanelItems( {
 		) );
 	};
 
+	const availableUnsavedItemsCount = Object.keys(
+		availableUnsavedItems
+	).length;
+
 	return (
 		<div className="googlesitekit-selection-panel-items">
 			{
@@ -59,15 +63,19 @@ export default function SelectionPanelItems( {
 						<div className="googlesitekit-selection-panel-items__subsection">
 							{ renderItems( availableSavedItems ) }
 						</div>
-						<p className="googlesitekit-selection-panel-items__subheading">
-							{ availableItemsTitle }
-						</p>
+						{ availableUnsavedItemsCount > 0 && (
+							<p className="googlesitekit-selection-panel-items__subheading">
+								{ availableItemsTitle }
+							</p>
+						) }
 					</Fragment>
 				)
 			}
-			<div className="googlesitekit-selection-panel-items__subsection">
-				{ renderItems( availableUnsavedItems ) }
-			</div>
+			{ availableUnsavedItemsCount > 0 && (
+				<div className="googlesitekit-selection-panel-items__subsection">
+					{ renderItems( availableUnsavedItems ) }
+				</div>
+			) }
 		</div>
 	);
 }
