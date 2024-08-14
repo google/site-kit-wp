@@ -31,15 +31,8 @@
 		align-items: center;
 		display: flex;
 		flex-direction: column;
+		gap: $grid-gap-desktop;
 		max-width: 335px;
-	}
-
-	.googlesitekit-audience-segmentation-tile-placeholder__container--with-selectable-audiences {
-		gap: 25px;
-	}
-
-	.googlesitekit-audience-segmentation-tile-placeholder__container--without-selectable-audiences {
-		gap: 35px;
 	}
 
 	.googlesitekit-audience-segmentation-tile-placeholder__image {
@@ -48,6 +41,10 @@
 
 	.googlesitekit-audience-segmentation-tile-placeholder__body {
 		text-align: center;
+	}
+
+	.googlesitekit-audience-segmentation-tile-placeholder__body--without-selectable-audiences {
+		margin-top: 10px;
 	}
 
 	.googlesitekit-audience-segmentation-tile-placeholder__title {

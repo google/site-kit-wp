@@ -73,19 +73,17 @@ export default function PlaceholderTile( { Widget } ) {
 
 	return (
 		<Widget className="googlesitekit-audience-segmentation-tile-placeholder">
-			<div
-				className={ classnames(
-					'googlesitekit-audience-segmentation-tile-placeholder__container',
-					{
-						'googlesitekit-audience-segmentation-tile-placeholder__container--with-selectable-audiences':
-							hasConfigurableNonDefaultAudiences,
-						'googlesitekit-audience-segmentation-tile-placeholder__container--without-selectable-audiences':
-							! hasConfigurableNonDefaultAudiences,
-					}
-				) }
-			>
+			<div className="googlesitekit-audience-segmentation-tile-placeholder__container">
 				<NoAudienceBannerGraphic className="googlesitekit-audience-segmentation-tile-placeholder__image" />
-				<div className="googlesitekit-audience-segmentation-tile-placeholder__body">
+				<div
+					className={ classnames(
+						'googlesitekit-audience-segmentation-tile-placeholder__body',
+						{
+							'googlesitekit-audience-segmentation-tile-placeholder__body--without-selectable-audiences':
+								! hasConfigurableNonDefaultAudiences,
+						}
+					) }
+				>
 					<h3 className="googlesitekit-audience-segmentation-tile-placeholder__title">
 						{ hasConfigurableNonDefaultAudiences
 							? __(
