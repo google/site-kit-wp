@@ -50,6 +50,9 @@ import {
 import AudienceTile from './AudienceTile';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
+import PlaceholderTile from './PlaceholderTile';
+import { Fragment } from 'react';
+import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 
 const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 	const audienceData = report?.rows?.find(
@@ -508,6 +511,16 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						/>
 					);
 				} ) }
+				{ ! isTabbedBreakpoint && visibleAudiences.length === 1 && (
+					<Fragment>
+						{ loading && (
+							<Widget noPadding>
+								<AudienceTileLoading />
+							</Widget>
+						) }
+						{ ! loading && <PlaceholderTile Widget={ Widget } /> }
+					</Fragment>
+				) }
 			</div>
 		</Widget>
 	);
