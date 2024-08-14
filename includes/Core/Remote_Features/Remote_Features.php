@@ -50,11 +50,14 @@ final class Remote_Features extends Setting {
 	/**
 	 * Includes the current timestamp to the setting and updates it.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $features features array.
 	 */
 	public function update( $features ) {
 		$features['last_updated_at'] = time();
-		$this->set( $features );
+
+		return $this->set( $features );
 	}
 
 	/**

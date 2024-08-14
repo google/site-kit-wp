@@ -38,12 +38,12 @@ class Remote_Features_Fallback {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Remote_Features_Syncer $syncer  Remote_Features_Syncer instance.
 	 * @param Remote_Features        $setting Remote_Features instance.
+	 * @param Remote_Features_Syncer $syncer  Remote_Features_Syncer instance.
 	 */
 	public function __construct(
-		Remote_Features_Syncer $syncer,
-		Remote_Features $setting
+		Remote_Features $setting,
+		Remote_Features_Syncer $syncer
 	) {
 		$this->syncer  = $syncer;
 		$this->setting = $setting;
