@@ -74,7 +74,11 @@ describe( 'ErrorNotice', () => {
 			.getError( 'getAccounts', [] );
 
 		return render(
-			<ErrorNotice error={ selectorError } storeName={ storeName } />,
+			<ErrorNotice
+				hasButton
+				error={ selectorError }
+				storeName={ storeName }
+			/>,
 			{
 				registry,
 			}
