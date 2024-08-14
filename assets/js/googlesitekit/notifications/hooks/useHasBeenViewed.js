@@ -19,9 +19,8 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '../../datastore/ui/constants';
-const { useSelect } = Data;
 
 const getKey = ( id ) => `notification/${ id }/viewed`;
 

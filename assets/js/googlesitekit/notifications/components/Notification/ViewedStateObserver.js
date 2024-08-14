@@ -27,12 +27,10 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../../datastore/ui/constants';
 import useLatestIntersection from '../../../../hooks/useLatestIntersection';
 import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
-
-const { useDispatch } = Data;
 
 export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 	const intersectionEntry = useLatestIntersection( observeRef, {

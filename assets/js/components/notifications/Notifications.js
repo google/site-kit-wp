@@ -24,10 +24,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-const { useSelect } = Data;
 
 export default function Notifications( { viewContext, areaSlug } ) {
 	const queuedNotifications = useSelect( ( select ) =>
