@@ -19,44 +19,57 @@
 /**
  * Internal dependencies
  */
-import PlaceholderTile from './PlaceholderTile';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import PlaceholderTile from './PlaceholderTile';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'placeholderTile' )( PlaceholderTile );
 
 function Template( { setupRegistry = () => {}, ...args } ) {
+	function setupRegistryCallback( registry ) {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+		} );
+
+		setupRegistry( registry );
+	}
+
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistryCallback }>
 			<WidgetWithComponentProps { ...args } />
 		</WithRegistrySetup>
 	);
 }
 
-export const WithSelectableAudiences = Template.bind( {} );
-WithSelectableAudiences.storyName = 'WithSelectableAudiences';
-WithSelectableAudiences.args = {
+export const WithConfigurableNonDefaultAudiences = Template.bind( {} );
+WithConfigurableNonDefaultAudiences.storyName =
+	'WithConfigurableNonDefaultAudiences';
+WithConfigurableNonDefaultAudiences.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableAudiences,
 		} );
 	},
 };
-WithSelectableAudiences.scenario = {};
+WithConfigurableNonDefaultAudiences.scenario = {};
 
-export const WithoutSelectableAudiences = Template.bind( {} );
-WithoutSelectableAudiences.storyName = 'WithoutSelectableAudiences';
-WithoutSelectableAudiences.args = {
+export const WithoutConfigurableNonDefaultAudiences = Template.bind( {} );
+WithoutConfigurableNonDefaultAudiences.storyName =
+	'WithoutConfigurableNonDefaultAudiences';
+WithoutConfigurableNonDefaultAudiences.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			availableAudiences: [],
+			availableAudiences: availableAudiences.filter(
+				( { audienceType } ) => audienceType === 'DEFAULT_AUDIENCE'
+			),
 		} );
 	},
 };
-WithoutSelectableAudiences.scenario = {};
+WithoutConfigurableNonDefaultAudiences.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PlaceholderTile',
