@@ -28,8 +28,8 @@ $google_services = implode(
 );
 
 return array(
-	'prefix'                     => 'Google\\Site_Kit_Dependencies',
-	'finders'                    => array(
+	'prefix'                  => 'Google\\Site_Kit_Dependencies',
+	'finders'                 => array(
 
 		// General dependencies, except Google API services.
 		Finder::create()
@@ -48,6 +48,9 @@ return array(
 			)
 			->path( '#^google/apiclient/#' )
 			->path( '#^google/auth/#' )
+			->path( '#^google-gemini-php/client/#' )
+			->path( '#^http-interop/http-factory-guzzle/#' )
+			->path( '#^php-http/discovery/#' )
 			->path( '#^guzzlehttp/#' )
 			->path( '#^monolog/#' )
 			->path( '#^psr/#' )
@@ -100,12 +103,11 @@ return array(
 			->name( '#\.php$#' )
 			->in( 'vendor/google/apiclient-services-adsenselinks' ),
 	),
-	'files-whitelist'            => array(
-
+	'exclude-files'           => array(
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
 	),
-	'patchers'                   => array(
+	'patchers'                => array(
 		function ( $file_path, $prefix, $contents ) {
 			// Avoid prefixing the `static` keyword in some places.
 			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
@@ -138,11 +140,11 @@ return array(
 			) {
 				$contents = str_replace( "namespace $prefix;", "/* namespace $prefix intentionally removed */", $contents );
 			}
+
 			return $contents;
 		},
 	),
-	'whitelist'                  => array(),
-	'whitelist-global-constants' => false,
-	'whitelist-global-classes'   => false,
-	'whitelist-global-functions' => false,
+	'expose-global-constants' => true,
+	'expose-global-classes'   => true,
+	'expose-global-functions' => true,
 );

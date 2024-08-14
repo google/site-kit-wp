@@ -33,6 +33,7 @@ import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
+import SettingsCardGemini from './SettingsCardGemini';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
@@ -138,6 +139,10 @@ export default function SettingsAdmin() {
 		<Row>
 			<Cell size={ 12 }>
 				<SettingsCardConsentMode />
+			</Cell>
+
+			<Cell size={ 12 }>
+				<SettingsCardGemini />
 			</Cell>
 
 			{ showKeyMetricsSettings && (

@@ -40,6 +40,11 @@
 	color: $c-violet-v-0;
 }
 
+.googlesitekit-badge--warning {
+	background-color: $c-selective-yellow;
+	color: $c-badge-text;
+}
+
 .googlesitekit-badge--hidden {
 	visibility: hidden;
 }

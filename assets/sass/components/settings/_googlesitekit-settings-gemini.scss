@@ -1,0 +1,78 @@
+/**
+ * Gemini Settings styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-settings-gemini {
+
+		.googlesitekit-settings-gemini__memorable-quotes {
+
+			.googlesitekit-settings-gemini__columns {
+
+				background-color: #fff;
+				border-radius: 16px;
+				display: grid;
+				gap: $grid-gap-desktop;
+				grid-auto-columns: minmax(0, 1fr);
+				grid-auto-flow: column;
+
+				.googlesitekit-heading-4 {
+					margin-bottom: 0.2em;
+					margin-top: 0;
+				}
+				.googlesitekit-settings-gemini__description {
+					margin-bottom: 1.33em;
+				}
+
+				.googlesitekit-settings-gemini__list {
+					height: 400px;
+					margin: 24px 0;
+					min-width: 0;
+					overflow-x: auto;
+
+					.googlesitekit-settings-gemini__post {
+						display: flex;
+					}
+
+					.googlesitekit-settings-gemini__no-quotes {
+						margin-top: 180px;
+						text-align: center;
+					}
+				}
+
+				.googlesitekit-settings-gemini__quotes .googlesitekit-settings-gemini__quote {
+					display: flex;
+				}
+
+				.googlesitekit-settings-gemini__select .googlesitekit-settings-gemini__post .mdc-form-field {
+					max-width: 100%;
+
+					label {
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+				}
+
+				.googlesitekit-settings-gemini__results .googlesitekit-settings-gemini__quote .mdc-form-field label {
+					padding-bottom: 8px;
+					padding-top: 8px;
+				}
+			}
+		}
+	}
+}

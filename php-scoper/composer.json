@@ -1,10 +1,10 @@
 {
     "require": {
-        "humbug/php-scoper": "^0.13.0"
+        "humbug/php-scoper": "^0.18.0"
     },
     "config": {
       "platform": {
-        "php": "7.4"
+        "php": "8.1"
       },
       "allow-plugins": {
         "composer/package-versions-deprecated": true
