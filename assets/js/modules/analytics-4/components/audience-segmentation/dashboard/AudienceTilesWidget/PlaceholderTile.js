@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import Link from '../../../../../../components/Link';
 import NoAudienceBannerGraphic from '../../../../../../../svg/graphics/no-audience-banner-graphic.svg';
@@ -40,11 +41,16 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/c
 
 export default function PlaceholderTile( { Widget } ) {
 	const hasConfigurableNonDefaultAudiences = useSelect( ( select ) => {
+		const configuredAudiences =
+			select( CORE_USER ).getConfiguredAudiences();
+
 		const configurableAudiences =
 			select( MODULES_ANALYTICS_4 ).getConfigurableAudiences();
 
 		return configurableAudiences.some(
-			( audience ) => audience.audienceType !== 'DEFAULT_AUDIENCE'
+			( audience ) =>
+				audience.audienceType !== 'DEFAULT_AUDIENCE' &&
+				! configuredAudiences.includes( audience.name )
 		);
 	} );
 
