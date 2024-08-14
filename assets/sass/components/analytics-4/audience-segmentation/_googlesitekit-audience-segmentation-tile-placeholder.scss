@@ -18,7 +18,8 @@
 
 .googlesitekit-plugin {
 	.googlesitekit-audience-segmentation-tile-placeholder {
-		min-height: 475px;
+		// The min-height is set to match the shortest populated tile height.
+		min-height: 542px;
 
 		.googlesitekit-widget__body {
 			align-items: center;
