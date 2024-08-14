@@ -36,8 +36,8 @@ function Template( { availableSavedItems = {}, savedItemSlugs = [] } ) {
 	);
 
 	const availableUnsavedItems =
-		// Create an array of numbers from 1 to 24.
-		Array.from( { length: 24 }, ( _, index ) => index + 1 )
+		// Create an array of numbers from 1 to 5.
+		Array.from( { length: 5 }, ( _, index ) => index + 1 )
 			// Filter out saved items.
 			.filter(
 				( number ) =>
@@ -89,7 +89,7 @@ function Template( { availableSavedItems = {}, savedItemSlugs = [] } ) {
 				savedItemSlugs={ savedItemSlugs }
 			/>
 			<SelectionPanelFooter
-				maxSelectedItemCount={ 24 }
+				maxSelectedItemCount={ 5 }
 				selectedItemSlugs={ selectedItems }
 			/>
 		</SelectionPanel>
@@ -132,7 +132,7 @@ export const withZeroUnsavedItems = Template.bind( {} );
 withZeroUnsavedItems.storyName = 'With zero unsaved items';
 withZeroUnsavedItems.args = {
 	availableSavedItems: Array.from(
-		{ length: 24 },
+		{ length: 5 },
 		( _, index ) => index + 1
 	).reduce( ( acc, current ) => {
 		const slug = `item-${ current }`;
@@ -147,7 +147,7 @@ withZeroUnsavedItems.args = {
 		};
 	}, {} ),
 	savedItemSlugs: Array.from(
-		{ length: 24 },
+		{ length: 5 },
 		( _, index ) => `item-${ index + 1 }`
 	),
 };
