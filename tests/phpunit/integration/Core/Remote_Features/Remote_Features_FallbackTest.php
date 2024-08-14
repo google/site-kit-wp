@@ -39,8 +39,8 @@ class Remote_Features_FallbackTest extends TestCase {
 
 	public function test_remote_features_sync_fallback__24h_since_last_sync() {
 		$fallback = new Remote_Features_Fallback(
-			$this->syncer,
-			$this->setting
+			$this->setting,
+			$this->syncer
 		);
 
 		$this->setting->set( array( 'last_updated_at' => time() - DAY_IN_SECONDS - MINUTE_IN_SECONDS ) );
@@ -53,8 +53,8 @@ class Remote_Features_FallbackTest extends TestCase {
 
 	public function test_remote_features_sync_fallback__less_than_24h_since_last_sync() {
 		$fallback = new Remote_Features_Fallback(
-			$this->syncer,
-			$this->setting
+			$this->setting,
+			$this->syncer
 		);
 
 		$this->setting->set( array( 'last_updated_at' => time() - HOUR_IN_SECONDS ) );
