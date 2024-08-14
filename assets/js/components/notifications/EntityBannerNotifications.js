@@ -24,12 +24,19 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import ZeroDataNotifications from './ZeroDataStateNotifications';
+import Notifications from './Notifications';
+import useViewContext from '../../hooks/useViewContext';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function EntityBannerNotifications() {
+	const viewContext = useViewContext();
+
 	return (
 		<Fragment>
-			<ZeroDataNotifications />
+			<Notifications
+				viewContext={ viewContext }
+				areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
+			/>
 		</Fragment>
 	);
 }

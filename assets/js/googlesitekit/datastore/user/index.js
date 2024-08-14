@@ -22,6 +22,7 @@
 import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '../../data/create-error-store';
 import adblocker from './adblocker';
+import audienceSettings from './audience-settings';
 import authentication from './authentication';
 import { CORE_USER } from './constants';
 import dateRange from './date-range';
@@ -43,6 +44,7 @@ const store = combineStores(
 	commonStore,
 	createErrorStore( CORE_USER ),
 	adblocker,
+	audienceSettings,
 	authentication,
 	dateRange,
 	disconnect,

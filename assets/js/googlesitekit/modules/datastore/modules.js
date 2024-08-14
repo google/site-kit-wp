@@ -1322,7 +1322,7 @@ const baseSelectors = {
 	/**
 	 * Checks if there are any recoverable modules for dashboard sharing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if there are recoverable modules.

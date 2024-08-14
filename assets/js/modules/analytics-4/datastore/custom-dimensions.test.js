@@ -30,7 +30,6 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import {
@@ -68,10 +67,6 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			googlesitekit_manage_options: true,
 		} );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {

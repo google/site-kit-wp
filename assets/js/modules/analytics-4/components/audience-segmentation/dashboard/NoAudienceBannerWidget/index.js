@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import { useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import NoAudienceBanner from './NoAudienceBanner';
 
 function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
@@ -35,7 +36,7 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 		return audiences?.map( ( audience ) => audience.name );
 	} );
 	const configuredAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	const hasNoMatchingAudience = configuredAudiences?.every(

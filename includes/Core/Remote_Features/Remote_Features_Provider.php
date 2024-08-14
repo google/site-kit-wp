@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Storage\Options;
 /**
  * Class providing the integration of remote features.
  *
- * @since n.e.x.t
+ * @since 1.133.0
  * @access private
  * @ignore
  */
@@ -72,7 +72,7 @@ class Remote_Features_Provider {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param Context $context Context instance.
 	 * @param Options $options Options instance.
@@ -94,7 +94,7 @@ class Remote_Features_Provider {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 */
 	public function register() {
 		$this->setting->register();

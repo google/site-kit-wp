@@ -96,12 +96,10 @@ export default {
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {
-						configuredAudiences: null,
-						isAudienceSegmentationWidgetHidden: false,
-					} );
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					configuredAudiences: null,
+					isAudienceSegmentationWidgetHidden: false,
+				} );
 
 				const options = {
 					metrics: [ { name: 'totalUsers' } ],
