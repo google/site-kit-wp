@@ -25,6 +25,7 @@ import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/er
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModuleRegistrations,
@@ -32,6 +33,7 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	render,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import ErrorNotice from './ErrorNotice';
 
@@ -261,6 +263,8 @@ describe( 'ErrorNotice', () => {
 			await waitForRegistry();
 
 			expect( getByText( /retry/i ) ).toBeInTheDocument();
+
+			await act( waitForDefaultTimeouts );
 
 			if ( 'syncAvailableAudiences' === storeFunctionName ) {
 				expect(
