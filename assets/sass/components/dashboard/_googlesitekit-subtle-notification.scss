@@ -110,6 +110,7 @@
 	&.googlesitekit-subtle-notification--warning {
 		background-color: $c-utility-warning-container;
 
+		.googlesitekit-subtle-notification__icon,
 		.googlesitekit-subtle-notification__content {
 			color: $c-utility-on-warning-container;
 		}
