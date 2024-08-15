@@ -33,11 +33,7 @@
 	}
 
 	.googlesitekit-subtle-notification__icon {
-		display: none;
-
-		@media (min-width: $bp-tablet) {
-			display: flex;
-		}
+		display: flex;
 	}
 
 	.googlesitekit-subtle-notification__content {
