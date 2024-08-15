@@ -38,6 +38,8 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
+use WP_Error;
 
 /**
  * Class representing the Reader Revenue Manager module.
@@ -142,31 +144,37 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Checks if the current user has access to the current configured service entity.
 	 *
 	 * @since 1.131.0
+	 * @since n.e.x.t Checks if the user's publications includes the saved publication.
 	 *
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		/**
-		 * Get the SubscribewithGoogle service instance.
-		 *
-		 * @var Google_Service_SubscribewithGoogle
-		 */
-		$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
-
 		try {
-			$subscribewithgoogle->publications->listPublications(
-				array(
-					'pageSize' => 1,
-				)
-			);
+			$response = $this->get_publications_list();
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 403 ) {
 				return false;
 			}
+
 			return $this->exception_to_error( $e );
 		}
 
-		return true;
+		$publications   = array_values( $response->getPublications() );
+		$settings       = $this->get_settings()->get();
+		$publication_id = $settings['publicationID'];
+
+		// Check if the $publications array contains a publication with the saved
+		// publication ID.
+		foreach ( $publications as $publication ) {
+			if (
+				isset( $publication['publicationId'] ) &&
+				$publication_id === $publication['publicationId']
+			) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -195,13 +203,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				/**
-				 * Get the SubscribewithGoogle service instance.
-				 *
-				 * @var Google_Service_SubscribewithGoogle
-				 */
-				$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
-				return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
+				return $this->get_publications_list();
 		}
 
 		return parent::create_data_request( $data );
@@ -378,5 +380,23 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'debug' => $settings['publicationOnboardingStateLastSyncedAtMs'],
 			),
 		);
+	}
+
+	/**
+	 * Makes a request to fetch publications list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return ListPublicationsResponse Publications list response instance.
+	 */
+	protected function get_publications_list() {
+		/**
+		 * Get the SubscribewithGoogle service instance.
+		 *
+		 * @var Google_Service_SubscribewithGoogle
+		 */
+		$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
+
+		return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
 	}
 }

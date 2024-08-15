@@ -12,6 +12,9 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
@@ -117,34 +120,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						$publications = array(
-							array(
-								'publicationId'         => 'ABCDEFGH',
-								'publicationPredicates' => array(
-									'businessPredicates' => array(
-										'supportsSiteKit' => true,
-										'canSell'         => true,
-									),
-								),
-								'verifiedDomains'       => 'example.com',
-								'paymentOptions'        => array(
-									'subscriptions' => true,
-									'noPayment'     => false,
-									'contributions' => false,
-									'thankStickers' => true,
-								),
-								'displayName'           => 'Test Property',
-								'products'              => array(
-									array(
-										'name' => 'basic',
-									),
-								),
-								'onboardingState'       => 'PENDING_VERIFICATION',
-							),
+						return new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response() )
 						);
-						$response     = new ListPublicationsResponse();
-						$response->setPublications( $publications );
-						return new Response( 200, array(), json_encode( $response ) );
 				}
 			}
 		);
@@ -233,14 +213,71 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
+	public function test_check_service_entity_access_no_access_unavailable_publication() {
+		$module = $this->get_module_with_service_entity();
+
+		$this->mock_service_entity_access( $module, 200 );
+		$this->set_up_check_service_entity_access( $module );
+
+		// Change saved publication to one that is not available.
+		$module->get_settings()->merge(
+			array(
+				'publicationID' => 'IJKLMNOP',
+			)
+		);
+
+		$access = $module->check_service_entity_access();
+
+		$this->assertNotWPError( $access );
+		$this->assertEquals( false, $access );
+	}
+
 	public function get_module_with_settings() {
 		return $this->reader_revenue_manager;
 	}
 
 	/**
-	 * @return Module_With_Service_Entity
+	 * @return Module|Module_With_Service_Entity|Module_With_Settings
 	 */
 	protected function get_module_with_service_entity() {
 		return $this->reader_revenue_manager;
+	}
+
+	protected function set_up_check_service_entity_access( Module_With_Settings $module ) {
+		$module->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+	}
+
+	protected function mock_service_entity_access( Module $module, $status_code ) {
+		FakeHttp::fake_google_http_handler(
+			$module->get_client(),
+			function () use ( $status_code ) {
+				if ( 200 === $status_code ) {
+					return new Response(
+						200,
+						array(),
+						json_encode( $this->get_publications_list_response() )
+					);
+				}
+
+				return new Response( $status_code );
+			}
+		);
+	}
+
+	protected function get_publications_list_response() {
+		$publication = new Publication();
+
+		$publication->setPublicationId( 'ABCDEFGH' );
+		$publication->setDisplayName( 'Test Property' );
+		$publication->setOnboardingState( 'PENDING_VERIFICATION' );
+
+		$response = new ListPublicationsResponse();
+		$response->setPublications( array( $publication ) );
+
+		return $response;
 	}
 }
