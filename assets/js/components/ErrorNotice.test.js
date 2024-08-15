@@ -176,6 +176,7 @@ describe( 'ErrorNotice', () => {
 				},
 			},
 			storeName: MODULES_TAGMANAGER,
+			hasButton: true,
 		} );
 
 		expect( queryByText( /retry/i ) ).toBeInTheDocument();
