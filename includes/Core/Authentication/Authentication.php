@@ -381,9 +381,11 @@ final class Authentication {
 
 		add_action(
 			'heartbeat_tick',
-			function () {
-				$this->maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
-			}
+			function ( $response, $screen_id ) {
+				$this->maybe_refresh_token_for_screen( $screen_id );
+			},
+			10,
+			2
 		);
 
 		// Regularly synchronize Google profile data.
