@@ -19,6 +19,8 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -34,8 +36,10 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  */
 class Reader_Revenue_ManagerTest extends TestCase {
 
-	use Module_With_Settings_ContractTests;
+	use Module_With_Owner_ContractTests;
+	use Module_With_Scopes_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Settings_ContractTests;
 
 	/**
 	 * Context object.
@@ -232,6 +236,23 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( false, $access );
 	}
 
+	/**
+	 * @return Module_With_Scopes
+	 */
+	protected function get_module_with_scopes() {
+		return $this->reader_revenue_manager;
+	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
+		return $this->reader_revenue_manager;
+	}
+
+	/**
+	 * @return Module_With_Settings
+	 */
 	public function get_module_with_settings() {
 		return $this->reader_revenue_manager;
 	}
