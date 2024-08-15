@@ -21,7 +21,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google-gemini-php/client": "dev-sitekit",
-    "google/apiclient": "2.14.0",
+    "google/apiclient": "^2.14.0",
     "google/apiclient-services": "^0.343.0",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
