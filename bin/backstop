@@ -17,7 +17,7 @@
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR=$(dirname "$BIN_DIR")
 
-VERSION=6.1.1
+VERSION=6.3.23
 IMAGE=googlesitekit/vrt:$VERSION
 
 # Build the backstopjs image if it doesn't exist yet.
