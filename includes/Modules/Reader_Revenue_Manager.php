@@ -149,13 +149,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		try {
-			$response = $this->get_publications_list();
-		} catch ( Exception $e ) {
-			if ( $e->getCode() === 403 ) {
-				return false;
-			}
+		/**
+		 * Get the SubscribewithGoogle service instance.
+		 *
+		 * @var Google_Service_SubscribewithGoogle
+		 */
+		$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
 
+		try {
+			$response = $subscribewithgoogle->publications->listPublications();
+		} catch ( Exception $e ) {
 			return $this->exception_to_error( $e );
 		}
 
@@ -203,7 +206,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				return $this->get_publications_list();
+				/**
+				 * Get the SubscribewithGoogle service instance.
+				 *
+				 * @var Google_Service_SubscribewithGoogle
+				 */
+				$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
+				return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
 		}
 
 		return parent::create_data_request( $data );
@@ -380,23 +389,5 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'debug' => $settings['publicationOnboardingStateLastSyncedAtMs'],
 			),
 		);
-	}
-
-	/**
-	 * Makes a request to fetch publications list.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return ListPublicationsResponse Publications list response instance.
-	 */
-	protected function get_publications_list() {
-		/**
-		 * Get the SubscribewithGoogle service instance.
-		 *
-		 * @var Google_Service_SubscribewithGoogle
-		 */
-		$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
-
-		return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
 	}
 }
