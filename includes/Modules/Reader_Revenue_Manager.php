@@ -158,6 +158,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		try {
 			$response = $subscribewithgoogle->publications->listPublications();
 		} catch ( Exception $e ) {
+			if ( $e->getCode() === 403 ) {
+				return false;
+			}
 			return $this->exception_to_error( $e );
 		}
 
