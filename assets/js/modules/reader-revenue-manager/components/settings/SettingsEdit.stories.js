@@ -55,7 +55,7 @@ Default.storyName = 'Default';
 Default.scenario = {};
 
 export const PendingVerification = Template.bind( {} );
-PendingVerification.storyName = 'Pending verification';
+PendingVerification.storyName = 'PendingVerification';
 PendingVerification.scenario = {};
 PendingVerification.args = {
 	setupRegistry: ( registry ) => {
@@ -66,7 +66,7 @@ PendingVerification.args = {
 };
 
 export const ActionRequired = Template.bind( {} );
-ActionRequired.storyName = 'Action required';
+ActionRequired.storyName = 'ActionRequired';
 ActionRequired.scenario = {};
 ActionRequired.args = {
 	setupRegistry: ( registry ) => {
@@ -77,7 +77,7 @@ ActionRequired.args = {
 };
 
 export const WithoutModuleAccess = Template.bind( {} );
-WithoutModuleAccess.storyName = 'Without module access';
+WithoutModuleAccess.storyName = 'WithoutModuleAccess';
 WithoutModuleAccess.scenario = {};
 WithoutModuleAccess.args = {
 	setupRegistry: ( registry ) => {
@@ -97,7 +97,7 @@ WithoutModuleAccess.args = {
 };
 
 export const PublicationUnavailable = Template.bind( {} );
-PublicationUnavailable.storyName = 'Publication unavailable';
+PublicationUnavailable.storyName = 'PublicationUnavailable';
 PublicationUnavailable.scenario = {};
 PublicationUnavailable.args = {
 	setupRegistry: ( registry ) => {
