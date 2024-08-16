@@ -1263,7 +1263,6 @@ class Analytics_4Test extends TestCase {
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
 				'create-audience',
-				'audience-settings',
 				'sync-audiences',
 				'save-resource-data-availability-date',
 			),

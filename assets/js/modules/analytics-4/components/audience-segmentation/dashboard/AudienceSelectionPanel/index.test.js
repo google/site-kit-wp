@@ -81,7 +81,7 @@ describe( 'AudienceSelectionPanel', () => {
 			.setAvailableAudiences( availableAudiences );
 
 		registry
-			.dispatch( MODULES_ANALYTICS_4 )
+			.dispatch( CORE_USER )
 			.setConfiguredAudiences( configuredAudiences );
 
 		registry.dispatch( CORE_FORMS ).setValues( AUDIENCE_SELECTION_FORM, {
@@ -466,7 +466,7 @@ describe( 'AudienceSelectionPanel', () => {
 		it( 'should display notice when there is a saved selection of one group', async () => {
 			const selectedAudiences = [ 'properties/12345/audiences/3' ];
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( selectedAudiences );
 
 			registry
@@ -499,7 +499,7 @@ describe( 'AudienceSelectionPanel', () => {
 			'should not display notice when there is a saved selection of %s than one group',
 			async ( _, audiences ) => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setConfiguredAudiences( audiences );
 
 				const { queryByText, waitForRegistry } = render(
@@ -521,7 +521,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should not display notice when the selection changes', async () => {
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
 
 			registry
@@ -549,7 +549,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should not display notice when dismissed', async () => {
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
 
 			registry
@@ -594,7 +594,7 @@ describe( 'AudienceSelectionPanel', () => {
 				.setAvailableAudiences( nonSiteKitAvailableAudiences );
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
 
 			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
@@ -645,7 +645,7 @@ describe( 'AudienceSelectionPanel', () => {
 				);
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( mixedConfiguredAudiences );
 
 			registry
@@ -706,7 +706,7 @@ describe( 'AudienceSelectionPanel', () => {
 				);
 
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( mixedConfiguredAudiences );
 
 			registry

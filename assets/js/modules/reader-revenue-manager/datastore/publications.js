@@ -225,21 +225,21 @@ const baseActions = {
 	 * Resets the publications data in the store.
 	 *
 	 * @since 1.133.0
+	 *
+	 * @return {Object} The dispatched action results.
 	 */
 	*resetPublications() {
 		const registry = yield commonActions.getRegistry();
 
-		yield errorStoreActions.clearErrors( 'getPublications' );
-
-		yield commonActions.await(
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.invalidateResolutionForStoreSelector( 'getPublications' )
-		);
-
 		yield {
 			type: 'RESET_PUBLICATIONS',
 		};
+
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		return registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.invalidateResolutionForStoreSelector( 'getPublications' );
 	},
 
 	/**

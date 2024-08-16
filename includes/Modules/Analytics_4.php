@@ -57,7 +57,6 @@ use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
-use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
@@ -90,6 +89,7 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\User\Audience_Settings;
 use stdClass;
 use WP_Error;
 
@@ -659,12 +659,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['GET:audience-settings']                     = array(
-				'service' => '',
-			);
-			$datapoints['POST:audience-settings']                    = array(
-				'service' => '',
-			);
 			$datapoints['POST:save-resource-data-availability-date'] = array(
 				'service' => '',
 			);
@@ -1096,33 +1090,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$property_id,
 						$post_body
 					);
-			case 'GET:audience-settings':
-				return function () {
-					return $this->audience_settings->get();
-				};
-			case 'POST:audience-settings':
-				$settings = $data['settings'];
-				if ( ! isset( $settings['configuredAudiences'] ) ) {
-					throw new Missing_Required_Param_Exception( 'configuredAudiences' );
-				}
-
-				if ( ! is_array( $settings['configuredAudiences'] ) ) {
-					throw new Invalid_Param_Exception( 'configuredAudiences' );
-				}
-
-				if ( ! isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
-					throw new Missing_Required_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
-				}
-
-				if ( ! is_bool( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
-					throw new Invalid_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
-				}
-
-				$this->audience_settings->merge( $data['settings'] );
-
-				return function () {
-					return $this->audience_settings->get();
-				};
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );

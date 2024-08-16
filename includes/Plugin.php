@@ -167,6 +167,9 @@ final class Plugin {
 
 				$user_input->register();
 
+				$user = new Core\User\User( $user_options );
+				$user->register();
+
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
 

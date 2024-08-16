@@ -26,8 +26,8 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
-	unsubscribeFromAll,
 } from '../../../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
@@ -40,7 +40,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	)( NoAudienceBannerWidget );
 
 	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	beforeEach( () => {
@@ -57,7 +57,6 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		jest.clearAllMocks();
 	} );
 
@@ -80,7 +79,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -97,7 +96,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -114,7 +113,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -131,7 +130,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [
 				'properties/12345/audiences/1',
 				'properties/12345/audiences/3',
@@ -151,7 +150,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [
 				'properties/12345/audiences/1',
 				'properties/12345/audiences/9',
@@ -171,7 +170,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -192,7 +191,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	it( 'should render with correct message when there is no additional configurable audience available', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );

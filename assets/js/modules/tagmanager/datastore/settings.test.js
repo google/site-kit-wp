@@ -45,7 +45,6 @@ import {
 } from './__factories__';
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	muteFetch,
 	provideModules,
 } from '../../../../../tests/js/utils';
@@ -109,10 +108,6 @@ describe( 'modules/tagmanager settings', () => {
 			},
 		] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {
