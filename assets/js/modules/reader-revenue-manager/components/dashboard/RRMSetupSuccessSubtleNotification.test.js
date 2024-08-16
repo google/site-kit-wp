@@ -171,7 +171,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 	it.each( publicationStatesData )(
 		'should dismiss the notification and trigger dismiss_notification event when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
-		( onboardingState, dismissText ) => {
+		( onboardingState, ctaText, dismissText ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
