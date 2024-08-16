@@ -136,8 +136,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 				'googlesitekit-publication-onboarding-state-notice'
 			);
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
+			act( () => {
 				fireEvent.click( getByText( ctaText ) );
 			} );
 
