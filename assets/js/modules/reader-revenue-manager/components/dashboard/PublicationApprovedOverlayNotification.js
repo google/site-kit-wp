@@ -86,6 +86,12 @@ export default function PublicationApprovedOverlayNotification() {
 		)
 	);
 
+	const dismissNotice = () => {
+		dismissOverlayNotification(
+			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
+		);
+	};
+
 	const dismissNotification = () => {
 		trackEvent(
 			`${ viewContext }_rrm-publication-approved-notification`,
@@ -93,9 +99,7 @@ export default function PublicationApprovedOverlayNotification() {
 		).finally( () => {
 			// Dismiss the notification, which also dismisses it from
 			// the current user's profile with the `dismissItem` action.
-			dismissOverlayNotification(
-				RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
-			);
+			dismissNotice();
 		} );
 	};
 
@@ -144,7 +148,7 @@ export default function PublicationApprovedOverlayNotification() {
 							`${ viewContext }_rrm-publication-approved-notification`,
 							'confirm_notification'
 						).finally( () => {
-							dismissNotification();
+							dismissNotice();
 						} );
 					} }
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }

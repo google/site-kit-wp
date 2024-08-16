@@ -51,7 +51,6 @@ const {
 
 describe( 'RRMSetupSuccessSubtleNotification', () => {
 	let registry;
-	let queryArgsMock;
 
 	const invalidPublicationOnboardingStates = [ UNSPECIFIED ];
 
@@ -77,7 +76,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	];
 
 	beforeEach( () => {
-		queryArgsMock = jest.fn();
 		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 
@@ -90,14 +88,12 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		] );
 
 		useQueryArg.mockImplementation( ( arg ) => {
+			const setValueMock = jest.fn();
 			switch ( arg ) {
 				case 'notification':
-					return [ 'authentication_success', queryArgsMock ];
+					return [ 'authentication_success', setValueMock ];
 				case 'slug':
-					return [
-						READER_REVENUE_MANAGER_MODULE_SLUG,
-						queryArgsMock,
-					];
+					return [ READER_REVENUE_MANAGER_MODULE_SLUG, setValueMock ];
 			}
 		} );
 	} );
@@ -125,7 +121,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 	it.each( publicationStatesData )(
 		'should render a notification and trigger confirm_notification event when the publication onboarding state is %s',
-		async ( onboardingState, ctaText, dismissText, message ) => {
+		( onboardingState, ctaText, dismissText, message ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
@@ -160,8 +156,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				onboardingState
 			);
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
+			act( () => {
 				fireEvent.click( ctaElement );
 			} );
 
@@ -171,19 +166,12 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				'confirm_notification',
 				onboardingState
 			);
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				3,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
-				'dismiss_notification',
-				onboardingState
-			);
 		}
 	);
 
 	it.each( publicationStatesData )(
 		'should dismiss the notification and trigger dismiss_notification event when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
-		async ( onboardingState, ctaText, dismissText ) => {
+		( onboardingState, dismissText ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
@@ -212,8 +200,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				onboardingState
 			);
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
+			act( () => {
 				fireEvent.click( dismissElement );
 			} );
 

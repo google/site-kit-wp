@@ -196,11 +196,5 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
 			'confirm_notification'
 		);
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			3,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
-			'dismiss_notification'
-		);
 	} );
 } );

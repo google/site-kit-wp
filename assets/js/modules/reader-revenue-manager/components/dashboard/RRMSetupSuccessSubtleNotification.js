@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useMemo, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -43,6 +43,12 @@ const {
 	ONBOARDING_ACTION_REQUIRED,
 } = PUBLICATION_ONBOARDING_STATES;
 
+const targetOnboardingStates = [
+	ONBOARDING_COMPLETE,
+	PENDING_VERIFICATION,
+	ONBOARDING_ACTION_REQUIRED,
+];
+
 function RRMSetupSuccessSubtleNotification() {
 	const viewContext = useViewContext();
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
@@ -62,40 +68,30 @@ function RRMSetupSuccessSubtleNotification() {
 		} )
 	);
 
-	const targetOnboardingStates = useMemo(
-		() => [
-			ONBOARDING_COMPLETE,
-			PENDING_VERIFICATION,
-			ONBOARDING_ACTION_REQUIRED,
-		],
-		[]
-	);
+	const showNotification =
+		notification === 'authentication_success' &&
+		slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
+		publicationOnboardingState !== undefined;
 
-	const skipDisplay =
-		'authentication_success' !== notification ||
-		slug !== READER_REVENUE_MANAGER_MODULE_SLUG ||
-		publicationOnboardingState === undefined;
+	const dismissNotice = () => {
+		setNotification( undefined );
+		setSlug( undefined );
+	};
 
 	const handleDismiss = () => {
-		if (
-			! skipDisplay &&
-			targetOnboardingStates.includes( publicationOnboardingState )
-		) {
+		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
 				`${ viewContext }_rrm-setup-success-notification`,
 				'dismiss_notification',
 				publicationOnboardingState
 			);
 		}
-		setNotification( undefined );
-		setSlug( undefined );
+
+		dismissNotice();
 	};
 
 	const onCTAClick = () => {
-		if (
-			! skipDisplay &&
-			targetOnboardingStates.includes( publicationOnboardingState )
-		) {
+		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
 				`${ viewContext }_rrm-setup-success-notification`,
 				'confirm_notification',
@@ -103,12 +99,12 @@ function RRMSetupSuccessSubtleNotification() {
 			);
 		}
 
-		handleDismiss();
+		dismissNotice();
 	};
 
 	useEffect( () => {
 		if (
-			! skipDisplay &&
+			showNotification &&
 			targetOnboardingStates.includes( publicationOnboardingState )
 		) {
 			trackEvent(
@@ -117,14 +113,9 @@ function RRMSetupSuccessSubtleNotification() {
 				publicationOnboardingState
 			);
 		}
-	}, [
-		publicationOnboardingState,
-		skipDisplay,
-		targetOnboardingStates,
-		viewContext,
-	] );
+	}, [ publicationOnboardingState, showNotification, viewContext ] );
 
-	if ( skipDisplay ) {
+	if ( ! showNotification ) {
 		return null;
 	}
 

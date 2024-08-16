@@ -61,12 +61,12 @@ export default function PublicationOnboardingStateNotice() {
 		} )
 	);
 
-	const skipDisplay =
-		! onboardingState ||
-		! actionableOnboardingStates.includes( onboardingState );
+	const showNotice =
+		onboardingState &&
+		actionableOnboardingStates.includes( onboardingState );
 
 	useEffect( () => {
-		if ( skipDisplay ) {
+		if ( ! showNotice ) {
 			return;
 		}
 
@@ -75,9 +75,9 @@ export default function PublicationOnboardingStateNotice() {
 			'view_notification',
 			onboardingState
 		);
-	}, [ onboardingState, skipDisplay, viewContext ] );
+	}, [ onboardingState, showNotice, viewContext ] );
 
-	if ( skipDisplay ) {
+	if ( ! showNotice ) {
 		return null;
 	}
 

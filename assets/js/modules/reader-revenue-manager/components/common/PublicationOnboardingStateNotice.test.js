@@ -138,9 +138,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 
 			// eslint-disable-next-line require-await
 			await act( async () => {
-				fireEvent.click(
-					container.querySelector( '.googlesitekit-cta-link' )
-				);
+				fireEvent.click( getByText( ctaText ) );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

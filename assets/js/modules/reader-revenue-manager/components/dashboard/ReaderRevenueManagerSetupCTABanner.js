@@ -90,10 +90,8 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		trackEvent(
 			`${ viewContext }_rrm-setup-notification`,
 			'dismiss_notification'
-		).finally( async () => {
-			await dismissItem(
-				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
-			);
+		).finally( () => {
+			dismissItem( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY );
 		} );
 	}, [ dismissItem, viewContext ] );
 
@@ -106,16 +104,18 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const showBanner = isDismissed === false && canActivateRRMModule;
+
 	useEffect( () => {
-		if ( isDismissed === false && canActivateRRMModule ) {
+		if ( showBanner ) {
 			trackEvent(
 				`${ viewContext }_rrm-setup-notification`,
 				'view_notification'
 			);
 		}
-	}, [ canActivateRRMModule, isDismissed, viewContext ] );
+	}, [ showBanner, viewContext ] );
 
-	if ( isDismissed || isDismissed === undefined || ! canActivateRRMModule ) {
+	if ( ! showBanner ) {
 		return <WidgetNull />;
 	}
 
