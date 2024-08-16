@@ -20,76 +20,99 @@
  * Internal dependencies
  */
 import { provideModuleRegistrations } from '../../../../../../tests/js/utils';
+import { Grid, Row, Cell } from '../../../../material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 
 function Template() {
-	return <SettingsEdit />;
+	return (
+		<div className="googlesitekit-layout">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--reader-revenue-manager">
+				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<div className="googlesitekit-setup-module">
+									<SettingsEdit />
+								</div>
+							</Cell>
+						</Row>
+					</Grid>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
 
-export const PublicationSelected = Template.bind( {} );
-PublicationSelected.storyName = 'PublicationSelected';
-PublicationSelected.scenario = {};
-PublicationSelected.args = {
+export const PendingVerification = Template.bind( {} );
+PendingVerification.storyName = 'Pending verification';
+PendingVerification.scenario = {};
+PendingVerification.args = {
 	setupRegistry: ( registry ) => {
-		const publication = publications[ 0 ];
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setPublicationID( publication.publicationId );
+			.selectPublication( publications[ 1 ] );
 	},
 };
 
-export const PublicationSelectedPendingVerification = Template.bind( {} );
-PublicationSelectedPendingVerification.storyName =
-	'PublicationSelectedWithOnboardingStateNotice';
-PublicationSelectedPendingVerification.scenario = {};
-PublicationSelectedPendingVerification.args = {
+export const ActionRequired = Template.bind( {} );
+ActionRequired.storyName = 'Action required';
+ActionRequired.scenario = {};
+ActionRequired.args = {
 	setupRegistry: ( registry ) => {
-		const publication = publications[ 1 ];
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setPublicationID( publication.publicationId );
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setPublicationOnboardingState( publication.onboardingState );
+			.selectPublication( publications[ 2 ] );
 	},
 };
 
-export const PublicationSelectedActionRequired = Template.bind( {} );
-PublicationSelectedActionRequired.storyName =
-	'PublicationSelectedWithOnboardingStateNotice';
-PublicationSelectedActionRequired.scenario = {};
-PublicationSelectedActionRequired.args = {
+export const WithoutModuleAccess = Template.bind( {} );
+WithoutModuleAccess.storyName = 'Without module access';
+WithoutModuleAccess.scenario = {};
+WithoutModuleAccess.args = {
 	setupRegistry: ( registry ) => {
-		const publication = publications[ 2 ];
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setOwnerID( 2 );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+			);
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setPublicationID( publication.publicationId );
+			.selectPublication( publications[ 2 ] );
+	},
+};
+
+export const PublicationUnavailable = Template.bind( {} );
+PublicationUnavailable.storyName = 'Publication unavailable';
+PublicationUnavailable.scenario = {};
+PublicationUnavailable.args = {
+	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setPublicationOnboardingState( publication.onboardingState );
+			.receiveGetPublications( [ publications[ 0 ], publications[ 1 ] ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.selectPublication( publications[ 2 ] );
 	},
 };
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Settings/SettingsEdit',
-	parameters: {
-		features: [ 'rrmModule' ],
-	},
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
@@ -106,8 +129,9 @@ export default {
 				const settings = {
 					ownerID: 1,
 					// eslint-disable-next-line sitekit/acronym-case
-					publicationID: '',
-					publicationOnboardingState: '',
+					publicationID: publications[ 0 ].publicationId,
+					publicationOnboardingState:
+						publications[ 0 ].onboardingState,
 					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 

@@ -20,13 +20,32 @@
  * Internal dependencies
  */
 import { provideModuleRegistrations } from '../../../../../../tests/js/utils';
+import { Grid, Row, Cell } from '../../../../material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
+} from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
 
 function Template() {
-	return <SettingsView />;
+	return (
+		<div className="googlesitekit-layout">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--reader-revenue-manager">
+				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SettingsView />
+							</Cell>
+						</Row>
+					</Grid>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export const Default = Template.bind( {} );
@@ -64,6 +83,26 @@ WithActionRequiredNotice.args = {
 	},
 };
 WithActionRequiredNotice.scenario = {};
+
+export const WithoutModuleAccess = Template.bind( {} );
+WithoutModuleAccess.storyName = 'WithoutModuleAccess';
+WithoutModuleAccess.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setOwnerID( 2 );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+			);
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.selectPublication( publications[ 2 ] );
+	},
+};
+WithoutModuleAccess.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Settings/SettingsView',
