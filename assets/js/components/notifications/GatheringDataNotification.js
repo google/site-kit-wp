@@ -34,6 +34,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS } from '../../util';
 import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
+import Description from '../../googlesitekit/notifications/components/common/Description';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
 
@@ -76,16 +77,20 @@ export default function GatheringDataNotification( { id, Notification } ) {
 		<Notification>
 			<NotificationWithSmallSVG
 				title={ gatheringDataTitle }
-				description={ sprintf(
-					/* translators: %s: the number of hours the site can be in a gathering data state */
-					_n(
-						'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-						'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-						gatheringDataWaitTimeInHours,
-						'google-site-kit'
-					),
-					gatheringDataWaitTimeInHours
-				) }
+				description={
+					<Description
+						description={ sprintf(
+							/* translators: %s: the number of hours the site can be in a gathering data state */
+							_n(
+								'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+								'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+								gatheringDataWaitTimeInHours,
+								'google-site-kit'
+							),
+							gatheringDataWaitTimeInHours
+						) }
+					/>
+				}
 				actions={
 					<ActionsCTALinkDismiss
 						id={ id }

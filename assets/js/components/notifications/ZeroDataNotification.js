@@ -29,8 +29,9 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
 import { DAY_IN_SECONDS } from '../../util';
 import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
-import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
+import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 
 export default function ZeroDataNotification( { id, Notification } ) {
 	const notEnoughTrafficURL = useSelect( ( select ) => {
@@ -46,16 +47,20 @@ export default function ZeroDataNotification( { id, Notification } ) {
 					'Not enough traffic yet to display stats',
 					'google-site-kit'
 				) }
-				description={ __(
-					'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
-					'google-site-kit'
-				) }
-				learnMoreLink={
-					<LearnMoreLink
-						id={ id }
-						label={ __( 'Learn more', 'google-site-kit' ) }
-						url={ notEnoughTrafficURL }
-					/>
+				description={
+					<Description
+						description={ __(
+							'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ notEnoughTrafficURL }
+							/>
+						}
+					></Description>
 				}
 				actions={
 					<Dismiss
