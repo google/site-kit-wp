@@ -18,7 +18,19 @@
  * Internal dependencies
  */
 import Link from '../../../../components/Link';
+import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function LearnMoreLink( { label, url } ) {
-	return <Link href={ url }>{ label }</Link>;
+export default function LearnMoreLink( { id, label, url } ) {
+	const trackEvents = useNotificationEvents( id );
+
+	const handleLearnMore = ( event ) => {
+		event.persist();
+		trackEvents.clickLearnMore();
+	};
+
+	return (
+		<Link onClick={ handleLearnMore } href={ url }>
+			{ label }
+		</Link>
+	);
 }
