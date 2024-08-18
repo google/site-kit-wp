@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,25 +28,9 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import BannerNotification from './BannerNotification';
 import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { DAY_IN_SECONDS } from '../../util';
 
 export default function ZeroDataNotification() {
-	const viewContext = useViewContext();
-	const eventCategory = `${ viewContext }_zero-data-notification`;
-
-	const handleOnView = useCallback( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	}, [ eventCategory ] );
-
-	const handleOnDismiss = useCallback( () => {
-		trackEvent( eventCategory, 'dismiss_notification' );
-	}, [ eventCategory ] );
-
-	const handleOnLearnMoreClick = useCallback( () => {
-		trackEvent( eventCategory, 'click_learn_more_link' );
-	}, [ eventCategory ] );
-
 	const notEnoughTrafficURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'not-enough-traffic'
@@ -71,9 +54,6 @@ export default function ZeroDataNotification() {
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ DAY_IN_SECONDS }
 			SmallImageSVG={ ZeroStateIcon }
-			onView={ handleOnView }
-			onDismiss={ handleOnDismiss }
-			onLearnMoreClick={ handleOnLearnMoreClick }
 			isDismissible
 		/>
 	);
