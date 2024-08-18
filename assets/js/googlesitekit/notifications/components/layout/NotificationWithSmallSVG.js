@@ -24,7 +24,7 @@ import Title from '../common/Title';
 export default function NotificationWithSmallSVG( {
 	title,
 	description,
-	learnMoreLink = null,
+	learnMoreLink,
 	actions,
 	SmallImageSVG,
 } ) {
@@ -46,8 +46,10 @@ export default function NotificationWithSmallSVG( {
 				>
 					<Title title={ title }></Title>
 
-					<Description description={ description }></Description>
-					{ learnMoreLink }
+					<Description
+						description={ description }
+						learnMoreLink={ learnMoreLink }
+					></Description>
 
 					{ actions }
 				</Cell>

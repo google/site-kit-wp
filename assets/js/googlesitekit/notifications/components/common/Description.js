@@ -19,7 +19,7 @@
  */
 import { sanitizeHTML } from '../../../../util';
 
-export default function Description( { description } ) {
+export default function Description( { description, learnMoreLink } ) {
 	return (
 		<div className="googlesitekit-publisher-win__desc">
 			<p>
@@ -28,7 +28,8 @@ export default function Description( { description } ) {
 						ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
 						ALLOWED_ATTR: [ 'href' ],
 					} ) }
-				/>
+				/>{ ' ' }
+				{ learnMoreLink }
 			</p>
 		</div>
 	);
