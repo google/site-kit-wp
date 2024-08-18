@@ -26,11 +26,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import BannerNotification from './BannerNotification';
 import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
 import { DAY_IN_SECONDS } from '../../util';
+import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
+import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 
-export default function ZeroDataNotification() {
+export default function ZeroDataNotification( { id, Notification } ) {
 	const notEnoughTrafficURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'not-enough-traffic'
@@ -38,23 +39,30 @@ export default function ZeroDataNotification() {
 	} );
 
 	return (
-		<BannerNotification
-			id="zero-data-notification"
-			title={ __(
-				'Not enough traffic yet to display stats',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
-				'google-site-kit'
-			) }
-			format="small"
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL={ notEnoughTrafficURL }
-			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			dismissExpires={ DAY_IN_SECONDS }
-			SmallImageSVG={ ZeroStateIcon }
-			isDismissible
-		/>
+		<Notification>
+			<NotificationWithSmallSVG
+				title={ __(
+					'Not enough traffic yet to display stats',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
+					'google-site-kit'
+				) }
+				learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+				learnMoreURL={ notEnoughTrafficURL }
+				actions={
+					<Dismiss
+						id={ id }
+						dismissLabel={ __(
+							'Remind me later',
+							'google-site-kit'
+						) }
+						dismissExpires={ DAY_IN_SECONDS }
+					/>
+				}
+				SmallImageSVG={ ZeroStateIcon }
+			/>
+		</Notification>
 	);
 }
