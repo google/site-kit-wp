@@ -208,6 +208,6 @@ export function registerDefaults( notificationsAPI ) {
 
 			return analyticsHasZeroData || searchConsoleHasZeroData;
 		},
-		isDismissible: false,
+		isDismissible: true,
 	} );
 }
