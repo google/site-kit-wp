@@ -29,7 +29,7 @@ export default function LearnMoreLink( { id, label, url } ) {
 	};
 
 	return (
-		<Link onClick={ handleLearnMore } href={ url }>
+		<Link onClick={ handleLearnMore } href={ url } external>
 			{ label }
 		</Link>
 	);
