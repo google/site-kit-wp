@@ -30,6 +30,7 @@ import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
 import { DAY_IN_SECONDS } from '../../util';
 import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 
 export default function ZeroDataNotification( { id, Notification } ) {
 	const notEnoughTrafficURL = useSelect( ( select ) => {
@@ -49,8 +50,13 @@ export default function ZeroDataNotification( { id, Notification } ) {
 					'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
 					'google-site-kit'
 				) }
-				learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-				learnMoreURL={ notEnoughTrafficURL }
+				learnMoreLink={
+					<LearnMoreLink
+						id={ id }
+						label={ __( 'Learn more', 'google-site-kit' ) }
+						url={ notEnoughTrafficURL }
+					/>
+				}
 				actions={
 					<Dismiss
 						id={ id }
