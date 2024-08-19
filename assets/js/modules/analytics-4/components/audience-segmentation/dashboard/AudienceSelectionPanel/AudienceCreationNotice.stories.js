@@ -19,8 +19,12 @@
 /**
  * Internal dependencies
  */
+import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceCreationNotice from './AudienceCreationNotice';
@@ -61,12 +65,27 @@ WithOneAudience.args = {
 	},
 };
 
+export const WithMissingScopeNotice = Template.bind( {} );
+WithMissingScopeNotice.storyName = 'WithMissingScopeNotice';
+WithMissingScopeNotice.scenario = {};
+WithMissingScopeNotice.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
+	},
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice',
 	component: AudienceCreationNotice,
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ EDIT_SCOPE ],
+				} );
+
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				registry
