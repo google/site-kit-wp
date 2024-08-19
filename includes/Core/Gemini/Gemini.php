@@ -152,7 +152,7 @@ class Gemini {
 			$output .= '<div>';
 			$output .= sprintf(
 				'<a class="google-site-kit-memorable-quote" href="%1$s">&quot;%2$s&quot;</a> %3$s',
-				esc_url( get_permalink( $quote['postID'] ) ),
+				esc_url( get_permalink( $quote['postID'] ) . '#:~:text=' . $quote['quote'] ),
 				esc_html( $quote['quote'] ),
 				esc_html( ! empty( $quote['author'] ) ? ' - ' . $quote['author'] : '' ),
 			);
