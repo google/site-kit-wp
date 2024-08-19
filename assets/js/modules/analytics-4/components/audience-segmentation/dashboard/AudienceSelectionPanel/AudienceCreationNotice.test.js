@@ -185,7 +185,7 @@ describe( 'AudienceCreationNotice', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render the information notice if the user does not have the edit scope', async () => {
+	it( 'should render the missing scope notice if the user does not have the edit scope', async () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [],
 		} );
@@ -227,7 +227,7 @@ describe( 'AudienceCreationNotice', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should not render the information notice if the user does not have the edit scope but the notice has been dismissed', async () => {
+	it( 'should not render the missing scope notice if the user does not have the edit scope but the notice has been dismissed', async () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [],
 		} );
