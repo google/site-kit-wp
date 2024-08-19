@@ -29,7 +29,10 @@ import {
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../../googlesitekit/constants';
 import {
 	createTestRegistry,
@@ -71,7 +74,9 @@ describe( 'AudienceSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		provideUserAuthentication( registry );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -599,7 +604,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
 
-			const { getByText, waitForRegistry } = render(
+			const { getByText, queryByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
 				{
 					registry,
@@ -620,6 +625,63 @@ describe( 'AudienceSelectionPanel', () => {
 						index === 0 ? 'New visitors' : 'Returning visitors'
 					);
 				} );
+
+			// Verify the edit scope notice is not displayed.
+			expect(
+				queryByText(
+					/Creating these groups require more data tracking. You will be directed to update your Analytics property./i
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should display the audience creation notice with the missing scope notice', async () => {
+			const nonSiteKitAvailableAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			);
+
+			const nonSiteKitConfiguredAudiences =
+				nonSiteKitAvailableAudiences.map( ( { name } ) => name );
+
+			const nonSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: nonSiteKitConfiguredAudiences,
+				},
+			};
+
+			provideUserAuthentication( registry, {
+				grantedScopes: [],
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( nonSiteKitAvailableAudiences );
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
+
+			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Create groups suggested by Site Kit/i )
+			).toBeInTheDocument();
+
+			// Verify the edit scope notice is displayed.
+			expect(
+				getByText(
+					/Creating these groups require more data tracking. You will be directed to update your Analytics property./i
+				)
+			).toBeInTheDocument();
 		} );
 
 		it( 'should display an audience creation notice for a single audience', async () => {
@@ -654,7 +716,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
 
-			const { getByText, waitForRegistry } = render(
+			const { getByText, queryByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
 				{
 					registry,
@@ -680,6 +742,13 @@ describe( 'AudienceSelectionPanel', () => {
 					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
 				)[ 2 ]
 			).toHaveTextContent( 'New visitors' );
+
+			// Verify the edit scope notice is not displayed.
+			expect(
+				queryByText(
+					/Creating these groups require more data tracking. You will be directed to update your Analytics property./i
+				)
+			).not.toBeInTheDocument();
 		} );
 
 		it( 'should display an audience creation success notice when both audiences are created', async () => {
