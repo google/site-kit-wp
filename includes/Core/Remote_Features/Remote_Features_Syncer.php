@@ -77,7 +77,7 @@ class Remote_Features_Syncer {
 		$features = ( $this->fetch_features )();
 
 		if ( ! is_wp_error( $features ) && is_array( $features ) ) {
-			$this->remote_features->set( $features );
+			$this->remote_features->update( $features );
 		}
 	}
 }
