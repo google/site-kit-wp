@@ -30,6 +30,7 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
+	Fragment,
 } from '@wordpress/element';
 
 /**
@@ -51,7 +52,6 @@ import AudienceTile from './AudienceTile';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import PlaceholderTile from './PlaceholderTile';
-import { Fragment } from 'react';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 
 const hasZeroDataForAudience = ( report, audienceResourceName ) => {
