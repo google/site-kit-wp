@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,13 +29,28 @@ import { useSelect } from 'googlesitekit-data';
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import whenActive from '../../../../util/when-active';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 
+const {
+	ONBOARDING_COMPLETE,
+	PENDING_VERIFICATION,
+	ONBOARDING_ACTION_REQUIRED,
+} = PUBLICATION_ONBOARDING_STATES;
+
+const targetOnboardingStates = [
+	ONBOARDING_COMPLETE,
+	PENDING_VERIFICATION,
+	ONBOARDING_ACTION_REQUIRED,
+];
+
 function RRMSetupSuccessSubtleNotification() {
+	const viewContext = useViewContext();
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
 	const [ slug, setSlug ] = useQueryArg( 'slug' );
 
@@ -52,23 +68,58 @@ function RRMSetupSuccessSubtleNotification() {
 		} )
 	);
 
-	const handleDismiss = () => {
+	const showNotification =
+		notification === 'authentication_success' &&
+		slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
+		publicationOnboardingState !== undefined;
+
+	const dismissNotice = () => {
 		setNotification( undefined );
 		setSlug( undefined );
 	};
 
-	if (
-		'authentication_success' !== notification ||
-		slug !== READER_REVENUE_MANAGER_MODULE_SLUG ||
-		publicationOnboardingState === undefined
-	) {
+	const handleDismiss = () => {
+		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
+			trackEvent(
+				`${ viewContext }_rrm-setup-success-notification`,
+				'dismiss_notification',
+				publicationOnboardingState
+			);
+		}
+
+		dismissNotice();
+	};
+
+	const onCTAClick = () => {
+		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
+			trackEvent(
+				`${ viewContext }_rrm-setup-success-notification`,
+				'confirm_notification',
+				publicationOnboardingState
+			);
+		}
+
+		dismissNotice();
+	};
+
+	useEffect( () => {
+		if (
+			showNotification &&
+			targetOnboardingStates.includes( publicationOnboardingState )
+		) {
+			trackEvent(
+				`${ viewContext }_rrm-setup-success-notification`,
+				'view_notification',
+				publicationOnboardingState
+			);
+		}
+	}, [ publicationOnboardingState, showNotification, viewContext ] );
+
+	if ( ! showNotification ) {
 		return null;
 	}
 
-	if (
-		publicationOnboardingState ===
-		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
-	) {
+	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
 			<SubtleNotification
 				title={ __(
@@ -83,16 +134,13 @@ function RRMSetupSuccessSubtleNotification() {
 				dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 				ctaLabel={ __( 'Customize settings', 'google-site-kit' ) }
 				ctaLink={ serviceURL }
-				onCTAClick={ handleDismiss }
+				onCTAClick={ onCTAClick }
 				isCTALinkExternal
 			/>
 		);
 	}
 
-	if (
-		publicationOnboardingState ===
-		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION
-	) {
+	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
 			<SubtleNotification
 				title={ __(
@@ -107,16 +155,13 @@ function RRMSetupSuccessSubtleNotification() {
 				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 				ctaLabel={ __( 'Check publication status', 'google-site-kit' ) }
 				ctaLink={ serviceURL }
-				onCTAClick={ handleDismiss }
+				onCTAClick={ onCTAClick }
 				isCTALinkExternal
 			/>
 		);
 	}
 
-	if (
-		publicationOnboardingState ===
-		PUBLICATION_ONBOARDING_STATES.ONBOARDING_ACTION_REQUIRED
-	) {
+	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
 			<SubtleNotification
 				title={ __(
@@ -130,7 +175,7 @@ function RRMSetupSuccessSubtleNotification() {
 					'google-site-kit'
 				) }
 				ctaLink={ serviceURL }
-				onCTAClick={ handleDismiss }
+				onCTAClick={ onCTAClick }
 				isCTALinkExternal
 				variant="warning"
 			/>
