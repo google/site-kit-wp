@@ -72,7 +72,7 @@ class REST_Gemini_Controller {
 		$encryption = new Data_Encryption();
 		if ( is_array( $settings ) && array_key_exists( 'APIKey', $settings ) && $settings['APIKey'] ) {
 			$api_key             = $encryption->decrypt( $settings['APIKey'] );
-			$this->gemini_client = Gemini::client( $api_key );
+			$this->gemini_client = Gemini::client( $api_key ); // TODO: handle API errors such as invalid API key or account not activated.
 		}
 	}
 
@@ -225,7 +225,7 @@ class REST_Gemini_Controller {
 											'id'        => $quote_id++,
 											'postID'    => $post_id,
 											'quote'     => $generated_quote->quote,
-											'author'    => $generated_quote->author ? $generated_quote->author : '',
+											'author'    => property_exists( $generated_quote, 'author' ) && $generated_quote->author ? $generated_quote->author : '',
 											'published' => false,
 										);
 									}
