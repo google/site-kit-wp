@@ -58,6 +58,7 @@ final class Event implements \JsonSerializable {
 	 *
 	 * @return array The configuration in JSON-serializable format.
 	 */
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this->config;
 	}
