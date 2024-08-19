@@ -63,5 +63,9 @@
 		font-size: $fs-body-sm;
 		line-height: $lh-body-sm;
 		margin: 0;
+
+		.googlesitekit-cta-link {
+			font-weight: $fw-medium;
+		}
 	}
 }
