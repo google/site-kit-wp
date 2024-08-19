@@ -119,9 +119,21 @@
 			&.googlesitekit-subtle-notification__cta {
 				@include mdc-button-filled-accessible($c-utility-on-warning-container);
 			}
+		}
 
-			&.mdc-button--tertiary:not(:disabled) {
-				color: $c-utility-on-warning-container;
+		.mdc-button--tertiary {
+
+			@include mdc-button-ink-color( $c-utility-on-warning-container );
+
+			&:hover {
+				@include mdc-button-filled-accessible( $c-interactive-callout-warning-hover );
+				@include mdc-button-ink-color( $c-utility-on-warning-container );
+			}
+
+			&:active,
+			&:focus {
+				@include mdc-button-filled-accessible( $c-interactive-callout-warning-focus );
+				@include mdc-button-ink-color( $c-utility-on-warning-container );
 			}
 		}
 	}
