@@ -157,7 +157,7 @@ class RequestHelpers {
 			array_filter(
 				$metrics,
 				function ( $metric ) use ( $valid_name_expression ) {
-					return ! preg_match( "#$valid_name_expression#", $metric->getName() );
+					return ! preg_match( "#$valid_name_expression#", $metric->getName() ?? '' );
 				}
 			)
 		);
