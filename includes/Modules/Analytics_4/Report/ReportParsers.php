@@ -81,11 +81,11 @@ class ReportParsers {
 	 */
 	public function parse_dateranges( Data_Request $data ) {
 		$date_ranges = array();
-		$start_date  = $data['startDate'];
-		$end_date    = $data['endDate'];
+		$start_date  = $data['startDate'] ?? '';
+		$end_date    = $data['endDate'] ?? '';
 		if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
-			$compare_start_date = $data['compareStartDate'];
-			$compare_end_date   = $data['compareEndDate'];
+			$compare_start_date = $data['compareStartDate'] ?? '';
+			$compare_end_date   = $data['compareEndDate'] ?? '';
 			$date_ranges[]      = array( $start_date, $end_date );
 
 			// When using multiple date ranges, it changes the structure of the response:
