@@ -17,11 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-const { useSelect } = Data;
+import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 export default function Notifications( { viewContext, areaSlug } ) {
 	const queuedNotifications = useSelect( ( select ) =>
@@ -35,7 +40,13 @@ export default function Notifications( { viewContext, areaSlug } ) {
 		return null;
 	}
 
-	const { Component: ActiveNotification } = queuedNotifications[ 0 ];
+	const { id, Component: ActiveNotification } = queuedNotifications[ 0 ];
+	const props = { id, ...getNotificationComponentProps( id ) };
 
-	return <ActiveNotification />;
+	return <ActiveNotification { ...props } />;
 }
+
+Notifications.propTypes = {
+	viewContext: PropTypes.string,
+	areaSlug: PropTypes.string,
+};

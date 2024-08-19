@@ -108,7 +108,7 @@ export function registerDefaults( notificationsAPI ) {
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
-		isDismissible: false,
+		isDismissible: true,
 	} );
 
 	notificationsAPI.registerNotification( 'zero-data-notification', {

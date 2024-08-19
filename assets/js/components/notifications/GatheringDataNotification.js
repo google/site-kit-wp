@@ -17,35 +17,27 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
-import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { DAY_IN_SECONDS } from '../../util';
 import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
+import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
+import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
 
-export default function GatheringDataNotification() {
-	const viewContext = useViewContext();
-	const eventCategory = `${ viewContext }_gathering-data-notification`;
-	const handleOnView = useCallback( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	}, [ eventCategory ] );
-	const handleOnDismiss = useCallback( () => {
-		trackEvent( eventCategory, 'dismiss_notification' );
-	}, [ eventCategory ] );
-	const handleCTAClick = useCallback( () => {
-		trackEvent( eventCategory, 'confirm_notification' );
-	}, [ eventCategory ] );
-
+export default function GatheringDataNotification( { id, Notification } ) {
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -81,29 +73,38 @@ export default function GatheringDataNotification() {
 	}
 
 	return (
-		<BannerNotification
-			id="gathering-data-notification"
-			title={ gatheringDataTitle }
-			description={ sprintf(
-				/* translators: %s: the number of hours the site can be in a gathering data state */
-				_n(
-					'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-					'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-					gatheringDataWaitTimeInHours,
-					'google-site-kit'
-				),
-				gatheringDataWaitTimeInHours
-			) }
-			format="small"
-			onView={ handleOnView }
-			ctaLabel={ __( 'See other services', 'google-site-kit' ) }
-			ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
-			onCTAClick={ handleCTAClick }
-			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
-			dismissExpires={ DAY_IN_SECONDS }
-			SmallImageSVG={ GatheringDataIcon }
-			onDismiss={ handleOnDismiss }
-			isDismissible
-		/>
+		<Notification>
+			<NotificationWithSmallSVG
+				title={ gatheringDataTitle }
+				description={ sprintf(
+					/* translators: %s: the number of hours the site can be in a gathering data state */
+					_n(
+						'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						gatheringDataWaitTimeInHours,
+						'google-site-kit'
+					),
+					gatheringDataWaitTimeInHours
+				) }
+				actions={
+					<ActionsCTALinkDismiss
+						id={ id }
+						ctaLabel={ __(
+							'See other services',
+							'google-site-kit'
+						) }
+						ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
+						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
+						dismissExpires={ DAY_IN_SECONDS }
+					/>
+				}
+				SmallImageSVG={ GatheringDataIcon }
+			/>
+		</Notification>
 	);
 }
+
+GatheringDataNotification.propTypes = {
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
+};

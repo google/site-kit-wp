@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { combineStores, commonStore } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from './constants';
-import notifications from './notifications';
-
-const store = combineStores( commonStore, notifications );
-
-export const registerStore = ( registry ) => {
-	registry.registerStore( CORE_NOTIFICATIONS, store );
-};
-
-export default store;
+export { default as Notification } from './Notification';

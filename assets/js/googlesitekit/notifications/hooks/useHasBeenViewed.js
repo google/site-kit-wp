@@ -1,4 +1,6 @@
 /**
+ * `useHasBeenViewed` hook.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +19,15 @@
 /**
  * Internal dependencies
  */
-import { combineStores, commonStore } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from './constants';
-import notifications from './notifications';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '../../datastore/ui/constants';
 
-const store = combineStores( commonStore, notifications );
+const getKey = ( id ) => `notification/${ id }/viewed`;
 
-export const registerStore = ( registry ) => {
-	registry.registerStore( CORE_NOTIFICATIONS, store );
-};
-
-export default store;
+export function useHasBeenViewed( id ) {
+	return useSelect(
+		( select ) => !! select( CORE_UI ).getValue( getKey( id ) ),
+		[ id ]
+	);
+}
+useHasBeenViewed.getKey = getKey;

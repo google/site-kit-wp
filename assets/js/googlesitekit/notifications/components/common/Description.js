@@ -17,14 +17,19 @@
 /**
  * Internal dependencies
  */
-import { combineStores, commonStore } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from './constants';
-import notifications from './notifications';
+import { sanitizeHTML } from '../../../../util';
 
-const store = combineStores( commonStore, notifications );
-
-export const registerStore = ( registry ) => {
-	registry.registerStore( CORE_NOTIFICATIONS, store );
-};
-
-export default store;
+export default function Description( { description } ) {
+	return (
+		<div className="googlesitekit-publisher-win__desc">
+			<p>
+				<span
+					dangerouslySetInnerHTML={ sanitizeHTML( description, {
+						ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
+						ALLOWED_ATTR: [ 'href' ],
+					} ) }
+				/>
+			</p>
+		</div>
+	);
+}
