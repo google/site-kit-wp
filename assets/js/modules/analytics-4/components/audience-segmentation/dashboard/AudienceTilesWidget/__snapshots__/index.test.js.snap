@@ -1,5 +1,96 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`AudienceTilesWidget should not render audiences that are not available (archived) 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
+        dir="ltr"
+        role="tablist"
+      >
+        <div
+          class="mdc-tab-scroller"
+        >
+          <div
+            class="mdc-tab-scroller__scroll-area mdc-tab-scroller__scroll-area--scroll"
+            style="margin-bottom: 0px;"
+          >
+            <div
+              class="mdc-tab-scroller__scroll-content"
+            >
+              <button
+                aria-label="All visitors"
+                aria-selected="true"
+                class="mdc-tab mdc-tab--active"
+                role="tab"
+                tabindex="0"
+              >
+                <span
+                  class="mdc-tab__content"
+                >
+                  All visitors
+                  <span
+                    class="googlesitekit-info-tooltip"
+                  >
+                    <svg />
+                  </span>
+                </span>
+                <span
+                  class="mdc-tab-indicator mdc-tab-indicator--active"
+                >
+                  <span
+                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
+                    style=""
+                  />
+                </span>
+                <div
+                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-widget-audience-tiles__body"
+      >
+        <div
+          class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding"
+        >
+          <div
+            class="googlesitekit-widget__body"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile__zero-data-container"
+              >
+                <div
+                  class="googlesitekit-audience-segmentation-tile__zero-data-content"
+                >
+                  <svg />
+                  <p
+                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
+                  >
+                    Site Kit is collecting data for this group.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`AudienceTilesWidget should render when all configured audiences are matching available audiences 1`] = `
 <div>
   <div
@@ -219,145 +310,6 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                   >
                     Site Kit is collecting data for this group.
                   </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`AudienceTilesWidget should render when some configured audiences are matching available audiences 1`] = `
-<div>
-  <div
-    class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
-  >
-    <div
-      class="googlesitekit-widget__body"
-    >
-      <div
-        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
-        dir="ltr"
-        role="tablist"
-      >
-        <div
-          class="mdc-tab-scroller"
-        >
-          <div
-            class="mdc-tab-scroller__scroll-area mdc-tab-scroller__scroll-area--scroll"
-            style="margin-bottom: 0px;"
-          >
-            <div
-              class="mdc-tab-scroller__scroll-content"
-            >
-              <button
-                aria-label="All visitors"
-                aria-selected="true"
-                class="mdc-tab mdc-tab--active"
-                role="tab"
-                tabindex="0"
-              >
-                <span
-                  class="mdc-tab__content"
-                >
-                  All visitors
-                  <span
-                    class="googlesitekit-info-tooltip"
-                  >
-                    <svg />
-                  </span>
-                </span>
-                <span
-                  class="mdc-tab-indicator mdc-tab-indicator--active"
-                >
-                  <span
-                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
-                    style=""
-                  />
-                </span>
-                <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
-                />
-              </button>
-              <button
-                aria-label=""
-                aria-selected="false"
-                class="mdc-tab"
-                role="tab"
-                tabindex="-1"
-              >
-                <span
-                  class="mdc-tab__content"
-                >
-                  
-                  <span
-                    class="googlesitekit-info-tooltip"
-                  >
-                    <svg />
-                  </span>
-                </span>
-                <span
-                  class="mdc-tab-indicator"
-                >
-                  <span
-                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
-                  />
-                </span>
-                <div
-                  class="mdc-tab__ripple"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="googlesitekit-widget-audience-tiles__body"
-      >
-        <div
-          class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding"
-        >
-          <div
-            class="googlesitekit-widget__body"
-          >
-            <div
-              class="googlesitekit-audience-segmentation-tile"
-            >
-              <div
-                class="googlesitekit-audience-segmentation-tile__zero-data-container"
-              >
-                <div
-                  class="googlesitekit-audience-segmentation-tile__zero-data-content"
-                >
-                  <svg />
-                  <p
-                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
-                  >
-                    Site Kit is collecting data for this group.
-                  </p>
-                  <p
-                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
-                  >
-                    You can hide this group until data is available.
-                  </p>
-                  <button
-                    class="googlesitekit-cta-link googlesitekit-audience-segmentation-tile-hide-cta googlesitekit-cta-link--secondary googlesitekit-cta-link--link-button"
-                  >
-                    <span
-                      class="googlesitekit-icon-wrapper"
-                      style="margin-right: 5px;"
-                    >
-                      <svg />
-                    </span>
-                    <span
-                      class="googlesitekit-cta-link__contents"
-                    >
-                      Temporarily hide
-                    </span>
-                  </button>
                 </div>
               </div>
             </div>

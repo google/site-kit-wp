@@ -26,9 +26,11 @@ import {
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
@@ -96,6 +98,7 @@ describe( 'SettingsView', () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
+					ownerID: 1,
 					publicationID,
 					publicationOnboardingState: publicationState,
 					publicationOnboardingStateLastSyncedAtMs: 0,
@@ -117,4 +120,34 @@ describe( 'SettingsView', () => {
 			expect( getByText( ctaText ) ).toBeInTheDocument();
 		}
 	);
+
+	it( 'should not render the publication onboarding state notice if the user does not have module access', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				ownerID: 2,
+				publicationID,
+				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			} );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+			);
+
+		const { queryByText, waitForRegistry } = render( <SettingsView />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			queryByText(
+				'Your publication requires further setup in Reader Revenue Manager'
+			)
+		).not.toBeInTheDocument();
+	} );
 } );

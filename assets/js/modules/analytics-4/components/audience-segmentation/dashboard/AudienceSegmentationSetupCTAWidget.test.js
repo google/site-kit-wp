@@ -484,12 +484,14 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 
-			const { getByRole } = render(
+			const { getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
 				}
 			);
+
+			await waitForRegistry();
 
 			expect(
 				getByRole( 'button', { name: /Enable groups/i } )

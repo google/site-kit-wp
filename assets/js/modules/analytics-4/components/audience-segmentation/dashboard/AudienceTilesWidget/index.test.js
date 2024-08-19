@@ -253,7 +253,7 @@ describe( 'AudienceTilesWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render when some configured audiences are matching available audiences', async () => {
+	it( 'should not render audiences that are not available (archived)', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
@@ -264,8 +264,8 @@ describe( 'AudienceTilesWidget', () => {
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [
-				'properties/12345/audiences/1',
-				'properties/12345/audiences/9',
+				'properties/12345/audiences/1', // Available.
+				'properties/12345/audiences/9', // Not available (archived).
 			],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -279,6 +279,12 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
+		// Only the available audience should be rendered, the archived one should be filtered out.
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-audience-segmentation-tile'
+			).length
+		).toBe( 1 );
 		expect( container ).toMatchSnapshot();
 	} );
 } );

@@ -19,7 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -31,13 +32,17 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import ErrorText from '../../../../components/ErrorText';
 import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
+import SettingsNotice, {
+	TYPE_INFO,
+} from '../../../../components/SettingsNotice';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 
 export default function SettingsEdit() {
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
 	);
-
 	const hasModuleAccess = useSelect( ( select ) => {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
@@ -70,6 +75,40 @@ export default function SettingsEdit() {
 
 		return false;
 	} );
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	);
+	const publicationAvailable = useSelect( ( select ) => {
+		if ( hasModuleAccess === undefined ) {
+			return undefined;
+		}
+
+		if ( hasModuleAccess === false ) {
+			return false;
+		}
+
+		const publications = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublications();
+
+		if ( ! Array.isArray( publications ) ) {
+			return undefined;
+		}
+
+		return publications.some(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+	} );
+	const formattedOwnerName = useSelect( ( select ) => {
+		const module = select( CORE_MODULES ).getModule(
+			READER_REVENUE_MANAGER_MODULE_SLUG
+		);
+
+		return module?.owner?.login
+			? `<strong>${ module.owner.login }</strong>`
+			: __( 'Another admin', 'google-site-kit' );
+	} );
 
 	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
 		return <ProgressBar />;
@@ -77,11 +116,42 @@ export default function SettingsEdit() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
-			{ hasModuleAccess && (
-				<Fragment>
-					<PublicationSelect hasModuleAccess={ hasModuleAccess } />
-					<PublicationOnboardingStateNotice />
-				</Fragment>
+			{ hasModuleAccess && false === publicationAvailable && (
+				<ErrorText
+					message={ sprintf(
+						/* translators: 1: Publication ID. */
+						__(
+							'The previously selected publication with ID %s was not found. Please select a new publication.',
+							'google-site-kit'
+						),
+						publicationID
+					) }
+				/>
+			) }
+			<div className="googlesitekit-setup-module__inputs">
+				<PublicationSelect hasModuleAccess={ hasModuleAccess } />
+			</div>
+			{ hasModuleAccess && publicationAvailable && (
+				<PublicationOnboardingStateNotice />
+			) }
+			{ ! hasModuleAccess && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					Icon={ WarningIcon }
+					notice={ createInterpolateElement(
+						sprintf(
+							/* translators: %s: module owner's name */
+							__(
+								'%s configured Reader Revenue Manager and you don’t have access to its configured publication. Contact them to share access or change the configured publication.',
+								'google-site-kit'
+							),
+							formattedOwnerName
+						),
+						{
+							strong: <strong />,
+						}
+					) }
+				/>
 			) }
 		</div>
 	);

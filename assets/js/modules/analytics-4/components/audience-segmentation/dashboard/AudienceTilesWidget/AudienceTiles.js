@@ -246,7 +246,14 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const [ audiencesToClearDismissal, visibleAudiences ] = useMemo( () => {
 		const toClear = [];
 		const visible = [];
-		const tempAudiences = configuredAudiences.slice();
+		// Filter `configuredAudiences` to ensure only available audiences are included.
+		const tempAudiences = configuredAudiences
+			.slice()
+			.filter( ( audienceResourceName ) =>
+				audiences.some(
+					( audience ) => audience.name === audienceResourceName
+				)
+			);
 
 		while ( tempAudiences.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
@@ -278,7 +285,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		}
 
 		return [ toClear, visible ];
-	}, [ configuredAudiences, dismissedItems, report ] );
+	}, [ audiences, configuredAudiences, dismissedItems, report ] );
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
