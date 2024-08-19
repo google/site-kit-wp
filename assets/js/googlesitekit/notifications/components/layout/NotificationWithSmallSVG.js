@@ -18,7 +18,6 @@
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../../../material-components';
-import Description from '../common/Description';
 import Title from '../common/Title';
 
 export default function NotificationWithSmallSVG( {
@@ -45,7 +44,7 @@ export default function NotificationWithSmallSVG( {
 				>
 					<Title title={ title }></Title>
 
-					<Description description={ description }></Description>
+					{ description }
 
 					{ actions }
 				</Cell>

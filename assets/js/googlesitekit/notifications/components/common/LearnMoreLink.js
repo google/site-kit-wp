@@ -17,20 +17,20 @@
 /**
  * Internal dependencies
  */
-import { sanitizeHTML } from '../../../../util';
+import Link from '../../../../components/Link';
+import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function Description( { description, learnMoreLink } ) {
+export default function LearnMoreLink( { id, label, url } ) {
+	const trackEvents = useNotificationEvents( id );
+
+	const handleLearnMore = ( event ) => {
+		event.persist();
+		trackEvents.clickLearnMore();
+	};
+
 	return (
-		<div className="googlesitekit-publisher-win__desc">
-			<p>
-				<span
-					dangerouslySetInnerHTML={ sanitizeHTML( description, {
-						ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
-						ALLOWED_ATTR: [ 'href' ],
-					} ) }
-				/>{ ' ' }
-				{ learnMoreLink }
-			</p>
-		</div>
+		<Link onClick={ handleLearnMore } href={ url } external>
+			{ label }
+		</Link>
 	);
 }
