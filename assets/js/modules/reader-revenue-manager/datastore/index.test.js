@@ -16,25 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
-
 describe( 'modules/reader-revenue-manager properties', () => {
-	let registry;
-
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
 	describe( 'store', () => {
 		it( 'is registered correctly', () => {
 			//  TODO: Implement tests as part of #8793.

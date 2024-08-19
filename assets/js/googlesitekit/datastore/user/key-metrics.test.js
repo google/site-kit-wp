@@ -26,7 +26,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -89,10 +88,6 @@ describe( 'core/user key metrics', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

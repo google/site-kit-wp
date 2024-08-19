@@ -39,7 +39,6 @@ import AdSenseAlerts from './AdSenseAlerts';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
 import useViewContext from '../../hooks/useViewContext';
-import ZeroDataNotification from './ZeroDataNotification';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
@@ -96,7 +95,6 @@ export default function BannerNotifications() {
 	if ( viewOnly ) {
 		return (
 			<Fragment>
-				<ZeroDataNotification />
 				<Notifications
 					viewContext={ viewContext }
 					areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
@@ -133,11 +131,6 @@ export default function BannerNotifications() {
 				viewContext={ viewContext }
 				areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
 			/>
-			{ /* Temporary hack to give priority to the `GatheringDataNotification` component queued by `Notifications`.
-			This happens because `hasZeroData` selectors return true within `ZeroDataNotification` even if a module is
-			still gathering data. `ZeroDataNotification` should be refactored next which will make `Notifications`
-			the last component to be rendered. */ }
-			<ZeroDataNotification />
 		</Fragment>
 	);
 }

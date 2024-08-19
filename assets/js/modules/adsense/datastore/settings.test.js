@@ -25,7 +25,6 @@ import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -60,10 +59,6 @@ describe( 'modules/adsense settings', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

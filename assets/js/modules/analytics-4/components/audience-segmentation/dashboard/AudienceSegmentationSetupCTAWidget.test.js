@@ -33,7 +33,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
@@ -136,7 +135,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		jest.clearAllMocks();
 	} );
 
@@ -486,12 +484,14 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 
-			const { getByRole } = render(
+			const { getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
 				}
 			);
+
+			await waitForRegistry();
 
 			expect(
 				getByRole( 'button', { name: /Enable groups/i } )

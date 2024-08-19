@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { clearCache, getItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from './constants';
 
@@ -31,10 +28,6 @@ describe( 'core/site client side cache', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
