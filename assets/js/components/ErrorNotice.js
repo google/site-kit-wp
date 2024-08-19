@@ -69,7 +69,7 @@ export default function ErrorNotice( {
 
 	// Append try again messaging if no retry button is present.
 	if ( ! hasButton ) {
-		message = `${ message } ${ __(
+		message = `${ message }. ${ __(
 			'Please try again.',
 			'google-site-kit'
 		) }`;
