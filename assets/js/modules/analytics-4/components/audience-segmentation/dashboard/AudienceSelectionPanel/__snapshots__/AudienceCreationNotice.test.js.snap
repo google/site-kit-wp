@@ -151,3 +151,222 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
   </div>
 </div>
 `;
+
+exports[`AudienceCreationNotice should render the notice with the info notice if the user does not have edit scope 1`] = `
+<div>
+  <div
+    class="googlesitekit-audience-selection-panel__audience-creation-notice"
+  >
+    <div
+      class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
+    >
+      <p
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+      >
+        Create groups suggested by Site Kit
+      </p>
+      <button
+        class="googlesitekit-cta-link googlesitekit-audience-selection-panel__audience-creation-notice-close googlesitekit-cta-link--link-button"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          <svg />
+        </span>
+      </button>
+    </div>
+    <div
+      class="googlesitekit-audience-selection-panel__audience-creation-notice-body"
+    >
+      <div
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
+      >
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
+        >
+          <h3>
+            New visitors
+          </h3>
+          <p
+            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+          >
+            People who visited the site for the first time
+          </p>
+        </div>
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button"
+        >
+          <button
+            class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__before mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Create
+            </span>
+          </button>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
+      >
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
+        >
+          <h3>
+            Returning visitors
+          </h3>
+          <p
+            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+          >
+            People who have visited your site at least once before
+          </p>
+        </div>
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button"
+        >
+          <button
+            class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__before mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Create
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-audience-selection-panel__audience-creation-notice-info"
+    >
+      <div
+        class="mdc-layout-grid"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="googlesitekit-subtle-notification googlesitekit-subtle-notification--warning mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+          >
+            <div
+              class="googlesitekit-subtle-notification__content"
+            >
+              <p>
+                Creating these groups require more data tracking. You will be directed to update your Analytics property.
+              </p>
+            </div>
+            <div
+              class="googlesitekit-subtle-notification__action"
+            >
+              <button
+                class="mdc-button mdc-button--tertiary"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Got it
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AudienceCreationNotice should render the notice without the info notice if the user does not have edit scope but the notice has been dismissed 1`] = `
+<div>
+  <div
+    class="googlesitekit-audience-selection-panel__audience-creation-notice"
+  >
+    <div
+      class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
+    >
+      <p
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+      >
+        Create groups suggested by Site Kit
+      </p>
+      <button
+        class="googlesitekit-cta-link googlesitekit-audience-selection-panel__audience-creation-notice-close googlesitekit-cta-link--link-button"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          <svg />
+        </span>
+      </button>
+    </div>
+    <div
+      class="googlesitekit-audience-selection-panel__audience-creation-notice-body"
+    >
+      <div
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
+      >
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
+        >
+          <h3>
+            New visitors
+          </h3>
+          <p
+            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+          >
+            People who visited the site for the first time
+          </p>
+        </div>
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button"
+        >
+          <button
+            class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__before mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Create
+            </span>
+          </button>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
+      >
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
+        >
+          <h3>
+            Returning visitors
+          </h3>
+          <p
+            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+          >
+            People who have visited your site at least once before
+          </p>
+        </div>
+        <div
+          class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button"
+        >
+          <button
+            class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__before mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Create
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
