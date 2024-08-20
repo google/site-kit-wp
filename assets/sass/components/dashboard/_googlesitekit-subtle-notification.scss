@@ -79,12 +79,12 @@
 	.googlesitekit-subtle-notification__action {
 		align-items: center;
 		display: flex;
-		gap: 8px;
+		flex-wrap: wrap;
+		gap: $grid-gap-phone;
 		justify-content: center;
 		width: 100%;
 
 		@media (min-width: $bp-tablet) {
-			gap: $grid-gap-phone;
 			justify-content: initial;
 			width: initial;
 		}
