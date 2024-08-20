@@ -30,6 +30,7 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
+	Fragment,
 } from '@wordpress/element';
 
 /**
@@ -52,6 +53,7 @@ import InfoTooltip from '../../../../../../components/InfoTooltip';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
 import AudienceTileError from './AudienceTile/AudienceTileError';
+import PlaceholderTile from './PlaceholderTile';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 
 const hasZeroDataForAudience = ( report, audienceResourceName ) => {
@@ -695,6 +697,20 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							/>
 						);
 					} ) }
+				{ ! isTabbedBreakpoint &&
+					allTilesError === false &&
+					visibleAudiences.length === 1 && (
+						<Fragment>
+							{ loading && (
+								<Widget noPadding>
+									<AudienceTileLoading />
+								</Widget>
+							) }
+							{ ! loading && (
+								<PlaceholderTile Widget={ Widget } />
+							) }
+						</Fragment>
+					) }
 			</div>
 		</Widget>
 	);
