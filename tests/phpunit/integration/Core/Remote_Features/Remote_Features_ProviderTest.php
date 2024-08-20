@@ -31,6 +31,7 @@ class Remote_Features_ProviderTest extends TestCase {
 		parent::set_up();
 		// Clean up side-effects from load in Plugin class.
 		remove_all_actions( 'admin_init' );
+		remove_all_actions( 'heartbeat_tick' );
 		remove_all_filters( 'googlesitekit_is_feature_enabled' );
 		remove_all_actions( Remote_Features_Cron::CRON_ACTION );
 		unregister_setting( Remote_Features::OPTION, Remote_Features::OPTION );
@@ -44,6 +45,7 @@ class Remote_Features_ProviderTest extends TestCase {
 
 		$this->assertSettingRegistered( Remote_Features::OPTION );
 		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'heartbeat_tick' ) );
 		$this->assertTrue( has_action( Remote_Features_Cron::CRON_ACTION ) );
 		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
 	}

@@ -32,11 +32,15 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
 import SettingsNotice from '../../../../components/SettingsNotice';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
+import { useEffect } from 'react';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
 
 export default function PublicationOnboardingStateNotice() {
+	const viewContext = useViewContext();
 	const onboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
@@ -57,10 +61,23 @@ export default function PublicationOnboardingStateNotice() {
 		} )
 	);
 
-	if (
-		! onboardingState ||
-		! actionableOnboardingStates.includes( onboardingState )
-	) {
+	const showNotice =
+		onboardingState &&
+		actionableOnboardingStates.includes( onboardingState );
+
+	useEffect( () => {
+		if ( ! showNotice ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_rrm-onboarding-state-notification`,
+			'view_notification',
+			onboardingState
+		);
+	}, [ onboardingState, showNotice, viewContext ] );
+
+	if ( ! showNotice ) {
 		return null;
 	}
 
@@ -82,7 +99,18 @@ export default function PublicationOnboardingStateNotice() {
 
 	const noticeCTA = () => {
 		return (
-			<Link href={ serviceURL } external inverse>
+			<Link
+				onClick={ () => {
+					trackEvent(
+						`${ viewContext }_rrm-onboarding-state-notification`,
+						'confirm_notification',
+						onboardingState
+					);
+				} }
+				href={ serviceURL }
+				external
+				inverse
+			>
 				{ buttonText }
 			</Link>
 		);

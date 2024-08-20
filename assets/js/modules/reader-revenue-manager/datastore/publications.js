@@ -33,7 +33,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
@@ -45,7 +45,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 	controlCallback: () =>
 		API.get(
 			'modules',
-			MODULE_SLUG,
+			READER_REVENUE_MANAGER_MODULE_SLUG,
 			'publications',
 			{},
 			{ useCache: false }
@@ -68,6 +68,17 @@ const baseActions = {
 	 */
 	*syncPublicationOnboardingState() {
 		const registry = yield commonActions.getRegistry();
+		const connected = yield commonActions.await(
+			registry
+				.resolveSelect( CORE_MODULES )
+				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
+		);
+
+		// If the module is not connected, do not attempt to sync the onboarding state.
+		if ( ! connected ) {
+			return;
+		}
+
 		// Ensure settings are loaded before checking for changed state below.
 		const settings = yield commonActions.await(
 			registry
@@ -150,7 +161,7 @@ const baseActions = {
 		const connected = yield commonActions.await(
 			registry
 				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( MODULE_SLUG )
+				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
@@ -214,21 +225,21 @@ const baseActions = {
 	 * Resets the publications data in the store.
 	 *
 	 * @since 1.133.0
+	 *
+	 * @return {Object} The dispatched action results.
 	 */
 	*resetPublications() {
 		const registry = yield commonActions.getRegistry();
 
-		yield errorStoreActions.clearErrors( 'getPublications' );
-
-		yield commonActions.await(
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.invalidateResolutionForStoreSelector( 'getPublications' )
-		);
-
 		yield {
 			type: 'RESET_PUBLICATIONS',
 		};
+
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		return registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.invalidateResolutionForStoreSelector( 'getPublications' );
 	},
 
 	/**

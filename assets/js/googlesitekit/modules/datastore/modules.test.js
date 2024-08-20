@@ -28,7 +28,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -140,7 +139,6 @@ describe( 'core/modules modules', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		delete global[ dashboardSharingDataBaseVar ];
 	} );
 

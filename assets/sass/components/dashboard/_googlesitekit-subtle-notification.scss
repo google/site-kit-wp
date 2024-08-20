@@ -33,11 +33,7 @@
 	}
 
 	.googlesitekit-subtle-notification__icon {
-		display: none;
-
-		@media (min-width: $bp-tablet) {
-			display: flex;
-		}
+		display: flex;
 	}
 
 	.googlesitekit-subtle-notification__content {
@@ -83,6 +79,7 @@
 	.googlesitekit-subtle-notification__action {
 		align-items: center;
 		display: flex;
+		flex-wrap: wrap;
 		gap: $grid-gap-phone;
 		justify-content: center;
 		width: 100%;
@@ -99,5 +96,31 @@
 
 	p.googlesitekit-subtle-notification__secondary_description {
 		font-weight: $fw-normal;
+	}
+
+	.googlesitekit-subtle-notification__cta {
+		svg {
+			margin-inline-start: 6px;
+		}
+	}
+
+	&.googlesitekit-subtle-notification--warning {
+		background-color: $c-utility-warning-container;
+
+		.googlesitekit-subtle-notification__icon,
+		.googlesitekit-subtle-notification__content {
+			color: $c-utility-on-warning-container;
+		}
+
+		.mdc-button {
+
+			&.googlesitekit-subtle-notification__cta {
+				@include mdc-button-filled-accessible($c-utility-on-warning-container);
+			}
+
+			&.mdc-button--tertiary:not(:disabled) {
+				color: $c-utility-on-warning-container;
+			}
+		}
 	}
 }

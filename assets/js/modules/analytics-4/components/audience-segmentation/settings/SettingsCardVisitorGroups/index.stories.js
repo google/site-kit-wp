@@ -25,7 +25,6 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import SettingsCardVisitorGroups from './';
@@ -44,7 +43,7 @@ export const WithSetupCTA = Template.bind( {} );
 WithSetupCTA.storyName = 'With setup CTA';
 WithSetupCTA.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -76,17 +75,15 @@ export default {
 						SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {
-						configuredAudiences: [ 'audienceA', 'audienceB' ],
-						isAudienceSegmentationWidgetHidden: false,
-					} );
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					configuredAudiences: [ 'audienceA', 'audienceB' ],
+					isAudienceSegmentationWidgetHidden: false,
+				} );
 
 				// Mock the audience-settings endpoint to allow toggling the switch.
 				fetchMock.post(
 					RegExp(
-						'google-site-kit/v1/modules/analytics-4/data/audience-settings'
+						'google-site-kit/v1/core/user/data/audience-settings'
 					),
 					( url, { body } ) => {
 						const { data } = JSON.parse( body );

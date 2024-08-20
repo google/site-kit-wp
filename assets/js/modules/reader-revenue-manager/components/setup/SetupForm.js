@@ -36,7 +36,7 @@ import Link from '../../../../components/Link';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
-	MODULE_SLUG,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
@@ -101,7 +101,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 	return (
 		<form onSubmit={ submitForm }>
 			<StoreErrorNotices
-				moduleSlug={ MODULE_SLUG }
+				moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
 			<p className="googlesitekit-margin-bottom-0">

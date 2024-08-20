@@ -20,7 +20,7 @@ export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
 
 export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
 
-export const MODULE_SLUG = 'reader-revenue-manager';
+export const READER_REVENUE_MANAGER_MODULE_SLUG = 'reader-revenue-manager';
 
 export const PUBLICATION_ONBOARDING_STATES = {
 	ONBOARDING_COMPLETE: 'ONBOARDING_COMPLETE',
@@ -31,6 +31,9 @@ export const PUBLICATION_ONBOARDING_STATES = {
 
 export const UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION =
 	'READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION';
+
+export const READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY =
+	'rrm_module_setup_banner_dismissed_key';
 
 export const READER_REVENUE_MANAGER_SETUP_FORM =
 	'readerRevenueManagerSetupForm';
