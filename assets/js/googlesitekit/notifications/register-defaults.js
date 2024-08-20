@@ -64,33 +64,27 @@ export function registerDefaults( notificationsAPI ) {
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-			const showRecoverableAnalytics = ( () => {
+			const showRecoverableAnalytics = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
 			} )();
-			const showRecoverableSearchConsole = ( () => {
+			const showRecoverableSearchConsole = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
@@ -114,7 +108,7 @@ export function registerDefaults( notificationsAPI ) {
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
-		isDismissible: false,
+		isDismissible: true,
 	} );
 
 	notificationsAPI.registerNotification( 'zero-data-notification', {
@@ -142,33 +136,27 @@ export function registerDefaults( notificationsAPI ) {
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-			const showRecoverableAnalytics = ( () => {
+			const showRecoverableAnalytics = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
 			} )();
-			const showRecoverableSearchConsole = ( () => {
+			const showRecoverableSearchConsole = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
@@ -208,6 +196,6 @@ export function registerDefaults( notificationsAPI ) {
 
 			return analyticsHasZeroData || searchConsoleHasZeroData;
 		},
-		isDismissible: false,
+		isDismissible: true,
 	} );
 }

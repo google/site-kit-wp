@@ -21,14 +21,19 @@
  */
 import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import GatheringDataNotification from './GatheringDataNotification';
 
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'gathering-data-notification'
+)( GatheringDataNotification );
+
 function Template( { setupRegistry } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<GatheringDataNotification />
+			<NotificationWithComponentProps />
 		</WithRegistrySetup>
 	);
 }
