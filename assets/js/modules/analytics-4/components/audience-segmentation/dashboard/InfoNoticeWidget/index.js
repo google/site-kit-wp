@@ -85,15 +85,14 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 		} );
 	}, [ dismissCount, dismissPrompt, noticesCount ] );
 
-	const showNotice =
-		hasMatchingAudience === true &&
-		! isDismissed &&
-		dismissCount !== undefined &&
-		dismissCount < noticesCount &&
-		! hideNotice;
-
 	// Return null if there are no matching audiences or if the notice has been dismissed.
-	if ( showNotice ) {
+	if (
+		hasMatchingAudience !== true ||
+		isDismissed ||
+		dismissCount === undefined ||
+		dismissCount >= noticesCount ||
+		hideNotice === true
+	) {
 		return <WidgetNull />;
 	}
 
