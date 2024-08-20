@@ -456,6 +456,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
 			{ allTilesError === false &&
+				! loading &&
 				isTabbedBreakpoint &&
 				visibleAudiences.length > 0 && (
 					<TabBar

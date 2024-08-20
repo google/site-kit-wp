@@ -440,6 +440,42 @@ SingleTileErrored.args = {
 };
 SingleTileErrored.scenario = {};
 
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+	],
+	setupRegistry: ( registry ) => {
+		const reportOptions = {
+			compareEndDate: '2024-02-28',
+			compareStartDate: '2024-02-01',
+			endDate: '2024-03-27',
+			startDate: '2024-02-29',
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: [
+					'properties/12345/audiences/1', // All Users
+					'properties/12345/audiences/3', // New visitors
+				],
+			},
+			metrics: [
+				{ name: 'totalUsers' },
+				{ name: 'sessionsPerUser' },
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
+			],
+		};
+
+		// Start loading the report and do not resolve it so that tiles are displayed in loading state.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ reportOptions ] );
+	},
+};
+Loading.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
 	decorators: [
