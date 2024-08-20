@@ -25,12 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../../tests/js/utils';
-import {
-	act,
-	fireEvent,
-	render,
-	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';
@@ -39,9 +34,13 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../googlesitekit/constants';
+import * as tracking from '../../../../util/tracking';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import { UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'PublicationApprovedOverlayNotification', () => {
 	let registry;
@@ -51,6 +50,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	);
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		registry
 			.dispatch( CORE_UI )
@@ -93,6 +93,12 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 				'.googlesitekit-reader-revenue-manager-publication-approved-notification'
 			)
 		).toBeInTheDocument();
+
+		// Make sure that the component is tracking the view event.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
+			'view_notification'
+		);
 	} );
 
 	it( 'should return null when dashboard is not main dashboard', async () => {
@@ -115,6 +121,8 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 		// Component should return null.
 		expect( container.firstChild ).toBeNull();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should return null when notification is dismissed', async () => {
@@ -140,6 +148,8 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 		// Component should return null.
 		expect( container.firstChild ).toBeNull();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should get dismissed when "Enable features" CTA is clicked', async () => {
@@ -166,10 +176,25 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click( getByRole( 'button', { name: /Enable features/i } ) );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
+			'view_notification'
+		);
 
-		await act( waitForDefaultTimeouts );
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', { name: /Enable features/i } )
+			);
+		} );
 
 		expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
+			'confirm_notification'
+		);
 	} );
 } );

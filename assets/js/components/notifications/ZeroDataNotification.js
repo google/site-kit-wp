@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,27 +26,14 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import BannerNotification from './BannerNotification';
 import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { DAY_IN_SECONDS } from '../../util';
+import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
+import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 
-export default function ZeroDataNotification() {
-	const viewContext = useViewContext();
-	const eventCategory = `${ viewContext }_zero-data-notification`;
-
-	const handleOnView = useCallback( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	}, [ eventCategory ] );
-
-	const handleOnDismiss = useCallback( () => {
-		trackEvent( eventCategory, 'dismiss_notification' );
-	}, [ eventCategory ] );
-
-	const handleOnLearnMoreClick = useCallback( () => {
-		trackEvent( eventCategory, 'click_learn_more_link' );
-	}, [ eventCategory ] );
-
+export default function ZeroDataNotification( { id, Notification } ) {
 	const notEnoughTrafficURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'not-enough-traffic'
@@ -55,26 +41,39 @@ export default function ZeroDataNotification() {
 	} );
 
 	return (
-		<BannerNotification
-			id="zero-data-notification"
-			title={ __(
-				'Not enough traffic yet to display stats',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
-				'google-site-kit'
-			) }
-			format="small"
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL={ notEnoughTrafficURL }
-			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			dismissExpires={ DAY_IN_SECONDS }
-			SmallImageSVG={ ZeroStateIcon }
-			onView={ handleOnView }
-			onDismiss={ handleOnDismiss }
-			onLearnMoreClick={ handleOnLearnMoreClick }
-			isDismissible
-		/>
+		<Notification>
+			<NotificationWithSmallSVG
+				title={ __(
+					'Not enough traffic yet to display stats',
+					'google-site-kit'
+				) }
+				description={
+					<Description
+						description={ __(
+							'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ notEnoughTrafficURL }
+							/>
+						}
+					></Description>
+				}
+				actions={
+					<Dismiss
+						id={ id }
+						dismissLabel={ __(
+							'Remind me later',
+							'google-site-kit'
+						) }
+						dismissExpires={ DAY_IN_SECONDS }
+					/>
+				}
+				SmallImageSVG={ ZeroStateIcon }
+			/>
+		</Notification>
 	);
 }
