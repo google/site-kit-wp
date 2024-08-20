@@ -35,8 +35,13 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 import whenActive from '../../../../../../util/when-active';
 import InfoNotice from '../InfoNotice';
-import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
+import {
+	AUDIENCE_INFO_NOTICES,
+	AUDIENCE_INFO_NOTICE_HIDE_UI,
+	AUDIENCE_INFO_NOTICE_SLUG,
+} from './constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 function InfoNoticeWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
@@ -55,6 +60,10 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isPromptDismissed( AUDIENCE_INFO_NOTICE_SLUG )
+	);
+
+	const hideNotice = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_INFO_NOTICE_HIDE_UI )
 	);
 
 	const dismissCount = useSelect( ( select ) =>
@@ -76,13 +85,15 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 		} );
 	}, [ dismissCount, dismissPrompt, noticesCount ] );
 
+	const showNotice =
+		hasMatchingAudience === true &&
+		! isDismissed &&
+		dismissCount !== undefined &&
+		dismissCount < noticesCount &&
+		! hideNotice;
+
 	// Return null if there are no matching audiences or if the notice has been dismissed.
-	if (
-		hasMatchingAudience !== true ||
-		isDismissed ||
-		dismissCount === undefined ||
-		dismissCount >= noticesCount
-	) {
+	if ( showNotice ) {
 		return <WidgetNull />;
 	}
 
