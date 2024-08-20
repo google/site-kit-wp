@@ -289,9 +289,9 @@ TwoTilesWithZeroTile.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTilesWithZeroTile',
 };
 
-export const SingleZeroTile = Template.bind( {} );
-SingleZeroTile.storyName = 'SingleZeroTile';
-SingleZeroTile.args = {
+export const ZeroTileWithPlaceholder = Template.bind( {} );
+ZeroTileWithPlaceholder.storyName = 'ZeroTileWithPlaceholder';
+ZeroTileWithPlaceholder.args = {
 	configuredAudiences: [
 		'properties/12345/audiences/4', // Returning visitors
 	],
@@ -344,8 +344,8 @@ SingleZeroTile.args = {
 			} );
 	},
 };
-SingleZeroTile.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/SingleZeroTile',
+ZeroTileWithPlaceholder.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/ZeroTileWithPlaceholder',
 };
 
 export default {
