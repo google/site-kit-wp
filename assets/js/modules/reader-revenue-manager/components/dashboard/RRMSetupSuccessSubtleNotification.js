@@ -99,8 +99,6 @@ function RRMSetupSuccessSubtleNotification() {
 				publicationOnboardingState
 			);
 		}
-
-		dismissNotice();
 	};
 
 	useEffect( () => {
