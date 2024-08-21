@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Sanitize;
 /**
  * Class for audience settings.
  *
- * @since n.e.x.t
+ * @since 1.134.0
  * @access private
  * @ignore
  */
