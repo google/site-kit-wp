@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -31,12 +31,15 @@ export default function Notification( { id, children } ) {
 	const viewed = useHasBeenViewed( id );
 	const trackEvents = useNotificationEvents( id );
 
+	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
+
 	// Track view once.
 	useEffect( () => {
-		if ( viewed ) {
+		if ( ! isViewedOnce && viewed ) {
 			trackEvents.view();
+			setIsViewedOnce( true );
 		}
-	}, [ viewed, trackEvents ] );
+	}, [ viewed, trackEvents, isViewedOnce ] );
 
 	return (
 		<section id={ id } className="googlesitekit-publisher-win" ref={ ref }>
