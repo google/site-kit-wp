@@ -79,6 +79,18 @@ SuccessWithCustomIcon.args = {
 };
 SuccessWithCustomIcon.scenario = {};
 
+export const SuccessWithoutIcon = Template.bind( {} );
+SuccessWithoutIcon.storyName = 'Success Without Icon';
+SuccessWithoutIcon.args = {
+	title: 'Success! Your Conversion Tracking ID was added to your site',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+	hideIcon: true,
+};
+SuccessWithoutIcon.scenario = {};
+
 export const Warning = Template.bind( {} );
 Warning.storyName = 'Warning';
 Warning.args = {
@@ -135,6 +147,19 @@ WarningWithCustomIcon.args = {
 	variant: 'warning',
 };
 WarningWithCustomIcon.scenario = {};
+
+export const WarningWithoutIcon = Template.bind( {} );
+WarningWithoutIcon.storyName = 'Warning Without Icon';
+WarningWithoutIcon.args = {
+	title: 'Warning! Your Conversion Tracking ID was added to your site',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+	variant: 'warning',
+	hideIcon: true,
+};
+WarningWithoutIcon.scenario = {};
 
 export default {
 	title: 'Components/SubtleNotification',
