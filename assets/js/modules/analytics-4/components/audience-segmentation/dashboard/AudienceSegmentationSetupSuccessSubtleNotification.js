@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
 import { Button } from 'googlesitekit-components';
 import SubtleNotification from '../../SubtleNotification';
 import useViewOnly from '../../../../../hooks/useViewOnly';
@@ -42,7 +41,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 	const viewOnly = useViewOnly();
 
 	const configuredAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	const isDismissed = useSelect( ( select ) => {

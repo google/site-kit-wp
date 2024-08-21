@@ -21,7 +21,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -44,10 +43,6 @@ describe( 'core/site Conversion Tracking', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

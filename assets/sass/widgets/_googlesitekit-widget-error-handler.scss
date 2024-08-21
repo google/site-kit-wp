@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager publication onboarding state notice styles.
+ * WidgetErrorHandler styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -18,21 +18,10 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-publication-onboarding-state-notice {
-
-		.googlesitekit-subtle-notification__icon {
-			display: flex;
-		}
-
-		@media (max-width: $bp-tablet) {
-			align-items: flex-start;
-			flex-direction: column;
-		}
-
-		@media (max-width: $bp-mobileOnly) {
-			.googlesitekit-subtle-notification__action {
-				display: inline-block;
-			}
-		}
+	.googlesitekit-widget-error-handler {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-row: 1 / -1;
+		grid-template-columns: subgrid;
 	}
 }

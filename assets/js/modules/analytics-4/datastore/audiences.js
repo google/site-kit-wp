@@ -178,7 +178,7 @@ const baseActions = {
 
 		// Remove any configuredAudiences that are no longer available in availableAudiences.
 		const configuredAudiences =
-			select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+			select( CORE_USER ).getConfiguredAudiences();
 		const newConfiguredAudiences = configuredAudiences?.filter(
 			( configuredAudience ) =>
 				availableAudiences?.some(
@@ -191,7 +191,7 @@ const baseActions = {
 			newConfiguredAudiences &&
 			newConfiguredAudiences !== configuredAudiences
 		) {
-			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
+			dispatch( CORE_USER ).setConfiguredAudiences(
 				newConfiguredAudiences || []
 			);
 		}
@@ -358,7 +358,7 @@ const baseActions = {
 			} );
 
 			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
+				resolveSelect( CORE_USER ).getAudienceSettings()
 			);
 
 			if ( failedAudiencesToRetry.length > 0 ) {
@@ -368,7 +368,7 @@ const baseActions = {
 			}
 
 			const existingConfiguredAudiences =
-				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || [];
+				select( CORE_USER ).getConfiguredAudiences() || [];
 
 			configuredAudiences.push( ...existingConfiguredAudiences );
 
@@ -435,12 +435,10 @@ const baseActions = {
 			);
 		}
 
-		dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
-			configuredAudiences
-		);
+		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings()
+			dispatch( CORE_USER ).saveAudienceSettings()
 		);
 
 		if ( error ) {

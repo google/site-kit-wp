@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: audience settings.
+ * `core/user` data store: audience settings.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -31,11 +31,15 @@ import {
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
-import { AUDIENCE_TYPE_SORT_ORDER, MODULES_ANALYTICS_4 } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import {
+	AUDIENCE_TYPE_SORT_ORDER,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
+import { createFetchStore } from '../../data/create-fetch-store';
+import { createValidatedAction } from '../../data/utils';
+import { createReducer } from '../../data/create-reducer';
+import { actions as errorStoreActions } from '../../data/create-error-store';
+import { CORE_USER } from './constants';
 
 const { receiveError, clearError } = errorStoreActions;
 
@@ -69,8 +73,8 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 	baseName: 'getAudienceSettings',
 	controlCallback() {
 		return API.get(
-			'modules',
-			'analytics-4',
+			'core',
+			'user',
 			'audience-settings',
 			{},
 			{
@@ -84,7 +88,7 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 const fetchSaveAudienceSettingsStore = createFetchStore( {
 	baseName: 'saveAudienceSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'modules', 'analytics-4', 'audience-settings', { settings } ),
+		API.set( 'core', 'user', 'audience-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateAudienceSettings,
@@ -120,9 +124,7 @@ const baseActions = {
 
 			const registry = yield commonActions.getRegistry();
 			const audienceSettings = yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getAudienceSettings()
+				registry.resolveSelect( CORE_USER ).getAudienceSettings()
 			);
 			const finalSettings = {
 				...audienceSettings,
@@ -252,7 +254,7 @@ const baseResolvers = {
 		const registry = yield commonActions.getRegistry();
 
 		const audienceSettings = registry
-			.select( MODULES_ANALYTICS_4 )
+			.select( CORE_USER )
 			.getAudienceSettings();
 
 		if ( audienceSettings === undefined ) {
@@ -283,8 +285,7 @@ const baseSelectors = {
 	 * @return {(Array|undefined)} An array with configured audiences; `undefined` if not loaded.
 	 */
 	getConfiguredAudiences: createRegistrySelector( ( select ) => () => {
-		const audienceSettings =
-			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+		const audienceSettings = select( CORE_USER ).getAudienceSettings();
 
 		return audienceSettings?.configuredAudiences;
 	} ),
@@ -299,8 +300,7 @@ const baseSelectors = {
 	 */
 	isAudienceSegmentationWidgetHidden: createRegistrySelector(
 		( select ) => () => {
-			const audienceSettings =
-				select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+			const audienceSettings = select( CORE_USER ).getAudienceSettings();
 
 			return audienceSettings?.isAudienceSegmentationWidgetHidden;
 		}

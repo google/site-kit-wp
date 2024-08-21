@@ -25,7 +25,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
+} from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { PublicationOnboardingStateNotice } from '../common';
 
@@ -33,6 +37,38 @@ export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+	const hasModuleAccess = useSelect( ( select ) => {
+		const { hasModuleOwnershipOrAccess, getErrorForAction } =
+			select( CORE_MODULES );
+
+		const hasAccess = hasModuleOwnershipOrAccess(
+			READER_REVENUE_MANAGER_MODULE_SLUG
+		);
+
+		if ( hasAccess ) {
+			return true;
+		}
+
+		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
+			READER_REVENUE_MANAGER_MODULE_SLUG,
+		] );
+
+		// Return early if request is not completed yet.
+		if ( undefined === hasAccess && ! checkAccessError ) {
+			return undefined;
+		}
+
+		// Return false if RRM is connected and access is concretely missing.
+		if ( false === hasAccess ) {
+			return false;
+		}
+
+		if ( 'module_not_connected' === checkAccessError?.code ) {
+			return true;
+		}
+
+		return false;
+	} );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module-view googlesitekit-setup-module--reader-revenue-manager">
@@ -46,7 +82,7 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
-			<PublicationOnboardingStateNotice />
+			{ hasModuleAccess && <PublicationOnboardingStateNotice /> }
 		</div>
 	);
 }

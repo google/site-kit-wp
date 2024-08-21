@@ -26,8 +26,8 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
-	unsubscribeFromAll,
 } from '../../../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
@@ -40,7 +40,7 @@ describe( 'AudienceTilesWidget', () => {
 	)( AudienceTilesWidget );
 
 	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	beforeEach( () => {
@@ -57,7 +57,6 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		jest.clearAllMocks();
 	} );
 
@@ -77,7 +76,7 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should not render when availableAudiences is not loaded', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -116,7 +115,7 @@ describe( 'AudienceTilesWidget', () => {
 	it( 'should not render when there is no available audience', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -138,7 +137,7 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -160,7 +159,7 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -182,7 +181,7 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -208,7 +207,7 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -234,7 +233,7 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [
 				'properties/12345/audiences/1',
 				'properties/12345/audiences/3',
@@ -254,7 +253,7 @@ describe( 'AudienceTilesWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render when some configured audiences are matching available audiences', async () => {
+	it( 'should not render audiences that are not available (archived)', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
@@ -263,10 +262,10 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [
-				'properties/12345/audiences/1',
-				'properties/12345/audiences/9',
+				'properties/12345/audiences/1', // Available.
+				'properties/12345/audiences/9', // Not available (archived).
 			],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -280,6 +279,12 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
+		// Only the available audience should be rendered, the archived one should be filtered out.
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-audience-segmentation-tile'
+			).length
+		).toBe( 1 );
 		expect( container ).toMatchSnapshot();
 	} );
 } );

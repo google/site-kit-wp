@@ -313,7 +313,7 @@ export default {
 					);
 
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setConfiguredAudiences( args?.configuredAudiences || [] );
 
 				provideAnalytics4MockReport( registry, reportOptions );

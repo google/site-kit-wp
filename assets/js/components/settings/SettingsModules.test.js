@@ -104,7 +104,12 @@ describe( 'SettingsModules', () => {
 
 		history.push( '/admin' );
 
-		render( <SettingsModules />, { history, registry } );
+		const { waitForRegistry } = render( <SettingsModules />, {
+			history,
+			registry,
+		} );
+
+		await waitForRegistry();
 
 		expect( global.location.hash ).toEqual( '#/admin-settings' );
 	} );
