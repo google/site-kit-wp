@@ -154,7 +154,7 @@ export default function SelectionPanelFooter( {
 			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-selection-panel-footer__content">
 				{ haveSettingsChanged && itemLimitError ? (
-					<ErrorText message={ itemLimitError } />
+					<ErrorText noPrefix message={ itemLimitError } />
 				) : (
 					itemCountElement
 				) }
