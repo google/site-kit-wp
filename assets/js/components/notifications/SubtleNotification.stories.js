@@ -162,11 +162,10 @@ WarningWithoutIcon.args = {
 WarningWithoutIcon.scenario = {};
 
 export const NonDismissible = Template.bind( {} );
-NonDismissible.storyName = 'Non dismissable';
+NonDismissible.storyName = 'Non dismissible';
 NonDismissible.args = {
 	title: 'Success! Your Conversion Tracking ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
-	isDismissable: false,
 	ctaLabel: 'Learn more',
 	ctaLink: 'https://sitekit.withgoogle.com/documentation',
 	isCTALinkExternal: true,

@@ -102,7 +102,6 @@ export default function PublicationOnboardingStateNotice() {
 			ctaLabel={ buttonText }
 			ctaLink={ serviceURL }
 			isCTALinkExternal
-			isDismissible={ false }
 			variant="warning"
 			onCTAClick={ () => {
 				trackEvent(

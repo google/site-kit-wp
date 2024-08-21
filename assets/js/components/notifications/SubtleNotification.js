@@ -23,11 +23,6 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
@@ -49,9 +44,8 @@ function SubtleNotification( {
 	className,
 	onCTAClick,
 	isCTALinkExternal,
-	isDismissible = true,
-	dismissLabel = __( 'Ok, got it', 'google-site-kit' ),
-	onDismiss = () => {},
+	dismissLabel,
+	onDismiss,
 	variant = VARIANTS.SUCCESS,
 	hideIcon = false,
 } ) {
@@ -88,7 +82,7 @@ function SubtleNotification( {
 				) }
 			</div>
 			<div className="googlesitekit-subtle-notification__action">
-				{ isDismissible && (
+				{ dismissLabel && (
 					<Button tertiary onClick={ onDismiss }>
 						{ dismissLabel }
 					</Button>
@@ -122,7 +116,6 @@ SubtleNotification.propTypes = {
 	className: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	isCTALinkExternal: PropTypes.bool,
-	isDismissible: PropTypes.bool,
 	dismissLabel: PropTypes.string,
 	onDismiss: PropTypes.func,
 	variant: PropTypes.oneOf( Object.values( VARIANTS ) ),
