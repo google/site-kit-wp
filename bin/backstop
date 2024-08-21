@@ -41,7 +41,8 @@ DOCKER_EXIT_CODE=$?
 # Display a link to the report only after the "test" command.
 if [ "$1" == "test" ]; then
 	echo ""
-	echo "To see the VRT report open this URL in your browser: file://$ROOT_DIR/tests/backstop/html_report/index.html"
+	echo "To view the report, open this URL in your browser:"
+	echo "file://$ROOT_DIR/tests/backstop/html_report/index.html"
 fi
 
 exit $DOCKER_EXIT_CODE
