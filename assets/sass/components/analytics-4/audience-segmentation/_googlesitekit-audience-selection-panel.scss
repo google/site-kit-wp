@@ -181,6 +181,34 @@
 				padding: 6px 16px;
 			}
 		}
+
+		.googlesitekit-audience-selection-panel__audience-creation-notice-info {
+			.mdc-layout-grid {
+				padding: 18px 0;
+			}
+
+			.googlesitekit-subtle-notification {
+				align-items: center;
+				border-radius: 8px;
+				flex-direction: row;
+				gap: $grid-gap-phone;
+				padding: $grid-gap-phone / 2 $grid-gap-phone;
+			}
+
+			.googlesitekit-subtle-notification__content {
+				flex: 1;
+
+				p {
+					font-size: $fs-body-sm;
+					font-weight: $fw-normal;
+				}
+			}
+
+			.googlesitekit-subtle-notification__action {
+				justify-content: initial;
+				width: initial;
+			}
+		}
 	}
 
 	.googlesitekit-audience-selection-panel__success-notice {

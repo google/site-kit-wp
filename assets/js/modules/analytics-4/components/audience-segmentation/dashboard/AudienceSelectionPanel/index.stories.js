@@ -31,7 +31,10 @@ import {
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -222,6 +225,28 @@ AudienceCreationNotice.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNotice',
 };
 
+export const AudienceCreationNoticeWithMissingScope = Template.bind( {} );
+AudienceCreationNoticeWithMissingScope.storyName =
+	'Audience creation notice with missing scope';
+AudienceCreationNoticeWithMissingScope.args = {
+	configuredAudiences: availableAudiences.reduce(
+		( acc, audience ) =>
+			audience.audienceType !== 'SITE_KIT_AUDIENCE'
+				? [ ...acc, audience.name ]
+				: acc,
+		[]
+	),
+	availableAudiences: availableAudiences.filter(
+		( audience ) => audience.audienceType !== 'SITE_KIT_AUDIENCE'
+	),
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
+	},
+};
+AudienceCreationNoticeWithMissingScope.scenario = {};
+
 export const AudienceCreationNoticeOneAdded = Template.bind( {} );
 AudienceCreationNoticeOneAdded.storyName =
 	'Audience creation notice with one audience created';
@@ -282,7 +307,9 @@ export default {
 			};
 
 			const setupRegistry = ( registry ) => {
-				provideUserAuthentication( registry );
+				provideUserAuthentication( registry, {
+					grantedScopes: [ EDIT_SCOPE ],
+				} );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 

@@ -53,6 +53,7 @@ function SubtleNotification( {
 	dismissLabel = __( 'Ok, got it', 'google-site-kit' ),
 	onDismiss = () => {},
 	variant = VARIANTS.SUCCESS,
+	hideIcon = false,
 } ) {
 	return (
 		<div
@@ -67,15 +68,17 @@ function SubtleNotification( {
 				className
 			) }
 		>
-			<div className="googlesitekit-subtle-notification__icon">
-				{ Icon && <Icon width={ 24 } height={ 24 } /> }
-				{ ! Icon && variant === VARIANTS.SUCCESS && (
-					<CheckFillSVG width={ 24 } height={ 24 } />
-				) }
-				{ ! Icon && variant === VARIANTS.WARNING && (
-					<WarningSVG width={ 24 } height={ 24 } />
-				) }
-			</div>
+			{ ! hideIcon && (
+				<div className="googlesitekit-subtle-notification__icon">
+					{ Icon && <Icon width={ 24 } height={ 24 } /> }
+					{ ! Icon && variant === VARIANTS.SUCCESS && (
+						<CheckFillSVG width={ 24 } height={ 24 } />
+					) }
+					{ ! Icon && variant === VARIANTS.WARNING && (
+						<WarningSVG width={ 24 } height={ 24 } />
+					) }
+				</div>
+			) }
 			<div className="googlesitekit-subtle-notification__content">
 				<p>{ title }</p>
 				{ description && (
@@ -123,6 +126,7 @@ SubtleNotification.propTypes = {
 	dismissLabel: PropTypes.string,
 	onDismiss: PropTypes.func,
 	variant: PropTypes.oneOf( Object.values( VARIANTS ) ),
+	hideIcon: PropTypes.bool,
 };
 
 export default SubtleNotification;
