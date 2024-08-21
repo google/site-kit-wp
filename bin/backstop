@@ -19,7 +19,6 @@ ROOT_DIR=$(dirname "$BIN_DIR")
 
 VERSION=6.1.1
 IMAGE=googlesitekit/vrt:$VERSION
-COMMAND=$1
 
 # (re)Build the backstopjs image as needed.
 docker build \
@@ -33,7 +32,7 @@ docker run --rm --tty \
 	--shm-size=512m \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
 	$IMAGE \
-	"$COMMAND" \
+	"$@" \
 	--config=/src/tests/backstop/config.js
 
 DOCKER_EXIT_CODE=$?
