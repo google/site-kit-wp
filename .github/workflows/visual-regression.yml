@@ -6,7 +6,7 @@ on:
       - main
       - develop
       - 'feature/**'
-    # Only run if CSS/JS/MD-related files changed.
+    # Only run if CSS/JS related files changed.
     paths:
       - '.github/workflows/visual-regression.yml'
       - 'assets/**'

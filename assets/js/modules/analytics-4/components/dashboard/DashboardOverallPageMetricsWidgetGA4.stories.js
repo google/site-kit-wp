@@ -252,7 +252,7 @@ LoadedEntityURL.args = {
 };
 LoadedEntityURL.scenario = {
 	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
-	delay: 500,
+	delay: 1500, // Allow extra time for responsive text in mobile.
 };
 
 export const LoadingEntityURL = Template.bind( {} );
