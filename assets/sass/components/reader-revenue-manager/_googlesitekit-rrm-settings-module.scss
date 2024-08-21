@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager styles.
+ * Reader Revenue Manager settings styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-rrm-overlay-notification";
-@import "googlesitekit-rrm-settings-module";
-@import "googlesitekit-rrm-setup-module";
-@import "googlesitekit-rrm-setup-cta-banner";
+.googlesitekit-plugin {
+
+	.googlesitekit-settings-module--reader-revenue-manager {
+		// Ensure that the style only applies to the settings view screen.
+		.googlesitekit-settings-module__meta-items + .googlesitekit-publication-onboarding-state-notice {
+			margin-top: $grid-gap-desktop;
+		}
+	}
+}
