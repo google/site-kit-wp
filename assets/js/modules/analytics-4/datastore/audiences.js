@@ -36,6 +36,7 @@ import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate } from '../../../util';
 import { validateAudience } from '../utils/validation';
+import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const MAX_INITIAL_AUDIENCES = 2;
 
@@ -227,6 +228,88 @@ const baseActions = {
 	},
 
 	/**
+	 * Retrives the initial set of audiences for selection.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} availableAudiences List of available audiences.
+	 * @return {Array} List of initial audiences.
+	 */
+	*retrieveInitialAudienceSelection( availableAudiences ) {
+		const registry = yield commonActions.getRegistry();
+
+		const { select } = registry;
+
+		const configuredAudiences = [];
+
+		const userAudiences = availableAudiences.filter(
+			( { audienceType } ) => audienceType === 'USER_AUDIENCE'
+		);
+
+		if ( userAudiences.length > 0 ) {
+			// If there are user audiences, filter and sort them by total users over the last 90 days,
+			// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
+
+			const endDate = select( CORE_USER ).getReferenceDate();
+
+			const startDate = getPreviousDate(
+				endDate,
+				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
+			);
+
+			const { audienceResourceNames, error } = yield commonActions.await(
+				getNonZeroDataAudiencesSortedByTotalUsers(
+					registry,
+					userAudiences,
+					startDate,
+					endDate
+				)
+			);
+
+			if ( error ) {
+				return { error };
+			}
+
+			configuredAudiences.push(
+				...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
+			);
+		}
+
+		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+			// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences
+			// if they exist, up to the limit of two.
+
+			const siteKitAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+			);
+
+			// Audience slugs to sort by:
+			const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
+
+			const sortedSiteKitAudiences = siteKitAudiences.sort(
+				( audienceA, audienceB ) => {
+					const indexA = sortedSlugs.indexOf(
+						audienceA.audienceSlug
+					);
+					const indexB = sortedSlugs.indexOf(
+						audienceB.audienceSlug
+					);
+
+					return indexA - indexB;
+				}
+			);
+
+			const audienceResourceNames = sortedSiteKitAudiences
+				.slice( 0, MAX_INITIAL_AUDIENCES - configuredAudiences.length )
+				.map( ( { name } ) => name );
+
+			configuredAudiences.push( ...audienceResourceNames );
+		}
+
+		return configuredAudiences;
+	},
+
+	/**
 	 * Populates the configured audiences with the top two user audiences and/or the Site Kit-created audiences,
 	 * depending on their availability and suitability (data over the last 90 days is required for user audiences).
 	 *
@@ -253,76 +336,14 @@ const baseActions = {
 			return { error: syncError };
 		}
 
-		const userAudiences = availableAudiences.filter(
-			( { audienceType } ) => audienceType === 'USER_AUDIENCE'
-		);
-
-		const configuredAudiences = [];
+		let configuredAudiences = [];
 
 		if ( ! failedSiteKitAudienceSlugs?.length ) {
-			if ( userAudiences.length > 0 ) {
-				// If there are user audiences, filter and sort them by total users over the last 90 days,
-				// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
-
-				const endDate = select( CORE_USER ).getReferenceDate();
-
-				const startDate = getPreviousDate(
-					endDate,
-					90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-				);
-
-				const { audienceResourceNames, error } =
-					yield commonActions.await(
-						getNonZeroDataAudiencesSortedByTotalUsers(
-							registry,
-							userAudiences,
-							startDate,
-							endDate
-						)
-					);
-
-				if ( error ) {
-					return { error };
-				}
-
-				configuredAudiences.push(
-					...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
-				);
-			}
-
-			if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
-				// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
-				// up to the limit of two.
-
-				const siteKitAudiences = availableAudiences.filter(
-					( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
-				);
-
-				// Audience slugs to sort by:
-				const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
-
-				const sortedSiteKitAudiences = siteKitAudiences.sort(
-					( audienceA, audienceB ) => {
-						const indexA = sortedSlugs.indexOf(
-							audienceA.audienceSlug
-						);
-						const indexB = sortedSlugs.indexOf(
-							audienceB.audienceSlug
-						);
-
-						return indexA - indexB;
-					}
-				);
-
-				const audienceResourceNames = sortedSiteKitAudiences
-					.slice(
-						0,
-						MAX_INITIAL_AUDIENCES - configuredAudiences.length
-					)
-					.map( ( { name } ) => name );
-
-				configuredAudiences.push( ...audienceResourceNames );
-			}
+			configuredAudiences = yield commonActions.await(
+				dispatch(
+					MODULES_ANALYTICS_4
+				).retrieveInitialAudienceSelection( availableAudiences )
+			);
 		}
 
 		if ( configuredAudiences.length === 0 ) {
@@ -433,6 +454,67 @@ const baseActions = {
 					MODULES_ANALYTICS_4
 				).fetchSyncAvailableCustomDimensions()
 			);
+		}
+
+		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
+
+		const { error } = yield commonActions.await(
+			dispatch( CORE_USER ).saveAudienceSettings()
+		);
+
+		if ( error ) {
+			return { error };
+		}
+	},
+
+	/**
+	 * Populates the configured audiences for the secondary user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `error`.
+	 */
+	*enableSecondaryUserAudienceGroup() {
+		const registry = yield commonActions.getRegistry();
+
+		const { dispatch, resolveSelect } = registry;
+
+		const { response: availableAudiences, error: syncError } =
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
+
+		if ( syncError ) {
+			return { error: syncError };
+		}
+
+		const configuredAudiences = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
+				availableAudiences
+			)
+		);
+
+		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+			// Add 'Purchasers' audience if it has data.
+			const purchasersAudience = availableAudiences.find(
+				( { audienceSlug } ) => audienceSlug === 'purchasers'
+			);
+
+			if ( purchasersAudience ) {
+				const purchasersResourceDataAvailabilityDate =
+					yield commonActions.await(
+						resolveSelect(
+							MODULES_ANALYTICS_4
+						).getResourceDataAvailabilityDate(
+							purchasersAudience.name,
+							RESOURCE_TYPE_AUDIENCE
+						)
+					);
+
+				if ( purchasersResourceDataAvailabilityDate ) {
+					configuredAudiences.push( purchasersAudience.name );
+				}
+			}
 		}
 
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
