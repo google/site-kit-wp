@@ -30,7 +30,7 @@ docker image inspect $IMAGE --format "{{.Id}}" >/dev/null 2>&1 ||
 # Run the backstopjs command.
 docker run --rm --tty \
 	--shm-size=512m \
-	--mount "type=bind,source=$ROOT_DIR',target=/src" \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
 	$IMAGE \
 	"$COMMAND" \
 	--config=/src/tests/backstop/config.js
