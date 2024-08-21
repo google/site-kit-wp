@@ -21,14 +21,12 @@
  */
 import useCreateCustomDimensionForAudienceEffect from '../hooks/useCreateCustomDimensionForAudienceEffect';
 import useCreateCustomDimensionsEffect from '../hooks/useCreateCustomDimensionsEffect';
-import useMaybeSyncAvailableAudiencesEffect from '../hooks/useMaybeSyncAvailableAudiencesEffect';
 import useSyncGoogleTagEffect from '../hooks/useSyncGoogleTagEffect';
 
 export default function DashboardMainEffectComponent() {
 	useCreateCustomDimensionForAudienceEffect();
 	useCreateCustomDimensionsEffect();
 	useSyncGoogleTagEffect();
-	useMaybeSyncAvailableAudiencesEffect();
 
 	return null;
 }
