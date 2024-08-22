@@ -2405,11 +2405,32 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		usort(
 			$available_audiences,
-			function ( $a, $b ) {
-				$a_weight = self::AUDIENCE_TYPE_SORT_ORDER[ $a['audienceType'] ];
-				$b_weight = self::AUDIENCE_TYPE_SORT_ORDER[ $b['audienceType'] ];
+			function ( $audience_a, $audience_b ) use ( $available_audiences ) {
+				$audience_index_a = array_search( $audience_a, $available_audiences, true );
+				$audience_index_b = array_search( $audience_b, $available_audiences, true );
 
-				return $a_weight - $b_weight;
+				if ( false === $audience_index_a || false === $audience_index_b ) {
+					return 0;
+				}
+
+				$audience_a = $available_audiences[ $audience_index_a ];
+				$audience_b = $available_audiences[ $audience_index_b ];
+
+				$audience_type_a = $audience_a['audienceType'];
+				$audience_type_b = $audience_b['audienceType'];
+
+				if ( $audience_type_a === $audience_type_b ) {
+					if ( 'SITE_KIT_AUDIENCE' === $audience_type_b ) {
+						return 'new-visitors' === $audience_a['audienceSlug'] ? -1 : 1;
+					}
+
+					return $audience_index_a - $audience_index_b;
+				}
+
+				$weight_a = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_a ];
+				$weight_b = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_b ];
+
+				return $weight_a - $weight_b;
 			}
 		);
 
