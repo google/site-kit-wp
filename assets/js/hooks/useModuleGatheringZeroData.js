@@ -29,7 +29,7 @@ import useViewOnly from './useViewOnly';
 /**
  * Determines if either Search Console or Analytics is in gathering or zero data states.
  *
- * @since n.e.x.t
+ * @since 1.134.0
  *
  * @return {Object} Individual boolean|undefined values for Gathering and Zero data states for both modules.
  */

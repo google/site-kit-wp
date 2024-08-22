@@ -143,7 +143,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Checks if the current user has access to the current configured service entity.
 	 *
 	 * @since 1.131.0
-	 * @since n.e.x.t Checks if the user's publications includes the saved publication.
+	 * @since 1.134.0 Checks if the user's publications includes the saved publication.
 	 *
 	 * @return boolean|WP_Error
 	 */

@@ -50,7 +50,7 @@ final class Remote_Features extends Setting {
 	/**
 	 * Includes the current timestamp to the setting and updates it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @param array $features features array.
 	 */
