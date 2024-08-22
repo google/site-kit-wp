@@ -183,15 +183,13 @@
 		}
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-info {
-			.mdc-layout-grid {
-				padding: 18px 0;
-			}
 
 			.googlesitekit-subtle-notification {
 				align-items: center;
 				border-radius: 8px;
 				flex-direction: row;
 				gap: $grid-gap-phone;
+				margin: 18px 0;
 				padding: $grid-gap-phone / 2 $grid-gap-phone;
 			}
 
