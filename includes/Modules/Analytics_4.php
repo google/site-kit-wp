@@ -90,6 +90,8 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\User\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
 use stdClass;
 use WP_Error;
 
@@ -217,6 +219,15 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$this->user_options
 		);
 		$synchronize_ads_linked->register();
+
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$conversion_reporting_provider = new Conversion_Reporting_Provider(
+				$this->settings,
+				$this->user_options,
+				$this
+			);
+			$conversion_reporting_provider->register();
+		}
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
