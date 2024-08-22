@@ -65,8 +65,6 @@ const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 };
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
-	const [ allTilesError, setAllTilesError ] = useState( false );
-
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -119,14 +117,6 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			reportOptions,
 		] )
-	);
-
-	const individualTileErrors = configuredAudiences.reduce(
-		( acc, audienceResourceName ) => {
-			acc[ audienceResourceName ] = [];
-			return acc;
-		},
-		{}
 	);
 
 	const { rows = [] } = report || {};
@@ -194,30 +184,24 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		)
 	);
 
-	const topCitiesReportError = useSelect( ( select ) => {
-		const citiesError = configuredAudiences.reduce(
-			( acc, audienceResourceName ) => {
-				const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-					'getReport',
-					[
-						{
-							...topCitiesReportOptions,
-							dimensionFilters: { audienceResourceName },
-						},
-					]
-				);
+	const topCitiesReportErrors = useSelect( ( select ) => {
+		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getReport',
+				[
+					{
+						...topCitiesReportOptions,
+						dimensionFilters: { audienceResourceName },
+					},
+				]
+			);
 
-				if ( error ) {
-					individualTileErrors[ audienceResourceName ].push( error );
-					acc.push( error );
-				}
+			if ( error ) {
+				acc[ audienceResourceName ] = error;
+			}
 
-				return acc;
-			},
-			[]
-		);
-
-		return citiesError.length;
+			return acc;
+		}, {} );
 	} );
 
 	const topContentReportOptions = {
@@ -247,30 +231,24 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		)
 	);
 
-	const topContentReportError = useSelect( ( select ) => {
-		const contentErrors = configuredAudiences.reduce(
-			( acc, audienceResourceName ) => {
-				const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-					'getReport',
-					[
-						{
-							...topContentReportOptions,
-							dimensionFilters: { audienceResourceName },
-						},
-					]
-				);
+	const topContentReportErrors = useSelect( ( select ) => {
+		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getReport',
+				[
+					{
+						...topContentReportOptions,
+						dimensionFilters: { audienceResourceName },
+					},
+				]
+			);
 
-				if ( error ) {
-					individualTileErrors[ audienceResourceName ].push( error );
-					acc.push( error );
-				}
+			if ( error ) {
+				acc[ audienceResourceName ] = error;
+			}
 
-				return acc;
-			},
-			[]
-		);
-
-		return contentErrors.length;
+			return acc;
+		}, {} );
 	} );
 
 	const topContentPageTitlesReportOptions = {
@@ -300,31 +278,58 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		)
 	);
 
-	const topContentPageTitlesReportError = useSelect( ( select ) => {
-		const contentPageError = configuredAudiences.reduce(
-			( acc, audienceResourceName ) => {
-				const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-					'getReport',
-					[
-						{
-							...topContentPageTitlesReportOptions,
-							dimensionFilters: { audienceResourceName },
-						},
-					]
-				);
+	const topContentPageTitlesReportErrors = useSelect( ( select ) => {
+		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getReport',
+				[
+					{
+						...topContentPageTitlesReportOptions,
+						dimensionFilters: { audienceResourceName },
+					},
+				]
+			);
 
-				if ( error ) {
-					individualTileErrors[ audienceResourceName ].push( error );
-					acc.push( error );
-				}
+			if ( error ) {
+				acc[ audienceResourceName ] = error;
+			}
 
-				return acc;
-			},
-			[]
-		);
-
-		return contentPageError.length;
+			return acc;
+		}, {} );
 	} );
+
+	const individualTileErrors = configuredAudiences.reduce(
+		( acc, audienceResourceName ) => {
+			acc[ audienceResourceName ] = [];
+
+			[
+				topCitiesReportErrors,
+				topContentReportErrors,
+				topContentPageTitlesReportErrors,
+			].forEach( ( reportErrors ) => {
+				const error = reportErrors[ audienceResourceName ];
+				if ( error ) {
+					acc[ audienceResourceName ].push( error );
+				}
+			} );
+
+			return acc;
+		},
+		{}
+	);
+
+	function checkForAllTilesError() {
+		if ( reportError || totalPageviewsReportError ) {
+			return true;
+		}
+
+		return configuredAudiences.every(
+			( audienceResourceName ) =>
+				individualTileErrors[ audienceResourceName ].length > 0
+		);
+	}
+
+	const allTilesError = checkForAllTilesError();
 
 	const dismissedItems = useSelect( ( select ) =>
 		select( CORE_USER ).getDismissedItems()
@@ -415,35 +420,6 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 			hasDismissed.current[ itemSlug ] = true;
 		} );
 	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
-
-	useEffect( () => {
-		if ( reportError || totalPageviewsReportError ) {
-			setAllTilesError( true );
-		}
-
-		if (
-			topCitiesReportError ||
-			topContentReportError ||
-			topContentPageTitlesReportError
-		) {
-			const allErroredTiles = configuredAudiences.every(
-				( audienceResourceName ) =>
-					individualTileErrors[ audienceResourceName ].length > 0
-			);
-
-			if ( allErroredTiles ) {
-				setAllTilesError( true );
-			}
-		}
-	}, [
-		configuredAudiences,
-		individualTileErrors,
-		reportError,
-		topCitiesReportError,
-		topContentPageTitlesReportError,
-		topContentReportError,
-		totalPageviewsReportError,
-	] );
 
 	const loading =
 		widgetLoading ||
