@@ -51,12 +51,12 @@ export default function ActionsCTALinkDismiss( {
 			event.preventDefault();
 		}
 
+		navigateTo( ctaLink );
+
 		await Promise.all( [
 			trackEvents.confirm(),
 			dismissNotification( id, { expiresInSeconds: dismissExpires } ),
 		] );
-
-		navigateTo( ctaLink );
 	};
 
 	return (

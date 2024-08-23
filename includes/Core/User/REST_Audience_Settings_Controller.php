@@ -21,7 +21,7 @@ use WP_REST_Server;
 /**
  * Class for handling audience settings rest routes.
  *
- * @since n.e.x.t
+ * @since 1.134.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class REST_Audience_Settings_Controller {
 	/**
 	 * Audience_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 * @var Audience_Settings
 	 */
 	private $audience_settings;
@@ -38,7 +38,7 @@ class REST_Audience_Settings_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @param Audience_Settings $audience_settings Audience_Settings instance.
 	 */
@@ -49,7 +49,7 @@ class REST_Audience_Settings_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 */
 	public function register() {
 		add_filter(
@@ -79,7 +79,7 @@ class REST_Audience_Settings_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

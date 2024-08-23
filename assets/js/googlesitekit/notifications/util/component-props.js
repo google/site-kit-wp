@@ -27,7 +27,7 @@ import Notification from '../components/Notification';
 /**
  * Gets the props to pass to a Notification's component.
  *
- * @since n.e.x.t
+ * @since 1.134.0
  *
  * @param {string} id The Notification's ID.
  * @return {Object} Props to pass to the Notification component.
@@ -56,7 +56,7 @@ function withNotificationID( id ) {
 /**
  * Gets the props and passes them to the notification's component through a HOC.
  *
- * @since n.e.x.t
+ * @since 1.134.0
  *
  * @param {string} id The id of the notification.
  * @return {Function} Enhancing function that adds the getNotificationComponentProps to the passed component.
