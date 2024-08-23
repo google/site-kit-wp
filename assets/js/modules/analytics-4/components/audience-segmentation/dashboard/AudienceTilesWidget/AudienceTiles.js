@@ -348,12 +348,19 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 		while ( tempAudiences.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
-
 			const isDismissed = dismissedItems?.includes(
 				`audience-tile-${ audienceResourceName }`
 			);
+			const isSiteKitAudience = siteKitAudiences.some(
+				( audience ) => audience.name === audienceResourceName
+			);
+			const reportToCheck =
+				isSiteKitAudience && isSiteKitAudiencePartialData
+					? siteKitAudiencesReport
+					: report;
+
 			const isZeroData = hasZeroDataForAudience(
-				report,
+				reportToCheck,
 				audienceResourceName
 			);
 
@@ -376,7 +383,15 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		}
 
 		return [ toClear, visible ];
-	}, [ audiences, configuredAudiences, dismissedItems, report ] );
+	}, [
+		audiences,
+		configuredAudiences,
+		dismissedItems,
+		isSiteKitAudiencePartialData,
+		report,
+		siteKitAudiences,
+		siteKitAudiencesReport,
+	] );
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
