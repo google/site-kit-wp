@@ -348,6 +348,40 @@ ZeroTileWithPlaceholder.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/ZeroTileWithPlaceholder',
 };
 
+export const SiteKitAudiencesPartialData = Template.bind( {} );
+SiteKitAudiencesPartialData.storyName = 'SiteKitAudiencesPartialData';
+SiteKitAudiencesPartialData.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/3': dataAvailabilityDate,
+					'properties/12345/audiences/4': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+	},
+};
+SiteKitAudiencesPartialData.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
 	decorators: [
@@ -372,6 +406,22 @@ export default {
 				startDate: '2024-02-29',
 				dimensions: [ { name: 'audienceResourceName' } ],
 				dimensionFilters: audiencesDimensionFilter,
+				metrics: [
+					{ name: 'totalUsers' },
+					{ name: 'sessionsPerUser' },
+					{ name: 'screenPageViewsPerSession' },
+					{ name: 'screenPageViews' },
+				],
+			};
+			const newVsReturningReportOptions = {
+				compareEndDate: '2024-02-28',
+				compareStartDate: '2024-02-01',
+				endDate: '2024-03-27',
+				startDate: '2024-02-29',
+				dimensions: [ { name: 'newVsReturning' } ],
+				dimensionFilters: {
+					newVsReturning: [ 'new', 'returning' ],
+				},
 				metrics: [
 					{ name: 'totalUsers' },
 					{ name: 'sessionsPerUser' },
@@ -446,6 +496,16 @@ export default {
 							},
 						} );
 				} );
+
+				const newVsReturningReport = getAnalytics4MockResponse(
+					newVsReturningReportOptions
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( newVsReturningReport, {
+						options: newVsReturningReportOptions,
+					} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
