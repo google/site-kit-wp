@@ -167,6 +167,89 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		return { current: currentMetrics, previous: previousMetrics };
 	};
 
+	const getAudienceTileData = ( audienceResourceName, audienceIndex ) => {
+		const audienceName =
+			audiences?.filter(
+				( { name } ) => name === audienceResourceName
+			)?.[ 0 ]?.displayName || '';
+
+		const audienceSlug =
+			audiences?.filter(
+				( { name } ) => name === audienceResourceName
+			)?.[ 0 ]?.audienceSlug || '';
+
+		const { current, previous } =
+			getAudienceTileMetrics( audienceResourceName );
+
+		const visitors = current[ 0 ] || 0;
+		const prevVisitors = previous[ 0 ] || 0;
+
+		const visitsPerVisitors = current[ 1 ] || 0;
+		const prevVisitsPerVisitors = previous[ 1 ] || 0;
+
+		const pagesPerVisit = current[ 2 ] || 0;
+		const prevPagesPerVisit = previous[ 2 ] || 0;
+
+		const pageviews = current[ 3 ] || 0;
+		const prevPageviews = previous[ 3 ] || 0;
+
+		const topCities = topCitiesReport?.[ audienceIndex ];
+
+		const topContent = topContentReport?.[ audienceIndex ];
+
+		const topContentTitles = {};
+
+		topContentPageTitlesReport?.[ audienceIndex ]?.rows?.forEach(
+			( row ) => {
+				topContentTitles[ row.dimensionValues[ 0 ].value ] =
+					row.dimensionValues[ 1 ].value;
+			}
+		);
+
+		const isSiteKitAudience = siteKitAudiences.some(
+			( audience ) => audience.name === audienceResourceName
+		);
+
+		let reportToCheck = report;
+		let dimensionValue = audienceResourceName;
+
+		if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+			// If it's a Site Kit audience in a partial data state, use the siteKitAudiencesReport.
+			reportToCheck = siteKitAudiencesReport;
+
+			// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
+			dimensionValue =
+				audienceSlug === 'new-visitors' ? 'new' : 'returning';
+		}
+
+		const isZeroData = hasZeroDataForAudience(
+			reportToCheck,
+			dimensionValue
+		);
+		const isPartialData =
+			isSiteKitAudience && isSiteKitAudiencePartialData
+				? false
+				: partialDataStates[ audienceResourceName ];
+
+		return {
+			audienceName,
+			audienceSlug,
+			visitors,
+			prevVisitors,
+			visitsPerVisitors,
+			prevVisitsPerVisitors,
+			pagesPerVisit,
+			prevPagesPerVisit,
+			pageviews,
+			prevPageviews,
+			topCities,
+			topContent,
+			topContentTitles,
+			isZeroData,
+			isPartialData,
+		};
+	};
+
 	const individualTileErrors = configuredAudiences.reduce(
 		( acc, audienceResourceName ) => {
 			acc[ audienceResourceName ] = [];
@@ -399,82 +482,29 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 					/>
 				) }
 				{ allTilesError === false &&
-					// eslint-disable-next-line complexity
 					visibleAudiences.map( ( audienceResourceName, index ) => {
 						// Conditionally render only the selected audience tile on mobile.
 						if ( isTabbedBreakpoint && index !== activeTile ) {
 							return null;
 						}
 
-						const audienceName =
-							audiences?.filter(
-								( { name } ) => name === audienceResourceName
-							)?.[ 0 ]?.displayName || '';
-
-						const audienceSlug =
-							audiences?.filter(
-								( { name } ) => name === audienceResourceName
-							)?.[ 0 ]?.audienceSlug || '';
-
-						const { current, previous } =
-							getAudienceTileMetrics( audienceResourceName );
-
-						const visitors = current[ 0 ] || 0;
-						const prevVisitors = previous[ 0 ] || 0;
-
-						const visitsPerVisitors = current[ 1 ] || 0;
-						const prevVisitsPerVisitors = previous[ 1 ] || 0;
-
-						const pagesPerVisit = current[ 2 ] || 0;
-						const prevPagesPerVisit = previous[ 2 ] || 0;
-
-						const pageviews = current[ 3 ] || 0;
-						const prevPageviews = previous[ 3 ] || 0;
-
-						const topCities = topCitiesReport?.[ index ];
-
-						const topContent = topContentReport?.[ index ];
-
-						const topContentTitles = {};
-
-						topContentPageTitlesReport?.[ index ]?.rows?.forEach(
-							( row ) => {
-								topContentTitles[
-									row.dimensionValues[ 0 ].value
-								] = row.dimensionValues[ 1 ].value;
-							}
-						);
-
-						const isSiteKitAudience = siteKitAudiences.some(
-							( audience ) =>
-								audience.name === audienceResourceName
-						);
-
-						let reportToCheck = report;
-						let dimensionValue = audienceResourceName;
-
-						if (
-							isSiteKitAudience &&
-							isSiteKitAudiencePartialData
-						) {
-							// If it's a Site Kit audience in a partial data state, use the siteKitAudiencesReport.
-							reportToCheck = siteKitAudiencesReport;
-
-							// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
-							dimensionValue =
-								audienceSlug === 'new-visitors'
-									? 'new'
-									: 'returning';
-						}
-
-						const isZeroData = hasZeroDataForAudience(
-							reportToCheck,
-							dimensionValue
-						);
-						const isPartialData =
-							isSiteKitAudience && isSiteKitAudiencePartialData
-								? false
-								: partialDataStates[ audienceResourceName ];
+						const {
+							audienceName,
+							audienceSlug,
+							visitors,
+							prevVisitors,
+							visitsPerVisitors,
+							prevVisitsPerVisitors,
+							pagesPerVisit,
+							prevPagesPerVisit,
+							pageviews,
+							prevPageviews,
+							topCities,
+							topContent,
+							topContentTitles,
+							isZeroData,
+							isPartialData,
+						} = getAudienceTileData( audienceResourceName, index );
 
 						// Return loading tile if data is not yet loaded.
 						if (
