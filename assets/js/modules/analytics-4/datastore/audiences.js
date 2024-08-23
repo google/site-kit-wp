@@ -174,7 +174,9 @@ const baseActions = {
 			resolveSelect( CORE_USER ).getAuthentication()
 		);
 
-		if ( ! select( CORE_USER ).isAuthenticated() ) {
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+		if ( ! isAuthenticated ) {
 			const availableAudiences =
 				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
@@ -551,17 +553,13 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {
 	*getAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
-		const { select, resolveSelect } = registry;
-
-		yield commonActions.await(
-			resolveSelect( CORE_USER ).getAuthentication()
-		);
+		const { select } = registry;
 
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
 		// If available audiences not present, sync the audience in state.
-		if ( select( CORE_USER ).isAuthenticated() && audiences === null ) {
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+		if ( audiences === null ) {
+			yield baseActions.syncAvailableAudiences();
 		}
 	},
 };

@@ -22,6 +22,7 @@
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
@@ -55,6 +56,12 @@ describe( 'modules/analytics-4 audiences', () => {
 	);
 	const audienceSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
+	);
+	const analyticsSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
+	const userAuthenticationEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/authentication'
 	);
 
 	const audience = {
@@ -177,6 +184,10 @@ describe( 'modules/analytics-4 audiences', () => {
 		} );
 
 		describe( 'syncAvailableAudiences', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+			} );
+
 			const availableAudiences = [
 				{
 					name: 'properties/123456789/audiences/0987654321',
@@ -187,15 +198,19 @@ describe( 'modules/analytics-4 audiences', () => {
 				},
 			];
 
-			it( 'should make a network request to sync available audiences', () => {
+			it( 'should make a network request to sync available audiences', async () => {
+				muteFetch( audienceSettingsEndpoint );
+
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
 				} );
 
-				registry
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
@@ -314,7 +329,13 @@ describe( 'modules/analytics-4 audiences', () => {
 		} );
 
 		describe( 'maybeSyncAvailableAudiences', () => {
+			beforeEach( () => {
+				provideUserAuthentication( registry );
+			} );
+
 			it( 'should call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is undefined', async () => {
+				muteFetch( analyticsSettingsEndpoint );
+
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiencesFixture,
 					status: 200,
@@ -334,7 +355,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
@@ -522,6 +543,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						connected: true,
 					},
 				] );
+
+				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableAudiences: null,
@@ -1391,7 +1414,11 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( audiences ).toEqual( availableAudiences );
 			} );
 
-			it( 'should sync cached audiences when the availableAudiences setting is null', async () => {
+			it( 'should sync cached audiences when the availableAudiences setting is null for authenticated user', async () => {
+				provideUserAuthentication( registry );
+
+				muteFetch( audienceSettingsEndpoint );
+
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
@@ -1420,6 +1447,8 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
 				expect( audiences ).toEqual( availableAudiences );
+
+				await waitForDefaultTimeouts();
 			} );
 		} );
 
@@ -1589,7 +1618,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'returns false when available audiences are null or not set', async () => {
-				freezeFetch( syncAvailableAudiencesEndpoint );
+				freezeFetch( userAuthenticationEndpoint );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableAudiences: null,
@@ -1661,7 +1690,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return empty array if loaded `availableAudiences` is not an array', async () => {
-				freezeFetch( syncAvailableAudiencesEndpoint );
+				freezeFetch( userAuthenticationEndpoint );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
