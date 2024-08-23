@@ -579,7 +579,7 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__title"
                     >
-                      0% of total pageviews
+                      22.9% of total pageviews
                     </div>
                   </div>
                   <div
@@ -612,9 +612,46 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                       class="googlesitekit-audience-segmentation-tile-metric__content"
                     >
                       <div
-                        class="googlesitekit-audience-segmentation-tile__no-data"
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
                       >
-                        No data to show yet
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Dublin
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          692.9%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Cork
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          285.7%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          (not set)
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          21.4%
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -639,22 +676,69 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                       class="googlesitekit-audience-segmentation-tile-metric__content"
                     >
                       <div
-                        class="googlesitekit-audience-segmentation-tile-metric__no-data"
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
-                        No data to show
-                        <p>
-                          Update Analytics to track metric
-                        </p>
-                        <button
-                          class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised mdc-button--danger"
-                          target="_self"
+                        <a
+                          aria-label="Test Post 2 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 2"
                         >
                           <span
-                            class="mdc-button__label"
+                            class="googlesitekit-cta-link__contents"
                           >
-                            Update
+                            Test Post 2
                           </span>
-                        </button>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          97
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          />
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          40
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 2 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 2"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 2
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          3
+                        </div>
                       </div>
                       <span
                         class="googlesitekit-audience-segmentation-partial-data-notice"
@@ -727,7 +811,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                 />
               </button>
               <button
-                aria-label="New visitors"
+                aria-label="Purchasers"
                 aria-selected="false"
                 class="mdc-tab"
                 role="tab"
@@ -736,7 +820,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                 <span
                   class="mdc-tab__content"
                 >
-                  New visitors
+                  Purchasers
                   <span
                     class="googlesitekit-info-tooltip"
                   >
@@ -792,7 +876,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__value"
                     >
-                      29
+                      90
                     </div>
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__title"
@@ -804,9 +888,9 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                     class="googlesitekit-audience-segmentation-tile-metric__badge-container"
                   >
                     <div
-                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                      class="googlesitekit-change-badge"
                     >
-                      -60.8%
+                      +1,700%
                     </div>
                   </div>
                 </div>
@@ -836,9 +920,9 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                     class="googlesitekit-audience-segmentation-tile-metric__badge-container"
                   >
                     <div
-                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                      class="googlesitekit-change-badge"
                     >
-                      -4.3%
+                      +1,238.1%
                     </div>
                   </div>
                 </div>
@@ -856,7 +940,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__value"
                     >
-                      0.97
+                      0.38
                     </div>
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__title"
@@ -870,7 +954,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                     <div
                       class="googlesitekit-change-badge"
                     >
-                      +51.3%
+                      +662.9%
                     </div>
                   </div>
                 </div>
@@ -888,12 +972,12 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__value"
                     >
-                      14
+                      7
                     </div>
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__title"
                     >
-                      46.7% of total pageviews
+                      13.5% of total pageviews
                     </div>
                   </div>
                   <div
@@ -902,7 +986,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                     <div
                       class="googlesitekit-change-badge googlesitekit-change-badge--negative"
                     >
-                      -64.1%
+                      -92.8%
                     </div>
                   </div>
                 </div>
@@ -936,7 +1020,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
-                          331%
+                          106.7%
                         </div>
                       </div>
                       <div
@@ -950,7 +1034,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
-                          217.2%
+                          70%
                         </div>
                       </div>
                       <div
@@ -964,7 +1048,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
-                          175.9%
+                          56.7%
                         </div>
                       </div>
                     </div>
