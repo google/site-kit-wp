@@ -2,7 +2,8 @@
         bootstrap="tests/phpunit/bootstrap.php"
         backupGlobals="false"
         processIsolation="false"
-        colors="true">
+        colors="true"
+        convertDeprecationsToExceptions="true">
     <testsuites>
         <testsuite name="Site Kit Test Suite">
             <directory suffix=".php">./tests/phpunit/integration</directory>

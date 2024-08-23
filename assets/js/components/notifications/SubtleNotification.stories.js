@@ -161,6 +161,16 @@ WarningWithoutIcon.args = {
 };
 WarningWithoutIcon.scenario = {};
 
+export const NonDismissible = Template.bind( {} );
+NonDismissible.storyName = 'Non dismissible';
+NonDismissible.args = {
+	title: 'Success! Your Conversion Tracking ID was added to your site',
+	description: 'You can now track conversions for your Ads campaigns',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+};
+
 export default {
 	title: 'Components/SubtleNotification',
 	component: SubtleNotification,

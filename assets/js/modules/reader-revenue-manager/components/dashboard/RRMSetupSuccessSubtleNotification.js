@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { Cell, Grid, Row } from '../../../../material-components';
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import whenActive from '../../../../util/when-active';
@@ -117,66 +118,87 @@ function RRMSetupSuccessSubtleNotification() {
 		return null;
 	}
 
+	function WithGridWrapped( { children } ) {
+		return (
+			<Grid>
+				<Row>
+					<Cell alignMiddle size={ 12 }>
+						{ children }
+					</Cell>
+				</Row>
+			</Grid>
+		);
+	}
+
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
-			<SubtleNotification
-				title={ __(
-					'Your Reader Revenue Manager account was successfully set up!',
-					'google-site-kit'
-				) }
-				description={ __(
-					'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
-					'google-site-kit'
-				) }
-				onDismiss={ handleDismiss }
-				dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-				ctaLabel={ __( 'Customize settings', 'google-site-kit' ) }
-				ctaLink={ serviceURL }
-				onCTAClick={ onCTAClick }
-				isCTALinkExternal
-			/>
+			<WithGridWrapped>
+				<SubtleNotification
+					title={ __(
+						'Your Reader Revenue Manager account was successfully set up!',
+						'google-site-kit'
+					) }
+					description={ __(
+						'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
+						'google-site-kit'
+					) }
+					onDismiss={ handleDismiss }
+					dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
+					ctaLabel={ __( 'Customize settings', 'google-site-kit' ) }
+					ctaLink={ serviceURL }
+					onCTAClick={ onCTAClick }
+					isCTALinkExternal
+				/>
+			</WithGridWrapped>
 		);
 	}
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<SubtleNotification
-				title={ __(
-					'Your Reader Revenue Manager account was successfully set up!',
-					'google-site-kit'
-				) }
-				description={ __(
-					'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
-					'google-site-kit'
-				) }
-				onDismiss={ handleDismiss }
-				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				ctaLabel={ __( 'Check publication status', 'google-site-kit' ) }
-				ctaLink={ serviceURL }
-				onCTAClick={ onCTAClick }
-				isCTALinkExternal
-			/>
+			<WithGridWrapped>
+				<SubtleNotification
+					title={ __(
+						'Your Reader Revenue Manager account was successfully set up!',
+						'google-site-kit'
+					) }
+					description={ __(
+						'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
+						'google-site-kit'
+					) }
+					onDismiss={ handleDismiss }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					ctaLabel={ __(
+						'Check publication status',
+						'google-site-kit'
+					) }
+					ctaLink={ serviceURL }
+					onCTAClick={ onCTAClick }
+					isCTALinkExternal
+				/>
+			</WithGridWrapped>
 		);
 	}
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<SubtleNotification
-				title={ __(
-					'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
-					'google-site-kit'
-				) }
-				onDismiss={ handleDismiss }
-				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				ctaLabel={ __(
-					'Complete publication setup',
-					'google-site-kit'
-				) }
-				ctaLink={ serviceURL }
-				onCTAClick={ onCTAClick }
-				isCTALinkExternal
-				variant="warning"
-			/>
+			<WithGridWrapped>
+				<SubtleNotification
+					title={ __(
+						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
+						'google-site-kit'
+					) }
+					onDismiss={ handleDismiss }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					ctaLabel={ __(
+						'Complete publication setup',
+						'google-site-kit'
+					) }
+					ctaLink={ serviceURL }
+					onCTAClick={ onCTAClick }
+					isCTALinkExternal
+					variant="warning"
+				/>
+			</WithGridWrapped>
 		);
 	}
 

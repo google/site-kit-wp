@@ -813,7 +813,7 @@ final class Authentication {
 	 */
 	private function get_update_core_url() {
 		if ( ! current_user_can( 'update_core' ) ) {
-			return null;
+			return '';
 		}
 
 		if ( is_multisite() ) {

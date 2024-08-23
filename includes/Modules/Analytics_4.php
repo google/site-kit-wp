@@ -2059,12 +2059,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$obj = $property->toSimpleObject();
 
 		$matches = array();
-		if ( preg_match( '#properties/([^/]+)#', $property[ $id_key ], $matches ) ) {
+		if ( preg_match( '#properties/([^/]+)#', $property[ $id_key ] ?? '', $matches ) ) {
 			$obj->_id = $matches[1];
 		}
 
 		$matches = array();
-		if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
+		if ( preg_match( '#accounts/([^/]+)#', $property['parent'] ?? '', $matches ) ) {
 			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 

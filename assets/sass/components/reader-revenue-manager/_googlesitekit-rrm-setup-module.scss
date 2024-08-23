@@ -24,8 +24,12 @@
 			font-weight: $fw-medium;
 		}
 
-		.googlesitekit-publication-onboarding-state-notice {
-			margin-bottom: 40px;
+		// Ensure that the descendent styles only apply to the module setup screen.
+		.googlesitekit-setup-module__step {
+
+			.googlesitekit-publication-onboarding-state-notice {
+				margin-bottom: 40px;
+			}
 		}
 	}
 
