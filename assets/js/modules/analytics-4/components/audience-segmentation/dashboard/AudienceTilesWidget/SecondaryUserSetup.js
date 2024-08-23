@@ -22,20 +22,50 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { useMount } from 'react-use';
+import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
 
 export default function SecondaryUserSetup( { Widget } ) {
+	const [ setupError, setSetupError ] = useState( null );
 	const { enableSecondaryUserAudienceGroup } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
+	const handleRetry = () => {
+		setSetupError( null );
+		enableSecondaryUserAudienceGroup().then( ( result ) => {
+			if ( result?.error ) {
+				setSetupError( result.error );
+			}
+		} );
+	};
+
 	useMount( () => {
-		enableSecondaryUserAudienceGroup();
+		enableSecondaryUserAudienceGroup().then( ( result ) => {
+			if ( result?.error ) {
+				setSetupError( result.error );
+			}
+		} );
 	} );
+
+	if ( setupError ) {
+		return (
+			<AudienceSegmentationErrorWidget
+				Widget={ Widget }
+				errors={ setupError }
+				onRetry={ handleRetry }
+			/>
+		);
+	}
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
