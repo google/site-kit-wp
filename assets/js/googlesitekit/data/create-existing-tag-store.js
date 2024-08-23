@@ -25,9 +25,9 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import {
-	commonActions,
 	createRegistryControl,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
@@ -163,15 +163,20 @@ export const createExistingTagStore = ( {
 
 	const resolvers = {
 		*getExistingTag() {
-			const registry = yield commonActions.getRegistry();
+			const existingTag = yield wpControls.select(
+				STORE_NAME,
+				'getExistingTag'
+			);
 
-			if (
-				registry.select( STORE_NAME ).getExistingTag() === undefined
-			) {
-				const existingTag = yield actions.fetchGetExistingTag();
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetExistingTag( existingTag );
+			if ( existingTag === undefined ) {
+				const existingTagFromServer =
+					yield actions.fetchGetExistingTag();
+
+				yield wpControls.dispatch(
+					STORE_NAME,
+					'receiveGetExistingTag',
+					existingTagFromServer
+				);
 			}
 		},
 	};

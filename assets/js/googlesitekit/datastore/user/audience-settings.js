@@ -30,6 +30,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import {
 	AUDIENCE_TYPE_SORT_ORDER,
@@ -122,19 +123,19 @@ const baseActions = {
 		function* ( settings = {} ) {
 			yield clearError( 'saveAudienceSettings', [] );
 
-			const registry = yield commonActions.getRegistry();
-			const audienceSettings = yield commonActions.await(
-				registry.resolveSelect( CORE_USER ).getAudienceSettings()
+			const audienceSettings = yield wpControls.resolveSelect(
+				CORE_USER,
+				'getAudienceSettings'
 			);
+
 			const finalSettings = {
 				...audienceSettings,
 				...settings,
 			};
 
-			const availableAudiences = yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences()
+			const availableAudiences = yield wpControls.resolveSelect(
+				MODULES_ANALYTICS_4,
+				'getAvailableAudiences'
 			);
 
 			const sortedConfiguredAudiences = [

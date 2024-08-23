@@ -27,14 +27,12 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-
-const { getRegistry } = commonActions;
 
 function reducerCallback( state, dismissedPrompts ) {
 	return {
@@ -108,8 +106,10 @@ const baseActions = {
 
 const baseResolvers = {
 	*getDismissedPrompts() {
-		const { select } = yield getRegistry();
-		const dismissedPrompts = select( CORE_USER ).getDismissedPrompts();
+		const dismissedPrompts = yield wpControls.select(
+			CORE_USER,
+			'getDismissedPrompts'
+		);
 
 		if ( dismissedPrompts === undefined ) {
 			yield fetchGetDismissedPromptsStore.actions.fetchGetDismissedPrompts();

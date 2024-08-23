@@ -35,6 +35,7 @@ import {
 	commonActions,
 	combineStores,
 	createRegistryControl,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -707,13 +708,11 @@ const baseActions = {
 		const googleTagAccountID = getGoogleTagAccountID();
 		const googleTagContainerID = getGoogleTagContainerID();
 
-		const googleTagContainerDestinations = yield commonActions.await(
-			resolveSelect(
-				MODULES_ANALYTICS_4
-			).getGoogleTagContainerDestinations(
-				googleTagAccountID,
-				googleTagContainerID
-			)
+		const googleTagContainerDestinations = yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagContainerDestinations',
+			googleTagAccountID,
+			googleTagContainerID
 		) || []; // Fallback used in the event of an error.
 
 		const googleTagContainerDestinationIDs =

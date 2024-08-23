@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -115,7 +114,12 @@ describe( 'FeatureTours', () => {
 			'^/google-site-kit/v1/core/user/data/dismiss-tour'
 		);
 
-		muteFetch( fetchDismissTourRegExp, [] );
+		fetchMock.post( fetchDismissTourRegExp, () => {
+			return {
+				status: 200,
+				body: JSON.stringify( [] ),
+			};
+		} );
 
 		const { getByRole, waitForRegistry } = render(
 			<TourTooltipsWithMockUI />,

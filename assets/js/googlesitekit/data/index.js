@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import {
+	controls as wpControls,
 	createRegistry,
 	createRegistryControl,
 	createRegistrySelector,
@@ -80,6 +81,7 @@ Data.useDispatch = useDispatch;
 Data.useRegistry = useRegistry;
 Data.withSelect = withSelect;
 Data.withDispatch = withDispatch;
+Data.wpControls = wpControls;
 Data.RegistryProvider = RegistryProvider;
 
 export {
@@ -96,6 +98,7 @@ export {
 	useRegistry,
 	withSelect,
 	withDispatch,
+	wpControls,
 	RegistryProvider,
 };
 

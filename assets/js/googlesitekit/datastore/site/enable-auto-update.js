@@ -25,9 +25,9 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -80,17 +80,18 @@ const baseActions = {
 	*enableAutoUpdate() {
 		yield clearError( 'enableAutoUpdate', [] );
 
-		const registry = yield commonActions.getRegistry();
+		yield wpControls.resolveSelect( CORE_USER, 'getNonces' );
+		yield wpControls.resolveSelect( CORE_SITE, 'getSiteInfo' );
 
-		yield commonActions.await(
-			registry.resolveSelect( CORE_USER ).getNonces()
+		const nonce = yield wpControls.select(
+			CORE_USER,
+			'getNonce',
+			'updates'
 		);
-		yield commonActions.await(
-			registry.resolveSelect( CORE_SITE ).getSiteInfo()
+		const pluginBasename = yield wpControls.select(
+			CORE_SITE,
+			'getPluginBasename'
 		);
-
-		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
-		const pluginBasename = registry.select( CORE_SITE ).getPluginBasename();
 
 		const { response, error } =
 			yield fetchEnableAutoUpdateStore.actions.fetchEnableAutoUpdate( {
@@ -99,9 +100,11 @@ const baseActions = {
 			} );
 
 		if ( response?.success ) {
-			yield registry
-				.dispatch( CORE_SITE )
-				.setSiteKitAutoUpdatesEnabled( true );
+			yield wpControls.dispatch(
+				CORE_SITE,
+				'setSiteKitAutoUpdatesEnabled',
+				true
+			);
 		}
 
 		if ( error ) {

@@ -25,9 +25,9 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
@@ -37,8 +37,6 @@ import { CORE_USER } from '../user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { clearError, receiveError } = errorStoreActions;
-
-const { getRegistry } = commonActions;
 
 const SET_CONSENT_MODE_ENABLED = 'SET_CONSENT_MODE_ENABLED';
 const INSTALL_ACTIVATE_WP_CONSENT_API_RESPONSE =
@@ -147,8 +145,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveConsentModeSettings() {
-		const { select } = yield getRegistry();
-		const settings = select( CORE_SITE ).getConsentModeSettings();
+		const settings = yield wpControls.select(
+			CORE_SITE,
+			'getConsentModeSettings'
+		);
 
 		return yield fetchSaveConsentModeSettingsStore.actions.fetchSaveConsentModeSettings(
 			settings
@@ -176,8 +176,6 @@ const baseActions = {
 	 * @since 1.132.0
 	 */
 	*installActivateWPConsentAPI() {
-		const registry = yield getRegistry();
-
 		yield clearError( 'installActivateWPConsentAPI', [] );
 
 		yield {
@@ -185,13 +183,14 @@ const baseActions = {
 			payload: true,
 		};
 
-		yield commonActions.await(
-			registry.resolveSelect( CORE_USER ).getNonces()
-		);
-		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
+		yield wpControls.resolveSelect( CORE_USER, 'getNonces' );
+
+		const nonce = yield wpControls
+			.select( CORE_USER )
+			.getNonce( 'updates' );
 
 		if ( nonce === undefined ) {
-			const error = registry
+			const error = yield wpControls
 				.select( CORE_USER )
 				.getErrorForSelector( 'getNonces' );
 
@@ -202,7 +201,7 @@ const baseActions = {
 				payload: false,
 			};
 
-			registry
+			yield wpControls
 				.dispatch( CORE_USER )
 				.invalidateResolution( 'getNonces', [] );
 
@@ -384,9 +383,12 @@ const baseSelectors = {
 
 const baseResolvers = {
 	*getConsentModeSettings() {
-		const { select } = yield getRegistry();
+		const consentModeSettings = yield wpControls.select(
+			CORE_SITE,
+			'getConsentModeSettings'
+		);
 
-		if ( select( CORE_SITE ).getConsentModeSettings() ) {
+		if ( consentModeSettings ) {
 			return;
 		}
 
@@ -394,9 +396,12 @@ const baseResolvers = {
 	},
 
 	*getConsentAPIInfo() {
-		const { select } = yield getRegistry();
+		const consentAPIInfo = yield wpControls.select(
+			CORE_SITE,
+			'getConsentAPIInfo'
+		);
 
-		if ( select( CORE_SITE ).getConsentAPIInfo() ) {
+		if ( consentAPIInfo ) {
 			return;
 		}
 

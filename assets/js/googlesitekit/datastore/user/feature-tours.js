@@ -32,6 +32,7 @@ import {
 	createRegistrySelector,
 	combineStores,
 	createRegistryControl,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_SITE } from '../../datastore/site/constants';
@@ -39,8 +40,6 @@ import { CORE_USER } from './constants';
 import featureTours from '../../../feature-tours';
 import { getItem } from '../../../googlesitekit/api/cache';
 import { createValidatedAction } from '../../data/utils';
-
-const { getRegistry } = commonActions;
 
 // Feature tour cooldown period is 2 hours
 export const FEATURE_TOUR_COOLDOWN_SECONDS = 60 * 60 * 2;
@@ -102,11 +101,17 @@ const baseActions = {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
 		},
 		function* ( slug ) {
-			const { select } = yield getRegistry();
+			const isFetchingDismissTour = yield wpControls.select(
+				CORE_USER,
+				'isFetchingDismissTour',
+				slug
+			);
 
-			if ( select( CORE_USER ).isFetchingDismissTour( slug ) ) {
-				const response =
-					select( CORE_USER ).getDismissedFeatureTourSlugs();
+			if ( isFetchingDismissTour ) {
+				const response = yield wpControls.select(
+					CORE_USER,
+					'getDismissedFeatureTourSlugs'
+				);
 				return { response, error: undefined };
 			}
 
@@ -169,13 +174,15 @@ const baseActions = {
 			invariant( timestamp, 'A timestamp is required.' );
 		},
 		function* ( timestamp ) {
-			const registry = yield getRegistry();
-
-			yield registry
-				.dispatch( CORE_SITE )
-				.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
+			yield wpControls.dispatch(
+				CORE_SITE,
+				'setCacheItem',
+				FEATURE_TOUR_LAST_DISMISSED_AT,
+				timestamp,
+				{
 					ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
-				} );
+				}
+			);
 
 			yield {
 				type: RECEIVE_LAST_DISMISSED_AT,
@@ -185,9 +192,12 @@ const baseActions = {
 	),
 
 	*triggerTour( tour ) {
-		const { select } = yield getRegistry();
+		const currentTour = yield wpControls.select(
+			CORE_USER,
+			'getCurrentTour'
+		);
 
-		if ( ! select( CORE_USER ).getCurrentTour() ) {
+		if ( ! currentTour ) {
 			yield baseActions.receiveCurrentTour( tour );
 		}
 	},
@@ -204,17 +214,21 @@ const baseActions = {
 	},
 
 	*triggerTourForView( viewContext ) {
-		const { select, resolveSelect } = yield getRegistry();
+		yield wpControls.resolveSelect( CORE_USER, 'getLastDismissedAt' );
 
-		yield commonActions.await(
-			resolveSelect( CORE_USER ).getLastDismissedAt()
+		const areFeatureToursOnCooldown = yield wpControls.select(
+			CORE_USER,
+			'areFeatureToursOnCooldown'
 		);
 
-		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
+		if ( areFeatureToursOnCooldown ) {
 			return {};
 		}
 
-		const tours = select( CORE_USER ).getAllFeatureTours();
+		const tours = yield wpControls.select(
+			CORE_USER,
+			'getAllFeatureTours'
+		);
 
 		for ( const tour of tours ) {
 			const tourQualifies = yield {
@@ -362,9 +376,11 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getDismissedFeatureTourSlugs() {
-		const { select } = yield getRegistry();
+		const tours = yield wpControls.select(
+			CORE_USER,
+			'getDismissedFeatureTourSlugs'
+		);
 
-		const tours = select( CORE_USER ).getDismissedFeatureTourSlugs();
 		if ( tours === undefined ) {
 			yield fetchGetDismissedToursStore.actions.fetchGetDismissedTours();
 		}

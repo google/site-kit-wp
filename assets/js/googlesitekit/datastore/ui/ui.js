@@ -25,7 +25,7 @@ import { isPlainObject, isBoolean } from 'lodash';
 /**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { commonActions, wpControls } from 'googlesitekit-data';
 import { CORE_UI } from './constants';
 import { CORE_USER } from '../user/constants';
 
@@ -116,14 +116,16 @@ export const actions = {
 	*dismissOverlayNotification( overlayNotification ) {
 		invariant( overlayNotification, 'overlayNotification is required.' );
 
-		const registry = yield commonActions.getRegistry();
+		const activeOverlayNotification = yield wpControls.select(
+			CORE_UI,
+			'getValue',
+			'activeOverlayNotification'
+		);
 
-		const activeOverlayNotification = registry
-			.select( CORE_UI )
-			.getValue( 'activeOverlayNotification' );
-
-		yield commonActions.await(
-			registry.dispatch( CORE_USER ).dismissItem( overlayNotification )
+		yield wpControls.dispatch(
+			CORE_USER,
+			'dismissItem',
+			overlayNotification
 		);
 
 		if (

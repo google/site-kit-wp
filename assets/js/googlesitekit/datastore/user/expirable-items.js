@@ -26,15 +26,13 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	createRegistrySelector,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-
-const { getRegistry } = commonActions;
 
 function reducerCallback( state, expirableItems ) {
 	return {
@@ -106,8 +104,11 @@ const baseActions = {
 
 const baseResolvers = {
 	*getExpirableItems() {
-		const { select } = yield getRegistry();
-		const expirableItems = select( CORE_USER ).getExpirableItems();
+		const expirableItems = yield wpControls.select(
+			CORE_USER,
+			'getExpirableItems'
+		);
+
 		if ( expirableItems === undefined ) {
 			yield fetchGetExpirableItemsStore.actions.fetchGetExpirableItems();
 		}

@@ -25,15 +25,13 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
 import { CORE_SITE } from './constants';
-
-const { getRegistry } = commonActions;
 
 const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
 const RESET_CONVERSION_TRACKING_SETTINGS = 'RESET_CONVERSION_TRACKING_SETTINGS';
@@ -86,8 +84,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveConversionTrackingSettings() {
-		const { select } = yield getRegistry();
-		const settings = select( CORE_SITE ).getConversionTrackingSettings();
+		const settings = yield wpControls.select(
+			CORE_SITE,
+			'getConversionTrackingSettings'
+		);
 
 		return yield fetchSaveConversionTrackingSettingsStore.actions.fetchSaveConversionTrackingSettings(
 			settings
@@ -189,9 +189,10 @@ const baseSelectors = {
 
 const baseResolvers = {
 	*getConversionTrackingSettings() {
-		const { select } = yield getRegistry();
-		const conversionTrackingSettings =
-			select( CORE_SITE ).getConversionTrackingSettings();
+		const conversionTrackingSettings = yield wpControls.select(
+			CORE_SITE,
+			'getConversionTrackingSettings'
+		);
 
 		if ( conversionTrackingSettings ) {
 			return;
