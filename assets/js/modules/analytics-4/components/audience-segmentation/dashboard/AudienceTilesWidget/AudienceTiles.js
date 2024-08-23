@@ -580,7 +580,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						// If errored, skip rendering.
 						if (
 							individualTileErrors[ audienceResourceName ]
-								?.length > 0
+								.length > 0
 						) {
 							return (
 								<AudienceTileError
