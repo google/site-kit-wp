@@ -377,7 +377,7 @@ describe( 'AudienceTilesWidget', () => {
 	it( 'should render when all configured audiences are matching available audiences', async () => {
 		const configuredAudiences = [
 			'properties/12345/audiences/1',
-			'properties/12345/audiences/3',
+			'properties/12345/audiences/2',
 		];
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -511,6 +511,8 @@ describe( 'AudienceTilesWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ newVsReturningReportOptions ] );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
