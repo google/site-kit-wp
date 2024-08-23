@@ -62,6 +62,19 @@ const hasZeroDataForAudience = ( report, audienceResourceName ) => {
 	return totalUsers === 0;
 };
 
+const aggregateMetrics = ( rows ) => {
+	return rows?.reduce(
+		( acc, row ) => {
+			acc[ 0 ] += Number( row.metricValues?.[ 0 ]?.value || 0 ); // totalUsers
+			acc[ 1 ] += Number( row.metricValues?.[ 1 ]?.value || 0 ); // sessionsPerUser
+			acc[ 2 ] += Number( row.metricValues?.[ 2 ]?.value || 0 ); // screenPageViewsPerSession
+			acc[ 3 ] += Number( row.metricValues?.[ 3 ]?.value || 0 ); // screenPageViews
+			return acc;
+		},
+		[ 0, 0, 0, 0 ]
+	);
+};
+
 export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
@@ -110,7 +123,25 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		] )
 	);
 
-	const { rows = [] } = report || {};
+	const newVsReturningReportOptions = {
+		...dates,
+		dimensions: [ { name: 'newVsReturning' } ],
+		dimensionFilters: { newVsReturning: [ 'new', 'returning' ] },
+		metrics: [
+			{ name: 'totalUsers' },
+			{ name: 'sessionsPerUser' },
+			{ name: 'screenPageViewsPerSession' },
+			{ name: 'screenPageViews' },
+		],
+	};
+	const siteKitAudiencesReport = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( newVsReturningReportOptions )
+	);
+	const siteKitAudiencesReportLoaded = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+			newVsReturningReportOptions,
+		] )
+	);
 
 	const totalPageviewsReportOptions = {
 		startDate,
@@ -219,6 +250,63 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		)
 	);
 
+	// eslint-disable-next-line no-unused-vars
+	const [ siteKitAudiences, otherAudiences ] = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getConfiguredSiteKitAndOtherAudiences()
+	);
+
+	const isSiteKitAudiencePartialData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasAudiencePartialData( siteKitAudiences )
+	);
+
+	const getAudienceTileMetrics = ( audienceResourceName ) => {
+		const isSiteKitAudience = siteKitAudiences.some(
+			( audience ) => audience.name === audienceResourceName
+		);
+
+		// Get the audience slug (e.g., 'new-visitors', 'returning-visitors').
+		const audienceSlug = siteKitAudiences.find(
+			( audience ) => audience.name === audienceResourceName
+		)?.audienceSlug;
+
+		const aggregateRows = ( dateRange ) => {
+			let rows = [];
+
+			if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+				// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
+				const dimensionValue =
+					audienceSlug === 'new-visitors' ? 'new' : 'returning';
+
+				// Filter for Site Kit audiences with partial data state.
+				rows = siteKitAudiencesReport?.rows?.filter(
+					( row ) =>
+						row.dimensionValues?.[ 0 ]?.value === dimensionValue &&
+						row.dimensionValues?.[ 1 ]?.value === dateRange
+				);
+			} else {
+				// Filter for non-Site Kit audiences or fully aggregated Site Kit data.
+				rows = report?.rows?.filter(
+					( row ) =>
+						row.dimensionValues?.[ 0 ]?.value ===
+							audienceResourceName &&
+						row.dimensionValues?.[ 1 ]?.value === dateRange
+				);
+			}
+
+			// Ensure rows are defined and non-empty before aggregating metrics.
+			if ( rows && rows.length > 0 ) {
+				return aggregateMetrics( rows );
+			}
+			// Return default values if no data is available.
+			return [ 0, 0, 0, 0 ];
+		};
+
+		const currentMetrics = aggregateRows( 'date_range_0' );
+		const previousMetrics = aggregateRows( 'date_range_1' );
+
+		return { current: currentMetrics, previous: previousMetrics };
+	};
+
 	const dismissedItems = useSelect( ( select ) =>
 		select( CORE_USER ).getDismissedItems()
 	);
@@ -312,6 +400,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const loading =
 		widgetLoading ||
 		! reportLoaded ||
+		! siteKitAudiencesReportLoaded ||
 		! totalPageviewsReportLoaded ||
 		! topCitiesReportLoaded ||
 		! topContentReportLoaded ||
@@ -367,22 +456,6 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						return null;
 					}
 
-					const currentMetricValues = rows.find( ( row ) => {
-						return (
-							row.dimensionValues[ 0 ]?.value ===
-								audienceResourceName &&
-							row.dimensionValues[ 1 ]?.value === 'date_range_0'
-						);
-					} )?.metricValues;
-
-					const previousMetricValues = rows.find( ( row ) => {
-						return (
-							row.dimensionValues[ 0 ]?.value ===
-								audienceResourceName &&
-							row.dimensionValues[ 1 ]?.value === 'date_range_1'
-						);
-					} )?.metricValues;
-
 					const audienceName =
 						audiences?.filter(
 							( { name } ) => name === audienceResourceName
@@ -393,25 +466,20 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							( { name } ) => name === audienceResourceName
 						)?.[ 0 ]?.audienceSlug || '';
 
-					const visitors =
-						Number( currentMetricValues?.[ 0 ]?.value ) || 0;
-					const prevVisitors =
-						Number( previousMetricValues?.[ 0 ]?.value ) || 0;
+					const { current, previous } =
+						getAudienceTileMetrics( audienceResourceName );
 
-					const visitsPerVisitors =
-						Number( currentMetricValues?.[ 1 ]?.value ) || 0;
-					const prevVisitsPerVisitors =
-						Number( previousMetricValues?.[ 1 ]?.value ) || 0;
+					const visitors = current[ 0 ] || 0;
+					const prevVisitors = previous[ 0 ] || 0;
 
-					const pagesPerVisit =
-						Number( currentMetricValues?.[ 2 ]?.value ) || 0;
-					const prevPagesPerVisit =
-						Number( previousMetricValues?.[ 2 ]?.value ) || 0;
+					const visitsPerVisitors = current[ 1 ] || 0;
+					const prevVisitsPerVisitors = previous[ 1 ] || 0;
 
-					const pageviews =
-						Number( currentMetricValues?.[ 3 ]?.value ) || 0;
-					const prevPageviews =
-						Number( previousMetricValues?.[ 3 ]?.value ) || 0;
+					const pagesPerVisit = current[ 2 ] || 0;
+					const prevPagesPerVisit = previous[ 2 ] || 0;
+
+					const pageviews = current[ 3 ] || 0;
+					const prevPageviews = previous[ 3 ] || 0;
 
 					const topCities = topCitiesReport?.[ index ];
 
