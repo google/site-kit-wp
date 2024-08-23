@@ -91,6 +91,315 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
 </div>
 `;
 
+exports[`AudienceTilesWidget should render correctly when there is partial data for Site Kit audiences 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
+        dir="ltr"
+        role="tablist"
+      >
+        <div
+          class="mdc-tab-scroller"
+        >
+          <div
+            class="mdc-tab-scroller__scroll-area mdc-tab-scroller__scroll-area--scroll"
+            style="margin-bottom: 0px;"
+          >
+            <div
+              class="mdc-tab-scroller__scroll-content"
+            >
+              <button
+                aria-label="New visitors"
+                aria-selected="true"
+                class="mdc-tab mdc-tab--active"
+                role="tab"
+                tabindex="0"
+              >
+                <span
+                  class="mdc-tab__content"
+                >
+                  New visitors
+                  <span
+                    class="googlesitekit-info-tooltip"
+                  >
+                    <svg />
+                  </span>
+                </span>
+                <span
+                  class="mdc-tab-indicator mdc-tab-indicator--active"
+                >
+                  <span
+                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
+                    style=""
+                  />
+                </span>
+                <div
+                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                />
+              </button>
+              <button
+                aria-label="Returning visitors"
+                aria-selected="false"
+                class="mdc-tab"
+                role="tab"
+                tabindex="-1"
+              >
+                <span
+                  class="mdc-tab__content"
+                >
+                  Returning visitors
+                  <span
+                    class="googlesitekit-info-tooltip"
+                  >
+                    <svg />
+                  </span>
+                </span>
+                <span
+                  class="mdc-tab-indicator"
+                >
+                  <span
+                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
+                  />
+                </span>
+                <div
+                  class="mdc-tab__ripple"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-widget-audience-tiles__body"
+      >
+        <div
+          class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding"
+        >
+          <div
+            class="googlesitekit-widget__body"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile__metrics"
+              >
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      14
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Visitors
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -79.7%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      0.4
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Visits per visitor
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -53.5%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      0.51
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Pages per visit
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -47%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      19
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      0% of total pageviews
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -38.7%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Cities with the most visitors
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile__no-data"
+                      >
+                        No data to show yet
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Top content by pageviews
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__no-data"
+                      >
+                        No data to show
+                        <p>
+                          Update Analytics to track metric
+                        </p>
+                        <button
+                          class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised mdc-button--danger"
+                          target="_self"
+                        >
+                          <span
+                            class="mdc-button__label"
+                          >
+                            Update
+                          </span>
+                        </button>
+                      </div>
+                      <span
+                        class="googlesitekit-audience-segmentation-partial-data-notice"
+                      >
+                        Still collecting full data for this timeframe, partial data is displayed for this metric
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`AudienceTilesWidget should render when all configured audiences are matching available audiences 1`] = `
 <div>
   <div
