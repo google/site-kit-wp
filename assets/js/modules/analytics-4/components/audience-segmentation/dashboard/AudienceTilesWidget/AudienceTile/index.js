@@ -88,14 +88,22 @@ export default function AudienceTile( {
 			select( MODULES_ANALYTICS_4 ).isPropertyPartialData( propertyID )
 		);
 	} );
-	const isAudiencePartialData = useSelect(
-		( select ) =>
+	const isSiteKitAudience = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSiteKitAudience( audienceResourceName )
+	);
+	const isAudiencePartialData = useSelect( ( select ) => {
+		if ( ! isPropertyPartialData && isSiteKitAudience ) {
+			return false;
+		}
+
+		return (
 			! isPropertyPartialData &&
 			audienceResourceName &&
 			select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
 				audienceResourceName
 			)
-	);
+		);
+	} );
 	const isTopContentPartialData = useSelect(
 		( select ) =>
 			! isAudiencePartialData &&
