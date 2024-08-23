@@ -314,12 +314,13 @@ describe( 'AudienceTilesWidget', () => {
 			'properties/12345/audiences/4', // Returning visitors
 		];
 
-		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
 		} );
 
 		const dataAvailabilityDate = Number(
-			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+			getPreviousDate( dates.startDate, -1 ).replace( /-/g, '' )
 		);
 
 		registry
@@ -343,10 +344,7 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 
 		const newVsReturningReportOptions = {
-			compareEndDate: '2024-02-28',
-			compareStartDate: '2024-02-01',
-			endDate: '2024-03-27',
-			startDate: '2024-02-29',
+			...dates,
 			dimensions: [ { name: 'newVsReturning' } ],
 			dimensionFilters: {
 				newVsReturning: [ 'new', 'returning' ],
@@ -397,16 +395,35 @@ describe( 'AudienceTilesWidget', () => {
 
 		expect( container ).toMatchSnapshot();
 
+		// Verify the tile is not in a loading state.
 		expect(
 			container.querySelector(
-				'.googlesitekit-audience-segmentation-tile'
+				'.googlesitekit-audience-segmentation-tile-loading'
 			)
-		).not.toBeNull();
-		// Shouldn't render the partial data notice.
+		).not.toBeInTheDocument();
+		// Verify the partial data badge is rendered.
 		expect(
 			container.querySelector(
 				'.googlesitekit-audience-segmentation-tile--partial-data'
 			)
-		).toBeNull();
+		).not.toBeInTheDocument();
+		// Verify the zero data tile is not rendered.
+		expect(
+			container.querySelector(
+				'.googlesitekit-audience-segmentation-tile__zero-data-container'
+			)
+		).not.toBeInTheDocument();
+		// Verify the tile is rendered.
+		expect(
+			container.querySelector(
+				'.googlesitekit-audience-segmentation-tile'
+			)
+		).toBeInTheDocument();
+		// Verify the metrics are rendered.
+		expect(
+			container.querySelector(
+				'.googlesitekit-audience-segmentation-tile__metrics'
+			)
+		).toBeInTheDocument();
 	} );
 } );
