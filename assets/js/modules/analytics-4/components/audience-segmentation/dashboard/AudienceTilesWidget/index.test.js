@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import AudienceTilesWidget from '.';
-import { render } from '../../../../../../../../tests/js/test-utils';
+import { render, waitFor } from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -29,8 +29,13 @@ import {
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { getPreviousDate } from '../../../../../../util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
+import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 
 describe( 'AudienceTilesWidget', () => {
 	let registry;
@@ -54,6 +59,17 @@ describe( 'AudienceTilesWidget', () => {
 		] );
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			} );
 	} );
 
 	afterEach( () => {
@@ -286,5 +302,111 @@ describe( 'AudienceTilesWidget', () => {
 			).length
 		).toBe( 1 );
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render correctly when there is partial data for Site Kit audiences', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
+		const configuredAudiences = [
+			'properties/12345/audiences/3', // New visitors
+			'properties/12345/audiences/4', // Returning visitors
+		];
+
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/3': dataAvailabilityDate,
+					'properties/12345/audiences/4': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const newVsReturningReportOptions = {
+			compareEndDate: '2024-02-28',
+			compareStartDate: '2024-02-01',
+			endDate: '2024-03-27',
+			startDate: '2024-02-29',
+			dimensions: [ { name: 'newVsReturning' } ],
+			dimensionFilters: {
+				newVsReturning: [ 'new', 'returning' ],
+			},
+			metrics: [
+				{ name: 'totalUsers' },
+				{ name: 'sessionsPerUser' },
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
+			],
+		};
+
+		const newVsReturningReport = getAnalytics4MockResponse(
+			newVsReturningReportOptions
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( newVsReturningReport, {
+				options: newVsReturningReportOptions,
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ newVsReturningReportOptions ] );
+
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line no-unused-vars
+		const [ siteKitAudiences, otherAudiences ] = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getConfiguredSiteKitAndOtherAudiences();
+
+		const isSiteKitAudiencePartialData = registry
+			.select( MODULES_ANALYTICS_4 )
+			.hasAudiencePartialData( siteKitAudiences );
+
+		await waitFor( () => {
+			expect( isSiteKitAudiencePartialData ).toBe( true );
+		} );
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-audience-segmentation-tile'
+			)
+		).not.toBeNull();
+		// Shouldn't render the partial data notice.
+		expect(
+			container.querySelector(
+				'.googlesitekit-audience-segmentation-tile--partial-data'
+			)
+		).toBeNull();
 	} );
 } );
