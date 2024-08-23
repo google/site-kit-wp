@@ -152,6 +152,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 			newVsReturningReportOptions,
 		] )
 	);
+	const siteKitAudiencesReportError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			newVsReturningReportOptions,
+		] )
+	);
 
 	const totalPageviewsReportOptions = {
 		startDate,
@@ -407,19 +412,6 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		{}
 	);
 
-	function checkForAllTilesError() {
-		if ( reportError || totalPageviewsReportError ) {
-			return true;
-		}
-
-		return configuredAudiences.every(
-			( audienceResourceName ) =>
-				individualTileErrors[ audienceResourceName ].length > 0
-		);
-	}
-
-	const allTilesError = checkForAllTilesError();
-
 	const dismissedItems = useSelect( ( select ) =>
 		select( CORE_USER ).getDismissedItems()
 	);
@@ -518,6 +510,31 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		siteKitAudiences,
 		siteKitAudiencesReport,
 	] );
+
+	function checkForAllTilesError() {
+		const isSiteKitAudience = visibleAudiences.some(
+			( audienceResourceName ) =>
+				siteKitAudiences.some(
+					( audience ) => audience.name === audienceResourceName
+				)
+		);
+
+		let reportErrorToCheck = reportError;
+		if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+			reportErrorToCheck = siteKitAudiencesReportError;
+		}
+
+		if ( reportErrorToCheck || totalPageviewsReportError ) {
+			return true;
+		}
+
+		return configuredAudiences.every(
+			( audienceResourceName ) =>
+				individualTileErrors[ audienceResourceName ].length > 0
+		);
+	}
+
+	const allTilesError = checkForAllTilesError();
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
