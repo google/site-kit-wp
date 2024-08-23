@@ -663,8 +663,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'service' => '',
 			);
 			$datapoints['POST:sync-audiences']                       = array(
-				'service'   => 'analyticsaudiences',
-				'shareable' => true,
+				'service' => 'analyticsaudiences',
 			);
 		}
 

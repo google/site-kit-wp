@@ -65,6 +65,7 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	const secondaryAudienceSetup =
 		availableAudiencesSynced &&
 		audienceSegmentationSetupComplete === true &&
+		availableAudiences &&
 		configuredAudiences === null;
 
 	if ( secondaryAudienceSetup ) {

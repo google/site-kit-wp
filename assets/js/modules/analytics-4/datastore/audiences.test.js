@@ -176,62 +176,6 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 		} );
 
-		describe( 'getAvailableAudiences', () => {
-			const availableAudiences = [
-				{
-					name: 'properties/123456789/audiences/0987654321',
-					displayName: 'All visitors',
-					description: 'All users',
-					audienceType: 'DEFAULT_AUDIENCE',
-					audienceSlug: 'all-users',
-				},
-			];
-
-			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiences );
-
-				const audiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences();
-
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
-				expect( audiences ).toEqual( availableAudiences );
-			} );
-
-			it( 'should sync cached audiences when the availableAudiences setting is null', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
-				// Simulate a scenario where getAvailableAudiences is null.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( null );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
-				).toBeNull();
-
-				// Wait until the resolver has finished fetching the audiences.
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
-
-				const audiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences();
-
-				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
-				expect( audiences ).toEqual( availableAudiences );
-			} );
-		} );
-
 		describe( 'syncAvailableAudiences', () => {
 			const availableAudiences = [
 				{
@@ -1422,6 +1366,62 @@ describe( 'modules/analytics-4 audiences', () => {
 		const userAudienceResourceNames = [
 			'properties/12345/audiences/5', // Test audience.
 		];
+
+		describe( 'getAvailableAudiences', () => {
+			const availableAudiences = [
+				{
+					name: 'properties/123456789/audiences/0987654321',
+					displayName: 'All visitors',
+					description: 'All users',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'all-users',
+				},
+			];
+
+			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( audiences ).toEqual( availableAudiences );
+			} );
+
+			it( 'should sync cached audiences when the availableAudiences setting is null', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				// Simulate a scenario where getAvailableAudiences is null.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( null );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toBeNull();
+
+				// Wait until the resolver has finished fetching the audiences.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableAudiences();
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
+				expect( audiences ).toEqual( availableAudiences );
+			} );
+		} );
 
 		describe( 'isDefaultAudience', () => {
 			it( 'should return `true` if the audience is a default audience', () => {

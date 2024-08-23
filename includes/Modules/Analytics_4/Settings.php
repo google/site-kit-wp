@@ -71,6 +71,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		return array(
 			'availableCustomDimensions',
 			'adSenseLinked',
+			'availableAudiences',
 			'availableAudiencesLastSyncedAt',
 			'audienceSegmentationSetupComplete',
 		);

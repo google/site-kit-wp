@@ -167,15 +167,26 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*syncAvailableAudiences() {
+		const registry = yield commonActions.getRegistry();
+		const { select, dispatch, resolveSelect } = registry;
+
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getAuthentication()
+		);
+
+		if ( ! select( CORE_USER ).isAuthenticated() ) {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			return { response: availableAudiences ?? [] };
+		}
+
 		const { response: availableAudiences, error } =
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 
 		if ( error ) {
 			return { response: availableAudiences, error };
 		}
-
-		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
 
 		// Remove any configuredAudiences that are no longer available in availableAudiences.
 		const configuredAudiences =
@@ -540,13 +551,16 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {
 	*getAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
+		const { select, resolveSelect } = registry;
 
-		const audiences = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAvailableAudiences();
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getAuthentication()
+		);
+
+		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
 		// If available audiences not present, sync the audience in state.
-		if ( audiences === null ) {
+		if ( select( CORE_USER ).isAuthenticated() && audiences === null ) {
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
 	},
