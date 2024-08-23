@@ -42,7 +42,7 @@ import { isInsufficientPermissionsError } from '../../../../../util/errors';
 import ReportErrorActions from '../../../../../components/ReportErrorActions';
 import GetHelpLink from './GetHelpLink';
 
-function AudienceSegmentationErrorWidget( { Widget, errors } ) {
+function AudienceSegmentationErrorWidget( { Widget, errors, onRetry } ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
@@ -87,6 +87,7 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 								}
 								buttonVariant="danger"
 								getHelpClassName="googlesitekit-error-retry-text"
+								onRetry={ onRetry }
 							/>
 						</div>
 					</Cell>
@@ -125,6 +126,7 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 AudienceSegmentationErrorWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	errors: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	onRetry: PropTypes.func,
 };
 
 export default whenActive( { moduleName: 'analytics-4' } )(
