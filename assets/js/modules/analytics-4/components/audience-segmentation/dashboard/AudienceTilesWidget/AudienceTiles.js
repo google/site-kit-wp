@@ -54,9 +54,9 @@ import AudienceTooltipMessage from './AudienceTooltipMessage';
 import PlaceholderTile from './PlaceholderTile';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 
-const hasZeroDataForAudience = ( report, audienceResourceName ) => {
+const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
-		( row ) => row.dimensionValues?.[ 0 ]?.value === audienceResourceName
+		( row ) => row.dimensionValues?.[ 0 ]?.value === dimensionName
 	);
 	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
 	return totalUsers === 0;
@@ -354,14 +354,27 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 			const isSiteKitAudience = siteKitAudiences.some(
 				( audience ) => audience.name === audienceResourceName
 			);
-			const reportToCheck =
-				isSiteKitAudience && isSiteKitAudiencePartialData
-					? siteKitAudiencesReport
-					: report;
+
+			let reportToCheck = report;
+			let dimensionValue = audienceResourceName;
+
+			if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+				// If it's a Site Kit audience in a partial data state, use the siteKitAudiencesReport.
+				reportToCheck = siteKitAudiencesReport;
+
+				// Get the audience slug (e.g., 'new-visitors', 'returning-visitors').
+				const audienceSlug = siteKitAudiences.find(
+					( audience ) => audience.name === audienceResourceName
+				)?.audienceSlug;
+
+				// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
+				dimensionValue =
+					audienceSlug === 'new-visitors' ? 'new' : 'returning';
+			}
 
 			const isZeroData = hasZeroDataForAudience(
 				reportToCheck,
-				audienceResourceName
+				dimensionValue
 			);
 
 			// Check if there are more audiences remaining to be processed.
@@ -509,12 +522,32 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						}
 					);
 
-					const isPartialData =
-						partialDataStates[ audienceResourceName ];
-					const isZeroData = hasZeroDataForAudience(
-						report,
-						audienceResourceName
+					const isSiteKitAudience = siteKitAudiences.some(
+						( audience ) => audience.name === audienceResourceName
 					);
+
+					let reportToCheck = report;
+					let dimensionValue = audienceResourceName;
+
+					if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+						// If it's a Site Kit audience in a partial data state, use the siteKitAudiencesReport.
+						reportToCheck = siteKitAudiencesReport;
+
+						// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
+						dimensionValue =
+							audienceSlug === 'new-visitors'
+								? 'new'
+								: 'returning';
+					}
+
+					const isZeroData = hasZeroDataForAudience(
+						reportToCheck,
+						dimensionValue
+					);
+					const isPartialData =
+						isSiteKitAudience && isSiteKitAudiencePartialData
+							? false
+							: partialDataStates[ audienceResourceName ];
 
 					return (
 						<AudienceTile
