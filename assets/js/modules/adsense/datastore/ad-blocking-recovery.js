@@ -28,8 +28,8 @@ import API from 'googlesitekit-api';
 import {
 	createRegistryControl,
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
@@ -141,11 +141,10 @@ const reducer = createReducer( ( state, { type, payload } ) => {
 
 const resolvers = {
 	*getExistingAdBlockingRecoveryTag() {
-		const registry = yield commonActions.getRegistry();
-
-		const existingAdBlockingRecoveryTag = registry
-			.select( MODULES_ADSENSE )
-			.getExistingAdBlockingRecoveryTag();
+		const existingAdBlockingRecoveryTag = yield wpControls.select(
+			MODULES_ADSENSE,
+			'getExistingAdBlockingRecoveryTag'
+		);
 
 		if ( existingAdBlockingRecoveryTag === undefined ) {
 			const fetchedAdBlockingRecoveryTag =

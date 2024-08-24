@@ -21,9 +21,9 @@
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	createRegistrySelector,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -114,9 +114,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getAuthentication() {
-		const { select } = yield commonActions.getRegistry();
+		const authentication = yield wpControls.select(
+			CORE_USER,
+			'getAuthentication'
+		);
 
-		if ( ! select( CORE_USER ).getAuthentication() ) {
+		if ( ! authentication ) {
 			yield fetchGetAuthenticationStore.actions.fetchGetAuthentication();
 		}
 	},

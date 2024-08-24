@@ -27,8 +27,8 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
@@ -78,8 +78,6 @@ const baseInitialState = {
 
 const baseActions = {
 	*resetClients() {
-		const { dispatch } = yield commonActions.getRegistry();
-
 		yield {
 			payload: {},
 			type: RESET_CLIENTS,
@@ -87,7 +85,9 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getClients' );
 
-		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
+		return yield wpControls.dispatch(
+			MODULES_ADSENSE,
+			'invalidateResolutionForStoreSelector',
 			'getClients'
 		);
 	},
@@ -129,10 +129,11 @@ const baseResolvers = {
 			return;
 		}
 
-		const registry = yield commonActions.getRegistry();
-		const existingClients = registry
-			.select( MODULES_ADSENSE )
-			.getClients( accountID );
+		const existingClients = yield wpControls.select(
+			MODULES_ADSENSE,
+			'getClients',
+			accountID
+		);
 
 		// If there are already clients loaded in state, consider it fulfilled
 		// and don't make an API request.

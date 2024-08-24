@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -103,8 +103,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*isTrackingEnabled() {
-		const { select } = yield commonActions.getRegistry();
-		if ( select( CORE_USER ).isTrackingEnabled() === undefined ) {
+		const isTrackingEnabled = yield wpControls.select(
+			CORE_USER,
+			'isTrackingEnabled'
+		);
+
+		if ( isTrackingEnabled === undefined ) {
 			yield fetchGetTrackingStore.actions.fetchGetTracking();
 		}
 	},

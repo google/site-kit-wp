@@ -25,9 +25,9 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import {
-	commonActions,
 	createRegistryControl,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
@@ -201,18 +201,18 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getOriginalUseSnippet() {
-		const registry = yield commonActions.getRegistry();
-
 		// Do not do anything if original useSnippet is already known.
-		const existingOriginalUseSnippet = registry
-			.select( MODULES_ADSENSE )
-			.getOriginalUseSnippet();
+		const existingOriginalUseSnippet = yield wpControls.select(
+			MODULES_ADSENSE,
+			'getOriginalUseSnippet'
+		);
+
 		if ( undefined !== existingOriginalUseSnippet ) {
 			return;
 		}
 
 		// Ensure settings are being fetched if not yet in progress.
-		registry.select( MODULES_ADSENSE ).getSettings();
+		yield wpControls.select( MODULES_ADSENSE, 'getSettings' );
 	},
 };
 

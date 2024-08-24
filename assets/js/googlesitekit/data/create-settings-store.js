@@ -27,10 +27,10 @@ import { isPlainObject, isEqual, pick } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	createRegistrySelector,
 	commonStore,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { createStrictSelect, createValidationSelector } from './utils';
 import {
@@ -201,15 +201,15 @@ export const createSettingsStore = (
 		 * @return {Object} Response and error, if any.
 		 */
 		*saveSettings() {
-			const registry = yield commonActions.getRegistry();
-
 			yield clearError( 'saveSettings', [] );
 
-			const values = registry.select( STORE_NAME ).getSettings();
+			const values = yield wpControls.select( STORE_NAME, 'getSettings' );
+
 			const { response, error } =
 				yield fetchSaveSettingsStore.actions.fetchSaveSettings(
 					values
 				);
+
 			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
 				yield receiveError( error, 'saveSettings', [] );
@@ -256,10 +256,11 @@ export const createSettingsStore = (
 
 	const resolvers = {
 		*getSettings() {
-			const registry = yield commonActions.getRegistry();
-			const existingSettings = registry
-				.select( STORE_NAME )
-				.getSettings();
+			const existingSettings = yield wpControls.select(
+				STORE_NAME,
+				'getSettings'
+			);
+
 			// If settings are already present, don't fetch them.
 			if ( ! existingSettings ) {
 				yield fetchGetSettingsStore.actions.fetchGetSettings();

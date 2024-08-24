@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -41,11 +41,10 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getConversionEvents() {
-		const registry = yield commonActions.getRegistry();
-		const existingConversionEvents = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getConversionEvents();
-
+		const existingConversionEvents = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getConversionEvents'
+		);
 		// If there are already `conversionEvents` loaded in state, consider it fulfilled
 		// and don't make an API request.
 		if ( existingConversionEvents ) {

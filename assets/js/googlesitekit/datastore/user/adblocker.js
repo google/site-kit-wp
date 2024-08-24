@@ -25,7 +25,7 @@ import { detectAnyAdblocker } from 'just-detect-adblock';
 /**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { wpControls } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 
 // Actions
@@ -110,10 +110,10 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*isAdBlockerActive() {
-		const registry = yield commonActions.getRegistry();
-		const isAdBlockerActive = registry
-			.select( CORE_USER )
-			.isAdBlockerActive();
+		const isAdBlockerActive = yield wpControls.select(
+			CORE_USER,
+			'isAdBlockerActive'
+		);
 
 		// If the ad blocker status is already set, don't make any requests
 		// to check the ad blocker status.

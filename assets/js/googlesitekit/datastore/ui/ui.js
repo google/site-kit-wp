@@ -25,7 +25,7 @@ import { isPlainObject, isBoolean } from 'lodash';
 /**
  * Internal dependencies
  */
-import { commonActions, wpControls } from 'googlesitekit-data';
+import { wpControls } from 'googlesitekit-data';
 import { CORE_UI } from './constants';
 import { CORE_USER } from '../user/constants';
 
@@ -47,11 +47,11 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetInViewHook() {
-		const registry = yield commonActions.getRegistry();
-
-		const useInViewResetCount = registry
-			.select( CORE_UI )
-			.getValue( 'useInViewResetCount' );
+		const useInViewResetCount = yield wpControls.select(
+			CORE_UI,
+			'getValue',
+			'useInViewResetCount'
+		);
 
 		return yield actions.setValue(
 			'useInViewResetCount',
@@ -86,11 +86,11 @@ export const actions = {
 	*setOverlayNotificationToShow( overlayNotification ) {
 		invariant( overlayNotification, 'overlayNotification is required.' );
 
-		const registry = yield commonActions.getRegistry();
-
-		const activeOverlayNotification = registry
-			.select( CORE_UI )
-			.getValue( 'activeOverlayNotification' );
+		const activeOverlayNotification = yield wpControls.select(
+			CORE_UI,
+			'getValue',
+			'activeOverlayNotification'
+		);
 
 		// If `activeOverlayNotification` is already set, don't override it.
 		if ( activeOverlayNotification ) {

@@ -29,7 +29,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import { createRegistrySelector, wpControls } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { escapeURI } from '../../../util/escape-uri';
 
@@ -196,9 +196,12 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getConnectURL() {
-		const { select } = yield commonActions.getRegistry();
+		const connectURLInStore = yield wpControls.select(
+			CORE_USER,
+			'getConnectURL'
+		);
 
-		if ( select( CORE_USER ).getConnectURL() ) {
+		if ( connectURLInStore ) {
 			return;
 		}
 
@@ -212,9 +215,9 @@ export const resolvers = {
 	},
 
 	*getUser() {
-		const { select } = yield commonActions.getRegistry();
+		const userInStore = yield wpControls.select( CORE_USER, 'getUser' );
 
-		if ( select( CORE_USER ).getUser() !== undefined ) {
+		if ( userInStore !== undefined ) {
 			return;
 		}
 
@@ -227,9 +230,12 @@ export const resolvers = {
 	},
 
 	*getInitialSiteKitVersion() {
-		const { select } = yield commonActions.getRegistry();
+		const initialSiteKitVersionInStore = yield wpControls.select(
+			CORE_USER,
+			'getInitialSiteKitVersion'
+		);
 
-		if ( select( CORE_USER ).getInitialSiteKitVersion() !== undefined ) {
+		if ( initialSiteKitVersionInStore !== undefined ) {
 			return;
 		}
 
@@ -245,9 +251,12 @@ export const resolvers = {
 	},
 
 	*isVerified() {
-		const { select } = yield commonActions.getRegistry();
+		const isVerifiedInStore = yield wpControls.select(
+			CORE_USER,
+			'isVerified'
+		);
 
-		if ( select( CORE_USER ).isVerified() !== undefined ) {
+		if ( isVerifiedInStore !== undefined ) {
 			return;
 		}
 
@@ -260,9 +269,12 @@ export const resolvers = {
 	},
 
 	*isUserInputCompleted() {
-		const { select } = yield commonActions.getRegistry();
+		const isUserInputCompletedInStore = yield wpControls.select(
+			CORE_USER,
+			'isUserInputCompleted'
+		);
 
-		if ( undefined !== select( CORE_USER ).isUserInputCompleted() ) {
+		if ( isUserInputCompletedInStore !== undefined ) {
 			return;
 		}
 

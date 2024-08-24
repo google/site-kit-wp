@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -109,10 +109,11 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getGoogleTagContainer( measurementID ) {
-		const registry = yield commonActions.getRegistry();
-		const container = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getGoogleTagContainer( measurementID );
+		const container = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagContainer',
+			measurementID
+		);
 
 		if ( container === undefined ) {
 			yield fetchGetGoogleTagContainerStore.actions.fetchGetGoogleTagContainer(
@@ -122,10 +123,12 @@ const baseResolvers = {
 	},
 
 	*getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID ) {
-		const registry = yield commonActions.getRegistry();
-		const containerDestinations = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID );
+		const containerDestinations = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagContainerDestinations',
+			gtmAccountID,
+			gtmContainerID
+		);
 
 		if ( containerDestinations === undefined ) {
 			yield fetchGetGoogleTagContainerDestinationsStore.actions.fetchGetGoogleTagContainerDestinations(

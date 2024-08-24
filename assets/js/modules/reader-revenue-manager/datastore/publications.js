@@ -28,7 +28,7 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
@@ -67,11 +67,10 @@ const baseActions = {
 	 * @return {void}
 	 */
 	*syncPublicationOnboardingState() {
-		const registry = yield commonActions.getRegistry();
-		const connected = yield commonActions.await(
-			registry
-				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
+		const connected = yield wpControls.resolveSelect(
+			CORE_MODULES,
+			'isModuleConnected',
+			READER_REVENUE_MANAGER_MODULE_SLUG
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
@@ -80,15 +79,16 @@ const baseActions = {
 		}
 
 		// Ensure settings are loaded before checking for changed state below.
-		const settings = yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getSettings()
+		const settings = yield wpControls.resolveSelect(
+			MODULES_READER_REVENUE_MANAGER,
+			'getSettings'
 		);
 
-		const hasPublicationIDChanged = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.hasSettingChanged( 'publicationID' );
+		const hasPublicationIDChanged = yield wpControls.select(
+			MODULES_READER_REVENUE_MANAGER,
+			'hasSettingChanged',
+			'publicationID'
+		);
 
 		// Do not attempt to sync the onboarding state if the publication ID
 		// in state is not the "saved" publication ID.
@@ -106,10 +106,9 @@ const baseActions = {
 			return;
 		}
 
-		const publications = yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getPublications()
+		const publications = yield wpControls.resolveSelect(
+			MODULES_READER_REVENUE_MANAGER,
+			'getPublications'
 		) || [];
 
 		const publication = publications.find(
@@ -124,15 +123,22 @@ const baseActions = {
 
 		const { onboardingState: newOnboardingState } = publication;
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
-			publicationOnboardingState: newOnboardingState,
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			// eslint-disable-next-line sitekit/no-direct-date
-			publicationOnboardingStateLastSyncedAtMs: Date.now(),
-		} );
+		yield wpControls.dispatch(
+			MODULES_READER_REVENUE_MANAGER,
+			'setSettings',
+			{
+				publicationOnboardingState: newOnboardingState,
+				// The "last synced" value should reflect the real time this action
+				// was performed, so we don't use the reference date here.
+				// eslint-disable-next-line sitekit/no-direct-date
+				publicationOnboardingStateLastSyncedAtMs: Date.now(),
+			}
+		);
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
+		yield wpControls.dispatch(
+			MODULES_READER_REVENUE_MANAGER,
+			'saveSettings'
+		);
 
 		// If the onboarding state changes to complete, set the key in CORE_UI to trigger the notification.
 		if (
@@ -140,12 +146,12 @@ const baseActions = {
 			newOnboardingState ===
 				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
 		) {
-			registry
-				.dispatch( CORE_UI )
-				.setValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-					true
-				);
+			yield wpControls.dispatch(
+				CORE_UI,
+				'setValue',
+				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+				true
+			);
 		}
 	},
 
@@ -157,11 +163,10 @@ const baseActions = {
 	 * @return {void}
 	 */
 	*maybeSyncPublicationOnboardingState() {
-		const registry = yield commonActions.getRegistry();
-		const connected = yield commonActions.await(
-			registry
-				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
+		const connected = yield wpControls.resolveSelect(
+			CORE_MODULES,
+			'isModuleConnected',
+			READER_REVENUE_MANAGER_MODULE_SLUG
 		);
 
 		// If the module is not connected, do not attempt to sync the onboarding state.
@@ -169,15 +174,15 @@ const baseActions = {
 			return;
 		}
 
-		yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getSettings()
+		yield wpControls.resolveSelect(
+			MODULES_READER_REVENUE_MANAGER,
+			'getSettings'
 		);
 
-		const onboardingStateLastSyncedAtMs = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublicationOnboardingStateLastSyncedAtMs();
+		const onboardingStateLastSyncedAtMs = wpControls.select(
+			MODULES_READER_REVENUE_MANAGER,
+			'getPublicationOnboardingStateLastSyncedAtMs'
+		);
 
 		if (
 			!! onboardingStateLastSyncedAtMs &&
@@ -199,9 +204,9 @@ const baseActions = {
 	 * @return {Object|null} Matched publication; `null` if none found.
 	 */
 	*findMatchedPublication() {
-		const { resolveSelect } = yield commonActions.getRegistry();
-		const publications = yield commonActions.await(
-			resolveSelect( MODULES_READER_REVENUE_MANAGER ).getPublications()
+		const publications = yield wpControls.resolveSelect(
+			MODULES_READER_REVENUE_MANAGER,
+			'getPublications'
 		);
 
 		if ( publications.length === 0 ) {
@@ -229,17 +234,17 @@ const baseActions = {
 	 * @return {Object} The dispatched action results.
 	 */
 	*resetPublications() {
-		const registry = yield commonActions.getRegistry();
-
 		yield {
 			type: 'RESET_PUBLICATIONS',
 		};
 
 		yield errorStoreActions.clearErrors( 'getPublications' );
 
-		return registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.invalidateResolutionForStoreSelector( 'getPublications' );
+		return yield wpControls.dispatch(
+			MODULES_READER_REVENUE_MANAGER,
+			'invalidateResolutionForStoreSelector',
+			'getPublications'
+		);
 	},
 
 	/**
@@ -267,18 +272,18 @@ const baseActions = {
 		// `publicationId` is the identifier used by the API.
 		// eslint-disable-next-line sitekit/acronym-case
 		function* ( { publicationId: publicationID, onboardingState } ) {
-			const registry = yield commonActions.getRegistry();
-
-			return registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.setSettings( {
+			return yield wpControls.dispatch(
+				MODULES_READER_REVENUE_MANAGER,
+				'setSettings',
+				{
 					publicationID,
 					publicationOnboardingState: onboardingState,
 					// The "last synced" value should reflect the real time this action
 					// was performed, so we don't use the reference date here.
 					// eslint-disable-next-line sitekit/no-direct-date
 					publicationOnboardingStateLastSyncedAtMs: Date.now(),
-				} );
+				}
+			);
 		}
 	),
 };
@@ -299,11 +304,12 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getPublications() {
-		const registry = yield commonActions.getRegistry();
 		// Only fetch publications if there are none in the store.
-		const publications = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublications();
+		const publications = yield wpControls.select(
+			MODULES_READER_REVENUE_MANAGER,
+			'getPublications'
+		);
+
 		if ( publications === undefined ) {
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
 		}

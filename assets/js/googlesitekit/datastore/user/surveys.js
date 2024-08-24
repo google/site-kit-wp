@@ -27,9 +27,9 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -185,26 +185,31 @@ const baseActions = {
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
-			const { select, dispatch, resolveSelect } =
-				yield commonActions.getRegistry();
 
 			// Wait for user authentication state to be available before selecting.
-			yield commonActions.await(
-				resolveSelect( CORE_USER ).getAuthentication()
+			yield wpControls.resolveSelect( CORE_USER, 'getAuthentication' );
+
+			const isAuthenticated = yield wpControls.select(
+				CORE_USER,
+				'isAuthenticated'
 			);
 
-			if ( ! select( CORE_USER ).isAuthenticated() ) {
+			if ( ! isAuthenticated ) {
 				return {};
 			}
 
 			// Await for surveys to be resolved before checking timeouts.
-			yield commonActions.await(
-				resolveSelect( CORE_USER ).getSurveyTimeouts()
+			yield wpControls.resolveSelect( CORE_USER, 'getSurveyTimeouts' );
+
+			const isTimedOut = yield wpControls.select(
+				CORE_USER,
+				'isSurveyTimedOut',
+				triggerID
 			);
 
-			const isTimedOut =
-				select( CORE_USER ).isSurveyTimedOut( triggerID );
-			const isTimingOut = select( CORE_USER ).isTimingOutSurvey(
+			const isTimingOut = yield wpControls.select(
+				CORE_USER,
+				'isTimingOutSurvey',
 				triggerID,
 				ttl
 			);
@@ -227,8 +232,11 @@ const baseActions = {
 						setTimeout( resolve, 30000 );
 					} );
 
-					yield commonActions.await(
-						dispatch( CORE_USER ).setSurveyTimeout( triggerID, ttl )
+					yield wpControls.dispatch(
+						CORE_USER,
+						'setSurveyTimeout',
+						triggerID,
+						ttl
 					);
 				}
 			}
@@ -262,8 +270,11 @@ const baseActions = {
 		},
 		function* ( eventID, eventData = {} ) {
 			const event = { [ eventID ]: eventData };
-			const { select } = yield commonActions.getRegistry();
-			const session = select( CORE_USER ).getCurrentSurveySession();
+			const session = yield wpControls.select(
+				CORE_USER,
+				'getCurrentSurveySession'
+			);
+
 			if ( session ) {
 				const { response, error } =
 					yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent(
@@ -278,16 +289,22 @@ const baseActions = {
 
 const baseResolvers = {
 	*getCurrentSurvey() {
-		const { select } = yield commonActions.getRegistry();
-		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
+		const currentSurvey = yield wpControls.select(
+			CORE_USER,
+			'getCurrentSurvey'
+		);
+
 		if ( currentSurvey === undefined ) {
 			yield fetchGetSurveyStore.actions.fetchGetSurvey();
 		}
 	},
 
 	*getSurveyTimeouts() {
-		const { select } = yield commonActions.getRegistry();
-		const surveyTimeouts = select( CORE_USER ).getSurveyTimeouts();
+		const surveyTimeouts = yield wpControls.select(
+			CORE_USER,
+			'getSurveyTimeouts'
+		);
+
 		if ( surveyTimeouts === undefined ) {
 			yield fetchGetSurveyTimeoutsStore.actions.fetchGetSurveyTimeouts();
 		}

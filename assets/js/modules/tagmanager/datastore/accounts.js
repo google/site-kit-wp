@@ -27,8 +27,8 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -69,14 +69,14 @@ export const baseActions = {
 	 * @private
 	 */
 	*resetAccounts() {
-		const { dispatch } = yield commonActions.getRegistry();
-
 		yield {
 			payload: {},
 			type: RESET_ACCOUNTS,
 		};
 
-		dispatch( MODULES_TAGMANAGER ).invalidateResolutionForStoreSelector(
+		yield wpControls.dispatch(
+			MODULES_TAGMANAGER,
+			'invalidateResolutionForStoreSelector',
 			'getAccounts'
 		);
 	},
@@ -97,14 +97,17 @@ export const baseActions = {
 			);
 		},
 		function* ( accountID ) {
-			const { select, dispatch } = yield commonActions.getRegistry();
+			const accountIDInStore = yield wpControls.select(
+				MODULES_TAGMANAGER,
+				'getAccountID'
+			);
 
 			// Do nothing if the accountID to select is the same as the current.
-			if ( accountID === select( MODULES_TAGMANAGER ).getAccountID() ) {
+			if ( accountID === accountIDInStore ) {
 				return;
 			}
 
-			dispatch( MODULES_TAGMANAGER ).setSettings( {
+			yield wpControls.dispatch( MODULES_TAGMANAGER, 'setSettings', {
 				accountID,
 				containerID: '',
 				internalContainerID: '',
@@ -112,10 +115,12 @@ export const baseActions = {
 				internalAMPContainerID: '',
 			} );
 
-			if (
-				ACCOUNT_CREATE === accountID ||
-				select( MODULES_TAGMANAGER ).hasExistingTag()
-			) {
+			const hasExistingTag = yield wpControls.select(
+				MODULES_TAGMANAGER,
+				'hasExistingTag'
+			);
+
+			if ( ACCOUNT_CREATE === accountID || hasExistingTag ) {
 				return;
 			}
 
@@ -125,45 +130,74 @@ export const baseActions = {
 			// it will simply wait for `getContainers` to be resolved for this account ID.
 			yield containerActions.waitForContainers( accountID );
 			// Trigger cascading selections.
-			const { isAMP, isSecondaryAMP } = select( CORE_SITE );
-			if ( ! isAMP() || isSecondaryAMP() ) {
-				const webContainers =
-					select( MODULES_TAGMANAGER ).getWebContainers( accountID );
+			const isAMP = yield wpControls.select( CORE_SITE, 'isAMP' );
+			const isSecondaryAMP = yield wpControls.select(
+				CORE_SITE,
+				'isSecondaryAMP'
+			);
+
+			if ( ! isAMP || isSecondaryAMP ) {
+				const webContainers = yield wpControls.select(
+					MODULES_TAGMANAGER,
+					'getWebContainers',
+					accountID
+				);
 
 				if ( ! webContainers.length ) {
-					dispatch( MODULES_TAGMANAGER ).setContainerID(
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setContainerID',
 						CONTAINER_CREATE
 					);
-					dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setInternalContainerID',
+						''
+					);
 				} else if ( webContainers.length === 1 ) {
-					dispatch( MODULES_TAGMANAGER ).setContainerID(
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setContainerID',
 						// eslint-disable-next-line sitekit/acronym-case
 						webContainers[ 0 ].publicId
 					);
-					dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setInternalContainerID',
 						// eslint-disable-next-line sitekit/acronym-case
 						webContainers[ 0 ].containerId
 					);
 				}
 			}
 
-			if ( isAMP() ) {
-				const ampContainers =
-					select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
+			if ( isAMP ) {
+				const ampContainers = yield wpControls.select(
+					MODULES_TAGMANAGER,
+					'getAMPContainers',
+					accountID
+				);
 
 				if ( ! ampContainers.length ) {
-					dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setAMPContainerID',
 						CONTAINER_CREATE
 					);
-					dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setInternalAMPContainerID',
 						''
 					);
 				} else if ( ampContainers.length === 1 ) {
-					dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setAMPContainerID',
 						// eslint-disable-next-line sitekit/acronym-case
 						ampContainers[ 0 ].publicId
 					);
-					dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+					yield wpControls.dispatch(
+						MODULES_TAGMANAGER,
+						'setInternalAMPContainerID',
 						// eslint-disable-next-line sitekit/acronym-case
 						ampContainers[ 0 ].containerId
 					);
@@ -198,8 +232,10 @@ export const baseReducer = ( state, { type } ) => {
 
 export const baseResolvers = {
 	*getAccounts() {
-		const { select, dispatch } = yield commonActions.getRegistry();
-		let accounts = select( MODULES_TAGMANAGER ).getAccounts();
+		let accounts = yield wpControls.select(
+			MODULES_TAGMANAGER,
+			'getAccounts'
+		);
 
 		// Only fetch accounts if they have not been received yet.
 		if ( ! accounts ) {
@@ -207,11 +243,15 @@ export const baseResolvers = {
 				yield fetchGetAccountsStore.actions.fetchGetAccounts() );
 		}
 
-		if (
-			accounts?.length === 1 &&
-			! select( MODULES_TAGMANAGER ).getAccountID()
-		) {
-			dispatch( MODULES_TAGMANAGER ).selectAccount(
+		const accountIDInStore = yield wpControls.select(
+			MODULES_TAGMANAGER,
+			'getAccountID'
+		);
+
+		if ( accounts?.length === 1 && ! accountIDInStore ) {
+			yield wpControls.dispatch(
+				MODULES_TAGMANAGER,
+				'selectAccount',
 				// eslint-disable-next-line sitekit/acronym-case
 				accounts[ 0 ].accountId
 			);

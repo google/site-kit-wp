@@ -28,8 +28,8 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -156,10 +156,11 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getReport( options = {} ) {
-		const registry = yield commonActions.getRegistry();
-		const existingReport = registry
-			.select( MODULES_SEARCH_CONSOLE )
-			.getReport( options );
+		const existingReport = yield wpControls.select(
+			MODULES_SEARCH_CONSOLE,
+			'getReport',
+			options
+		);
 
 		// If there are already alerts loaded in state, consider it fulfilled
 		// and don't make an API request.

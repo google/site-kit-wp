@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 
@@ -54,11 +54,11 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getMatchedProperties() {
-		const registry = yield commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
-		const properties = registry
-			.select( MODULES_SEARCH_CONSOLE )
-			.getMatchedProperties();
+		const properties = yield wpControls.select(
+			MODULES_SEARCH_CONSOLE,
+			'getMatchedProperties'
+		);
 		if ( properties === undefined ) {
 			yield fetchGetMatchedPropertiesStore.actions.fetchGetMatchedProperties();
 		}

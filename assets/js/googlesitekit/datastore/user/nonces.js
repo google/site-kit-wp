@@ -21,9 +21,9 @@
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	createRegistrySelector,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -86,9 +86,10 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getNonces() {
-		const registry = yield commonActions.getRegistry();
-
-		const existingNonces = yield registry.select( CORE_USER ).getNonces();
+		const existingNonces = yield wpControls.select(
+			CORE_USER,
+			'getNonces'
+		);
 
 		if ( existingNonces ) {
 			return existingNonces;

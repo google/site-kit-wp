@@ -29,8 +29,8 @@ import API from 'googlesitekit-api';
 import {
 	createRegistryControl,
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
@@ -194,10 +194,13 @@ const baseActions = {
 	*matchWebDataStream( propertyID ) {
 		yield baseActions.waitForWebDataStreams( propertyID );
 
-		const registry = yield commonActions.getRegistry();
-		return registry
-			.select( MODULES_ANALYTICS_4 )
-			.getMatchingWebDataStreamByPropertyID( propertyID );
+		const matchingWebDataStream = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getMatchingWebDataStreamByPropertyID',
+			propertyID
+		);
+
+		return matchingWebDataStream;
 	},
 
 	/**
@@ -238,11 +241,12 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
-		const registry = yield commonActions.getRegistry();
 		// Only fetch web data streams if there are none in the store for the given property.
-		const webdatastreams = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getWebDataStreams( propertyID );
+		const webdatastreams = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getWebDataStreams',
+			propertyID
+		);
 		if ( webdatastreams === undefined ) {
 			yield fetchGetWebDataStreamsStore.actions.fetchGetWebDataStreams(
 				propertyID
@@ -250,11 +254,11 @@ const baseResolvers = {
 		}
 	},
 	*getWebDataStreamsBatch( propertyIDs ) {
-		const registry = yield commonActions.getRegistry();
-		const webdatastreams =
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getWebDataStreamsBatch( propertyIDs ) || {};
+		const webdatastreams = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getWebDataStreamsBatch',
+			propertyIDs
+		) || {};
 
 		const availablePropertyIDs = Object.keys( webdatastreams );
 		const remainingPropertyIDs = difference(

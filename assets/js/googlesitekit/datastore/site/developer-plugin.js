@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
@@ -45,11 +45,10 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getDeveloperPluginState() {
-		const registry = yield commonActions.getRegistry();
-
-		const existingDeveloperPluginState = registry
-			.select( CORE_SITE )
-			.getDeveloperPluginState();
+		const existingDeveloperPluginState = yield wpControls.select(
+			CORE_SITE,
+			'getDeveloperPluginState'
+		);
 
 		if ( ! existingDeveloperPluginState ) {
 			yield fetchGetDeveloperPluginState.actions.fetchGetDeveloperPluginState();

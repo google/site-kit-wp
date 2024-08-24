@@ -31,7 +31,7 @@ import { createRegistrySelector } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -220,15 +220,11 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID, webDataStreamID, enabled ) {
-			const registry = yield commonActions.getRegistry();
-
-			const currentSettings = yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getEnhancedMeasurementSettings(
-						propertyID,
-						webDataStreamID
-					)
+			const currentSettings = yield wpControls.resolveSelect(
+				MODULES_ANALYTICS_4,
+				'getEnhancedMeasurementSettings',
+				propertyID,
+				webDataStreamID
 			);
 
 			if ( ! currentSettings ) {
@@ -247,14 +243,12 @@ const baseActions = {
 				streamEnabled,
 			};
 
-			return yield commonActions.await(
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setEnhancedMeasurementSettings(
-						propertyID,
-						webDataStreamID,
-						newSettings
-					)
+			return yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'setEnhancedMeasurementSettings',
+				propertyID,
+				webDataStreamID,
+				newSettings
 			);
 		}
 	),
@@ -294,15 +288,11 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID, webDataStreamID ) {
-			const registry = yield commonActions.getRegistry();
-
-			const currentSettings = yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getEnhancedMeasurementSettings(
-						propertyID,
-						webDataStreamID
-					)
+			const currentSettings = yield wpControls.resolveSelect(
+				MODULES_ANALYTICS_4,
+				'getEnhancedMeasurementSettings',
+				propertyID,
+				webDataStreamID
 			);
 
 			if ( ! currentSettings ) {
@@ -373,11 +363,13 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getEnhancedMeasurementSettings( propertyID, webDataStreamID ) {
-		const registry = yield commonActions.getRegistry();
 		// Only fetch enhanced measurement settings if there are none in the store for the given data stream.
-		const enhancedMeasurementSettings = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+		const enhancedMeasurementSettings = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getEnhancedMeasurementSettings',
+			propertyID,
+			webDataStreamID
+		);
 
 		if ( enhancedMeasurementSettings === undefined ) {
 			yield fetchGetEnhancedMeasurementSettingsStore.actions.fetchGetEnhancedMeasurementSettings(
@@ -388,14 +380,13 @@ const baseResolvers = {
 	},
 
 	*isEnhancedMeasurementStreamAlreadyEnabled( propertyID, webDataStreamID ) {
-		const registry = yield commonActions.getRegistry();
 		// Only fetch enhanced measurement settings if the `streamEnabled` setting is not already in the store.
-		const isEnhancedMeasurementStreamEnabled = registry
-			.select( MODULES_ANALYTICS_4 )
-			.isEnhancedMeasurementStreamAlreadyEnabled(
-				propertyID,
-				webDataStreamID
-			);
+		const isEnhancedMeasurementStreamEnabled = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'isEnhancedMeasurementStreamAlreadyEnabled',
+			propertyID,
+			webDataStreamID
+		);
 
 		if ( isEnhancedMeasurementStreamEnabled === undefined ) {
 			yield fetchGetEnhancedMeasurementSettingsStore.actions.fetchGetEnhancedMeasurementSettings(

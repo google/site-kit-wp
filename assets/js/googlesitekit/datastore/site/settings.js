@@ -26,9 +26,9 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	createRegistrySelector,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -107,9 +107,11 @@ function baseReducer( state, { type } ) {
 
 const baseResolvers = {
 	*getAdminBarSettings() {
-		const { select } = yield commonActions.getRegistry();
+		const settings = yield wpControls.select(
+			CORE_SITE,
+			'getAdminBarSettings'
+		);
 
-		const settings = select( CORE_SITE ).getAdminBarSettings();
 		if ( settings === undefined ) {
 			yield fetchGetAdminBarSettingsStore.actions.fetchGetAdminBarSettings();
 		}

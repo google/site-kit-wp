@@ -26,9 +26,9 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
@@ -89,8 +89,6 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetSites() {
-		const { dispatch } = yield commonActions.getRegistry();
-
 		yield {
 			payload: {},
 			type: RESET_SITES,
@@ -98,7 +96,9 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getSites' );
 
-		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
+		return yield wpControls.dispatch(
+			MODULES_ADSENSE,
+			'invalidateResolutionForStoreSelector',
 			'getSites'
 		);
 	},
@@ -140,10 +140,11 @@ const baseResolvers = {
 			return;
 		}
 
-		const registry = yield commonActions.getRegistry();
-		const existingSites = registry
-			.select( MODULES_ADSENSE )
-			.getSites( accountID );
+		const existingSites = yield wpControls.select(
+			MODULES_ADSENSE,
+			'getSites',
+			accountID
+		);
 
 		// If there are already sites loaded in state, consider it fulfilled
 		// and don't make an API request.

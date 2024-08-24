@@ -28,8 +28,8 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
@@ -109,16 +109,16 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetAccountSummaries() {
-		const { dispatch } = yield commonActions.getRegistry();
-
 		yield {
 			payload: {},
 			type: RESET_ACCOUNT_SUMMARIES,
 		};
 
-		return dispatch(
-			MODULES_ANALYTICS_4
-		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
+		return yield wpControls.dispatch(
+			MODULES_ANALYTICS_4,
+			'invalidateResolutionForStoreSelector',
+			'getAccountSummaries'
+		);
 	},
 
 	/**
@@ -129,16 +129,40 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createAccount() {
-		const registry = yield commonActions.getRegistry();
-
-		const { getValue } = registry.select( CORE_FORMS );
 		const data = {
-			displayName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
-			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
-			dataStreamName: getValue( FORM_ACCOUNT_CREATE, 'dataStreamName' ),
-			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
-			regionCode: getValue( FORM_ACCOUNT_CREATE, 'countryCode' ),
-			enhancedMeasurementStreamEnabled: getValue(
+			displayName: yield wpControls.select(
+				CORE_FORMS,
+				'getValue',
+				FORM_ACCOUNT_CREATE,
+				'accountName'
+			),
+			propertyName: yield wpControls.select(
+				CORE_FORMS,
+				'getValue',
+				FORM_ACCOUNT_CREATE,
+				'propertyName'
+			),
+			dataStreamName: yield wpControls.select(
+				CORE_FORMS,
+				'getValue',
+				FORM_ACCOUNT_CREATE,
+				'dataStreamName'
+			),
+			timezone: yield wpControls.select(
+				CORE_FORMS,
+				'getValue',
+				FORM_ACCOUNT_CREATE,
+				'timezone'
+			),
+			regionCode: yield wpControls.select(
+				CORE_FORMS,
+				'getValue',
+				FORM_ACCOUNT_CREATE,
+				'countryCode'
+			),
+			enhancedMeasurementStreamEnabled: yield wpControls.select(
+				CORE_FORMS,
+				'getValue',
 				FORM_ACCOUNT_CREATE,
 				ENHANCED_MEASUREMENT_ENABLED
 			),
@@ -171,7 +195,6 @@ const baseActions = {
 			);
 		},
 		function* ( accountID ) {
-			const registry = yield commonActions.getRegistry();
 			const finishSelectingAccountAction = {
 				type: FINISH_SELECTING_ACCOUNT,
 				payload: {},
@@ -184,7 +207,7 @@ const baseActions = {
 
 			yield clearErrors();
 
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			yield wpControls.dispatch( MODULES_ANALYTICS_4, 'setSettings', {
 				accountID,
 				propertyID: '',
 				webDataStreamID: '',
@@ -195,10 +218,11 @@ const baseActions = {
 				return;
 			}
 
-			yield commonActions.await(
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.matchAndSelectProperty( accountID, PROPERTY_CREATE )
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'matchAndSelectProperty',
+				accountID,
+				PROPERTY_CREATE
 			);
 
 			yield finishSelectingAccountAction;
@@ -213,25 +237,25 @@ const baseActions = {
 	 * @return {Object|null} Matching account summary on success, otherwise NULL.
 	 */
 	*findMatchedAccount() {
-		const registry = yield commonActions.getRegistry();
-		const matchedProperty = yield commonActions.await(
-			registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty()
+		const matchedProperty = yield wpControls.dispatch(
+			MODULES_ANALYTICS_4,
+			'findMatchedProperty'
 		);
 
 		if ( ! matchedProperty ) {
 			return null;
 		}
 
-		const accountSummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAccountSummaries();
+		const accountSummaries = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getAccountSummaries'
+		);
 
 		const matchedAccount = accountSummaries.find( ( account ) =>
 			account.propertySummaries.some(
 				( { _id } ) => _id === matchedProperty._id
 			)
 		);
-
 		return matchedAccount || null;
 	},
 };
@@ -276,10 +300,11 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAccountSummaries() {
-		const registry = yield commonActions.getRegistry();
-		const summaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAccountSummaries();
+		const summaries = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getAccountSummaries'
+		);
+
 		if ( summaries === undefined ) {
 			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
 		}

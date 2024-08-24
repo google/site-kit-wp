@@ -40,6 +40,7 @@ import {
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import {
 	CORE_MODULES,
@@ -394,16 +395,21 @@ const baseActions = {
 				type: REGISTER_MODULE,
 			};
 
-			const registry = yield commonActions.getRegistry();
-
 			// As we can specify a custom checkRequirements function here, we're
 			// invalidating the resolvers for activation checks.
-			registry
-				.dispatch( CORE_MODULES )
-				.invalidateResolution( 'canActivateModule', [ slug ] );
-			registry
-				.dispatch( CORE_MODULES )
-				.invalidateResolution( 'getCheckRequirementsError', [ slug ] );
+			yield wpControls.dispatch(
+				CORE_MODULES,
+				'invalidateResolution',
+				'canActivateModule',
+				[ slug ]
+			);
+
+			yield wpControls.dispatch(
+				CORE_MODULES,
+				'invalidateResolution',
+				'getCheckRequirementsError',
+				[ slug ]
+			);
 		}
 	),
 
@@ -481,7 +487,6 @@ const baseActions = {
 			invariant( Array.isArray( slugs ), 'slugs must be an array' );
 		},
 		function* ( slugs ) {
-			const { dispatch, select } = yield commonActions.getRegistry();
 			const { response } =
 				yield fetchRecoverModulesStore.actions.fetchRecoverModules(
 					slugs
@@ -493,13 +498,14 @@ const baseActions = {
 			);
 
 			for ( const slug of successfulRecoveries ) {
-				const storeName =
-					select( CORE_MODULES ).getModuleStoreName( slug );
+				const storeName = yield wpControls.select(
+					CORE_MODULES,
+					'getModuleStoreName',
+					slug
+				);
 
 				// Reload the module's settings from the server.
-				yield commonActions.await(
-					dispatch( storeName ).fetchGetSettings()
-				);
+				yield wpControls.dispatch( storeName, 'fetchGetSettings' );
 			}
 
 			if ( successfulRecoveries.length ) {
@@ -508,15 +514,15 @@ const baseActions = {
 
 				// Having reloaded the modules from the server, ensure the list of recoverable modules is also refreshed,
 				// as the recoverable modules list is derived from the main list of modules.
-				dispatch( CORE_MODULES ).invalidateResolution(
+				yield wpControls.dispatch(
+					CORE_MODULES,
+					'invalidateResolution',
 					'getRecoverableModules',
 					[]
 				);
 
 				// Refresh user capabilities from the server.
-				yield commonActions.await(
-					dispatch( CORE_USER ).refreshCapabilities()
-				);
+				yield wpControls.dispatch( CORE_USER, 'refreshCapabilities' );
 			}
 
 			return { response };
@@ -669,16 +675,15 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 function* waitForModules() {
-	const { resolveSelect } = yield commonActions.getRegistry();
-
-	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
+	yield wpControls.resolveSelect( CORE_MODULES, 'getModules' );
 }
 
 const baseResolvers = {
 	*getModules() {
-		const registry = yield commonActions.getRegistry();
-
-		const existingModules = registry.select( CORE_MODULES ).getModules();
+		const existingModules = yield wpControls.select(
+			CORE_MODULES,
+			'getModules'
+		);
 
 		if ( ! existingModules ) {
 			yield fetchGetModulesStore.actions.fetchGetModules();
@@ -686,26 +691,31 @@ const baseResolvers = {
 	},
 
 	*canActivateModule( slug ) {
-		const registry = yield commonActions.getRegistry();
-		const { select, resolveSelect } = registry;
-		const module = yield commonActions.await(
-			resolveSelect( CORE_MODULES ).getModule( slug )
+		const module = yield wpControls.resolveSelect(
+			CORE_MODULES,
+			'getModule',
+			slug
 		);
-		// At this point, all modules are loaded so we can safely select getModule below.
 
+		// At this point, all modules are loaded so we can safely select
+		// `getModule` below.
 		if ( ! module ) {
 			return;
 		}
 
 		const inactiveModules = [];
 
-		module.dependencies.forEach( ( dependencySlug ) => {
-			const dependedentModule =
-				select( CORE_MODULES ).getModule( dependencySlug );
+		for ( const dependencySlug of module.dependencies ) {
+			const dependedentModule = yield wpControls.select(
+				CORE_MODULES,
+				'getModule',
+				dependencySlug
+			);
+
 			if ( ! dependedentModule?.active ) {
 				inactiveModules.push( dependedentModule.name );
 			}
-		} );
+		}
 
 		// If we have inactive dependencies, there's no need to check if we can
 		// activate the module until the dependencies have been activated.
@@ -728,6 +738,8 @@ const baseResolvers = {
 			} );
 		} else {
 			try {
+				const registry = yield commonActions.getRegistry();
+
 				yield commonActions.await(
 					module.checkRequirements( registry )
 				);
@@ -739,11 +751,11 @@ const baseResolvers = {
 	},
 
 	*hasModuleAccess( slug ) {
-		const registry = yield commonActions.getRegistry();
-
-		const existingCheckAccess = registry
-			.select( CORE_MODULES )
-			.hasModuleAccess( slug );
+		const existingCheckAccess = yield wpControls.select(
+			CORE_MODULES,
+			'hasModuleAccess',
+			slug
+		);
 
 		if ( existingCheckAccess === undefined ) {
 			yield fetchCheckModuleAccessStore.actions.fetchCheckModuleAccess(
@@ -753,9 +765,9 @@ const baseResolvers = {
 	},
 
 	*getRecoverableModules() {
-		const registry = yield commonActions.getRegistry();
-		const modules = yield commonActions.await(
-			registry.resolveSelect( CORE_MODULES ).getModules()
+		const modules = yield wpControls.resolveSelect(
+			CORE_MODULES,
+			'getModules'
 		);
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
@@ -773,9 +785,12 @@ const baseResolvers = {
 	},
 
 	*getSharedOwnershipModules() {
-		const registry = yield commonActions.getRegistry();
+		const sharedOwnershipModulesInStore = yield wpControls.select(
+			CORE_MODULES,
+			'getSharedOwnershipModules'
+		);
 
-		if ( registry.select( CORE_MODULES ).getSharedOwnershipModules() ) {
+		if ( sharedOwnershipModulesInStore ) {
 			return;
 		}
 

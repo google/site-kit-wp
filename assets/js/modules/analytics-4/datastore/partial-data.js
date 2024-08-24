@@ -27,9 +27,9 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -184,12 +184,12 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getResourceDataAvailabilityDates() {
-		const { select } = yield commonActions.getRegistry();
+		const resourceDataAvailabilityDates = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getResourceDataAvailabilityDates'
+		);
 
-		if (
-			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDates() !==
-			undefined
-		) {
+		if ( resourceDataAvailabilityDates !== undefined ) {
 			return;
 		}
 
@@ -205,21 +205,19 @@ const baseResolvers = {
 	},
 
 	*getResourceDataAvailabilityDate( resourceSlug, resourceType ) {
-		const { select, resolveSelect } = yield commonActions.getRegistry();
-
-		if (
-			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDate(
-				resourceSlug,
-				resourceType
-			) !== undefined
-		) {
+		const resourceAvailabilityDatesInStore = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getResourceDataAvailabilityDate',
+			resourceSlug,
+			resourceType
+		);
+		if ( resourceAvailabilityDatesInStore !== undefined ) {
 			return;
 		}
 
-		const resourceAvailabilityDates = yield commonActions.await(
-			resolveSelect(
-				MODULES_ANALYTICS_4
-			).getResourceDataAvailabilityDates()
+		const resourceAvailabilityDates = yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getResourceDataAvailabilityDates'
 		);
 
 		if (
@@ -227,43 +225,48 @@ const baseResolvers = {
 			undefined
 		) {
 			// Ensure the settings are loaded.
-			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			yield wpControls.resolveSelect(
+				MODULES_ANALYTICS_4,
+				'getSettings'
 			);
 
 			// Validate if the resourceSlug is a valid resource.
 			switch ( resourceType ) {
 				case RESOURCE_TYPE_AUDIENCE:
-					yield commonActions.await(
-						resolveSelect(
-							MODULES_ANALYTICS_4
-						).getAvailableAudiences()
+					yield wpControls.resolveSelect(
+						MODULES_ANALYTICS_4,
+						'getAvailableAudiences'
 					);
 
-					if (
-						! select( MODULES_ANALYTICS_4 ).hasAudiences(
-							resourceSlug
-						)
-					) {
+					const hasAudiences = yield wpControls.select(
+						MODULES_ANALYTICS_4,
+						'hasAudiences',
+						resourceSlug
+					);
+
+					if ( ! hasAudiences ) {
 						return;
 					}
 					break;
 
 				case RESOURCE_TYPE_CUSTOM_DIMENSION:
-					if (
-						! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-							resourceSlug
-						)
-					) {
+					const hasCustomDimensions = yield wpControls.select(
+						MODULES_ANALYTICS_4,
+						'hasCustomDimensions',
+						resourceSlug
+					);
+
+					if ( ! hasCustomDimensions ) {
 						return;
 					}
 					break;
 
 				case RESOURCE_TYPE_PROPERTY:
-					if (
-						select( MODULES_ANALYTICS_4 ).getPropertyID() !==
-						resourceSlug
-					) {
+					const propertyID = yield wpControls.select(
+						MODULES_ANALYTICS_4,
+						'getPropertyID'
+					);
+					if ( propertyID !== resourceSlug ) {
 						return;
 					}
 					break;
@@ -272,12 +275,14 @@ const baseResolvers = {
 					return;
 			}
 
-			yield commonActions.await(
-				resolveSelect( CORE_USER ).getAuthentication()
-			);
+			yield wpControls.resolveSelect( CORE_USER, 'getAuthentication' );
 
 			// Return early if user is not authenticated.
-			if ( ! select( CORE_USER ).isAuthenticated() ) {
+			const isAuthenticated = yield wpControls.select(
+				CORE_USER,
+				'isAuthenticated'
+			);
+			if ( ! isAuthenticated ) {
 				yield baseActions.setResourceDataAvailabilityDate(
 					resourceSlug,
 					resourceType,
@@ -286,10 +291,11 @@ const baseResolvers = {
 				return;
 			}
 
-			const reportArgs = yield commonActions.await(
-				resolveSelect(
-					MODULES_ANALYTICS_4
-				).getPartialDataReportOptions( resourceSlug, resourceType )
+			const reportArgs = yield wpControls.resolveSelect(
+				MODULES_ANALYTICS_4,
+				'getPartialDataReportOptions',
+				resourceSlug,
+				resourceType
 			);
 
 			// Return early if reportArgs is not available.
@@ -297,13 +303,17 @@ const baseResolvers = {
 				return;
 			}
 
-			const report = yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+			const report = yield wpControls.resolveSelect(
+				( MODULES_ANALYTICS_4, 'getReport', reportArgs )
 			);
 
-			const hasReportError = !! select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportArgs ] );
+			const errorForSelector = yield wpControls.select(
+				MODULES_ANALYTICS_4,
+				'getErrorForSelector',
+				'getReport',
+				[ reportArgs ]
+			);
+			const hasReportError = !! errorForSelector;
 
 			const isDataAvailable =
 				! hasReportError &&
@@ -336,10 +346,9 @@ const baseResolvers = {
 	},
 
 	*getPartialDataReportOptions() {
-		const { resolveSelect } = yield commonActions.getRegistry();
-
-		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getPropertyCreateTime()
+		yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getPropertyCreateTime'
 		);
 	},
 };

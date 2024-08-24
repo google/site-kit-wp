@@ -21,9 +21,9 @@
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -49,9 +49,10 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getConnection() {
-		const registry = yield commonActions.getRegistry();
-
-		const existingConnection = registry.select( CORE_SITE ).getConnection();
+		const existingConnection = yield wpControls.select(
+			CORE_SITE,
+			'getConnection'
+		);
 
 		if ( ! existingConnection ) {
 			yield fetchGetConnectionStore.actions.fetchGetConnection();

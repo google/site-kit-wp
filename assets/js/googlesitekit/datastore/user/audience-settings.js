@@ -28,7 +28,6 @@ import { isEqual, isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
 	wpControls,
 } from 'googlesitekit-data';
@@ -252,11 +251,10 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getAudienceSettings() {
-		const registry = yield commonActions.getRegistry();
-
-		const audienceSettings = registry
-			.select( CORE_USER )
-			.getAudienceSettings();
+		const audienceSettings = yield wpControls.select(
+			CORE_USER,
+			'getAudienceSettings'
+		);
 
 		if ( audienceSettings === undefined ) {
 			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();

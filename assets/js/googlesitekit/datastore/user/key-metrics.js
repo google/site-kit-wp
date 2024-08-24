@@ -25,9 +25,9 @@ import { isEmpty, isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	createRegistrySelector,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import {
 	CORE_USER,
@@ -125,10 +125,10 @@ const baseActions = {
 
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
-		const registry = yield commonActions.getRegistry();
-		const keyMetricsSettings = registry
-			.select( CORE_USER )
-			.getKeyMetricsSettings();
+		const keyMetricsSettings = yield wpControls.select(
+			CORE_USER,
+			'getKeyMetricsSettings'
+		);
 
 		const { response, error } =
 			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
@@ -142,13 +142,15 @@ const baseActions = {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
 			yield receiveError( error, 'saveKeyMetricsSettings', [] );
 		} else if ( isEmpty( settings ) || settings.widgetSlugs ) {
+			const userID = yield wpControls.select( CORE_USER, 'getID' );
+
 			// Update the `keyMetricsSetupCompletedBy` value to mark setup completed.
 			// This will be handled automatically on the back end.
-			registry
-				.dispatch( CORE_SITE )
-				.setKeyMetricsSetupCompletedBy(
-					registry.select( CORE_USER ).getID()
-				);
+			yield wpControls.dispatch(
+				CORE_SITE,
+				'setKeyMetricsSetupCompletedBy',
+				userID
+			);
 		}
 
 		return { response, error };
@@ -176,10 +178,10 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getKeyMetricsSettings() {
-		const registry = yield commonActions.getRegistry();
-		const keyMetricsSettings = registry
-			.select( CORE_USER )
-			.getKeyMetricsSettings();
+		const keyMetricsSettings = yield wpControls.select(
+			CORE_USER,
+			'getKeyMetricsSettings'
+		);
 
 		if ( keyMetricsSettings ) {
 			return;

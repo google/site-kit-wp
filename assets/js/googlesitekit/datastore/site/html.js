@@ -30,9 +30,9 @@ import { isURL, addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import {
-	commonActions,
 	combineStores,
 	createRegistryControl,
+	wpControls,
 } from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_SITE } from './constants';
@@ -111,14 +111,14 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*resetHTMLForURL( url ) {
-		const { dispatch } = yield commonActions.getRegistry();
-
 		yield {
 			payload: { url },
 			type: RESET_HTML_FOR_URL,
 		};
 
-		return dispatch( CORE_SITE ).invalidateResolutionForStoreSelector(
+		return yield wpControls.dispatch(
+			CORE_SITE,
+			'invalidateResolutionForStoreSelector',
 			'getHTMLForURL'
 		);
 	},
@@ -207,9 +207,11 @@ const baseReducer = ( state, { type, payload } ) => {
 
 export const baseResolvers = {
 	*getHTMLForURL( url ) {
-		const registry = yield commonActions.getRegistry();
-
-		const existingHTML = registry.select( CORE_SITE ).getHTMLForURL( url );
+		const existingHTML = yield wpControls.select(
+			CORE_SITE,
+			'getHTMLForURL',
+			url
+		);
 
 		if ( existingHTML === undefined ) {
 			yield fetchHTMLForURLStore.actions.fetchGetHTMLForURL( url );

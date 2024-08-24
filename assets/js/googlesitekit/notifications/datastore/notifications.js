@@ -24,7 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	wpControls,
+} from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
@@ -144,7 +148,6 @@ export const actions = {
 		},
 		function* ( id, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
-			const registry = yield commonActions.getRegistry();
 
 			// Remove the notification from the queue of notifications in state.
 			yield {
@@ -152,9 +155,9 @@ export const actions = {
 				payload: { id },
 			};
 
-			return yield registry
-				.dispatch( CORE_USER )
-				.dismissItem( id, { expiresInSeconds } );
+			return yield wpControls.dispatch( CORE_USER, 'dismissItem', id, {
+				expiresInSeconds,
+			} );
 		}
 	),
 };
@@ -207,14 +210,13 @@ export const resolvers = {
 	*getQueuedNotifications( viewContext ) {
 		const registry = yield commonActions.getRegistry();
 
-		const notifications = registry
-			.select( CORE_NOTIFICATIONS )
-			.getNotifications();
+		const notifications = yield wpControls.select(
+			CORE_NOTIFICATIONS,
+			'getNotifications'
+		);
 
 		// Wait for all dismissed items to be available before filtering.
-		yield commonActions.await(
-			registry.resolveSelect( CORE_USER ).getDismissedItems()
-		);
+		yield wpControls.resolveSelect( CORE_USER, 'getDismissedItems' );
 
 		const filteredNotifications = Object.values( notifications ).filter(
 			( notification ) => {

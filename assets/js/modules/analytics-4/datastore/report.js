@@ -32,8 +32,8 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -139,10 +139,11 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getReport( options = {} ) {
-		const registry = yield commonActions.getRegistry();
-		const existingReport = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getReport( options );
+		const existingReport = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getReport',
+			options
+		);
 
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.

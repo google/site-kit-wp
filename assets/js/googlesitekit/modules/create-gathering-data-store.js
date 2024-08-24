@@ -26,9 +26,9 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistryControl,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../data/create-fetch-store';
 
@@ -188,18 +188,19 @@ export const createGatheringDataStore = (
 
 	const resolvers = {
 		*isGatheringData() {
-			const registry = yield commonActions.getRegistry();
-
+			const isGatheringData = yield wpControls.select(
+				storeName,
+				'isGatheringData'
+			);
 			// If the gatheringData flag is already set, return early.
-			if (
-				registry.select( storeName ).isGatheringData() !== undefined
-			) {
+			if ( isGatheringData !== undefined ) {
 				return;
 			}
 
-			const dataAvailableOnLoad = registry
-				.select( storeName )
-				.isDataAvailableOnLoad();
+			const dataAvailableOnLoad = yield wpControls.select(
+				storeName,
+				'isDataAvailableOnLoad'
+			);
 
 			// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 			if ( dataAvailableOnLoad ) {
@@ -212,9 +213,10 @@ export const createGatheringDataStore = (
 				type: WAIT_FOR_DATA_AVAILABILITY_STATE,
 			};
 
-			const dataAvailability = registry
-				.select( storeName )
-				.selectDataAvailability();
+			const dataAvailability = yield wpControls.select(
+				storeName,
+				'selectDataAvailability'
+			);
 
 			yield actions.receiveIsGatheringData( ! dataAvailability );
 

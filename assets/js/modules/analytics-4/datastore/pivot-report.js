@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { stringifyObject } from '../../../util';
@@ -58,10 +58,11 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getPivotReport( options = {} ) {
-		const registry = yield commonActions.getRegistry();
-		const existingReport = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPivotReport( options );
+		const existingReport = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getPivotReport',
+			options
+		);
 
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.

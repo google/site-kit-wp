@@ -26,7 +26,7 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -94,10 +94,11 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getReport( options = {} ) {
-		const registry = yield commonActions.getRegistry();
-		const existingReport = registry
-			.select( MODULES_ADSENSE )
-			.getReport( options );
+		const existingReport = yield wpControls.select(
+			MODULES_ADSENSE,
+			'getReport',
+			options
+		);
 
 		// If there are already alerts loaded in state, consider it fulfilled
 		// and don't make an API request.

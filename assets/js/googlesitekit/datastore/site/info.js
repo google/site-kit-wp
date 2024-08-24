@@ -30,7 +30,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import { createRegistrySelector, wpControls } from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
 import { negateDefined } from '../../../util/negate';
@@ -268,9 +268,9 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo() {
-		const registry = yield commonActions.getRegistry();
+		const siteInfo = yield wpControls.select( CORE_SITE, 'getSiteInfo' );
 
-		if ( registry.select( CORE_SITE ).getSiteInfo() ) {
+		if ( siteInfo ) {
 			return;
 		}
 

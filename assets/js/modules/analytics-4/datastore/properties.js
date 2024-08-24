@@ -229,8 +229,6 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		return ( function* () {
-			const { dispatch } = yield commonActions.getRegistry();
-
 			const { response, error } =
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
 					accountID
@@ -238,9 +236,10 @@ const baseActions = {
 
 			if ( response ) {
 				// Refresh account summaries to load the new property.
-				yield dispatch(
-					MODULES_ANALYTICS_4
-				).fetchGetAccountSummaries();
+				yield wpControls.dispatch(
+					MODULES_ANALYTICS_4,
+					'fetchGetAccountSummaries'
+				);
 			}
 
 			return { response, error };
@@ -263,50 +262,62 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID ) {
-			const registry = yield commonActions.getRegistry();
-			const {
-				setPropertyCreateTime,
-				setSettings,
-				setWebDataStreamID,
-				updateSettingsForMeasurementID,
-			} = registry.dispatch( MODULES_ANALYTICS_4 );
-
-			setSettings( {
+			yield wpControls.dispatch( MODULES_ANALYTICS_4, 'setSettings', {
 				propertyID,
 				propertyCreateTime: 0,
 			} );
 
-			updateSettingsForMeasurementID( '' );
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'updateSettingsForMeasurementID',
+				''
+			);
 
 			if ( PROPERTY_CREATE === propertyID ) {
-				setWebDataStreamID( WEBDATASTREAM_CREATE );
+				yield wpControls.dispatch(
+					MODULES_ANALYTICS_4,
+					'setWebDataStreamID',
+					WEBDATASTREAM_CREATE
+				);
 				return;
 			}
 
-			setWebDataStreamID( '' );
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'setWebDataStreamID',
+				''
+			);
 
 			if ( propertyID ) {
-				const property = yield commonActions.await(
-					registry
-						.resolveSelect( MODULES_ANALYTICS_4 )
-						.getProperty( propertyID )
+				const property = yield wpControls.resolveSelect(
+					MODULES_ANALYTICS_4,
+					'getProperty',
+					propertyID
 				);
 
 				if ( property?.createTime ) {
-					setPropertyCreateTime( property.createTime );
+					yield wpControls.dispatch(
+						MODULES_ANALYTICS_4,
+						'setPropertyCreateTime',
+						property.createTime
+					);
 				}
 			}
 
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
-			let webdatastream = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getMatchingWebDataStreamByPropertyID( propertyID );
+			let webdatastream = yield wpControls.select(
+				MODULES_ANALYTICS_4,
+				'getMatchingWebDataStreamByPropertyID',
+				propertyID
+			);
 
 			if ( ! webdatastream ) {
-				const webdatastreams = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getWebDataStreams( propertyID );
+				const webdatastreams = yield wpControls.select(
+					MODULES_ANALYTICS_4,
+					'getWebDataStreams',
+					propertyID
+				);
 
 				if ( webdatastreams?.length ) {
 					webdatastream = webdatastreams[ 0 ];
@@ -314,15 +325,26 @@ const baseActions = {
 			}
 
 			if ( webdatastream ) {
-				setWebDataStreamID( webdatastream._id );
-				updateSettingsForMeasurementID(
+				yield wpControls.dispatch(
+					MODULES_ANALYTICS_4,
+					'setWebDataStreamID',
+					webdatastream._id
+				);
+				yield wpControls.dispatch(
+					MODULES_ANALYTICS_4,
+					'updateSettingsForMeasurementID',
 					// eslint-disable-next-line sitekit/acronym-case
 					webdatastream.webStreamData.measurementId
 				);
 				return;
 			}
+
 			// At this point there is no web data stream to set.
-			setWebDataStreamID( WEBDATASTREAM_CREATE );
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'setWebDataStreamID',
+				WEBDATASTREAM_CREATE
+			);
 		}
 	),
 
@@ -334,16 +356,16 @@ const baseActions = {
 	 * @return {Object|null} Matching property on success, otherwise NULL.
 	 */
 	*findMatchedProperty() {
-		const registry = yield commonActions.getRegistry();
-		const accounts = yield commonActions.await(
-			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
+		const accounts = yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getAccountSummaries'
 		);
 
 		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
 			return null;
 		}
 
-		const url = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const url = yield wpControls.select( CORE_SITE, 'getReferenceSiteURL' );
 		const propertyIDs = accounts.reduce(
 			( acc, { propertySummaries: properties } ) => [
 				...acc,
@@ -352,10 +374,11 @@ const baseActions = {
 			[]
 		);
 
-		return yield commonActions.await(
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.matchPropertyByURL( propertyIDs, url )
+		return yield wpControls.dispatch(
+			MODULES_ANALYTICS_4,
+			'matchPropertyByURL',
+			propertyIDs,
+			url
 		);
 	},
 
@@ -368,14 +391,17 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAccountProperty( accountID ) {
-		const registry = yield commonActions.getRegistry();
-
 		yield baseActions.waitForPropertySummaries( accountID );
 
-		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const propertySummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertySummaries( accountID );
+		const referenceURL = yield wpControls.select(
+			CORE_SITE,
+			'getReferenceSiteURL'
+		);
+		const propertySummaries = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getPropertySummaries',
+			accountID
+		);
 
 		const property = yield baseActions.matchPropertyByURL(
 			( propertySummaries || [] ).map( ( { _id } ) => _id ),
@@ -424,7 +450,6 @@ const baseActions = {
 	 * @return {Object} A property object if found.
 	 */
 	*matchPropertyByURL( properties, url ) {
-		const registry = yield commonActions.getRegistry();
 		const urls = ( Array.isArray( url ) ? url : [ url ] )
 			.filter( ( item ) => typeof item === 'string' )
 			.map( normalizeURL );
@@ -438,10 +463,10 @@ const baseActions = {
 				i,
 				i + MAX_WEBDATASTREAMS_PER_BATCH
 			);
-			const webdatastreams = yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getWebDataStreamsBatch( chunk )
+			const webdatastreams = yield wpControls.resolveSelect(
+				MODULES_ANALYTICS_4,
+				'getWebDataStreamsBatch',
+				chunk
 			);
 
 			for ( const propertyID in webdatastreams ) {
@@ -454,10 +479,10 @@ const baseActions = {
 								webdatastream.webStreamData?.defaultUri
 							)
 						) {
-							return yield commonActions.await(
-								registry
-									.resolveSelect( MODULES_ANALYTICS_4 )
-									.getProperty( propertyID )
+							return yield wpControls.resolveSelect(
+								MODULES_ANALYTICS_4,
+								'getProperty',
+								propertyID
 							);
 						}
 					}
@@ -539,11 +564,8 @@ const baseActions = {
 	 * @param {string} measurementID Measurement ID.
 	 */
 	*updateSettingsForMeasurementID( measurementID ) {
-		const { select, dispatch, resolveSelect } =
-			yield commonActions.getRegistry();
-
 		if ( ! measurementID ) {
-			dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			yield wpControls.dispatch( MODULES_ANALYTICS_4, 'setSettings', {
 				measurementID,
 				googleTagAccountID: '',
 				googleTagContainerID: '',
@@ -552,13 +574,21 @@ const baseActions = {
 			return;
 		}
 
-		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( measurementID );
+		yield wpControls.dispatch(
+			MODULES_ANALYTICS_4,
+			'setMeasurementID',
+			measurementID
+		);
 
 		// Wait for authentication to be resolved to check scopes.
-		yield commonActions.await(
-			resolveSelect( CORE_USER ).getAuthentication()
+		yield wpControls.resolveSelect( CORE_USER, 'getAuthentication' );
+
+		const hasTagManagerReadScope = yield wpControls.select(
+			CORE_USER,
+			'hasScope',
+			TAGMANAGER_READ_SCOPE
 		);
-		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
+		if ( ! hasTagManagerReadScope ) {
 			return;
 		}
 
@@ -580,7 +610,7 @@ const baseActions = {
 		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
 		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
 		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		yield wpControls.dispatch( MODULES_ANALYTICS_4, 'setSettings', {
 			googleTagAccountID,
 			googleTagContainerID,
 			googleTagID,
@@ -637,10 +667,9 @@ const baseActions = {
 	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
-		const { select, dispatch, resolveSelect } =
-			yield commonActions.getRegistry();
-
-		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+		const hasTagManagerReadScope = yield wpControls.select(
+			CORE_USER,
+			'hasScope',
 			TAGMANAGER_READ_SCOPE
 		);
 
@@ -649,34 +678,34 @@ const baseActions = {
 		}
 
 		// Wait for modules to be available before selecting.
-		yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
+		yield wpControls.resolveSelect( CORE_MODULES, 'getModules' );
 
-		const { isModuleConnected } = select( CORE_MODULES );
+		const isAnalytics4Connected = yield wpControls.select(
+			CORE_MODULES,
+			'isModuleConnected',
+			'analytics-4'
+		);
 
-		if ( ! isModuleConnected( 'analytics-4' ) ) {
+		if ( ! isAnalytics4Connected ) {
 			return;
 		}
 
 		// Wait for module settings to be available before selecting.
-		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		yield wpControls.resolveSelect( MODULES_ANALYTICS_4, 'getSettings' );
+
+		const measurementID = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getMeasurementID'
 		);
-
-		const {
-			getGoogleTagID,
-			getMeasurementID,
-			getGoogleTagLastSyncedAtMs,
-			getGoogleTagAccountID,
-			getGoogleTagContainerID,
-		} = select( MODULES_ANALYTICS_4 );
-
-		const measurementID = getMeasurementID();
 
 		if ( ! measurementID ) {
 			return;
 		}
 
-		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
+		const googleTagLastSyncedAtMs = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagLastSyncedAtMs'
+		);
 
 		if (
 			!! googleTagLastSyncedAtMs &&
@@ -687,13 +716,16 @@ const baseActions = {
 			return;
 		}
 
-		const googleTagID = getGoogleTagID();
+		const googleTagID = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagID'
+		);
 
 		if ( !! googleTagID ) {
-			const googleTagContainer = yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagContainer(
-					measurementID
-				)
+			const googleTagContainer = yield wpControls.resolveSelect(
+				MODULES_ANALYTICS_4,
+				'getGoogleTagContainer',
+				measurementID
 			);
 
 			if ( ! googleTagContainer ) {
@@ -705,8 +737,14 @@ const baseActions = {
 			yield baseActions.updateSettingsForMeasurementID( measurementID );
 		}
 
-		const googleTagAccountID = getGoogleTagAccountID();
-		const googleTagContainerID = getGoogleTagContainerID();
+		const googleTagAccountID = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagAccountID'
+		);
+		const googleTagContainerID = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagContainerID'
+		);
 
 		const googleTagContainerDestinations = yield wpControls.resolveSelect(
 			MODULES_ANALYTICS_4,
@@ -721,14 +759,14 @@ const baseActions = {
 				( { destinationId } ) => destinationId
 			);
 
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		yield wpControls.dispatch( MODULES_ANALYTICS_4, 'setSettings', {
 			googleTagContainerDestinationIDs,
 			// The "last synced" value should reflect the real time this action
 			// was performed, so we don't use the reference date here.
 			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
 		} );
 
-		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+		yield wpControls.dispatch( MODULES_ANALYTICS_4, 'saveSettings' );
 	},
 };
 
@@ -769,11 +807,12 @@ const baseResolvers = {
 			return;
 		}
 
-		const registry = yield commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
-		const properties = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getProperties( accountID );
+		const properties = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getProperties',
+			accountID
+		);
 		if ( properties === undefined ) {
 			yield fetchGetPropertiesStore.actions.fetchGetProperties(
 				accountID
@@ -781,28 +820,28 @@ const baseResolvers = {
 		}
 	},
 	*getProperty( propertyID ) {
-		const registry = yield commonActions.getRegistry();
-		const property = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getProperty( propertyID );
+		const property = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getProperty',
+			propertyID
+		);
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
 	},
 	*getPropertyCreateTime() {
-		const registry = yield commonActions.getRegistry();
 		// Ensure settings are available to select.
-		yield commonActions.await(
-			registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		yield wpControls.resolveSelect( MODULES_ANALYTICS_4, 'getSettings' );
+
+		const propertyID = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getPropertyID'
 		);
 
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
-
-		const propertyCreateTime = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyCreateTime();
+		const propertyCreateTime = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getPropertyCreateTime'
+		);
 
 		if ( propertyCreateTime || ! isValidPropertyID( propertyID ) ) {
 			return;
@@ -815,17 +854,19 @@ const baseResolvers = {
 		);
 
 		if ( cachedPropertyCreateTime.cacheHit ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyCreateTime( cachedPropertyCreateTime.value );
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'setPropertyCreateTime',
+				cachedPropertyCreateTime.value
+			);
 
 			return;
 		}
 
-		const property = yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_ANALYTICS_4 )
-				.getProperty( propertyID )
+		const property = yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getProperty',
+			propertyID
 		);
 
 		if ( ! property?.createTime ) {
@@ -840,16 +881,17 @@ const baseResolvers = {
 			)
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setPropertyCreateTime( property.createTime );
+		yield wpControls.dispatch(
+			MODULES_ANALYTICS_4,
+			'setPropertyCreateTime',
+			property.createTime
+		);
 	},
 	*hasMismatchedGoogleTagID() {
-		const registry = yield commonActions.getRegistry();
-
-		const hasMismatchedTag = registry
-			.select( MODULES_ANALYTICS_4 )
-			.hasMismatchedGoogleTagID();
+		const hasMismatchedTag = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'hasMismatchedGoogleTagID'
+		);
 
 		if ( hasMismatchedTag === undefined ) {
 			if ( ! global._googlesitekitModulesData ) {

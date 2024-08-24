@@ -26,9 +26,9 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from './constants';
 import {
@@ -107,15 +107,14 @@ const baseResolvers = {
 			return;
 		}
 
-		const { select } = yield commonActions.getRegistry();
+		const liveContainerVersion = yield wpControls.select(
+			MODULES_TAGMANAGER,
+			'getLiveContainerVersion',
+			accountID,
+			internalContainerID
+		);
 
-		if (
-			undefined ===
-			select( MODULES_TAGMANAGER ).getLiveContainerVersion(
-				accountID,
-				internalContainerID
-			)
-		) {
+		if ( liveContainerVersion === undefined ) {
 			yield fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion(
 				accountID,
 				internalContainerID

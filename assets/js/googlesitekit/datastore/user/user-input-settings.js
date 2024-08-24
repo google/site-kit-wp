@@ -27,9 +27,9 @@ import { isPlainObject, isEqual, pick } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	createRegistrySelector,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -100,13 +100,15 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveUserInputSettings() {
-		const registry = yield commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
 		const trim = ( value ) => value.trim();
 		const notEmpty = ( value ) => value.length > 0;
 
-		const settings = registry.select( CORE_USER ).getUserInputSettings();
+		const settings = yield wpControls.select(
+			CORE_USER,
+			'getUserInputSettings'
+		);
 		const values = Object.keys( settings ).reduce(
 			( accum, key ) => ( {
 				...accum,
@@ -165,10 +167,9 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*maybeTriggerUserInputSurvey() {
-		const { resolveSelect, dispatch } = yield commonActions.getRegistry();
-
-		const settings = yield commonActions.await(
-			resolveSelect( CORE_USER ).getUserInputSettings()
+		const settings = yield wpControls.resolveSelect(
+			CORE_USER,
+			'getUserInputSettings'
 		);
 
 		const settingsAnsweredOther = Object.keys( settings ).filter( ( key ) =>
@@ -183,8 +184,10 @@ const baseActions = {
 			'_'
 		) }`;
 
-		const { response, error } = yield commonActions.await(
-			dispatch( CORE_USER ).triggerSurvey( triggerID )
+		const { response, error } = yield wpControls.dispatch(
+			CORE_USER,
+			'triggerSurvey',
+			triggerID
 		);
 
 		return { response, error };
@@ -227,9 +230,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getUserInputSettings() {
-		const { select } = yield commonActions.getRegistry();
+		const userInputSettings = yield wpControls.select(
+			CORE_USER,
+			'getUserInputSettings'
+		);
 
-		if ( ! select( CORE_USER ).getUserInputSettings() ) {
+		if ( ! userInputSettings ) {
 			yield fetchGetUserInputSettingsStore.actions.fetchGetUserInputSettings();
 		}
 	},

@@ -28,8 +28,8 @@ import { isEqual, isEmpty, pick } from 'lodash';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_MODULES } from './constants';
@@ -169,16 +169,15 @@ const baseActions = {
 	 * @return {Object} Object with `{response, error}`.
 	 */
 	*saveSharingSettings() {
-		const registry = yield commonActions.getRegistry();
-
 		yield {
 			type: START_SUBMIT_SHARING_CHANGES,
 			payload: {},
 		};
 
-		const sharingSettings = registry
-			.select( CORE_MODULES )
-			.getSharingSettings();
+		const sharingSettings = yield wpControls.select(
+			CORE_MODULES,
+			'getSharingSettings'
+		);
 
 		const { response, error } =
 			yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
@@ -190,11 +189,13 @@ const baseActions = {
 			for ( const [ slug, ownerID ] of Object.entries(
 				response.newOwnerIDs
 			) ) {
-				const storeName = registry
-					.select( CORE_MODULES )
-					.getModuleStoreName( slug );
+				const storeName = yield wpControls.select(
+					CORE_MODULES,
+					'getModuleStoreName',
+					slug
+				);
 
-				registry.dispatch( storeName ).setOwnerID( ownerID );
+				yield wpControls.dispatch( storeName, 'setOwnerID', ownerID );
 			}
 		}
 
@@ -403,9 +404,12 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getSharingSettings() {
-		const registry = yield commonActions.getRegistry();
+		const sharingSettings = yield wpControls.select(
+			CORE_MODULES,
+			'getSharingSettings'
+		);
 
-		if ( registry.select( CORE_MODULES ).getSharingSettings() ) {
+		if ( sharingSettings ) {
 			return;
 		}
 
@@ -421,9 +425,12 @@ const baseResolvers = {
 	},
 
 	*getShareableRoles() {
-		const registry = yield commonActions.getRegistry();
+		const shareableRoles = yield wpControls.select(
+			CORE_MODULES,
+			'getShareableRoles'
+		);
 
-		if ( registry.select( CORE_MODULES ).getShareableRoles() ) {
+		if ( shareableRoles ) {
 			return;
 		}
 
@@ -439,13 +446,13 @@ const baseResolvers = {
 	},
 
 	*getDefaultSharedOwnershipModuleSettings() {
-		const registry = yield commonActions.getRegistry();
+		const defaultSharedOwnershipModuleSettingsInStore =
+			yield wpControls.select(
+				CORE_MODULES,
+				'getDefaultSharedOwnershipModuleSettings'
+			);
 
-		if (
-			registry
-				.select( CORE_MODULES )
-				.getDefaultSharedOwnershipModuleSettings()
-		) {
+		if ( defaultSharedOwnershipModuleSettingsInStore ) {
 			return;
 		}
 

@@ -28,8 +28,8 @@ import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	createRegistryControl,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
@@ -181,8 +181,10 @@ const baseActions = {
 			);
 		},
 		function* ( containerID ) {
-			const { select, dispatch } = yield commonActions.getRegistry();
-			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+			const accountID = yield wpControls.select(
+				MODULES_TAGMANAGER,
+				'getAccountID'
+			);
 
 			if ( ! isValidAccountID( accountID ) ) {
 				return;
@@ -194,23 +196,39 @@ const baseActions = {
 			// it will simply wait for `getContainers` to be resolved for this account ID.
 			yield baseActions.waitForContainers( accountID );
 
-			const container = select( MODULES_TAGMANAGER ).getContainerByID(
+			const container = yield wpControls.select(
+				MODULES_TAGMANAGER,
+				'getContainerByID',
 				accountID,
 				containerID
 			);
+
 			if ( ! container ) {
 				// Do nothing if the container was not found.
 				return;
 			}
+
 			if ( container.usageContext.includes( CONTEXT_WEB ) ) {
-				dispatch( MODULES_TAGMANAGER ).setContainerID( containerID );
-				dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+				yield wpControls.dispatch(
+					MODULES_TAGMANAGER,
+					'setContainerID',
+					containerID
+				);
+				yield wpControls.dispatch(
+					MODULES_TAGMANAGER,
+					'setInternalContainerID',
 					// eslint-disable-next-line sitekit/acronym-case
 					container.containerId
 				);
 			} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
-				dispatch( MODULES_TAGMANAGER ).setAMPContainerID( containerID );
-				dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+				yield wpControls.dispatch(
+					MODULES_TAGMANAGER,
+					'setAMPContainerID',
+					containerID
+				);
+				yield wpControls.dispatch(
+					MODULES_TAGMANAGER,
+					'setInternalAMPContainerID',
 					// eslint-disable-next-line sitekit/acronym-case
 					container.containerId
 				);
@@ -280,9 +298,13 @@ const baseResolvers = {
 			return;
 		}
 
-		const { select } = yield commonActions.getRegistry();
+		const containers = yield wpControls.select(
+			MODULES_TAGMANAGER,
+			'getContainers',
+			accountID
+		);
 
-		if ( ! select( MODULES_TAGMANAGER ).getContainers( accountID ) ) {
+		if ( ! containers ) {
 			yield fetchGetContainersStore.actions.fetchGetContainers(
 				accountID
 			);

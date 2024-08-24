@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
@@ -80,10 +80,13 @@ const baseResolvers = {
 			return;
 		}
 
-		const registry = yield commonActions.getRegistry();
-		const existingAdUnits = registry
-			.select( MODULES_ADSENSE )
-			.getAdUnits( accountID, clientID );
+		const existingAdUnits = yield wpControls.select(
+			MODULES_ADSENSE,
+			'getAdUnits',
+			accountID,
+			clientID
+		);
+
 		if ( existingAdUnits ) {
 			return;
 		}

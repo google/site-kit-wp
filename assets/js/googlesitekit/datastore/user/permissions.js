@@ -26,9 +26,9 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
 	createRegistrySelector,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -116,13 +116,15 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*refreshCapabilities() {
-		const { dispatch } = yield commonActions.getRegistry();
-
 		const { response, error } =
 			yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
 
 		if ( error ) {
-			dispatch( CORE_USER ).setPermissionScopeError( error );
+			yield wpControls.dispatch(
+				CORE_USER,
+				'setPermissionScopeError',
+				error
+			);
 		}
 
 		return { response, error };
@@ -166,9 +168,12 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getCapabilities() {
-		const registry = yield commonActions.getRegistry();
+		const capabilities = yield wpControls.select(
+			CORE_USER,
+			'getCapabilities'
+		);
 
-		if ( registry.select( CORE_USER ).getCapabilities() ) {
+		if ( capabilities ) {
 			return;
 		}
 

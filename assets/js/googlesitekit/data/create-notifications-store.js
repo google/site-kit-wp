@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { createFetchStore } from './create-fetch-store';
 
 // Actions
@@ -182,10 +182,10 @@ export const createNotificationsStore = (
 
 	const resolvers = {
 		*getNotifications() {
-			const registry = yield commonActions.getRegistry();
-			const notifications = registry
-				.select( STORE_NAME )
-				.getNotifications();
+			const notifications = yield wpControls.select(
+				STORE_NAME,
+				'getNotifications'
+			);
 
 			if ( ! notifications ) {
 				yield fetchGetNotificationsStore.actions.fetchGetNotifications();

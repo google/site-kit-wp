@@ -30,6 +30,7 @@ import {
 	combineStores,
 	createRegistrySelector,
 	commonActions,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -173,12 +174,11 @@ const baseActions = {
 			return { response: availableAudiences, error };
 		}
 
-		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
-
 		// Remove any configuredAudiences that are no longer available in availableAudiences.
-		const configuredAudiences =
-			select( CORE_USER ).getConfiguredAudiences();
+		const configuredAudiences = yield wpControls.select(
+			CORE_USER,
+			'getConfiguredAudiences'
+		);
 		const newConfiguredAudiences = configuredAudiences?.filter(
 			( configuredAudience ) =>
 				availableAudiences?.some(
@@ -191,7 +191,9 @@ const baseActions = {
 			newConfiguredAudiences &&
 			newConfiguredAudiences !== configuredAudiences
 		) {
-			dispatch( CORE_USER ).setConfiguredAudiences(
+			yield wpControls.dispatch(
+				CORE_USER,
+				'setConfiguredAudiences',
 				newConfiguredAudiences || []
 			);
 		}
@@ -207,11 +209,10 @@ const baseActions = {
 	 * @return {void}
 	 */
 	*maybeSyncAvailableAudiences() {
-		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
-
-		const availableAudiencesLastSyncedAt =
-			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
+		const availableAudiencesLastSyncedAt = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getAvailableAudiencesLastSyncedAt'
+		);
 
 		// Update the audience cache if the availableAudiencesLastSyncedAt setting is older than 1 hour.
 		if (
@@ -220,8 +221,9 @@ const baseActions = {
 				// eslint-disable-next-line sitekit/no-direct-date
 				Date.now() - 1 * 60 * 60 * 1000
 		) {
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'syncAvailableAudiences'
 			);
 		}
 	},
@@ -240,18 +242,17 @@ const baseActions = {
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
 	 */
 	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
-		const registry = yield commonActions.getRegistry();
-
-		const { dispatch, select, resolveSelect } = registry;
-
 		const { response: availableAudiences, error: syncError } =
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'syncAvailableAudiences'
 			);
 
 		if ( syncError ) {
 			return { error: syncError };
 		}
+
+		const registry = yield commonActions.getRegistry();
 
 		const userAudiences = availableAudiences.filter(
 			( { audienceType } ) => audienceType === 'USER_AUDIENCE'
@@ -264,7 +265,10 @@ const baseActions = {
 				// If there are user audiences, filter and sort them by total users over the last 90 days,
 				// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
 
-				const endDate = select( CORE_USER ).getReferenceDate();
+				const endDate = yield wpControls.select(
+					CORE_USER,
+					'getReferenceDate'
+				);
 
 				const startDate = getPreviousDate(
 					endDate,
@@ -339,9 +343,11 @@ const baseActions = {
 			const audienceCreationResults = yield commonActions.await(
 				Promise.all(
 					audiencesToCreate.map( ( audienceSlug ) => {
-						return dispatch( MODULES_ANALYTICS_4 ).createAudience(
-							SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
-						);
+						return registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.createAudience(
+								SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
+							);
 					} )
 				)
 			);
@@ -357,9 +363,7 @@ const baseActions = {
 				}
 			} );
 
-			yield commonActions.await(
-				resolveSelect( CORE_USER ).getAudienceSettings()
-			);
+			yield wpControls.resolveSelect( CORE_USER, 'getAudienceSettings' );
 
 			if ( failedAudiencesToRetry.length > 0 ) {
 				return {
@@ -368,14 +372,18 @@ const baseActions = {
 			}
 
 			const existingConfiguredAudiences =
-				select( CORE_USER ).getConfiguredAudiences() || [];
+				( yield wpControls.select(
+					CORE_USER,
+					'getConfiguredAudiences'
+				) ) || [];
 
 			configuredAudiences.push( ...existingConfiguredAudiences );
 
 			// Resync available audiences to ensure the newly created audiences are available.
 			const { response: newAvailableAudiences } =
-				yield commonActions.await(
-					dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+				yield wpControls.dispatch(
+					MODULES_ANALYTICS_4,
+					'syncAvailableAudiences'
 				);
 
 			// Find the audience in the newly available audiences that matches the required slug.
@@ -396,22 +404,28 @@ const baseActions = {
 		}
 
 		// Create custom dimension if it doesn't exist.
-		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
+		yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getAvailableCustomDimensions'
 		);
 
-		if (
-			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-				'googlesitekit_post_type'
-			)
-		) {
-			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const hasCustomDimensions = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'hasCustomDimensions',
+			'googlesitekit_post_type'
+		);
 
-			const { error } = yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).fetchCreateCustomDimension(
-					propertyID,
-					CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
-				)
+		if ( ! hasCustomDimensions ) {
+			const propertyID = yield wpControls.select(
+				MODULES_ANALYTICS_4,
+				'getPropertyID'
+			);
+
+			const { error } = yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'fetchCreateCustomDimension',
+				propertyID,
+				CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
 			);
 
 			if ( error ) {
@@ -420,25 +434,29 @@ const baseActions = {
 
 			// If the custom dimension was created successfully, mark it as gathering
 			// data immediately so that it doesn't cause unnecessary report requests.
-			dispatch(
-				MODULES_ANALYTICS_4
-			).receiveIsCustomDimensionGatheringData(
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'receiveIsCustomDimensionGatheringData',
 				'googlesitekit_post_type',
 				true
 			);
 
 			// Resync available custom dimensions to ensure the newly created custom dimension is available.
-			yield commonActions.await(
-				dispatch(
-					MODULES_ANALYTICS_4
-				).fetchSyncAvailableCustomDimensions()
+			yield wpControls.dispatch(
+				MODULES_ANALYTICS_4,
+				'fetchSyncAvailableCustomDimensions'
 			);
 		}
 
-		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
+		yield wpControls.dispatch(
+			CORE_USER,
+			'setConfiguredAudiences',
+			configuredAudiences
+		);
 
-		const { error } = yield commonActions.await(
-			dispatch( CORE_USER ).saveAudienceSettings()
+		const { error } = yield wpControls.dispatch(
+			CORE_USER,
+			'saveAudienceSettings'
 		);
 
 		if ( error ) {
@@ -457,11 +475,10 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAvailableAudiences() {
-		const registry = yield commonActions.getRegistry();
-
-		const audiences = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAvailableAudiences();
+		const audiences = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getAvailableAudiences'
+		);
 
 		// If available audiences not present, sync the audience in state.
 		if ( audiences === null ) {

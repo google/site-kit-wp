@@ -31,6 +31,7 @@ import {
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
@@ -284,11 +285,13 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getAvailableCustomDimensions() {
-		const { select, resolveSelect } = yield commonActions.getRegistry();
-		const { isAuthenticated, hasCapability } = select( CORE_USER );
+		const registry = yield commonActions.getRegistry();
+		const { isAuthenticated, hasCapability } = registry.select( CORE_USER );
 
-		const isGA4Connected = yield commonActions.await(
-			resolveSelect( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		const isGA4Connected = yield wpControls.resolveSelect(
+			CORE_MODULES,
+			'isModuleConnected',
+			'analytics-4'
 		);
 
 		if ( ! isGA4Connected ) {
@@ -296,21 +299,19 @@ const baseResolvers = {
 		}
 
 		// Wait for settings to be loaded before proceeding.
-		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
-		);
+		yield wpControls.resolveSelect( MODULES_ANALYTICS_4, 'getSettings' );
 
-		const availableCustomDimensions =
-			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
+		const availableCustomDimensions = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getAvailableCustomDimensions'
+		);
 
 		if ( availableCustomDimensions || ! isAuthenticated() ) {
 			return;
 		}
 
 		// Wait for permissions to be loaded before checking if the user can manage options.
-		yield commonActions.await(
-			resolveSelect( CORE_USER ).getCapabilities()
-		);
+		yield wpControls.resolveSelect( CORE_USER, 'getCapabilities' );
 
 		if ( ! hasCapability( PERMISSION_MANAGE_OPTIONS ) ) {
 			return;

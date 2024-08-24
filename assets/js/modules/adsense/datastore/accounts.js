@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -49,8 +49,6 @@ const baseInitialState = {
 
 const baseActions = {
 	*resetAccounts() {
-		const { dispatch } = yield commonActions.getRegistry();
-
 		yield {
 			payload: {},
 			type: RESET_ACCOUNTS,
@@ -58,7 +56,9 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getAccounts' );
 
-		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
+		return yield wpControls.dispatch(
+			MODULES_ADSENSE,
+			'invalidateResolutionForStoreSelector',
 			'getAccounts'
 		);
 	},
@@ -98,10 +98,10 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAccounts() {
-		const registry = yield commonActions.getRegistry();
-		const existingAccounts = registry
-			.select( MODULES_ADSENSE )
-			.getAccounts();
+		const existingAccounts = yield wpControls.select(
+			MODULES_ADSENSE,
+			'getAccounts'
+		);
 
 		// If there are already accounts loaded in state, consider it fulfilled
 		// and don't make an API request.

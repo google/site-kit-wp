@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { combineStores, wpControls } from 'googlesitekit-data';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { getTagMatchers } from '../utils/tag-matchers';
@@ -33,9 +33,10 @@ const existingTagStore = createExistingTagStore( {
 
 // Override the `getExistingTag()` resolver to provide the extended Google Tag behavior.
 existingTagStore.resolvers.getExistingTag = function* () {
-	const registry = yield commonActions.getRegistry();
-
-	let existingTag = registry.select( MODULES_ANALYTICS_4 ).getExistingTag();
+	let existingTag = yield wpControls.select(
+		MODULES_ANALYTICS_4,
+		'getExistingTag'
+	);
 
 	if ( existingTag === undefined ) {
 		existingTag = yield existingTagStore.actions.fetchGetExistingTag();
@@ -45,10 +46,10 @@ existingTagStore.resolvers.getExistingTag = function* () {
 	// We then check if the tag ID is included in the container's tag IDs. If so, we have confirmed the existing tag is a Google Tag pointing to the given measurement ID.
 	// Otherwise, we ignore the existing tag (set it to null).
 	if ( existingTag !== null ) {
-		const container = yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_ANALYTICS_4 )
-				.getGoogleTagContainer( existingTag )
+		const container = yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getGoogleTagContainer',
+			existingTag
 		);
 
 		if ( ! container?.tagIds.includes( existingTag ) ) {
@@ -56,9 +57,11 @@ existingTagStore.resolvers.getExistingTag = function* () {
 		}
 	}
 
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetExistingTag( existingTag );
+	yield wpControls.dispatch(
+		MODULES_ANALYTICS_4,
+		'receiveGetExistingTag',
+		existingTag
+	);
 };
 
 const store = combineStores( existingTagStore );

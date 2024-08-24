@@ -27,8 +27,8 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	commonActions,
 	combineStores,
+	wpControls,
 } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -117,17 +117,15 @@ const baseActions = {
 	 * @param {string} customDimension Custom dimension slug.
 	 */
 	*checkCustomDimensionDataAvailability( customDimension ) {
-		const { select, resolveSelect } = yield commonActions.getRegistry();
+		yield wpControls.resolveSelect( MODULES_ANALYTICS_4, 'getSettings' );
 
-		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		const hasCustomDimension = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'hasCustomDimensions',
+			customDimension
 		);
 
-		if (
-			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-				customDimension
-			)
-		) {
+		if ( ! hasCustomDimension ) {
 			yield baseActions.receiveIsCustomDimensionGatheringData(
 				customDimension,
 				true
@@ -135,11 +133,14 @@ const baseActions = {
 			return;
 		}
 
-		yield commonActions.await(
-			resolveSelect( CORE_USER ).getAuthentication()
+		yield wpControls.resolveSelect( CORE_USER, 'getAuthentication' );
+
+		const isAuthenticated = yield wpControls.select(
+			CORE_USER,
+			'isAuthenticated'
 		);
 
-		if ( ! select( CORE_USER ).isAuthenticated() ) {
+		if ( ! isAuthenticated ) {
 			yield baseActions.receiveIsCustomDimensionGatheringData(
 				customDimension,
 				true
@@ -147,10 +148,10 @@ const baseActions = {
 			return;
 		}
 
-		const reportArgs = yield commonActions.await(
-			resolveSelect(
-				MODULES_ANALYTICS_4
-			).getDataAvailabilityReportOptions( customDimension )
+		const reportArgs = yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getDataAvailabilityReportOptions',
+			customDimension
 		);
 
 		if ( ! reportArgs ) {
@@ -161,13 +162,19 @@ const baseActions = {
 			return;
 		}
 
-		const report = yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+		const report = yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getReport',
+			reportArgs
 		);
 
-		const hasReportError = !! select(
-			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ reportArgs ] );
+		const errorForSelector = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'getErrorForSelector',
+			'getReport',
+			[ reportArgs ]
+		);
+		const hasReportError = !! errorForSelector;
 
 		const isGatheringData =
 			hasReportError ||
@@ -211,14 +218,14 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*isCustomDimensionGatheringData( customDimension ) {
-		const registry = yield commonActions.getRegistry();
+		const gatheringData = yield wpControls.select(
+			MODULES_ANALYTICS_4,
+			'isCustomDimensionGatheringData',
+			customDimension
+		);
 
 		// If the gatheringData flag is already set, return early.
-		if (
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.isCustomDimensionGatheringData( customDimension ) !== undefined
-		) {
+		if ( gatheringData !== undefined ) {
 			return;
 		}
 
@@ -241,10 +248,9 @@ const baseResolvers = {
 	},
 
 	*getDataAvailabilityReportOptions() {
-		const { resolveSelect } = yield commonActions.getRegistry();
-
-		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getPropertyCreateTime()
+		yield wpControls.resolveSelect(
+			MODULES_ANALYTICS_4,
+			'getPropertyCreateTime'
 		);
 	},
 };
