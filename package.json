@@ -30,7 +30,7 @@
 		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
 		"test:storybook": "npm run test:js -- --testMatch '<rootDir>/.storybook/*.test.js'",
-		"pretest:e2e": "./bin/local-env/env-check.sh",
+		"pretest:e2e": "./bin/local-env/env-check.sh && ./tests/e2e/bin/test-docker-connectivity",
 		"test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./tests/e2e/script.js",
 		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
 		"test:e2e:watch": "npm run test:e2e -- --watch",
