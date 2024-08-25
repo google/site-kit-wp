@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -56,10 +56,10 @@ function AudienceSegmentationErrorWidget( { Widget, errors, onRetry } ) {
 		? castArray( errors ).some( isInsufficientPermissionsError )
 		: false;
 
-	const handleRetry = useCallback( () => {
+	const handleRetry = () => {
 		setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
 		onRetry?.();
-	}, [ onRetry, setValue ] );
+	};
 
 	useEffect( () => {
 		// Set UI key to hide the info notice.
