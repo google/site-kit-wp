@@ -22,12 +22,14 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_SETTINGS,
 } from '../constants';
 import { NOTIFICATION_AREAS } from './datastore/constants';
 import { CORE_USER } from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 
@@ -39,6 +41,23 @@ import ZeroDataNotification from '../../components/notifications/ZeroDataNotific
  * @param {Object} notificationsAPI Notifications API.
  */
 export function registerDefaults( notificationsAPI ) {
+	notificationsAPI.registerNotification( 'authentication-error', {
+		Component: UnsatisfiedScopesAlert,
+		priority: 150,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: () => {
+			return true;
+		},
+		isDismissible: false,
+	} );
+
 	notificationsAPI.registerNotification( 'gathering-data-notification', {
 		Component: GatheringDataNotification,
 		priority: 300,
