@@ -57,15 +57,23 @@ export function registerDefaults( notificationsAPI ) {
 		checkRequirements: ( { select } ) => {
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
+
+			const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
 			const ga4ModuleConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
 			);
 
+			const showUnsatisfiedScopesAlertGTE =
+				ga4ModuleConnected && ! hasTagManagerReadScope;
+
 			return (
 				! setupErrorMessage &&
-				( ! ga4ModuleConnected || hasTagManagerReadScope )
+				isAuthenticated &&
+				! showUnsatisfiedScopesAlertGTE
 			);
 		},
 		isDismissible: false,
