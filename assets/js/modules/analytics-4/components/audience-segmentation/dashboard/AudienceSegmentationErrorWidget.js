@@ -88,6 +88,9 @@ function AudienceSegmentationErrorWidget( { Widget, errors, onRetry } ) {
 								buttonVariant="danger"
 								getHelpClassName="googlesitekit-error-retry-text"
 								onRetry={ onRetry }
+								overrideShowRetryButton={
+									typeof onRetry === 'function'
+								}
 							/>
 						</div>
 					</Cell>
