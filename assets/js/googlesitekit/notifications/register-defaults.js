@@ -25,10 +25,12 @@ import {
 	VIEW_CONTEXT_SETTINGS,
 } from '../constants';
 import { NOTIFICATION_AREAS } from './datastore/constants';
+import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
@@ -52,8 +54,19 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: () => {
-			return true;
+		checkRequirements: ( { select } ) => {
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+				TAGMANAGER_READ_SCOPE
+			);
+
+			return (
+				! setupErrorMessage &&
+				( ! ga4ModuleConnected || hasTagManagerReadScope )
+			);
 		},
 		isDismissible: false,
 	} );
