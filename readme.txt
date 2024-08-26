@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.6
 Requires PHP:      7.4
-Stable tag:        1.132.0
+Stable tag:        1.134.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,34 +109,36 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.132.0 =
+= 1.134.0 =
 
 **Enhanced**
 
-* Implement the dismiss functionality for the new notifications infrastructure. See [#8974](https://github.com/google/site-kit-wp/issues/8974).
-* Add Reader Revenue Manager data store functionality to get service URL. See [#8848](https://github.com/google/site-kit-wp/issues/8848).
-* Populate the feature list in the Reader Revenue Manager disconnection confirmation modal. See [#8845](https://github.com/google/site-kit-wp/issues/8845).
-* Include the Subscribe with Google external JavaScript file and configure it for the Reader Revenue Manager service. See [#8844](https://github.com/google/site-kit-wp/issues/8844).
-* Provide the Settings UI to allow a user to select a publication in the Reader Revenue Manager module. See [#8837](https://github.com/google/site-kit-wp/issues/8837).
-* Add infrastructure for synchronizing the onboarding state of a publication in the Reader Revenue Manager module. See [#8796](https://github.com/google/site-kit-wp/issues/8796).
-* Add Reader Revenue Manager data store functionality to find a matching publication. See [#8795](https://github.com/google/site-kit-wp/issues/8795).
-* Add Reader Revenue Manager data store functionality to list available publications. See [#8794](https://github.com/google/site-kit-wp/issues/8794).
-* Add Reader Revenue Manager module settings infrastructure. See [#8793](https://github.com/google/site-kit-wp/issues/8793).
-* Improve Authorize Application screen action button styling. See [#8584](https://github.com/google/site-kit-wp/issues/8584).
-* Allow users to install Consent Mode plugin from Site Kit Settings. See [#8521](https://github.com/google/site-kit-wp/issues/8521).
-* Update Consent Mode to prevent enqueuing duplicate consent commands on page load. See [#8387](https://github.com/google/site-kit-wp/issues/8387).
-* Update the Consent Mode Setup CTA banner not to be shown if the user toggles the consent mode via settings. See [#8386](https://github.com/google/site-kit-wp/issues/8386).
-* Extract inline consent mode JS to external script. See [#8384](https://github.com/google/site-kit-wp/issues/8384).
-* Update the layout of the graphic on the Consent Mode Setup CTA banner. See [#8376](https://github.com/google/site-kit-wp/issues/8376).
-* Improve the "Top recent trending pages" empty state when no posts have been recently published. See [#8315](https://github.com/google/site-kit-wp/issues/8315).
-* Update module infrastructure to add proper support for dashboard effects. See [#8211](https://github.com/google/site-kit-wp/issues/8211).
-* Provide the ability to set up the Audience Segmentation feature from the Settings screen. See [#8178](https://github.com/google/site-kit-wp/issues/8178).
-* Implement the Audience Segmentation "no audiences" banner. See [#8155](https://github.com/google/site-kit-wp/issues/8155).
-* Show a loading state with placeholders for the content while data is being retrieved for an Audience Tile. See [#8145](https://github.com/google/site-kit-wp/issues/8145).
+* Refactor the ZeroDataNotification to use the new lighter Notification component. See [#9184](https://github.com/google/site-kit-wp/issues/9184).
+* Modify the Reader Revenue Manager's `resetPublications` action to clear publications before invalidating the `getPublications` resolver. See [#9176](https://github.com/google/site-kit-wp/issues/9176).
+* Improve the Reader Revenue Manager settings edit screen by handling cases where the configured publication is unavailable, or the user lacks access by displaying appropriate notices. See [#9151](https://github.com/google/site-kit-wp/issues/9151).
+* Improve the check for whether a user has access to the Reader Revenue Manager module, requiring the user to have visibility of the connected publication ID. See [#9150](https://github.com/google/site-kit-wp/issues/9150).
+* Refactor the GatheringDataNotification to use a newly refactored version of the BannerNotification component. See [#9071](https://github.com/google/site-kit-wp/issues/9071).
+* Add the `async` attribute to the Subscribe with Google script tag. See [#9055](https://github.com/google/site-kit-wp/issues/9055).
+* Refactor the ZeroDataNotification to use the new Notifications approach. See [#8977](https://github.com/google/site-kit-wp/issues/8977).
+* Update notifications to use new notifications infrastructure. See [#8976](https://github.com/google/site-kit-wp/issues/8976).
+* Improve error handling for widgets. See [#8939](https://github.com/google/site-kit-wp/issues/8939).
+* Handle errors when retrieving the user count to show in the Audience Selection Panel for audiences which are in the partial data state. See [#8923](https://github.com/google/site-kit-wp/issues/8923).
+* Adjust the CTA and "New" badge positions for widget areas on mobile and tablet viewports. See [#8863](https://github.com/google/site-kit-wp/issues/8863).
+* Add Analytics tracking events for the Reader Revenue Manager module. See [#8847](https://github.com/google/site-kit-wp/issues/8847).
+* Add the Reader Revenue Manager module setup CTA banner notification to the Site Kit main dashboard, visible only on HTTPS-enabled sites. See [#8846](https://github.com/google/site-kit-wp/issues/8846).
+* Add the Reader Revenue Manager module success setup banner notification. See [#8840](https://github.com/google/site-kit-wp/issues/8840).
+* Detached audience segmentation settings from the Analytics module. See [#8810](https://github.com/google/site-kit-wp/issues/8810).
+* Implement the placeholder tile variants for the Audience Tile that appear when only one audience is selected. See [#8146](https://github.com/google/site-kit-wp/issues/8146).
+* Add fallback for remote feature activation. See [#7531](https://github.com/google/site-kit-wp/issues/7531).
+
+**Changed**
+
+* Remove UA Analytics tracking from Site Kit admin. See [#9042](https://github.com/google/site-kit-wp/issues/9042).
 
 **Fixed**
 
-* Fix measurement of successful setup completion events. See [#9039](https://github.com/google/site-kit-wp/issues/9039).
-* Ensure WP Forms events are only sent once when Popup Maker plugin is installed. See [#8944](https://github.com/google/site-kit-wp/issues/8944).
+* Update the "See full details" link in Reader Revenue Manager. See [#9144](https://github.com/google/site-kit-wp/issues/9144).
+* Ensure that a Selection Panel without any available items doesn't display the available items title. See [#9109](https://github.com/google/site-kit-wp/issues/9109).
+* Fix bug where selected audiences which have been archived would remain visible in the loading state. See [#9095](https://github.com/google/site-kit-wp/issues/9095).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

@@ -38,7 +38,6 @@ import {
 	render,
 	provideModules,
 	provideUserCapabilities,
-	unsubscribeFromAll,
 	muteFetch,
 } from '../../../../../tests/js/test-utils';
 import {
@@ -109,10 +108,6 @@ describe( 'WidgetAreaRenderer', () => {
 			'^/google-site-kit/v1/core/user/data/expirable-items'
 		);
 		muteFetch( fetchGetExpiredItems );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	it( 'should return the same number of elements as widgets from a selector', async () => {
@@ -819,7 +814,7 @@ describe( 'WidgetAreaRenderer', () => {
 		const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 		mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-		it( 'should display the error using `ErrorHandler` component within a widget', async () => {
+		it( 'should display the error using `WidgetErrorHandler` component within a widget', async () => {
 			createWidgets( registry, areaName, [
 				{
 					Component: WidgetComponentErrored,
@@ -837,10 +832,10 @@ describe( 'WidgetAreaRenderer', () => {
 			await waitForRegistry();
 
 			expect( container.firstChild ).toHaveTextContent(
-				'Site Kit encountered an error'
+				'Error in Widget'
 			);
 			expect( container.firstChild ).toHaveTextContent(
-				'Site Kit error message.'
+				'An error prevented this Widget'
 			);
 
 			expect( console ).toHaveErrored();
@@ -878,7 +873,7 @@ describe( 'WidgetAreaRenderer', () => {
 			await waitForRegistry();
 
 			expect( container.firstChild ).toHaveTextContent(
-				'Site Kit encountered an error'
+				'Error in Widget'
 			);
 
 			expect(

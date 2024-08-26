@@ -26,6 +26,7 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
+	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
@@ -34,6 +35,7 @@ import {
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AddGroupNotice from './AddGroupNotice';
 import AudienceItems from './AudienceItems';
@@ -50,8 +52,8 @@ export default function AudienceSelectionPanel() {
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 	const savedItemSlugs = useSelect( ( select ) => {
-		const { getConfigurableAudiences, getConfiguredAudiences } =
-			select( MODULES_ANALYTICS_4 );
+		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
+		const { getConfiguredAudiences } = select( CORE_USER );
 
 		const configuredAudiences = getConfiguredAudiences() || [];
 		const configurableAudiences = getConfigurableAudiences() || [];
@@ -64,6 +66,10 @@ export default function AudienceSelectionPanel() {
 			.filter( ( { name } ) => configuredAudiences.includes( name ) )
 			.map( ( { name } ) => name );
 	} );
+
+	const isCreatingAudienceFromOAuth = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( AUDIENCE_CREATION_FORM, 'autoSubmit' )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
@@ -86,12 +92,12 @@ export default function AudienceSelectionPanel() {
 		<SelectionPanel
 			className="googlesitekit-audience-selection-panel"
 			closePanel={ closePanel }
-			isOpen={ isOpen }
+			isOpen={ isOpen || isCreatingAudienceFromOAuth }
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
-			<AddGroupNotice savedItemSlugs={ savedItemSlugs } />
+			<AddGroupNotice />
 			<AudienceCreationNotice />
 			<LearnMoreLink />
 			<ErrorNotice />

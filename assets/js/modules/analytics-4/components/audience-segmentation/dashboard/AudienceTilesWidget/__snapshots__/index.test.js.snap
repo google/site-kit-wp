@@ -1,5 +1,370 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`AudienceTilesWidget should not render audiences that are not available (archived) 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
+        dir="ltr"
+        role="tablist"
+      >
+        <div
+          class="mdc-tab-scroller"
+        >
+          <div
+            class="mdc-tab-scroller__scroll-area mdc-tab-scroller__scroll-area--scroll"
+            style="margin-bottom: 0px;"
+          >
+            <div
+              class="mdc-tab-scroller__scroll-content"
+            >
+              <button
+                aria-label="All visitors"
+                aria-selected="true"
+                class="mdc-tab mdc-tab--active"
+                role="tab"
+                tabindex="0"
+              >
+                <span
+                  class="mdc-tab__content"
+                >
+                  All visitors
+                  <span
+                    class="googlesitekit-info-tooltip"
+                  >
+                    <svg />
+                  </span>
+                </span>
+                <span
+                  class="mdc-tab-indicator mdc-tab-indicator--active"
+                >
+                  <span
+                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
+                    style=""
+                  />
+                </span>
+                <div
+                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-widget-audience-tiles__body"
+      >
+        <div
+          class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding"
+        >
+          <div
+            class="googlesitekit-widget__body"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile googlesitekit-audience-segmentation-tile--partial-data"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile__metrics"
+              >
+                <span
+                  class="googlesitekit-audience-segmentation-partial-data-notice"
+                >
+                  Still collecting full data for this timeframe, partial data is displayed for this group
+                </span>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      97
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Visitors
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge"
+                    >
+                      +4.3%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      0.8
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Visits per visitor
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge"
+                    >
+                      +310.7%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      0.94
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Pages per visit
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge"
+                    >
+                      +7.5%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      42
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      113.5% of total pageviews
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge"
+                    >
+                      +320%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Cities with the most visitors
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          (not set)
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          99%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Dublin
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          64.9%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Cork
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          52.6%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Top content by pageviews
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 3 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 3"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 3
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          96
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 12 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 12"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 12
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          63
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          />
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          51
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`AudienceTilesWidget should render when all configured audiences are matching available audiences 1`] = `
 <div>
   <div
@@ -94,40 +459,294 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
             class="googlesitekit-widget__body"
           >
             <div
-              class="googlesitekit-audience-segmentation-tile"
+              class="googlesitekit-audience-segmentation-tile googlesitekit-audience-segmentation-tile--partial-data"
             >
               <div
-                class="googlesitekit-audience-segmentation-tile__zero-data-container"
+                class="googlesitekit-audience-segmentation-tile__metrics"
               >
-                <div
-                  class="googlesitekit-audience-segmentation-tile__zero-data-content"
+                <span
+                  class="googlesitekit-audience-segmentation-partial-data-notice"
                 >
-                  <svg />
-                  <p
-                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
+                  Still collecting full data for this timeframe, partial data is displayed for this group
+                </span>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
                   >
-                    Site Kit is collecting data for this group.
-                  </p>
-                  <p
-                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
                   >
-                    You can hide this group until data is available.
-                  </p>
-                  <button
-                    class="googlesitekit-cta-link googlesitekit-audience-segmentation-tile-hide-cta googlesitekit-cta-link--secondary googlesitekit-cta-link--link-button"
-                  >
-                    <span
-                      class="googlesitekit-icon-wrapper"
-                      style="margin-right: 5px;"
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
                     >
-                      <svg />
-                    </span>
-                    <span
-                      class="googlesitekit-cta-link__contents"
+                      29
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
                     >
-                      Temporarily hide
-                    </span>
-                  </button>
+                      Visitors
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -60.8%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      0.8
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Visits per visitor
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -4.3%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      0.97
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Pages per visit
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge"
+                    >
+                      +51.3%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      14
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      46.7% of total pageviews
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -64.1%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Cities with the most visitors
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          (not set)
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          331%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Dublin
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          217.2%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Cork
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          175.9%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Top content by pageviews
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 3 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 3"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 3
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          96
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 12 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 12"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 12
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          63
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          />
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          51
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,159 +824,294 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
             class="googlesitekit-widget__body"
           >
             <div
-              class="googlesitekit-audience-segmentation-tile"
+              class="googlesitekit-audience-segmentation-tile googlesitekit-audience-segmentation-tile--partial-data"
             >
               <div
-                class="googlesitekit-audience-segmentation-tile__zero-data-container"
+                class="googlesitekit-audience-segmentation-tile__metrics"
               >
-                <div
-                  class="googlesitekit-audience-segmentation-tile__zero-data-content"
+                <span
+                  class="googlesitekit-audience-segmentation-partial-data-notice"
                 >
-                  <svg />
-                  <p
-                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
+                  Still collecting full data for this timeframe, partial data is displayed for this group
+                </span>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
                   >
-                    Site Kit is collecting data for this group.
-                  </p>
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      66
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Visitors
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge"
+                    >
+                      +1,220%
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`AudienceTilesWidget should render when some configured audiences are matching available audiences 1`] = `
-<div>
-  <div
-    class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
-  >
-    <div
-      class="googlesitekit-widget__body"
-    >
-      <div
-        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
-        dir="ltr"
-        role="tablist"
-      >
-        <div
-          class="mdc-tab-scroller"
-        >
-          <div
-            class="mdc-tab-scroller__scroll-area mdc-tab-scroller__scroll-area--scroll"
-            style="margin-bottom: 0px;"
-          >
-            <div
-              class="mdc-tab-scroller__scroll-content"
-            >
-              <button
-                aria-label="All visitors"
-                aria-selected="true"
-                class="mdc-tab mdc-tab--active"
-                role="tab"
-                tabindex="0"
-              >
-                <span
-                  class="mdc-tab__content"
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
                 >
-                  All visitors
-                  <span
-                    class="googlesitekit-info-tooltip"
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
                   >
                     <svg />
-                  </span>
-                </span>
-                <span
-                  class="mdc-tab-indicator mdc-tab-indicator--active"
-                >
-                  <span
-                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
-                    style=""
-                  />
-                </span>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      0.1
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Visits per visitor
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -83.3%
+                    </div>
+                  </div>
+                </div>
                 <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
-                />
-              </button>
-              <button
-                aria-label=""
-                aria-selected="false"
-                class="mdc-tab"
-                role="tab"
-                tabindex="-1"
-              >
-                <span
-                  class="mdc-tab__content"
+                  class="googlesitekit-audience-segmentation-tile-metric"
                 >
-                  
-                  <span
-                    class="googlesitekit-info-tooltip"
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
                   >
                     <svg />
-                  </span>
-                </span>
-                <span
-                  class="mdc-tab-indicator"
-                >
-                  <span
-                    class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
-                  />
-                </span>
-                <div
-                  class="mdc-tab__ripple"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="googlesitekit-widget-audience-tiles__body"
-      >
-        <div
-          class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding"
-        >
-          <div
-            class="googlesitekit-widget__body"
-          >
-            <div
-              class="googlesitekit-audience-segmentation-tile"
-            >
-              <div
-                class="googlesitekit-audience-segmentation-tile__zero-data-container"
-              >
-                <div
-                  class="googlesitekit-audience-segmentation-tile__zero-data-content"
-                >
-                  <svg />
-                  <p
-                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
                   >
-                    Site Kit is collecting data for this group.
-                  </p>
-                  <p
-                    class="googlesitekit-audience-segmentation-tile__zero-data-description"
-                  >
-                    You can hide this group until data is available.
-                  </p>
-                  <button
-                    class="googlesitekit-cta-link googlesitekit-audience-segmentation-tile-hide-cta googlesitekit-cta-link--secondary googlesitekit-cta-link--link-button"
-                  >
-                    <span
-                      class="googlesitekit-icon-wrapper"
-                      style="margin-right: 5px;"
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
                     >
-                      <svg />
-                    </span>
-                    <span
-                      class="googlesitekit-cta-link__contents"
+                      0.66
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
                     >
-                      Temporarily hide
-                    </span>
-                  </button>
+                      Pages per visit
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+                    >
+                      -0.1%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__value"
+                    >
+                      95
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      190% of total pageviews
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+                  >
+                    <div
+                      class="googlesitekit-change-badge"
+                    >
+                      +156.8%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Cities with the most visitors
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          (not set)
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          145.5%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Dublin
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          95.5%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          Cork
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          77.3%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__icon"
+                  >
+                    <svg />
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__container"
+                  >
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__title"
+                    >
+                      Top content by pageviews
+                    </div>
+                    <div
+                      class="googlesitekit-audience-segmentation-tile-metric__content"
+                    >
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 3 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 3"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 3
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          96
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 12 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 12"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 12
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          63
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          />
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          51
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

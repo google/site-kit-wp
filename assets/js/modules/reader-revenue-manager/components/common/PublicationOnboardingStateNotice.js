@@ -25,18 +25,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import InfoIcon from '../../../../../svg/icons/info-circle.svg';
-import Link from '../../../../components/Link';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
-import SettingsNotice from '../../../../components/SettingsNotice';
+import SubtleNotification from '../../../../components/notifications/SubtleNotification';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
+import { useEffect } from 'react';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
 
 export default function PublicationOnboardingStateNotice() {
+	const viewContext = useViewContext();
 	const onboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
@@ -57,10 +59,23 @@ export default function PublicationOnboardingStateNotice() {
 		} )
 	);
 
-	if (
-		! onboardingState ||
-		! actionableOnboardingStates.includes( onboardingState )
-	) {
+	const showNotice =
+		onboardingState &&
+		actionableOnboardingStates.includes( onboardingState );
+
+	useEffect( () => {
+		if ( ! showNotice ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_rrm-onboarding-state-notification`,
+			'view_notification',
+			onboardingState
+		);
+	}, [ onboardingState, showNotice, viewContext ] );
+
+	if ( ! showNotice ) {
 		return null;
 	}
 
@@ -80,21 +95,21 @@ export default function PublicationOnboardingStateNotice() {
 			? __( 'Check publication status', 'google-site-kit' )
 			: __( 'Complete publication setup', 'google-site-kit' );
 
-	const noticeCTA = () => {
-		return (
-			<Link href={ serviceURL } external inverse>
-				{ buttonText }
-			</Link>
-		);
-	};
-
 	return (
-		<SettingsNotice
+		<SubtleNotification
 			className="googlesitekit-publication-onboarding-state-notice"
-			type="warning"
-			Icon={ InfoIcon }
-			notice={ noticeText }
-			OuterCTA={ noticeCTA }
+			title={ noticeText }
+			ctaLabel={ buttonText }
+			ctaLink={ serviceURL }
+			isCTALinkExternal
+			variant="warning"
+			onCTAClick={ () => {
+				trackEvent(
+					`${ viewContext }_rrm-onboarding-state-notification`,
+					'confirm_notification',
+					onboardingState
+				);
+			} }
 		/>
 	);
 }

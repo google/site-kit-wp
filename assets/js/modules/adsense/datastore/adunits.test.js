@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
@@ -41,10 +40,6 @@ describe( 'modules/adsense Ad Units', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'selectors', () => {

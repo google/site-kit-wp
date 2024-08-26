@@ -82,7 +82,7 @@ describe( 'trackEvent', () => {
 		const config = {
 			referenceSiteURL: 'https://www.example.com/',
 			userIDHash: 'a1b2c3',
-			trackingID_GA4: 'G-EQDN3BWDSD',
+			trackingID: 'G-EQDN3BWDSD',
 			activeModules: [],
 			trackingEnabled: true,
 			userRoles: [ 'administrator' ],
@@ -130,7 +130,7 @@ describe( 'trackEvent', () => {
 			} )
 		);
 		expect( pushArgs[ 0 ][ 2 ] ).toHaveProperty( 'event_callback' );
-		const expectedTagSrc = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID_GA4 }&l=${ DATA_LAYER }`;
+		const expectedTagSrc = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID }&l=${ DATA_LAYER }`;
 		expect( scriptTagSrc ).toEqual( expectedTagSrc );
 	} );
 
