@@ -1373,6 +1373,445 @@ describe( 'modules/analytics-4 audiences', () => {
 				} );
 			} );
 		} );
+
+		describe( 'enableSecondaryUserAudienceGroup', () => {
+			function createAvailableUserAudience( audienceID ) {
+				return {
+					name: `properties/12345/audiences/${ audienceID }`,
+					description: `Description ${ audienceID }`,
+					displayName: `Test Audience ${ audienceID }`,
+					audienceType: 'USER_AUDIENCE',
+					audienceSlug: '',
+				};
+			}
+
+			function createAudiencesTotalUsersMockReport(
+				totalUsersByAudience
+			) {
+				return {
+					kind: 'analyticsData#runReport',
+					rowCount: 3,
+					dimensionHeaders: [
+						{
+							name: 'audienceResourceName',
+						},
+					],
+					metricHeaders: [
+						{
+							name: 'totalUsers',
+							type: 'TYPE_INTEGER',
+						},
+					],
+					rows: Object.entries( totalUsersByAudience ).map(
+						( [ audienceResourceName, totalUsers ] ) => ( {
+							dimensionValues: [
+								{
+									value: audienceResourceName,
+								},
+							],
+							metricValues: [
+								{
+									value: totalUsers,
+								},
+							],
+						} )
+					),
+					totals: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_TOTAL',
+								},
+							],
+							metricValues: [
+								{
+									value: Object.values( totalUsersByAudience )
+										.reduce(
+											( acc, totalUsers ) =>
+												acc + totalUsers,
+											0
+										)
+										.toString(),
+								},
+							],
+						},
+					],
+					maximums: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_MAX',
+								},
+							],
+							metricValues: [
+								{
+									value: Math.max(
+										...Object.values( totalUsersByAudience )
+									).toString(),
+								},
+							],
+						},
+					],
+					minimums: [
+						{
+							dimensionValues: [
+								{
+									value: 'RESERVED_MIN',
+								},
+							],
+							metricValues: [
+								{
+									value: Math.min(
+										...Object.values( totalUsersByAudience )
+									).toString(),
+								},
+							],
+						},
+					],
+					metadata: {
+						currencyCode: 'USD',
+						dataLossFromOtherRow: null,
+						emptyReason: null,
+						subjectToThresholding: null,
+						timeZone: 'Etc/UTC',
+					},
+				};
+			}
+
+			const testPropertyID = propertiesFixture[ 0 ]._id;
+
+			const referenceDate = '2024-05-10';
+			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+
+			const availableNewVisitorsAudienceFixture =
+				availableAudiencesFixture[ 2 ];
+			const availableReturningVisitorsAudienceFixture =
+				availableAudiencesFixture[ 3 ];
+			const availableUserAudienceFixture = availableAudiencesFixture[ 4 ];
+
+			// The fixture only contains one user audience. Create another two so we can test the filtering and sorting.
+			const availableUserAudiences = [
+				availableUserAudienceFixture,
+				createAvailableUserAudience( 6 ),
+				createAvailableUserAudience( 7 ),
+			];
+
+			const isAudienceSegmentationWidgetHidden = false;
+
+			beforeEach( () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideUserAuthentication( registry );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableAudiences: null,
+					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
+					availableCustomDimensions: [ 'googlesitekit_post_type' ],
+					propertyID: testPropertyID,
+				} );
+
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( referenceDate );
+
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					configuredAudiences: null,
+					isAudienceSegmentationWidgetHidden,
+				} );
+			} );
+
+			it( 'does not sync `availableAudiences` for unauthenticated user', async () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: [],
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						[ availableUserAudienceFixture ],
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( {}, { options } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableSecondaryUserAudienceGroup();
+
+				expect( fetchMock ).not.toHaveFetched(
+					syncAvailableAudiencesEndpoint
+				);
+			} );
+
+			it( 'syncs `availableAudiences`', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: [],
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						[ availableUserAudienceFixture ],
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( {}, { options } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableSecondaryUserAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					syncAvailableAudiencesEndpoint
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( availableAudiencesFixture );
+			} );
+
+			it.each( [
+				[
+					'the top 1 from 1 of 3 candidate user audiences with data over the past 90 days', // Test description differentiator.
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 0,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+						],
+					},
+				],
+				[
+					'the top 2 from 2 of 3 candidate user audiences with data over the past 90 days',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 10,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+							availableUserAudiences[ 0 ].name,
+						],
+					},
+				],
+				[
+					'the top 2 from 3 of 3 candidate user audiences with data over the past 90 days',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 20,
+							[ availableUserAudiences[ 1 ].name ]: 10,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+							availableUserAudiences[ 0 ].name,
+						],
+					},
+				],
+			] )(
+				'adds %s to `configuredAudiences`, sorted by user count',
+				async (
+					_,
+					{ totalUsersByAudience, expectedConfiguredAudiences }
+				) => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableUserAudiences,
+						status: 200,
+					} );
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: expectedConfiguredAudiences,
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					const options = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudiencesUserCountReportOptions(
+							availableUserAudiences,
+							{ startDate, endDate: referenceDate }
+						);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport(
+							createAudiencesTotalUsersMockReport(
+								totalUsersByAudience
+							),
+							{ options }
+						);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.finishResolution( 'getReport', [ options ] );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableSecondaryUserAudienceGroup();
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						audienceSettingsEndpoint,
+						{
+							body: {
+								data: {
+									settings: {
+										configuredAudiences:
+											expectedConfiguredAudiences,
+										isAudienceSegmentationWidgetHidden,
+									},
+								},
+							},
+						}
+					);
+
+					expect(
+						registry.select( CORE_USER ).getConfiguredAudiences()
+					).toEqual( expectedConfiguredAudiences );
+				}
+			);
+
+			it.each( [
+				[
+					'"new visitors" audience',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 0,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 123,
+						},
+						expectedConfiguredAudiences: [
+							availableUserAudiences[ 2 ].name,
+							availableNewVisitorsAudienceFixture.name,
+						],
+					},
+				],
+				[
+					'"new visitors" and "returning visitors" audiences',
+					{
+						totalUsersByAudience: {
+							[ availableUserAudiences[ 0 ].name ]: 0,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 0,
+						},
+						expectedConfiguredAudiences: [
+							availableNewVisitorsAudienceFixture.name,
+							availableReturningVisitorsAudienceFixture.name,
+						],
+					},
+				],
+			] )(
+				'fills available space in `configuredAudiences` with pre-existing %s',
+				async (
+					_,
+					{ totalUsersByAudience, expectedConfiguredAudiences }
+				) => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: [
+							...availableAudiencesFixture,
+							...availableUserAudiences.slice( 1 ),
+						],
+						status: 200,
+					} );
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: expectedConfiguredAudiences,
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					const options = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudiencesUserCountReportOptions(
+							availableUserAudiences,
+							{ startDate, endDate: referenceDate }
+						);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetReport(
+							createAudiencesTotalUsersMockReport(
+								totalUsersByAudience
+							),
+							{ options }
+						);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.finishResolution( 'getReport', [ options ] );
+
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableSecondaryUserAudienceGroup();
+
+					expect( fetchMock ).toHaveFetchedTimes(
+						1,
+						audienceSettingsEndpoint,
+						{
+							body: {
+								data: {
+									settings: {
+										configuredAudiences:
+											expectedConfiguredAudiences,
+										isAudienceSegmentationWidgetHidden,
+									},
+								},
+							},
+						}
+					);
+
+					expect(
+						registry.select( CORE_USER ).getConfiguredAudiences()
+					).toEqual( expectedConfiguredAudiences );
+				}
+			);
+		} );
 	} );
 
 	describe( 'selectors', () => {
