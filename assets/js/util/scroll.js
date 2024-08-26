@@ -31,7 +31,7 @@ import { finiteNumberOrZero } from './finite-number-or-zero';
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The offset to scroll to.
  */
-export function getContextScrollTop( context, breakpoint ) {
+export function getNavigationalScrollTop( context, breakpoint ) {
 	const contextElement = document.querySelector( context );
 	if ( ! contextElement ) {
 		return 0;

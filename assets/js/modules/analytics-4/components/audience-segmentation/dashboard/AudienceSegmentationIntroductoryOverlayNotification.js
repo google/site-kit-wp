@@ -31,11 +31,15 @@ import AudienceIntroductoryGraphicMobile from '../../../../../../svg/graphics/au
 import OverlayNotification from '../../../../../components/OverlayNotification/OverlayNotification';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { getNavigationalScrollTop } from '../../../../../util/scroll';
+import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
+	const breakpoint = useBreakpoint();
+
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
@@ -56,6 +60,18 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		dismissOverlayNotification(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		);
+	};
+
+	const scrollToWidgetAndDismissNotification = ( event ) => {
+		event.preventDefault();
+
+		const widgetClass =
+			'.googlesitekit-widget-area--mainDashboardTrafficPrimary';
+
+		global.scrollTo( {
+			top: getNavigationalScrollTop( widgetClass, breakpoint ),
+			behavior: 'smooth',
+		} );
 	};
 
 	const shouldShowNotification = isDismissed === false;
@@ -83,7 +99,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 				<Button
 					tertiary
 					disabled={ isDismissing }
-					onClick={ dismissNotification }
+					onClick={ scrollToWidgetAndDismissNotification }
 				>
 					{ __( 'Got it', 'google-site-kit' ) }
 				</Button>
