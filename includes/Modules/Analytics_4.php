@@ -90,6 +90,7 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\User\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
 use stdClass;
@@ -296,12 +297,16 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							'adSenseLinkedLastSyncedAt' => 0,
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
+							'recentEvents'              => array(),
 							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
 
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+							do_action( Conversion_Reporting_Cron::CRON_ACTION );
+						}
 					}
 				}
 			}
