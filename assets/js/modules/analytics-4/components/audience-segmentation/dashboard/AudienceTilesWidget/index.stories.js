@@ -169,7 +169,7 @@ DefaultWithZeroTile.args = {
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport = excludeAudienceFromReport(
 			report,
-			audienceResourceNames[ 2 ]
+			audienceResourceNames[ 0 ]
 		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
@@ -187,9 +187,9 @@ DefaultWithZeroTile.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
 				audience: {
-					'properties/12345/audiences/1': audienceDate,
+					'properties/12345/audiences/1': dataAvailabilityDate,
 					'properties/12345/audiences/3': audienceDate,
-					'properties/12345/audiences/4': dataAvailabilityDate,
+					'properties/12345/audiences/4': audienceDate,
 				},
 				customDimension: {},
 				property: {},
