@@ -24,23 +24,30 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
 import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 import { PublicationApprovedOverlayNotification } from '../../modules/reader-revenue-manager/components/dashboard';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 export default function OverlayNotificationsRenderer() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
+	const audienceSegmentationSetupComplete = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupComplete()
+	);
+
 	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
 
 	return (
 		<Fragment>
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
-			{ audienceSegmentationEnabled && (
-				<AudienceSegmentationIntroductoryOverlayNotification />
-			) }
+			{ audienceSegmentationEnabled &&
+				audienceSegmentationSetupComplete && (
+					<AudienceSegmentationIntroductoryOverlayNotification />
+				) }
 			{ readerRevenueManagerEnabled && (
 				<PublicationApprovedOverlayNotification />
 			) }

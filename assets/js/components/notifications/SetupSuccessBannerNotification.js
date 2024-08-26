@@ -38,7 +38,7 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
-import { getContextScrollTop } from '../../util/scroll';
+import { getNavigationalScrollTop } from '../../util/scroll';
 import useViewContext from '../../hooks/useViewContext';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import Link from '../Link';
@@ -148,7 +148,7 @@ function SetupSuccessBannerNotification() {
 
 					global.history.replaceState( {}, '', anchorLink );
 					global.scrollTo( {
-						top: getContextScrollTop( anchorLink, breakpoint ),
+						top: getNavigationalScrollTop( anchorLink, breakpoint ),
 						behavior: 'smooth',
 					} );
 				};
