@@ -126,3 +126,56 @@ exports[`AudienceSegmentationErrorWidget should render the insufficient permissi
   </div>
 </div>
 `;
+
+exports[`AudienceSegmentationErrorWidget should retry button when \`onRetry\` prop is passed 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <h3
+              class="googlesitekit-publisher-win__title"
+            >
+              Your visitor groups data loading failed
+            </h3>
+            <div
+              class="googlesitekit-widget-audience-segmentation-error__actions"
+            >
+              <div
+                class="googlesitekit-report-error-actions"
+              >
+                <button
+                  class="mdc-button mdc-button--raised mdc-button--danger"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Retry
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell"
+          >
+            <svg />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
