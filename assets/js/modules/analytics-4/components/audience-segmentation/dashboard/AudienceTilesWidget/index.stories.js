@@ -260,7 +260,7 @@ TwoTilesWithZeroTile.args = {
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport = excludeAudienceFromReport(
 			report,
-			audienceResourceNames[ 1 ]
+			audienceResourceNames[ 0 ]
 		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
@@ -278,8 +278,8 @@ TwoTilesWithZeroTile.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
 				audience: {
-					'properties/12345/audiences/1': audienceDate,
-					'properties/12345/audiences/4': dataAvailabilityDate,
+					'properties/12345/audiences/1': dataAvailabilityDate,
+					'properties/12345/audiences/4': audienceDate,
 				},
 				customDimension: {},
 				property: {},
@@ -294,12 +294,12 @@ export const ZeroTileWithPlaceholder = Template.bind( {} );
 ZeroTileWithPlaceholder.storyName = 'ZeroTileWithPlaceholder';
 ZeroTileWithPlaceholder.args = {
 	configuredAudiences: [
-		'properties/12345/audiences/4', // Returning visitors
+		'properties/12345/audiences/1', // All Users
 	],
 
 	setupRegistry: ( registry ) => {
 		const audienceResourceNames = [
-			'properties/12345/audiences/4', // Returning visitors
+			'properties/12345/audiences/1', // All Users
 		];
 		const reportOptions = {
 			compareEndDate: '2024-02-28',
@@ -338,7 +338,7 @@ ZeroTileWithPlaceholder.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
 				audience: {
-					'properties/12345/audiences/4': dataAvailabilityDate,
+					'properties/12345/audiences/1': dataAvailabilityDate,
 				},
 				customDimension: {},
 				property: {},
