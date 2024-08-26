@@ -304,6 +304,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+
 						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
 							do_action( Conversion_Reporting_Cron::CRON_ACTION );
 						}
