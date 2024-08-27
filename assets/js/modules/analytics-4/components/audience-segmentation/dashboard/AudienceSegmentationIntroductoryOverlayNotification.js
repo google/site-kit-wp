@@ -72,6 +72,8 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 			top: getNavigationalScrollTop( widgetClass, breakpoint ),
 			behavior: 'smooth',
 		} );
+
+		dismissNotification();
 	};
 
 	const shouldShowNotification = isDismissed === false;
