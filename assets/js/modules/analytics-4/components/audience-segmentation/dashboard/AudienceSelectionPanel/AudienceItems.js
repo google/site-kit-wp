@@ -253,7 +253,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 	// the array reference of `newBadgesToActivate` is not reliable and can
 	// cause the effect to unexpectedly run multiple times.
 	useDeepCompareEffect( () => {
-		if ( newBadgesToActivate.length ) {
+		if ( newBadgesToActivate !== undefined && newBadgesToActivate.length ) {
 			setExpirableItemTimers(
 				newBadgesToActivate.map( ( slug ) => ( {
 					slug,
