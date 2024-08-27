@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX } from '../components/audience-segmentation/dashboard/AudienceSelectionPanel/AudienceItem';
 import {
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
@@ -444,6 +445,16 @@ const baseActions = {
 		if ( error ) {
 			return { error };
 		}
+
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 0,
+				} ) )
+			)
+		);
 	},
 };
 
