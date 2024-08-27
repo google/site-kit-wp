@@ -145,5 +145,9 @@
 		.mdc-dialog__title {
 			align-items: flex-start;
 		}
+
+		.mdc-list-item:last-child {
+			border-bottom: 0;
+		}
 	}
 }
