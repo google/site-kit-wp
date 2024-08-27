@@ -3836,6 +3836,35 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'] );
 	}
 
+	public function test_inline_conversion_reporting_data() {
+		$this->enable_feature( 'conversionReporting' );
+
+		$this->analytics->register();
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( array(), $inline_modules_data['analytics-4']['recentEvents'] );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'recentEvents' => array( 'generate_lead' ),
+			)
+		);
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( array( 'generate_lead' ), $inline_modules_data['analytics-4']['recentEvents'] );
+	}
+
 	public function test_get_data__adsense_links() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
