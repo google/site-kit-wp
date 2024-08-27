@@ -95,6 +95,9 @@ class Gemini {
 			$api_key             = $encryption->decrypt( $settings['APIKey'] );
 			$this->gemini_client = Gemini_API::client( $api_key ); // TODO: handle API errors such as invalid API key or account not activated.
 		}
+
+		// Force auto updates to be disabled for testing to prevent this test build from being replaced by a production build.
+		add_filter( 'auto_update_plugin', '__return_false' );
 	}
 
 	/**
