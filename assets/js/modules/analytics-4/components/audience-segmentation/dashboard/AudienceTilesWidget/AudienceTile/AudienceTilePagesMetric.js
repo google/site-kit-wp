@@ -38,6 +38,7 @@ import {
 	useBreakpoint,
 } from '../../../../../../../hooks/useBreakpoint';
 import { CORE_FORMS } from '../../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -115,6 +116,19 @@ export default function AudienceTilePagesMetric( {
 			'isRetrying'
 		)
 	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'autoSubmit'
+		)
+	);
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
 	const onCreateCustomDimension = useCallback(
 		( { isRetrying } = {} ) => {
@@ -194,7 +208,8 @@ export default function AudienceTilePagesMetric( {
 					isSaving={ isSaving }
 				/>
 				{ ( ( customDimensionError && ! isSaving ) ||
-					isRetryingCustomDimensionCreate ) && (
+					isRetryingCustomDimensionCreate ||
+					hasOAuthError ) && (
 					<AudienceErrorModal
 						apiErrors={ [ customDimensionError ] }
 						title={ __(
@@ -210,6 +225,7 @@ export default function AudienceTilePagesMetric( {
 						}
 						onCancel={ onCancel }
 						inProgress={ isSaving }
+						hasOAuthError={ hasOAuthError }
 					/>
 				) }
 			</div>
