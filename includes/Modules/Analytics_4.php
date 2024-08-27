@@ -335,6 +335,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
 
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_data' ), 20 );
+		}
+
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
 		}
@@ -2321,6 +2325,27 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			// No need to check if `analytics-4` key is present, as this hook is added with higher
 			// priority than inline_custom_dimensions_data where this key is set.
 			$modules_data['analytics-4']['tagIDMismatch'] = $tag_id_mismatch;
+		}
+
+		return $modules_data;
+	}
+
+	/**
+	 * Populates conversion reporting events data to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	protected function inline_conversion_reporting_data( $modules_data ) {
+		if ( $this->is_connected() ) {
+			$recent_events = $this->settings->get()['recentEvents'];
+
+			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
+			// No need to check if `analytics-4` key is present, as this hook is added with higher
+			// priority than inline_custom_dimensions_data where this key is set.
+			$modules_data['analytics-4']['recentEvents'] = $recent_events;
 		}
 
 		return $modules_data;
