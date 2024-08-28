@@ -75,7 +75,7 @@ class Conversion_Reporting_Events_Sync {
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( empty( $report->rowCount ) ) {
-			$this->settings->merge( array( 'recentEvents' => array() ) );
+			$this->settings->merge( array( 'detectedEvents' => array() ) );
 
 			return;
 		}
@@ -84,7 +84,7 @@ class Conversion_Reporting_Events_Sync {
 			$detected_events[] = $row['dimensionValues'][0]['value'];
 		}
 
-		$this->settings->merge( array( 'recentEvents' => $detected_events ) );
+		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
 	}
 
 	/**
