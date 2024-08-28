@@ -33,6 +33,7 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
@@ -41,6 +42,7 @@ describe( 'ErrorNotifications', () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
@@ -52,6 +54,7 @@ describe( 'ErrorNotifications', () => {
 		} );
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 		expect( container.childElementCount ).toBe( 0 );
 	} );
@@ -64,6 +67,7 @@ describe( 'ErrorNotifications', () => {
 		} );
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent(
@@ -85,6 +89,7 @@ describe( 'ErrorNotifications', () => {
 		} );
 		const { container, getByRole } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Get help' );
@@ -112,6 +117,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent(
@@ -130,6 +136,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent(
@@ -147,6 +154,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent(
@@ -168,6 +176,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
@@ -185,6 +194,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
@@ -215,6 +225,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
