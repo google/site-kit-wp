@@ -544,7 +544,7 @@ describe( 'AudienceTilesWidget', () => {
 				'.googlesitekit-audience-segmentation-tile-loading'
 			)
 		).not.toBeInTheDocument();
-		// Verify the partial data badge is rendered.
+		// Verify the partial data badge is not rendered.
 		expect(
 			container.querySelector(
 				'.googlesitekit-audience-segmentation-tile--partial-data'
