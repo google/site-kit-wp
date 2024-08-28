@@ -206,6 +206,9 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 						id={ id }
 						ctaLabel={ ctaLabel }
 						ctaLink={ connectURL }
+						onCTAClick={ () => {
+							doingCTARef.current = true;
+						} }
 					/>
 				}
 			/>
