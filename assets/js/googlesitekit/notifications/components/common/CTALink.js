@@ -23,7 +23,12 @@ import { CORE_LOCATION } from '../../../datastore/location/constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { SpinnerButton } from 'googlesitekit-components';
 
-export default function CTALink( { id, ctaLink, ctaLabel, dismissExpires } ) {
+export default function CTALink( {
+	id,
+	ctaLink,
+	ctaLabel,
+	dismissExpires = -1,
+} ) {
 	const trackEvents = useNotificationEvents( id );
 
 	const isNavigatingToCTALink = useSelect( ( select ) =>
@@ -39,10 +44,15 @@ export default function CTALink( { id, ctaLink, ctaLabel, dismissExpires } ) {
 			event.preventDefault();
 		}
 
-		await Promise.all( [
-			trackEvents.confirm(),
-			dismissNotification( id, { expiresInSeconds: dismissExpires } ),
-		] );
+		const ctaClickActions = [ trackEvents.confirm() ];
+
+		if ( dismissExpires >= 0 ) {
+			ctaClickActions.push(
+				dismissNotification( id, { expiresInSeconds: dismissExpires } )
+			);
+		}
+
+		await Promise.all( ctaClickActions );
 
 		navigateTo( ctaLink );
 	};
@@ -53,6 +63,7 @@ export default function CTALink( { id, ctaLink, ctaLabel, dismissExpires } ) {
 			href={ ctaLink }
 			onClick={ handleCTAClick }
 			disabled={ isNavigatingToCTALink }
+			isSaving={ isNavigatingToCTALink }
 		>
 			{ ctaLabel }
 		</SpinnerButton>
