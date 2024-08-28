@@ -15,6 +15,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import { useMountedState } from 'react-use';
+
+/*
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
@@ -27,8 +38,13 @@ export default function CTALink( {
 	id,
 	ctaLink,
 	ctaLabel,
+	onCTAClick,
 	dismissExpires = -1,
 } ) {
+	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
+		useState( false );
+	const isMounted = useMountedState();
+
 	const trackEvents = useNotificationEvents( id );
 
 	const isNavigatingToCTALink = useSelect( ( select ) =>
@@ -42,6 +58,12 @@ export default function CTALink( {
 		event.persist();
 		if ( ! event.defaultPrevented ) {
 			event.preventDefault();
+		}
+
+		setIsAwaitingCTAResponse( true );
+		await onCTAClick?.( event );
+		if ( isMounted() ) {
+			setIsAwaitingCTAResponse( false );
 		}
 
 		const ctaClickActions = [ trackEvents.confirm() ];
@@ -62,10 +84,19 @@ export default function CTALink( {
 			className="googlesitekit-notification__cta"
 			href={ ctaLink }
 			onClick={ handleCTAClick }
-			disabled={ isNavigatingToCTALink }
-			isSaving={ isNavigatingToCTALink }
+			disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
+			isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
 		>
 			{ ctaLabel }
 		</SpinnerButton>
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+CTALink.propTypes = {
+	id: PropTypes.string,
+	ctaLink: PropTypes.string,
+	ctaLabel: PropTypes.string,
+	onCTAClick: PropTypes.func,
+	dismissExpires: PropTypes.number,
+};
