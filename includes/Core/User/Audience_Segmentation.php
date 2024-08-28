@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling audience settings rest routes.
  *
- * @since n.e.x.t
+ * @since 1.134.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Audience_Segmentation {
 	/**
 	 * Audience_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 * @var Audience_Settings
 	 */
 	private $audience_settings;
@@ -32,7 +32,7 @@ class Audience_Segmentation {
 	/**
 	 * REST_Audience_Settings_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 * @var REST_Audience_Settings_Controller
 	 */
 	private $rest_controller;
@@ -40,7 +40,7 @@ class Audience_Segmentation {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -52,7 +52,7 @@ class Audience_Segmentation {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 */
 	public function register() {
 		$this->audience_settings->register();

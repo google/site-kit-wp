@@ -26,6 +26,7 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
+	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
@@ -66,6 +67,10 @@ export default function AudienceSelectionPanel() {
 			.map( ( { name } ) => name );
 	} );
 
+	const isCreatingAudienceFromOAuth = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( AUDIENCE_CREATION_FORM, 'autoSubmit' )
+	);
+
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -87,7 +92,7 @@ export default function AudienceSelectionPanel() {
 		<SelectionPanel
 			className="googlesitekit-audience-selection-panel"
 			closePanel={ closePanel }
-			isOpen={ isOpen }
+			isOpen={ isOpen || isCreatingAudienceFromOAuth }
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />

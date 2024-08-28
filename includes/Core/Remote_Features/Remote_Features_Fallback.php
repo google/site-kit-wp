@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Remote_Features;
 /**
  * Class providing the integration of remote features.
  *
- * @since n.e.x.t
+ * @since 1.134.0
  * @access private
  * @ignore
  */
@@ -36,7 +36,7 @@ class Remote_Features_Fallback {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @param Remote_Features        $setting Remote_Features instance.
 	 * @param Remote_Features_Syncer $syncer  Remote_Features_Syncer instance.
@@ -52,7 +52,7 @@ class Remote_Features_Fallback {
 	/**
 	 * Fallback for syncing the remote features.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 */
 	public function remote_features_sync_fallback() {
 		$remote_features = $this->setting->get();

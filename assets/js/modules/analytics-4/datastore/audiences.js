@@ -719,7 +719,7 @@ const baseSelectors = {
 	/**
 	 * Gets the report options for the Site Kit audiences user count report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @return {Object} Returns the report options for the Site Kit audiences user count report.
 	 */
@@ -745,7 +745,7 @@ const baseSelectors = {
 	/**
 	 * Checks if any of the provided audiences are in the partial data state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @param {Array} audiences Array of audiences to check.
 	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences are undefined.
@@ -767,7 +767,7 @@ const baseSelectors = {
 	/**
 	 * Gets the configured Site Kit and other (non Site Kit) audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.134.0
 	 *
 	 * @return {Array} Array of Site Kit and other audiences.
 	 */
