@@ -86,6 +86,7 @@ class SettingsTest extends SettingsTestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			get_option( Settings::OPTION )
 		);

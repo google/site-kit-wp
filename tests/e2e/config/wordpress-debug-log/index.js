@@ -32,7 +32,7 @@ import { printReceived } from 'jest-matcher-utils';
  */
 import { logIgnoreList } from './log-ignore-list';
 
-const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
+const docker = new Docker();
 
 /**
  * @since 1.81.0
