@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: coversion reporting.
+ * `modules/analytics-4` data store: conversion reporting.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
