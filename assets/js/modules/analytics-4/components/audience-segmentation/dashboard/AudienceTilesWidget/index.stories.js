@@ -349,6 +349,39 @@ ZeroTileWithPlaceholder.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/ZeroTileWithPlaceholder',
 };
 
+export const DefaultAudiencesPartialData = Template.bind( {} );
+DefaultAudiencesPartialData.storyName = 'DefaultAudiencesPartialData';
+DefaultAudiencesPartialData.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/2', // Purchasers
+	],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/1': dataAvailabilityDate,
+					'properties/12345/audiences/2': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+	},
+};
+DefaultAudiencesPartialData.scenario = {};
+
 export const SiteKitAudiencesPartialData = Template.bind( {} );
 SiteKitAudiencesPartialData.storyName = 'SiteKitAudiencesPartialData';
 SiteKitAudiencesPartialData.args = {
