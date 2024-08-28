@@ -297,7 +297,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							'adSenseLinkedLastSyncedAt' => 0,
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
-							'recentEvents'              => array(),
+							'detectedEvents'            => array(),
 							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
