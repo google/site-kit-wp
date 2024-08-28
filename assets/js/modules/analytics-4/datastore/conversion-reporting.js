@@ -37,19 +37,15 @@ export const selectors = {
 			// Ensure events is always an array, even if a string is passed.
 			const eventsToCheck = Array.isArray( events ) ? events : [ events ];
 
-			const conversionReportingEvents =
+			const detectedEvents =
 				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
-			if ( conversionReportingEvents === undefined ) {
-				return undefined;
-			}
-
-			if ( ! conversionReportingEvents?.length ) {
+			if ( ! detectedEvents?.length ) {
 				return false;
 			}
 
 			return eventsToCheck.some( ( event ) =>
-				conversionReportingEvents.includes( event )
+				detectedEvents.includes( event )
 			);
 		}
 	),
