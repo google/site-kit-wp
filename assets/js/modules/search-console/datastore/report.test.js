@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
@@ -59,7 +59,7 @@ describe( 'modules/search-console report', () => {
 	let registry;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -67,7 +67,7 @@ describe( 'modules/search-console report', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'selectors', () => {

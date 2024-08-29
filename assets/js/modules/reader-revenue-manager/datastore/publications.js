@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies.
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { commonActions, combineStores } from 'googlesitekit-data';
@@ -43,7 +43,7 @@ import { HOUR_IN_SECONDS } from '../../../util';
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
-		API.get(
+		get(
 			'modules',
 			READER_REVENUE_MANAGER_MODULE_SLUG,
 			'publications',

@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -49,7 +49,7 @@ const { receiveError, clearError, clearErrors } = errorStoreActions;
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
 	controlCallback() {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'account-summaries',
@@ -67,12 +67,7 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 const fetchCreateAccountStore = createFetchStore( {
 	baseName: 'createAccount',
 	controlCallback: ( { data } ) => {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'create-account-ticket',
-			data
-		);
+		return set( 'modules', 'analytics-4', 'create-account-ticket', data );
 	},
 	// eslint-disable-next-line sitekit/acronym-case
 	reducerCallback: ( state, { accountTicketId: accountTicketID } ) => {

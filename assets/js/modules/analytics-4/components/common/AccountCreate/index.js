@@ -25,7 +25,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import {
@@ -105,7 +105,7 @@ export default function AccountCreate() {
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
-				await API.invalidateCache( 'modules', 'analytics-4' );
+				await invalidateCache( 'modules', 'analytics-4' );
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}

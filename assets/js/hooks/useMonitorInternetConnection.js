@@ -29,7 +29,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 
@@ -52,7 +52,7 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			const connectionCheckResponse = await API.get(
+			const connectionCheckResponse = await get(
 				'core',
 				'site',
 				'connection-check',

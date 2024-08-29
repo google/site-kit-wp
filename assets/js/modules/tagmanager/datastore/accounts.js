@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -44,7 +44,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
 	controlCallback: () =>
-		API.get( 'modules', 'tagmanager', 'accounts', null, {
+		get( 'modules', 'tagmanager', 'accounts', null, {
 			useCache: false,
 		} ),
 	reducerCallback: ( state, accounts ) => {

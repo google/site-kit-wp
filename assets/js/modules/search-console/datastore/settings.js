@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID } from '../util';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
@@ -46,7 +46,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'search-console' );
+	await invalidateCache( 'modules', 'search-console' );
 
 	return {};
 }

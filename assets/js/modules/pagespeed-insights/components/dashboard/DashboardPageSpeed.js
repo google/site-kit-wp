@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { Button, ProgressBar, Tab, TabBar } from 'googlesitekit-components';
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
@@ -193,7 +193,7 @@ export default function DashboardPageSpeed() {
 			event.preventDefault();
 
 			// Invalidate the PageSpeed API request caches.
-			await API.invalidateCache(
+			await invalidateCache(
 				'modules',
 				'pagespeed-insights',
 				'pagespeed'
