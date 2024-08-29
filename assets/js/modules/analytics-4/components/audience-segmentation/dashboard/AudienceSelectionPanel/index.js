@@ -46,8 +46,11 @@ import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
 import AudienceCreationNotice from './AudienceCreationNotice';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
 
 export default function AudienceSelectionPanel() {
+	const viewOnlyDashboard = useViewOnly();
+
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
@@ -98,7 +101,7 @@ export default function AudienceSelectionPanel() {
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<AddGroupNotice />
-			<AudienceCreationNotice />
+			{ ! viewOnlyDashboard && <AudienceCreationNotice /> }
 			<LearnMoreLink />
 			<ErrorNotice />
 			<AudienceCreationSuccessNotice />

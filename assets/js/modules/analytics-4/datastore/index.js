@@ -26,6 +26,7 @@ import audiences from './audiences';
 import baseModuleStore from './base';
 import containers from './containers';
 import conversionEvents from './conversion-events';
+import conversionReporting from './conversion-reporting';
 import customDimensions from './custom-dimensions';
 import customDimensionsGatheringData from './custom-dimensions-gathering-data';
 import enhancedMeasurement from './enhanced-measurement';
@@ -44,6 +45,7 @@ const store = combineStores(
 	baseModuleStore,
 	containers,
 	conversionEvents,
+	conversionReporting,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
 	customDimensions,
 	customDimensionsGatheringData,

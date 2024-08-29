@@ -64,7 +64,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$event_check = $this->get_instance();
 		$event_check->check_for_events();
 
-		$this->assertEquals( $detected_events, $this->settings->get()['recentEvents'] );
+		$this->assertEquals( $detected_events, $this->settings->get()['detectedEvents'] );
 	}
 
 	public function get_instance() {
