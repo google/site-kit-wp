@@ -29,9 +29,15 @@ import {
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 
 function Template() {
-	return <AdBlockingRecoveryApp />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<AdBlockingRecoveryApp />
+		</ViewContextProvider>
+	);
 }
 
 export const StepOne = Template.bind( {} );
