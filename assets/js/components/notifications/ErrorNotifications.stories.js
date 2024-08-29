@@ -28,9 +28,15 @@ import {
 } from '../../../../tests/js/utils';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 function Template( { ...args } ) {
-	return <ErrorNotifications { ...args } />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<ErrorNotifications { ...args } />
+		</ViewContextProvider>
+	);
 }
 
 export const UnsatisfiedScopeGTESupport = Template.bind( {} );
