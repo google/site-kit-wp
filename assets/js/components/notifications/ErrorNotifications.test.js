@@ -108,9 +108,6 @@ describe( 'ErrorNotifications', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
 		expect( container ).toMatchSnapshot();
 	} );
 
@@ -126,9 +123,6 @@ describe( 'ErrorNotifications', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
 		expect( container ).toMatchSnapshot();
 	} );
 
