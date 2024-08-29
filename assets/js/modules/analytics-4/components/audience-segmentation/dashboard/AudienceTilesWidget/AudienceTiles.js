@@ -37,7 +37,7 @@ import {
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -71,12 +71,13 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
 	// An array of audience resource names.
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
+	const configuredAudiences = useInViewSelect(
+		( select ) => select( CORE_USER ).getConfiguredAudiences(),
+		[]
 	);
-	const audiences = useSelect( ( select ) => {
+	const audiences = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-	} );
+	}, [] );
 
 	const audiencesDimensionFilter = {
 		audienceResourceName: configuredAudiences,
@@ -103,9 +104,12 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		],
 	};
 
-	const report = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
+	const report = useInViewSelect(
+		( select ) => {
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[ reportOptions ]
+	);
 
 	const reportLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
@@ -127,11 +131,14 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		metrics: [ { name: 'screenPageViews' } ],
 	};
 
-	const totalPageviewsReport = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReport(
-			totalPageviewsReportOptions
-		);
-	} );
+	const totalPageviewsReport = useInViewSelect(
+		( select ) => {
+			return select( MODULES_ANALYTICS_4 ).getReport(
+				totalPageviewsReportOptions
+			);
+		},
+		[ totalPageviewsReportOptions ]
+	);
 
 	const totalPageviewsReportLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
@@ -139,10 +146,12 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		] )
 	);
 
-	const totalPageviewsReportError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			totalPageviewsReportOptions,
-		] )
+	const totalPageviewsReportError = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+				totalPageviewsReportOptions,
+			] ),
+		[ totalPageviewsReportOptions ]
 	);
 
 	const totalPageviews =
@@ -166,15 +175,17 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		limit: 3,
 	};
 
-	const topCitiesReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-			topCitiesReportOptions,
-			configuredAudiences
-		)
+	const topCitiesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+				topCitiesReportOptions,
+				configuredAudiences
+			),
+		[ topCitiesReportOptions, configuredAudiences ]
 	);
 
 	const topCitiesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
+		configuredAudiences?.every( ( audienceResourceName ) =>
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				{
 					...topCitiesReportOptions,
@@ -185,7 +196,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	);
 
 	const topCitiesReportErrors = useSelect( ( select ) => {
-		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+		return configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
 			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 				'getReport',
 				[
@@ -213,15 +224,17 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		limit: 3,
 	};
 
-	const topContentReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-			topContentReportOptions,
-			configuredAudiences
-		)
+	const topContentReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+				topContentReportOptions,
+				configuredAudiences
+			),
+		[ topContentReportOptions, configuredAudiences ]
 	);
 
 	const topContentReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
+		configuredAudiences?.every( ( audienceResourceName ) =>
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				{
 					...topContentReportOptions,
@@ -232,7 +245,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	);
 
 	const topContentReportErrors = useSelect( ( select ) => {
-		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+		return configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
 			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 				'getReport',
 				[
@@ -260,15 +273,17 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		limit: 15,
 	};
 
-	const topContentPageTitlesReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-			topContentPageTitlesReportOptions,
-			configuredAudiences
-		)
+	const topContentPageTitlesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
+				topContentPageTitlesReportOptions,
+				configuredAudiences
+			),
+		[ topContentPageTitlesReportOptions, configuredAudiences ]
 	);
 
 	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
+		configuredAudiences?.every( ( audienceResourceName ) =>
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				{
 					...topContentPageTitlesReportOptions,
@@ -279,7 +294,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	);
 
 	const topContentPageTitlesReportErrors = useSelect( ( select ) => {
-		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+		return configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
 			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 				'getReport',
 				[
@@ -298,7 +313,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		}, {} );
 	} );
 
-	const individualTileErrors = configuredAudiences.reduce(
+	const individualTileErrors = configuredAudiences?.reduce(
 		( acc, audienceResourceName ) => {
 			acc[ audienceResourceName ] = [];
 
@@ -323,7 +338,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 			return true;
 		}
 
-		return configuredAudiences.every(
+		return configuredAudiences?.every(
 			( audienceResourceName ) =>
 				individualTileErrors[ audienceResourceName ].length > 0
 		);
@@ -331,8 +346,9 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	const allTilesError = checkForAllTilesError();
 
-	const dismissedItems = useSelect( ( select ) =>
-		select( CORE_USER ).getDismissedItems()
+	const dismissedItems = useInViewSelect(
+		( select ) => select( CORE_USER ).getDismissedItems(),
+		[]
 	);
 
 	const { isDismissingItem } = useSelect( ( select ) => select( CORE_USER ) );
@@ -345,14 +361,16 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		[ dismissItem ]
 	);
 
-	const partialDataStates = useSelect( ( select ) =>
-		configuredAudiences.reduce( ( acc, audienceResourceName ) => {
-			acc[ audienceResourceName ] =
-				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					audienceResourceName
-				);
-			return acc;
-		}, {} )
+	const partialDataStates = useInViewSelect(
+		( select ) =>
+			configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
+				acc[ audienceResourceName ] =
+					select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+						audienceResourceName
+					);
+				return acc;
+			}, {} ),
+		[ configuredAudiences ]
 	);
 
 	// useRef to track if the dismissal logic has already been executed.
@@ -363,14 +381,14 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		const visible = [];
 		// Filter `configuredAudiences` to ensure only available audiences are included.
 		const tempAudiences = configuredAudiences
-			.slice()
+			?.slice()
 			.filter( ( audienceResourceName ) =>
 				audiences.some(
 					( audience ) => audience.name === audienceResourceName
 				)
 			);
 
-		while ( tempAudiences.length > 0 ) {
+		while ( tempAudiences?.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
 
 			const isDismissed = dismissedItems?.includes(
