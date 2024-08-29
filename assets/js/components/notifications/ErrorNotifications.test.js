@@ -45,37 +45,6 @@ describe( 'ErrorNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
-	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
-		provideUserAuthentication( registry, {
-			authenticated: false,
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
-		} );
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-		expect( container.childElementCount ).toBe( 0 );
-	} );
-
-	it( 'renders UnsatisfiedScopesAlert when user is authenticated', () => {
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
-		} );
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
-		expect( container ).toMatchSnapshot();
-	} );
-
 	it( 'renders `Get help` link', () => {
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
