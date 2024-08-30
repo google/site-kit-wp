@@ -111,7 +111,7 @@ module.exports = async ( { config } ) => {
 						configFile: false,
 						cacheDirectory: true,
 						presets: [
-							'@wordpress/default',
+							'@wordpress/babel-preset-default',
 							'@babel/preset-react',
 						],
 					},

@@ -25,11 +25,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
@@ -40,8 +42,6 @@ import {
 	getIconFromType,
 } from './utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Button } from 'googlesitekit-components';
-import { forwardRef } from 'react';
 
 const SettingsNotice = forwardRef( ( props, ref ) => {
 	const {
