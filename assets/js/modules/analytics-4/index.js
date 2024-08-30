@@ -33,6 +33,7 @@ import {
 	PopularProductsWidget,
 	ReturningVisitorsWidget,
 	TopCitiesWidget,
+	TopCitiesDrivingLeadsWidget,
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
@@ -67,6 +68,7 @@ import {
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
@@ -492,6 +494,22 @@ export const registerWidgets = ( widgets ) => {
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+		{
+			Component: TopCitiesDrivingLeadsWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS
 				),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
