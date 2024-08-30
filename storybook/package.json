@@ -1,0 +1,9 @@
+{
+	"dependencies": {
+		"@storybook/addon-postcss": "^2.0.0",
+		"@storybook/addon-storyshots": "^6.5.16",
+		"@storybook/addon-storyshots-puppeteer": "^6.5.16",
+		"@storybook/addon-viewport": "^6.5.16",
+		"css-loader": "^3.6.0"
+	}
+}

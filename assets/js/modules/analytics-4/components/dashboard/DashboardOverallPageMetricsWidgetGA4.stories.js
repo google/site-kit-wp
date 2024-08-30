@@ -27,7 +27,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	getAnalytics4MockResponse,

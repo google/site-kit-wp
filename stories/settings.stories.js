@@ -41,7 +41,7 @@ import {
 	WithTestRegistry,
 	untilResolved,
 } from '../tests/js/utils';
-import settingsData from '../.storybook/__fixtures__/_googlesitekitLegacyData';
+import settingsData from '../storybook/__fixtures__/_googlesitekitLegacyData';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';

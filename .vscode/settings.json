@@ -1,14 +1,14 @@
 {
 	"search.exclude": {
-		".storybook/data": true,
+		"storybook/data": true,
 		"dist/": true,
-		"node_modules/": true,
+		"**/node_modules/": true,
 		"third-party/": true,
 		"vendor/": true
 	},
 	"files.exclude": {
 		"dist/": true,
-		"node_modules/": true,
+		"**/node_modules/": true,
 		"third-party/": true,
 		"vendor/": true
 	},

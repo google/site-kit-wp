@@ -31,7 +31,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
 const reportOptions = {

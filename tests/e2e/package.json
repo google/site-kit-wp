@@ -1,0 +1,15 @@
+{
+	"dependencies": {
+		"@wordpress/babel-preset-default": "^4.20.0",
+		"@wordpress/e2e-test-utils": "^4.16.1",
+		"@wordpress/jest-console": "^3.10.0",
+		"amphtml-validator": "^1.0.38",
+		"babel-jest": "^26.6.3",
+		"dockerode": "^4.0.2",
+		"expect-puppeteer": "^4.4.0",
+		"jest": "^26.6.3",
+		"jest-puppeteer": "^4.4.0",
+		"jsdom": "^16.7.0",
+		"puppeteer": "^10.4.0"
+	}
+}

@@ -23,7 +23,7 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
