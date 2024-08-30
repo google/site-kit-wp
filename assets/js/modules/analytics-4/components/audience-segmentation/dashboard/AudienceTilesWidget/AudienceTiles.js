@@ -37,7 +37,7 @@ import {
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -82,12 +82,13 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
 	// An array of audience resource names.
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
+	const configuredAudiences = useInViewSelect(
+		( select ) => select( CORE_USER ).getConfiguredAudiences(),
+		[]
 	);
-	const audiences = useSelect( ( select ) => {
+	const audiences = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-	} );
+	}, [] );
 
 	const {
 		report,
@@ -250,7 +251,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		};
 	};
 
-	const individualTileErrors = configuredAudiences.reduce(
+	const individualTileErrors = configuredAudiences?.reduce(
 		( acc, audienceResourceName ) => {
 			acc[ audienceResourceName ] = [];
 
@@ -284,14 +285,16 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		[ dismissItem ]
 	);
 
-	const partialDataStates = useSelect( ( select ) =>
-		configuredAudiences.reduce( ( acc, audienceResourceName ) => {
-			acc[ audienceResourceName ] =
-				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					audienceResourceName
-				);
-			return acc;
-		}, {} )
+	const partialDataStates = useInViewSelect(
+		( select ) =>
+			configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
+				acc[ audienceResourceName ] =
+					select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+						audienceResourceName
+					);
+				return acc;
+			}, {} ),
+		[ configuredAudiences ]
 	);
 
 	// useRef to track if the dismissal logic has already been executed.
@@ -302,14 +305,14 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		const visible = [];
 		// Filter `configuredAudiences` to ensure only available audiences are included.
 		const tempAudiences = configuredAudiences
-			.slice()
+			?.slice()
 			.filter( ( audienceResourceName ) =>
 				audiences.some(
 					( audience ) => audience.name === audienceResourceName
 				)
 			);
 
-		while ( tempAudiences.length > 0 ) {
+		while ( tempAudiences?.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
 			const isDismissed = dismissedItems?.includes(
 				`audience-tile-${ audienceResourceName }`
@@ -386,7 +389,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 			return true;
 		}
 
-		return configuredAudiences.every(
+		return configuredAudiences?.every(
 			( audienceResourceName ) =>
 				individualTileErrors[ audienceResourceName ].length > 0
 		);

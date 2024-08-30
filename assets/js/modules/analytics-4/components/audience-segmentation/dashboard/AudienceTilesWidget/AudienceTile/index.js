@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -77,7 +77,7 @@ export default function AudienceTile( {
 } ) {
 	const breakpoint = useBreakpoint();
 
-	const isPropertyPartialData = useSelect( ( select ) => {
+	const isPropertyPartialData = useInViewSelect( ( select ) => {
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 		return (
@@ -88,25 +88,29 @@ export default function AudienceTile( {
 	const isSiteKitAudience = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSiteKitAudience( audienceResourceName )
 	);
-	const isAudiencePartialData = useSelect( ( select ) => {
-		if ( ! isPropertyPartialData && isSiteKitAudience ) {
-			return false;
-		}
+	const isAudiencePartialData = useInViewSelect(
+		( select ) => {
+			if ( ! isPropertyPartialData && isSiteKitAudience ) {
+				return false;
+			}
 
-		return (
-			! isPropertyPartialData &&
-			audienceResourceName &&
-			select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-				audienceResourceName
-			)
-		);
-	} );
-	const isTopContentPartialData = useSelect(
+			return (
+				! isPropertyPartialData &&
+				audienceResourceName &&
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audienceResourceName
+				)
+			);
+		},
+		[ isPropertyPartialData, isSiteKitAudience, audienceResourceName ]
+	);
+	const isTopContentPartialData = useInViewSelect(
 		( select ) =>
 			! isAudiencePartialData &&
 			select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
 				'googlesitekit_post_type'
-			)
+			),
+		[ isAudiencePartialData ]
 	);
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(

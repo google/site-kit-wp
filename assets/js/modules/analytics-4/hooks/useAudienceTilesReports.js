@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
 
@@ -53,17 +53,14 @@ export default function useAudienceTilesReports() {
 			{ name: 'screenPageViews' },
 		],
 	};
-
-	const report = useSelect( ( select ) => {
+	const report = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 	} );
-
 	const reportLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 			reportOptions,
 		] )
 	);
-
 	const reportError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			reportOptions,
@@ -81,7 +78,7 @@ export default function useAudienceTilesReports() {
 			{ name: 'screenPageViews' },
 		],
 	};
-	const siteKitAudiencesReport = useSelect( ( select ) =>
+	const siteKitAudiencesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( newVsReturningReportOptions )
 	);
 	const siteKitAudiencesReportLoaded = useSelect( ( select ) =>
@@ -100,19 +97,16 @@ export default function useAudienceTilesReports() {
 		endDate,
 		metrics: [ { name: 'screenPageViews' } ],
 	};
-
-	const totalPageviewsReport = useSelect( ( select ) => {
+	const totalPageviewsReport = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReport(
 			totalPageviewsReportOptions
 		);
 	} );
-
 	const totalPageviewsReportLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 			totalPageviewsReportOptions,
 		] )
 	);
-
 	const totalPageviewsReportError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			totalPageviewsReportOptions,
@@ -140,7 +134,7 @@ export default function useAudienceTilesReports() {
 		limit: 3,
 	};
 
-	const topCitiesReport = useSelect( ( select ) =>
+	const topCitiesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
 			topCitiesReportOptions,
 			configuredAudiences
@@ -186,14 +180,12 @@ export default function useAudienceTilesReports() {
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
 	};
-
-	const topContentReport = useSelect( ( select ) =>
+	const topContentReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
 			topContentReportOptions,
 			configuredAudiences
 		)
 	);
-
 	const topContentReportLoaded = useSelect( ( select ) =>
 		configuredAudiences.every( ( audienceResourceName ) =>
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
@@ -204,7 +196,6 @@ export default function useAudienceTilesReports() {
 			] )
 		)
 	);
-
 	const topContentReportErrors = useSelect( ( select ) => {
 		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
 			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
@@ -233,14 +224,12 @@ export default function useAudienceTilesReports() {
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
 	};
-
-	const topContentPageTitlesReport = useSelect( ( select ) =>
+	const topContentPageTitlesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
 			topContentPageTitlesReportOptions,
 			configuredAudiences
 		)
 	);
-
 	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
 		configuredAudiences.every( ( audienceResourceName ) =>
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
@@ -251,7 +240,6 @@ export default function useAudienceTilesReports() {
 			] )
 		)
 	);
-
 	const topContentPageTitlesReportErrors = useSelect( ( select ) => {
 		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
 			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
