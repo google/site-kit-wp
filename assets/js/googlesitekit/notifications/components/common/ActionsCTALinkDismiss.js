@@ -45,7 +45,7 @@ export default function ActionsCTALinkDismiss( {
 				ctaLink={ ctaLink }
 				ctaLabel={ ctaLabel }
 				dismissExpires={ dismissExpires }
-			></CTALink>
+			/>
 
 			<Dismiss
 				id={ id }
