@@ -70,7 +70,11 @@ export function registerDefaults( notificationsAPI ) {
 			const showUnsatisfiedScopesAlertGTE =
 				ga4ModuleConnected && ! hasTagManagerReadScope;
 
+			const unsatisfiedScopes =
+				select( CORE_USER ).getUnsatisfiedScopes();
+
 			return (
+				unsatisfiedScopes?.length &&
 				! setupErrorMessage &&
 				isAuthenticated &&
 				! showUnsatisfiedScopesAlertGTE
