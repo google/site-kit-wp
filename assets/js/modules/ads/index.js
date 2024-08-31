@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -41,6 +42,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
 
 export { registerStore } from './datastore';
 
@@ -108,5 +110,14 @@ export const registerNotifications = ( notifications ) => {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+
+			if ( PAX_SETUP_SUCCESS_NOTIFICATION === notification ) {
+				return true;
+			}
+
+			return false;
+		},
 	} );
 };
