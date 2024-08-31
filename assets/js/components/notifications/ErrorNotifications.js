@@ -40,11 +40,8 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import BannerNotification from './BannerNotification';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
-import useViewContext from '../../hooks/useViewContext';
 
 export default function ErrorNotifications() {
-	const viewContext = useViewContext();
-
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -142,10 +139,7 @@ export default function ErrorNotifications() {
 					) }
 				</Fragment>
 			) }
-			<Notifications
-				viewContext={ viewContext }
-				areaSlug={ NOTIFICATION_AREAS.ERRORS }
-			/>
+			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
 		</Fragment>
 	);
 }
