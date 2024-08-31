@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { getContextScrollTop } from '../../../../util/scroll';
-import SubtleNotification from '../../../analytics-4/components/SubtleNotification';
+import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
