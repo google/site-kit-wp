@@ -200,7 +200,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 		<Notification>
 			<NotificationError
 				title={ title }
-				description={ <Description description={ message } /> }
+				description={ <Description text={ message } /> }
 				actions={
 					<CTALink
 						id={ id }
