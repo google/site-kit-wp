@@ -30,8 +30,9 @@ import SubtleNotification from '../../../../googlesitekit/notifications/componen
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
+import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 
-export default function PAXSetupSuccessSubtleNotification() {
+export default function PAXSetupSuccessSubtleNotification( { id } ) {
 	const breakpoint = useBreakpoint();
 
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
@@ -69,7 +70,14 @@ export default function PAXSetupSuccessSubtleNotification() {
 				'Track your conversions, measure your campaign results and make the most of your ad spend',
 				'google-site-kit'
 			) }
-			onDismiss={ onDismiss }
+			dismissCTA={
+				<Dismiss
+					id={ id }
+					primary={ false }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					onDismiss={ onDismiss }
+				/>
+			}
 			additionalCTA={
 				<Button onClick={ scrollToWidget }>
 					{ __( 'Show me', 'google-site-kit' ) }
