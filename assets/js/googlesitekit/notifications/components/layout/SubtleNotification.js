@@ -31,7 +31,7 @@ export default function SubtleNotification( {
 	title,
 	description,
 	dismissCTA,
-	additionalCTA = false,
+	additionalCTA,
 } ) {
 	return (
 		<Grid>
@@ -51,7 +51,7 @@ export default function SubtleNotification( {
 						</p>
 					</div>
 					{ dismissCTA }
-					{ !! additionalCTA && additionalCTA }
+					{ additionalCTA }
 				</Cell>
 			</Row>
 		</Grid>
@@ -62,5 +62,5 @@ SubtleNotification.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
-	additionalCTA: PropTypes.oneOfType( [ PropTypes.node, PropTypes.bool ] ),
+	additionalCTA: PropTypes.node,
 };
