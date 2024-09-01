@@ -28,9 +28,15 @@ import fetchMock from 'fetch-mock';
 import UserInputApp from './UserInputApp';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../../../../tests/js/utils';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 function Template() {
-	return <UserInputApp />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<UserInputApp />
+		</ViewContextProvider>
+	);
 }
 
 export const Default = Template.bind( {} );

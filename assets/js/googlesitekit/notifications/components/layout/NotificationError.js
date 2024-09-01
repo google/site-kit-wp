@@ -1,7 +1,5 @@
 /**
- * EntityBannerNotifications component.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +15,30 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import Notifications from './Notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { Cell, Grid, Row } from '../../../../material-components';
+import BannerIcon from '../common/BannerIcon';
+import Title from '../common/Title';
 
-export default function EntityBannerNotifications() {
+export default function NotificationError( { title, description, actions } ) {
 	return (
-		<Fragment>
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
-		</Fragment>
+		<Grid className="googlesitekit-publisher-win--win-error">
+			<Row>
+				<Cell
+					smSize={ 3 }
+					mdSize={ 7 }
+					lgSize={ 11 }
+					className="googlesitekit-publisher-win__content"
+				>
+					<Title title={ title }></Title>
+
+					{ description }
+
+					{ actions }
+				</Cell>
+				<BannerIcon type="win-error" />
+			</Row>
+		</Grid>
 	);
 }
