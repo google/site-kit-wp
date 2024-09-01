@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -77,28 +77,30 @@ export default function AudienceTile( {
 } ) {
 	const breakpoint = useBreakpoint();
 
-	const isPropertyPartialData = useSelect( ( select ) => {
+	const isPropertyPartialData = useInViewSelect( ( select ) => {
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 		return (
 			propertyID &&
 			select( MODULES_ANALYTICS_4 ).isPropertyPartialData( propertyID )
 		);
-	} );
-	const isAudiencePartialData = useSelect(
+	}, [] );
+	const isAudiencePartialData = useInViewSelect(
 		( select ) =>
 			! isPropertyPartialData &&
 			audienceResourceName &&
 			select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
 				audienceResourceName
-			)
+			),
+		[ isPropertyPartialData, audienceResourceName ]
 	);
-	const isTopContentPartialData = useSelect(
+	const isTopContentPartialData = useInViewSelect(
 		( select ) =>
 			! isAudiencePartialData &&
 			select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
 				'googlesitekit_post_type'
-			)
+			),
+		[ isAudiencePartialData ]
 	);
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
