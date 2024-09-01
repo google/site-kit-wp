@@ -36,11 +36,14 @@ import { CORE_SITE } from './constants';
 const { getRegistry } = commonActions;
 
 const SET_GEMINI_API_KEY = 'SET_GEMINI_API_KEY';
+
 const SET_MEMORABLE_QUOTES_ENABLED = 'SET_MEMORABLE_QUOTES_ENABLED';
 const SET_GENERATING_QUOTES = 'SET_GENERATING_QUOTES';
 const SET_MEMORABLE_QUOTES_POSTS = 'SET_MEMORABLE_QUOTES_POSTS';
 const SET_MEMORABLE_QUOTES = 'SET_MEMORABLE_QUOTES';
 const SET_MEMORABLE_QUOTES_AUTO_PUBLISH = 'SET_MEMORABLE_QUOTES_AUTO_PUBLISH';
+
+const SET_SITEKIT_ASSISTANT_ENABLED = 'SET_SITEKIT_ASSISTANT_ENABLED';
 
 const settingsReducerCallback = createReducer( ( state, settings ) => {
 	state.gemini.settings = settings;
@@ -224,6 +227,21 @@ const baseActions = {
 			payload: { autoPublish },
 		};
 	},
+
+	/**
+	 * Sets the Site Kit Assistant enabled status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} enabled Site Kit Assistant enabled status.
+	 * @return {Object} Redux-style action.
+	 */
+	setSiteKitAssistantEnabled( enabled ) {
+		return {
+			type: SET_SITEKIT_ASSISTANT_ENABLED,
+			payload: { enabled },
+		};
+	},
 };
 
 const baseControls = {};
@@ -258,6 +276,11 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_MEMORABLE_QUOTES_AUTO_PUBLISH:
 			state.gemini.settings.memorableQuotesAutoPublish =
 				!! payload.autoPublish;
+			break;
+
+		case SET_SITEKIT_ASSISTANT_ENABLED:
+			state.gemini.settings = state.gemini.settings || {};
+			state.gemini.settings.siteKitAssistantEnabled = !! payload.enabled;
 			break;
 
 		default:
@@ -365,6 +388,20 @@ const baseSelectors = {
 			return !! memorableQuotesAutoPublish;
 		}
 	),
+
+	/**
+	 * Gets the Site Kit Assistant enabled status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Site Kit Assistant enabled status, or `undefined` if not loaded.
+	 */
+	isSiteKitAssistantEnabled: createRegistrySelector( ( select ) => () => {
+		const { siteKitAssistantEnabled } =
+			select( CORE_SITE ).getGeminiSettings() || {};
+
+		return !! siteKitAssistantEnabled;
+	} ),
 };
 
 const baseResolvers = {

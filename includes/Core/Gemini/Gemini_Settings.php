@@ -53,6 +53,7 @@ class Gemini_Settings extends Setting {
 			'memorableQuotesPosts'       => array(),
 			'memorableQuotes'            => array(),
 			'memorableQuotesAutoPublish' => false,
+			'siteKitAssistantEnabled'    => false,
 		);
 	}
 
@@ -84,10 +85,11 @@ class Gemini_Settings extends Setting {
 				$new_value['memorableQuotesEnabled'] = $value['memorableQuotesEnabled'];
 			}
 
-			// Disable memorable quotes if the API key is removed.
+			// Disable features if the API key is removed.
 			if ( '' === $value['APIKey'] ) {
 				$new_value['memorableQuotesEnabled']     = false;
 				$new_value['memorableQuotesAutoPublish'] = false;
+				$new_value['siteKitAssistantEnabled']    = false;
 			}
 
 			if ( is_array( $value['memorableQuotesPosts'] ) ) {
@@ -100,6 +102,10 @@ class Gemini_Settings extends Setting {
 
 			if ( isset( $value['memorableQuotesAutoPublish'] ) ) {
 				$new_value['memorableQuotesAutoPublish'] = $value['memorableQuotesAutoPublish'];
+			}
+
+			if ( isset( $value['siteKitAssistantEnabled'] ) ) {
+				$new_value['siteKitAssistantEnabled'] = $value['siteKitAssistantEnabled'];
 			}
 
 			return $new_value;

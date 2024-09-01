@@ -77,7 +77,7 @@ import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
 import { getContextScrollTop } from '../util/scroll';
-import Gemini from './Gemini/Gemini';
+import SiteKitAssistant from './Gemini/SiteKitAssistant';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -233,9 +233,6 @@ export default function DashboardMainApp() {
 
 			<OverlayNotificationsRenderer />
 
-			{ /* Prototype Gemini assistant, to be refactored using Widget areas if ever needed. */ }
-			<Gemini />
-
 			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
@@ -291,6 +288,8 @@ export default function DashboardMainApp() {
 			{ audienceSegmentationEnabled && <AudienceSelectionPanel /> }
 
 			<OfflineNotification />
+
+			<SiteKitAssistant />
 		</Fragment>
 	);
 }

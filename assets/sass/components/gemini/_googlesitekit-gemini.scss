@@ -18,23 +18,57 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-gemini-key-metrics {
-		padding: 32px;
+	.googlesitekit-gemini-assistant-button {
+		bottom: $grid-gap-desktop;
+		position: fixed;
+		right: $grid-gap-desktop;
 
-		.googlesitekit-gemini-key-metrics-chat {
-			padding: 20px 0;
-			.googlesitekit-gemini-key-metrics-chat__message {
+		.mdc-button {
+			background-color: #fff;
+			filter: drop-shadow(0 0 0.75rem rgba(0, 0, 0, 0.2));
+			height: 64px;
+		}
+	}
+
+	.googlesitekit-gemini-assistant-window {
+		background-color: #fff;
+		border-radius: $br-sm;
+		bottom: 100px;
+		filter: drop-shadow(0 0 0.75rem rgba(0, 0, 0, 0.2));
+		padding: $grid-gap-phone;
+		position: fixed;
+		right: $grid-gap-desktop;
+
+		.googlesitekit-heading-4 {
+			margin: 0.33em 0;
+		}
+
+		.googlesitekit-gemini-assistant-window__chat {
+
+			display: flex;
+			flex-direction: column-reverse;
+			height: 300px;
+			margin-bottom: $grid-gap-phone;
+			overflow: auto;
+			overflow-anchor: auto !important;
+
+			.googlesitekit-gemini-assistant-window__chat-message {
 
 				display: grid;
 				gap: 10px;
 				grid-template-columns: 30px 1fr;
-				.googlesitekit-gemini-key-metrics-chat__message-icon {
+				.googlesitekit-gemini-assistant-window__chat-message-icon {
 					height: 30px;
 					margin: 1em 0;
 					width: 30px;
 				}
-				p {
+				> span {
 					margin-top: 19px;
+					max-width: 434px;
+				}
+
+				.googlesitekit-km-widget-tile {
+					padding: 0;
 				}
 			}
 		}
@@ -42,7 +76,7 @@
 		.mdc-text-field {
 			height: 44px;
 			margin-right: 10px;
-			width: 400px;
+			width: 387px; // Allow a little space for the spinner button to expand.
 
 			.mdc-text-field__input {
 				padding: 10px 12px;

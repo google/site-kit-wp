@@ -32,9 +32,11 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Grid, Cell, Row } from '../../material-components';
 import Badge from '../../components/Badge';
 import Layout from '../layout/Layout';
-import MemorableQuotesSwitch from '../Gemini/Settings/MemorableQuotesSwitch';
 import GeminiAPIKey from '../Gemini/Settings/GeminiAPIKey';
+import MemorableQuotesSwitch from '../Gemini/Settings/MemorableQuotesSwitch';
 import MemorableQuotesSelection from '../Gemini/Settings/MemorableQuotesSelection';
+import SiteKitAssistantSwitch from '../Gemini/Settings/SiteKitAssistantSwitch';
+import { Fragment } from '@wordpress/element';
 
 export default function SettingsCardGemini() {
 	const isLoading = useSelect( ( select ) => {
@@ -66,21 +68,39 @@ export default function SettingsCardGemini() {
 						</Cell>
 					</Row>
 					{ ! isLoading && (
-						<Row>
-							<Cell
-								size={ 12 }
-								className={ classNames( {
-									'googlesitekit-overflow-hidden': isLoading,
-								} ) }
-							>
-								<MemorableQuotesSwitch loading={ isLoading } />
-							</Cell>
-							<Cell size={ 12 }>
-								<MemorableQuotesSelection
-									loading={ isLoading }
-								/>
-							</Cell>
-						</Row>
+						<Fragment>
+							<Row>
+								<Cell
+									size={ 12 }
+									className={ classNames( {
+										'googlesitekit-overflow-hidden':
+											isLoading,
+									} ) }
+								>
+									<MemorableQuotesSwitch
+										loading={ isLoading }
+									/>
+								</Cell>
+								<Cell size={ 12 }>
+									<MemorableQuotesSelection
+										loading={ isLoading }
+									/>
+								</Cell>
+							</Row>
+							<Row>
+								<Cell
+									size={ 12 }
+									className={ classNames( {
+										'googlesitekit-overflow-hidden':
+											isLoading,
+									} ) }
+								>
+									<SiteKitAssistantSwitch
+										loading={ isLoading }
+									/>
+								</Cell>
+							</Row>
+						</Fragment>
 					) }
 				</Grid>
 			</div>

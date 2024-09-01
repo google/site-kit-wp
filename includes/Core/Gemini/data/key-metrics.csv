@@ -1,0 +1,77 @@
+Sr #,Metric,Status,Metric widget slug,Metrics,Dimension,Computation,Description,Description (Selection Panel),Module this is related to
+1,Top recent trending pages,Completed,kmAnalyticsTopRecentTrendingPages,screenPageViews,pagePath,"Display pageTitle with their screenPageViews
+
+Order by: screenPageViews descending
+
+Filter by dimension: Date returned by customEvent:googlesitekit_post_date should be within the last 3 days",Pages with the most pageviews published in the last 3 days,,analytics-4
+2,Most popular authors by pageviews,Completed,kmAnalyticsPopularAuthors,screenPageViews,customEvent:googlesitekit_post_author,"Display author WP displayName with their total screenPageViews
+
+Order by: screenPageViews descending
+
+Filter by dimension: post_author is a non-empty value",Authors whose posts got the most visits,,analytics-4
+3,Top categories by pageviews,Completed,kmAnalyticsTopCategories,screenPageViews,customEvent:googlesitekit_post_categories,"Display comma separated list of WP categoryNames with their total screenPageViews
+
+Order by: screenPageViews descending",Categories that your site visitors viewed the most,,analytics-4
+4,Most popular content by pageviews,Completed,kmAnalyticsPopularContent,screenPageViews,pagePath,"Display pageTitle with their screenPageViews
+
+Order by: screenPageViews descending",Pages your visitors read the most,Pages that brought in the most visitors,analytics-4
+5,Most popular products by pageviews,Completed,kmAnalyticsPopularProducts,screenPageViews,pagePath,"Display pageTitle with their screenPageViews
+
+Order by: screenPageViews descending
+
+Filter by dimension: pagePath partially matches productBasePaths","Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can <a>replace</a> this with another metric",Products that brought in the most visitors,analytics-4
+6,Pages per visit,Completed,kmAnalyticsPagesPerVisit,"screenPageViewsPerSession
+screenPageViews",,"Main metric: screenPageViewsPerSession
+
+Subtext: screenPageViews ""page views""",Number of pages visitors viewed per session on average,,analytics-4
+7,Visit length,Completed,kmAnalyticsVisitLength,"averageSessionDuration
+sessions",,"Main metric: averageSessionDuration
+
+Subtext: sessions ""total visits""",Average duration of engaged visits,,analytics-4
+8,Visits per visitor,Completed,kmAnalyticsVisitsPerVisitor,"sessionsPerUser
+sessions",,"Main metric: sessionsPerUser
+
+Subtext: sessions ""total visits""",Average number of sessions per site visitor,,analytics-4
+9,Most engaging pages,Completed,kmAnalyticsMostEngagingPages,"engagementRate
+screenPageViews",pagePath,"Display pageTitle with their engagementRate
+
+Order by: engagementRate descending, screenPageViews descending
+
+Filter by metric: screenPageViews >= ""Average number of screenPageViews""",Pages with the highest engagement rate,,analytics-4
+10,Least engaging pages,Completed,kmAnalyticsLeastEngagingPages,"bounceRate
+screenPageViews",pagePath,"Display pageTitle with their bounceRate
+
+Order by: bounceRate descending, screenPageViews descending
+
+Filter by metric: screenPageViews >= ""Median number of screenPageViews""",Percentage of visitors that left without engagement with your site,Pages with the highest percentage of visitors that left without engagement with your site,analytics-4
+11,Top pages by returning visitors,Completed,kmAnalyticsTopReturningVisitorPages,activeUsers,pagePath,"Display pageTitle with their activeUsers
+
+Order by: activeUsers descending
+
+Filter by dimension: newVsReturning = returning",Pages that attracted the most returning visitors,,analytics-4
+12,New visitors,Completed,kmAnalyticsNewVisitors,activeUsers,newVsReturning,"new
+of (new + returning) ""total visitors""",Portion of visitors who visited your site for the first time in this timeframe,How many new visitors you got and how the overall audience changed,analytics-4
+13,Returning visitors,Completed,kmAnalyticsReturningVisitors,activeUsers,newVsReturning,"(returning * 100) / (new + returning) %
+
+of (new + returning) ""total visitors""",Portion of your site’s visitors that returned at least once in this timeframe,Portion of people who visited your site more than once,analytics-4
+14,Top traffic source,Completed,kmAnalyticsTopTrafficSource,totalUsers,sessionDefaultChannelGroup,"Main metric: sessionDefaultChannelGroup with highest totalUsers.
+
+Subtext: Display totalUsers from the query’s top result (sessionDefaultChannelGroup) as a percentage of the overall totalUsers.","Channel (e.g. social, paid, search) that brought in the most visitors to your site",Channel which brought in the most visitors to your site,analytics-4
+15,Most engaged traffic source,Completed,kmAnalyticsEngagedTrafficSource,engagedSessions,sessionDefaultChannelGroup,"Main metric: Display sessionDefaultChannelGroup with the highest number of engagedSessions.
+
+Subtext: Percentage of the top sessionDefaultChannelGroup's engagedSessions compared to the total engagedSessions (of all sessionDefaultChannelGroup combined).","Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site",Visitors coming via this channel spent the most time on your site,analytics-4
+16,Top converting traffic source,Completed,kmTopConvertingTrafficSource,sessionConversionRate,sessionDefaultChannelGroup,"Main metric: Display the sessionDefaultChannelGroup with the highest sessionConversionRate.
+
+Subtext: Highest sessionDefaultChannelGroup for the above sessionDefaultChannelGroup group","Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions",Channel which brought in the most visits that resulted in conversions,analytics-4
+17,Top cities driving traffic,Completed,kmAnalyticsTopCities,totalUsers,city,Display top cities with their percentage of totalUsers,The cities where most of your visitors came from,Which cities you get the most visitors from,analytics-4
+18,Top countries driving traffic,Completed,kmAnalyticsTopCountries,totalUsers,country,Display top countries with their percentage of totalUsers,The countries where most of your visitors came from,Which countries you get the most visitors from,analytics-4
+19,Top performing keywords,Completed,kmSearchConsolePopularKeywords,,QUERY,Fetch 100 of the top search queries (which are automatically sorted by clicks) and display the one with the highest CTR.,The top search queries for your site by highest clickthrough rate,What people searched for before they came to your site,search-console
+20,Top earning content,Completed,kmAnalyticsAdSenseTopEarningContent,totalAdRevenue,pagePath (+ adSourceName used to restrict the report to revenue from the users AdSense account),"Display a list of the top three pages based on pagePath, by totalAdRevenue over the selected period.",Pages that generated the most AdSense revenue,Pages that generated the most AdSense revenue,"adsense, analytics-4"
+21,Top pages driving leads,New,kmAnalyticsTopPagesDrivingLeads,"screenPageViews, generate_lead, contact and submit_lead_form events count, ",pagePath,"Display top 3 pages ordered by generate_lead, submit_lead_form event count and contact event count based on the pagePath",Pages on which forms are most frequently submitted,Pages on which forms are most frequently submitted,analytics-4
+22,Top cities driving leads,New,kmAnalyticsTopCitiesDrivingLeads,"generate_lead, submit_lead_form, and contact events count",city,"Display top 3 cities for generate_lead, submit_lead_form and contact events count, ordered by city dimension",Cities driving the most contact form submissions,Cities driving the most contact form submissions,analytics-4
+23,Top traffic source driving leads,New,kmAnalyticsTopTrafficSourceDrivingLeads,"generate_lead, submit_lead_form, and contact events count",sessionDefaultChannelGroup,"Display total generate_lead, submit_lead_form and contact events count, ordered by sessionDefaultChannelGroup dimension, returning the 1st item from results",Total number of leads for the top traffic source,Total number of leads for the top traffic source,analytics-4
+24,Top cities driving add to cart,New,kmAnalyticsTopCitiesDrivingAddToCart,addToCarts,city,"Display top 3 cities for addToCarts, ordered by city dimension, by the number of the events counted",Cities where visitors most frequently add products to their carts,Cities where visitors most frequently add products to their carts,analytics-4
+25,Top traffic source driving add to cart,New,kmAnalyticsTopTrafficSourceDrivingAddToCart,addToCarts,sessionDefaultChannelGroup,"Total addToCarts, ordered by sessionDefaultChannelGroup dimension, returning the 1st item from results",Traffic source that generates the most add to cart events,Traffic source that generates the most add to cart events,analytics-4
+26,Top cities driving purchases,New,kmAnalyticsTopCitiesDrivingPurchases,ecommercePurchases,city,"Display top 3 cities for keyEvents:purchase, ordered by city dimension, by the number of the events counted",Cities driving the most purchases,Cities driving the most purchases,analytics-4
+27,Top device driving purchases,New,kmAnalyticsTopDeviceDrivingPurchases,ecommercePurchases,deviceCategory,"Total keyEvents:purchase, ordered by deviceCategory dimension, returning the 1st item from results",Top device driving the most purchases,Top device driving the most purchases,analytics-4
+28,Top traffic source driving purchases,New,kmAnalyticsTopTraffiSourceDrivingPurchases,ecommercePurchases,sessionDefaultChannelGroup,"Total keyEvents:purchase, ordered by sessionDefaultChannelGroup dimension, returning the 1st item from results",Traffic source that generates the most purchases,Traffic source that generates the most purchases,analytics-4
