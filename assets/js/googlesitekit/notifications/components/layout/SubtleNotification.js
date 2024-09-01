@@ -22,21 +22,15 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import CheckFill from '../../../../../svg/icons/check-fill.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
 export default function SubtleNotification( {
 	title,
 	description,
-	onDismiss,
+	dismissCTA,
 	additionalCTA = false,
 } ) {
 	return (
@@ -56,9 +50,7 @@ export default function SubtleNotification( {
 							{ description }
 						</p>
 					</div>
-					<Button tertiary onClick={ onDismiss }>
-						{ __( 'Got it', 'google-site-kit' ) }
-					</Button>
+					{ dismissCTA }
 					{ !! additionalCTA && additionalCTA }
 				</Cell>
 			</Row>
@@ -69,6 +61,6 @@ export default function SubtleNotification( {
 SubtleNotification.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
-	onDismiss: PropTypes.func.isRequired,
+	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.oneOfType( [ PropTypes.node, PropTypes.bool ] ),
 };
