@@ -62,6 +62,7 @@ ConfirmDisconnectWithFeatures.decorators = [
 		);
 	},
 ];
+ConfirmDisconnectWithFeatures.scenario = {};
 
 export const ConfirmDisconnectWithFeaturesAndLongText = Template.bind( {} );
 ConfirmDisconnectWithFeaturesAndLongText.storyName =
