@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import AuthError from './AuthError';
-import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
 import InternalServerError from './InternalServerError';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -39,6 +38,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import BannerNotification from './BannerNotification';
+import Notifications from './Notifications';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function ErrorNotifications() {
 	const isAuthenticated = useSelect( ( select ) =>
@@ -133,14 +134,12 @@ export default function ErrorNotifications() {
 			) }
 			{ ! setupErrorMessage && isAuthenticated && (
 				<Fragment>
-					{ ! showUnsatisfiedScopesAlertGTE && (
-						<UnsatisfiedScopesAlert />
-					) }
 					{ showUnsatisfiedScopesAlertGTE && (
 						<UnsatisfiedScopesAlertGTE />
 					) }
 				</Fragment>
 			) }
+			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
 		</Fragment>
 	);
 }

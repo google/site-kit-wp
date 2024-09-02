@@ -49,7 +49,7 @@ export default function ZeroDataNotification( { id, Notification } ) {
 				) }
 				description={
 					<Description
-						description={ __(
+						text={ __(
 							'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
 							'google-site-kit'
 						) }
