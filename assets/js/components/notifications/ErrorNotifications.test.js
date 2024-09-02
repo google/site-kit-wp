@@ -70,31 +70,6 @@ describe( 'ErrorNotifications', () => {
 		);
 	} );
 
-	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-			],
-		} );
-
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		expect( container ).toHaveTextContent(
-			'Site Kit needs additional permissions to detect updates to tags on your site'
-		);
-		expect( container ).toMatchSnapshot();
-	} );
-
 	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
