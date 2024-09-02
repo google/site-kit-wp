@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
  */
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Icon, check, stack } from '@wordpress/icons';
+import { Icon, check, copy } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -58,7 +58,7 @@ function ReportErrorButton( { message, componentStack } ) {
 			trailingIcon={
 				<Icon
 					className="mdc-button__icon"
-					icon={ copied ? check : stack }
+					icon={ copied ? check : copy }
 				/>
 			}
 		>
