@@ -74,10 +74,17 @@ class Audience_Settings extends User_Setting {
 		$allowed_settings = array(
 			'configuredAudiences'                => true,
 			'isAudienceSegmentationWidgetHidden' => true,
-			'didSetAudiences'                    => true,
 		);
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
+
+		if ( empty( $settings['didSetAudiences'] )
+			&& isset( $updated['configuredAudiences'] )
+			&& is_array( $updated['configuredAudiences'] )
+			&& ! empty( $updated['configuredAudiences'] )
+		) {
+			$updated['didSetAudiences'] = true;
+		}
 
 		return $this->set( array_merge( $settings, $updated ) );
 	}
