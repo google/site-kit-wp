@@ -549,6 +549,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -581,6 +582,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -706,6 +708,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -832,6 +835,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -867,6 +871,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
