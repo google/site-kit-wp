@@ -42,7 +42,7 @@ export default function Notification( { id, children } ) {
 	}, [ viewed, trackEvents, isViewedOnce ] );
 
 	return (
-		<section id={ id } className="googlesitekit-publisher-win" ref={ ref }>
+		<section id={ id } ref={ ref }>
 			{ children }
 
 			{ /* Encapsulate observer to dispose when no longer needed. */ }
