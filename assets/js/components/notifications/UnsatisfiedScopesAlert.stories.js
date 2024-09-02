@@ -36,7 +36,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'UnsatisfiedScopesAlert';
 
 export default {
-	title: 'Components/Notifications/UnsatisfiedScopesAlert',
+	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlert',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
