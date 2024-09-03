@@ -99,9 +99,7 @@ const baseActions = {
 			} );
 
 		if ( response?.success ) {
-			yield registry
-				.dispatch( CORE_SITE )
-				.setSiteKitAutoUpdatesEnabled( true );
+			registry.dispatch( CORE_SITE ).setSiteKitAutoUpdatesEnabled( true );
 		}
 
 		if ( error ) {
