@@ -109,6 +109,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'availableAudiences'                => null,
 			'availableAudiencesLastSyncedAt'    => 0,
 			'audienceSegmentationSetupComplete' => false,
+			'detectedEvents'                    => array(),
 		);
 	}
 

@@ -32,6 +32,8 @@ import {
 	provideUserCapabilities,
 	WithTestRegistry,
 } from '../tests/js/utils';
+import { Provider as ViewContextProvider } from '../assets/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../assets/js/googlesitekit/constants';
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
@@ -56,7 +58,9 @@ storiesOf( 'Setup / Using GCP', module ).add(
 
 		return (
 			<WithTestRegistry registry={ registry }>
-				<SetupUsingGCP />
+				<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+					<SetupUsingGCP />
+				</ViewContextProvider>
 			</WithTestRegistry>
 		);
 	},
