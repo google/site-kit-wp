@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -35,6 +36,13 @@ import {
 import { isFeatureEnabled } from '../../features';
 import PartnerAdsPAXWidget from './components/dashboard/PartnerAdsPAXWidget';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '../../googlesitekit/widgets/default-areas';
+import { PAXSetupSuccessSubtleNotification } from './components/notifications';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
 
 export { registerStore } from './datastore';
 
@@ -91,4 +99,25 @@ export const registerWidgets = ( widgets ) => {
 			[ AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY ]
 		);
 	}
+};
+
+export const registerNotifications = ( notifications ) => {
+	notifications.registerNotification( 'setup-success-notification-pax', {
+		Component: PAXSetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+
+			if ( PAX_SETUP_SUCCESS_NOTIFICATION === notification ) {
+				return true;
+			}
+
+			return false;
+		},
+	} );
 };

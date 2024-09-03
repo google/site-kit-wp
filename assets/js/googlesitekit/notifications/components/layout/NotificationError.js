@@ -18,24 +18,13 @@
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../../../material-components';
+import BannerIcon from '../common/BannerIcon';
 import Title from '../common/Title';
 
-export default function NotificationWithSmallSVG( {
-	title,
-	description,
-	actions,
-	SmallImageSVG,
-} ) {
+export default function NotificationError( { title, description, actions } ) {
 	return (
-		<Grid className="googlesitekit-publisher-win">
+		<Grid className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
 			<Row>
-				<Cell
-					size={ 1 }
-					className="googlesitekit-publisher-win__small-media"
-				>
-					<SmallImageSVG />
-				</Cell>
-
 				<Cell
 					smSize={ 3 }
 					mdSize={ 7 }
@@ -48,6 +37,7 @@ export default function NotificationWithSmallSVG( {
 
 					{ actions }
 				</Cell>
+				<BannerIcon type="win-error" />
 			</Row>
 		</Grid>
 	);

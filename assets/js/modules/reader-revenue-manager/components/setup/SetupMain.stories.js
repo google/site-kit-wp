@@ -33,9 +33,15 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { publications } from '../../datastore/__fixtures__';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 function Template() {
-	return <ModuleSetup moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG } />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<ModuleSetup moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG } />
+		</ViewContextProvider>
+	);
 }
 
 export const NoPublications = Template.bind( {} );
