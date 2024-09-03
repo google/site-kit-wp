@@ -478,6 +478,18 @@ const baseActions = {
 		if ( error ) {
 			return { error };
 		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupComplete(
+			true
+		);
+
+		const { saveSettingsError } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).saveSettings()
+		);
+
+		if ( saveSettingsError ) {
+			return { error: saveSettingsError };
+		}
 	},
 
 	/**
