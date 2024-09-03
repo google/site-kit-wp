@@ -126,6 +126,12 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 
+		registry
+			.dispatch( CORE_USER )
+			.finishResolution( 'getPromptDismissCount', [
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+			] );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableAudiences: null,
 			// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
@@ -263,6 +269,30 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			// Wait for resolvers to finish to avoid an unhandled React state update.
 			await waitForRegistry();
+
+			expect(
+				queryByText(
+					/Learn how different types of visitors interact with your site/i
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not render the widget when the prompt dismiss count is not resolved', () => {
+			registry
+				.dispatch( CORE_USER )
+				.startResolution( 'getPromptDismissCount', [
+					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+				] );
+
+			const { queryByText } = render(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+				}
+			);
 
 			expect(
 				queryByText(
@@ -504,9 +534,26 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 			} );
 
+			// Dismiss prompt endpoint must be called when the CTA is clicked.
+			const dismissPromptEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+			);
+
 			expect(
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
+					body: {
+						data: {
+							slug: AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+							expiration: 0,
+						},
+					},
+					method: 'POST',
+				} );
+			} );
 
 			await act( () => waitForTimeouts( 30 ) );
 		} );

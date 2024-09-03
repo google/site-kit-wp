@@ -88,6 +88,12 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const dismissCountLoaded = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getPromptDismissCount', [
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+		] )
+	);
+
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
 	);
@@ -192,7 +198,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed ||
-		dismissCount === undefined
+		! dismissCountLoaded
 	) {
 		return null;
 	}
