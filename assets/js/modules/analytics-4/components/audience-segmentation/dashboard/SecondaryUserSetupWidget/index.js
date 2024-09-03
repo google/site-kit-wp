@@ -1,5 +1,5 @@
 /**
- * SecondaryUserSetup component.
+ * SecondaryUserSetupWidget component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -30,12 +30,12 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import AudienceTileLoading from '../AudienceTilesWidget/AudienceTile/AudienceTileLoading';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { useMount } from 'react-use';
 import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
 
-export default function SecondaryUserSetup( { Widget } ) {
+export default function SecondaryUserSetupWidget( { Widget } ) {
 	const [ setupError, setSetupError ] = useState( null );
 	const { enableSecondaryUserAudienceGroup } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -81,6 +81,6 @@ export default function SecondaryUserSetup( { Widget } ) {
 	);
 }
 
-SecondaryUserSetup.propTypes = {
+SecondaryUserSetupWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };

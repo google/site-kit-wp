@@ -1,5 +1,5 @@
 /**
- * SecondaryUserSetup Component Stories.
+ * SecondaryUserSetupWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -24,7 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies.
  */
-import SecondaryUserSetup from './SecondaryUserSetup';
+import SecondaryUserSetupWidgetWidget from '.';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import {
 	freezeFetch,
@@ -43,8 +43,9 @@ const syncAvailableAudiencesEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 );
 
-const WidgetWithComponentProps =
-	withWidgetComponentProps( 'secondaryUserSetup' )( SecondaryUserSetup );
+const WidgetWithComponentProps = withWidgetComponentProps(
+	'analyticsAudienceSecondaryUserSetup'
+)( SecondaryUserSetupWidgetWidget );
 
 function Template() {
 	return <WidgetWithComponentProps />;
@@ -97,7 +98,7 @@ SetupError.args = {
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SecondaryUserSetup',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SecondaryUserSetupWidget',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = async ( registry ) => {

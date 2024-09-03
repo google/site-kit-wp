@@ -31,7 +31,6 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
 import { useInView } from '../../../../../../hooks/useInView';
-import SecondaryUserSetup from './SecondaryUserSetup';
 
 function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
@@ -40,9 +39,6 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	} );
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
-	);
-	const audienceSegmentationSetupComplete = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupComplete()
 	);
 
 	const [ availableAudiencesSynced, setAvailableAudiencesSynced ] =
@@ -61,16 +57,6 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
 		availableAudiences?.includes( audience )
 	);
-
-	const secondaryAudienceSetup =
-		availableAudiencesSynced &&
-		audienceSegmentationSetupComplete === true &&
-		availableAudiences &&
-		configuredAudiences === null;
-
-	if ( secondaryAudienceSetup ) {
-		return <SecondaryUserSetup Widget={ Widget } />;
-	}
 
 	if ( ! hasMatchingAudience ) {
 		return <WidgetNull />;
