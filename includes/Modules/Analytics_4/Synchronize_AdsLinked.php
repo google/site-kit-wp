@@ -87,7 +87,7 @@ class Synchronize_AdsLinked {
 	protected function synchronize_ads_linked_data() {
 		$ads_connected = apply_filters( 'googlesitekit_is_module_connected', false, Ads::MODULE_SLUG );
 
-		if ( ! $ads_connected ) {
+		if ( $ads_connected ) {
 			return;
 		}
 
