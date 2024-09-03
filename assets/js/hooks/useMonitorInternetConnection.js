@@ -37,6 +37,7 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
  * Monitors the user's internet connection status.
  *
  * @since 1.118.0
+ * @since n.e.x.t Changed the connection check endpoint.
  */
 export function useMonitorInternetConnection() {
 	const { setIsOnline } = useDispatch( CORE_UI );
@@ -52,15 +53,9 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			const connectionCheckResponse = await API.get(
-				'core',
-				'site',
-				'connection-check',
-				undefined,
-				{
-					useCache: false,
-				}
-			);
+			const connectionCheckResponse = await API.apiFetch( {
+				path: '/google-site-kit/v1/',
+			} );
 
 			// We are only interested if the request was successful, to
 			// confirm online status.
@@ -76,8 +71,6 @@ export function useMonitorInternetConnection() {
 		() => {
 			global.addEventListener( 'online', checkInternetConnection );
 			global.addEventListener( 'offline', checkInternetConnection );
-
-			checkInternetConnection();
 		},
 		() => {
 			global.removeEventListener( 'online', checkInternetConnection );
