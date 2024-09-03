@@ -152,7 +152,7 @@ export const actions = {
 				payload: { id },
 			};
 
-			return yield registry
+			return registry
 				.dispatch( CORE_USER )
 				.dismissItem( id, { expiresInSeconds } );
 		}
