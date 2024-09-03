@@ -94,7 +94,7 @@ class WooCommerce extends Conversion_Events_Provider {
 				$order_key = $input->filter( INPUT_GET, 'key' );
 
 				// Don't output the script tag if the order key is invalid.
-				if ( ! $order->key_is_valid( $order_key ) ) {
+				if ( empty( $order_key ) || ! $order->key_is_valid( $order_key ) ) {
 					return;
 				}
 
