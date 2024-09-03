@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Modules\Ads;
 
 /**
  * The base class for Synchronizing the adsLinked status.
@@ -41,16 +43,26 @@ class Synchronize_AdsLinked {
 	protected $user_options;
 
 	/**
+	 * Context instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.124.0
 	 *
 	 * @param Analytics_4  $analytics_4  Analytics 4 instance.
 	 * @param User_Options $user_options User_Options instance.
+	 * @param Context      $context      Context instance.
 	 */
-	public function __construct( Analytics_4 $analytics_4, User_Options $user_options ) {
+	public function __construct( Analytics_4 $analytics_4, User_Options $user_options, Context $context ) {
 		$this->analytics_4  = $analytics_4;
 		$this->user_options = $user_options;
+		$this->context      = $context;
 	}
 
 	/**
@@ -73,6 +85,12 @@ class Synchronize_AdsLinked {
 	 * @since 1.124.0
 	 */
 	protected function synchronize_ads_linked_data() {
+		$ads_connected = apply_filters( 'googlesitekit_is_module_connected', false, Ads::MODULE_SLUG );
+
+		if ( ! $ads_connected ) {
+			return;
+		}
+
 		$owner_id     = $this->analytics_4->get_owner_id();
 		$restore_user = $this->user_options->switch_user( $owner_id );
 
@@ -117,13 +135,17 @@ class Synchronize_AdsLinked {
 	 * @since 1.124.0
 	 */
 	public function maybe_schedule_synchronize_ads_linked() {
+		if ( is_admin() && 'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page' ) ) {
+			return;
+		}
+
 		$analytics_4_connected  = $this->analytics_4->is_connected();
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_ADS_LINKED );
 
 		if ( $analytics_4_connected && ! $cron_already_scheduled ) {
 			wp_schedule_single_event(
 				// Schedule the task to run in 24 hours.
-				time() + ( DAY_IN_SECONDS ),
+				time() + ( WEEK_IN_SECONDS ),
 				self::CRON_SYNCHRONIZE_ADS_LINKED
 			);
 		}
