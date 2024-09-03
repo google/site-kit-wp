@@ -19,30 +19,43 @@
 /**
  * Internal dependencies
  */
-import { provideUserAuthentication } from '../../../../tests/js/utils';
+import {
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
+import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'gathering-data-notification'
-)( UnsatisfiedScopesAlert );
+)( UnsatisfiedScopesAlertGTE );
 
 function Template() {
 	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'UnsatisfiedScopesAlert';
+Default.storyName = 'UnsatisfiedScopesAlertGTE';
+Default.scenario = {
+	label: 'Global/Notifications/Errors/UnsatisfiedScopeGTESupport',
+};
 
 export default {
-	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlert',
+	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlertGTE',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
 				provideUserAuthentication( registry, {
 					unsatisfiedScopes: [
-						'https://www.googleapis.com/auth/analytics.readonly',
+						'https://www.googleapis.com/auth/tagmanager.readonly',
 					],
 				} );
 			};

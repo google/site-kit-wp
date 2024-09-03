@@ -32,6 +32,7 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
+import UnsatisfiedScopesAlertGTE from '../../components/notifications/UnsatisfiedScopesAlertGTE';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 
@@ -78,6 +79,42 @@ export function registerDefaults( notificationsAPI ) {
 				! setupErrorMessage &&
 				isAuthenticated &&
 				! showUnsatisfiedScopesAlertGTE
+			);
+		},
+		isDismissible: false,
+	} );
+
+	notificationsAPI.registerNotification( 'authentication-error-gte', {
+		Component: UnsatisfiedScopesAlertGTE,
+		priority: 150,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: ( { select } ) => {
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+				TAGMANAGER_READ_SCOPE
+			);
+
+			const showUnsatisfiedScopesAlertGTE =
+				ga4ModuleConnected && ! hasTagManagerReadScope;
+
+			return (
+				! setupErrorMessage &&
+				isAuthenticated &&
+				showUnsatisfiedScopesAlertGTE
 			);
 		},
 		isDismissible: false,
