@@ -126,11 +126,16 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 
+		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+				expires: currentTimeInSeconds - 10,
+				count: 0,
+			},
+		} );
 		registry
 			.dispatch( CORE_USER )
-			.finishResolution( 'getPromptDismissCount', [
-				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-			] );
+			.finishResolution( 'getDismissedPrompts', [] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableAudiences: null,
@@ -280,11 +285,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		it( 'should not render the widget when the prompt dismiss count is not resolved', () => {
 			registry
 				.dispatch( CORE_USER )
-				.startResolution( 'getPromptDismissCount', [
-					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-				] );
+				.startResolution( 'getDismissedPrompts', [] );
 
-			const { queryByText } = render(
+			const { container } = render(
 				<AudienceSegmentationSetupCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
@@ -293,12 +296,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					registry,
 				}
 			);
-
-			expect(
-				queryByText(
-					/Learn how different types of visitors interact with your site/i
-				)
-			).not.toBeInTheDocument();
+			expect( container ).toBeEmptyDOMElement();
 		} );
 	} );
 
@@ -514,7 +512,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 
-			const { getByRole, waitForRegistry } = render(
+			const { container, getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
@@ -555,7 +553,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				} );
 			} );
 
-			await act( () => waitForTimeouts( 30 ) );
+			expect( container ).toBeEmptyDOMElement();
 		} );
 
 		it( 'should initialise the list of configured audiences when autoSubmit is set to true.', async () => {
