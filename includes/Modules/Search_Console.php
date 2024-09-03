@@ -303,7 +303,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				$entries     = Sort::case_insensitive_list_sort(
 					$this->map_sites( (array) $response->getSiteEntry() ),
-					'name'
+					'siteURL' // Must match the mapped value.
 				);
 				$strict      = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
 				$current_url = $this->context->get_reference_site_url();

@@ -102,6 +102,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'adsLinkedLastSyncedAt'            => 0,
 			'availableAudiences'               => null,
 			'availableAudiencesLastSyncedAt'   => 0,
+			'detectedEvents'                   => array(),
 		);
 	}
 

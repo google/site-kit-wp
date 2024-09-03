@@ -63,6 +63,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'adsLinkedLastSyncedAt',
 		'availableAudiences',
 		'availableAudiencesLastSyncedAt',
+		'detectedEvents',
 	],
 	submitChanges,
 	rollbackChanges,

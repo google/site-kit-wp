@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -53,13 +53,11 @@ import PartialDataNotice from './PartialDataNotice';
 import { numFmt } from '../../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
-import AudienceTileLoading from './AudienceTileLoading';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
 // in AudienceTiles.
 export default function AudienceTile( {
-	loaded,
 	title,
 	infoTooltip,
 	visitors,
@@ -72,7 +70,6 @@ export default function AudienceTile( {
 	topContentTitles,
 	Widget,
 	audienceResourceName,
-	isLoading,
 	isZeroData,
 	isPartialData,
 	isTileHideable,
@@ -80,46 +77,35 @@ export default function AudienceTile( {
 } ) {
 	const breakpoint = useBreakpoint();
 
-	const isPropertyPartialData = useSelect( ( select ) => {
+	const isPropertyPartialData = useInViewSelect( ( select ) => {
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 		return (
 			propertyID &&
 			select( MODULES_ANALYTICS_4 ).isPropertyPartialData( propertyID )
 		);
-	} );
-	const isAudiencePartialData = useSelect(
+	}, [] );
+	const isAudiencePartialData = useInViewSelect(
 		( select ) =>
 			! isPropertyPartialData &&
 			audienceResourceName &&
 			select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
 				audienceResourceName
-			)
+			),
+		[ isPropertyPartialData, audienceResourceName ]
 	);
-	const isTopContentPartialData = useSelect(
+	const isTopContentPartialData = useInViewSelect(
 		( select ) =>
 			! isAudiencePartialData &&
 			select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
 				'googlesitekit_post_type'
-			)
+			),
+		[ isAudiencePartialData ]
 	);
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
-
-	if (
-		! loaded ||
-		isLoading ||
-		isZeroData === undefined ||
-		isPartialData === undefined
-	) {
-		return (
-			<Widget noPadding>
-				<AudienceTileLoading />
-			</Widget>
-		);
-	}
 
 	if ( isPartialData && isZeroData ) {
 		return (
@@ -279,7 +265,6 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
-	loaded: PropTypes.bool,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
@@ -292,7 +277,6 @@ AudienceTile.propTypes = {
 	topContentTitles: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
-	isLoading: PropTypes.bool,
 	isZeroData: PropTypes.bool,
 	isPartialData: PropTypes.bool,
 	isTileHideable: PropTypes.bool,

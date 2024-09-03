@@ -30,21 +30,27 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 import whenActive from '../../../../../../util/when-active';
 import InfoNotice from '../InfoNotice';
-import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
+import {
+	AUDIENCE_INFO_NOTICES,
+	AUDIENCE_INFO_NOTICE_HIDE_UI,
+	AUDIENCE_INFO_NOTICE_SLUG,
+} from './constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 function InfoNoticeWidget( { Widget, WidgetNull } ) {
-	const availableAudiences = useSelect( ( select ) => {
+	const availableAudiences = useInViewSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
-	} );
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
+	}, [] );
+	const configuredAudiences = useInViewSelect(
+		( select ) => select( CORE_USER ).getConfiguredAudiences(),
+		[]
 	);
 
 	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
@@ -53,12 +59,22 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 
 	const noticesCount = AUDIENCE_INFO_NOTICES.length;
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isPromptDismissed( AUDIENCE_INFO_NOTICE_SLUG )
+	const isDismissed = useInViewSelect(
+		( select ) =>
+			select( CORE_USER ).isPromptDismissed( AUDIENCE_INFO_NOTICE_SLUG ),
+		[]
 	);
 
-	const dismissCount = useSelect( ( select ) =>
-		select( CORE_USER ).getPromptDismissCount( AUDIENCE_INFO_NOTICE_SLUG )
+	const hideNotice = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_INFO_NOTICE_HIDE_UI )
+	);
+
+	const dismissCount = useInViewSelect(
+		( select ) =>
+			select( CORE_USER ).getPromptDismissCount(
+				AUDIENCE_INFO_NOTICE_SLUG
+			),
+		[]
 	);
 
 	const { dismissPrompt } = useDispatch( CORE_USER );
@@ -81,7 +97,8 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 		hasMatchingAudience !== true ||
 		isDismissed ||
 		dismissCount === undefined ||
-		dismissCount >= noticesCount
+		dismissCount >= noticesCount ||
+		hideNotice === true
 	) {
 		return <WidgetNull />;
 	}

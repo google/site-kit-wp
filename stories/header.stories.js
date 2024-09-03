@@ -39,6 +39,8 @@ import {
 	WithTestRegistry,
 } from '../tests/js/utils';
 import HelpMenuLink from '../assets/js/components/help/HelpMenuLink';
+import { Provider as ViewContextProvider } from '../assets/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../assets/js/googlesitekit/constants';
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
@@ -47,7 +49,9 @@ const withRegistry = ( Story ) => {
 
 	return (
 		<WithTestRegistry registry={ registry }>
-			<Story registry={ registry } />
+			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+				<Story registry={ registry } />
+			</ViewContextProvider>
 		</WithTestRegistry>
 	);
 };

@@ -26,11 +26,142 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from '../../../../datastore/constants';
+import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
+
+/**
+ * Generates mock response for audience tiles component.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        registry            Data registry object.
+ * @param {Array<string>} configuredAudiences Array of audience resource names.
+ */
+function provideAudienceTilesMockReport( registry, configuredAudiences ) {
+	const dates = registry.select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+		compare: true,
+	} );
+
+	const { startDate, endDate } = dates;
+
+	const reportOptions = {
+		dimensions: [ { name: 'audienceResourceName' } ],
+		metrics: [
+			{ name: 'totalUsers' },
+			{ name: 'sessionsPerUser' },
+			{ name: 'screenPageViewsPerSession' },
+			{ name: 'screenPageViews' },
+		],
+	};
+
+	const options = {
+		...dates,
+		...reportOptions,
+		dimensionFilters: {
+			audienceResourceName: configuredAudiences,
+		},
+	};
+
+	const reportData = getAnalytics4MockResponse( options );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( reportData, {
+		options,
+	} );
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ options ] );
+
+	const totalPageviewsReportOptions = {
+		startDate,
+		endDate,
+		metrics: [ { name: 'screenPageViews' } ],
+	};
+
+	const totalPageviewsReportData = getAnalytics4MockResponse( options );
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( totalPageviewsReportData, {
+			options: totalPageviewsReportOptions,
+		} );
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ totalPageviewsReportOptions ] );
+
+	const topCitiesReportOptions = {
+		startDate,
+		endDate,
+		dimensions: [ 'city' ],
+		metrics: [ { name: 'totalUsers' } ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
+		limit: 3,
+	};
+
+	const topContentReportOptions = {
+		startDate,
+		endDate,
+		dimensions: [ 'pagePath' ],
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 3,
+	};
+
+	const topContentPageTitlesReportOptions = {
+		startDate,
+		endDate,
+		dimensions: [ 'pagePath', 'pageTitle' ],
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 15,
+	};
+
+	[
+		topCitiesReportOptions,
+		topContentReportOptions,
+		topContentPageTitlesReportOptions,
+	].forEach( ( value ) => {
+		configuredAudiences.forEach( ( audienceResourceName ) => {
+			const individualReportOptions = {
+				...value,
+				dimensionFilters: {
+					audienceResourceName,
+				},
+			};
+
+			const individualReportData = getAnalytics4MockResponse(
+				individualReportOptions
+			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( individualReportData, {
+					options: individualReportOptions,
+				} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ individualReportOptions ] );
+		} );
+	} );
+}
 
 describe( 'AudienceTilesWidget', () => {
 	let registry;
@@ -53,7 +184,11 @@ describe( 'AudienceTilesWidget', () => {
 			},
 		] );
 		provideModuleRegistrations( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: [ 'googlesitekit_post_type' ],
+		} );
 	} );
 
 	afterEach( () => {
@@ -199,6 +334,8 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should render when configured audience is matching available audiences', async () => {
+		const configuredAudiences = [ 'properties/12345/audiences/1' ];
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
@@ -208,9 +345,11 @@ describe( 'AudienceTilesWidget', () => {
 			.setAvailableAudiences( availableAudiences );
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/1' ],
+			configuredAudiences,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -225,6 +364,11 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should render when all configured audiences are matching available audiences', async () => {
+		const configuredAudiences = [
+			'properties/12345/audiences/1',
+			'properties/12345/audiences/3',
+		];
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
@@ -234,12 +378,11 @@ describe( 'AudienceTilesWidget', () => {
 			.setAvailableAudiences( availableAudiences );
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [
-				'properties/12345/audiences/1',
-				'properties/12345/audiences/3',
-			],
+			configuredAudiences,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -254,6 +397,10 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should not render audiences that are not available (archived)', async () => {
+		const configuredAudiences = [
+			'properties/12345/audiences/1', // Available.
+			'properties/12345/audiences/9', // Not available (archived).
+		];
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
@@ -263,12 +410,11 @@ describe( 'AudienceTilesWidget', () => {
 			.setAvailableAudiences( availableAudiences );
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [
-				'properties/12345/audiences/1', // Available.
-				'properties/12345/audiences/9', // Not available (archived).
-			],
+			configuredAudiences,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,

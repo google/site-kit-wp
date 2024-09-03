@@ -25,18 +25,12 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Notifications from './Notifications';
-import useViewContext from '../../hooks/useViewContext';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function EntityBannerNotifications() {
-	const viewContext = useViewContext();
-
 	return (
 		<Fragment>
-			<Notifications
-				viewContext={ viewContext }
-				areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
-			/>
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
 	);
 }
