@@ -97,6 +97,7 @@ export default function ConfirmDisableConsentModeDialog( {
 
 	return (
 		<ModalDialog
+			className="googlesitekit-settings-module__confirm-disable-consent-mode-modal"
 			dialogActive
 			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
 			subtitle={ subtitle }
