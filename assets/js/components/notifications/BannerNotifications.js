@@ -38,7 +38,6 @@ import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
-import useViewContext from '../../hooks/useViewContext';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
@@ -56,7 +55,6 @@ const MODULES_USING_SUBTLE_NOTIFICATIONS = [
 
 export default function BannerNotifications() {
 	const viewOnly = useViewOnly();
-	const viewContext = useViewContext();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -102,7 +100,6 @@ export default function BannerNotifications() {
 		return (
 			<Fragment>
 				<Notifications
-					viewContext={ viewContext }
 					areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
 				/>
 			</Fragment>
@@ -134,10 +131,7 @@ export default function BannerNotifications() {
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
-			<Notifications
-				viewContext={ viewContext }
-				areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
-			/>
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
 	);
 }
