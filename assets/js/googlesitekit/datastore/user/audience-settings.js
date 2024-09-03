@@ -307,6 +307,20 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets the `didSetAudiences` flag from the audience settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Whether or not the audience selection has ever been populated for the current user; `undefined` if not loaded.
+	 */
+	didSetAudiences: createRegistrySelector( ( select ) => () => {
+		const audienceSettings = select( CORE_USER ).getAudienceSettings();
+
+		return audienceSettings?.didSetAudiences;
+	} ),
+
+	/**
 	 * Checks if the configured audiences have changed from the saved settings.
 	 *
 	 * @since 1.124.0
