@@ -53,7 +53,6 @@ export default function ReportErrorActions( props ) {
 		hideGetHelpLink,
 		buttonVariant,
 		onRetry,
-		overrideShowRetryButton,
 		getHelpClassName,
 		RequestAccessButton,
 		RetryButton,
@@ -89,7 +88,7 @@ export default function ReportErrorActions( props ) {
 			err.selectorData.name === 'getReport'
 	);
 
-	const showRetry = overrideShowRetryButton || !! retryableErrors.length;
+	const showRetry = !! retryableErrors.length;
 
 	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
 		const err = {
@@ -209,7 +208,6 @@ ReportErrorActions.propTypes = {
 	hideGetHelpLink: PropTypes.bool,
 	buttonVariant: PropTypes.string,
 	onRetry: PropTypes.func,
-	overrideShowRetryButton: PropTypes.bool,
 	getHelpClassName: PropTypes.string,
 	RequestAccessButton: PropTypes.elementType,
 	RetryButton: PropTypes.elementType,

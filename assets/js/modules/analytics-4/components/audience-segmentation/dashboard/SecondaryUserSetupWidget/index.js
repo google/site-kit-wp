@@ -63,6 +63,7 @@ export default function SecondaryUserSetupWidget( { Widget } ) {
 				Widget={ Widget }
 				errors={ setupError }
 				onRetry={ handleRetry }
+				showRetryButton
 			/>
 		);
 	}
