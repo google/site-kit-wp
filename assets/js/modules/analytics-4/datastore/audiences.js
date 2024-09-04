@@ -530,11 +530,18 @@ const baseActions = {
 			return { error: syncError };
 		}
 
-		const configuredAudiences = yield commonActions.await(
+		const {
+			error: retrieveInitialAudienceSelectionError,
+			configuredAudiences,
+		} = yield commonActions.await(
 			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
 				availableAudiences
 			)
 		);
+
+		if ( retrieveInitialAudienceSelectionError ) {
+			return { error: retrieveInitialAudienceSelectionError };
+		}
 
 		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
 			// Add 'Purchasers' audience if it has data.
