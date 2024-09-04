@@ -67,7 +67,7 @@ export default function ErrorNotice( {
 	const shouldDisplayRetry =
 		hasButton && isErrorRetryable( error, selectorData );
 
-	// Append try again messaging if no retry button is present.
+	// Append "Try again" messaging if no retry button is present.
 	if ( ! hasButton ) {
 		message = `${ message }. ${ __(
 			'Please try again.',
