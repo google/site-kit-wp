@@ -191,6 +191,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 			<WidgetWithComponentProps
 				errors={ errors }
 				onRetry={ handleRetrySpy }
+				showRetryButton
 			/>,
 			{
 				registry,

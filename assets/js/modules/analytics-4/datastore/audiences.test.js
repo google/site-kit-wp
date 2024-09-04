@@ -198,6 +198,25 @@ describe( 'modules/analytics-4 audiences', () => {
 				},
 			];
 
+			it( 'should not call syncAvailableAudiences if user is not authenticated', async () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
+
 			it( 'should make a network request to sync available audiences', async () => {
 				muteFetch( audienceSettingsEndpoint );
 
@@ -333,6 +352,23 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry );
 			} );
 
+			it( 'should not call syncAvailableAudiences if user is not authenticated', async () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.maybeSyncAvailableAudiences();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
+
 			it( 'should call syncAvailableAudiences if the availableAudiencesLastSyncedAt setting is undefined', async () => {
 				muteFetch( analyticsSettingsEndpoint );
 
@@ -355,7 +391,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
