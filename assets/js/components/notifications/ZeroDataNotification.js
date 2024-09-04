@@ -41,7 +41,7 @@ export default function ZeroDataNotification( { id, Notification } ) {
 	} );
 
 	return (
-		<Notification>
+		<Notification className="googlesitekit-publisher-win">
 			<NotificationWithSmallSVG
 				title={ __(
 					'Not enough traffic yet to display stats',
