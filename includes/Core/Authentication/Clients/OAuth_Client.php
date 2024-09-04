@@ -413,7 +413,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 
 		if ( ! $this->credentials->has() ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_credentials_not_exist' );
-			// HERE: Redirect to dashboard/splash on error.
 			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
@@ -655,7 +654,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.77.0
 	 */
 	private function authorize_user_redirect_url() {
-		// HERE: Redirect URL for dashboard/splash on error.
 		$error_redirect_url = $this->user_options->get( self::OPTION_ERROR_REDIRECT_URL );
 
 		if ( $error_redirect_url ) {

@@ -347,7 +347,6 @@ abstract class OAuth_Client_Base {
 	 * @return string OAuth redirect URI.
 	 */
 	protected function get_redirect_uri() {
-		// HERE: add_query_arg 'oauth2callback'.
 		return add_query_arg( 'oauth2callback', '1', admin_url( 'index.php' ) );
 	}
 }

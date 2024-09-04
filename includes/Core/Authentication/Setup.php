@@ -204,15 +204,6 @@ class Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		/*
-		We shouldn't need an error redirect URL here, the defaults should be fine for the initial setup.
-		$error_redirect_url = $this->context->input()->filter( INPUT_GET, 'error_redirect', FILTER_DEFAULT );
-
-		if ( $error_redirect_url ) {
-			$this->user_options->set( OAuth_Client::OPTION_ERROR_REDIRECT_URL, $error_redirect_url );
-		}
-		*/
-
 		wp_safe_redirect( $oauth_setup_redirect );
 		exit;
 	}
