@@ -760,16 +760,22 @@ final class Authentication {
 			wp_die( esc_html__( 'You don’t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+		// HERE: Parsing `redirect` query parameter from the connect URL.
 		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 		if ( $redirect_url ) {
 			$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
+		}
+
+		$error_redirect_url = $input->filter( INPUT_GET, 'errorRedirect', FILTER_DEFAULT );
+		if ( $error_redirect_url ) {
+			$error_redirect_url = esc_url_raw( wp_unslash( $error_redirect_url ) );
 		}
 
 		// User is trying to authenticate, but access token hasn't been set.
 		$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 
 		wp_safe_redirect(
-			$this->get_oauth_client()->get_authentication_url( $redirect_url, $additional_scopes )
+			$this->get_oauth_client()->get_authentication_url( $redirect_url, $error_redirect_url, $additional_scopes )
 		);
 		exit();
 	}
