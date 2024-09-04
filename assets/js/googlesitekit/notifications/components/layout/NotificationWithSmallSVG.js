@@ -27,7 +27,7 @@ export default function NotificationWithSmallSVG( {
 	SmallImageSVG,
 } ) {
 	return (
-		<Grid className="googlesitekit-publisher-win">
+		<Grid>
 			<Row>
 				<Cell
 					size={ 1 }

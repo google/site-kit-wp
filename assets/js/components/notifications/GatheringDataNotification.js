@@ -74,7 +74,7 @@ export default function GatheringDataNotification( { id, Notification } ) {
 	}
 
 	return (
-		<Notification>
+		<Notification className="googlesitekit-publisher-win">
 			<NotificationWithSmallSVG
 				title={ gatheringDataTitle }
 				description={
