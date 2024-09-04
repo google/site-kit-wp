@@ -222,7 +222,17 @@ const baseActions = {
 	 */
 	*maybeSyncAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
+		const { select, dispatch, resolveSelect } = registry;
+
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getAuthentication()
+		);
+
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+		if ( ! isAuthenticated ) {
+			return;
+		}
 
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
