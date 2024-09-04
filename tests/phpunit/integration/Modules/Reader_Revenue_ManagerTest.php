@@ -17,8 +17,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -29,8 +31,6 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicat
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
-use Google\Site_Kit\Core\Util\URL;
 
 /**
  * @group Modules
@@ -125,40 +125,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_get_publications_based() {
-		FakeHttp::fake_google_http_handler(
-			$this->reader_revenue_manager->get_client(),
-			function ( Request $request ) {
-				$url = parse_url( $request->getUri() );
-
-				switch ( $url['path'] ) {
-					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response() )
-						);
-				}
-			}
-		);
-
-		$this->reader_revenue_manager->register();
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->authentication->get_oauth_client()->get_required_scopes()
-		);
-
-		$result = $this->reader_revenue_manager->get_data( 'publications' );
-		$this->assertNotWPError( $result );
-		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
-
-		$publication = $result[0];
-
-		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
-		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
-	}
-
-	public function test_get_publications_filter_url() {
+	public function test_get_publications__url() {
 		$filter = '';
 		// Set the Search console option.
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
@@ -187,7 +154,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
-		$this->reader_revenue_manager->get_data( 'publications' );
+		$result = $this->reader_revenue_manager->get_data( 'publications' );
+
+		$this->assertNotWPError( $result );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
+
+		$publication = $result[0];
+
+		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+
 		$expected_filter = 'filter=' . join(
 			' OR ',
 			array_map(
@@ -201,7 +177,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( $expected_filter, urldecode( $filter ) );
 	}
 
-	public function test_get_publications_filter_host() {
+	public function test_get_publications__domain() {
 		$filter = '';
 		// Set the Search console option.
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'sc-domain:example.com' ) );
@@ -230,7 +206,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
-		$this->reader_revenue_manager->get_data( 'publications' );
+		$result = $this->reader_revenue_manager->get_data( 'publications' );
+
+		$this->assertNotWPError( $result );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
+
+		$publication = $result[0];
+
+		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+
 		$expected_filter = 'filter=' . join(
 			' OR ',
 			array_map(
