@@ -197,7 +197,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	}
 
 	return (
-		<Notification>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
 			<NotificationError
 				title={ title }
 				description={ <Description text={ message } /> }

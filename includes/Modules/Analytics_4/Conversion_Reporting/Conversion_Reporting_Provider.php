@@ -17,7 +17,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 /**
  * Class providing the integration of conversion reporting.
  *
- * @since n.e.x.t
+ * @since 1.135.0
  * @access private
  * @ignore
  */
@@ -54,7 +54,7 @@ class Conversion_Reporting_Provider {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 *
 	 * @param Settings     $settings     Settings instance.
 	 * @param User_Options $user_options User_Options instance.
@@ -75,7 +75,7 @@ class Conversion_Reporting_Provider {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	public function register() {
 		$this->cron->register();
@@ -86,7 +86,7 @@ class Conversion_Reporting_Provider {
 	/**
 	 * Handles the googlesitekit-dashboard page load callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	protected function on_dashboard_load() {
 		$this->cron->maybe_schedule_cron();
@@ -95,7 +95,7 @@ class Conversion_Reporting_Provider {
 	/**
 	 * Handles the cron callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	protected function cron_callback() {
 		$owner_id     = $this->analytics->get_owner_id();

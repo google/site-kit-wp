@@ -26,7 +26,7 @@ import ViewedStateObserver from './ViewedStateObserver';
 import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function Notification( { id, children } ) {
+export default function Notification( { id, className, children } ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
 	const trackEvents = useNotificationEvents( id );
@@ -42,7 +42,7 @@ export default function Notification( { id, children } ) {
 	}, [ viewed, trackEvents, isViewedOnce ] );
 
 	return (
-		<section id={ id } ref={ ref }>
+		<section id={ id } ref={ ref } className={ className }>
 			{ children }
 
 			{ /* Encapsulate observer to dispose when no longer needed. */ }
