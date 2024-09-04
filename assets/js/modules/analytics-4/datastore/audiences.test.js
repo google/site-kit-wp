@@ -576,6 +576,15 @@ describe( 'modules/analytics-4 audiences', () => {
 			const isAudienceSegmentationWidgetHidden = false;
 
 			beforeEach( () => {
+				fetchMock.postOnce(
+					analyticsSettingsEndpoint,
+					( url, opts ) => {
+						const { data } = JSON.parse( opts.body );
+						// Return the same settings passed to the API.
+						return { body: data, status: 200 };
+					}
+				);
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',

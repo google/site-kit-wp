@@ -329,7 +329,7 @@ const baseActions = {
 			configuredAudiences.push( ...audienceResourceNames );
 		}
 
-		return configuredAudiences;
+		return { configuredAudiences };
 	},
 
 	/**
@@ -359,14 +359,21 @@ const baseActions = {
 			return { error: syncError };
 		}
 
-		let configuredAudiences = [];
+		const configuredAudiences = [];
 
 		if ( ! failedSiteKitAudienceSlugs?.length ) {
-			configuredAudiences = yield commonActions.await(
-				dispatch(
-					MODULES_ANALYTICS_4
-				).retrieveInitialAudienceSelection( availableAudiences )
-			);
+			const { error, configuredAudiences: audiences } =
+				yield commonActions.await(
+					dispatch(
+						MODULES_ANALYTICS_4
+					).retrieveInitialAudienceSelection( availableAudiences )
+				);
+
+			if ( error ) {
+				return { error };
+			}
+
+			configuredAudiences.push( ...audiences );
 		}
 
 		if ( configuredAudiences.length === 0 ) {
