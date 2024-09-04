@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -69,10 +69,11 @@ export default function ErrorNotice( {
 
 	// Append "Try again" messaging if no retry button is present.
 	if ( ! hasButton ) {
-		message = sprintf( __(
-			'%s. Please try again.',
-			'google-site-kit'
-		), message );
+		message = sprintf(
+			/* translators: %s: Error message from Google API. */
+			__( '%s. Please try again.', 'google-site-kit' ),
+			message
+		);
 	}
 
 	return (
