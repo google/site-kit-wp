@@ -256,7 +256,7 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Array} availableAudiences List of available audiences.
-	 * @return {Array} List of initial audiences.
+	 * @return {Object} Object with properties `configuredAudiences` or `error`.
 	 */
 	*retrieveInitialAudienceSelection( availableAudiences ) {
 		const registry = yield commonActions.getRegistry();
