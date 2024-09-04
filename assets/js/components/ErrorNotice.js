@@ -69,10 +69,10 @@ export default function ErrorNotice( {
 
 	// Append "Try again" messaging if no retry button is present.
 	if ( ! hasButton ) {
-		message = `${ message }. ${ __(
-			'Please try again.',
+		message = sprintf( __(
+			'%s. Please try again.',
 			'google-site-kit'
-		) }`;
+		), message );
 	}
 
 	return (
