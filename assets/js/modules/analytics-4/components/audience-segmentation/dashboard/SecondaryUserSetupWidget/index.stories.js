@@ -35,6 +35,7 @@ import {
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 
 const userAuthenticationEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/authentication'
@@ -111,12 +112,32 @@ export default {
 				] );
 				provideModuleRegistrations( registry );
 
+				const [
+					accountID,
+					propertyID,
+					measurementID,
+					webDataStreamID,
+				] = [ '12345', '34567', '56789', '78901' ];
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAccountID( accountID );
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setMeasurementID( measurementID );
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( webDataStreamID );
+
 				const audienceSettings = {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden: false,
 				};
 
-				registry
+				await registry
 					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( audienceSettings );
 

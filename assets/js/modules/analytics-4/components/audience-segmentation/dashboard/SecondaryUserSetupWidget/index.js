@@ -34,6 +34,7 @@ import { useDispatch } from 'googlesitekit-data';
 import AudienceTileLoading from '../AudienceTilesWidget/AudienceTile/AudienceTileLoading';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
+import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 
 export default function SecondaryUserSetupWidget( { Widget } ) {
 	const [ setupError, setSetupError ] = useState( null );
@@ -63,7 +64,9 @@ export default function SecondaryUserSetupWidget( { Widget } ) {
 				Widget={ Widget }
 				errors={ setupError }
 				onRetry={ handleRetry }
-				showRetryButton
+				showRetryButton={
+					! isInsufficientPermissionsError( setupError )
+				}
 			/>
 		);
 	}
