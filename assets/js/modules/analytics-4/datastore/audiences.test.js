@@ -198,9 +198,13 @@ describe( 'modules/analytics-4 audiences', () => {
 				},
 			];
 
-			it( 'should not call syncAvailableAudiences if user is not authenticated', async () => {
+			it( 'should not sync audiences if user is not authenticated', async () => {
 				provideUserAuthentication( registry, {
 					authenticated: false,
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiences: [],
 				} );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
