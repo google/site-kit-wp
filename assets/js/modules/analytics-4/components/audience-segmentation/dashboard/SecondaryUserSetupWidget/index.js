@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -32,7 +33,6 @@ import { useState } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import AudienceTileLoading from '../AudienceTilesWidget/AudienceTile/AudienceTileLoading';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { useMount } from 'react-use';
 import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
 
 export default function SecondaryUserSetupWidget( { Widget } ) {
@@ -40,21 +40,21 @@ export default function SecondaryUserSetupWidget( { Widget } ) {
 	const { enableSecondaryUserAudienceGroup } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const handleRetry = () => {
+	const handleRetry = async () => {
 		setSetupError( null );
-		enableSecondaryUserAudienceGroup().then( ( result ) => {
-			if ( result?.error ) {
-				setSetupError( result.error );
-			}
-		} );
+		const { error } = await enableSecondaryUserAudienceGroup();
+		if ( error ) {
+			setSetupError( error );
+		}
 	};
 
 	useMount( () => {
-		enableSecondaryUserAudienceGroup().then( ( result ) => {
-			if ( result?.error ) {
-				setSetupError( result.error );
+		( async () => {
+			const { error } = await enableSecondaryUserAudienceGroup();
+			if ( error ) {
+				setSetupError( error );
 			}
-		} );
+		} )();
 	} );
 
 	if ( setupError ) {

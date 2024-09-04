@@ -152,7 +152,10 @@ function AudienceSegmentationErrorWidget( {
 
 AudienceSegmentationErrorWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	errors: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	errors: PropTypes.oneOfType( [
+		PropTypes.object,
+		PropTypes.arrayOf( PropTypes.object ),
+	] ).isRequired,
 	onRetry: PropTypes.func,
 	showRetryButton: PropTypes.bool,
 };

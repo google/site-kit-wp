@@ -293,13 +293,10 @@ describe( 'ErrorNotice', () => {
 					},
 				} );
 
-				await act(
-					async () =>
-						await untilResolved(
-							registry,
-							CORE_USER
-						).getAudienceSettings()
-				);
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getAudienceSettings();
 
 				expect(
 					registry

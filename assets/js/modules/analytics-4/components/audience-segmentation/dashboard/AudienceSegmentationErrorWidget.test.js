@@ -174,7 +174,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should retry button when `onRetry` prop is passed', async () => {
+	it( 'should render a retry button when `onRetry` and `showRetryButton` props are passed', async () => {
 		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{
 				code: 'test-error-code',
