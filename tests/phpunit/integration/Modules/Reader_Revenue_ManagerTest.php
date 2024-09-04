@@ -127,7 +127,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 	public function test_get_publications__url() {
 		$filter = '';
-		// Set the Search console option.
+
+		// Set the Search Console option.
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
 
 		FakeHttp::fake_google_http_handler(
@@ -179,7 +180,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 	public function test_get_publications__domain() {
 		$filter = '';
-		// Set the Search console option.
+
+		// Set the Search Console option.
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'sc-domain:example.com' ) );
 
 		FakeHttp::fake_google_http_handler(
