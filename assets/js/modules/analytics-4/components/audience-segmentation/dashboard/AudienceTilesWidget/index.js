@@ -30,7 +30,6 @@ import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
-import { useInView } from '../../../../../../hooks/useInView';
 
 function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
@@ -45,14 +44,12 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 		useState( false );
 	const { maybeSyncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const inView = useInView();
-
 	useEffect( () => {
-		if ( inView && ! availableAudiencesSynced ) {
+		if ( ! availableAudiencesSynced ) {
 			maybeSyncAvailableAudiences();
 			setAvailableAudiencesSynced( true );
 		}
-	}, [ inView, availableAudiencesSynced, maybeSyncAvailableAudiences ] );
+	}, [ availableAudiencesSynced, maybeSyncAvailableAudiences ] );
 
 	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
 		availableAudiences?.includes( audience )
