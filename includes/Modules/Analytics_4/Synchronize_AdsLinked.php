@@ -135,10 +135,6 @@ class Synchronize_AdsLinked {
 	 * @since 1.124.0
 	 */
 	public function maybe_schedule_synchronize_ads_linked() {
-		if ( is_admin() && 'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page' ) ) {
-			return;
-		}
-
 		$analytics_4_connected  = $this->analytics_4->is_connected();
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_ADS_LINKED );
 
