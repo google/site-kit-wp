@@ -45,7 +45,9 @@ export default function NoAudienceBanner( { hasConfigurableAudiences } ) {
 			<DescriptionContent
 				hasConfigurableAudiences={ hasConfigurableAudiences }
 			/>
-			<ActionContent />
+			<ActionContent
+				hasConfigurableAudiences={ hasConfigurableAudiences }
+			/>
 		</LeanCTABanner>
 	);
 }

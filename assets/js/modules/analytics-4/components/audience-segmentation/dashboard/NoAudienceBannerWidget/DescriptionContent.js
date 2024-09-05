@@ -81,6 +81,7 @@ export default function DescriptionContent( { hasConfigurableAudiences } ) {
 			);
 		}
 
+		// The user either has configured audiences (which no longer exist), or is an authenticated user who has previously populated their configured audiences.
 		return (
 			<p>
 				{ createInterpolateElement(
