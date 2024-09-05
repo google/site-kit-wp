@@ -16,7 +16,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 /**
  * Class providing report implementation for available events for conversion reporting.
  *
- * @since n.e.x.t
+ * @since 1.135.0
  * @access private
  * @ignore
  */
@@ -47,7 +47,7 @@ class Conversion_Reporting_Events_Sync {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 *
 	 * @param Settings    $settings  Settings module settings instance.
 	 * @param Analytics_4 $analytics Analytics 4 module instance.
@@ -63,7 +63,7 @@ class Conversion_Reporting_Events_Sync {
 	/**
 	 * Checks for available events and save them in settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	public function check_for_events() {
 		$report          = $this->get_report();
@@ -75,7 +75,7 @@ class Conversion_Reporting_Events_Sync {
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( empty( $report->rowCount ) ) {
-			$this->settings->merge( array( 'recentEvents' => array() ) );
+			$this->settings->merge( array( 'detectedEvents' => array() ) );
 
 			return;
 		}
@@ -84,13 +84,13 @@ class Conversion_Reporting_Events_Sync {
 			$detected_events[] = $row['dimensionValues'][0]['value'];
 		}
 
-		$this->settings->merge( array( 'recentEvents' => $detected_events ) );
+		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
 	}
 
 	/**
 	 * Retrieves the GA4 report for filtered events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	protected function get_report() {
 		$options = array(

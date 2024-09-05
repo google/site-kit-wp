@@ -165,6 +165,12 @@
 			letter-spacing: $ls-xs;
 			line-height: $lh-label-sm;
 		}
+
+		.googlesitekit-error-text {
+			p {
+				font-size: $fs-label-md;
+			}
+		}
 	}
 
 	.googlesitekit-selection-panel-footer__content {

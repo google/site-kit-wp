@@ -26,12 +26,16 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { getContextScrollTop } from '../../../../util/scroll';
-import SubtleNotification from '../../../analytics-4/components/SubtleNotification';
+import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
+import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 
-export default function PAXSetupSuccessSubtleNotification() {
+export default function PAXSetupSuccessSubtleNotification( {
+	id,
+	Notification,
+} ) {
 	const breakpoint = useBreakpoint();
 
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
@@ -60,21 +64,30 @@ export default function PAXSetupSuccessSubtleNotification() {
 	}
 
 	return (
-		<SubtleNotification
-			title={ __(
-				'Your Ads campaign was successfully set up!',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Track your conversions, measure your campaign results and make the most of your ad spend',
-				'google-site-kit'
-			) }
-			onDismiss={ onDismiss }
-			additionalCTA={
-				<Button onClick={ scrollToWidget }>
-					{ __( 'Show me', 'google-site-kit' ) }
-				</Button>
-			}
-		/>
+		<Notification>
+			<SubtleNotification
+				title={ __(
+					'Your Ads campaign was successfully set up!',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Track your conversions, measure your campaign results and make the most of your ad spend',
+					'google-site-kit'
+				) }
+				dismissCTA={
+					<Dismiss
+						id={ id }
+						primary={ false }
+						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+						onDismiss={ onDismiss }
+					/>
+				}
+				additionalCTA={
+					<Button onClick={ scrollToWidget }>
+						{ __( 'Show me', 'google-site-kit' ) }
+					</Button>
+				}
+			/>
+		</Notification>
 	);
 }

@@ -267,30 +267,26 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	private function get_publication_filter() {
 		$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
 		$sc_property_id = $sc_settings['propertyID'];
-		$raw_url        = str_replace(
-			array( 'sc-domain:', 'https://', 'http://', 'www.' ),
-			'',
-			$sc_property_id
-		);
 
 		if ( 0 === strpos( $sc_property_id, 'sc-domain:' ) ) { // Domain property.
+			$host   = str_replace( 'sc-domain:', '', $sc_property_id );
 			$filter = join(
 				' OR ',
 				array_map(
-					function ( $host ) {
-						return sprintf( 'domain = "%s"', $host );
+					function ( $domain ) {
+						return sprintf( 'domain = "%s"', $domain );
 					},
-					URL::permute_site_hosts( $raw_url )
+					URL::permute_site_hosts( $host )
 				)
 			);
 		} else { // URL property.
 			$filter = join(
 				' OR ',
 				array_map(
-					function ( $host ) {
-						return sprintf( 'site_url = "%s"', $host );
+					function ( $url ) {
+						return sprintf( 'site_url = "%s"', $url );
 					},
-					URL::permute_site_url( $raw_url )
+					URL::permute_site_url( $sc_property_id )
 				)
 			);
 		}
