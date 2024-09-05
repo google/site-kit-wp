@@ -45,11 +45,11 @@ class Conversion_Reporting_Provider {
 	private Conversion_Reporting_Cron $cron;
 
 	/**
-	 * Conversion_Reporting_Events_Check instance.
+	 * Conversion_Reporting_Events_Sync instance.
 	 *
-	 * @var Conversion_Reporting_Events_Check
+	 * @var Conversion_Reporting_Events_Sync
 	 */
-	private Conversion_Reporting_Events_Sync $events_check;
+	private Conversion_Reporting_Events_Sync $events_sync;
 
 	/**
 	 * Constructor.
@@ -68,8 +68,8 @@ class Conversion_Reporting_Provider {
 		$this->user_options = $user_options;
 		$this->analytics    = $analytics;
 
-		$this->events_check = new Conversion_Reporting_Events_Sync( $settings, $this->analytics );
-		$this->cron         = new Conversion_Reporting_Cron( fn() => $this->cron_callback() );
+		$this->events_sync = new Conversion_Reporting_Events_Sync( $settings, $this->analytics );
+		$this->cron        = new Conversion_Reporting_Cron( fn() => $this->cron_callback() );
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Conversion_Reporting_Provider {
 		$owner_id     = $this->analytics->get_owner_id();
 		$restore_user = $this->user_options->switch_user( $owner_id );
 
-		$this->events_check->check_for_events();
+		$this->events_sync->check_for_events();
 
 		$restore_user();
 	}
