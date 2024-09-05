@@ -658,6 +658,16 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
+	 * Checks if the audience group setup is in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the audience group setup is in progress, otherwise false.
+	 */
+	isSettingUpAudiences: ( state ) => state.isSettingUpAudiences,
+
+	/**
 	 * Checks if the given audience is a default audience.
 	 *
 	 * @since 1.127.0
@@ -708,16 +718,6 @@ const baseSelectors = {
 			return audience?.audienceType === 'SITE_KIT_AUDIENCE';
 		}
 	),
-
-	/**
-	 * Checks if the audience group setup is in progress.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} True if the audience group setup is in progress, otherwise false.
-	 */
-	isSettingUpAudiences: ( state ) => state.isSettingUpAudiences,
 
 	/**
 	 * Checks if the given audience is a user-defined audience.

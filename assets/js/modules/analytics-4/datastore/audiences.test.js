@@ -612,6 +612,60 @@ describe( 'modules/analytics-4 audiences', () => {
 				} );
 			} );
 
+			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: [],
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						[ availableUserAudienceFixture ],
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( {}, { options } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSettingUpAudiences()
+				).toBe( false );
+
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSettingUpAudiences()
+				).toBe( true );
+
+				await promise;
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSettingUpAudiences()
+				).toBe( false );
+			} );
+
 			it( 'syncs `availableAudiences`', async () => {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiencesFixture,
@@ -1573,6 +1627,60 @@ describe( 'modules/analytics-4 audiences', () => {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
+			} );
+
+			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: [],
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						[ availableUserAudienceFixture ],
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( {}, { options } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSettingUpAudiences()
+				).toBe( false );
+
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableSecondaryUserAudienceGroup();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSettingUpAudiences()
+				).toBe( true );
+
+				await promise;
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSettingUpAudiences()
+				).toBe( false );
 			} );
 
 			it( 'does not sync `availableAudiences` for unauthenticated user', async () => {
