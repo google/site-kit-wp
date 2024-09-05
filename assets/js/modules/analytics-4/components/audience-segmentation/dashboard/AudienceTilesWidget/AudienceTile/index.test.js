@@ -24,8 +24,6 @@ import {
 	act,
 	fireEvent,
 	render,
-	waitFor,
-	screen,
 } from '../../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -33,7 +31,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	waitForDefaultTimeouts,
 } from '../../../../../../../../../tests/js/utils';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
@@ -130,10 +127,7 @@ describe( 'AudienceTile', () => {
 			total: 1768,
 		},
 		topContentTitles: {
-			'/en/test-post-1/':
-				'Test Post 1 - This is a very long title to test the audience segmentation tile that it wraps up and doesn not extend to the next line. It should show ellipsis instead. It must also have some gap at the right side so that the post title does not collide with the user count being shown next to it.',
-			'/en/test-post-2/': 'Test Post 2',
-			'/en/test-post-3/': 'Test Post 3',
+			'/en/test-post-1/': 'Test Post 1',
 		},
 		isZeroData: false,
 		isPartialData: false,
@@ -193,25 +187,19 @@ describe( 'AudienceTile', () => {
 			} );
 	} );
 
-	afterEach( () => {
-		jest.clearAllMocks();
-	} );
-
-	it( 'should render the AudienceTile component', async () => {
-		const { container, waitForRegistry } = render(
+	it( 'should render the AudienceTile component', () => {
+		const { container } = render(
 			<WidgetWithComponentProps { ...props } />,
 			{
 				registry,
 			}
 		);
 
-		await waitForRegistry();
-
 		expect( container ).toMatchSnapshot();
 	} );
 
 	describe( 'AudienceErrorModal', () => {
-		it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
+		it( 'should show the OAuth error modal when the required scopes are not granted', () => {
 			provideSiteInfo( registry, {
 				setupErrorCode: 'access_denied',
 			} );
@@ -220,51 +208,43 @@ describe( 'AudienceTile', () => {
 				grantedScopes: [],
 			} );
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				render( <WidgetWithComponentProps { ...props } />, {
+			const { getByRole, getByText } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
 					registry,
-				} );
-			} );
+				}
+			);
 
 			expect(
-				screen.getByRole( 'button', { name: /update/i } )
+				getByRole( 'button', { name: /update/i } )
 			).toBeInTheDocument();
 
 			act( () => {
-				fireEvent.click(
-					screen.getByRole( 'button', { name: /update/i } )
-				);
+				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
 			} );
 
 			// Verify the error is an OAuth error variant.
-			await waitFor( () => {
-				expect(
-					screen.getByText( /Analytics update failed/i )
-				).toBeInTheDocument();
+			expect(
+				getByText( /Analytics update failed/i )
+			).toBeInTheDocument();
 
-				// Verify the "Get help" link is displayed.
-				expect( screen.getByText( /get help/i ) ).toBeInTheDocument();
+			// Verify the "Get help" link is displayed.
+			expect( getByText( /get help/i ) ).toBeInTheDocument();
 
-				expect(
-					screen.getByRole( 'link', { name: /get help/i } )
-				).toHaveAttribute(
-					'href',
-					registry
-						.select( CORE_SITE )
-						.getErrorTroubleshootingLinkURL( {
-							code: 'access_denied',
-						} )
-				);
+			expect(
+				getByRole( 'link', { name: /get help/i } )
+			).toHaveAttribute(
+				'href',
+				registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+					code: 'access_denied',
+				} )
+			);
 
-				// Verify the "Retry" button is displayed.
-				expect( screen.getByText( /retry/i ) ).toBeInTheDocument();
-			} );
-
-			await act( waitForDefaultTimeouts );
+			// Verify the "Retry" button is displayed.
+			expect( getByText( /retry/i ) ).toBeInTheDocument();
 		} );
 
-		it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
+		it( 'should show the insufficient permission error modal when the user does not have the required permissions', () => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -276,42 +256,34 @@ describe( 'AudienceTile', () => {
 				error,
 			} );
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				render( <WidgetWithComponentProps { ...props } />, {
+			const { getByRole, getByText } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
 					registry,
-				} );
-			} );
+				}
+			);
 
 			expect(
-				screen.getByRole( 'button', { name: /update/i } )
+				getByRole( 'button', { name: /update/i } )
 			).toBeInTheDocument();
 
 			act( () => {
-				fireEvent.click(
-					screen.getByRole( 'button', { name: /update/i } )
-				);
+				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
 			} );
 
 			// Verify the error is "Insufficient permissions" variant.
-			await waitFor( () => {
-				expect(
-					screen.getByText( /Insufficient permissions/i )
-				).toBeInTheDocument();
+			expect(
+				getByText( /Insufficient permissions/i )
+			).toBeInTheDocument();
 
-				// Verify the "Get help" link is displayed.
-				expect( screen.getByText( /get help/i ) ).toBeInTheDocument();
+			// Verify the "Get help" link is displayed.
+			expect( getByText( /get help/i ) ).toBeInTheDocument();
 
-				// Verify the "Request access" button is displayed.
-				expect(
-					screen.getByText( /request access/i )
-				).toBeInTheDocument();
-			} );
-
-			await act( waitForDefaultTimeouts );
+			// Verify the "Request access" button is displayed.
+			expect( getByText( /request access/i ) ).toBeInTheDocument();
 		} );
 
-		it( 'should show the generic error modal when an internal server error occurs', async () => {
+		it( 'should show the generic error modal when an internal server error occurs', () => {
 			const error = {
 				code: 'internal_server_error',
 				message: 'Internal server error',
@@ -323,36 +295,30 @@ describe( 'AudienceTile', () => {
 				error,
 			} );
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				render( <WidgetWithComponentProps { ...props } />, {
+			const { getByRole, getByText } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
 					registry,
-				} );
-			} );
+				}
+			);
 
 			expect(
-				screen.getByRole( 'button', { name: /update/i } )
+				getByRole( 'button', { name: /update/i } )
 			).toBeInTheDocument();
 
 			act( () => {
-				fireEvent.click(
-					screen.getByRole( 'button', { name: /update/i } )
-				);
+				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
 			} );
 
 			// Verify the error is a generic error variant.
-			await waitFor( () => {
-				expect(
-					screen.getByText( /Failed to enable metric/i )
-				).toBeInTheDocument();
+			expect(
+				getByText( /Failed to enable metric/i )
+			).toBeInTheDocument();
 
-				// Verify the "Retry" button is displayed.
-				expect(
-					screen.getByRole( 'button', { name: /retry/i } )
-				).toBeInTheDocument();
-			} );
-
-			await act( waitForDefaultTimeouts );
+			// Verify the "Retry" button is displayed.
+			expect(
+				getByRole( 'button', { name: /retry/i } )
+			).toBeInTheDocument();
 		} );
 	} );
 } );
