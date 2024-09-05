@@ -48,6 +48,21 @@ class Uninstallation {
 	private $options;
 
 	/**
+	 * List of scheduled events.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	const SCHEDULED_EVENTS = array(
+		Conversion_Reporting_Cron::CRON_ACTION,
+		OAuth_Client::CRON_REFRESH_PROFILE_DATA,
+		Remote_Features_Cron::CRON_ACTION,
+		Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED,
+		Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED,
+		Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY,
+	);
+
+	/**
 	 * Constructor.
 	 *
 	 * This class and its logic must be instantiated early in the WordPress
@@ -117,16 +132,7 @@ class Uninstallation {
 	 * @since n.e.x.t
 	 */
 	private function clear_scheduled_events() {
-		$events = array(
-			Conversion_Reporting_Cron::CRON_ACTION,
-			OAuth_Client::CRON_REFRESH_PROFILE_DATA,
-			Remote_Features_Cron::CRON_ACTION,
-			Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED,
-			Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED,
-			Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY,
-		);
-
-		foreach ( $events as $event ) {
+		foreach ( self::SCHEDULED_EVENTS as $event ) {
 			wp_clear_scheduled_hook( $event );
 		}
 	}
