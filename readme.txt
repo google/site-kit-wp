@@ -111,6 +111,31 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 = 1.135.0 =
 
-TBA
+**Added**
+
+* Add a cron task to fetch Analytics report data for conversion events reporting. See [#9130](https://github.com/google/site-kit-wp/issues/9130).
+
+**Enhanced**
+
+* Add an "Edit in Reader Revenue Manager" link to the RRM module's settings view screen. See [#9192](https://github.com/google/site-kit-wp/issues/9192).
+* Add `conversionReporting` feature flag to plugin. See [#9152](https://github.com/google/site-kit-wp/issues/9152).
+* Add support for Analytics Conversion Report Events in data store. See [#9132](https://github.com/google/site-kit-wp/issues/9132).
+* Fix the undefined array key "name" warning. See [#9113](https://github.com/google/site-kit-wp/issues/9113).
+* Don't show the Audiences Widget Area on the dashboard when the "Display visitor groups in dashboard" switch is toggled off in the Settings section. See [#9065](https://github.com/google/site-kit-wp/issues/9065).
+* Refactor PAX notification to use new notification infrastructure. See [#8980](https://github.com/google/site-kit-wp/issues/8980).
+* Update Google Tag scope notifications to use new notifications infrastructure. See [#8979](https://github.com/google/site-kit-wp/issues/8979).
+* Update banner notification code for the "Unsatisfied Scopes Alert" banner notification. See [#8978](https://github.com/google/site-kit-wp/issues/8978).
+* Optimize Audience Segmentation related API calls to be made only when the area is being viewed. See [#8879](https://github.com/google/site-kit-wp/issues/8879).
+* Add the `PublicationOnboardingStateNotice` component, rendering a notice based on the onboarding state of the current publication and presented in Storybook. See [#8838](https://github.com/google/site-kit-wp/issues/8838).
+* Fix PHP 8.1 deprecation notices. See [#8589](https://github.com/google/site-kit-wp/issues/8589).
+* Enhance Audience Segmentation CTAs to not appear on shared dashboard. See [#8174](https://github.com/google/site-kit-wp/issues/8174).
+* Show a notice in the Audience Creation Notice when the Analytics edit scope is missing, and proceed directly to the OAuth flow upon clicking a CTA to create an audience. See [#8165](https://github.com/google/site-kit-wp/issues/8165).
+* Show an Audience Tile in an error state if an error occurred while retrieving its data; show a combined error state if all audiences have an error. See [#8147](https://github.com/google/site-kit-wp/issues/8147).
+
+**Fixed**
+
+* Ensure the list of publications in the Reader Revenue Manager setup and settings screens only shows publications relevant to the current site. See [#9247](https://github.com/google/site-kit-wp/issues/9247).
+* Update the PAX library version. See [#9237](https://github.com/google/site-kit-wp/issues/9237).
+* Enhance stability of visual regression test runs. See [#9211](https://github.com/google/site-kit-wp/issues/9211).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

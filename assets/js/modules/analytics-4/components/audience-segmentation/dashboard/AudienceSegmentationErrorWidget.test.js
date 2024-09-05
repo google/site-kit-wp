@@ -25,6 +25,7 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserInfo,
+	fireEvent,
 } from '../../../../../../../tests/js/test-utils';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
@@ -171,5 +172,44 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 			queryByText( 'Your visitor groups data loading failed' )
 		).not.toBeInTheDocument();
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render a retry button when `onRetry` and `showRetryButton` props are passed', async () => {
+		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+			},
+			'getAccountID'
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+
+		const handleRetrySpy = jest.fn();
+
+		const { container, getByText, getByRole, waitForRegistry } = render(
+			<WidgetWithComponentProps
+				errors={ errors }
+				onRetry={ handleRetrySpy }
+				showRetryButton
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			getByText( 'Your visitor groups data loading failed' )
+		).toBeInTheDocument();
+
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+		expect( handleRetrySpy ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
