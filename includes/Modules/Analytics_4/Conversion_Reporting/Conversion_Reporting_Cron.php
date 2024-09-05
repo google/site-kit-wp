@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting;
 /**
  * Class providing cron implementation for conversion reporting.
  *
- * @since n.e.x.t
+ * @since 1.135.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Conversion_Reporting_Cron {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 *
 	 * @param callable $callback Function to call on the cron action.
 	 */
@@ -51,7 +51,7 @@ class Conversion_Reporting_Cron {
 	/**
 	 * Schedules cron if not already set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	public function maybe_schedule_cron() {
 		if ( ! wp_next_scheduled( self::CRON_ACTION ) && ! wp_installing() ) {

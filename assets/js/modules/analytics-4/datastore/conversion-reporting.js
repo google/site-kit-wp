@@ -26,7 +26,7 @@ export const selectors = {
 	/**
 	 * Checks whether the provided conversion reporting events are available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 *
 	 * @param {Object}               state  Data store's state.
 	 * @param {string|Array<string>} events Conversion reporting events to check.

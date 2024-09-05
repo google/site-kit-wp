@@ -23,7 +23,7 @@ import Title from '../common/Title';
 
 export default function NotificationError( { title, description, actions } ) {
 	return (
-		<Grid className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+		<Grid>
 			<Row>
 				<Cell
 					smSize={ 3 }

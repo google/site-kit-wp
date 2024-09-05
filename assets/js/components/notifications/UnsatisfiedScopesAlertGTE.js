@@ -64,7 +64,7 @@ export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
 	}
 
 	return (
-		<Notification>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
 			<NotificationError
 				title={ __(
 					'Site Kit needs additional permissions to detect updates to tags on your site',
