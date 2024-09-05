@@ -74,12 +74,12 @@ export default function GatheringDataNotification( { id, Notification } ) {
 	}
 
 	return (
-		<Notification>
+		<Notification className="googlesitekit-publisher-win">
 			<NotificationWithSmallSVG
 				title={ gatheringDataTitle }
 				description={
 					<Description
-						description={ sprintf(
+						text={ sprintf(
 							/* translators: %s: the number of hours the site can be in a gathering data state */
 							_n(
 								'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
