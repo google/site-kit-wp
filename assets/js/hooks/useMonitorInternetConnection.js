@@ -25,11 +25,11 @@ import { useLifecycles, useInterval } from 'react-use';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 
@@ -53,7 +53,7 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			const connectionCheckResponse = await API.apiFetch( {
+			const connectionCheckResponse = await apiFetch( {
 				path: '/google-site-kit/v1/',
 			} );
 

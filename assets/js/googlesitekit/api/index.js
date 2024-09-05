@@ -355,7 +355,6 @@ const API = {
 	set,
 	setUsingCache,
 	usingCache,
-	apiFetch,
 };
 
 export default API;
