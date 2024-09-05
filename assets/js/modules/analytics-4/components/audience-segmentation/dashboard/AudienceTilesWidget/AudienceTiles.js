@@ -30,7 +30,6 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
-	Fragment,
 } from '@wordpress/element';
 
 /**
@@ -50,8 +49,8 @@ import InfoTooltip from '../../../../../../components/InfoTooltip';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
 import AudienceTileError from './AudienceTile/AudienceTileError';
-import PlaceholderTile from './PlaceholderTile';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import MaybePlaceholderTile from './MaybePlaceholderTile';
 import useAudienceTilesReports from '../../../../hooks/useAudienceTilesReports';
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
@@ -474,7 +473,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 					</TabBar>
 				) }
 			<div className="googlesitekit-widget-audience-tiles__body">
-				{ allTilesError && (
+				{ allTilesError && ! loading && (
 					<AudienceSegmentationErrorWidget
 						Widget={ Widget }
 						errors={ [
@@ -484,7 +483,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						] }
 					/>
 				) }
-				{ allTilesError === false &&
+				{ ( allTilesError === false || loading ) &&
 					visibleAudiences.map( ( audienceResourceName, index ) => {
 						// Conditionally render only the selected audience tile on mobile.
 						if ( isTabbedBreakpoint && index !== activeTile ) {
@@ -619,20 +618,14 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							/>
 						);
 					} ) }
-				{ ! isTabbedBreakpoint &&
-					allTilesError === false &&
-					visibleAudiences.length === 1 && (
-						<Fragment>
-							{ loading && (
-								<Widget noPadding>
-									<AudienceTileLoading />
-								</Widget>
-							) }
-							{ ! loading && (
-								<PlaceholderTile Widget={ Widget } />
-							) }
-						</Fragment>
-					) }
+				{ ! isTabbedBreakpoint && (
+					<MaybePlaceholderTile
+						Widget={ Widget }
+						loading={ loading }
+						allTilesError={ allTilesError }
+						visibleAudienceCount={ visibleAudiences.length }
+					/>
+				) }
 			</div>
 		</Widget>
 	);

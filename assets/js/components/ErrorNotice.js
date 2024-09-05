@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,6 +37,7 @@ import ErrorText from './ErrorText';
 
 export default function ErrorNotice( {
 	error,
+	hasButton = false,
 	storeName,
 	message = error.message,
 	noPrefix = false,
@@ -63,7 +64,17 @@ export default function ErrorNotice( {
 		return null;
 	}
 
-	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
+	const shouldDisplayRetry =
+		hasButton && isErrorRetryable( error, selectorData );
+
+	// Append "Try again" messaging if no retry button is present.
+	if ( ! hasButton ) {
+		message = sprintf(
+			/* translators: %s: Error message from Google API. */
+			__( '%s. Please try again.', 'google-site-kit' ),
+			message
+		);
+	}
 
 	return (
 		<Fragment>
@@ -88,6 +99,7 @@ ErrorNotice.propTypes = {
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
+	hasButton: PropTypes.bool,
 	storeName: PropTypes.string,
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
