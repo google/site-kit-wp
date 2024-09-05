@@ -28,6 +28,8 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 const { accountSummaries, webDataStreamsBatch } = fixtures;
 const accounts = accountSummaries;
@@ -36,7 +38,11 @@ const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
 
 function Template() {
-	return <ModuleSetup moduleSlug="analytics-4" />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<ModuleSetup moduleSlug="analytics-4" />
+		</ViewContextProvider>
+	);
 }
 
 export const Default = Template.bind( null );

@@ -171,7 +171,7 @@ const baseActions = {
 		function* ( timestamp ) {
 			const registry = yield getRegistry();
 
-			yield registry
+			registry
 				.dispatch( CORE_SITE )
 				.setCacheItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
 					ttl: FEATURE_TOUR_COOLDOWN_SECONDS,

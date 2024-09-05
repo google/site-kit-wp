@@ -27,9 +27,14 @@ import { withQuery } from '@storybook/addon-queryparams';
 import PAXSetupSuccessSubtleNotification from './PAXSetupSuccessSubtleNotification';
 import { WithTestRegistry } from '../../../../../../tests/js/utils';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'gathering-data-notification'
+)( PAXSetupSuccessSubtleNotification );
 
 function Template( { ...args } ) {
-	return <PAXSetupSuccessSubtleNotification { ...args } />;
+	return <NotificationWithComponentProps { ...args } />;
 }
 
 export const Ads = Template.bind( {} );

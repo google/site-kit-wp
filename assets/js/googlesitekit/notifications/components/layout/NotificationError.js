@@ -1,7 +1,5 @@
 /**
- * AdSense Error Notices component.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +17,28 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import PropTypes from 'prop-types';
+import { Cell, Grid, Row } from '../../../../material-components';
+import BannerIcon from '../common/BannerIcon';
+import Title from '../common/Title';
 
-export default function ErrorNotices( { hasButton = false } ) {
+export default function NotificationError( { title, description, actions } ) {
 	return (
-		<StoreErrorNotices
-			hasButton={ hasButton }
-			moduleSlug="adsense"
-			storeName={ MODULES_ADSENSE }
-		/>
+		<Grid>
+			<Row>
+				<Cell
+					smSize={ 3 }
+					mdSize={ 7 }
+					lgSize={ 11 }
+					className="googlesitekit-publisher-win__content"
+				>
+					<Title title={ title }></Title>
+
+					{ description }
+
+					{ actions }
+				</Cell>
+				<BannerIcon type="win-error" />
+			</Row>
+		</Grid>
 	);
 }
-
-ErrorNotices.propTypes = {
-	hasButton: PropTypes.bool,
-};
