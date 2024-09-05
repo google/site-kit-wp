@@ -126,6 +126,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
+	const audienceSegmentationSetupComplete = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupComplete()
+	);
+
 	const handleDismissClick = async () => {
 		showTooltip();
 
@@ -182,6 +186,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
+		audienceSegmentationSetupComplete ||
 		configuredAudiences === undefined ||
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
