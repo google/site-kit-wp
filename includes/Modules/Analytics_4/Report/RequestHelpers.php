@@ -268,6 +268,7 @@ class RequestHelpers {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
+				'audienceResourceName',
 				'adSourceName',
 				'city',
 				'country',
