@@ -92,7 +92,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
+		select( CORE_USER ).isPromptDismissed(
 			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
 		)
 	);
@@ -119,10 +119,9 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 
 			showTooltip();
 
-			dismissPrompt(
-				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-				expirationInSeconds
-			);
+			dismissPrompt( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY, {
+				expiresInSeconds: expirationInSeconds,
+			} );
 		} );
 	}, [ dismissCount, dismissPrompt, showTooltip, viewContext ] );
 
@@ -138,7 +137,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 	const showBanner =
 		isDismissed === false &&
 		canActivateRRMModule &&
-		dismissedPromptsLoaded !== undefined;
+		dismissedPromptsLoaded === true;
 
 	useEffect( () => {
 		if ( showBanner ) {
