@@ -53,9 +53,13 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Search_Console extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Data_Available_State {
-	use Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait, Module_With_Data_Available_State_Trait;
+final class Search_Console extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Data_Available_State {
+	use Module_With_Scopes_Trait;
+	use Module_With_Settings_Trait;
+	use Google_URL_Matcher_Trait;
+	use Module_With_Assets_Trait;
+	use Module_With_Owner_Trait;
+	use Module_With_Data_Available_State_Trait;
 
 	/**
 	 * Module slug name.
@@ -73,7 +77,7 @@ final class Search_Console extends Module
 		// Detect and store Search Console property when receiving token for the first time.
 		add_action(
 			'googlesitekit_authorize_user',
-			function( array $token_response ) {
+			function ( array $token_response ) {
 				if ( ! current_user_can( Permissions::SETUP ) ) {
 					return;
 				}
@@ -103,7 +107,7 @@ final class Search_Console extends Module
 
 		// Ensure that the data available state is reset when the property changes.
 		$this->get_settings()->on_change(
-			function( $old_value, $new_value ) {
+			function ( $old_value, $new_value ) {
 				if (
 					is_array( $old_value ) &&
 					is_array( $new_value ) &&
@@ -117,7 +121,7 @@ final class Search_Console extends Module
 		// Ensure that a Search Console property must be set at all times.
 		add_filter(
 			'googlesitekit_setup_complete',
-			function( $complete ) {
+			function ( $complete ) {
 				if ( ! $complete ) {
 					return $complete;
 				}
@@ -299,7 +303,7 @@ final class Search_Console extends Module
 				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				$entries     = Sort::case_insensitive_list_sort(
 					$this->map_sites( (array) $response->getSiteEntry() ),
-					'name'
+					'siteURL' // Must match the mapped value.
 				);
 				$strict      = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
 				$current_url = $this->context->get_reference_site_url();
@@ -476,7 +480,7 @@ final class Search_Console extends Module
 		if ( count( $properties ) > 1 ) {
 			$url_properties = array_filter(
 				$properties,
-				function( $property ) {
+				function ( $property ) {
 					return 0 !== strpos( $property['siteURL'], 'sc-domain:' );
 				}
 			);
@@ -612,5 +616,4 @@ final class Search_Console extends Module
 
 		return true;
 	}
-
 }

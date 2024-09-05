@@ -24,16 +24,19 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import {
-	SetupSuccessSubtleNotification,
-	PAXSetupSuccessSubtleNotification,
-} from '../../modules/ads/components/notifications/';
 import { useFeature } from '../../hooks/useFeature';
+import { SetupSuccessSubtleNotification } from '../../modules/ads/components/notifications/';
+import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
+import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
+import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
+import useViewContext from '../../hooks/useViewContext';
+import Notifications from './Notifications';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function SubtleNotifications() {
+	const viewContext = useViewContext();
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
+	const rrmModuleEnabled = useFeature( 'rrmModule' );
 
 	// Each notification component rendered here has its own logic to determine
 	// whether it should be displayed; in most cases none of these components
@@ -49,7 +52,11 @@ export default function SubtleNotifications() {
 			) }
 			<GA4AdSenseLinkedNotification />
 			<SetupSuccessSubtleNotification />
-			<PAXSetupSuccessSubtleNotification />
+			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
+			<Notifications
+				viewContext={ viewContext }
+				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
+			/>
 		</Fragment>
 	);
 }

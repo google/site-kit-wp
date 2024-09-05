@@ -35,5 +35,4 @@ trait User_Aware_Interface_ContractTests {
 		$restore_original_user_id();
 		$this->assertEquals( $user_id_a, $user_aware->get_user_id() );
 	}
-
 }

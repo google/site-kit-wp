@@ -47,5 +47,4 @@ trait Method_Proxy_Trait {
 			return $return_value;
 		};
 	}
-
 }

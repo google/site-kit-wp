@@ -30,7 +30,7 @@
 		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
 		"test:storybook": "npm run test:js -- --testMatch '<rootDir>/.storybook/*.test.js'",
-		"pretest:e2e": "./bin/local-env/env-check.sh",
+		"pretest:e2e": "./bin/local-env/env-check.sh && ./tests/e2e/bin/test-docker-connectivity",
 		"test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./tests/e2e/script.js",
 		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
 		"test:e2e:watch": "npm run test:e2e -- --watch",
@@ -45,7 +45,8 @@
 		"lint:css-fix": "stylelint ./assets/sass ./.storybook/assets/sass --fix",
 		"env:start": "./bin/local-env/start.sh",
 		"env:stop": "./bin/local-env/stop.sh",
-		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
+		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site",
+		"postinstall": "patch-package"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
@@ -63,7 +64,7 @@
 	},
 	"lint-staged": {
 		"*.js": [
-			"eslint"
+			"eslint --config .eslintrc.staged.json"
 		],
 		"assets/sass/**/*.scss": [
 			"stylelint"
@@ -119,8 +120,8 @@
 		"@react-hook/merged-ref": "^1.3.0",
 		"@react-hook/window-size": "^3.0.7",
 		"@wordpress/api-fetch": "^3.18.0",
-		"@wordpress/compose": "^3.19.1",
-		"@wordpress/data": "^4.23.0",
+		"@wordpress/compose": "^3.25.3",
+		"@wordpress/data": "^4.27.3",
 		"@wordpress/dom-ready": "^2.10.0",
 		"@wordpress/element": "^2.20.3",
 		"@wordpress/i18n": "^3.14.0",
@@ -184,7 +185,7 @@
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^3.3.0",
 		"@wordpress/babel-preset-default": "^4.17.0",
-		"@wordpress/browserslist-config": "^2.7.0",
+		"@wordpress/browserslist-config": "^5.40.0",
 		"@wordpress/e2e-test-utils": "^4.11.0",
 		"@wordpress/eslint-plugin": "^7.1.0",
 		"@wordpress/jest-console": "^3.9.0",
@@ -200,7 +201,7 @@
 		"cross-env": "^7.0.3",
 		"css-loader": "^3.6.0",
 		"cssnano": "^4.1.10",
-		"dockerode": "^3.3.3",
+		"dockerode": "^4.0.2",
 		"element-internals-polyfill": "^1.3.5",
 		"eslint": "^7.32.0",
 		"eslint-import-resolver-alias": "^1.1.2",
@@ -222,7 +223,7 @@
 		"git-repo-info": "^2.1.1",
 		"glob": "^7.1.7",
 		"glob-to-regexp": "^0.4.1",
-		"google-pax-sdk": "1.0.9",
+		"google-pax-sdk": "1.0.12",
 		"husky": "^3.1.0",
 		"jest": "^26.6.3",
 		"jest-localstorage-mock": "^2.4.2",
@@ -232,10 +233,11 @@
 		"lint-staged": "^10.2.11",
 		"mini-css-extract-plugin": "^1.2.1",
 		"node-fetch": "^2.6.8",
+		"patch-package": "^8.0.0",
 		"postcss": "^8.4.31",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^4.0.0",
-		"postcss-preset-env": "^6.7.0",
+		"postcss-preset-env": "^9.5.11",
 		"prettier": "npm:wp-prettier@2.6.2",
 		"puppeteer": "^10.4.0",
 		"puppeteer-core": "^3.3.0",

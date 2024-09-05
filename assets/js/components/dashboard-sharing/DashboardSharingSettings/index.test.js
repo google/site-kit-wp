@@ -81,7 +81,7 @@ describe( 'DashboardSharingSettings', () => {
 			expect( container ).toHaveTextContent( 'Search Console' );
 		} );
 
-		it( 'should render the modules with user role select when the admin owns the modules', () => {
+		it( 'should render the modules with user role select when the admin owns the modules', async () => {
 			act( () => {
 				provideModules( registry, modules );
 				provideModuleRegistrations( registry );
@@ -107,9 +107,15 @@ describe( 'DashboardSharingSettings', () => {
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.receiveGetSettings( { ownerID: 1 } );
 			} );
-			const { container } = render( <DashboardSharingSettings />, {
-				registry,
-			} );
+
+			const { container, waitForRegistry } = render(
+				<DashboardSharingSettings />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			expect(
 				container.querySelector(
@@ -118,7 +124,7 @@ describe( 'DashboardSharingSettings', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should not render sharing management for a single admin environment', () => {
+		it( 'should not render sharing management for a single admin environment', async () => {
 			act( () => {
 				provideModules( registry, modules );
 				provideModuleRegistrations( registry );
@@ -144,9 +150,14 @@ describe( 'DashboardSharingSettings', () => {
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.receiveGetSettings( { ownerID: 1 } );
 			} );
-			const { container } = render( <DashboardSharingSettings />, {
-				registry,
-			} );
+			const { container, waitForRegistry } = render(
+				<DashboardSharingSettings />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			expect( container ).not.toHaveTextContent(
 				'Who can manage view access'

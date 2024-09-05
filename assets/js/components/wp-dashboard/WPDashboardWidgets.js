@@ -40,6 +40,7 @@ import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
+import DataBlockGroup from '../DataBlockGroup';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
@@ -96,7 +97,7 @@ export default function WPDashboardWidgets() {
 		analyticsModuleActive && analyticsModuleConnected;
 
 	return (
-		<div
+		<DataBlockGroup
 			className={ classnames(
 				'googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--twoup',
 				{
@@ -131,6 +132,6 @@ export default function WPDashboardWidgets() {
 					<WPDashboardPopularPagesGA4Widget />
 				</Fragment>
 			) }
-		</div>
+		</DataBlockGroup>
 	);
 }

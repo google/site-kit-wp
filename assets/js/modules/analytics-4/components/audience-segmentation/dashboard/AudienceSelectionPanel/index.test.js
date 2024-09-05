@@ -21,29 +21,38 @@
  */
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../../googlesitekit/constants';
 import {
 	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
 	provideUserAuthentication,
+	provideUserInfo,
 } from '../../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
 import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import AudienceSelectionPanel from '.';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
 
 	const baseReportOptions = {
-		endDate: '2024-03-27',
 		startDate: '2024-02-29',
+		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
 	};
 
@@ -65,7 +74,9 @@ describe( 'AudienceSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		provideUserAuthentication( registry );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -75,7 +86,7 @@ describe( 'AudienceSelectionPanel', () => {
 			.setAvailableAudiences( availableAudiences );
 
 		registry
-			.dispatch( MODULES_ANALYTICS_4 )
+			.dispatch( CORE_USER )
 			.setConfiguredAudiences( configuredAudiences );
 
 		registry.dispatch( CORE_FORMS ).setValues( AUDIENCE_SELECTION_FORM, {
@@ -379,6 +390,38 @@ describe( 'AudienceSelectionPanel', () => {
 			}
 		);
 
+		it( 'should display a "dash" instead of the user count if retrieval fails', async () => {
+			const error = {
+				code: 'test_error',
+				message: 'Error message.',
+				data: {},
+			};
+
+			provideModules( registry );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveError( error, 'getReport', [ reportOptions ] );
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const userCountInDOM = item?.querySelector(
+						'.googlesitekit-selection-panel-item__suffix'
+					);
+
+					expect( userCountInDOM ).toHaveTextContent( '-' );
+				} );
+		} );
+
 		it( 'should include audience source for each audience', async () => {
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
 				registry,
@@ -426,9 +469,17 @@ describe( 'AudienceSelectionPanel', () => {
 
 	describe( 'AddGroupNotice', () => {
 		it( 'should display notice when there is a saved selection of one group', async () => {
+			const selectedAudiences = [ 'properties/12345/audiences/3' ];
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( selectedAudiences );
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( AUDIENCE_SELECTION_FORM, {
+					[ AUDIENCE_SELECTED ]: selectedAudiences,
+					[ AUDIENCE_SELECTION_CHANGED ]: true,
+				} );
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -453,7 +504,7 @@ describe( 'AudienceSelectionPanel', () => {
 			'should not display notice when there is a saved selection of %s than one group',
 			async ( _, audiences ) => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.setConfiguredAudiences( audiences );
 
 				const { queryByText, waitForRegistry } = render(
@@ -475,7 +526,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should not display notice when the selection changes', async () => {
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
 
 			registry
@@ -503,7 +554,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should not display notice when dismissed', async () => {
 			registry
-				.dispatch( MODULES_ANALYTICS_4 )
+				.dispatch( CORE_USER )
 				.setConfiguredAudiences( [ 'properties/12345/audiences/3' ] );
 
 			registry
@@ -527,6 +578,238 @@ describe( 'AudienceSelectionPanel', () => {
 		} );
 	} );
 
+	describe( 'AudienceCreationNotice / AudienceCreationSuccess', () => {
+		it( 'should display an audience creation notice with both audiences', async () => {
+			const nonSiteKitAvailableAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			);
+
+			const nonSiteKitConfiguredAudiences =
+				nonSiteKitAvailableAudiences.map( ( { name } ) => name );
+
+			const nonSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: nonSiteKitConfiguredAudiences,
+				},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( nonSiteKitAvailableAudiences );
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
+
+			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
+
+			const { getByText, queryByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Create groups suggested by Site Kit/i )
+			).toBeInTheDocument();
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel__audience-creation-notice-audience .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
+				)
+				?.forEach( ( element, index ) => {
+					expect( element ).toHaveTextContent(
+						index === 0 ? 'New visitors' : 'Returning visitors'
+					);
+				} );
+
+			// Verify the edit scope notice is not displayed.
+			expect(
+				queryByText(
+					/Creating these groups require more data tracking. You will be directed to update your Analytics property./i
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should display the audience creation notice with the missing scope notice', async () => {
+			const nonSiteKitAvailableAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			);
+
+			const nonSiteKitConfiguredAudiences =
+				nonSiteKitAvailableAudiences.map( ( { name } ) => name );
+
+			const nonSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: nonSiteKitConfiguredAudiences,
+				},
+			};
+
+			provideUserAuthentication( registry, {
+				grantedScopes: [],
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( nonSiteKitAvailableAudiences );
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
+
+			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Create groups suggested by Site Kit/i )
+			).toBeInTheDocument();
+
+			// Verify the edit scope notice is displayed.
+			expect(
+				getByText(
+					/Creating these groups require more data tracking. You will be directed to update your Analytics property./i
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should display an audience creation notice for a single audience', async () => {
+			const mixedConfiguredAudiences = [
+				'properties/12345/audiences/1',
+				'properties/12345/audiences/2',
+				'properties/12345/audiences/3', // New visitors Site Kit audience.
+			];
+
+			const mixedSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: mixedConfiguredAudiences,
+				},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences(
+					availableAudiences.filter( ( { name } ) =>
+						mixedConfiguredAudiences.includes( name )
+					)
+				);
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( mixedConfiguredAudiences );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+
+			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
+
+			const { getByText, queryByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Visitor group created successfully/i )
+			).toBeInTheDocument();
+			expect(
+				getByText( /Create groups suggested by Site Kit/i )
+			).toBeInTheDocument();
+			expect(
+				document.querySelector(
+					'.googlesitekit-audience-selection-panel__audience-creation-notice-audience  .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
+				)
+			).toHaveTextContent( 'Returning visitors' );
+			// New visitors should now be showed in the list of configured audiences checkboxes.
+			expect(
+				document.querySelectorAll(
+					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
+				)[ 2 ]
+			).toHaveTextContent( 'New visitors' );
+
+			// Verify the edit scope notice is not displayed.
+			expect(
+				queryByText(
+					/Creating these groups require more data tracking. You will be directed to update your Analytics property./i
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should display an audience creation success notice when both audiences are created', async () => {
+			const mixedConfiguredAudiences = [
+				'properties/12345/audiences/1',
+				'properties/12345/audiences/2',
+				'properties/12345/audiences/3', // New visitors Site Kit audience.
+				'properties/12345/audiences/4', // Returning visitors Site Kit audience.
+			];
+
+			const mixedSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: mixedConfiguredAudiences,
+				},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences(
+					availableAudiences.filter( ( { name } ) =>
+						mixedConfiguredAudiences.includes( name )
+					)
+				);
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( mixedConfiguredAudiences );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+
+			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
+
+			const { getByText, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Visitor group created successfully/i )
+			).toBeInTheDocument();
+			// New visitors and Returning visitors should now be showed in the list of configured audiences checkboxes.
+			expect(
+				document.querySelectorAll(
+					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
+				)[ 2 ]
+			).toHaveTextContent( 'New visitors' );
+			expect(
+				document.querySelectorAll(
+					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
+				)[ 3 ]
+			).toHaveTextContent( 'Returning visitors' );
+		} );
+	} );
+
 	describe( 'LearnMoreLink', () => {
 		it( 'should display a learn more link', async () => {
 			const { getByText, waitForRegistry } = render(
@@ -544,6 +827,104 @@ describe( 'AudienceSelectionPanel', () => {
 				)
 			).toBeInTheDocument();
 		} );
+	} );
+
+	describe( 'ErrorNotice', () => {
+		it( 'should not display an error notice when there are no errors', async () => {
+			const { container, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).not.toHaveTextContent( 'Data loading failed' );
+			expect( container ).not.toHaveTextContent(
+				'Insufficient permissions, contact your administrator.'
+			);
+		} );
+
+		it.each( [
+			[ 'resyncing available audiences', 'syncAvailableAudiences', [] ],
+			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
+		] )(
+			'should display an error notice when there is an insufficient permissions error while %s',
+			async ( _, storeFunctionName, args ) => {
+				const error = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
+
+				provideUserInfo( registry );
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error, storeFunctionName, args );
+
+				const { getByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByText(
+						/Insufficient permissions, contact your administrator/i
+					)
+				).toBeInTheDocument();
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
+				expect( getByText( /request access/i ) ).toBeInTheDocument();
+			}
+		);
+
+		it.each( [
+			[ 'resyncing available audiences', 'syncAvailableAudiences', [] ],
+			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
+		] )(
+			'should display an error notice when %s fails',
+			async ( _, storeFunctionName, args ) => {
+				const error = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: {},
+				};
+
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error, storeFunctionName, args );
+
+				const { getByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByText( /Data loading failed/i )
+				).toBeInTheDocument();
+				expect( getByText( /retry/i ) ).toBeInTheDocument();
+			}
+		);
 	} );
 
 	describe( 'Footer', () => {

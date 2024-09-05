@@ -200,7 +200,7 @@ $c-icon-notice-info: $c-denim;
 $c-icon-notice-suggestion: $c-denim;
 
 $c-chart-1: $c-cornflower-blue;
-$c-chart-2: $c-scooter;
+$c-chart-2: $c-teal-t-300;
 $c-chart-3: $c-elm;
 $c-chart-4: $c-purple-heart;
 
@@ -299,6 +299,7 @@ $mdc-layout-grid-breakpoints: (
 /* stylelint-enable */
 
 $mdc-button-min-height: 40px;
+$mdc-button-callout-min-height: 32px;
 $mdc-typography-font-family: $f-primary;
 $mdc-typography-styles-subtitle1: (
 	font-size: $fs-body-md,

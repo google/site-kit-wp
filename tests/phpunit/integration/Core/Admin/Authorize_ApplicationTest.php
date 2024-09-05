@@ -104,7 +104,6 @@ class Authorize_ApplicationTest extends TestCase {
 
 		// Check that the custom footer content isn't rendered.
 		$this->assertStringNotContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output );
-
 	}
 
 	public function set_global_get_params( $success_url ) {

@@ -138,4 +138,91 @@
 			outline: none;
 		}
 	}
+
+	.mdc-button--callout {
+		font-family: $f-primary;
+		font-weight: $fw-medium;
+		height: auto;
+		letter-spacing: normal;
+		min-height: $mdc-button-callout-min-height;
+		padding: 6px 16px;
+
+		&.mdc-button--callout-primary {
+
+			@include mdc-button-ink-color( $c-content-on-primary-container );
+
+			&:hover {
+
+				@include mdc-button-filled-accessible( $c-interactive-callout-primary-hover );
+				@include mdc-button-ink-color( $c-content-on-primary-container );
+
+				text-decoration: none;
+			}
+
+			&:active,
+			&:focus {
+
+				@include mdc-button-filled-accessible( $c-interactive-callout-primary-focus );
+				@include mdc-button-ink-color( $c-content-on-primary-container );
+
+				outline: none;
+			}
+
+			&:disabled {
+				color: $c-interactive-callout-primary-disabled;
+			}
+		}
+
+		&.mdc-button--callout-warning {
+
+			@include mdc-button-ink-color( $c-utility-on-warning-container );
+
+			&:hover {
+
+				@include mdc-button-filled-accessible( $c-interactive-callout-warning-hover );
+				@include mdc-button-ink-color( $c-utility-on-warning-container );
+
+				text-decoration: none;
+			}
+
+			&:active,
+			&:focus {
+
+				@include mdc-button-filled-accessible( $c-interactive-callout-warning-focus );
+				@include mdc-button-ink-color( $c-utility-on-warning-container );
+
+				outline: none;
+			}
+
+			&:disabled {
+				color: $c-interactive-callout-warning-disabled;
+			}
+		}
+
+		&.mdc-button--callout-error {
+
+			@include mdc-button-ink-color( $c-utility-on-error-container );
+
+			&:hover {
+
+				@include mdc-button-filled-accessible( $c-interactive-callout-error-hover );
+				@include mdc-button-ink-color( $c-utility-on-error-container );
+
+				text-decoration: none;
+			}
+
+			&:active,
+			&:focus {
+
+				@include mdc-button-filled-accessible( $c-interactive-callout-error-focus );
+				@include mdc-button-ink-color( $c-utility-on-error-container );
+
+				outline: none;
+			}
+
+			&:disabled {
+				color: $c-interactive-callout-error-disabled;
+			}
+		}
+	}
 }

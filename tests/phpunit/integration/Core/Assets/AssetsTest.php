@@ -218,7 +218,7 @@ class AssetsTest extends TestCase {
 	public function test_base_data__reference_date_filter() {
 		add_filter(
 			'googlesitekit_reference_date',
-			function() {
+			function () {
 				return '2020-01-01';
 			}
 		);
@@ -246,7 +246,7 @@ class AssetsTest extends TestCase {
 
 		add_filter(
 			'googlesitekit_product_post_type',
-			function() {
+			function () {
 				return 'digital_product';
 			}
 		);
@@ -259,7 +259,7 @@ class AssetsTest extends TestCase {
 	public function test_base_data__product_post_type__invalid_post_type() {
 		add_filter(
 			'googlesitekit_product_post_type',
-			function() {
+			function () {
 				return 'invalid_post_type';
 			}
 		);

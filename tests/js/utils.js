@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { castArray, mapValues } from 'lodash';
+import { mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -38,10 +38,12 @@ import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
 import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
+import * as coreNotifications from '../../assets/js/googlesitekit/notifications';
 import * as modulesAds from '../../assets/js/modules/ads';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
+import * as modulesReaderRevenueManager from '../../assets/js/modules/reader-revenue-manager';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
@@ -68,12 +70,14 @@ const allCoreStores = [
 	coreUser,
 	coreUi,
 	coreWidgets,
+	coreNotifications,
 ];
 const allCoreModules = [
 	modulesAds,
 	modulesAdSense,
 	modulesAnalytics4,
 	modulesPageSpeedInsights,
+	modulesReaderRevenueManager,
 	modulesSearchConsole,
 	modulesTagManager,
 ];
@@ -473,13 +477,6 @@ export const registerAllStoresOn = ( registry ) => {
 	);
 };
 
-const unsubscribes = [];
-export const subscribeWithUnsubscribe = ( registry, ...args ) => {
-	const unsubscribe = registry.subscribe( ...args );
-	unsubscribes.push( unsubscribe );
-	return unsubscribe;
-};
-
 /**
  * Returns an object that returns hasFinishedResolution selectors for each key
  * that are bound to the given registry and store name.
@@ -508,23 +505,25 @@ export const untilResolved = ( registry, storeName ) => {
 	);
 };
 
-export const subscribeUntil = ( registry, predicates ) => {
-	predicates = castArray( predicates );
-
+/**
+ * Subscribes to the given registry until all predicates are satisfied.
+ *
+ * @since 1.11.0
+ * @private
+ *
+ * @param {Object}      registry   WP data registry instance.
+ * @param {...Function} predicates Predicate functions.
+ * @return {Promise} Promise that resolves once all predicates are satisfied.
+ */
+export const subscribeUntil = ( registry, ...predicates ) => {
 	return new Promise( ( resolve ) => {
-		subscribeWithUnsubscribe( registry, () => {
+		const unsubscribe = registry.subscribe( () => {
 			if ( predicates.every( ( predicate ) => predicate() ) ) {
+				unsubscribe();
 				resolve();
 			}
 		} );
 	} );
-};
-
-export const unsubscribeFromAll = () => {
-	let unsubscribe;
-	while ( ( unsubscribe = unsubscribes.shift() ) ) {
-		unsubscribe();
-	}
 };
 
 /**
@@ -578,7 +577,7 @@ export const createWaitForRegistry = ( registry ) => {
 	const updates = [];
 	const listener = () =>
 		updates.push( new Promise( ( resolve ) => resolve() ) );
-	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
+	const unsubscribe = registry.subscribe( listener );
 
 	// Return a function that:
 	// - Waits until the next tick for updates.

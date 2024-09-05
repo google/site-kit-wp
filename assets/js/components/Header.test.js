@@ -24,7 +24,9 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 } from '../../../tests/js/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import Header from './Header';
 import Null from './Null';
 
@@ -37,17 +39,24 @@ describe( 'Header', () => {
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( [] );
 	} );
 
 	it( 'renders', () => {
-		render( <Header />, { registry } );
+		render( <Header />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
 	} );
 
-	it( 'can render a subheader', () => {
-		const { queryByTestID } = render(
+	it( 'can render a subheader', async () => {
+		const { waitForRegistry, queryByTestID } = render(
 			<Header subHeader={ <div data-testid="sub" /> } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
+
+		await waitForRegistry();
 
 		expect( queryByTestID( 'sub' ) ).toBeInTheDocument();
 	} );
@@ -57,6 +66,7 @@ describe( 'Header', () => {
 			<Header subHeader={ <Null /> } />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 

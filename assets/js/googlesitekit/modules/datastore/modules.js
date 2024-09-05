@@ -81,6 +81,8 @@ const moduleDefaults = {
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
 	checkRequirements: () => true,
+	DashboardMainEffectComponent: null,
+	DashboardEntityEffectComponent: null,
 };
 
 const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
@@ -341,6 +343,8 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
+	 * @param {WPComponent}    [settings.DashboardEntityEffectComponent]   Optional. React component to render the effects on entity dashboard. Default none.
 	 */
 	registerModule: createValidatedAction(
 		( slug ) => {
@@ -361,6 +365,8 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				DashboardMainEffectComponent,
+				DashboardEntityEffectComponent,
 			} = {}
 		) {
 			const settings = {
@@ -376,6 +382,8 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				DashboardMainEffectComponent,
+				DashboardEntityEffectComponent,
 			};
 
 			yield {
@@ -563,13 +571,11 @@ export const baseControls = {
 			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select, __experimentalResolveSelect } ) =>
+		( { select, resolveSelect } ) =>
 			async ( { payload } ) => {
 				const { slug } = payload;
 				// Ensure the module is loaded before selecting the store name.
-				await __experimentalResolveSelect( CORE_MODULES ).getModule(
-					slug
-				);
+				await resolveSelect( CORE_MODULES ).getModule( slug );
 
 				const storeName =
 					select( CORE_MODULES ).getModuleStoreName( slug );
@@ -580,9 +586,7 @@ export const baseControls = {
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
-					return await __experimentalResolveSelect(
-						storeName
-					).getAdminReauthURL();
+					return await resolveSelect( storeName ).getAdminReauthURL();
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -665,11 +669,9 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 function* waitForModules() {
-	const { __experimentalResolveSelect } = yield commonActions.getRegistry();
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-	yield commonActions.await(
-		__experimentalResolveSelect( CORE_MODULES ).getModules()
-	);
+	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
 }
 
 const baseResolvers = {
@@ -685,9 +687,9 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield commonActions.getRegistry();
-		const { select, __experimentalResolveSelect } = registry;
+		const { select, resolveSelect } = registry;
 		const module = yield commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
+			resolveSelect( CORE_MODULES ).getModule( slug )
 		);
 		// At this point, all modules are loaded so we can safely select getModule below.
 
@@ -753,7 +755,7 @@ const baseResolvers = {
 	*getRecoverableModules() {
 		const registry = yield commonActions.getRegistry();
 		const modules = yield commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+			registry.resolveSelect( CORE_MODULES ).getModules()
 		);
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
@@ -1316,6 +1318,25 @@ const baseSelectors = {
 
 		return calculateRecoverableModules( modules, state.recoverableModules );
 	} ),
+
+	/**
+	 * Checks if there are any recoverable modules for dashboard sharing.
+	 *
+	 * @since 1.133.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if there are recoverable modules.
+	 * 								 `false` if there are none.
+	 * 								 `undefined` if not loaded.
+	 */
+	hasRecoverableModules: ( state ) => {
+		// Return `undefined` if recoverableModules haven't been loaded yet.
+		if ( state.recoverableModules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( state.recoverableModules ).length > 0;
+	},
 
 	/**
 	 * Gets the list of shared ownership modules for dashboard sharing.

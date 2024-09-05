@@ -80,5 +80,4 @@ class Conversion_Tracking_Settings extends Setting {
 	public function is_conversion_tracking_enabled() {
 		return $this->get()['enabled'];
 	}
-
 }

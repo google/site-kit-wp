@@ -83,6 +83,107 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		);
 	}
 
+
+	/**
+	 * @dataProvider provider_dismissed_item_deletions
+	 */
+	public function test_delete_dismissed_items( $slugs_to_delete, $expected_remaining_items ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->dismissed_items->add( 'foo' );
+		$this->dismissed_items->add( 'bar', 100 );
+		$this->dismissed_items->add( 'baz', 200 );
+
+		$this->assertEqualSets(
+			array( 'foo', 'bar', 'baz' ),
+			array_keys( $this->dismissed_items->get() )
+		);
+
+		$request = new WP_REST_Request( 'DELETE', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slugs' => $slugs_to_delete,
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEqualSets(
+			$expected_remaining_items,
+			array_keys( $this->dismissed_items->get() )
+		);
+
+		$this->assertEqualSets(
+			$expected_remaining_items,
+			$response->get_data()
+		);
+	}
+
+
+	public function provider_dismissed_item_deletions() {
+		return array(
+			'slugs as single item string'     => array(
+				'foo', // Slugs to delete.
+				array( 'bar', 'baz' ), // Expected remaining items.
+			),
+			'slugs as comma separated string' => array(
+				'foo,bar',
+				array( 'baz' ),
+			),
+			'slugs as single item array'      => array(
+				array( 'foo' ),
+				array( 'bar', 'baz' ),
+			),
+			'slugs as multiple item array'    => array(
+				array( 'foo', 'bar' ),
+				array( 'baz' ),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider provider_dismissed_item_deletions__wrong_data
+	 */
+	public function test_delete_dismissed_items__wrong_data( $data ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new WP_REST_Request( 'DELETE', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
+		$request->set_body_params(
+			array(
+				'data' => $data,
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+	}
+
+	public function provider_dismissed_item_deletions__wrong_data() {
+		return array(
+			'empty object'                                 => array(
+				array(),
+			),
+			'wrong data type'                              => array(
+				'{}',
+			),
+			'invalid property'                             => array(
+				array( 'some-invalid-property' => 'value' ),
+			),
+			'slugs array containing non-string'            => array(
+				array( 'slugs' => array( 123 ) ),
+			),
+			'slugs array containing string and non-string' => array(
+				array( 'slugs' => array( '123', 456 ) ),
+			),
+		);
+	}
+
 	public function test_dismiss_item() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
@@ -106,5 +207,4 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			rest_get_server()->dispatch( $request )->get_data()
 		);
 	}
-
 }

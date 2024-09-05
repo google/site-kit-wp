@@ -31,25 +31,22 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-import CheckFill from '../../../svg/icons/check-fill.svg';
-import { Button } from 'googlesitekit-components';
-import { Grid, Cell, Row } from '../../material-components';
-import useViewOnly from '../../hooks/useViewOnly';
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import SubtleNotification from '../../modules/analytics-4/components/SubtleNotification';
 import useDashboardType from '../../hooks/useDashboardType';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
+import whenInViewContext from '../../util/whenInViewContext';
 
 export const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'ga4_adsense_linked_notification';
 
-export default function GA4AdSenseLinkedNotification() {
+function GA4AdSenseLinkedNotification() {
 	const dashboardType = useDashboardType();
-	const viewOnly = useViewOnly();
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( ! dashboardType || viewOnly ) {
+		if ( ! dashboardType ) {
 			return null;
 		}
 
@@ -57,7 +54,7 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( ! dashboardType || viewOnly ) {
+		if ( ! dashboardType ) {
 			return null;
 		}
 
@@ -65,7 +62,7 @@ export default function GA4AdSenseLinkedNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( ! dashboardType || viewOnly ) {
+		if ( ! dashboardType ) {
 			return null;
 		}
 
@@ -76,7 +73,7 @@ export default function GA4AdSenseLinkedNotification() {
 		adSenseModuleConnected && analyticsModuleConnected && isAdSenseLinked;
 
 	const isDismissed = useSelect( ( select ) => {
-		if ( ! dashboardType || viewOnly ) {
+		if ( ! dashboardType ) {
 			return null;
 		}
 
@@ -110,11 +107,7 @@ export default function GA4AdSenseLinkedNotification() {
 	};
 
 	const report = useSelect( ( select ) => {
-		if (
-			viewOnly ||
-			isDismissed ||
-			! analyticsAndAdsenseConnectedAndLinked
-		) {
+		if ( isDismissed || ! analyticsAndAdsenseConnectedAndLinked ) {
 			return null;
 		}
 
@@ -145,7 +138,6 @@ export default function GA4AdSenseLinkedNotification() {
 	useEffect( () => {
 		if (
 			!! dashboardType &&
-			! viewOnly &&
 			isDismissed === false &&
 			hasFinishedResolution &&
 			isZeroReport( report ) === false &&
@@ -156,7 +148,6 @@ export default function GA4AdSenseLinkedNotification() {
 	}, [
 		report,
 		isDismissed,
-		viewOnly,
 		hasFinishedResolution,
 		analyticsAndAdsenseConnectedAndLinked,
 		dismissNotificationForUser,
@@ -170,8 +161,6 @@ export default function GA4AdSenseLinkedNotification() {
 		// Only show this notification on the main/entity dashboard, not on the
 		// settings page, etc.
 		dashboardType &&
-		// Don't show this notification on the view-only dashboard.
-		! viewOnly &&
 		// Don't show this notification if `isDismissed` call is still loading
 		// or the user has dismissed it.
 		! isDismissed &&
@@ -193,35 +182,21 @@ export default function GA4AdSenseLinkedNotification() {
 	}
 
 	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className="googlesitekit-subtle-notification"
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
-					</div>
-					<div className="googlesitekit-subtle-notification__content">
-						<p>
-							{ __(
-								'Your AdSense and Analytics accounts are linked.',
-								'google-site-kit'
-							) }
-						</p>
-						<p>
-							{ __(
-								'We’ll let you know as soon as there’s enough data available.',
-								'google-site-kit'
-							) }
-						</p>
-					</div>
-					<Button tertiary onClick={ dismissNotificationForUser }>
-						{ __( 'Got it', 'google-site-kit' ) }
-					</Button>
-				</Cell>
-			</Row>
-		</Grid>
+		<SubtleNotification
+			title={ __(
+				'Your AdSense and Analytics accounts are linked.',
+				'google-site-kit'
+			) }
+			description={ __(
+				'We’ll let you know as soon as there’s enough data available.',
+				'google-site-kit'
+			) }
+			onDismiss={ dismissNotificationForUser }
+		/>
 	);
 }
+
+export default whenInViewContext( { allNonViewOnly: true } )(
+	// eslint-disable-next-line sitekit/acronym-case
+	GA4AdSenseLinkedNotification
+);

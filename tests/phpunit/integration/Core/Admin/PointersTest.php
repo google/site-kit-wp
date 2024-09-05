@@ -61,7 +61,7 @@ class PointersTest extends TestCase {
 	public function test_enqueue_pointers__no_active_pointers() {
 		add_filter(
 			'googlesitekit_admin_pointers',
-			function( $pointers ) {
+			function ( $pointers ) {
 				$pointers[] = new Pointer(
 					'test-slug',
 					array(
@@ -85,7 +85,7 @@ class PointersTest extends TestCase {
 	public function test_enqueue_pointers() {
 		add_filter(
 			'googlesitekit_admin_pointers',
-			function( $pointers ) {
+			function ( $pointers ) {
 				$pointers[] = new Pointer(
 					'test-slug',
 					array(
@@ -116,7 +116,7 @@ class PointersTest extends TestCase {
 	public function test_print_pointer_scripy() {
 		add_filter(
 			'googlesitekit_admin_pointers',
-			function( $pointers ) {
+			function ( $pointers ) {
 				$pointers[] = new Pointer(
 					'test-slug',
 					array(

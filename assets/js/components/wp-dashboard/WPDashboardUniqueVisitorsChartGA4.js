@@ -48,7 +48,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
 	);
 	const refDate = useSelect( ( select ) =>
-		select( CORE_USER ).getReferenceDate( { parsed: true } )
+		select( CORE_USER ).getReferenceDate()
 	);
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
@@ -79,8 +79,9 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		],
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 
 	const loading = useSelect(

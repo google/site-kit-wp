@@ -23,7 +23,6 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -58,10 +57,6 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 			uriQueryParameter: null,
 			videoEngagementEnabled: null,
 		};
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -356,7 +351,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( initialSettings ).toBeUndefined();
 
 				const finalSettings = await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getEnhancedMeasurementSettings(
 						propertyID,
 						webDataStreamID
@@ -488,7 +483,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( initialStreamEnabled ).toBeUndefined();
 
 				const finalStreamEnabled = await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.isEnhancedMeasurementStreamAlreadyEnabled(
 						propertyID,
 						webDataStreamID

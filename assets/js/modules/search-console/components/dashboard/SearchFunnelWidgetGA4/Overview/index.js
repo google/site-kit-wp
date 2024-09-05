@@ -51,6 +51,7 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
 import ga4ReportingTour from '../../../../../../feature-tours/ga4-reporting';
+import DataBlockGroup from '../../../../../../components/DataBlockGroup';
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	return {
@@ -109,10 +110,12 @@ export default function Overview( props ) {
 	const ga4ModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
-	const isGA4GatheringData = useInViewSelect( ( select ) =>
-		ga4ModuleConnected
-			? select( MODULES_ANALYTICS_4 ).isGatheringData()
-			: false
+	const isGA4GatheringData = useInViewSelect(
+		( select ) =>
+			ga4ModuleConnected
+				? select( MODULES_ANALYTICS_4 ).isGatheringData()
+				: false,
+		[ ga4ModuleConnected ]
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
@@ -336,7 +339,7 @@ export default function Overview( props ) {
 		<Grid>
 			<Row>
 				<Cell { ...dataBlockWrapperCellProps[ dataBlocks.length ] }>
-					<Row>
+					<DataBlockGroup className="mdc-layout-grid__inner">
 						{ dataBlocks.map( ( dataBlock, index ) => (
 							<Cell
 								key={ dataBlock.id }
@@ -370,7 +373,7 @@ export default function Overview( props ) {
 								/>
 							</Cell>
 						) ) }
-					</Row>
+					</DataBlockGroup>
 				</Cell>
 
 				<OptionalCells

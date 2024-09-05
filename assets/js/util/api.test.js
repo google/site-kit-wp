@@ -46,9 +46,9 @@ describe( 'trackAPIError', () => {
 				code: 'test-error-code',
 			},
 		} );
-		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 4 );
+		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 3 );
 		const [ event, eventName, eventData ] =
-			dataLayerPushSpy.mock.calls[ 3 ][ 0 ];
+			dataLayerPushSpy.mock.calls[ 2 ][ 0 ];
 		expect( event ).toEqual( 'event' );
 		expect( eventName ).toEqual(
 			'test-method:test-type/test-identifier/data/test-datapoint'

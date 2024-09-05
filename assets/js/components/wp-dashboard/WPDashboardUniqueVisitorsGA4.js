@@ -60,8 +60,9 @@ function WPDashboardUniqueVisitorsGA4( { WPDashboardReportError } ) {
 		],
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [

@@ -76,11 +76,12 @@ class REST_Dismissals_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.37.0
+	 * @since 1.133.0 Added the `DELETE dismissed-items` route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_dismiss_item = function() {
+		$can_dismiss_item = function () {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
@@ -94,6 +95,39 @@ class REST_Dismissals_Controller {
 					},
 					'permission_callback' => $can_dismiss_item,
 				)
+			),
+			new REST_Route(
+				'core/user/data/dismissed-items',
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => function ( WP_REST_Request $request ) {
+						$slugs = $request['data']['slugs'];
+
+						foreach ( $slugs as $slug ) {
+							$this->dismissed_items->remove( $slug );
+						}
+
+						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
+					},
+					'permission_callback' => $can_dismiss_item,
+					'args'                => array(
+						'data' => array(
+							'type'                 => 'object',
+							'required'             => true,
+							'minProperties'        => 1,
+							'additionalProperties' => false,
+							'properties'           => array(
+								'slugs' => array(
+									'type'     => 'array',
+									'required' => true,
+									'items'    => array(
+										'type' => 'string',
+									),
+								),
+							),
+						),
+					),
+				),
 			),
 			new REST_Route(
 				'core/user/data/dismiss-item',
@@ -131,5 +165,4 @@ class REST_Dismissals_Controller {
 			),
 		);
 	}
-
 }

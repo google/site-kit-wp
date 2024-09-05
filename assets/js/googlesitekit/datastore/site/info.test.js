@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
@@ -69,7 +68,6 @@ describe( 'core/site site info', () => {
 	afterEach( () => {
 		delete global[ baseInfoVar ];
 		delete global[ entityInfoVar ];
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -188,6 +186,44 @@ describe( 'core/site site info', () => {
 				} ).not.toThrow(
 					'keyMetricsSetupCompletedBy must be a number.'
 				);
+			} );
+		} );
+
+		describe( 'setSetupErrorCode', () => {
+			it( 'sets the `setupErrorCode` property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setSetupErrorCode( 'error_code' );
+
+				expect( store.getState().siteInfo.setupErrorCode ).toBe(
+					'error_code'
+				);
+			} );
+
+			it( 'requires a string or null argument', () => {
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode();
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSetupErrorCode( undefined );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( true );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( 1 );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( null );
+
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( 'error' );
+				} ).not.toThrow( 'setupErrorCode must be a string or null.' );
 			} );
 		} );
 	} );

@@ -98,7 +98,7 @@ export function createPaxServices( registry, options = {} ) {
 	const { onCampaignCreated = null, onFinishAndCloseSignUpFlow = null } =
 		options;
 
-	const { select, __experimentalResolveSelect: resolveSelect } = registry;
+	const { select, resolveSelect } = registry;
 	const getToken = createMemoizedGetToken();
 
 	const services = {

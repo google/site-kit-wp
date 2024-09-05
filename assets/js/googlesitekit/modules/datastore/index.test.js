@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_MODULES } from './constants';
 import { initialState } from './index';
 
@@ -33,10 +30,6 @@ describe( 'core/modules store', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'reducer', () => {

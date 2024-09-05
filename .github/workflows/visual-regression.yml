@@ -6,7 +6,7 @@ on:
       - main
       - develop
       - 'feature/**'
-    # Only run if CSS/JS/MD-related files changed.
+    # Only run if CSS/JS related files changed.
     paths:
       - '.github/workflows/visual-regression.yml'
       - 'assets/**'
@@ -50,7 +50,7 @@ jobs:
       - name: Run Backstopjs
         run: npm run test:visualtest
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: vrt-report

@@ -23,14 +23,14 @@ class Sort {
 	 *
 	 * @since 1.90.0
 	 *
-	 * @param array  $list    The list to sort.
-	 * @param string $orderby The field by which the list should be ordered by.
+	 * @param array  $list_to_sort The list to sort.
+	 * @param string $orderby      The field by which the list should be ordered by.
 	 *
 	 * @return array The sorted list.
 	 */
-	public static function case_insensitive_list_sort( array $list, $orderby ) {
+	public static function case_insensitive_list_sort( array $list_to_sort, $orderby ) {
 		usort(
-			$list,
+			$list_to_sort,
 			function ( $a, $b ) use ( $orderby ) {
 				if ( is_array( $a ) && is_array( $b ) ) {
 					return strcasecmp(
@@ -50,6 +50,6 @@ class Sort {
 			}
 		);
 
-		return $list;
+		return $list_to_sort;
 	}
 }

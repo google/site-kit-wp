@@ -40,5 +40,4 @@ class Tag_Guard extends Module_Tag_Guard {
 
 		return ! empty( $settings['useSnippet'] ) && ! empty( $settings['clientID'] );
 	}
-
 }

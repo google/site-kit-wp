@@ -34,9 +34,15 @@ import {
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 function Template() {
-	return <SetupUsingProxyWithSignIn />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<SetupUsingProxyWithSignIn />
+		</ViewContextProvider>
+	);
 }
 
 export const Start = Template.bind( {} );

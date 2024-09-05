@@ -51,5 +51,4 @@ class Tag_Verify_Guard implements Guard_Interface {
 	public function can_activate() {
 		return ! $this->input->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN );
 	}
-
 }

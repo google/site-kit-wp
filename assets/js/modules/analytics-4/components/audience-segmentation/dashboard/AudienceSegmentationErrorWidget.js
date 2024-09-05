@@ -26,11 +26,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import whenActive from '../../../../../util/when-active';
+import { useDispatch } from 'googlesitekit-data';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import {
 	BREAKPOINT_SMALL,
@@ -40,16 +42,28 @@ import {
 import AudienceSegmentationErrorSVG from '../../../../../../svg/graphics/audience-segmentation-error-full-width.svg';
 import { isInsufficientPermissionsError } from '../../../../../util/errors';
 import ReportErrorActions from '../../../../../components/ReportErrorActions';
-import GetHelpLink from './AudienceTile/GetHelpLink';
+import GetHelpLink from './GetHelpLink';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { AUDIENCE_INFO_NOTICE_HIDE_UI } from './InfoNoticeWidget/constants';
 
 function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
+	const { setValue } = useDispatch( CORE_UI );
 
 	const hasInsufficientPermissionsError = errors
 		? castArray( errors ).some( isInsufficientPermissionsError )
 		: false;
+
+	const handleRetry = useCallback( () => {
+		setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
+	}, [ setValue ] );
+
+	useEffect( () => {
+		// Set UI key to hide the info notice.
+		setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, true );
+	}, [ setValue ] );
 
 	return (
 		<Widget
@@ -87,6 +101,7 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 								}
 								buttonVariant="danger"
 								getHelpClassName="googlesitekit-error-retry-text"
+								onRetry={ handleRetry }
 							/>
 						</div>
 					</Cell>

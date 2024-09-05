@@ -62,8 +62,9 @@ function WPDashboardClicks( { WPDashboardReportError } ) {
 		dimensions: 'date',
 	};
 
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
+	const data = useInViewSelect(
+		( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 	const error = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [

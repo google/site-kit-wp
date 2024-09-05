@@ -59,5 +59,4 @@ interface User_Options_Interface extends User_Aware_Interface {
 	 * @return string Meta key name.
 	 */
 	public function get_meta_key( $option );
-
 }

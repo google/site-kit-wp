@@ -366,7 +366,7 @@ class Analytics_4Test extends TestCase {
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
-			function( $caps, $cap ) {
+			function ( $caps, $cap ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap ) {
 					return array( 'manage_options' );
 				}
@@ -452,7 +452,7 @@ class Analytics_4Test extends TestCase {
 		$account_id              = '12345678';
 		$property_id             = '1001';
 		$webdatastream_id        = '2001';
-		$measurement_id          = '1A2BCD345E';
+		$measurement_id          = 'G-1A2BCD345E';
 		$google_tag_account_id   = '123';
 		$google_tag_container_id = '456';
 		$tag_ids                 = array( 'GT-123', 'G-456' );
@@ -549,6 +549,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -581,6 +582,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -590,7 +592,7 @@ class Analytics_4Test extends TestCase {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
-		$measurement_id   = '1A2BCD345E';
+		$measurement_id   = 'G-1A2BCD345E';
 
 		$options = new Options( $this->context );
 		$options->set(
@@ -706,6 +708,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -729,7 +732,7 @@ class Analytics_4Test extends TestCase {
 		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
-		$measurement_id   = '1A2BCD345E';
+		$measurement_id   = 'G-1A2BCD345E';
 
 		$options = new Options( $this->context );
 		$options->set(
@@ -832,6 +835,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -867,6 +871,7 @@ class Analytics_4Test extends TestCase {
 				'adsLinkedLastSyncedAt'            => 0,
 				'availableAudiences'               => null,
 				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -1263,7 +1268,6 @@ class Analytics_4Test extends TestCase {
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
 				'create-audience',
-				'audience-settings',
 				'sync-audiences',
 				'save-resource-data-availability-date',
 			),
@@ -2241,7 +2245,7 @@ class Analytics_4Test extends TestCase {
 		$invalid_characters = ' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
 
 		$invalid_names = array_map(
-			function( $character ) {
+			function ( $character ) {
 				return "test$character";
 			},
 			str_split( $invalid_characters )
@@ -2308,7 +2312,7 @@ class Analytics_4Test extends TestCase {
 		$invalid_characters = ' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïð';
 
 		$invalid_names = array_map(
-			function( $character ) {
+			function ( $character ) {
 				return "test$character";
 			},
 			str_split( $invalid_characters )
@@ -2934,7 +2938,7 @@ class Analytics_4Test extends TestCase {
 	protected function set_shareable_metrics( ...$metrics ) {
 		add_filter(
 			'googlesitekit_shareable_analytics_4_metrics',
-			function() use ( $metrics ) {
+			function () use ( $metrics ) {
 				return $metrics;
 			}
 		);
@@ -2948,7 +2952,7 @@ class Analytics_4Test extends TestCase {
 	protected function set_shareable_dimensions( ...$dimensions ) {
 		add_filter(
 			'googlesitekit_shareable_analytics_4_dimensions',
-			function() use ( $dimensions ) {
+			function () use ( $dimensions ) {
 				return $dimensions;
 			}
 		);
@@ -3202,7 +3206,7 @@ class Analytics_4Test extends TestCase {
 		$restore_user();
 
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
-		$permssions_callback = function( $caps, $cap ) {
+		$permssions_callback = function ( $caps, $cap ) {
 			if ( Permissions::MANAGE_OPTIONS === $cap ) {
 				return array( 'manage_options' );
 			}
@@ -3496,7 +3500,7 @@ class Analytics_4Test extends TestCase {
 		$wp_query->is_singular    = true;
 		$wp_query->queried_object = get_post( $post_id );
 
-		$hook = function( $post_types ) use ( $post_type ) {
+		$hook = function ( $post_types ) use ( $post_type ) {
 			return array_merge( $post_types, array( $post_type ) );
 		};
 
@@ -3843,7 +3847,7 @@ class Analytics_4Test extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
-			function() {
+			function () {
 				$mock_adSenseLink = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink();
 				$mock_adSenseLink->setName( 'properties/12345/adSenseLinks/12345' );
 				$mock_adSenseLink->setAdClientCode( 'ca-pub-12345' );

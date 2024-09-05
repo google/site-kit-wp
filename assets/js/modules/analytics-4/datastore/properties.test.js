@@ -31,7 +31,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
@@ -94,10 +93,6 @@ describe( 'modules/analytics-4 properties', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -601,7 +596,7 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should return a property object when a property is found', async () => {
-				const measurementID = '1A2BCD346E';
+				const measurementID = 'G-1A2BCD346E';
 				const matchedProperty = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchPropertyByMeasurementID( propertyIDs, measurementID );

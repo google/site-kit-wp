@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.5
+Tested up to:      6.6
 Requires PHP:      7.4
-Stable tag:        1.130.0
+Stable tag:        1.135.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,31 +109,33 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.130.0 =
+= 1.135.0 =
+
+**Added**
+
+* Add a cron task to fetch Analytics report data for conversion events reporting. See [#9130](https://github.com/google/site-kit-wp/issues/9130).
 
 **Enhanced**
 
-* Added events tracking to the conversion tracking toggle. See [#8894](https://github.com/google/site-kit-wp/issues/8894).
-* Add support for Easy Digital Downloads "add to cart" event in Analytics enhanced tracking. See [#8801](https://github.com/google/site-kit-wp/issues/8801).
-* Add conversion events tracking for the Ninja Forms plugin. See [#8799](https://github.com/google/site-kit-wp/issues/8799).
-* Add foundation for new Reader Revenue Manager feature (PHP). See [#8785](https://github.com/google/site-kit-wp/issues/8785).
-* Add the Subscribe with Google PHP client library. See [#8783](https://github.com/google/site-kit-wp/issues/8783).
-* Ensure that Audiences are listed in the correct order, both in the Audience Tiles Widget and the Selection Panel. See [#8519](https://github.com/google/site-kit-wp/issues/8519).
-* Add support for pivot reports from Analytics to improve report request efficiency. See [#8484](https://github.com/google/site-kit-wp/issues/8484).
-* Update Analytics and AdSense modules to check the linked status as soon as one of these modules is connected. See [#8463](https://github.com/google/site-kit-wp/issues/8463).
-* Add a fallback mechanism to obtain user count for Site Kit audiences in the partial data state. See [#8160](https://github.com/google/site-kit-wp/issues/8160).
-* Show a notice in the Audience Selection Panel when it's opened with a single audience in the selection. See [#8159](https://github.com/google/site-kit-wp/issues/8159).
-* Add a CTA banner in the audiences widget area to reconnect Analytics if disconnected. See [#8156](https://github.com/google/site-kit-wp/issues/8156).
-* Show an Audience Tile in a zero-data state, and allow it to be temporarily hidden. See [#8143](https://github.com/google/site-kit-wp/issues/8143).
-* Update audiences widget area to show multiple notices in sequence. See [#8139](https://github.com/google/site-kit-wp/issues/8139).
-* Navigate to the OAuth flow as needed when setting up Audience Segmentation from the Setup CTA Banner. See [#8132](https://github.com/google/site-kit-wp/issues/8132).
-* Update the `url` parameter used in creating a new AdSense account not to contain subdomain information. See [#8124](https://github.com/google/site-kit-wp/issues/8124).
-* Update the Google Tag Mismatch notification to persist until a user dismisses it. See [#6819](https://github.com/google/site-kit-wp/issues/6819).
-* Add error boundary to widgets to prevent errors in an individual widget from crashing the entire dashboard. See [#6695](https://github.com/google/site-kit-wp/issues/6695).
+* Add an "Edit in Reader Revenue Manager" link to the RRM module's settings view screen. See [#9192](https://github.com/google/site-kit-wp/issues/9192).
+* Add `conversionReporting` feature flag to plugin. See [#9152](https://github.com/google/site-kit-wp/issues/9152).
+* Add support for Analytics Conversion Report Events in data store. See [#9132](https://github.com/google/site-kit-wp/issues/9132).
+* Fix the undefined array key "name" warning. See [#9113](https://github.com/google/site-kit-wp/issues/9113).
+* Don't show the Audiences Widget Area on the dashboard when the "Display visitor groups in dashboard" switch is toggled off in the Settings section. See [#9065](https://github.com/google/site-kit-wp/issues/9065).
+* Refactor PAX notification to use new notification infrastructure. See [#8980](https://github.com/google/site-kit-wp/issues/8980).
+* Update Google Tag scope notifications to use new notifications infrastructure. See [#8979](https://github.com/google/site-kit-wp/issues/8979).
+* Update banner notification code for the "Unsatisfied Scopes Alert" banner notification. See [#8978](https://github.com/google/site-kit-wp/issues/8978).
+* Optimize Audience Segmentation related API calls to be made only when the area is being viewed. See [#8879](https://github.com/google/site-kit-wp/issues/8879).
+* Add the `PublicationOnboardingStateNotice` component, rendering a notice based on the onboarding state of the current publication and presented in Storybook. See [#8838](https://github.com/google/site-kit-wp/issues/8838).
+* Fix PHP 8.1 deprecation notices. See [#8589](https://github.com/google/site-kit-wp/issues/8589).
+* Enhance Audience Segmentation CTAs to not appear on shared dashboard. See [#8174](https://github.com/google/site-kit-wp/issues/8174).
+* Show a notice in the Audience Creation Notice when the Analytics edit scope is missing, and proceed directly to the OAuth flow upon clicking a CTA to create an audience. See [#8165](https://github.com/google/site-kit-wp/issues/8165).
+* Show an Audience Tile in an error state if an error occurred while retrieving its data; show a combined error state if all audiences have an error. See [#8147](https://github.com/google/site-kit-wp/issues/8147).
 
 **Fixed**
 
-* Fix the problem with sticky header when the admin menu tooltip is shown. See [#8764](https://github.com/google/site-kit-wp/issues/8764).
-* Fix Analytics data inconsistency for Arabic language pages. See [#8184](https://github.com/google/site-kit-wp/issues/8184).
+* Ensure the list of publications in the Reader Revenue Manager setup and settings screens only shows publications relevant to the current site. See [#9247](https://github.com/google/site-kit-wp/issues/9247).
+* Update the PAX library version. See [#9237](https://github.com/google/site-kit-wp/issues/9237).
+* Enhance stability of visual regression test runs. See [#9211](https://github.com/google/site-kit-wp/issues/9211).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

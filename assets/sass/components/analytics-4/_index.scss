@@ -21,13 +21,16 @@
 @import "googlesitekit-analytics-settings-module";
 @import "googlesitekit-analytics-setup-module";
 @import "googlesitekit-analytics-enhanced-measurement";
-@import "audience-segmentation/googlesitekit-audience-connect-analytics-cta";
 @import "audience-segmentation/googlesitekit-audience-segmentation-setup-cta";
 @import "audience-segmentation/googlesitekit-audience-segmentation-tile";
+@import "audience-segmentation/googlesitekit-audience-segmentation-tile-loading";
 @import "audience-segmentation/googlesitekit-audience-segmentation-tile-error";
+@import "audience-segmentation/googlesitekit-audience-segmentation-tile-placeholder";
 @import "audience-segmentation/googlesitekit-audience-segmentation-info-notice";
 @import "audience-segmentation/googlesitekit-audience-segmentation-error";
 @import "audience-segmentation/googlesitekit-audience-tiles";
+@import "audience-segmentation/googlesitekit-no-audience-banner";
+@import "audience-segmentation/googlesitekit-audience-widget-area";
 @import "audience-segmentation/googlesitekit-partial-data-badge";
 @import "audience-segmentation/googlesitekit-partial-data-notice";
 @import "audience-segmentation/googlesitekit-audience-selection-panel";

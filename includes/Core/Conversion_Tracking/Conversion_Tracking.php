@@ -103,7 +103,7 @@ class Conversion_Tracking {
 
 		array_walk(
 			$active_providers,
-			function( Conversion_Events_Provider $active_provider ) {
+			function ( Conversion_Events_Provider $active_provider ) {
 				$active_provider->register_hooks();
 			}
 		);
@@ -125,14 +125,31 @@ class Conversion_Tracking {
 
 		array_walk(
 			$active_providers,
-			function( Conversion_Events_Provider $active_provider ) {
+			function ( Conversion_Events_Provider $active_provider ) {
 				$script_asset = $active_provider->register_script();
 				$script_asset->enqueue();
 			}
 		);
 
-		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit = window._googlesitekit || {};' );
-		wp_add_inline_script( GTag::HANDLE, 'window._googlesitekit.gtagEvent = (name, data) => gtag("event", name, {...data, event_source: "site-kit" });' );
+		$gtag_event = '
+			window._googlesitekit = window._googlesitekit || {};
+			window._googlesitekit.throttledEvents = [];
+			window._googlesitekit.gtagEvent = (name, data) => {
+				var key = JSON.stringify( { name, data } );
+
+				if ( !! window._googlesitekit.throttledEvents[ key ] ) {
+					return;
+				}
+				window._googlesitekit.throttledEvents[ key ] = true;
+				setTimeout( () => {
+					delete window._googlesitekit.throttledEvents[ key ];
+				}, 5 );
+
+				gtag( "event", name, { ...data, event_source: "site-kit" } );
+			}
+		';
+
+		wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
 	}
 
 	/**
@@ -187,5 +204,4 @@ class Conversion_Tracking {
 
 		return $active_providers;
 	}
-
 }

@@ -27,7 +27,7 @@ final class Tracking {
 
 	use Method_Proxy_Trait;
 
-	const TRACKING_ID = 'UA-130569087-3';
+	const TRACKING_ID = 'G-EQDN3BWDSD';
 
 	/**
 	 * Screens instance.

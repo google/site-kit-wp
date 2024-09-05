@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,10 +39,18 @@ import EntityOwnershipChangeNotice from '../../../../components/settings/EntityO
 import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import { useFeature } from '../../../../hooks/useFeature';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Link from '../../../../components/Link';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
+	);
+
+	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'enhanced-conversion-tracking'
+		)
 	);
 
 	const iceEnabled = useFeature( 'conversionInfra' );
@@ -59,9 +67,23 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 			{ iceEnabled && (
 				<ConversionTrackingToggle>
-					{ __(
-						'Conversion tracking is used for tracking additional conversion-related events via Analytics',
-						'google-site-kit'
+					{ createInterpolateElement(
+						__(
+							'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ conversionTrackingDocumentationURL }
+									external
+									aria-label={ __(
+										'Learn more about conversion tracking',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
 					) }
 				</ConversionTrackingToggle>
 			) }

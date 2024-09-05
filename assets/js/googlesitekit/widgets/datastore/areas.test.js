@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_WIDGETS } from './constants';
 import Null from '../../../components/Null';
 import SiteKitLogo from '../../../../svg/graphics/logo-sitekit.svg';
@@ -34,10 +31,6 @@ describe( 'core/widgets Widget areas', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_WIDGETS ].store;
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Plugin;
 use WP_Query;
 use WP_Post;

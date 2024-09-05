@@ -83,10 +83,10 @@ const baseActions = {
 		const registry = yield commonActions.getRegistry();
 
 		yield commonActions.await(
-			registry.__experimentalResolveSelect( CORE_USER ).getNonces()
+			registry.resolveSelect( CORE_USER ).getNonces()
 		);
 		yield commonActions.await(
-			registry.__experimentalResolveSelect( CORE_SITE ).getSiteInfo()
+			registry.resolveSelect( CORE_SITE ).getSiteInfo()
 		);
 
 		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
@@ -99,9 +99,7 @@ const baseActions = {
 			} );
 
 		if ( response?.success ) {
-			yield registry
-				.dispatch( CORE_SITE )
-				.setSiteKitAutoUpdatesEnabled( true );
+			registry.dispatch( CORE_SITE ).setSiteKitAutoUpdatesEnabled( true );
 		}
 
 		if ( error ) {

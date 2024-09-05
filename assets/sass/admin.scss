@@ -149,10 +149,12 @@
 @import "components/dashboard/googlesitekit-dashboard-charts";
 @import "components/dashboard/googlesitekit-dashboard-module-header";
 @import "components/dashboard/googlesitekit-entity-dashboard";
+@import "components/dashboard/googlesitekit-lean-cta-banner";
 @import "components/dashboard/googlesitekit-DashboardPageSpeed";
 @import "components/dashboard/googlesitekit-ReportMetric";
 @import "components/dashboard/googlesitekit-subtle-notification";
 @import "components/dashboard/googlesitekit-setup-cta-banner";
+@import "components/dashboard/googlesitekit-consent-mode-setup-cta";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -180,6 +182,7 @@
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-notice";
 @import "components/settings/googlesitekit-settings-user-input";
+@import "components/settings/googlesitekit-settings-visitor-groups";
 
 // User Input
 @import "components/user-input/googlesitekit-user-input-module";
@@ -197,6 +200,7 @@
 @import "components/ads";
 @import "components/adsense";
 @import "components/analytics-4";
+@import "components/reader-revenue-manager";
 
 // Key Metric Widgets Styles
 @import "components/key-metrics/googlesitekit-km-widget-tile";
@@ -217,6 +221,7 @@
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
 @import "widgets/googlesitekit-widget-overallPageMetrics";
+@import "widgets/googlesitekit-widget-error-handler";
 
 // Utilities
 @import "utilities/alignment";
