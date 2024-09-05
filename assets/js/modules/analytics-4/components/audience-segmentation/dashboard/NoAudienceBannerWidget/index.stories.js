@@ -24,11 +24,17 @@ import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetu
 import {
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../../googlesitekit/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsNoAudienceBanner'
@@ -38,28 +44,113 @@ function Template() {
 	return <WidgetWithComponentProps />;
 }
 
-export const HasConfigurableAudiences = Template.bind( {} );
-HasConfigurableAudiences.storyName = 'Has Configurable Audiences';
-HasConfigurableAudiences.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/NoAudienceBannerWidget/HasConfigurableAudiences',
-};
-HasConfigurableAudiences.args = {
+export const AuthenticatedUserWithoutConfigurableAudiencesNeverSetup =
+	Template.bind( {} );
+AuthenticatedUserWithoutConfigurableAudiencesNeverSetup.storyName =
+	'Authenticated user, no selectable audiences, never populated their audience selection';
+AuthenticatedUserWithoutConfigurableAudiencesNeverSetup.scenario = {};
+AuthenticatedUserWithoutConfigurableAudiencesNeverSetup.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: false,
+		} );
+	},
+};
+export const AuthenticatedUserWithoutConfigurableAudiencesHasSetup =
+	Template.bind( {} );
+AuthenticatedUserWithoutConfigurableAudiencesHasSetup.storyName =
+	'Authenticated user, no selectable audiences, previously populated their audience selection';
+AuthenticatedUserWithoutConfigurableAudiencesHasSetup.scenario = {};
+AuthenticatedUserWithoutConfigurableAudiencesHasSetup.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: true,
+		} );
+	},
+};
+export const AuthenticatedUserWithConfigurableAudiences = Template.bind( {} );
+AuthenticatedUserWithConfigurableAudiences.storyName =
+	'Authenticated user with selectable audiences';
+AuthenticatedUserWithConfigurableAudiences.scenario = {};
+AuthenticatedUserWithConfigurableAudiences.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: true,
+		} );
 	},
 };
 
-export const NoConfigurableAudience = Template.bind( {} );
-NoConfigurableAudience.storyName = 'No Configurable Audience';
-NoConfigurableAudience.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/NoAudienceBannerWidget/NoConfigurableAudience',
-};
-NoConfigurableAudience.args = {
+export const ViewOnlyUserWithoutConfigurableAudiencesNeverSetup = Template.bind(
+	{}
+);
+ViewOnlyUserWithoutConfigurableAudiencesNeverSetup.storyName =
+	'View only user, no selectable audiences, never populated their audience selection';
+ViewOnlyUserWithoutConfigurableAudiencesNeverSetup.scenario = {};
+ViewOnlyUserWithoutConfigurableAudiencesNeverSetup.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, { authenticated: false } );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+		} );
 	},
+	isViewOnly: true,
+};
+export const ViewOnlyUserWithoutConfigurableAudiencesHasSetup = Template.bind(
+	{}
+);
+ViewOnlyUserWithoutConfigurableAudiencesHasSetup.storyName =
+	'View only user, no selectable audiences, previously populated their audience selection';
+ViewOnlyUserWithoutConfigurableAudiencesHasSetup.scenario = {};
+ViewOnlyUserWithoutConfigurableAudiencesHasSetup.args = {
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, { authenticated: false } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+		} );
+	},
+	isViewOnly: true,
+};
+export const ViewOnlyUserWithConfigurableAudiences = Template.bind( {} );
+ViewOnlyUserWithConfigurableAudiences.storyName =
+	'View only user with selectable audiences';
+ViewOnlyUserWithConfigurableAudiences.scenario = {};
+ViewOnlyUserWithConfigurableAudiences.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, { authenticated: false } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+		} );
+	},
+	isViewOnly: true,
 };
 
 export default {
@@ -76,20 +167,18 @@ export default {
 				] );
 				provideModuleRegistrations( registry );
 
-				const audienceSettings = {
-					configuredAudiences: [ 'properties/12345/audiences/9' ],
-					isAudienceSegmentationWidgetHidden: false,
-				};
-
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettings );
-
-				await args?.setupRegistry( registry );
+				await args.setupRegistry( registry );
 			};
+
+			const viewContext = args.isViewOnly
+				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				: VIEW_CONTEXT_MAIN_DASHBOARD;
+
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<ViewContextProvider value={ viewContext }>
+						<Story />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},
