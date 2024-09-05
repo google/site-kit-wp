@@ -39,6 +39,8 @@ import { validateAudience } from '../utils/validation';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const MAX_INITIAL_AUDIENCES = 2;
+const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
+const FINISH_AUDIENCES_SETUP = 'FINISH_AUDIENCES_SETUP';
 
 /**
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
@@ -123,6 +125,10 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 		};
 	},
 } );
+
+export const baseInitialState = {
+	isSettingUpAudiences: false,
+};
 
 const baseActions = {
 	/**
@@ -346,6 +352,26 @@ const baseActions = {
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
 	 */
 	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
+		yield { type: START_AUDIENCES_SETUP };
+
+		const response = yield baseActions.enableAudienceGroupMain(
+			failedSiteKitAudienceSlugs
+		);
+
+		yield { type: FINISH_AUDIENCES_SETUP };
+
+		return response;
+	},
+
+	/**
+	 * This contains the main logic for the `*enableAudienceGroup()` action above.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
+	 */
+	*enableAudienceGroupMain( failedSiteKitAudienceSlugs ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, resolveSelect } = registry;
@@ -517,6 +543,24 @@ const baseActions = {
 	 * @return {Object} Object with `error`.
 	 */
 	*enableSecondaryUserAudienceGroup() {
+		yield { type: START_AUDIENCES_SETUP };
+
+		const response =
+			yield baseActions.enableSecondaryUserAudienceGroupMain();
+
+		yield { type: FINISH_AUDIENCES_SETUP };
+
+		return response;
+	},
+
+	/**
+	 * This contains the main logic for the `*enableSecondaryUserAudienceGroup()` action above.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `error`.
+	 */
+	*enableSecondaryUserAudienceGroupMain() {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, resolveSelect } = registry;
@@ -580,6 +624,18 @@ const baseActions = {
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case START_AUDIENCES_SETUP: {
+			return {
+				...state,
+				isSettingUpAudiences: true,
+			};
+		}
+		case FINISH_AUDIENCES_SETUP: {
+			return {
+				...state,
+				isSettingUpAudiences: false,
+			};
+		}
 		default: {
 			return state;
 		}
@@ -652,6 +708,16 @@ const baseSelectors = {
 			return audience?.audienceType === 'SITE_KIT_AUDIENCE';
 		}
 	),
+
+	/**
+	 * Checks if the audience group setup is in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the audience group setup is in progress, otherwise false.
+	 */
+	isSettingUpAudiences: ( state ) => state.isSettingUpAudiences,
 
 	/**
 	 * Checks if the given audience is a user-defined audience.
@@ -935,7 +1001,7 @@ const store = combineStores(
 	fetchCreateAudienceStore,
 	fetchSyncAvailableAudiencesStore,
 	{
-		initialState: {},
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: {},
 		reducer: baseReducer,

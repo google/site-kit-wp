@@ -44,12 +44,20 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 		useState( false );
 	const { maybeSyncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
 
+	const isSettingUpAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSettingUpAudiences()
+	);
+
 	useEffect( () => {
-		if ( ! availableAudiencesSynced ) {
+		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
 			maybeSyncAvailableAudiences();
 			setAvailableAudiencesSynced( true );
 		}
-	}, [ availableAudiencesSynced, maybeSyncAvailableAudiences ] );
+	}, [
+		availableAudiencesSynced,
+		isSettingUpAudiences,
+		maybeSyncAvailableAudiences,
+	] );
 
 	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
 		availableAudiences?.includes( audience )
