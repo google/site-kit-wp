@@ -61,7 +61,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
-	 * Gets the default value.
+	 * Gets the default values.
 	 *
 	 * @since 1.132.0
 	 *
@@ -73,6 +73,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'publicationID'                            => '',
 			'publicationOnboardingState'               => '',
 			'publicationOnboardingStateLastSyncedAtMs' => 0,
+			'publicationOnboardingStateChanged'        => false,
 		);
 	}
 

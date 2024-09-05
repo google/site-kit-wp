@@ -1,5 +1,5 @@
 /**
- * PublicationApprovedOverlayNotification component.
+ * PublicationApprovedOverlayNotification components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
