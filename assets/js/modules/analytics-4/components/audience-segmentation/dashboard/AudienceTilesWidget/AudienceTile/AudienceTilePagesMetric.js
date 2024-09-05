@@ -127,6 +127,7 @@ export default function AudienceTilePagesMetric( {
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
 	);
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
@@ -166,12 +167,19 @@ export default function AudienceTilePagesMetric( {
 		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 			autoSubmit: false,
 		} );
+		setSetupErrorCode( null );
 		clearPermissionScopeError();
 		clearError( 'createCustomDimension', [
 			propertyID,
 			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 		] );
-	}, [ clearError, clearPermissionScopeError, propertyID, setValues ] );
+	}, [
+		clearError,
+		clearPermissionScopeError,
+		propertyID,
+		setSetupErrorCode,
+		setValues,
+	] );
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
@@ -208,7 +216,8 @@ export default function AudienceTilePagesMetric( {
 					isSaving={ isSaving }
 				/>
 				{ ( ( customDimensionError && ! isSaving ) ||
-					isRetryingCustomDimensionCreate ||
+					( isRetryingCustomDimensionCreate &&
+						! isAutoCreatingCustomDimensionsForAudience ) ||
 					hasOAuthError ) && (
 					<AudienceErrorModal
 						apiErrors={ [ customDimensionError ] }
