@@ -60,9 +60,6 @@ describe( 'modules/analytics-4 audiences', () => {
 	const analyticsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
-	const userAuthenticationEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/authentication'
-	);
 
 	const audience = {
 		displayName: 'Recently active users',
@@ -2214,7 +2211,9 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'returns false when available audiences are null or not set', async () => {
-				freezeFetch( userAuthenticationEndpoint );
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableAudiences: null,
@@ -2226,7 +2225,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						.hasAudiences( testAudience1ResourceName )
 				).toBe( false );
 
-				await waitForDefaultTimeouts();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableAudiences();
 			} );
 
 			it( 'returns true when all provided audiences are available', () => {
@@ -2286,7 +2288,9 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return empty array if loaded `availableAudiences` is not an array', async () => {
-				freezeFetch( userAuthenticationEndpoint );
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -2298,7 +2302,10 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				expect( configurableAudiences ).toEqual( [] );
 
-				await waitForDefaultTimeouts();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAvailableAudiences();
 			} );
 
 			it( 'should not include "Purchasers" if it has no data', () => {
