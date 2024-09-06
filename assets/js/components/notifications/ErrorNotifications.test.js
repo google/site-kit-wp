@@ -33,6 +33,7 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
@@ -41,35 +42,7 @@ describe( 'ErrorNotifications', () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
-	} );
-
-	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
-		provideUserAuthentication( registry, {
-			authenticated: false,
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
-		} );
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-		} );
-		expect( container.childElementCount ).toBe( 0 );
-	} );
-
-	it( 'renders UnsatisfiedScopesAlert when user is authenticated', () => {
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
-		} );
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-		} );
-
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
-		expect( container ).toMatchSnapshot();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'renders `Get help` link', () => {
@@ -85,6 +58,7 @@ describe( 'ErrorNotifications', () => {
 		} );
 		const { container, getByRole } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Get help' );
@@ -94,30 +68,6 @@ describe( 'ErrorNotifications', () => {
 				code: registry.select( CORE_SITE ).getSetupErrorCode(),
 			} )
 		);
-	} );
-
-	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-			],
-		} );
-
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-		} );
-
-		expect( container ).toHaveTextContent(
-			'Site Kit needs additional permissions to detect updates to tags on your site'
-		);
-		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
@@ -130,11 +80,9 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
 		expect( container ).toMatchSnapshot();
 	} );
 
@@ -147,11 +95,9 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
 		expect( container ).toMatchSnapshot();
 	} );
 
@@ -168,6 +114,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
@@ -185,6 +132,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
@@ -215,6 +163,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );

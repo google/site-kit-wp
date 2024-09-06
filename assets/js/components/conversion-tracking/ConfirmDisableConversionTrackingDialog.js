@@ -57,6 +57,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 
 	return (
 		<ModalDialog
+			className="googlesitekit-settings-module__confirm-disconnect-modal"
 			dialogActive
 			title={ __(
 				'Disable enhanced conversion tracking',
