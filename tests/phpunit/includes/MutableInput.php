@@ -19,7 +19,7 @@ class MutableInput extends Input {
 	/**
 	 * @inheritDoc
 	 */
-	public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = null ) {
+	public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = 0 ) {
 		$input_map = array(
 			INPUT_GET    => $_GET,
 			INPUT_POST   => $_POST,

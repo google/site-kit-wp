@@ -21,6 +21,7 @@
  */
 import {
 	provideModules,
+	provideModuleRegistrations,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
@@ -289,9 +290,9 @@ TwoTilesWithZeroTile.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTilesWithZeroTile',
 };
 
-export const SingleZeroTile = Template.bind( {} );
-SingleZeroTile.storyName = 'SingleZeroTile';
-SingleZeroTile.args = {
+export const ZeroTileWithPlaceholder = Template.bind( {} );
+ZeroTileWithPlaceholder.storyName = 'ZeroTileWithPlaceholder';
+ZeroTileWithPlaceholder.args = {
 	configuredAudiences: [
 		'properties/12345/audiences/4', // Returning visitors
 	],
@@ -344,9 +345,146 @@ SingleZeroTile.args = {
 			} );
 	},
 };
-SingleZeroTile.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/SingleZeroTile',
+ZeroTileWithPlaceholder.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/ZeroTileWithPlaceholder',
 };
+
+export const AllTilesErrored = Template.bind( {} );
+AllTilesErrored.storyName = 'AllTilesErrored';
+AllTilesErrored.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+	],
+	setupRegistry: async ( registry ) => {
+		const reportOptions = {
+			compareEndDate: '2024-02-28',
+			compareStartDate: '2024-02-01',
+			endDate: '2024-03-27',
+			startDate: '2024-02-29',
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: [
+					'properties/12345/audiences/1', // All Users
+					'properties/12345/audiences/3', // New visitors
+				],
+			},
+			metrics: [
+				{ name: 'totalUsers' },
+				{ name: 'sessionsPerUser' },
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
+			],
+		};
+
+		const errorReport = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'Data Error',
+			},
+		};
+
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( errorReport, 'getReport', [ reportOptions ] );
+	},
+};
+AllTilesErrored.scenario = {};
+
+export const SingleTileErrored = Template.bind( {} );
+SingleTileErrored.storyName = 'SingleTileErrored';
+SingleTileErrored.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+	],
+	setupRegistry: ( registry ) => {
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const { startDate, endDate } = dates;
+
+		const citiesReportOptions = {
+			startDate,
+			endDate,
+			dimensions: [ 'city' ],
+			dimensionFilters: {
+				audienceResourceName: 'properties/12345/audiences/3',
+			},
+			metrics: [ { name: 'totalUsers' } ],
+			orderby: [
+				{
+					metric: {
+						metricName: 'totalUsers',
+					},
+					desc: true,
+				},
+			],
+			limit: 3,
+		};
+
+		const errorReport = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'Data Error',
+			},
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( errorReport, 'getReport', [ citiesReportOptions ] );
+	},
+};
+SingleTileErrored.scenario = {};
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+	],
+	setupRegistry: ( registry ) => {
+		const reportOptions = {
+			compareEndDate: '2024-02-28',
+			compareStartDate: '2024-02-01',
+			endDate: '2024-03-27',
+			startDate: '2024-02-29',
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: [
+					'properties/12345/audiences/1', // All Users
+					'properties/12345/audiences/3', // New visitors
+				],
+			},
+			metrics: [
+				{ name: 'totalUsers' },
+				{ name: 'sessionsPerUser' },
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
+			],
+		};
+
+		// Start loading the report and do not resolve it so that tiles are displayed in loading state.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ reportOptions ] );
+	},
+};
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
+Loading.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
@@ -391,6 +529,7 @@ export default {
 						connected: true,
 					},
 				] );
+				provideModuleRegistrations( registry );
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );

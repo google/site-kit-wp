@@ -22,12 +22,17 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_SETTINGS,
 } from '../constants';
 import { NOTIFICATION_AREAS } from './datastore/constants';
+import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
+import UnsatisfiedScopesAlertGTE from '../../components/notifications/UnsatisfiedScopesAlertGTE';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 
@@ -39,6 +44,82 @@ import ZeroDataNotification from '../../components/notifications/ZeroDataNotific
  * @param {Object} notificationsAPI Notifications API.
  */
 export function registerDefaults( notificationsAPI ) {
+	notificationsAPI.registerNotification( 'authentication-error', {
+		Component: UnsatisfiedScopesAlert,
+		priority: 150,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: ( { select } ) => {
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+				TAGMANAGER_READ_SCOPE
+			);
+
+			const showUnsatisfiedScopesAlertGTE =
+				ga4ModuleConnected && ! hasTagManagerReadScope;
+
+			const unsatisfiedScopes =
+				select( CORE_USER ).getUnsatisfiedScopes();
+
+			return (
+				unsatisfiedScopes?.length &&
+				! setupErrorMessage &&
+				isAuthenticated &&
+				! showUnsatisfiedScopesAlertGTE
+			);
+		},
+		isDismissible: false,
+	} );
+
+	notificationsAPI.registerNotification( 'authentication-error-gte', {
+		Component: UnsatisfiedScopesAlertGTE,
+		priority: 150,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: ( { select } ) => {
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+				TAGMANAGER_READ_SCOPE
+			);
+
+			const showUnsatisfiedScopesAlertGTE =
+				ga4ModuleConnected && ! hasTagManagerReadScope;
+
+			return (
+				! setupErrorMessage &&
+				isAuthenticated &&
+				showUnsatisfiedScopesAlertGTE
+			);
+		},
+		isDismissible: false,
+	} );
+
 	notificationsAPI.registerNotification( 'gathering-data-notification', {
 		Component: GatheringDataNotification,
 		priority: 300,
@@ -64,33 +145,27 @@ export function registerDefaults( notificationsAPI ) {
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-			const showRecoverableAnalytics = ( () => {
+			const showRecoverableAnalytics = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
 			} )();
-			const showRecoverableSearchConsole = ( () => {
+			const showRecoverableSearchConsole = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
@@ -114,7 +189,7 @@ export function registerDefaults( notificationsAPI ) {
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
-		isDismissible: false,
+		isDismissible: true,
 	} );
 
 	notificationsAPI.registerNotification( 'zero-data-notification', {
@@ -142,33 +217,27 @@ export function registerDefaults( notificationsAPI ) {
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-			const showRecoverableAnalytics = ( () => {
+			const showRecoverableAnalytics = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
 			} )();
-			const showRecoverableSearchConsole = ( () => {
+			const showRecoverableSearchConsole = await ( async () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules === undefined ) {
-					return undefined;
-				}
+				const recoverableModules = await resolveSelect(
+					CORE_MODULES
+				).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
@@ -208,6 +277,6 @@ export function registerDefaults( notificationsAPI ) {
 
 			return analyticsHasZeroData || searchConsoleHasZeroData;
 		},
-		isDismissible: false,
+		isDismissible: true,
 	} );
 }

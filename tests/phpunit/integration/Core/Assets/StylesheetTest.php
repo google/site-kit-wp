@@ -73,7 +73,7 @@ class StylesheetTest extends TestCase {
 		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock->expects( $this->once() )
 			->method( 'callback' )
-			->with( $expected_src, 'test-handle' );
+			->with( $expected_src, 'test-handle' )->willReturn( '' );
 
 		add_filter( 'style_loader_src', array( $mock, 'callback' ), 10, 2 );
 

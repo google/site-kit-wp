@@ -126,6 +126,17 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 
+		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+				expires: currentTimeInSeconds - 10,
+				count: 0,
+			},
+		} );
+		registry
+			.dispatch( CORE_USER )
+			.finishResolution( 'getDismissedPrompts', [] );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableAudiences: null,
 			// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
@@ -269,6 +280,23 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					/Learn how different types of visitors interact with your site/i
 				)
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not render the widget when the prompt dismiss count is not resolved', () => {
+			registry
+				.dispatch( CORE_USER )
+				.startResolution( 'getDismissedPrompts', [] );
+
+			const { container } = render(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+				}
+			);
+			expect( container ).toBeEmptyDOMElement();
 		} );
 	} );
 
@@ -484,12 +512,14 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 
-			const { getByRole } = render(
+			const { container, getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
 				}
 			);
+
+			await waitForRegistry();
 
 			expect(
 				getByRole( 'button', { name: /Enable groups/i } )
@@ -502,11 +532,28 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 			} );
 
+			// Dismiss prompt endpoint must be called when the CTA is clicked.
+			const dismissPromptEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+			);
+
 			expect(
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
 
-			await act( () => waitForTimeouts( 30 ) );
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
+					body: {
+						data: {
+							slug: AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+							expiration: 0,
+						},
+					},
+					method: 'POST',
+				} );
+			} );
+
+			expect( container ).toBeEmptyDOMElement();
 		} );
 
 		it( 'should initialise the list of configured audiences when autoSubmit is set to true.', async () => {

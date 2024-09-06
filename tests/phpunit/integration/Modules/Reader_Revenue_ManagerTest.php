@@ -12,10 +12,17 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -31,8 +38,10 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  */
 class Reader_Revenue_ManagerTest extends TestCase {
 
-	use Module_With_Settings_ContractTests;
+	use Module_With_Owner_ContractTests;
+	use Module_With_Scopes_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Settings_ContractTests;
 
 	/**
 	 * Context object.
@@ -49,6 +58,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	private $authentication;
 
 	/**
+	 * Options object.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * Reader_Revenue_Manager object.
 	 *
 	 * @var Reader_Revenue_Manager
@@ -59,11 +75,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		parent::set_up();
 
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options                      = new Options( $this->context );
+		$this->options                = new Options( $this->context );
 		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$user_options                 = new User_Options( $this->context, $user->ID );
-		$this->authentication         = new Authentication( $this->context, $options, $user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options, $this->authentication );
+		$this->authentication         = new Authentication( $this->context, $this->options, $user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $user_options, $this->authentication );
 	}
 
 	public function test_register() {
@@ -109,42 +125,26 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_get_publications() {
+	public function test_get_publications__url() {
+		$filter = '';
+
+		// Set the Search Console option.
+		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
 		FakeHttp::fake_google_http_handler(
 			$this->reader_revenue_manager->get_client(),
-			function ( Request $request ) {
+			function ( Request $request ) use ( &$filter ) {
 				$url = parse_url( $request->getUri() );
+
+				$filter = $url['query'];
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						$publications = array(
-							array(
-								'publicationId'         => 'ABCDEFGH',
-								'publicationPredicates' => array(
-									'businessPredicates' => array(
-										'supportsSiteKit' => true,
-										'canSell'         => true,
-									),
-								),
-								'verifiedDomains'       => 'example.com',
-								'paymentOptions'        => array(
-									'subscriptions' => true,
-									'noPayment'     => false,
-									'contributions' => false,
-									'thankStickers' => true,
-								),
-								'displayName'           => 'Test Property',
-								'products'              => array(
-									array(
-										'name' => 'basic',
-									),
-								),
-								'onboardingState'       => 'PENDING_VERIFICATION',
-							),
+						return new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response() )
 						);
-						$response     = new ListPublicationsResponse();
-						$response->setPublications( $publications );
-						return new Response( 200, array(), json_encode( $response ) );
 				}
 			}
 		);
@@ -156,6 +156,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
+
 		$this->assertNotWPError( $result );
 		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
 
@@ -163,6 +164,71 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
 		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+
+		$expected_filter = 'filter=' . join(
+			' OR ',
+			array_map(
+				function ( $url ) {
+					return sprintf( 'site_url = "%s"', $url );
+				},
+				URL::permute_site_url( 'http://test.com' )
+			)
+		);
+
+		$this->assertEquals( $expected_filter, urldecode( $filter ) );
+	}
+
+	public function test_get_publications__domain() {
+		$filter = '';
+
+		// Set the Search Console option.
+		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'sc-domain:example.com' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) use ( &$filter ) {
+				$url = parse_url( $request->getUri() );
+
+				$filter = $url['query'];
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response() )
+						);
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$result = $this->reader_revenue_manager->get_data( 'publications' );
+
+		$this->assertNotWPError( $result );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
+
+		$publication = $result[0];
+
+		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+
+		$expected_filter = 'filter=' . join(
+			' OR ',
+			array_map(
+				function ( $domain ) {
+					return sprintf( 'domain = "%s"', $domain );
+				},
+				URL::permute_site_hosts( 'example.com' )
+			)
+		);
+
+		$this->assertEquals( $expected_filter, urldecode( $filter ) );
 	}
 
 	public function test_is_connected() {
@@ -216,7 +282,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-		$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 	}
 
@@ -233,14 +299,88 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
+	public function test_check_service_entity_access_no_access_unavailable_publication() {
+		$module = $this->get_module_with_service_entity();
+
+		$this->mock_service_entity_access( $module, 200 );
+		$this->set_up_check_service_entity_access( $module );
+
+		// Change saved publication to one that is not available.
+		$module->get_settings()->merge(
+			array(
+				'publicationID' => 'IJKLMNOP',
+			)
+		);
+
+		$access = $module->check_service_entity_access();
+
+		$this->assertNotWPError( $access );
+		$this->assertEquals( false, $access );
+	}
+
+	/**
+	 * @return Module_With_Scopes
+	 */
+	protected function get_module_with_scopes() {
+		return $this->reader_revenue_manager;
+	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
+		return $this->reader_revenue_manager;
+	}
+
+	/**
+	 * @return Module_With_Settings
+	 */
 	public function get_module_with_settings() {
 		return $this->reader_revenue_manager;
 	}
 
 	/**
-	 * @return Module_With_Service_Entity
+	 * @return Module|Module_With_Service_Entity|Module_With_Settings
 	 */
 	protected function get_module_with_service_entity() {
 		return $this->reader_revenue_manager;
+	}
+
+	protected function set_up_check_service_entity_access( Module_With_Settings $module ) {
+		$module->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+	}
+
+	protected function mock_service_entity_access( Module $module, $status_code ) {
+		FakeHttp::fake_google_http_handler(
+			$module->get_client(),
+			function () use ( $status_code ) {
+				if ( 200 === $status_code ) {
+					return new Response(
+						200,
+						array(),
+						json_encode( $this->get_publications_list_response() )
+					);
+				}
+
+				return new Response( $status_code );
+			}
+		);
+	}
+
+	protected function get_publications_list_response() {
+		$publication = new Publication();
+
+		$publication->setPublicationId( 'ABCDEFGH' );
+		$publication->setDisplayName( 'Test Property' );
+		$publication->setOnboardingState( 'PENDING_VERIFICATION' );
+
+		$response = new ListPublicationsResponse();
+		$response->setPublications( array( $publication ) );
+
+		return $response;
 	}
 }

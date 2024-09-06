@@ -38,7 +38,6 @@ import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
-import useViewContext from '../../hooks/useViewContext';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
@@ -47,10 +46,15 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import Notifications from './Notifications';
+import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../modules/reader-revenue-manager/datastore/constants';
+
+const MODULES_USING_SUBTLE_NOTIFICATIONS = [
+	'ads',
+	READER_REVENUE_MANAGER_MODULE_SLUG,
+];
 
 export default function BannerNotifications() {
 	const viewOnly = useViewOnly();
-	const viewContext = useViewContext();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -96,7 +100,6 @@ export default function BannerNotifications() {
 		return (
 			<Fragment>
 				<Notifications
-					viewContext={ viewContext }
 					areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
 				/>
 			</Fragment>
@@ -107,10 +110,11 @@ export default function BannerNotifications() {
 		<Fragment>
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			<ModuleRecoveryAlert />
-			{ /* The Ads module uses the new, subtle notification rather than the old SetupSuccessBannerNotification */ }
-			{ 'authentication_success' === notification && slug !== 'ads' && (
-				<SetupSuccessBannerNotification />
-			) }
+			{ /* This ensures that the `SetupSuccessBannerNotification` is not rendered for the modules that are using the `SubtleNotification` to display their success notification. */ }
+			{ 'authentication_success' === notification &&
+				! MODULES_USING_SUBTLE_NOTIFICATIONS.includes( slug ) && (
+					<SetupSuccessBannerNotification />
+				) }
 			{ 'ad_blocking_recovery_setup_success' === notification && (
 				<AdBlockingRecoverySetupSuccessBannerNotification />
 			) }
@@ -127,10 +131,7 @@ export default function BannerNotifications() {
 					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
-			<Notifications
-				viewContext={ viewContext }
-				areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
-			/>
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
 	);
 }

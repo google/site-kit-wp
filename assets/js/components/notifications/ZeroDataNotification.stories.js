@@ -20,12 +20,17 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import ZeroDataNotification from './ZeroDataNotification';
 
-function Template( {} ) {
-	return <ZeroDataNotification />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'gathering-data-notification'
+)( ZeroDataNotification );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );

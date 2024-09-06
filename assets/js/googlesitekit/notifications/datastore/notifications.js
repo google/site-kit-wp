@@ -24,10 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data, {
-	commonActions,
-	createRegistrySelector,
-} from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
@@ -39,6 +36,7 @@ import { createValidatedAction } from '../../data/utils';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
+const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 
 export const initialState = {
 	notifications: {},
@@ -147,7 +145,14 @@ export const actions = {
 		function* ( id, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
 			const registry = yield commonActions.getRegistry();
-			return yield registry
+
+			// Remove the notification from the queue of notifications in state.
+			yield {
+				type: DISMISS_NOTIFICATION,
+				payload: { id },
+			};
+
+			return registry
 				.dispatch( CORE_USER )
 				.dismissItem( id, { expiresInSeconds } );
 		}
@@ -177,6 +182,22 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			break;
 		}
 
+		case DISMISS_NOTIFICATION: {
+			const { id } = payload;
+			const dismissedNotificationIndex =
+				state.queuedNotifications.findIndex(
+					( notification ) => notification.id === id
+				);
+
+			if ( dismissedNotificationIndex >= 0 ) {
+				state.queuedNotifications.splice(
+					dismissedNotificationIndex,
+					1
+				);
+			}
+			break;
+		}
+
 		default:
 			break;
 	}
@@ -184,14 +205,14 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getQueuedNotifications( viewContext ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const notifications = registry
 			.select( CORE_NOTIFICATIONS )
 			.getNotifications();
 
 		// Wait for all dismissed items to be available before filtering.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			registry.resolveSelect( CORE_USER ).getDismissedItems()
 		);
 
@@ -214,7 +235,7 @@ export const resolvers = {
 			}
 		);
 
-		const checkRequirementsResults = yield Data.commonActions.await(
+		const checkRequirementsResults = yield commonActions.await(
 			Promise.all(
 				filteredNotifications.map( async ( { checkRequirements } ) => {
 					if ( typeof checkRequirements === 'function' ) {

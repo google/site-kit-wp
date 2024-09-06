@@ -113,7 +113,9 @@ final class WP_Query_Factory {
 		}
 
 		// Strip leading and trailing slashes.
-		$url_path = trim( $url_path, '/' );
+		if ( is_string( $url_path ) ) {
+			$url_path = trim( $url_path, '/' );
+		}
 
 		// Fetch the rewrite rules.
 		$rewrite = $wp_rewrite->wp_rewrite_rules();

@@ -22,39 +22,21 @@
 import ErrorNotifications from './ErrorNotifications';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
-	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 function Template( { ...args } ) {
-	return <ErrorNotifications { ...args } />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<ErrorNotifications { ...args } />
+		</ViewContextProvider>
+	);
 }
-
-export const UnsatisfiedScopeGTESupport = Template.bind( {} );
-UnsatisfiedScopeGTESupport.storyName =
-	'Unsatisfied Scope - GTE Support for GA4';
-UnsatisfiedScopeGTESupport.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-			],
-		} );
-	},
-};
-UnsatisfiedScopeGTESupport.scenario = {
-	label: 'Global/ErrorNotifications/UnsatisfiedScopeGTESupport',
-};
 
 export const PluginSetupError = Template.bind( {} );
 PluginSetupError.storyName = 'Plugin Setup Error - Redo the plugin setup';

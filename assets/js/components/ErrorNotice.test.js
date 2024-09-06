@@ -52,7 +52,11 @@ describe( 'ErrorNotice', () => {
 		invalidateResolutionSpy.mockReset();
 	} );
 
-	async function renderErrorNotice( { error, storeName } ) {
+	async function renderErrorNotice( {
+		error,
+		storeName,
+		hasButton = false,
+	} ) {
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
@@ -74,12 +78,31 @@ describe( 'ErrorNotice', () => {
 			.getError( 'getAccounts', [] );
 
 		return render(
-			<ErrorNotice error={ selectorError } storeName={ storeName } />,
+			<ErrorNotice
+				hasButton={ hasButton }
+				error={ selectorError }
+				storeName={ storeName }
+			/>,
 			{
 				registry,
 			}
 		);
 	}
+
+	it( 'should not render the `Retry` button by default', async () => {
+		const { queryByText } = await renderErrorNotice( {
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			storeName: MODULES_TAGMANAGER,
+		} );
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
 
 	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', async () => {
 		const { queryByText } = await renderErrorNotice( {
@@ -127,7 +150,7 @@ describe( 'ErrorNotice', () => {
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should render the `Retry` button if the error is retryable', async () => {
+	it( 'should render the `Retry` button if the error is retryable and hasButton is passed', async () => {
 		const { queryByText } = await renderErrorNotice( {
 			error: {
 				code: 'test-error-code',
@@ -137,6 +160,7 @@ describe( 'ErrorNotice', () => {
 				},
 			},
 			storeName: MODULES_TAGMANAGER,
+			hasButton: true,
 		} );
 
 		expect( queryByText( /retry/i ) ).toBeInTheDocument();
@@ -152,6 +176,7 @@ describe( 'ErrorNotice', () => {
 				},
 			},
 			storeName: MODULES_TAGMANAGER,
+			hasButton: true,
 		} );
 
 		expect( queryByText( /retry/i ) ).toBeInTheDocument();

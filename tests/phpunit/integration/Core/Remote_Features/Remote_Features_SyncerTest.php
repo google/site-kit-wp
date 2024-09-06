@@ -34,14 +34,13 @@ class Remote_Features_SyncerTest extends TestCase {
 			$this->setting,
 			fn () => array( 'testFeature' => array( 'enabled' => true ) )
 		);
-		$this->assertEquals( array(), $this->setting->get() );
+
+		$this->assertEquals( array( 'last_updated_at' => 0 ), $this->setting->get() );
 
 		$syncer->pull_remote_features();
 
-		$this->assertEquals(
-			array( 'testFeature' => array( 'enabled' => true ) ),
-			$this->setting->get()
-		);
+		$this->assertEquals( array( 'enabled' => true ), $this->setting->get()['testFeature'] );
+		$this->assertEqualsWithDelta( time(), $this->setting->get()['last_updated_at'], 2 );
 	}
 
 	public function test_pull_remote_features__with_guards() {
@@ -54,23 +53,21 @@ class Remote_Features_SyncerTest extends TestCase {
 			new TestGuard( fn () => $returns->a ),
 			new TestGuard( fn () => $returns->b ),
 		);
-		$this->assertEquals( array(), $this->setting->get() );
+		$this->assertEquals( array( 'last_updated_at' => 0 ), $this->setting->get() );
 
 		$syncer->pull_remote_features();
 
-		$this->assertEquals( array(), $this->setting->get() );
+		$this->assertEquals( array( 'last_updated_at' => 0 ), $this->setting->get() );
 
 		$returns->a = true;
 		$syncer->pull_remote_features();
 
-		$this->assertEquals( array(), $this->setting->get() );
+		$this->assertEquals( array( 'last_updated_at' => 0 ), $this->setting->get() );
 
 		$returns->b = true;
 		$syncer->pull_remote_features();
 
-		$this->assertEquals(
-			array( 'testFeature' => array( 'enabled' => true ) ),
-			$this->setting->get()
-		);
+		$this->assertEquals( array( 'enabled' => true ), $this->setting->get()['testFeature'] );
+		$this->assertEqualsWithDelta( time(), $this->setting->get()['last_updated_at'], 2 );
 	}
 }

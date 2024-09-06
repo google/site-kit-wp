@@ -26,6 +26,7 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
+	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
@@ -45,8 +46,11 @@ import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
 import AudienceCreationNotice from './AudienceCreationNotice';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
 
 export default function AudienceSelectionPanel() {
+	const viewOnlyDashboard = useViewOnly();
+
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
@@ -65,6 +69,10 @@ export default function AudienceSelectionPanel() {
 			.filter( ( { name } ) => configuredAudiences.includes( name ) )
 			.map( ( { name } ) => name );
 	} );
+
+	const isCreatingAudienceFromOAuth = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( AUDIENCE_CREATION_FORM, 'autoSubmit' )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
@@ -87,13 +95,13 @@ export default function AudienceSelectionPanel() {
 		<SelectionPanel
 			className="googlesitekit-audience-selection-panel"
 			closePanel={ closePanel }
-			isOpen={ isOpen }
+			isOpen={ isOpen || isCreatingAudienceFromOAuth }
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<AddGroupNotice />
-			<AudienceCreationNotice />
+			{ ! viewOnlyDashboard && <AudienceCreationNotice /> }
 			<LearnMoreLink />
 			<ErrorNotice />
 			<AudienceCreationSuccessNotice />
