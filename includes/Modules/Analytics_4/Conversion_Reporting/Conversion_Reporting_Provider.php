@@ -101,7 +101,7 @@ class Conversion_Reporting_Provider {
 		$owner_id     = $this->analytics->get_owner_id();
 		$restore_user = $this->user_options->switch_user( $owner_id );
 
-		$this->events_sync->check_for_events();
+		$this->events_sync->sync_detected_events();
 
 		$restore_user();
 	}
