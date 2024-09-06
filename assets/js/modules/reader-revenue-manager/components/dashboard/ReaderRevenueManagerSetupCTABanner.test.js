@@ -327,6 +327,12 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 				},
 				method: 'POST',
 			} );
+
+			expect(
+				getByText(
+					/You can always enable reader revenue manager from Settings later/
+				)
+			).toBeInTheDocument();
 		} );
 	} );
 
