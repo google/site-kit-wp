@@ -38,6 +38,7 @@ import {
 	useBreakpoint,
 } from '../../../../../../../hooks/useBreakpoint';
 import { CORE_FORMS } from '../../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -116,6 +117,20 @@ export default function AudienceTilePagesMetric( {
 		)
 	);
 
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'autoSubmit'
+		)
+	);
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+
 	const onCreateCustomDimension = useCallback(
 		( { isRetrying } = {} ) => {
 			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
@@ -152,12 +167,19 @@ export default function AudienceTilePagesMetric( {
 		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 			autoSubmit: false,
 		} );
+		setSetupErrorCode( null );
 		clearPermissionScopeError();
 		clearError( 'createCustomDimension', [
 			propertyID,
 			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 		] );
-	}, [ clearError, clearPermissionScopeError, propertyID, setValues ] );
+	}, [
+		clearError,
+		clearPermissionScopeError,
+		propertyID,
+		setSetupErrorCode,
+		setValues,
+	] );
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
@@ -194,7 +216,9 @@ export default function AudienceTilePagesMetric( {
 					isSaving={ isSaving }
 				/>
 				{ ( ( customDimensionError && ! isSaving ) ||
-					isRetryingCustomDimensionCreate ) && (
+					( isRetryingCustomDimensionCreate &&
+						! isAutoCreatingCustomDimensionsForAudience ) ||
+					hasOAuthError ) && (
 					<AudienceErrorModal
 						apiErrors={ [ customDimensionError ] }
 						title={ __(
@@ -210,6 +234,7 @@ export default function AudienceTilePagesMetric( {
 						}
 						onCancel={ onCancel }
 						inProgress={ isSaving }
+						hasOAuthError={ hasOAuthError }
 					/>
 				) }
 			</div>
