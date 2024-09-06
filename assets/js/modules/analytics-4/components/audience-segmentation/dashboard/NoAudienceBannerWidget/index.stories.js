@@ -24,7 +24,6 @@ import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetu
 import {
 	provideModuleRegistrations,
 	provideModules,
-	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
@@ -44,52 +43,25 @@ function Template() {
 	return <WidgetWithComponentProps />;
 }
 
-export const AuthenticatedUserWithoutConfigurableAudiencesNeverSetup =
-	Template.bind( {} );
-AuthenticatedUserWithoutConfigurableAudiencesNeverSetup.storyName =
-	'Authenticated user, no selectable audiences, never populated their audience selection';
-AuthenticatedUserWithoutConfigurableAudiencesNeverSetup.scenario = {};
-AuthenticatedUserWithoutConfigurableAudiencesNeverSetup.args = {
+export const AuthenticatedUserNeverSetup = Template.bind( {} );
+AuthenticatedUserNeverSetup.storyName =
+	'Authenticated user, never populated their audience selection';
+AuthenticatedUserNeverSetup.scenario = {};
+AuthenticatedUserNeverSetup.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
 			didSetAudiences: false,
 		} );
 	},
 };
-export const AuthenticatedUserWithoutConfigurableAudiencesHasSetup =
-	Template.bind( {} );
-AuthenticatedUserWithoutConfigurableAudiencesHasSetup.storyName =
-	'Authenticated user, no selectable audiences, previously populated their audience selection';
-AuthenticatedUserWithoutConfigurableAudiencesHasSetup.scenario = {};
-AuthenticatedUserWithoutConfigurableAudiencesHasSetup.args = {
+
+export const AuthenticatedUserHasSetup = Template.bind( {} );
+AuthenticatedUserHasSetup.storyName =
+	'Authenticated user, previously populated their audience selection';
+AuthenticatedUserHasSetup.scenario = {};
+AuthenticatedUserHasSetup.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
-			didSetAudiences: true,
-		} );
-	},
-};
-export const AuthenticatedUserWithConfigurableAudiences = Template.bind( {} );
-AuthenticatedUserWithConfigurableAudiences.storyName =
-	'Authenticated user with selectable audiences';
-AuthenticatedUserWithConfigurableAudiences.scenario = {};
-AuthenticatedUserWithConfigurableAudiences.args = {
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
 			didSetAudiences: true,
@@ -97,57 +69,29 @@ AuthenticatedUserWithConfigurableAudiences.args = {
 	},
 };
 
-export const ViewOnlyUserWithoutConfigurableAudiencesNeverSetup = Template.bind(
-	{}
-);
-ViewOnlyUserWithoutConfigurableAudiencesNeverSetup.storyName =
-	'View only user, no selectable audiences, never populated their audience selection';
-ViewOnlyUserWithoutConfigurableAudiencesNeverSetup.scenario = {};
-ViewOnlyUserWithoutConfigurableAudiencesNeverSetup.args = {
+export const ViewOnlyUserNeverSetup = Template.bind( {} );
+ViewOnlyUserNeverSetup.storyName =
+	'View-only user, never populated their audience selection';
+ViewOnlyUserNeverSetup.scenario = {};
+ViewOnlyUserNeverSetup.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry, { authenticated: false } );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
+			didSetAudiences: false,
 		} );
 	},
 	isViewOnly: true,
 };
-export const ViewOnlyUserWithoutConfigurableAudiencesHasSetup = Template.bind(
-	{}
-);
-ViewOnlyUserWithoutConfigurableAudiencesHasSetup.storyName =
-	'View only user, no selectable audiences, previously populated their audience selection';
-ViewOnlyUserWithoutConfigurableAudiencesHasSetup.scenario = {};
-ViewOnlyUserWithoutConfigurableAudiencesHasSetup.args = {
-	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+
+export const ViewOnlyUserHasSetup = Template.bind( {} );
+ViewOnlyUserHasSetup.storyName =
+	'View-only user, previously populated their audience selection';
+ViewOnlyUserHasSetup.scenario = {};
+ViewOnlyUserHasSetup.args = {
 	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry, { authenticated: false } );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
-		} );
-	},
-	isViewOnly: true,
-};
-export const ViewOnlyUserWithConfigurableAudiences = Template.bind( {} );
-ViewOnlyUserWithConfigurableAudiences.storyName =
-	'View only user with selectable audiences';
-ViewOnlyUserWithConfigurableAudiences.scenario = {};
-ViewOnlyUserWithConfigurableAudiences.args = {
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry, { authenticated: false } );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
+			didSetAudiences: true,
 		} );
 	},
 	isViewOnly: true,
@@ -166,6 +110,10 @@ export default {
 					},
 				] );
 				provideModuleRegistrations( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
 
 				await args.setupRegistry( registry );
 			};
