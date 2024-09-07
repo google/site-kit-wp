@@ -46,10 +46,12 @@ return array(
 					'vendor-bin',
 				)
 			)
+			->path( '#^firebase/php-jwt#' )
 			->path( '#^google/apiclient/#' )
 			->path( '#^google/auth/#' )
 			->path( '#^guzzlehttp/#' )
 			->path( '#^monolog/#' )
+			->path( '#^phpseclib/phpseclib/phpseclib/#' )
 			->path( '#^psr/#' )
 			->path( '#^ralouphie/#' )
 			->path( '#^react/#' )
@@ -101,7 +103,6 @@ return array(
 			->in( 'vendor/google/apiclient-services-adsenselinks' ),
 	),
 	'files-whitelist'            => array(
-
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
 	),
@@ -128,6 +129,12 @@ return array(
 			if ( false !== strpos( $file_path, 'apiclient-services-adsenselinks' ) ) {
 				// Rewrite "Class_Name" to Class_Name::class to inherit namespace.
 				$contents = preg_replace( '/"(Google_[^"]+)"/', '\\1::class', $contents );
+			}
+			if ( false !== strpos( $file_path, 'phpseclib' ) ) {
+				// Use modified prefix just for this patch.
+				$s_prefix = str_replace( '\\', '\\\\', $prefix );
+				$contents = str_replace( "'phpseclib3\\\\", "'\\\\" . $s_prefix . '\\\\phpseclib3\\\\', $contents );
+				$contents = str_replace( "'\\\\phpseclib3", "'\\\\" . $s_prefix . '\\\\phpseclib3', $contents );
 			}
 
 			if (
