@@ -23,7 +23,11 @@ import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
 
-export default function useAudienceTilesReports() {
+export default function useAudienceTilesReports( {
+	isSiteKitAudiencePartialData,
+	siteKitAudiences,
+	otherAudiences,
+} ) {
 	// An array of audience resource names.
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
@@ -42,6 +46,14 @@ export default function useAudienceTilesReports() {
 
 	const { startDate, endDate } = dates;
 
+	const shouldFetchReport =
+		isSiteKitAudiencePartialData === undefined
+			? undefined
+			: otherAudiences.length > 0 ||
+			  isSiteKitAudiencePartialData === false;
+	const shouldFetchSiteKitAudiencesReport =
+		siteKitAudiences.length > 0 ? isSiteKitAudiencePartialData : false;
+
 	const reportOptions = {
 		...dates,
 		dimensions: [ { name: 'audienceResourceName' } ],
@@ -53,20 +65,44 @@ export default function useAudienceTilesReports() {
 			{ name: 'screenPageViews' },
 		],
 	};
-	const report = useInViewSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-	} );
-	const reportLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-			reportOptions,
-		] )
-	);
-	const reportError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			reportOptions,
-		] )
+	const report = useInViewSelect(
+		( select ) => {
+			if ( shouldFetchReport === undefined ) {
+				return undefined;
+			}
+			if ( ! shouldFetchReport ) {
+				return null;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
+		},
+		[ shouldFetchReport ]
 	);
 
+	const reportLoaded = useSelect( ( select ) => {
+		if ( shouldFetchReport === undefined ) {
+			return undefined;
+		}
+		if ( ! shouldFetchReport ) {
+			// If we don't need to fetch the report, we can consider it loaded to simplify the loading state logic.
+			return true;
+		}
+		return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getReport',
+			[ reportOptions ]
+		);
+	} );
+	const reportError = useSelect( ( select ) => {
+		if ( shouldFetchReport === undefined ) {
+			return undefined;
+		}
+		if ( ! shouldFetchReport ) {
+			return null;
+		}
+		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			reportOptions,
+		] );
+	} );
 	const newVsReturningReportOptions = {
 		...dates,
 		dimensions: [ { name: 'newVsReturning' } ],
@@ -78,19 +114,44 @@ export default function useAudienceTilesReports() {
 			{ name: 'screenPageViews' },
 		],
 	};
-	const siteKitAudiencesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( newVsReturningReportOptions )
+	const siteKitAudiencesReport = useInViewSelect(
+		( select ) => {
+			if ( shouldFetchSiteKitAudiencesReport === undefined ) {
+				return undefined;
+			}
+			if ( ! shouldFetchSiteKitAudiencesReport ) {
+				return null;
+			}
+			return select( MODULES_ANALYTICS_4 ).getReport(
+				newVsReturningReportOptions
+			);
+		},
+		[ shouldFetchSiteKitAudiencesReport ]
 	);
-	const siteKitAudiencesReportLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
+	const siteKitAudiencesReportLoaded = useSelect( ( select ) => {
+		if ( shouldFetchSiteKitAudiencesReport === undefined ) {
+			return undefined;
+		}
+		if ( ! shouldFetchSiteKitAudiencesReport ) {
+			// If we don't need to fetch the report, we can consider it loaded to simplify the loading state logic.
+			return true;
+		}
+		return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getReport',
+			[ newVsReturningReportOptions ]
+		);
+	} );
+	const siteKitAudiencesReportError = useSelect( ( select ) => {
+		if ( shouldFetchSiteKitAudiencesReport === undefined ) {
+			return undefined;
+		}
+		if ( ! shouldFetchSiteKitAudiencesReport ) {
+			return null;
+		}
+		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			newVsReturningReportOptions,
-		] )
-	);
-	const siteKitAudiencesReportError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			newVsReturningReportOptions,
-		] )
-	);
+		] );
+	} );
 
 	const totalPageviewsReportOptions = {
 		startDate,
