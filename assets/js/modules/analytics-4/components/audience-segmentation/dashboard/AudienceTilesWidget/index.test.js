@@ -20,13 +20,18 @@
  * Internal dependencies
  */
 import AudienceTilesWidget from '.';
-import { render, waitFor } from '../../../../../../../../tests/js/test-utils';
+import {
+	act,
+	render,
+	waitFor,
+} from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
@@ -45,8 +50,13 @@ import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
  *
  * @param {Object}        registry            Data registry object.
  * @param {Array<string>} configuredAudiences Array of audience resource names.
+ * @param {boolean}       shouldFetchReport   Whether to fetch the report or not.
  */
-function provideAudienceTilesMockReport( registry, configuredAudiences ) {
+function provideAudienceTilesMockReport(
+	registry,
+	configuredAudiences,
+	shouldFetchReport = true
+) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 		compare: true,
@@ -72,15 +82,17 @@ function provideAudienceTilesMockReport( registry, configuredAudiences ) {
 		},
 	};
 
-	const reportData = getAnalytics4MockResponse( options );
+	if ( shouldFetchReport ) {
+		const reportData = getAnalytics4MockResponse( options );
 
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( reportData, {
-		options,
-	} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( reportData, {
+			options,
+		} );
 
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ options ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ options ] );
+	}
 
 	const totalPageviewsReportOptions = {
 		startDate,
@@ -370,8 +382,11 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		await waitForRegistry();
+		await act( waitForDefaultTimeouts );
 
-		expect( container ).toMatchSnapshot();
+		await waitFor( () => {
+			expect( container ).toMatchSnapshot();
+		} );
 	} );
 
 	it( 'should render when all configured audiences are matching available audiences', async () => {
@@ -403,8 +418,11 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		await waitForRegistry();
+		await act( waitForDefaultTimeouts );
 
-		expect( container ).toMatchSnapshot();
+		await waitFor( () => {
+			expect( container ).toMatchSnapshot();
+		} );
 	} );
 
 	it( 'should not render audiences that are not available (archived)', async () => {
@@ -435,14 +453,17 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		await waitForRegistry();
+		await act( waitForDefaultTimeouts );
 
-		// Only the available audience should be rendered, the archived one should be filtered out.
-		expect(
-			container.querySelectorAll(
-				'.googlesitekit-audience-segmentation-tile'
-			).length
-		).toBe( 1 );
-		expect( container ).toMatchSnapshot();
+		await waitFor( () => {
+			// Only the available audience should be rendered, the archived one should be filtered out.
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-audience-segmentation-tile'
+				).length
+			).toBe( 1 );
+			expect( container ).toMatchSnapshot();
+		} );
 	} );
 
 	it( 'should render correctly when there is partial data for Site Kit audiences', async () => {
@@ -512,7 +533,7 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ newVsReturningReportOptions ] );
 
-		provideAudienceTilesMockReport( registry, configuredAudiences );
+		provideAudienceTilesMockReport( registry, configuredAudiences, false );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -522,9 +543,9 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		await waitForRegistry();
+		await act( waitForDefaultTimeouts );
 
-		// eslint-disable-next-line no-unused-vars
-		const [ siteKitAudiences, otherAudiences ] = registry
+		const [ siteKitAudiences ] = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getConfiguredSiteKitAndOtherAudiences();
 
@@ -535,7 +556,6 @@ describe( 'AudienceTilesWidget', () => {
 		await waitFor( () => {
 			expect( isSiteKitAudiencePartialData ).toBe( true );
 		} );
-
 		expect( container ).toMatchSnapshot();
 
 		// Verify the tile is not in a loading state.
