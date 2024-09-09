@@ -90,7 +90,7 @@ export default function AudienceTile( {
 	);
 	const isAudiencePartialData = useInViewSelect(
 		( select ) => {
-			if ( ! isPropertyPartialData && isSiteKitAudience ) {
+			if ( isSiteKitAudience ) {
 				return false;
 			}
 
