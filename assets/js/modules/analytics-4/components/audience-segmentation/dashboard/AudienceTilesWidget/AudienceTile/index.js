@@ -163,6 +163,7 @@ export default function AudienceTile( {
 						</div>
 						{ isAudiencePartialData && (
 							<BadgeWithTooltip
+								className="googlesitekit-audience-segmentation-partial-data-badge"
 								label={ __(
 									'Partial data',
 									'google-site-kit'

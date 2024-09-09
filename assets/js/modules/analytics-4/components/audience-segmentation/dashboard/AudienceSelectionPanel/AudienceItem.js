@@ -41,6 +41,7 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { numFmt } from '../../../../../../util';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
 import BadgeWithTooltip from '../../../../../../components/BadgeWithTooltip';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 
 export default function AudienceItem( {
 	slug,
@@ -73,9 +74,7 @@ export default function AudienceItem( {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const temporarilyHidden = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isItemDismissed(
-			`audience-tile-${ slug }`
-		)
+		select( CORE_USER ).isItemDismissed( `audience-tile-${ slug }` )
 	);
 
 	const onCheckboxChange = useCallback(

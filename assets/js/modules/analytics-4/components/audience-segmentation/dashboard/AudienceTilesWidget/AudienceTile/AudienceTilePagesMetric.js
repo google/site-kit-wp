@@ -200,6 +200,7 @@ export default function AudienceTilePagesMetric( {
 					{ title }
 					{ ! isMobileBreakpoint && isTopContentPartialData && (
 						<BadgeWithTooltip
+							className="googlesitekit-audience-segmentation-partial-data-badge"
 							label={ __( 'Partial data', 'google-site-kit' ) }
 							tooltipTitle={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this metric',

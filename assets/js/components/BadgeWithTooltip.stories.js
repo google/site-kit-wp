@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation PartialDataBadge component.
+ * BadgeWithTooltip Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,29 +17,26 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import InfoTooltip from '../../../../../../../components/InfoTooltip';
+import BadgeWithTooltip from './BadgeWithTooltip';
 
-export default function PartialDataBadge( { tooltipTitle } ) {
-	return (
-		<span className="googlesitekit-audience-segmentation-partial-data-badge">
-			{ __( 'Partial data', 'google-site-kit' ) }
-			{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
-		</span>
-	);
+function Template( args ) {
+	return <BadgeWithTooltip { ...args } />;
 }
 
-PartialDataBadge.propTypes = {
-	tooltipTitle: PropTypes.node,
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+
+Default.args = {
+	label: 'Title for badge with tooltip',
+	tooltipTitle:
+		'Still collecting full data for this timeframe, partial data is displayed for this group',
+};
+Default.scenario = {
+	label: 'Modules/Analytics4/Components/BadgeWithTooltip/Default',
+};
+
+export default {
+	title: 'Modules/Analytics4/Components/BadgeWithTooltip',
 };
