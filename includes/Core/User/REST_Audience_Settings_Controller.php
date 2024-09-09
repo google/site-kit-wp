@@ -133,6 +133,9 @@ class REST_Audience_Settings_Controller {
 											'isAudienceSegmentationWidgetHidden' => array(
 												'type' => 'boolean',
 											),
+											'didSetAudiences'                   => array(
+												'type' => 'boolean',
+											),
 										),
 									),
 								),

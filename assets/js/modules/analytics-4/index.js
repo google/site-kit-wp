@@ -87,6 +87,7 @@ import {
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
 	NoAudienceBannerWidget,
+	SecondaryUserSetupWidget,
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -138,6 +139,44 @@ export const registerWidgets = ( widgets ) => {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 				return configuredAudiences?.length > 0;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudienceSecondaryUserSetup',
+		{
+			Component: SecondaryUserSetupWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) => {
+				const isAnalyticsConnected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+				// If Analytics is not connected, we can return early.
+				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				const availableAudiences =
+					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+				const configuredAudiences =
+					select( CORE_USER ).getConfiguredAudiences();
+
+				const audienceSegmentationSetupComplete =
+					select(
+						MODULES_ANALYTICS_4
+					).getAudienceSegmentationSetupComplete();
+
+				return (
+					availableAudiences?.length &&
+					configuredAudiences === null &&
+					audienceSegmentationSetupComplete === true
+				);
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
