@@ -47,7 +47,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../../../util/errors';
-import PartialDataBadge from './PartialDataBadge';
+import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
 import AudienceErrorModal from '../../AudienceErrorModal';
 
@@ -199,7 +199,8 @@ export default function AudienceTilePagesMetric( {
 				<div className="googlesitekit-audience-segmentation-tile-metric__title">
 					{ title }
 					{ ! isMobileBreakpoint && isTopContentPartialData && (
-						<PartialDataBadge
+						<BadgeWithTooltip
+							label={ __( 'Partial data', 'google-site-kit' ) }
 							tooltipTitle={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this metric',
 								'google-site-kit'
