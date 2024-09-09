@@ -284,6 +284,27 @@ AudienceCreationSuccessNotice.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationSuccessNotice',
 };
 
+export const TemporarilyHiddenBadge = Template.bind( {} );
+TemporarilyHiddenBadge.storyName =
+	'Audience item with temporarily hidden badge';
+TemporarilyHiddenBadge.args = {
+	configuredAudiences: availableAudiences.reduce(
+		( acc, audience ) =>
+			audience.name !== 'properties/12345/audiences/1' // All visitors
+				? [ ...acc, audience.name ]
+				: acc,
+		[]
+	),
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				'audience-tile-properties/12345/audiences/3',
+			] );
+	},
+};
+TemporarilyHiddenBadge.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',
 	component: AudienceSelectionPanel,
