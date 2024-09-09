@@ -217,8 +217,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		$synchronize_ads_linked = new Synchronize_AdsLinked(
 			$this,
-			$this->user_options,
-			$this->context
+			$this->user_options
 		);
 		$synchronize_ads_linked->register();
 

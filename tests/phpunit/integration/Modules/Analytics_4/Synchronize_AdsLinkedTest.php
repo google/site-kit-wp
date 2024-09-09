@@ -108,11 +108,7 @@ class Synchronize_AdsLinkedTest extends TestCase {
 			)
 		);
 
-		$this->synchronize_ads_linked = new Synchronize_AdsLinked(
-			$this->analytics_4,
-			$this->user_options,
-			$this->context
-		);
+		$this->synchronize_ads_linked = new Synchronize_AdsLinked( $this->analytics_4, $this->user_options );
 	}
 
 	protected function fake_ads_linked_response() {

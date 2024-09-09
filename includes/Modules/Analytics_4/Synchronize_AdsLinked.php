@@ -43,26 +43,16 @@ class Synchronize_AdsLinked {
 	protected $user_options;
 
 	/**
-	 * Context instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Context
-	 */
-	protected $context;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.124.0
 	 *
 	 * @param Analytics_4  $analytics_4  Analytics 4 instance.
 	 * @param User_Options $user_options User_Options instance.
-	 * @param Context      $context      Context instance.
 	 */
-	public function __construct( Analytics_4 $analytics_4, User_Options $user_options, Context $context ) {
+	public function __construct( Analytics_4 $analytics_4, User_Options $user_options ) {
 		$this->analytics_4  = $analytics_4;
 		$this->user_options = $user_options;
-		$this->context      = $context;
 	}
 
 	/**
