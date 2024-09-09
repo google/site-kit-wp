@@ -869,7 +869,7 @@ const baseSelectors = {
 				getAudiencesUserCountReportOptions,
 				getSiteKitAudiencesUserCountReportOptions,
 				getErrorForSelector,
-				getConfiguredSiteKitAndOtherAudiences,
+				getConfigurableSiteKitAndOtherAudiences,
 				hasAudiencePartialData,
 			} = select( MODULES_ANALYTICS_4 );
 
@@ -881,7 +881,7 @@ const baseSelectors = {
 
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const [ siteKitAudiences, otherAudiences ] =
-				getConfiguredSiteKitAndOtherAudiences();
+				getConfigurableSiteKitAndOtherAudiences();
 
 			const isSiteKitAudiencePartialData =
 				hasAudiencePartialData( siteKitAudiences );
@@ -961,13 +961,13 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the configured Site Kit and other (non Site Kit) audiences.
+	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
 	 *
 	 * @since 1.134.0
 	 *
 	 * @return {Array} Array of Site Kit and other audiences.
 	 */
-	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
+	getConfigurableSiteKitAndOtherAudiences: createRegistrySelector(
 		( select ) => () => {
 			const audiences =
 				select( MODULES_ANALYTICS_4 ).getConfigurableAudiences();

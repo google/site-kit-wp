@@ -548,7 +548,7 @@ describe( 'AudienceTilesWidget', () => {
 
 		const [ siteKitAudiences ] = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getConfiguredSiteKitAndOtherAudiences();
+			.getConfigurableSiteKitAndOtherAudiences();
 
 		const isSiteKitAudiencePartialData = registry
 			.select( MODULES_ANALYTICS_4 )
