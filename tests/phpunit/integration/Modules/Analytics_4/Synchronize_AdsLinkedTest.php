@@ -56,11 +56,6 @@ class Synchronize_AdsLinkedTest extends TestCase {
 	protected $options;
 
 	/**
-	 * @var Context
-	 */
-	protected $context;
-
-	/**
 	 * @var Authentication
 	 */
 	protected $authentication;
@@ -70,10 +65,10 @@ class Synchronize_AdsLinkedTest extends TestCase {
 
 		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $this->context );
-		$this->user_options   = new User_Options( $this->context, $user_id );
-		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $context );
+		$this->user_options   = new User_Options( $context, $user_id );
+		$this->authentication = new Authentication( $context, $this->options, $this->user_options );
 
 		// Fake a valid authentication token on the client.
 		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
@@ -83,7 +78,7 @@ class Synchronize_AdsLinkedTest extends TestCase {
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
 		$this->analytics_4 = new Analytics_4(
-			$this->context,
+			$context,
 			$this->options,
 			$this->user_options,
 			$this->authentication
