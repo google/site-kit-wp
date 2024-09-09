@@ -114,8 +114,10 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			const expectedServiceURL = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getServiceURL( {
-					path: '/reader-revenue-manager',
-					publicationID: 'ABCDEFGH',
+					path: 'reader-revenue-manager',
+					query: {
+						publication: 'ABCDEFGH',
+					},
 				} );
 
 			// Ensure that CTA is present and class name is correct.
