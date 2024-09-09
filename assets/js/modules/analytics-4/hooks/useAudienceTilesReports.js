@@ -23,6 +23,113 @@ import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
 
+/**
+ * Checks if the audience reports are loaded for the given report options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} reportOptions       Report options.
+ * @param {Array}  configuredAudiences Configured audiences.
+ * @return {boolean} Whether the report is loaded.
+ */
+function useReportLoaded( reportOptions, configuredAudiences ) {
+	return useSelect( ( select ) =>
+		configuredAudiences.every( ( audienceResourceName ) => {
+			const partialDataSiteKitAudience =
+				select( MODULES_ANALYTICS_4 ).getPartialDataSiteKitAudience(
+					audienceResourceName
+				);
+
+			if ( partialDataSiteKitAudience === undefined ) {
+				return false;
+			}
+
+			const dimensionFilters = {};
+
+			if ( partialDataSiteKitAudience ) {
+				dimensionFilters.newVsReturning =
+					partialDataSiteKitAudience.audienceSlug === 'new-visitors'
+						? 'new'
+						: 'returning';
+			} else {
+				dimensionFilters.audienceResourceName = audienceResourceName;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[
+					{
+						...reportOptions,
+						dimensionFilters,
+					},
+				]
+			);
+		} )
+	);
+}
+
+/**
+ * Checks if there are errors for the audience reports with the given report options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} reportOptions       Report options.
+ * @param {Array}  configuredAudiences Configured audiences.
+ * @return {Object} Object with the errors for each audience.
+ */
+function useReportErrors( reportOptions, configuredAudiences ) {
+	return useSelect( ( select ) => {
+		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
+			const partialDataSiteKitAudience =
+				select( MODULES_ANALYTICS_4 ).getPartialDataSiteKitAudience(
+					audienceResourceName
+				);
+
+			if ( partialDataSiteKitAudience === undefined ) {
+				return acc;
+			}
+
+			const dimensionFilters = {};
+
+			if ( partialDataSiteKitAudience ) {
+				dimensionFilters.newVsReturning =
+					partialDataSiteKitAudience.audienceSlug === 'new-visitors'
+						? 'new'
+						: 'returning';
+			} else {
+				dimensionFilters.audienceResourceName = audienceResourceName;
+			}
+
+			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getReport',
+				[
+					{
+						...reportOptions,
+						dimensionFilters,
+					},
+				]
+			);
+
+			if ( error ) {
+				acc[ audienceResourceName ] = error;
+			}
+
+			return acc;
+		}, {} );
+	} );
+}
+
+/**
+ * Fetch reports for audience tiles.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  args                              Arguments for the hook.
+ * @param {boolean} args.isSiteKitAudiencePartialData Whether the Site Kit audiences are partially loaded.
+ * @param {Array}   args.siteKitAudiences             Site Kit audiences.
+ * @param {Array}   args.otherAudiences               Other audiences.
+ * @return {Object} Object with the report data.
+ */
 export default function useAudienceTilesReports( {
 	isSiteKitAudiencePartialData,
 	siteKitAudiences,
@@ -202,36 +309,15 @@ export default function useAudienceTilesReports( {
 		)
 	);
 
-	const topCitiesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topCitiesReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
-		)
+	const topCitiesReportLoaded = useReportLoaded(
+		topCitiesReportOptions,
+		configuredAudiences
 	);
 
-	const topCitiesReportErrors = useSelect( ( select ) => {
-		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
-			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[
-					{
-						...topCitiesReportOptions,
-						dimensionFilters: { audienceResourceName },
-					},
-				]
-			);
-
-			if ( error ) {
-				acc[ audienceResourceName ] = error;
-			}
-
-			return acc;
-		}, {} );
-	} );
+	const topCitiesReportErrors = useReportErrors(
+		topCitiesReportOptions,
+		configuredAudiences
+	);
 
 	const topContentReportOptions = {
 		startDate,
@@ -247,35 +333,15 @@ export default function useAudienceTilesReports( {
 			configuredAudiences
 		)
 	);
-	const topContentReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topContentReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
-		)
+	const topContentReportLoaded = useReportLoaded(
+		topContentReportOptions,
+		configuredAudiences
 	);
-	const topContentReportErrors = useSelect( ( select ) => {
-		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
-			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[
-					{
-						...topContentReportOptions,
-						dimensionFilters: { audienceResourceName },
-					},
-				]
-			);
 
-			if ( error ) {
-				acc[ audienceResourceName ] = error;
-			}
-
-			return acc;
-		}, {} );
-	} );
+	const topContentReportErrors = useReportErrors(
+		topContentReportOptions,
+		configuredAudiences
+	);
 
 	const topContentPageTitlesReportOptions = {
 		startDate,
@@ -291,35 +357,15 @@ export default function useAudienceTilesReports( {
 			configuredAudiences
 		)
 	);
-	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topContentPageTitlesReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
-		)
+	const topContentPageTitlesReportLoaded = useReportLoaded(
+		topContentPageTitlesReportOptions,
+		configuredAudiences
 	);
-	const topContentPageTitlesReportErrors = useSelect( ( select ) => {
-		return configuredAudiences.reduce( ( acc, audienceResourceName ) => {
-			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[
-					{
-						...topContentPageTitlesReportOptions,
-						dimensionFilters: { audienceResourceName },
-					},
-				]
-			);
 
-			if ( error ) {
-				acc[ audienceResourceName ] = error;
-			}
-
-			return acc;
-		}, {} );
-	} );
+	const topContentPageTitlesReportErrors = useReportErrors(
+		topContentPageTitlesReportOptions,
+		configuredAudiences
+	);
 
 	return {
 		report,
