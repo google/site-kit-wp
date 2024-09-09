@@ -258,8 +258,7 @@ export default function AudienceTile( {
 						topCities={ topCities }
 					/>
 
-					{ ( ( postTypeDimensionExists && isViewOnly ) ||
-						! isViewOnly ) && (
+					{ ( ! isViewOnly || postTypeDimensionExists ) && (
 						<AudienceTilePagesMetric
 							TileIcon={ AudienceMetricIconTopContent }
 							title={ __(
