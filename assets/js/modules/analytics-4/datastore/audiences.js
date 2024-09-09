@@ -971,6 +971,44 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Checks if the provided audience is a Site Kit audience in the partial data state and returns the audience object if so.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} audienceResourceName The audience resource name.
+	 * @return {(Object|null|undefined)} The audience object if the audience is a Site Kit audience in the partial data state, otherwise null. Undefined if available audiences or the partial data state is not loaded yet.
+	 */
+	getPartialDataSiteKitAudience: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audience = availableAudiences.find(
+				( { name } ) => name === audienceResourceName
+			);
+
+			if ( audience?.audienceType !== 'SITE_KIT_AUDIENCE' ) {
+				return null;
+			}
+
+			const isPartialData =
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audienceResourceName
+				);
+
+			if ( isPartialData === undefined ) {
+				return undefined;
+			}
+
+			return isPartialData ? audience : null;
+		}
+	),
+
+	/**
 	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
 	 *
 	 * @since 1.134.0
