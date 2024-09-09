@@ -944,7 +944,7 @@ const baseSelectors = {
 	 * @since 1.134.0
 	 *
 	 * @param {Array} audiences Array of audiences to check.
-	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences are undefined.
+	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences or any partial data state is not loaded yet.
 	 */
 	hasAudiencePartialData: createRegistrySelector(
 		( select ) => ( state, audiences ) => {
@@ -952,11 +952,21 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			return ( audiences || [] ).some( ( { name } ) => {
-				return select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					name
-				);
-			} );
+			for ( const audience of audiences || [] ) {
+				const isPartialData = select(
+					MODULES_ANALYTICS_4
+				).isAudiencePartialData( audience.name );
+
+				if ( isPartialData === undefined ) {
+					return undefined;
+				}
+
+				if ( isPartialData ) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 	),
 
