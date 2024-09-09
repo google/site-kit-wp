@@ -995,6 +995,52 @@ const baseSelectors = {
 			return [ siteKitAudiences, otherAudiences ];
 		}
 	),
+
+	/**
+	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array} Array of Site Kit and other audiences.
+	 */
+	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
+		( select ) => () => {
+			const configuredAudiences =
+				select( CORE_USER ).getConfiguredAudiences();
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if (
+				undefined === configuredAudiences ||
+				undefined === availableAudiences
+			) {
+				return undefined;
+			}
+
+			if ( ! configuredAudiences?.length ) {
+				return [];
+			}
+
+			const [ siteKitAudiences, otherAudiences ] =
+				configuredAudiences.reduce(
+					( [ siteKit, other ], configuredAudience ) => {
+						const audience = availableAudiences.find(
+							( { name } ) => name === configuredAudience
+						);
+
+						if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
+							siteKit.push( audience );
+						} else {
+							other.push( audience );
+						}
+						return [ siteKit, other ];
+					},
+					[ [], [] ] // Initial values.
+				);
+
+			return [ siteKitAudiences, otherAudiences ];
+		}
+	),
 };
 
 const store = combineStores(

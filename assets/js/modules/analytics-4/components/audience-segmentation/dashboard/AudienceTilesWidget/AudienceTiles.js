@@ -76,7 +76,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	}, [] );
 	const [ siteKitAudiences, otherAudiences ] = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConfigurableSiteKitAndOtherAudiences()
+		select( MODULES_ANALYTICS_4 ).getConfiguredSiteKitAndOtherAudiences()
 	);
 	const isSiteKitAudiencePartialData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasAudiencePartialData( siteKitAudiences )
