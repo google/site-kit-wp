@@ -66,6 +66,8 @@ export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
 export const KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES =
 	'kmAnalyticsTopRecentTrendingPages';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
+export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS =
+	'kmAnalyticsTopTrafficSourceDrivingLeads';
 export const KM_ANALYTICS_PAGES_PER_VISIT = 'kmAnalyticsPagesPerVisit';
 export const KM_ANALYTICS_VISIT_LENGTH = 'kmAnalyticsVisitLength';
 export const KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES =
