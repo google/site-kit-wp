@@ -155,7 +155,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 				<AdminMenuTooltip
 					title=""
 					content={ __(
-						'You can always enable reader revenue manager from Settings later',
+						'You can always enable Reader Revenue Manager from Settings later',
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
