@@ -522,34 +522,6 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const newVsReturningReportOptions = {
-			...dates,
-			dimensions: [ { name: 'newVsReturning' } ],
-			dimensionFilters: {
-				newVsReturning: [ 'new', 'returning' ],
-			},
-			metrics: [
-				{ name: 'totalUsers' },
-				{ name: 'sessionsPerUser' },
-				{ name: 'screenPageViewsPerSession' },
-				{ name: 'screenPageViews' },
-			],
-		};
-
-		const newVsReturningReport = getAnalytics4MockResponse(
-			newVsReturningReportOptions
-		);
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( newVsReturningReport, {
-				options: newVsReturningReportOptions,
-			} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ newVsReturningReportOptions ] );
-
 		provideAudienceTilesMockReport( registry, configuredAudiences, true );
 
 		const { container, waitForRegistry } = render(
