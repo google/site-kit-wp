@@ -49,14 +49,15 @@ import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
  *
  * @since 1.135.0
  *
- * @param {Object}        registry                     Data registry object.
- * @param {Array<string>} configuredAudiences          Array of audience resource names.
- * @param {boolean}       isSiteKitAudiencePartialData Whether to fetch the report or not.
+ * @param {Object}        registry                               Data registry object.
+ * @param {Array<string>} configuredAudiences                    Array of audience resource names.
+ * @param {Object}        [options]                              Options object.
+ * @param {boolean}       [options.isSiteKitAudiencePartialData] Whether the mock response should include partial data for Site Kit audiences. Defaults to false.
  */
 function provideAudienceTilesMockReport(
 	registry,
 	configuredAudiences,
-	isSiteKitAudiencePartialData = false
+	{ isSiteKitAudiencePartialData = false } = {}
 ) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
@@ -522,7 +523,9 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		provideAudienceTilesMockReport( registry, configuredAudiences, true );
+		provideAudienceTilesMockReport( registry, configuredAudiences, {
+			isSiteKitAudiencePartialData: true,
+		} );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
