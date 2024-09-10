@@ -579,7 +579,7 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                     <div
                       class="googlesitekit-audience-segmentation-tile-metric__title"
                     >
-                      22.9% of total pageviews
+                      24.4% of total pageviews
                     </div>
                   </div>
                   <div
@@ -617,12 +617,12 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
                         >
-                          Dublin
+                          Cork
                         </div>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
-                          692.9%
+                          578.6%
                         </div>
                       </div>
                       <div
@@ -631,12 +631,12 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
                         >
-                          Cork
+                          Dublin
                         </div>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
-                          285.7%
+                          464.3%
                         </div>
                       </div>
                       <div
@@ -650,7 +650,7 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
-                          21.4%
+                          78.6%
                         </div>
                       </div>
                     </div>
@@ -679,29 +679,6 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 2 (opens in a new tab)"
-                          class="googlesitekit-cta-link"
-                          href=""
-                          rel="noopener noreferrer"
-                          target="_blank"
-                          title="Test Post 2"
-                        >
-                          <span
-                            class="googlesitekit-cta-link__contents"
-                          >
-                            Test Post 2
-                          </span>
-                        </a>
-                        <div
-                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
-                        >
-                          97
-                        </div>
-                      </div>
-                      <div
-                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
-                      >
-                        <a
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
@@ -714,30 +691,53 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          40
+                          81
                         </div>
                       </div>
                       <div
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 2 (opens in a new tab)"
+                          aria-label="Test Post 9 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 2"
+                          title="Test Post 9"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 2
+                            Test Post 9
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          3
+                          65
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
+                      >
+                        <a
+                          aria-label="Test Post 3 (opens in a new tab)"
+                          class="googlesitekit-cta-link"
+                          href=""
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          title="Test Post 3"
+                        >
+                          <span
+                            class="googlesitekit-cta-link__contents"
+                          >
+                            Test Post 3
+                          </span>
+                        </a>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
+                        >
+                          11
                         </div>
                       </div>
                       <span
