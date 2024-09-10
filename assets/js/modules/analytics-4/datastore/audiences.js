@@ -630,6 +630,16 @@ const baseActions = {
 		if ( error ) {
 			return { error };
 		}
+
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 0,
+				} ) )
+			)
+		);
 	},
 };
 
