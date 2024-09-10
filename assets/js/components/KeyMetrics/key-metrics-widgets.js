@@ -29,6 +29,7 @@ import {
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
@@ -50,6 +51,7 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '../../features';
 
 /**
  * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
@@ -119,6 +121,30 @@ function shouldDisplayWidgetWithCustomDimensions(
 		// This property is available to the widget object that requires the
 		// custom dimensions, where the function is attached.
 		this.requiredCustomDimensions
+	);
+}
+
+/**
+ * Determines whether to display a widget that requires conversion reporting events
+ * in the key metrics selection panel.
+ *
+ * This function is attached to the widget object that requires the conversion reporting events and
+ * has the `requiredConversionEventName` property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store select function.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithConversionEvent( select ) {
+	if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
+		return false;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+		// This property is available to the widget object that requires the
+		// conversion reporting events, where the function is attached.
+		this.requiredConversionEventName
 	);
 }
 
@@ -296,6 +322,23 @@ const KEY_METRICS_WIDGETS = {
 			'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
 			'google-site-kit'
 		),
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
+		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
+		description: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
 		title: __( 'Most engaged traffic source', 'google-site-kit' ),
