@@ -32,6 +32,7 @@ const selectors = {
 	 * Returns a link to the Reader Revenue Manager platform.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Removed `publicationID` arg.
 	 *
 	 * @param {Object} state                Data store's state.
 	 * @param {Object} [args]               Object containing optional publication ID, path and query args.
@@ -42,25 +43,18 @@ const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) =>
-			( state, { path, query, publicationID } = {} ) => {
+			( state, { path, query } = {} ) => {
 				let serviceURL = 'https://publishercenter.google.com';
-
-				// Always add the utm_source.
-				query = {
-					...query,
-					utm_source: 'sitekit',
-				};
-
-				if ( publicationID ) {
-					query.publication = publicationID;
-				}
 
 				if ( path ) {
 					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
 					serviceURL = `${ serviceURL }${ sanitizedPath }`;
 				}
 
-				serviceURL = addQueryArgs( serviceURL, query );
+				serviceURL = addQueryArgs( serviceURL, {
+					...query,
+					utm_source: 'sitekit', // Always add the utm_source.
+				} );
 
 				const accountChooserBaseURI =
 					select( CORE_USER ).getAccountChooserURL( serviceURL );
