@@ -381,7 +381,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 		act( () => {
-			fireEvent.click( getByText( /Maybe later/i ) );
+			fireEvent.click( getByText( /Don’t show again/i ) );
 		} );
 
 		await waitFor( () => {

@@ -231,10 +231,15 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 												tertiary
 												onClick={ onDismiss }
 											>
-												{ __(
-													'Maybe later',
-													'google-site-kit'
-												) }
+												{ dismissCount < 1
+													? __(
+															'Maybe later',
+															'google-site-kit'
+													  )
+													: __(
+															'Don’t show again',
+															'google-site-kit'
+													  ) }
 											</Button>
 										</div>
 									</Cell>
