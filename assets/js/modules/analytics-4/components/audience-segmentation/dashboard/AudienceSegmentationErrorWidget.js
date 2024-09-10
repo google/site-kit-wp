@@ -26,11 +26,12 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import whenActive from '../../../../../util/when-active';
 import { useDispatch } from 'googlesitekit-data';
 import { Cell, Grid, Row } from '../../../../../material-components';
@@ -46,7 +47,12 @@ import GetHelpLink from './GetHelpLink';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { AUDIENCE_INFO_NOTICE_HIDE_UI } from './InfoNoticeWidget/constants';
 
-function AudienceSegmentationErrorWidget( { Widget, errors } ) {
+function AudienceSegmentationErrorWidget( {
+	Widget,
+	errors,
+	onRetry,
+	showRetryButton,
+} ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
@@ -56,9 +62,10 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 		? castArray( errors ).some( isInsufficientPermissionsError )
 		: false;
 
-	const handleRetry = useCallback( () => {
+	const handleRetry = () => {
 		setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
-	}, [ setValue ] );
+		onRetry?.();
+	};
 
 	useEffect( () => {
 		// Set UI key to hide the info notice.
@@ -88,21 +95,27 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 								  ) }
 						</h3>
 						<div className="googlesitekit-widget-audience-segmentation-error__actions">
-							<ReportErrorActions
-								moduleSlug="analytics-4"
-								error={ errors }
-								GetHelpLink={
-									hasInsufficientPermissionsError
-										? GetHelpLink
-										: undefined
-								}
-								hideGetHelpLink={
-									! hasInsufficientPermissionsError
-								}
-								buttonVariant="danger"
-								getHelpClassName="googlesitekit-error-retry-text"
-								onRetry={ handleRetry }
-							/>
+							{ showRetryButton && onRetry ? (
+								<Button onClick={ handleRetry } danger>
+									{ __( 'Retry', 'google-site-kit' ) }
+								</Button>
+							) : (
+								<ReportErrorActions
+									moduleSlug="analytics-4"
+									error={ errors }
+									GetHelpLink={
+										hasInsufficientPermissionsError
+											? GetHelpLink
+											: undefined
+									}
+									hideGetHelpLink={
+										! hasInsufficientPermissionsError
+									}
+									buttonVariant="danger"
+									getHelpClassName="googlesitekit-error-retry-text"
+									onRetry={ handleRetry }
+								/>
+							) }
 						</div>
 					</Cell>
 					{ ! isMobileBreakpoint && ! isTabletBreakpoint && (
@@ -139,7 +152,12 @@ function AudienceSegmentationErrorWidget( { Widget, errors } ) {
 
 AudienceSegmentationErrorWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
-	errors: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	errors: PropTypes.oneOfType( [
+		PropTypes.object,
+		PropTypes.arrayOf( PropTypes.object ),
+	] ).isRequired,
+	onRetry: PropTypes.func,
+	showRetryButton: PropTypes.bool,
 };
 
 export default whenActive( { moduleName: 'analytics-4' } )(

@@ -34,11 +34,15 @@ import {
 	provideModuleRegistrations,
 } from '../tests/js/utils';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '../assets/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../assets/js/googlesitekit/constants';
 
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<ModuleSetup moduleSlug="adsense" />
+			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+				<ModuleSetup moduleSlug="adsense" />
+			</ViewContextProvider>
 		</WithTestRegistry>
 	);
 }

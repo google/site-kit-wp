@@ -40,7 +40,7 @@ import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 /**
  * Generates mock response for audience tiles component.
  *
- * @since n.e.x.t
+ * @since 1.135.0
  *
  * @param {Object}        registry            Data registry object.
  * @param {Array<string>} configuredAudiences Array of audience resource names.
@@ -184,6 +184,7 @@ describe( 'AudienceTilesWidget', () => {
 			},
 		] );
 		provideModuleRegistrations( registry );
+
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {

@@ -33,12 +33,14 @@ export default function Dismiss( {
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
 	disabled,
+	onDismiss = () => {},
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismiss = () => {
+	const handleDismiss = async ( event ) => {
+		await onDismiss?.( event );
 		trackEvents.dismiss();
 		dismissNotification( id, { expiresInSeconds: dismissExpires } );
 	};
