@@ -31,7 +31,9 @@
 	}
 
 	label {
+		align-items: center;
 		cursor: pointer;
+		display: flex;
 		font-size: $fs-label-md;
 		font-weight: $fw-medium;
 		line-height: $lh-label-md;
@@ -44,6 +46,10 @@
 
 		&:focus {
 			outline-offset: 0;
+		}
+
+		.googlesitekit-badge {
+			margin-left: 10px;
 		}
 	}
 
