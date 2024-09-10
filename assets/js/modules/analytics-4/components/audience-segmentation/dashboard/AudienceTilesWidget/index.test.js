@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
@@ -48,14 +49,14 @@ import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
  *
  * @since 1.135.0
  *
- * @param {Object}        registry            Data registry object.
- * @param {Array<string>} configuredAudiences Array of audience resource names.
- * @param {boolean}       shouldFetchReport   Whether to fetch the report or not.
+ * @param {Object}        registry                     Data registry object.
+ * @param {Array<string>} configuredAudiences          Array of audience resource names.
+ * @param {boolean}       isSiteKitAudiencePartialData Whether to fetch the report or not.
  */
 function provideAudienceTilesMockReport(
 	registry,
 	configuredAudiences,
-	shouldFetchReport = true
+	isSiteKitAudiencePartialData = false
 ) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
@@ -65,7 +66,9 @@ function provideAudienceTilesMockReport(
 	const { startDate, endDate } = dates;
 
 	const reportOptions = {
-		dimensions: [ { name: 'audienceResourceName' } ],
+		dimensions: isSiteKitAudiencePartialData
+			? [ { name: 'newVsReturning' } ]
+			: [ { name: 'audienceResourceName' } ],
 		metrics: [
 			{ name: 'totalUsers' },
 			{ name: 'sessionsPerUser' },
@@ -77,22 +80,24 @@ function provideAudienceTilesMockReport(
 	const options = {
 		...dates,
 		...reportOptions,
-		dimensionFilters: {
-			audienceResourceName: configuredAudiences,
-		},
+		dimensionFilters: isSiteKitAudiencePartialData
+			? {
+					newVsReturning: [ 'new', 'returning' ],
+			  }
+			: {
+					audienceResourceName: configuredAudiences,
+			  },
 	};
 
-	if ( shouldFetchReport ) {
-		const reportData = getAnalytics4MockResponse( options );
+	const reportData = getAnalytics4MockResponse( options );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( reportData, {
-			options,
-		} );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( reportData, {
+		options,
+	} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ options ] );
-	}
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ options ] );
 
 	const totalPageviewsReportOptions = {
 		startDate,
@@ -152,11 +157,21 @@ function provideAudienceTilesMockReport(
 		topContentPageTitlesReportOptions,
 	].forEach( ( value ) => {
 		configuredAudiences.forEach( ( audienceResourceName ) => {
+			const dimensionFilters = isSiteKitAudiencePartialData
+				? {
+						newVsReturning:
+							audienceResourceName ===
+							'properties/12345/audiences/3'
+								? 'new'
+								: 'returning',
+				  }
+				: {
+						audienceResourceName,
+				  };
+
 			const individualReportOptions = {
 				...value,
-				dimensionFilters: {
-					audienceResourceName,
-				},
+				dimensionFilters,
 			};
 
 			const individualReportData = getAnalytics4MockResponse(
@@ -197,8 +212,9 @@ describe( 'AudienceTilesWidget', () => {
 			},
 		] );
 		provideModuleRegistrations( registry );
-
 		provideUserAuthentication( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
@@ -534,7 +550,7 @@ describe( 'AudienceTilesWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ newVsReturningReportOptions ] );
 
-		provideAudienceTilesMockReport( registry, configuredAudiences, false );
+		provideAudienceTilesMockReport( registry, configuredAudiences, true );
 
 		const { container, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -557,6 +573,7 @@ describe( 'AudienceTilesWidget', () => {
 		await waitFor( () => {
 			expect( isSiteKitAudiencePartialData ).toBe( true );
 		} );
+
 		expect( container ).toMatchSnapshot();
 
 		// Verify the tile is not in a loading state.
@@ -589,5 +606,7 @@ describe( 'AudienceTilesWidget', () => {
 				'.googlesitekit-audience-segmentation-tile__metrics'
 			)
 		).toBeInTheDocument();
+
+		await act( () => waitForTimeouts( 15 ) );
 	} );
 } );
