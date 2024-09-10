@@ -534,8 +534,7 @@ describe( 'AudienceTilesWidget', () => {
 			}
 		);
 
-		await waitForRegistry();
-		await act( waitForDefaultTimeouts );
+		await act( waitForRegistry );
 
 		const [ siteKitAudiences ] = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -582,6 +581,6 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 15 ) );
+		await act( () => waitForTimeouts( 50 ) );
 	} );
 } );
