@@ -37,10 +37,7 @@ import {
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
 } from '../../../../utils/data-mock';
-import {
-	audiences as audiencesFixture,
-	availableAudiences,
-} from '../../../../datastore/__fixtures__';
+import { availableAudiences } from '../../../../datastore/__fixtures__';
 import AudienceTilesWidget from './';
 
 function excludeAudienceFromReport( report, audienceResourceName ) {
@@ -412,6 +409,43 @@ SiteKitAudiencesPartialData.args = {
 				customDimension: {},
 				property: {},
 			} );
+
+		availableAudiences
+			.filter(
+				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+			)
+			.forEach( ( { audienceSlug } ) => {
+				const dimensionFilters = {
+					newVsReturning:
+						audienceSlug === 'new-visitors' ? 'new' : 'returning',
+				};
+
+				provideAnalytics4MockReport( registry, {
+					...topCitiesReportOptions,
+					dimensionFilters,
+				} );
+
+				provideAnalytics4MockReport( registry, {
+					...topContentReportOptions,
+					dimensionFilters,
+				} );
+
+				const pageTitlesReport = getAnalytics4MockResponse(
+					topContentPageTitlesReportOptions,
+					// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+					// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+					// page paths to page titles.
+					{ dimensionCombinationStrategy: STRATEGY_ZIP }
+				);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( pageTitlesReport, {
+						options: {
+							...topContentPageTitlesReportOptions,
+							dimensionFilters,
+						},
+					} );
+			} );
 	},
 };
 SiteKitAudiencesPartialData.scenario = {};
@@ -631,25 +665,21 @@ export default {
 					totalPageviewsReportOptions
 				);
 
-				audiencesFixture.forEach( ( audience ) => {
+				availableAudiences.forEach( ( audience ) => {
+					const dimensionFilters = {
+						audienceResourceName: audience.name,
+					};
+
 					provideAnalytics4MockReport( registry, {
 						...topCitiesReportOptions,
-						dimensionFilters: {
-							audienceResourceName: audience.name,
-						},
+						dimensionFilters,
 					} );
-				} );
 
-				audiencesFixture.forEach( ( audience ) => {
 					provideAnalytics4MockReport( registry, {
 						...topContentReportOptions,
-						dimensionFilters: {
-							audienceResourceName: audience.name,
-						},
+						dimensionFilters,
 					} );
-				} );
 
-				audiencesFixture.forEach( ( audience ) => {
 					const pageTitlesReport = getAnalytics4MockResponse(
 						topContentPageTitlesReportOptions,
 						// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -662,9 +692,7 @@ export default {
 						.receiveGetReport( pageTitlesReport, {
 							options: {
 								...topContentPageTitlesReportOptions,
-								dimensionFilters: {
-									audienceResourceName: audience.name,
-								},
+								dimensionFilters,
 							},
 						} );
 				} );
@@ -696,7 +724,7 @@ export default {
 				const audienceDate = Number( startDate.replace( /-/g, '' ) );
 
 				const audienceResourceData = {};
-				audiencesFixture.forEach( ( audience ) => {
+				availableAudiences.forEach( ( audience ) => {
 					audienceResourceData[ audience.name ] = audienceDate;
 				} );
 				registry
