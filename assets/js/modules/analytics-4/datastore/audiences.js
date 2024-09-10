@@ -1076,7 +1076,7 @@ const baseSelectors = {
 							( { name } ) => name === configuredAudience
 						);
 
-						if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
+						if ( audience?.audienceType === 'SITE_KIT_AUDIENCE' ) {
 							siteKit.push( audience );
 						} else {
 							other.push( audience );
