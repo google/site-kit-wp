@@ -330,7 +330,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 			expect(
 				getByText(
-					/You can always enable reader revenue manager from Settings later/
+					/You can always enable Reader Revenue Manager from Settings later/
 				)
 			).toBeInTheDocument();
 		} );
