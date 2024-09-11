@@ -36,6 +36,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../../googlesitekit/constants';
 import {
 	createTestRegistry,
+	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -70,6 +71,10 @@ describe( 'AudienceSelectionPanel', () => {
 		'properties/12345/audiences/3',
 		'properties/12345/audiences/4',
 	];
+
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -109,6 +114,10 @@ describe( 'AudienceSelectionPanel', () => {
 			} );
 
 		provideAnalytics4MockReport( registry, reportOptions );
+
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+
+		muteFetch( expirableItemEndpoint );
 	} );
 
 	describe( 'Header', () => {

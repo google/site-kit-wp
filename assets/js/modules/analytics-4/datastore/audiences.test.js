@@ -60,6 +60,9 @@ describe( 'modules/analytics-4 audiences', () => {
 	const analyticsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+	);
 
 	const audience = {
 		displayName: 'Recently active users',
@@ -623,6 +626,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				muteFetch( expirableItemEndpoint );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions(
@@ -676,6 +681,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 					status: 200,
 				} );
+
+				muteFetch( expirableItemEndpoint );
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -768,6 +775,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -865,6 +874,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -986,6 +997,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						};
 					}
 				);
+
+				muteFetch( expirableItemEndpoint );
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1132,6 +1145,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						body: CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1412,6 +1427,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						}
 					);
 
+					muteFetch( expirableItemEndpoint );
+
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.enableAudienceGroup( failedAudiencesToRetry );
@@ -1640,6 +1657,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				muteFetch( expirableItemEndpoint );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions(
@@ -1693,6 +1712,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				muteFetch( expirableItemEndpoint );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions(
@@ -1730,6 +1751,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 					status: 200,
 				} );
+
+				muteFetch( expirableItemEndpoint );
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1822,6 +1845,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1919,6 +1944,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
