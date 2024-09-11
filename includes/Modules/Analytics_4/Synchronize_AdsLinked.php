@@ -129,7 +129,6 @@ class Synchronize_AdsLinked {
 
 		if ( $analytics_4_connected && ! $cron_already_scheduled ) {
 			wp_schedule_single_event(
-				// Schedule the task to run in 24 hours.
 				time() + ( WEEK_IN_SECONDS ),
 				self::CRON_SYNCHRONIZE_ADS_LINKED
 			);
