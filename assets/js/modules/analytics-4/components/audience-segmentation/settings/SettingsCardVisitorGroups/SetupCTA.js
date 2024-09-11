@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,23 +32,59 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../../../components/Link';
+import { AudienceErrorModal } from '../../dashboard';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 
 export default function SetupCTA() {
+	const [ showErrorModal, setShowErrorModal ] = useState( false );
+
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const { isSaving, onEnableGroups } = useEnableAudienceGroup( {
-		redirectURL: global.location.href,
-		onSuccess: () => {
-			// Dismiss success notification in dashboard.
-			dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
-		},
-	} );
+	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
+		useEnableAudienceGroup( {
+			redirectURL: global.location.href,
+			onSuccess: () => {
+				// Dismiss success notification in dashboard.
+				dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
+			},
+			onError: () => {
+				setShowErrorModal( true );
+			},
+		} );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isPromptDismissed(
 			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 		)
 	);
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_SEGMENTATION_SETUP_FORM,
+			'autoSubmit'
+		)
+	);
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+
+	const onCancel = () => {
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+		clearPermissionScopeError();
+		setSetupErrorCode( null );
+		setShowErrorModal( false );
+	};
 
 	if ( isDismissed === undefined || isDismissed ) {
 		return null;
@@ -71,6 +108,19 @@ export default function SetupCTA() {
 				<Link onClick={ onEnableGroups }>
 					{ __( 'Enable groups', 'google-site-kit' ) }
 				</Link>
+			) }
+			{ ( showErrorModal || hasOAuthError ) && (
+				<AudienceErrorModal
+					hasOAuthError={ hasOAuthError }
+					apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
+					onRetry={ onEnableGroups }
+					inProgress={ isSaving }
+					onCancel={
+						hasOAuthError
+							? onCancel
+							: () => setShowErrorModal( false )
+					}
+				/>
 			) }
 		</div>
 	);
