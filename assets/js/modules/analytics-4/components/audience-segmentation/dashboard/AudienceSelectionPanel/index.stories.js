@@ -24,6 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX } from './AudienceItem';
 import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
@@ -284,6 +285,17 @@ AudienceCreationSuccessNotice.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationSuccessNotice',
 };
 
+export const WithNewBadges = Template.bind( {} );
+WithNewBadges.storyName = 'With "New" badges';
+WithNewBadges.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+	},
+};
+WithNewBadges.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithNewBadges',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',
 	component: AudienceSelectionPanel,
@@ -367,6 +379,17 @@ export default {
 						customDimension: {},
 						property: {},
 					} );
+
+				// Prevent displaying "New" badges by default.
+				registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+					availableAudiences.reduce(
+						( acc, { name } ) => ( {
+							...acc,
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]: 0,
+						} ),
+						{}
+					)
+				);
 
 				registry
 					.dispatch( CORE_UI )
