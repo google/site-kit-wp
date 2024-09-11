@@ -17,8 +17,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -56,6 +58,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	private $authentication;
 
 	/**
+	 * Options object.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * Reader_Revenue_Manager object.
 	 *
 	 * @var Reader_Revenue_Manager
@@ -66,11 +75,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		parent::set_up();
 
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options                      = new Options( $this->context );
+		$this->options                = new Options( $this->context );
 		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$user_options                 = new User_Options( $this->context, $user->ID );
-		$this->authentication         = new Authentication( $this->context, $options, $user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options, $this->authentication );
+		$this->authentication         = new Authentication( $this->context, $this->options, $user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $user_options, $this->authentication );
 	}
 
 	public function test_register() {
@@ -116,11 +125,18 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_get_publications() {
+	public function test_get_publications__url() {
+		$filter = '';
+
+		// Set the Search Console option.
+		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
 		FakeHttp::fake_google_http_handler(
 			$this->reader_revenue_manager->get_client(),
-			function ( Request $request ) {
+			function ( Request $request ) use ( &$filter ) {
 				$url = parse_url( $request->getUri() );
+
+				$filter = $url['query'];
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
@@ -140,6 +156,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
+
 		$this->assertNotWPError( $result );
 		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
 
@@ -147,6 +164,71 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
 		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+
+		$expected_filter = 'filter=' . join(
+			' OR ',
+			array_map(
+				function ( $url ) {
+					return sprintf( 'site_url = "%s"', $url );
+				},
+				URL::permute_site_url( 'http://test.com' )
+			)
+		);
+
+		$this->assertEquals( $expected_filter, urldecode( $filter ) );
+	}
+
+	public function test_get_publications__domain() {
+		$filter = '';
+
+		// Set the Search Console option.
+		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'sc-domain:example.com' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) use ( &$filter ) {
+				$url = parse_url( $request->getUri() );
+
+				$filter = $url['query'];
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response() )
+						);
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$result = $this->reader_revenue_manager->get_data( 'publications' );
+
+		$this->assertNotWPError( $result );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
+
+		$publication = $result[0];
+
+		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+
+		$expected_filter = 'filter=' . join(
+			' OR ',
+			array_map(
+				function ( $domain ) {
+					return sprintf( 'domain = "%s"', $domain );
+				},
+				URL::permute_site_hosts( 'example.com' )
+			)
+		);
+
+		$this->assertEquals( $expected_filter, urldecode( $filter ) );
 	}
 
 	public function test_is_connected() {

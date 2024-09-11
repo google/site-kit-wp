@@ -16,7 +16,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 /**
  * Class providing report implementation for available events for conversion reporting.
  *
- * @since n.e.x.t
+ * @since 1.135.0
  * @access private
  * @ignore
  */
@@ -47,7 +47,7 @@ class Conversion_Reporting_Events_Sync {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 *
 	 * @param Settings    $settings  Settings module settings instance.
 	 * @param Analytics_4 $analytics Analytics 4 module instance.
@@ -61,11 +61,11 @@ class Conversion_Reporting_Events_Sync {
 	}
 
 	/**
-	 * Checks for available events and save them in settings.
+	 * Syncs detected events into settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
-	public function check_for_events() {
+	public function sync_detected_events() {
 		$report          = $this->get_report();
 		$detected_events = array();
 
@@ -90,7 +90,7 @@ class Conversion_Reporting_Events_Sync {
 	/**
 	 * Retrieves the GA4 report for filtered events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	protected function get_report() {
 		$options = array(

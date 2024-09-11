@@ -29,6 +29,11 @@ import { withWidgetComponentProps } from '../../../../../../googlesitekit/widget
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../../googlesitekit/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsNoAudienceBanner'
@@ -38,28 +43,58 @@ function Template() {
 	return <WidgetWithComponentProps />;
 }
 
-export const HasConfigurableAudiences = Template.bind( {} );
-HasConfigurableAudiences.storyName = 'Has Configurable Audiences';
-HasConfigurableAudiences.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/NoAudienceBannerWidget/HasConfigurableAudiences',
-};
-HasConfigurableAudiences.args = {
+export const AuthenticatedUserNeverSetup = Template.bind( {} );
+AuthenticatedUserNeverSetup.storyName =
+	'Authenticated user, never populated their audience selection';
+AuthenticatedUserNeverSetup.scenario = {};
+AuthenticatedUserNeverSetup.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: false,
+		} );
 	},
 };
 
-export const NoConfigurableAudience = Template.bind( {} );
-NoConfigurableAudience.storyName = 'No Configurable Audience';
-NoConfigurableAudience.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/NoAudienceBannerWidget/NoConfigurableAudience',
-};
-NoConfigurableAudience.args = {
+export const AuthenticatedUserHasSetup = Template.bind( {} );
+AuthenticatedUserHasSetup.storyName =
+	'Authenticated user, previously populated their audience selection';
+AuthenticatedUserHasSetup.scenario = {};
+AuthenticatedUserHasSetup.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: true,
+		} );
 	},
+};
+
+export const ViewOnlyUserNeverSetup = Template.bind( {} );
+ViewOnlyUserNeverSetup.storyName =
+	'View-only user, never populated their audience selection';
+ViewOnlyUserNeverSetup.scenario = {};
+ViewOnlyUserNeverSetup.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: false,
+		} );
+	},
+	isViewOnly: true,
+};
+
+export const ViewOnlyUserHasSetup = Template.bind( {} );
+ViewOnlyUserHasSetup.storyName =
+	'View-only user, previously populated their audience selection';
+ViewOnlyUserHasSetup.scenario = {};
+ViewOnlyUserHasSetup.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: true,
+		} );
+	},
+	isViewOnly: true,
 };
 
 export default {
@@ -76,20 +111,22 @@ export default {
 				] );
 				provideModuleRegistrations( registry );
 
-				const audienceSettings = {
-					configuredAudiences: [ 'properties/12345/audiences/9' ],
-					isAudienceSegmentationWidgetHidden: false,
-				};
-
 				registry
-					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettings );
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
 
-				await args?.setupRegistry( registry );
+				await args.setupRegistry( registry );
 			};
+
+			const viewContext = args.isViewOnly
+				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				: VIEW_CONTEXT_MAIN_DASHBOARD;
+
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<ViewContextProvider value={ viewContext }>
+						<Story />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},

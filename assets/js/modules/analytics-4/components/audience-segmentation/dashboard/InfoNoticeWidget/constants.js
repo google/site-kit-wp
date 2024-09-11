@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * UI key to display audience segmentation info notice.
  *
- * @since n.e.x.t
+ * @since 1.135.0
  * @private
  */
 export const AUDIENCE_INFO_NOTICE_HIDE_UI =

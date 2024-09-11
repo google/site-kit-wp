@@ -30,7 +30,6 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
-	Fragment,
 } from '@wordpress/element';
 
 /**
@@ -44,21 +43,19 @@ import {
 	useBreakpoint,
 } from '../../../../../../hooks/useBreakpoint';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceTile from './AudienceTile';
 import InfoTooltip from '../../../../../../components/InfoTooltip';
 import AudienceTooltipMessage from './AudienceTooltipMessage';
 import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
 import AudienceTileError from './AudienceTile/AudienceTileError';
-import PlaceholderTile from './PlaceholderTile';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import MaybePlaceholderTile from './MaybePlaceholderTile';
+import useAudienceTilesReports from '../../../../hooks/useAudienceTilesReports';
 
-const hasZeroDataForAudience = ( report, audienceResourceName ) => {
+const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
-		( row ) => row.dimensionValues?.[ 0 ]?.value === audienceResourceName
+		( row ) => row.dimensionValues?.[ 0 ]?.value === dimensionName
 	);
 	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
 	return totalUsers === 0;
@@ -78,240 +75,167 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const audiences = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 	}, [] );
-
-	const audiencesDimensionFilter = {
-		audienceResourceName: configuredAudiences,
-	};
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} )
+	const [ siteKitAudiences, otherAudiences ] = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getConfiguredSiteKitAndOtherAudiences()
+	) || [ [], [] ];
+	const isSiteKitAudiencePartialData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasAudiencePartialData( siteKitAudiences )
 	);
 
-	const { startDate, endDate } = dates;
-
-	const reportOptions = {
-		...dates,
-		dimensions: [ { name: 'audienceResourceName' } ],
-		dimensionFilters: audiencesDimensionFilter,
-		metrics: [
-			{ name: 'totalUsers' },
-			{ name: 'sessionsPerUser' },
-			{ name: 'screenPageViewsPerSession' },
-			{ name: 'screenPageViews' },
-		],
-	};
-
-	const report = useInViewSelect(
-		( select ) => {
-			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
-		},
-		[ reportOptions ]
-	);
-
-	const reportLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-			reportOptions,
-		] )
-	);
-
-	const reportError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			reportOptions,
-		] )
-	);
-
-	const { rows = [] } = report || {};
-
-	const totalPageviewsReportOptions = {
-		startDate,
-		endDate,
-		metrics: [ { name: 'screenPageViews' } ],
-	};
-
-	const totalPageviewsReport = useInViewSelect(
-		( select ) => {
-			return select( MODULES_ANALYTICS_4 ).getReport(
-				totalPageviewsReportOptions
-			);
-		},
-		[ totalPageviewsReportOptions ]
-	);
-
-	const totalPageviewsReportLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-			totalPageviewsReportOptions,
-		] )
-	);
-
-	const totalPageviewsReportError = useInViewSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-				totalPageviewsReportOptions,
-			] ),
-		[ totalPageviewsReportOptions ]
-	);
-
-	const totalPageviews =
-		Number(
-			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
-		) || 0;
-
-	const topCitiesReportOptions = {
-		startDate,
-		endDate,
-		dimensions: [ 'city' ],
-		metrics: [ { name: 'totalUsers' } ],
-		orderby: [
-			{
-				metric: {
-					metricName: 'totalUsers',
-				},
-				desc: true,
-			},
-		],
-		limit: 3,
-	};
-
-	const topCitiesReport = useInViewSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-				topCitiesReportOptions,
-				configuredAudiences
-			),
-		[ topCitiesReportOptions, configuredAudiences ]
-	);
-
-	const topCitiesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences?.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topCitiesReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
-		)
-	);
-
-	const topCitiesReportErrors = useSelect( ( select ) => {
-		return configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
-			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[
-					{
-						...topCitiesReportOptions,
-						dimensionFilters: { audienceResourceName },
-					},
-				]
-			);
-
-			if ( error ) {
-				acc[ audienceResourceName ] = error;
-			}
-
-			return acc;
-		}, {} );
+	const {
+		report,
+		reportLoaded,
+		reportError,
+		siteKitAudiencesReport,
+		siteKitAudiencesReportLoaded,
+		siteKitAudiencesReportError,
+		totalPageviews,
+		totalPageviewsReportLoaded,
+		totalPageviewsReportError,
+		topCitiesReport,
+		topCitiesReportLoaded,
+		topCitiesReportErrors,
+		topContentReport,
+		topContentReportLoaded,
+		topContentReportErrors,
+		topContentPageTitlesReport,
+		topContentPageTitlesReportLoaded,
+		topContentPageTitlesReportErrors,
+	} = useAudienceTilesReports( {
+		isSiteKitAudiencePartialData,
+		siteKitAudiences,
+		otherAudiences,
 	} );
 
-	const topContentReportOptions = {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath' ],
-		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-		limit: 3,
-	};
+	const getAudienceTileMetrics = ( audienceResourceName ) => {
+		const isSiteKitAudience = siteKitAudiences.some(
+			( audience ) => audience.name === audienceResourceName
+		);
 
-	const topContentReport = useInViewSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-				topContentReportOptions,
-				configuredAudiences
-			),
-		[ topContentReportOptions, configuredAudiences ]
-	);
+		// Get the audience slug (e.g., 'new-visitors', 'returning-visitors').
+		const audienceSlug = siteKitAudiences.find(
+			( audience ) => audience.name === audienceResourceName
+		)?.audienceSlug;
 
-	const topContentReportLoaded = useSelect( ( select ) =>
-		configuredAudiences?.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topContentReportOptions,
-					dimensionFilters: { audienceResourceName },
-				},
-			] )
-		)
-	);
+		const findMetricsForDateRange = ( dateRange ) => {
+			let row;
 
-	const topContentReportErrors = useSelect( ( select ) => {
-		return configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
-			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[
-					{
-						...topContentReportOptions,
-						dimensionFilters: { audienceResourceName },
-					},
-				]
-			);
+			if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+				// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
+				const dimensionValue =
+					audienceSlug === 'new-visitors' ? 'new' : 'returning';
 
-			if ( error ) {
-				acc[ audienceResourceName ] = error;
+				row = siteKitAudiencesReport?.rows?.find(
+					( { dimensionValues } ) =>
+						dimensionValues?.[ 0 ]?.value === dimensionValue &&
+						dimensionValues?.[ 1 ]?.value === dateRange
+				);
+			} else {
+				row = report?.rows?.find(
+					( { dimensionValues } ) =>
+						dimensionValues?.[ 0 ]?.value ===
+							audienceResourceName &&
+						dimensionValues?.[ 1 ]?.value === dateRange
+				);
 			}
 
-			return acc;
-		}, {} );
-	} );
+			return [
+				Number( row?.metricValues?.[ 0 ]?.value || 0 ), // totalUsers
+				Number( row?.metricValues?.[ 1 ]?.value || 0 ), // sessionsPerUser
+				Number( row?.metricValues?.[ 2 ]?.value || 0 ), // screenPageViewsPerSession
+				Number( row?.metricValues?.[ 3 ]?.value || 0 ), // screenPageViews
+			];
+		};
 
-	const topContentPageTitlesReportOptions = {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath', 'pageTitle' ],
-		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-		limit: 15,
+		const currentMetrics = findMetricsForDateRange( 'date_range_0' );
+		const previousMetrics = findMetricsForDateRange( 'date_range_1' );
+
+		return { current: currentMetrics, previous: previousMetrics };
 	};
 
-	const topContentPageTitlesReport = useInViewSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
-				topContentPageTitlesReportOptions,
-				configuredAudiences
-			),
-		[ topContentPageTitlesReportOptions, configuredAudiences ]
-	);
+	const getAudienceTileData = ( audienceResourceName, audienceIndex ) => {
+		const audienceName =
+			audiences?.filter(
+				( { name } ) => name === audienceResourceName
+			)?.[ 0 ]?.displayName || '';
 
-	const topContentPageTitlesReportLoaded = useSelect( ( select ) =>
-		configuredAudiences?.every( ( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				{
-					...topContentPageTitlesReportOptions,
-					dimensionFilters: { audienceResourceName },
+		const audienceSlug =
+			audiences?.filter(
+				( { name } ) => name === audienceResourceName
+			)?.[ 0 ]?.audienceSlug || '';
+
+		const { current, previous } =
+			getAudienceTileMetrics( audienceResourceName );
+
+		const visitors = current[ 0 ];
+		const prevVisitors = previous[ 0 ];
+
+		const visitsPerVisitors = current[ 1 ];
+		const prevVisitsPerVisitors = previous[ 1 ];
+
+		const pagesPerVisit = current[ 2 ];
+		const prevPagesPerVisit = previous[ 2 ];
+
+		const pageviews = current[ 3 ];
+		const prevPageviews = previous[ 3 ];
+
+		const topCities = topCitiesReport?.[ audienceIndex ];
+
+		const topContent = topContentReport?.[ audienceIndex ];
+
+		const topContentTitles =
+			topContentPageTitlesReport?.[ audienceIndex ]?.rows?.reduce(
+				( acc, row ) => {
+					acc[ row.dimensionValues[ 0 ].value ] =
+						row.dimensionValues[ 1 ].value;
+
+					return acc;
 				},
-			] )
-		)
-	);
+				{}
+			) || {};
 
-	const topContentPageTitlesReportErrors = useSelect( ( select ) => {
-		return configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
-			const error = select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[
-					{
-						...topContentPageTitlesReportOptions,
-						dimensionFilters: { audienceResourceName },
-					},
-				]
-			);
+		const isSiteKitAudience = siteKitAudiences.some(
+			( audience ) => audience.name === audienceResourceName
+		);
 
-			if ( error ) {
-				acc[ audienceResourceName ] = error;
-			}
+		let reportToCheck = report;
+		let dimensionValue = audienceResourceName;
 
-			return acc;
-		}, {} );
-	} );
+		if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+			// If it's a Site Kit audience in a partial data state, use the siteKitAudiencesReport.
+			reportToCheck = siteKitAudiencesReport;
+
+			// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
+			dimensionValue =
+				audienceSlug === 'new-visitors' ? 'new' : 'returning';
+		}
+
+		const isZeroData = hasZeroDataForAudience(
+			reportToCheck,
+			dimensionValue
+		);
+		const isPartialData = isSiteKitAudience
+			? false
+			: partialDataStates[ audienceResourceName ];
+
+		return {
+			audienceName,
+			audienceSlug,
+			visitors,
+			prevVisitors,
+			visitsPerVisitors,
+			prevVisitsPerVisitors,
+			pagesPerVisit,
+			prevPagesPerVisit,
+			pageviews,
+			prevPageviews,
+			topCities,
+			topContent,
+			topContentTitles,
+			isZeroData,
+			isPartialData,
+		};
+	};
 
 	const individualTileErrors = configuredAudiences?.reduce(
 		( acc, audienceResourceName ) => {
@@ -333,22 +257,8 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		{}
 	);
 
-	function checkForAllTilesError() {
-		if ( reportError || totalPageviewsReportError ) {
-			return true;
-		}
-
-		return configuredAudiences?.every(
-			( audienceResourceName ) =>
-				individualTileErrors[ audienceResourceName ].length > 0
-		);
-	}
-
-	const allTilesError = checkForAllTilesError();
-
-	const dismissedItems = useInViewSelect(
-		( select ) => select( CORE_USER ).getDismissedItems(),
-		[]
+	const dismissedItems = useSelect( ( select ) =>
+		select( CORE_USER ).getDismissedItems()
 	);
 
 	const { isDismissingItem } = useSelect( ( select ) => select( CORE_USER ) );
@@ -390,13 +300,33 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 		while ( tempAudiences?.length > 0 ) {
 			const audienceResourceName = tempAudiences.shift();
-
 			const isDismissed = dismissedItems?.includes(
 				`audience-tile-${ audienceResourceName }`
 			);
+			const isSiteKitAudience = siteKitAudiences.some(
+				( audience ) => audience.name === audienceResourceName
+			);
+
+			let reportToCheck = report;
+			let dimensionValue = audienceResourceName;
+
+			if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
+				// If it's a Site Kit audience in a partial data state, use the siteKitAudiencesReport.
+				reportToCheck = siteKitAudiencesReport;
+
+				// Get the audience slug (e.g., 'new-visitors', 'returning-visitors').
+				const audienceSlug = siteKitAudiences.find(
+					( audience ) => audience.name === audienceResourceName
+				)?.audienceSlug;
+
+				// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
+				dimensionValue =
+					audienceSlug === 'new-visitors' ? 'new' : 'returning';
+			}
+
 			const isZeroData = hasZeroDataForAudience(
-				report,
-				audienceResourceName
+				reportToCheck,
+				dimensionValue
 			);
 
 			// Check if there are more audiences remaining to be processed.
@@ -418,7 +348,35 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		}
 
 		return [ toClear, visible ];
-	}, [ audiences, configuredAudiences, dismissedItems, report ] );
+	}, [
+		audiences,
+		configuredAudiences,
+		dismissedItems,
+		isSiteKitAudiencePartialData,
+		report,
+		siteKitAudiences,
+		siteKitAudiencesReport,
+	] );
+
+	function checkForAllTilesError() {
+		const mainReportErrors = [];
+		if ( report ) {
+			mainReportErrors.push( reportError );
+		}
+		if ( siteKitAudiencesReport ) {
+			mainReportErrors.push( siteKitAudiencesReportError );
+		}
+		if ( mainReportErrors.every( Boolean ) || totalPageviewsReportError ) {
+			return true;
+		}
+
+		return configuredAudiences?.every(
+			( audienceResourceName ) =>
+				individualTileErrors[ audienceResourceName ].length > 0
+		);
+	}
+
+	const allTilesError = checkForAllTilesError();
 
 	// Re-dismiss with a short expiry time to clear any previously dismissed tiles.
 	// This ensures that the tile will reappear when it is populated with data again.
@@ -442,6 +400,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const loading =
 		widgetLoading ||
 		! reportLoaded ||
+		! siteKitAudiencesReportLoaded ||
 		! totalPageviewsReportLoaded ||
 		! topCitiesReportLoaded ||
 		! topContentReportLoaded ||
@@ -496,7 +455,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 					</TabBar>
 				) }
 			<div className="googlesitekit-widget-audience-tiles__body">
-				{ allTilesError && (
+				{ allTilesError && ! loading && (
 					<AudienceSegmentationErrorWidget
 						Widget={ Widget }
 						errors={ [
@@ -506,81 +465,30 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						] }
 					/>
 				) }
-				{ allTilesError === false &&
+				{ ( allTilesError === false || loading ) &&
 					visibleAudiences.map( ( audienceResourceName, index ) => {
 						// Conditionally render only the selected audience tile on mobile.
 						if ( isTabbedBreakpoint && index !== activeTile ) {
 							return null;
 						}
 
-						const currentMetricValues = rows.find( ( row ) => {
-							return (
-								row.dimensionValues[ 0 ]?.value ===
-									audienceResourceName &&
-								row.dimensionValues[ 1 ]?.value ===
-									'date_range_0'
-							);
-						} )?.metricValues;
-
-						const previousMetricValues = rows.find( ( row ) => {
-							return (
-								row.dimensionValues[ 0 ]?.value ===
-									audienceResourceName &&
-								row.dimensionValues[ 1 ]?.value ===
-									'date_range_1'
-							);
-						} )?.metricValues;
-
-						const audienceName =
-							audiences?.filter(
-								( { name } ) => name === audienceResourceName
-							)?.[ 0 ]?.displayName || '';
-
-						const audienceSlug =
-							audiences?.filter(
-								( { name } ) => name === audienceResourceName
-							)?.[ 0 ]?.audienceSlug || '';
-
-						const visitors =
-							Number( currentMetricValues?.[ 0 ]?.value ) || 0;
-						const prevVisitors =
-							Number( previousMetricValues?.[ 0 ]?.value ) || 0;
-
-						const visitsPerVisitors =
-							Number( currentMetricValues?.[ 1 ]?.value ) || 0;
-						const prevVisitsPerVisitors =
-							Number( previousMetricValues?.[ 1 ]?.value ) || 0;
-
-						const pagesPerVisit =
-							Number( currentMetricValues?.[ 2 ]?.value ) || 0;
-						const prevPagesPerVisit =
-							Number( previousMetricValues?.[ 2 ]?.value ) || 0;
-
-						const pageviews =
-							Number( currentMetricValues?.[ 3 ]?.value ) || 0;
-						const prevPageviews =
-							Number( previousMetricValues?.[ 3 ]?.value ) || 0;
-
-						const topCities = topCitiesReport?.[ index ];
-
-						const topContent = topContentReport?.[ index ];
-
-						const topContentTitles = {};
-
-						topContentPageTitlesReport?.[ index ]?.rows?.forEach(
-							( row ) => {
-								topContentTitles[
-									row.dimensionValues[ 0 ].value
-								] = row.dimensionValues[ 1 ].value;
-							}
-						);
-
-						const isPartialData =
-							partialDataStates[ audienceResourceName ];
-						const isZeroData = hasZeroDataForAudience(
-							report,
-							audienceResourceName
-						);
+						const {
+							audienceName,
+							audienceSlug,
+							visitors,
+							prevVisitors,
+							visitsPerVisitors,
+							prevVisitsPerVisitors,
+							pagesPerVisit,
+							prevPagesPerVisit,
+							pageviews,
+							prevPageviews,
+							topCities,
+							topContent,
+							topContentTitles,
+							isZeroData,
+							isPartialData,
+						} = getAudienceTileData( audienceResourceName, index );
 
 						// Return loading tile if data is not yet loaded.
 						if (
@@ -692,20 +600,14 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							/>
 						);
 					} ) }
-				{ ! isTabbedBreakpoint &&
-					allTilesError === false &&
-					visibleAudiences.length === 1 && (
-						<Fragment>
-							{ loading && (
-								<Widget noPadding>
-									<AudienceTileLoading />
-								</Widget>
-							) }
-							{ ! loading && (
-								<PlaceholderTile Widget={ Widget } />
-							) }
-						</Fragment>
-					) }
+				{ ! isTabbedBreakpoint && (
+					<MaybePlaceholderTile
+						Widget={ Widget }
+						loading={ loading }
+						allTilesError={ allTilesError }
+						visibleAudienceCount={ visibleAudiences.length }
+					/>
+				) }
 			</div>
 		</Widget>
 	);
