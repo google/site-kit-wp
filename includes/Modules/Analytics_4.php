@@ -2420,6 +2420,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$weight_a = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_a ];
 				$weight_b = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_b ];
 
+				if ( $weight_a === $weight_b ) {
+					return $audience_index_a - $audience_index_b;
+				}
+
 				return $weight_a - $weight_b;
 			}
 		);
