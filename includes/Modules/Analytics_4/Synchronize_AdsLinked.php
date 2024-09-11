@@ -12,9 +12,8 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Analytics_4;
 
 /**
  * The base class for Synchronizing the adsLinked status.
