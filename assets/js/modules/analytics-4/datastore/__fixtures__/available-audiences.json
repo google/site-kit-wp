@@ -22,7 +22,6 @@
     },
     {
         "name": "properties/12345/audiences/4",
-        "adsPersonalizationEnabled": true,
         "description": "People who have visited your site at least once before",
         "displayName": "Returning visitors",
         "audienceType": "SITE_KIT_AUDIENCE",
