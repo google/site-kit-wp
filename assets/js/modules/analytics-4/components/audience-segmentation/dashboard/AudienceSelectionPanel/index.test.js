@@ -31,6 +31,7 @@ import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
+	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -81,6 +82,9 @@ describe( 'AudienceSelectionPanel', () => {
 
 	const expirableItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+	);
+	const syncAvailableAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 
 	beforeEach( () => {
@@ -620,6 +624,16 @@ describe( 'AudienceSelectionPanel', () => {
 					overwriteRoutes: true,
 				}
 			);
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
+			// The request is made when the panel is opened.
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
 				registry,

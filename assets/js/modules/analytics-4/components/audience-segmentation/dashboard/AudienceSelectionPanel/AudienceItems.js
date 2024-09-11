@@ -253,7 +253,11 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 	// the array reference of `newBadgesToActivate` is not reliable and can
 	// cause the effect to unexpectedly run multiple times.
 	useDeepCompareEffect( () => {
-		if ( newBadgesToActivate !== undefined && newBadgesToActivate.length ) {
+		if (
+			isOpen && // Only activate when the badge is viewed, i.e. the panel is opened.
+			newBadgesToActivate !== undefined &&
+			newBadgesToActivate.length
+		) {
 			setExpirableItemTimers(
 				newBadgesToActivate.map( ( slug ) => ( {
 					slug,
@@ -261,7 +265,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 				} ) )
 			);
 		}
-	}, [ setExpirableItemTimers, newBadgesToActivate ] );
+	}, [ isOpen, setExpirableItemTimers, newBadgesToActivate ] );
 
 	return (
 		<SelectionPanelItems
