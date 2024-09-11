@@ -38,7 +38,7 @@ function Template( { ...args } ) {
 }
 
 export const Ads = Template.bind( {} );
-Ads.storyName = 'PAX Setup Success';
+Ads.storyName = 'PAXSetupSuccessSubtleNotification';
 Ads.parameters = {
 	query: {
 		notification: PAX_SETUP_SUCCESS_NOTIFICATION,
