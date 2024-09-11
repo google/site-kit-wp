@@ -528,7 +528,7 @@ const baseActions = {
 			dispatch( CORE_USER ).setExpirableItemTimers(
 				configuredAudiences.map( ( slug ) => ( {
 					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
-					expiresInSeconds: 0,
+					expiresInSeconds: 1,
 				} ) )
 			)
 		);
@@ -636,7 +636,7 @@ const baseActions = {
 			dispatch( CORE_USER ).setExpirableItemTimers(
 				configuredAudiences.map( ( slug ) => ( {
 					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
-					expiresInSeconds: 0,
+					expiresInSeconds: 1,
 				} ) )
 			)
 		);

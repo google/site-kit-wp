@@ -1117,7 +1117,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				fetchMock.postOnce( expirableItemEndpoint, {
 					body: configuredAudiences.map( ( slug ) => ( {
-						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 0,
+						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 1,
 					} ) ),
 				} );
 
@@ -1156,7 +1156,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						body: {
 							data: configuredAudiences.map( ( slug ) => ( {
 								slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
-								expiration: 0,
+								expiration: 1,
 							} ) ),
 						},
 					}
@@ -2100,7 +2100,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				fetchMock.postOnce( expirableItemEndpoint, {
 					body: configuredAudiences.map( ( slug ) => ( {
-						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 0,
+						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 1,
 					} ) ),
 				} );
 
@@ -2139,7 +2139,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						body: {
 							data: configuredAudiences.map( ( slug ) => ( {
 								slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
-								expiration: 0,
+								expiration: 1,
 							} ) ),
 						},
 					}
