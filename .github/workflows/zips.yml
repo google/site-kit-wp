@@ -221,8 +221,10 @@ jobs:
   dryrun-publish-to-wporg:
     name: '[DRY RUN] Publish to WordPress.org'
     runs-on: ubuntu-latest
-    environment: github-pages # no SVN credentials!
+    # environment: do not define to omit SVN credentials + deployment protection rules for this dry-run.
     if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
+    needs: build-zips
+    timeout-minutes: 20
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -257,8 +259,6 @@ jobs:
         run: |
           unzip /tmp/google-site-kit.zip
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
-        with:
-          dry-run: false
         env:
           BUILD_DIR: ./google-site-kit
           SLUG: google-site-kit
