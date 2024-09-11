@@ -17,8 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import { AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX } from './AudienceItem';
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
@@ -34,6 +40,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../../googlesitekit/constants';
+import { WEEK_IN_SECONDS } from '../../../../../../util';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -473,6 +480,154 @@ describe( 'AudienceSelectionPanel', () => {
 							break;
 					}
 				} );
+		} );
+
+		it( 'should show a "New" badge for non-default audiences if the badges have not been seen yet', async () => {
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const audienceName = item?.querySelector(
+						'input[type="checkbox"]'
+					)?.value;
+
+					const audienceType = availableAudiences.find(
+						( { name } ) => name === audienceName
+					)?.audienceType;
+
+					const sourceInDOM = item?.querySelector(
+						'.googlesitekit-new-badge'
+					);
+
+					if ( audienceType === 'DEFAULT_AUDIENCE' ) {
+						expect( sourceInDOM ).not.toBeInTheDocument();
+					} else {
+						expect( sourceInDOM ).toBeInTheDocument();
+					}
+				} );
+		} );
+
+		it( 'should show a "New" badge for non-default audiences if the badges have been seen and they are still active', async () => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+				availableAudiences
+					.filter(
+						( { audienceType } ) =>
+							audienceType !== 'DEFAULT_AUDIENCE'
+					)
+					.reduce(
+						( acc, { name } ) => ( {
+							...acc,
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]:
+								currentTimeInSeconds + 100,
+						} ),
+						{}
+					)
+			);
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const audienceName = item?.querySelector(
+						'input[type="checkbox"]'
+					)?.value;
+
+					const audienceType = availableAudiences.find(
+						( { name } ) => name === audienceName
+					)?.audienceType;
+
+					const sourceInDOM = item?.querySelector(
+						'.googlesitekit-new-badge'
+					);
+
+					if ( audienceType === 'DEFAULT_AUDIENCE' ) {
+						expect( sourceInDOM ).not.toBeInTheDocument();
+					} else {
+						expect( sourceInDOM ).toBeInTheDocument();
+					}
+				} );
+		} );
+
+		it( 'should not show "New" badges if they have expired', async () => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+				availableAudiences
+					.filter(
+						( { audienceType } ) =>
+							audienceType !== 'DEFAULT_AUDIENCE'
+					)
+					.reduce(
+						( acc, { name } ) => ( {
+							...acc,
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]:
+								currentTimeInSeconds - 100,
+						} ),
+						{}
+					)
+			);
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const sourceInDOM = item?.querySelector(
+						'.googlesitekit-new-badge'
+					);
+
+					expect( sourceInDOM ).not.toBeInTheDocument();
+				} );
+		} );
+
+		it( 'should make a request to set an expiry for "New" badges as soon as they are visibile', async () => {
+			fetchMock.postOnce(
+				expirableItemEndpoint,
+				{
+					body: availableAudiences
+						.filter(
+							( { audienceType } ) =>
+								audienceType !== 'DEFAULT_AUDIENCE'
+						)
+						.map( ( { name } ) => ( {
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]:
+								WEEK_IN_SECONDS * 4,
+						} ) ),
+				},
+				{
+					overwriteRoutes: true,
+				}
+			);
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, expirableItemEndpoint );
 		} );
 	} );
 

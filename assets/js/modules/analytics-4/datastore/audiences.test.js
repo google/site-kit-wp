@@ -29,6 +29,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX } from '../components/audience-segmentation/dashboard/AudienceSelectionPanel/AudienceItem';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
@@ -1086,6 +1087,82 @@ describe( 'modules/analytics-4 audiences', () => {
 				).toEqual( expectedConfiguredAudiences );
 			} );
 
+			it( 'should make a request to expire new badges for configured audiences', async () => {
+				const totalUsersByAudience = {
+					[ availableUserAudiences[ 0 ].name ]: 0,
+					[ availableUserAudiences[ 1 ].name ]: 0,
+					[ availableUserAudiences[ 2 ].name ]: 0,
+				};
+
+				const configuredAudiences = [
+					availableNewVisitorsAudienceFixture.name,
+					availableReturningVisitorsAudienceFixture.name,
+				];
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						...availableAudiencesFixture,
+						...availableUserAudiences.slice( 1 ),
+					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( expirableItemEndpoint, {
+					body: configuredAudiences.map( ( slug ) => ( {
+						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 0,
+					} ) ),
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						availableUserAudiences,
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport(
+						createAudiencesTotalUsersMockReport(
+							totalUsersByAudience
+						),
+						{ options }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect(
+					registry.select( CORE_USER ).getConfiguredAudiences()
+				).toEqual( configuredAudiences );
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					expirableItemEndpoint,
+					{
+						body: {
+							data: configuredAudiences.map( ( slug ) => ( {
+								slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+								expiration: 0,
+							} ) ),
+						},
+					}
+				);
+			} );
+
 			describe( 'custom dimension handling', () => {
 				const createCustomDimensionEndpoint = new RegExp(
 					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
@@ -1992,6 +2069,82 @@ describe( 'modules/analytics-4 audiences', () => {
 					).toEqual( expectedConfiguredAudiences );
 				}
 			);
+
+			it( 'should make a request to expire new badges for configured audiences', async () => {
+				const totalUsersByAudience = {
+					[ availableUserAudiences[ 0 ].name ]: 0,
+					[ availableUserAudiences[ 1 ].name ]: 0,
+					[ availableUserAudiences[ 2 ].name ]: 0,
+				};
+
+				const configuredAudiences = [
+					availableNewVisitorsAudienceFixture.name,
+					availableReturningVisitorsAudienceFixture.name,
+				];
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						...availableAudiencesFixture,
+						...availableUserAudiences.slice( 1 ),
+					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( expirableItemEndpoint, {
+					body: configuredAudiences.map( ( slug ) => ( {
+						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 0,
+					} ) ),
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						availableUserAudiences,
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport(
+						createAudiencesTotalUsersMockReport(
+							totalUsersByAudience
+						),
+						{ options }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableSecondaryUserAudienceGroup();
+
+				expect(
+					registry.select( CORE_USER ).getConfiguredAudiences()
+				).toEqual( configuredAudiences );
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					expirableItemEndpoint,
+					{
+						body: {
+							data: configuredAudiences.map( ( slug ) => ( {
+								slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+								expiration: 0,
+							} ) ),
+						},
+					}
+				);
+			} );
 		} );
 	} );
 
