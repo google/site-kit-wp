@@ -90,6 +90,17 @@ class Audience_Settings extends User_Setting {
 	}
 
 	/**
+	 * Reset the setting to their default values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function reset() {
+		return $this->set( $this->get_default() );
+	}
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.124.0

@@ -93,6 +93,7 @@ use Google\Site_Kit\Core\User\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
+use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
 use stdClass;
 use WP_Error;
 
@@ -232,6 +233,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
+		( new Reset_Audiences( $this->user_options, $this ) )->register();
+
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
 		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
 		add_action( 'admin_init', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
@@ -298,7 +301,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
 							'detectedEvents'            => array(),
-							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
 
