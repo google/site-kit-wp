@@ -65,11 +65,6 @@ on:
         description: Release version
         required: false
         default: ''
-      dry_run:
-        type: boolean
-        description: Run the publishing process without committing.
-        required: false
-        default: false
 
 concurrency:
   group: zips-${{ github.event_name }}-${{ github.ref }}
@@ -223,6 +218,29 @@ jobs:
           edit-mode: replace
           body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
 
+  dryrun-publish-to-wporg:
+    name: '[DRY RUN] Publish to WordPress.org'
+    runs-on: ubuntu-latest
+    environment: github-pages # no SVN credentials!
+    if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: zip-files
+          path: /tmp
+      - name: Extract
+        run: |
+          unzip /tmp/google-site-kit.zip
+      - uses: 10up/action-wordpress-plugin-deploy@2.2.2
+        with:
+          dry-run: true
+        env:
+          BUILD_DIR: ./google-site-kit
+          SLUG: google-site-kit
+          SVN_PASSWORD: no-op-password
+          SVN_USERNAME: no-op-username
+          VERSION: ${{ inputs.release_version }}
+  
   publish-to-wporg:
     name: Publish to WordPress.org
     runs-on: ubuntu-latest
@@ -240,7 +258,7 @@ jobs:
           unzip /tmp/google-site-kit.zip
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
         with:
-          dry-run: ${{ inputs.dry_run }}
+          dry-run: false
         env:
           BUILD_DIR: ./google-site-kit
           SLUG: google-site-kit
