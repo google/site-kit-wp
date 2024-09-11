@@ -27,18 +27,25 @@
 	}
 
 	.mdc-checkbox__content {
-		padding-top: 10px;
+		padding-top: 9px;
+
+		&:has(.googlesitekit-badge) {
+			padding-top: 8px;
+		}
 	}
 
 	label {
-		align-items: center;
 		cursor: pointer;
-		display: flex;
 		font-size: $fs-label-md;
 		font-weight: $fw-medium;
 		line-height: $lh-label-md;
 		position: relative;
 		width: 100%;
+
+		&:has(.googlesitekit-badge) {
+			align-items: center;
+			display: flex;
+		}
 
 		&:hover {
 			text-decoration: none;
