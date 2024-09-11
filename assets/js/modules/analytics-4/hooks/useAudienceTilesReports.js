@@ -183,7 +183,7 @@ export default function useAudienceTilesReports( {
 
 			return select( MODULES_ANALYTICS_4 ).getReport( reportOptions );
 		},
-		[ shouldFetchReport ]
+		[ shouldFetchReport, reportOptions ]
 	);
 
 	const reportLoaded = useSelect( ( select ) => {
@@ -233,7 +233,7 @@ export default function useAudienceTilesReports( {
 				newVsReturningReportOptions
 			);
 		},
-		[ shouldFetchSiteKitAudiencesReport ]
+		[ shouldFetchSiteKitAudiencesReport, newVsReturningReportOptions ]
 	);
 	const siteKitAudiencesReportLoaded = useSelect( ( select ) => {
 		if ( shouldFetchSiteKitAudiencesReport === undefined ) {
