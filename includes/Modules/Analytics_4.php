@@ -199,6 +199,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->audience_settings                = new Audience_Settings( $this->user_options );
+		$this->reset_audiences                  = new Reset_Audiences( $this->user_options, $this );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
 	}
 
@@ -241,7 +242,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
-		$this->reset_audiences = new Reset_Audiences( $this->user_options, $this );
 		$this->reset_audiences->register();
 
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
