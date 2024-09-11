@@ -163,6 +163,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	protected $audience_settings;
 
 	/**
+	 * Reset_Audiences instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Reset_Audiences
+	 */
+	protected $reset_audiences;
+
+	/**
 	 * Resource_Data_Availability_Date instance.
 	 *
 	 * @since 1.127.0
@@ -233,7 +241,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
-		( new Reset_Audiences( $this->user_options, $this ) )->register();
+		$this->reset_audiences = new Reset_Audiences( $this->user_options, $this );
+		$this->reset_audiences->register();
 
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
 		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
@@ -466,6 +475,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$this->get_settings()->delete();
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
+		$this->reset_audiences->reset_audience_data();
 	}
 
 	/**
