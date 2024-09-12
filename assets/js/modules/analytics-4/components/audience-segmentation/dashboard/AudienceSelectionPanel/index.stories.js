@@ -292,9 +292,7 @@ WithNewBadges.args = {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	},
 };
-WithNewBadges.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithNewBadges',
-};
+WithNewBadges.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',
