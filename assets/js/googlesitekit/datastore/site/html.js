@@ -34,7 +34,7 @@ import {
 	combineStores,
 	createRegistryControl,
 } from 'googlesitekit-data';
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { extractExistingTag } from '../../../util/tag';
@@ -161,7 +161,7 @@ const baseControls = {
 			let tokenMatch = false;
 
 			try {
-				( { token } = await API.set( 'core', 'site', 'setup-tag' ) );
+				( { token } = await set( 'core', 'site', 'setup-tag' ) );
 				const homeURL = await registry.select( CORE_SITE ).getHomeURL();
 
 				( { response, error } = await registry

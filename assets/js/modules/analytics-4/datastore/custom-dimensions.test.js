@@ -24,7 +24,7 @@ import { times } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
@@ -56,7 +56,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 	];
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -70,7 +70,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {

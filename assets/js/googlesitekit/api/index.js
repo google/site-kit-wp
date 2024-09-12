@@ -349,6 +349,14 @@ export const invalidateCache = async ( type, identifier, datapoint ) => {
 	} );
 };
 
+/**
+ * API singleton interface. Exposes all public API functions on a singleton.
+ *
+ * Use individual functions instead of this object whenever possible.
+ *
+ * @since n.e.x.t
+ * @deprecated
+ */
 const API = {
 	invalidateCache,
 	get,

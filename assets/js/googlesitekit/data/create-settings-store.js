@@ -25,7 +25,7 @@ import { isPlainObject, isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, invalidateCache, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -104,7 +104,7 @@ export const createSettingsStore = (
 	const fetchGetSettingsStore = createFetchStore( {
 		baseName: 'getSettings',
 		controlCallback: () => {
-			return API.get(
+			return get(
 				type,
 				identifier,
 				datapoint,
@@ -133,7 +133,7 @@ export const createSettingsStore = (
 		baseName: 'saveSettings',
 		controlCallback: ( params ) => {
 			const { values } = params;
-			return API.set( type, identifier, datapoint, values );
+			return set( type, identifier, datapoint, values );
 		},
 		reducerCallback: ( state, values ) => {
 			return {
@@ -461,7 +461,7 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 			}
 		}
 
-		await API.invalidateCache( 'modules', slug );
+		await invalidateCache( 'modules', slug );
 
 		return {};
 	};

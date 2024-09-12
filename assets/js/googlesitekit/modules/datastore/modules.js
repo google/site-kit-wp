@@ -34,7 +34,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	createRegistryControl,
@@ -130,7 +130,7 @@ const calculateRecoverableModules = memize( ( modules, recoverableModules ) =>
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
 	controlCallback: () => {
-		return API.get( 'core', 'modules', 'list', null, {
+		return get( 'core', 'modules', 'list', null, {
 			useCache: false,
 		} );
 	},
@@ -148,7 +148,7 @@ const fetchGetModulesStore = createFetchStore( {
 const fetchSetModuleActivationStore = createFetchStore( {
 	baseName: 'setModuleActivation',
 	controlCallback: ( { slug, active } ) => {
-		return API.set( 'core', 'modules', 'activation', {
+		return set( 'core', 'modules', 'activation', {
 			slug,
 			active,
 		} );
@@ -176,7 +176,7 @@ const fetchSetModuleActivationStore = createFetchStore( {
 const fetchCheckModuleAccessStore = createFetchStore( {
 	baseName: 'checkModuleAccess',
 	controlCallback: ( { slug } ) => {
-		return API.set( 'core', 'modules', 'check-access', { slug } );
+		return set( 'core', 'modules', 'check-access', { slug } );
 	},
 	reducerCallback: ( state, { access }, { slug } ) => {
 		return {
@@ -198,7 +198,7 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 const fetchRecoverModulesStore = createFetchStore( {
 	baseName: 'recoverModules',
 	controlCallback: ( { slugs } ) => {
-		return API.set( 'core', 'modules', 'recover-modules', { slugs } );
+		return set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
 	reducerCallback: ( state, recoveredModules ) => {
 		return {

@@ -25,7 +25,7 @@ import { pick, difference } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistryControl,
 	createRegistrySelector,
@@ -44,7 +44,7 @@ import {
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
 	controlCallback( { propertyID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'webdatastreams',
@@ -79,7 +79,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	baseName: 'getWebDataStreamsBatch',
 	controlCallback( { propertyIDs } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'webdatastreams-batch',
@@ -118,7 +118,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
 	controlCallback( { propertyID, displayName } ) {
-		return API.set( 'modules', 'analytics-4', 'create-webdatastream', {
+		return set( 'modules', 'analytics-4', 'create-webdatastream', {
 			propertyID,
 			displayName,
 		} );

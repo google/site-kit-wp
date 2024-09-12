@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from './create-fetch-store';
 
@@ -73,7 +73,7 @@ export const createNotificationsStore = (
 	const fetchGetNotificationsStore = createFetchStore( {
 		baseName: 'getNotifications',
 		controlCallback: () => {
-			return API.get( type, identifier, datapoint );
+			return get( type, identifier, datapoint );
 		},
 		reducerCallback: ( state, notifications ) => {
 			return {

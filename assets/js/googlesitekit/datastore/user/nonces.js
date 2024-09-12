@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -34,7 +34,7 @@ const RECEIVE_NONCES = 'RECEIVE_NONCES';
 const fetchGetNoncesStore = createFetchStore( {
 	baseName: 'getNonces',
 	controlCallback: () => {
-		return API.get( 'core', 'user', 'nonces', undefined, {
+		return get( 'core', 'user', 'nonces', undefined, {
 			useCache: false,
 		} );
 	},

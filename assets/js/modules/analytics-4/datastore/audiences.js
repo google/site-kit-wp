@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
@@ -100,7 +100,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
-		API.set( 'modules', 'analytics-4', 'create-audience', {
+		set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
 	argsToParams: ( audience ) => ( {
@@ -113,8 +113,7 @@ const fetchCreateAudienceStore = createFetchStore( {
 
 const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	baseName: 'syncAvailableAudiences',
-	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
+	controlCallback: () => set( 'modules', 'analytics-4', 'sync-audiences' ),
 	reducerCallback: ( state, audiences ) => {
 		return {
 			...state,

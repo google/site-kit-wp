@@ -25,7 +25,7 @@ import { isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	isValidPropertyID,
@@ -161,7 +161,7 @@ export async function submitChanges( { select, dispatch } ) {
 		return error;
 	}
 
-	await API.invalidateCache( 'modules', 'analytics-4' );
+	await invalidateCache( 'modules', 'analytics-4' );
 
 	return {};
 }
