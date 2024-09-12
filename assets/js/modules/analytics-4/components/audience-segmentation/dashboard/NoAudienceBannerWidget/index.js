@@ -50,9 +50,7 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 	) {
 		return (
 			<Widget noPadding>
-				<NoAudienceBanner
-					hasConfigurableAudiences={ !! availableAudiences?.length }
-				/>
+				<NoAudienceBanner />
 			</Widget>
 		);
 	}

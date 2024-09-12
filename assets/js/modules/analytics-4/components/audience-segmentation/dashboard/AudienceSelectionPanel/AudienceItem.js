@@ -56,7 +56,7 @@ export default function AudienceItem( {
 	const [ siteKitUserCountReportError, otherUserCountReportError ] =
 		useSelect( ( select ) =>
 			select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
-		);
+		) || [];
 
 	const errors = [];
 

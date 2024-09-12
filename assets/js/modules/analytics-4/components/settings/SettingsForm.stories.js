@@ -184,9 +184,6 @@ IceEnabled.scenario = {
 	label: 'Modules/Analytics4/Settings/SettingsEdit/ICE',
 	delay: 250,
 };
-IceEnabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceEnabled.decorators = [
 	( Story, { parameters } ) => {
 		const setupRegistry = ( registry ) => {

@@ -40,21 +40,10 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 	};
 
-	const healthCheckEndpoint = new RegExp(
-		'google-site-kit/v1/core/site/data/connection-check'
-	);
+	const connectionCheckEndpoint = '/google-site-kit/v1/?_locale=user';
 
-	const healthCheckResponse = {
-		checks: {
-			googleAPI: {
-				pass: true,
-				errorMsg: '',
-			},
-			skService: {
-				pass: true,
-				errorMsg: '',
-			},
-		},
+	const connectionCheckResponse = {
+		namespace: 'google-site-kit/v1',
 	};
 
 	beforeEach( () => {
@@ -79,8 +68,8 @@ describe( 'useMonitorInternetConnection', () => {
 	} );
 
 	it( 'should set online status correctly', () => {
-		fetchMock.getOnce( healthCheckEndpoint, {
-			body: healthCheckResponse,
+		fetchMock.getOnce( connectionCheckEndpoint, {
+			body: connectionCheckResponse,
 		} );
 
 		renderHook( () => useMonitorInternetConnection(), { registry } );
@@ -88,17 +77,22 @@ describe( 'useMonitorInternetConnection', () => {
 		expect( store.getState().isOnline ).toBe( true );
 	} );
 
-	it( 'should set offline status correctly', () => {
-		mockOnlineStatus( false );
-
+	it( 'should set offline status correctly', async () => {
 		renderHook( () => useMonitorInternetConnection(), { registry } );
+
+		await act( async () => {
+			mockOnlineStatus( false );
+			global.window.dispatchEvent( new Event( 'offline' ) );
+			// Wait for fetch to complete.
+			await waitForTimeouts( 100 );
+		} );
 
 		expect( store.getState().isOnline ).toBe( false );
 	} );
 
 	it( 'should correctly change connection status when going offline then online', async () => {
-		fetchMock.get( healthCheckEndpoint, {
-			body: healthCheckResponse,
+		fetchMock.get( connectionCheckEndpoint, {
+			body: connectionCheckResponse,
 		} );
 
 		renderHook( () => useMonitorInternetConnection(), {
@@ -130,45 +124,42 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 
 		expect( store.getState().isOnline ).toBe( true );
-		expect( fetchMock ).toHaveFetched( healthCheckEndpoint );
+		expect( fetchMock ).toHaveFetched( connectionCheckEndpoint );
 	} );
 
 	it( 'should check online status in correct interval when online', () => {
 		jest.useFakeTimers();
 
-		fetchMock.get( healthCheckEndpoint, {
-			body: healthCheckResponse,
+		fetchMock.get( connectionCheckEndpoint, {
+			body: connectionCheckResponse,
 		} );
 
 		renderHook( () => useMonitorInternetConnection(), { registry } );
 
 		expect( store.getState().isOnline ).toBe( true );
 
-		// The initial fetch will happen immediately.
-		expect( fetchMock ).toHaveFetchedTimes( 1 );
-
 		jest.advanceTimersByTime( 119999 );
 
-		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		expect( fetchMock ).toHaveFetchedTimes( 0 );
 
 		jest.advanceTimersByTime( 1 );
 
-		// The second fetch will happen after 120000ms.
-		expect( fetchMock ).toHaveFetchedTimes( 2 );
+		// The first fetch will happen after 120000ms.
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
 	} );
 
 	it( 'should check online status in correct interval when offline', async () => {
 		jest.useFakeTimers();
 
-		fetchMock.get( healthCheckEndpoint, {
-			body: healthCheckResponse,
+		fetchMock.get( connectionCheckEndpoint, {
+			body: connectionCheckResponse,
 		} );
 
 		mockOnlineStatus( false );
 
-		renderHook( () => useMonitorInternetConnection(), { registry } );
+		registry.dispatch( CORE_UI ).setIsOnline( false );
 
-		expect( store.getState().isOnline ).toBe( false );
+		renderHook( () => useMonitorInternetConnection(), { registry } );
 
 		// The interval should be 15000ms when offline.
 		jest.advanceTimersByTime( 14999 );

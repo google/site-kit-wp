@@ -39,9 +39,6 @@ Enabled.scenario = {
 	label: 'Components/Conversion Tracking/ConversionTrackingToggle/Enabled',
 	delay: 250,
 };
-Enabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 Enabled.decorators = [
 	( Story, { parameters } ) => {
 		const setupRegistry = ( registry ) => {
@@ -75,9 +72,6 @@ Default.storyName = 'Default Disabled';
 Default.scenario = {
 	label: 'Components/Conversion Tracking/ConversionTrackingToggle/Default',
 	delay: 250,
-};
-Default.parameters = {
-	features: [ 'conversionInfra' ],
 };
 Default.decorators = [
 	( Story, { parameters } ) => {

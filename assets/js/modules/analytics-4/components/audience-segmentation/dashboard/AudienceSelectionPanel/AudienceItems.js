@@ -81,7 +81,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			getConfigurableAudiences,
 			getReport,
 			getAudiencesUserCountReportOptions,
-			getConfiguredSiteKitAndOtherAudiences,
+			getConfigurableSiteKitAndOtherAudiences,
 			hasAudiencePartialData,
 		} = select( MODULES_ANALYTICS_4 );
 
@@ -97,7 +97,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return -- We might return before `otherAudiences` is used.
 		const [ siteKitAudiences, otherAudiences ] =
-			getConfiguredSiteKitAndOtherAudiences();
+			getConfigurableSiteKitAndOtherAudiences();
 
 		const isSiteKitAudiencePartialData =
 			hasAudiencePartialData( siteKitAudiences );
@@ -122,7 +122,9 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 
 		// Get the user count for the available audiences using the `audienceResourceName` dimension.
 		const audienceResourceNameReport =
-			isSiteKitAudiencePartialData === false || otherAudiences?.length > 0
+			isSiteKitAudiencePartialData === false ||
+			( isSiteKitAudiencePartialData === true &&
+				otherAudiences?.length > 0 )
 				? getReport(
 						getAudiencesUserCountReportOptions(
 							isSiteKitAudiencePartialData

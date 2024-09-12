@@ -24,7 +24,6 @@ import {
 	act,
 	fireEvent,
 	render,
-	screen,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import {
@@ -34,7 +33,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
-	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -626,27 +624,22 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				render(
-					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-					{
-						registry,
-					}
-				);
-			} );
+			const { getByRole } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
 
-			await waitFor( () => {
-				expect(
-					screen.getByRole( 'button', { name: /Enabling groups/i } )
-				).toBeInTheDocument();
-			} );
+			expect(
+				getByRole( 'button', { name: /Enabling groups/i } )
+			).toBeInTheDocument();
 
 			await act( () => waitForTimeouts( 30 ) );
 		} );
 
 		describe( 'AudienceErrorModal', () => {
-			it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
+			it( 'should show the OAuth error modal when the required scopes are not granted', () => {
 				provideSiteInfo( registry, {
 					setupErrorCode: 'access_denied',
 				} );
@@ -669,55 +662,44 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( settings );
 
-				// eslint-disable-next-line require-await
-				await act( async () => {
-					render(
-						<AudienceSegmentationSetupCTAWidget
-							Widget={ Widget }
-						/>,
-						{
-							registry,
-						}
-					);
-				} );
+				const { getByRole, getByText } = render(
+					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					{
+						registry,
+					}
+				);
 
 				expect(
-					screen.getByRole( 'button', { name: /Enable groups/i } )
+					getByRole( 'button', { name: /Enable groups/i } )
 				).toBeInTheDocument();
 
 				act( () => {
 					fireEvent.click(
-						screen.getByRole( 'button', { name: /Enable groups/i } )
+						getByRole( 'button', { name: /Enable groups/i } )
 					);
 				} );
 
 				// Verify the error is an OAuth error variant.
-				await waitFor( () => {
-					expect(
-						screen.getByText( /Analytics update failed/i )
-					).toBeInTheDocument();
+				expect(
+					getByText( /Analytics update failed/i )
+				).toBeInTheDocument();
 
-					// Verify the "Get help" link is displayed.
-					expect(
-						screen.getByText( /get help/i )
-					).toBeInTheDocument();
+				// Verify the "Get help" link is displayed.
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
 
-					expect(
-						screen.getByRole( 'link', { name: /get help/i } )
-					).toHaveAttribute(
-						'href',
-						registry
-							.select( CORE_SITE )
-							.getErrorTroubleshootingLinkURL( {
-								code: 'access_denied',
-							} )
-					);
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toHaveAttribute(
+					'href',
+					registry
+						.select( CORE_SITE )
+						.getErrorTroubleshootingLinkURL( {
+							code: 'access_denied',
+						} )
+				);
 
-					// Verify the "Retry" button is displayed.
-					expect( screen.getByText( /retry/i ) ).toBeInTheDocument();
-				} );
-
-				await act( waitForDefaultTimeouts );
+				// Verify the "Retry" button is displayed.
+				expect( getByText( /retry/i ) ).toBeInTheDocument();
 			} );
 
 			it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
@@ -732,46 +714,37 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				// eslint-disable-next-line require-await
-				await act( async () => {
-					render(
-						<AudienceSegmentationSetupCTAWidget
-							Widget={ Widget }
-						/>,
-						{
-							registry,
-						}
-					);
-				} );
+				const { getByRole, getByText } = render(
+					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					{
+						registry,
+					}
+				);
 
 				expect(
-					screen.getByRole( 'button', { name: /Enable groups/i } )
+					getByRole( 'button', { name: /Enable groups/i } )
 				).toBeInTheDocument();
 
 				act( () => {
 					fireEvent.click(
-						screen.getByRole( 'button', { name: /Enable groups/i } )
+						getByRole( 'button', { name: /Enable groups/i } )
 					);
 				} );
 
 				// Verify the error is "Insufficient permissions" variant.
 				await waitFor( () => {
 					expect(
-						screen.getByText( /Insufficient permissions/i )
+						getByText( /Insufficient permissions/i )
 					).toBeInTheDocument();
 
 					// Verify the "Get help" link is displayed.
-					expect(
-						screen.getByText( /get help/i )
-					).toBeInTheDocument();
+					expect( getByText( /get help/i ) ).toBeInTheDocument();
 
 					// Verify the "Request access" button is displayed.
 					expect(
-						screen.getByText( /request access/i )
+						getByText( /request access/i )
 					).toBeInTheDocument();
 				} );
-
-				await act( waitForDefaultTimeouts );
 			} );
 
 			it( 'should show the generic error modal when an internal server error occurs', async () => {
@@ -786,41 +759,34 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				// eslint-disable-next-line require-await
-				await act( async () => {
-					render(
-						<AudienceSegmentationSetupCTAWidget
-							Widget={ Widget }
-						/>,
-						{
-							registry,
-						}
-					);
-				} );
+				const { getByRole, getByText } = render(
+					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					{
+						registry,
+					}
+				);
 
 				expect(
-					screen.getByRole( 'button', { name: /Enable groups/i } )
+					getByRole( 'button', { name: /Enable groups/i } )
 				).toBeInTheDocument();
 
 				act( () => {
 					fireEvent.click(
-						screen.getByRole( 'button', { name: /Enable groups/i } )
+						getByRole( 'button', { name: /Enable groups/i } )
 					);
 				} );
 
 				// Verify the error is "Insufficient permissions" variant.
 				await waitFor( () => {
 					expect(
-						screen.getByText( /Failed to set up visitor groups/i )
+						getByText( /Failed to set up visitor groups/i )
 					).toBeInTheDocument();
 
 					// Verify the "Retry" button is displayed.
 					expect(
-						screen.getByRole( 'button', { name: /retry/i } )
+						getByRole( 'button', { name: /retry/i } )
 					).toBeInTheDocument();
 				} );
-
-				await act( waitForDefaultTimeouts );
 			} );
 		} );
 	} );

@@ -234,7 +234,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
 		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
-		add_action( 'admin_init', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
+		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.
