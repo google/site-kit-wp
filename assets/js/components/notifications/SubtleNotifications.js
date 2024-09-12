@@ -25,7 +25,6 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useFeature } from '../../hooks/useFeature';
-import { SetupSuccessSubtleNotification } from '../../modules/ads/components/notifications/';
 import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
@@ -51,7 +50,6 @@ export default function SubtleNotifications() {
 				<AudienceSegmentationSetupSuccessSubtleNotification />
 			) }
 			<GA4AdSenseLinkedNotification />
-			<SetupSuccessSubtleNotification />
 			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
 			<Notifications
 				viewContext={ viewContext }
