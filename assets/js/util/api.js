@@ -27,7 +27,7 @@ export const excludedErrorCodes = [
 ];
 
 // Datapoints that we want to exclude from tracking API errors.
-export const excludedEndpoints = [ 'core/site/data/connection-check' ];
+export const excludedEndpoints = [];
 
 /**
  * Tracks API errors.
