@@ -170,12 +170,12 @@ export const registerWidgets = ( widgets ) => {
 				const audienceSegmentationSetupComplete =
 					select(
 						MODULES_ANALYTICS_4
-					).getAudienceSegmentationSetupComplete();
+					).getAudienceSegmentationSetupCompletedBy();
 
 				return (
 					availableAudiences?.length &&
 					configuredAudiences === null &&
-					audienceSegmentationSetupComplete === true
+					audienceSegmentationSetupComplete !== null
 				);
 			},
 		},

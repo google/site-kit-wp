@@ -33,11 +33,15 @@ import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import useViewOnly from '../../../../../hooks/useViewOnly';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
+	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -49,6 +53,17 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		select( CORE_USER ).isDismissingItem(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		)
+	);
+
+	const shouldShowAudienceSegmentationIntroductoryOverlay = useSelect(
+		( select ) =>
+			select( CORE_MODULES ).isModuleActive( 'analytics-4' ) &&
+			( ! isViewOnly ||
+				select( CORE_USER ).canViewSharedModule( 'analytics-4' ) ) &&
+			select(
+				MODULES_ANALYTICS_4
+			).getAudienceSegmentationSetupCompletedBy() !==
+				select( CORE_USER ).getID()
 	);
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
@@ -64,18 +79,20 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	const scrollToWidgetAndDismissNotification = ( event ) => {
 		event.preventDefault();
 
-		const widgetClass =
-			'.googlesitekit-widget-area--mainDashboardTrafficPrimary';
+		const widgetAreaClass =
+			'.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation';
 
 		global.scrollTo( {
-			top: getNavigationalScrollTop( widgetClass, breakpoint ),
+			top: getNavigationalScrollTop( widgetAreaClass, breakpoint ),
 			behavior: 'smooth',
 		} );
 
 		dismissNotification();
 	};
 
-	const shouldShowNotification = isDismissed === false;
+	const shouldShowNotification =
+		isDismissed === false &&
+		shouldShowAudienceSegmentationIntroductoryOverlay;
 
 	return (
 		<OverlayNotification
@@ -100,14 +117,14 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 				<Button
 					tertiary
 					disabled={ isDismissing }
-					onClick={ scrollToWidgetAndDismissNotification }
+					onClick={ dismissNotification }
 				>
 					{ __( 'Got it', 'google-site-kit' ) }
 				</Button>
 
 				<Button
 					disabled={ isDismissing }
-					onClick={ dismissNotification }
+					onClick={ scrollToWidgetAndDismissNotification }
 				>
 					{ __( 'Show me', 'google-site-kit' ) }
 				</Button>

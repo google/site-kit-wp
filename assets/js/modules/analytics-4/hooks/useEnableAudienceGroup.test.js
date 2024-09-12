@@ -34,6 +34,7 @@ import {
 	muteFetch,
 	provideModules,
 	provideUserAuthentication,
+	provideUserInfo,
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
@@ -72,6 +73,8 @@ describe( 'useEnableAudienceGroup', () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
+
+		provideUserInfo( registry );
 
 		provideModules( registry, [
 			{
