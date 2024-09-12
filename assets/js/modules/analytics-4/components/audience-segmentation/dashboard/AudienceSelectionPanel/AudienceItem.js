@@ -37,13 +37,13 @@ import {
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { numFmt } from '../../../../../../util';
 import NewBadge from '../../../../../../components/NewBadge';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
-
-export const AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX =
-	'audience-selection-panel-expirable-new-badge-';
 
 export default function AudienceItem( {
 	slug,

@@ -29,10 +29,10 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX } from '../components/audience-segmentation/dashboard/AudienceSelectionPanel/AudienceItem';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,

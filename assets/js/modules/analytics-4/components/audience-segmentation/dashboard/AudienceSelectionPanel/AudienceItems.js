@@ -36,13 +36,12 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
-import AudienceItem, {
-	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
-} from './AudienceItem';
+import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
 import AudienceItemPreviewBlock from './AudienceItemPreviewBlock';
 

@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX } from '../components/audience-segmentation/dashboard/AudienceSelectionPanel/AudienceItem';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
