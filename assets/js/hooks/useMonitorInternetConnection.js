@@ -24,8 +24,8 @@ import { useLifecycles, useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
