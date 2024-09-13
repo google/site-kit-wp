@@ -236,10 +236,10 @@ describe( 'AudienceTilesWidget', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should not render when availableAudiences and configuredAudiences are not loaded', async () => {
+	it( 'should render no audiences banner when availableAudiences and configuredAudiences are not loaded', async () => {
 		muteFetch( audienceSettingsRegExp );
 
-		const { container, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
 			{
 				registry,
@@ -248,67 +248,25 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
-		expect( container ).toBeEmptyDOMElement();
+		expect(
+			getByText( /You don’t have any visitor groups selected./i )
+		).toBeInTheDocument();
 	} );
 
-	it( 'should not render when availableAudiences is not loaded', async () => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/1' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
+	it( 'should render loading tiles when audiences are not syncing', async () => {
+		const maybeSyncAvailableAudiencesSpy = jest.spyOn(
+			registry.dispatch( MODULES_ANALYTICS_4 ),
+			'maybeSyncAvailableAudiences'
 		);
 
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when configuredAudiences is not loaded', async () => {
-		muteFetch( audienceSettingsRegExp );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
+		/**
+		 * Mock the maybeSyncAvailableAudiences function to return a promise that never resolves
+		 * so that availableAudiencesSynced is never set to true.
+		 */
+		maybeSyncAvailableAudiencesSpy.mockImplementation(
+			() => new Promise( () => {} )
 		);
 
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when there is no available audience', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when there is no configured audience', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -318,60 +276,30 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when configuredAudiences is null (not set)', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: null,
-			isAudienceSegmentationWidgetHidden: false,
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableAudiencesLastSyncedAt: Date.now() - 100,
 		} );
 
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
+		await act( async () => {
+			// Render the component and wait for the registry updates
+			const { container, waitForRegistry } = render(
+				<WidgetWithComponentProps />,
+				{
+					registry,
+				}
+			);
 
-		await waitForRegistry();
+			await waitForRegistry();
 
-		expect( container ).toBeEmptyDOMElement();
-	} );
+			// Wait for async updates using waitFor
+			await waitFor( () => {
+				expect( maybeSyncAvailableAudiencesSpy ).toHaveBeenCalledTimes(
+					1
+				);
 
-	it( 'should not render when there is no matching audience', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
+				expect( container ).toMatchSnapshot();
+			} );
 		} );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render when configured audience is matching available audiences', async () => {

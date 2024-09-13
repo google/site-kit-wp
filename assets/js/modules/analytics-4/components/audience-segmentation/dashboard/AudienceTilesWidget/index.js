@@ -30,8 +30,10 @@ import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
+import NoAudienceBanner from '../NoAudienceBannerWidget/NoAudienceBanner';
+import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 
-function AudienceTilesWidget( { Widget, WidgetNull } ) {
+function AudienceTilesWidget( { Widget } ) {
 	const availableAudiences = useSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
@@ -50,8 +52,12 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
-			maybeSyncAvailableAudiences();
-			setAvailableAudiencesSynced( true );
+			const syncAudiences = async () => {
+				await maybeSyncAvailableAudiences();
+				setAvailableAudiencesSynced( true );
+			};
+
+			syncAudiences();
 		}
 	}, [
 		availableAudiencesSynced,
@@ -64,7 +70,20 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 	);
 
 	if ( ! hasMatchingAudience ) {
-		return <WidgetNull />;
+		return availableAudiencesSynced ? (
+			<NoAudienceBanner />
+		) : (
+			<Widget className="googlesitekit-widget-audience-tiles" noPadding>
+				<div className="googlesitekit-widget-audience-tiles__body">
+					<Widget noPadding>
+						<AudienceTileLoading />
+					</Widget>
+					<Widget noPadding>
+						<AudienceTileLoading />
+					</Widget>
+				</div>
+			</Widget>
+		);
 	}
 
 	return (
