@@ -163,12 +163,10 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {
-						configuredAudiences: [ 'properties/12345/audiences/1' ],
-						isAudienceSegmentationWidgetHidden: false,
-					} );
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					configuredAudiences: [ 'properties/12345/audiences/1' ],
+					isAudienceSegmentationWidgetHidden: false,
+				} );
 				await args?.setupRegistry( registry );
 			};
 			return (

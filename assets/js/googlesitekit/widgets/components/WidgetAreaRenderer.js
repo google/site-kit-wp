@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * WordPress dependencies
@@ -30,7 +31,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
 import { getStickyHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
@@ -43,15 +44,14 @@ import {
 	BREAKPOINT_TABLET,
 	BREAKPOINT_SMALL,
 } from '../../../hooks/useBreakpoint';
-import ErrorHandler from '../../../components/ErrorHandler';
 import InViewProvider from '../../../components/InViewProvider';
 import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
+import WidgetErrorHandler from '../../../components/WidgetErrorHandler';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
 import useLatestIntersection from '../../../hooks/useLatestIntersection';
-import NewBadge from '../../../components/NewBadge';
-import { WEEK_IN_SECONDS } from '../../../util';
+import WidgetNewBadge from './WidgetNewBadge';
 
 /**
  * Gets root margin value for the intersection hook.
@@ -86,6 +86,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
+	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
 
 	const widgetAreaRef = useRef();
@@ -98,8 +99,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
 
-	const { Icon, title, style, subtitle, hasNewBadge, CTA, Footer } =
-		widgetArea;
+	const { Icon, title, style, subtitle, CTA, Footer } = widgetArea;
 
 	const widgets = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug, {
@@ -135,46 +135,8 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		} );
 	}, [ intersectionEntry, slug, activeContextID, contextID ] );
 
-	// NewBadge Expirable Item
-	const expirableBadgeSlug = `widget-area-expirable-new-badge-${ slug }`;
-
-	const hasBadgeBeenSeen = useSelect( ( select ) =>
-		select( CORE_USER ).hasExpirableItem( expirableBadgeSlug )
-	);
-	const isExpiredBadgeActive = useSelect( ( select ) =>
-		select( CORE_USER ).isExpirableItemActive( expirableBadgeSlug )
-	);
-
-	// Show the new badge if this widget area allows new badges, it's new badge
-	// has not been seen yet, or the badge has been seen and is still active.
-	const showNewBadge =
-		hasNewBadge && ( hasBadgeBeenSeen === false || isExpiredBadgeActive );
-
-	const { setExpirableItemTimers } = useDispatch( CORE_USER );
-
-	useEffect( () => {
-		// Wait until the selectors have resolved.
-		if (
-			hasBadgeBeenSeen !== undefined &&
-			isExpiredBadgeActive !== undefined
-		) {
-			// Only set the expirable item if the badge is new and the user is viewing it for the first time.
-			if ( hasNewBadge && ! hasBadgeBeenSeen ) {
-				setExpirableItemTimers( [
-					{
-						slug: expirableBadgeSlug,
-						expiresInSeconds: WEEK_IN_SECONDS * 4,
-					},
-				] );
-			}
-		}
-	}, [
-		hasNewBadge,
-		expirableBadgeSlug,
-		hasBadgeBeenSeen,
-		isExpiredBadgeActive,
-		setExpirableItemTimers,
-	] );
+	const ctaWithSmallWindow = CTA && windowWidth <= 782;
+	const ctaWithLargeWindow = CTA && windowWidth >= 783;
 
 	if ( viewableModules === undefined ) {
 		return null;
@@ -207,7 +169,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 			key={ `${ widget.slug }-wrapper` }
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
-			<ErrorHandler>
+			<WidgetErrorHandler slug={ widget.slug }>
 				<WidgetRenderer
 					OverrideComponent={
 						overrideComponents[ i ]
@@ -220,7 +182,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 					}
 					slug={ widget.slug }
 				/>
-			</ErrorHandler>
+			</WidgetErrorHandler>
 		</WidgetCellWrapper>
 	) );
 
@@ -245,7 +207,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 							{ title && (
 								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
 									{ title }
-									{ showNewBadge && <NewBadge /> }
+									<WidgetNewBadge slug={ slug } />
 								</h3>
 							) }
 
@@ -254,13 +216,13 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 									{ subtitle && (
 										<h4 className="googlesitekit-widget-area-header__subtitle">
 											{ subtitle }
-											{ showNewBadge && ! title && (
-												<NewBadge />
+											{ ! title && (
+												<WidgetNewBadge slug={ slug } />
 											) }
 										</h4>
 									) }
 
-									{ CTA && (
+									{ ctaWithLargeWindow && (
 										<div className="googlesitekit-widget-area-header__cta">
 											<CTA />
 										</div>
@@ -283,16 +245,30 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 							) }
 						</Row>
 					</div>
-					{ Footer && (
-						<Row>
+					<Row>
+						{ ctaWithSmallWindow && (
 							<Cell
 								className="googlesitekit-widget-area-footer"
-								size={ 12 }
+								lgSize={ 12 }
+								mdSize={ 4 }
+								smSize={ 2 }
+							>
+								<div className="googlesitekit-widget-area-footer__cta">
+									<CTA />
+								</div>
+							</Cell>
+						) }
+						{ Footer && (
+							<Cell
+								className="googlesitekit-widget-area-footer"
+								lgSize={ 12 }
+								mdSize={ ctaWithSmallWindow ? 4 : 8 }
+								smSize={ ctaWithSmallWindow ? 2 : 4 }
 							>
 								<Footer />
 							</Cell>
-						</Row>
-					) }
+						) }
+					</Row>
 				</Grid>
 			) }
 			{

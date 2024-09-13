@@ -29,28 +29,21 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
 } from './datastore/constants';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
-import { isFeatureEnabled } from '../../features';
 import { isURLUsingHTTPS } from './utils/validation';
 
 export { registerStore } from './datastore';
 
-const isRrmModuleEnabled =
-	( func ) =>
-	( ...args ) => {
-		if ( isFeatureEnabled( 'rrmModule' ) ) {
-			func( ...args );
-		}
-	};
-
-export const registerModule = isRrmModuleEnabled( ( modules ) => {
+export const registerModule = ( modules ) => {
 	modules.registerModule( 'reader-revenue-manager', {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
+		DashboardMainEffectComponent,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
@@ -77,4 +70,4 @@ export const registerModule = isRrmModuleEnabled( ( modules ) => {
 			};
 		},
 	} );
-} );
+};

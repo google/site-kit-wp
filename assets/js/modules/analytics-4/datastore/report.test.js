@@ -25,7 +25,6 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 	freezeFetch,
 	subscribeUntil,
 	muteFetch,
@@ -44,10 +43,6 @@ describe( 'modules/analytics-4 report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {
@@ -643,6 +638,28 @@ describe( 'modules/analytics-4 report', () => {
 			const audiences = fixtures.audiences.map( ( { name } ) => name );
 
 			it( 'should trigger a separate report for each provided audience', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( fixtures.availableAudiences );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: fixtures.availableAudiences.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
 				const options = {
 					startDate: '2022-11-02',
 					endDate: '2022-11-04',

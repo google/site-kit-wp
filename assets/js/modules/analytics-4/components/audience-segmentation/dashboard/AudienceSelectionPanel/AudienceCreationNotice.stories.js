@@ -19,8 +19,12 @@
 /**
  * Internal dependencies
  */
+import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceCreationNotice from './AudienceCreationNotice';
@@ -42,15 +46,45 @@ Default.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice/Default',
 };
 
+export const WithOneAudience = Template.bind( {} );
+WithOneAudience.storyName = 'WithOneAudience';
+WithOneAudience.args = {
+	setupRegistry: ( registry ) => {
+		const availableAudiencesWithoutNewVisitors = availableAudiences.filter(
+			( audience ) => audience.name !== 'properties/12345/audiences/3' // New Visitors.
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiencesWithoutNewVisitors );
+		registry
+			.dispatch( CORE_USER )
+			.setConfiguredAudiences(
+				availableAudiencesWithoutNewVisitors.map( ( { name } ) => name )
+			);
+	},
+};
+
+export const WithMissingScopeNotice = Template.bind( {} );
+WithMissingScopeNotice.storyName = 'WithMissingScopeNotice';
+WithMissingScopeNotice.scenario = {};
+WithMissingScopeNotice.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
+	},
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice',
 	component: AudienceCreationNotice,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiences );
+				provideUserAuthentication( registry, {
+					grantedScopes: [ EDIT_SCOPE ],
+				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -67,6 +101,16 @@ export default {
 						customDimension: {},
 						property: {},
 					} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+					availableAudiences: [],
+				} );
+
+				args?.setupRegistry?.( registry );
 			};
 
 			return (

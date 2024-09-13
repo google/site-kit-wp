@@ -51,6 +51,7 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
 import ga4ReportingTour from '../../../../../../feature-tours/ga4-reporting';
+import DataBlockGroup from '../../../../../../components/DataBlockGroup';
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
 	return {
@@ -326,19 +327,11 @@ export default function Overview( props ) {
 		4: quarterCellProps,
 	};
 
-	// Check if any of the data blocks have a badge.
-	//
-	// If no data blocks have a badge, we shouldn't even render an
-	// empty badge container, and save some vertical space in the `DataBlock`.
-	const hasMetricWithBadge = dataBlocks.some( ( { badge } ) => {
-		return !! badge;
-	} );
-
 	return (
 		<Grid>
 			<Row>
 				<Cell { ...dataBlockWrapperCellProps[ dataBlocks.length ] }>
-					<Row>
+					<DataBlockGroup className="mdc-layout-grid__inner">
 						{ dataBlocks.map( ( dataBlock, index ) => (
 							<Cell
 								key={ dataBlock.id }
@@ -366,13 +359,10 @@ export default function Overview( props ) {
 									}
 									handleStatSelection={ handleStatsSelection }
 									gatheringData={ dataBlock.isGatheringData }
-									badge={
-										dataBlock.badge || hasMetricWithBadge
-									}
 								/>
 							</Cell>
 						) ) }
-					</Row>
+					</DataBlockGroup>
 				</Cell>
 
 				<OptionalCells

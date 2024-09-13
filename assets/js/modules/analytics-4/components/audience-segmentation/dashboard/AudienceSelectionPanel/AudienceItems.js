@@ -81,6 +81,8 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			getConfigurableAudiences,
 			getReport,
 			getAudiencesUserCountReportOptions,
+			getConfigurableSiteKitAndOtherAudiences,
+			hasAudiencePartialData,
 		} = select( MODULES_ANALYTICS_4 );
 
 		const audiences = getConfigurableAudiences();
@@ -94,32 +96,11 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		}
 
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return -- We might return before `otherAudiences` is used.
-		const [ siteKitAudiences, otherAudiences ] = audiences.reduce(
-			( [ siteKit, other ], audience ) => {
-				if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
-					siteKit.push( audience );
-				} else {
-					other.push( audience );
-				}
-				return [ siteKit, other ];
-			},
-			[ [], [] ] // Initial values.
-		);
-
-		const siteKitAudiencesPartialData = siteKitAudiences.map(
-			( audience ) =>
-				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					audience.name
-				)
-		);
-
-		// If any of the Site Kit audiences' partial data state is still loading, return undefined.
-		if ( siteKitAudiencesPartialData.includes( undefined ) ) {
-			return undefined;
-		}
+		const [ siteKitAudiences, otherAudiences ] =
+			getConfigurableSiteKitAndOtherAudiences();
 
 		const isSiteKitAudiencePartialData =
-			siteKitAudiencesPartialData.includes( true );
+			hasAudiencePartialData( siteKitAudiences );
 
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -140,11 +121,18 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			} );
 
 		// Get the user count for the available audiences using the `audienceResourceName` dimension.
-		const audienceResourceNameReport = getReport(
-			getAudiencesUserCountReportOptions(
-				isSiteKitAudiencePartialData ? otherAudiences : audiences
-			)
-		);
+		const audienceResourceNameReport =
+			isSiteKitAudiencePartialData === false ||
+			( isSiteKitAudiencePartialData === true &&
+				otherAudiences?.length > 0 )
+				? getReport(
+						getAudiencesUserCountReportOptions(
+							isSiteKitAudiencePartialData
+								? otherAudiences
+								: audiences
+						)
+				  )
+				: {};
 
 		const { rows: newVsReturningRows = [] } = newVsReturningReport || {};
 		const { rows: audienceResourceNameRows = [] } =

@@ -19,6 +19,14 @@ abstract class SettingsTestCase extends TestCase {
 	 */
 	abstract protected function get_option_name();
 
+	protected function get_option() {
+		return get_option( $this->get_option_name() );
+	}
+
+	protected function update_option( $value ) {
+		return update_option( $this->get_option_name(), $value );
+	}
+
 	public function set_up() {
 		parent::set_up();
 

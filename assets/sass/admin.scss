@@ -200,6 +200,7 @@
 @import "components/ads";
 @import "components/adsense";
 @import "components/analytics-4";
+@import "components/reader-revenue-manager";
 
 // Key Metric Widgets Styles
 @import "components/key-metrics/googlesitekit-km-widget-tile";
@@ -220,6 +221,7 @@
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
 @import "widgets/googlesitekit-widget-overallPageMetrics";
+@import "widgets/googlesitekit-widget-error-handler";
 
 // Utilities
 @import "utilities/alignment";

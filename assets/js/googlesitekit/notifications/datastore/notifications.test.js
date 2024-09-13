@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
@@ -46,10 +45,6 @@ describe( 'core/notifications Notifications', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -171,18 +166,23 @@ describe( 'core/notifications Notifications', () => {
 			} );
 			it( 'should dismiss a notification without a given expiry time', async () => {
 				fetchMock.postOnce( fetchDismissItem, {
-					body: [ 'foo' ],
+					body: [ 'test-notification' ],
 				} );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.dismissNotification( 'foo' );
+					.dismissNotification( 'test-notification' );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
 					body: {
 						data: {
-							slug: 'foo',
+							slug: 'test-notification',
 							expiration: 0,
 						},
 					},
@@ -190,25 +190,33 @@ describe( 'core/notifications Notifications', () => {
 
 				const isNotificationDismissed = registry
 					.select( CORE_NOTIFICATIONS )
-					.isNotificationDismissed( 'foo' );
+					.isNotificationDismissed( 'test-notification' );
 				expect( isNotificationDismissed ).toBe( true );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 			it( 'should dismiss a notification with a given expiry time', async () => {
 				fetchMock.postOnce( fetchDismissItem, {
-					body: [ 'foo' ],
+					body: [ 'test-notification' ],
 				} );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.dismissNotification( 'foo', { expiresInSeconds: 3 } );
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'test-notification', {
+						expiresInSeconds: 3,
+					} );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
 					body: {
 						data: {
-							slug: 'foo',
+							slug: 'test-notification',
 							expiration: 3,
 						},
 					},
@@ -216,7 +224,7 @@ describe( 'core/notifications Notifications', () => {
 
 				const isNotificationDismissed = registry
 					.select( CORE_NOTIFICATIONS )
-					.isNotificationDismissed( 'foo' );
+					.isNotificationDismissed( 'test-notification' );
 				expect( isNotificationDismissed ).toBe( true );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

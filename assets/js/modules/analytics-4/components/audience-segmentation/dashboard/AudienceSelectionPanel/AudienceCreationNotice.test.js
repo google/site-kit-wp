@@ -25,11 +25,18 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserInfo,
+	provideUserAuthentication,
 } from '../../../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
-import { AUDIENCE_CREATION_NOTICE_SLUG } from './constants';
+import {
+	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
+	AUDIENCE_CREATION_NOTICE_SLUG,
+} from './constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 
 describe( 'AudienceCreationNotice', () => {
@@ -38,6 +45,9 @@ describe( 'AudienceCreationNotice', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
 		provideModules( registry, [
 			{
 				active: true,
@@ -56,23 +66,6 @@ describe( 'AudienceCreationNotice', () => {
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should render null if there are 0 audiences available', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			availableAudiences: [],
-		} );
-
-		const { container, waitForRegistry } = render(
-			<AudienceCreationNotice />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -114,7 +107,7 @@ describe( 'AudienceCreationNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render the notice if the user has not dismissed the notice', async () => {
+	it( 'should render the notice if the user has not dismissed the notice and there are 2 available audiences', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -132,7 +125,7 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences,
+			availableAudiences: [],
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -143,6 +136,140 @@ describe( 'AudienceCreationNotice', () => {
 		);
 
 		await waitForRegistry();
+
+		// Verify the edit scope notice is not displayed.
+		expect( container ).not.toHaveTextContent(
+			'Creating these groups require more data tracking. You will be directed to update your Analytics property.'
+		);
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the notice if the user has not dismissed the notice and there is 1 available audience', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID: '12345',
+			propertyID: '34567',
+			measurementID: '56789',
+			webDataStreamID: '78901',
+			availableAudiences: availableAudiences.filter(
+				( { displayName } ) => displayName !== 'Returning visitors'
+			),
+		} );
+
+		const { container, waitForRegistry } = render(
+			<AudienceCreationNotice />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// Verify the edit scope notice is not displayed.
+		expect( container ).not.toHaveTextContent(
+			'Creating these groups require more data tracking. You will be directed to update your Analytics property.'
+		);
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the missing scope notice if the user does not have the edit scope', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID: '12345',
+			propertyID: '34567',
+			measurementID: '56789',
+			webDataStreamID: '78901',
+			availableAudiences: [],
+		} );
+
+		const { container, waitForRegistry } = render(
+			<AudienceCreationNotice />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// Verify the edit scope notice is displayed.
+		expect( container ).toHaveTextContent(
+			'Creating these groups require more data tracking. You will be directed to update your Analytics property.'
+		);
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should not render the missing scope notice if the user does not have the edit scope but the notice has been dismissed', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
+			] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID: '12345',
+			propertyID: '34567',
+			measurementID: '56789',
+			webDataStreamID: '78901',
+			availableAudiences: [],
+		} );
+
+		const { container, waitForRegistry } = render(
+			<AudienceCreationNotice />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// Verify the edit scope notice is not displayed.
+		expect( container ).not.toHaveTextContent(
+			'Creating these groups require more data tracking. You will be directed to update your Analytics property.'
+		);
 
 		expect( container ).toMatchSnapshot();
 	} );

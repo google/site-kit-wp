@@ -57,7 +57,6 @@ use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
-use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
@@ -90,6 +89,10 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\User\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
 use stdClass;
 use WP_Error;
 
@@ -218,11 +221,20 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		);
 		$synchronize_ads_linked->register();
 
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$conversion_reporting_provider = new Conversion_Reporting_Provider(
+				$this->settings,
+				$this->user_options,
+				$this
+			);
+			$conversion_reporting_provider->register();
+		}
+
 		( new Advanced_Tracking( $this->context ) )->register();
 
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
 		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
-		add_action( 'admin_init', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
+		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.
@@ -285,12 +297,17 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							'adSenseLinkedLastSyncedAt' => 0,
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
+							'detectedEvents'            => array(),
 							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
 
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+
+						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+							do_action( Conversion_Reporting_Cron::CRON_ACTION );
+						}
 					}
 				}
 			}
@@ -659,16 +676,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			);
-			$datapoints['GET:audience-settings']                     = array(
-				'service' => '',
-			);
-			$datapoints['POST:audience-settings']                    = array(
-				'service' => '',
-			);
 			$datapoints['POST:save-resource-data-availability-date'] = array(
 				'service' => '',
 			);
-			$datapoints['POST:sync-audiences']                       = array( 'service' => 'analyticsaudiences' );
+			$datapoints['POST:sync-audiences']                       = array(
+				'service' => 'analyticsaudiences',
+			);
 		}
 
 		return $datapoints;
@@ -1096,33 +1109,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$property_id,
 						$post_body
 					);
-			case 'GET:audience-settings':
-				return function () {
-					return $this->audience_settings->get();
-				};
-			case 'POST:audience-settings':
-				$settings = $data['settings'];
-				if ( ! isset( $settings['configuredAudiences'] ) ) {
-					throw new Missing_Required_Param_Exception( 'configuredAudiences' );
-				}
-
-				if ( ! is_array( $settings['configuredAudiences'] ) ) {
-					throw new Invalid_Param_Exception( 'configuredAudiences' );
-				}
-
-				if ( ! isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
-					throw new Missing_Required_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
-				}
-
-				if ( ! is_bool( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
-					throw new Invalid_Param_Exception( 'isAudienceSegmentationWidgetHidden' );
-				}
-
-				$this->audience_settings->merge( $data['settings'] );
-
-				return function () {
-					return $this->audience_settings->get();
-				};
 			case 'POST:create-account-ticket':
 				if ( empty( $data['displayName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'displayName' );
@@ -2089,12 +2075,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$obj = $property->toSimpleObject();
 
 		$matches = array();
-		if ( preg_match( '#properties/([^/]+)#', $property[ $id_key ], $matches ) ) {
+		if ( preg_match( '#properties/([^/]+)#', $property[ $id_key ] ?? '', $matches ) ) {
 			$obj->_id = $matches[1];
 		}
 
 		$matches = array();
-		if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
+		if ( preg_match( '#accounts/([^/]+)#', $property['parent'] ?? '', $matches ) ) {
 			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 

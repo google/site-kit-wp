@@ -25,7 +25,6 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { unsubscribeFromAll } from '../../../../tests/js/utils';
 import { createNotificationsStore } from '../data/create-notifications-store';
 import { createSettingsStore } from '../data/create-settings-store';
 import { createInfoStore } from './create-info-store';
@@ -59,10 +58,6 @@ describe( 'createModuleStore store', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'name', () => {

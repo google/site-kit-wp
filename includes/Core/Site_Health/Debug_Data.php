@@ -192,12 +192,8 @@ class Debug_Data {
 			'enabled_features'     => $this->get_feature_fields(),
 		);
 
-		if ( Feature_Flags::enabled( 'conversionInfra' ) ) {
-			$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
-		}
-
+		$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
 		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
-
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 
 		$fields = array_filter(
