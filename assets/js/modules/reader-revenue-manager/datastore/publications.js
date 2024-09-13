@@ -68,40 +68,20 @@ const baseActions = {
 	 */
 	*syncPublicationOnboardingState() {
 		const registry = yield commonActions.getRegistry();
-		const connected = yield commonActions.await(
-			registry
-				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
-		);
 
-		// If the module is not connected, do not attempt to sync the onboarding state.
-		if ( ! connected ) {
-			return;
-		}
-
-		// Ensure settings are loaded before checking for changed state below.
 		const settings = yield commonActions.await(
 			registry
 				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
 				.getSettings()
 		);
 
-		const hasPublicationIDChanged = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.hasSettingChanged( 'publicationID' );
-
-		// Do not attempt to sync the onboarding state if the publication ID
-		// in state is not the "saved" publication ID.
-		if ( hasPublicationIDChanged ) {
-			return;
-		}
-
 		const {
 			publicationID,
 			publicationOnboardingState: currentOnboardingState,
 		} = settings;
 
-		// If there is no publication ID, do not attempt to sync the onboarding state.
+		// If there is no publication ID in state, do not attempt to sync
+		// the onboarding state.
 		if ( publicationID === undefined ) {
 			return;
 		}
@@ -124,18 +104,32 @@ const baseActions = {
 
 		const { onboardingState: newOnboardingState } = publication;
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
-			publicationOnboardingState: newOnboardingState,
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationOnboardingState( newOnboardingState );
+
+		const hasPublicationIDChanged = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.hasSettingChanged( 'publicationID' );
+
+		// Only save the synced onboarding state if there is a saved publication ID.
+		if ( hasPublicationIDChanged ) {
+			return;
+		}
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			// The "last synced" value should reflect the real time this action
 			// was performed, so we don't use the reference date here.
 			// eslint-disable-next-line sitekit/no-direct-date
-			publicationOnboardingStateLastSyncedAtMs: Date.now(),
-		} );
+			.setPublicationOnboardingStateLastSyncedAtMs( Date.now() );
 
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
 
-		// If the onboarding state changes to complete, set the key in CORE_UI to trigger the notification.
+		// If the onboarding state changes to complete from a non-empty state, set
+		// the key in CORE_UI to trigger the notification.
 		if (
+			!! currentOnboardingState &&
 			newOnboardingState !== currentOnboardingState &&
 			newOnboardingState ===
 				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
@@ -174,6 +168,16 @@ const baseActions = {
 				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
 				.getSettings()
 		);
+
+		const hasPublicationIDChanged = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.hasSettingChanged( 'publicationID' );
+
+		// Do not attempt to sync the onboarding state if the publication ID
+		// in state is not the "saved" publication ID.
+		if ( hasPublicationIDChanged ) {
+			return;
+		}
 
 		const onboardingStateLastSyncedAtMs = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
