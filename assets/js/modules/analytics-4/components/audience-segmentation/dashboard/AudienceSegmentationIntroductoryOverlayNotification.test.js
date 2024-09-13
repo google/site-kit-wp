@@ -68,9 +68,11 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	it( 'should render an introductory overlay notification', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
+		const userID = registry.select( CORE_USER ).getID();
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( 2 );
+			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
 		const { queryByText, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
@@ -126,9 +128,11 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
+		const userID = registry.select( CORE_USER ).getID();
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( 2 );
+			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
 		const { getByRole, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
