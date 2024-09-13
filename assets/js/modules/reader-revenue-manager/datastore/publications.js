@@ -75,16 +75,17 @@ const baseActions = {
 				.getSettings()
 		);
 
-		const {
-			publicationID,
-			publicationOnboardingState: currentOnboardingState,
-		} = settings;
+		const publicationID = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationID();
 
 		// If there is no publication ID in state, do not attempt to sync
 		// the onboarding state.
 		if ( publicationID === undefined ) {
 			return;
 		}
+
+		yield baseActions.resetPublications();
 
 		const publications = yield commonActions.await(
 			registry
@@ -124,7 +125,11 @@ const baseActions = {
 			// eslint-disable-next-line sitekit/no-direct-date
 			.setPublicationOnboardingStateLastSyncedAtMs( Date.now() );
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
+		yield commonActions.await(
+			registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings()
+		);
+
+		const { publicationOnboardingState: currentOnboardingState } = settings;
 
 		// If the onboarding state changes to complete from a non-empty state, set
 		// the key in CORE_UI to trigger the notification.
