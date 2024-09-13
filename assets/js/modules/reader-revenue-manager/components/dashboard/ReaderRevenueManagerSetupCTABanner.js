@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import { compose } from '@wordpress/compose';
 import {
 	createInterpolateElement,
+	Fragment,
 	useCallback,
 	useEffect,
 } from '@wordpress/element';
@@ -56,7 +57,12 @@ import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.s
 import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
 import Link from '../../../../components/Link';
-import { trackEvent } from '../../../../util';
+import { trackEvent, WEEK_IN_SECONDS } from '../../../../util';
+import {
+	AdminMenuTooltip,
+	useShowTooltip,
+	useTooltipState,
+} from '../../../../components/AdminMenuTooltip';
 import useViewContext from '../../../../hooks/useViewContext';
 
 function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
@@ -78,22 +84,46 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		} );
 	}, [ onSetupActivate, viewContext ] );
 
+	const showTooltip = useShowTooltip(
+		READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+	);
+	const { isTooltipVisible } = useTooltipState(
+		READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+	);
+
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
+		select( CORE_USER ).isPromptDismissed(
 			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
 		)
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const dismissCount = useSelect( ( select ) =>
+		select( CORE_USER ).getPromptDismissCount(
+			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+		)
+	);
+
+	const dismissedPromptsLoaded = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
+	);
+
+	const { dismissPrompt } = useDispatch( CORE_USER );
 
 	const onDismiss = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_rrm-setup-notification`,
 			'dismiss_notification'
 		).finally( () => {
-			dismissItem( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY );
+			const expirationInSeconds =
+				dismissCount < 1 ? 2 * WEEK_IN_SECONDS : 0;
+
+			showTooltip();
+
+			dismissPrompt( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY, {
+				expiresInSeconds: expirationInSeconds,
+			} );
 		} );
-	}, [ dismissItem, viewContext ] );
+	}, [ dismissCount, dismissPrompt, showTooltip, viewContext ] );
 
 	const readerRevenueManagerDocumentationURL =
 		'https://readerrevenue.withgoogle.com';
@@ -104,7 +134,10 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const showBanner = isDismissed === false && canActivateRRMModule;
+	const showBanner =
+		isDismissed === false &&
+		canActivateRRMModule &&
+		dismissedPromptsLoaded === true;
 
 	useEffect( () => {
 		if ( showBanner ) {
@@ -114,6 +147,25 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 			);
 		}
 	}, [ showBanner, viewContext ] );
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<WidgetNull />
+				<AdminMenuTooltip
+					title=""
+					content={ __(
+						'You can always enable Reader Revenue Manager from Settings later',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					tooltipStateKey={
+						READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+					}
+				/>
+			</Fragment>
+		);
+	}
 
 	if ( ! showBanner ) {
 		return <WidgetNull />;
@@ -179,10 +231,15 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 												tertiary
 												onClick={ onDismiss }
 											>
-												{ __(
-													'Maybe later',
-													'google-site-kit'
-												) }
+												{ dismissCount < 1
+													? __(
+															'Maybe later',
+															'google-site-kit'
+													  )
+													: __(
+															'Don’t show again',
+															'google-site-kit'
+													  ) }
 											</Button>
 										</div>
 									</Cell>

@@ -38,7 +38,6 @@ import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
-import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 
@@ -53,8 +52,6 @@ export default function SettingsForm( { hasModuleAccess } ) {
 		)
 	);
 
-	const iceEnabled = useFeature( 'conversionInfra' );
-
 	return (
 		<Fragment>
 			<SettingsControls hasModuleAccess={ hasModuleAccess } />
@@ -65,28 +62,26 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
 			) }
 
-			{ iceEnabled && (
-				<ConversionTrackingToggle>
-					{ createInterpolateElement(
-						__(
-							'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
-							'google-site-kit'
+			<ConversionTrackingToggle>
+				{ createInterpolateElement(
+					__(
+						'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								href={ conversionTrackingDocumentationURL }
+								external
+								aria-label={ __(
+									'Learn more about conversion tracking',
+									'google-site-kit'
+								) }
+							/>
 						),
-						{
-							a: (
-								<Link
-									href={ conversionTrackingDocumentationURL }
-									external
-									aria-label={ __(
-										'Learn more about conversion tracking',
-										'google-site-kit'
-									) }
-								/>
-							),
-						}
-					) }
-				</ConversionTrackingToggle>
-			) }
+					}
+				) }
+			</ConversionTrackingToggle>
 
 			{ isValidAccountID( accountID ) && (
 				<AdsConversionIDSettingsNotice />

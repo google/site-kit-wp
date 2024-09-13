@@ -332,14 +332,34 @@ const baseSelectors = {
 	 */
 	getReportForAllAudiences: createRegistrySelector(
 		( select ) => ( state, options, audienceResourceNames ) => {
-			return audienceResourceNames?.map( ( audienceResourceName ) =>
-				select( MODULES_ANALYTICS_4 ).getReport( {
+			return audienceResourceNames?.map( ( audienceResourceName ) => {
+				const partialDataSiteKitAudience =
+					select( MODULES_ANALYTICS_4 ).getPartialDataSiteKitAudience(
+						audienceResourceName
+					);
+
+				if ( partialDataSiteKitAudience === undefined ) {
+					return undefined;
+				}
+
+				const dimensionFilters = {};
+
+				if ( partialDataSiteKitAudience ) {
+					dimensionFilters.newVsReturning =
+						partialDataSiteKitAudience.audienceSlug ===
+						'new-visitors'
+							? 'new'
+							: 'returning';
+				} else {
+					dimensionFilters.audienceResourceName =
+						audienceResourceName;
+				}
+
+				return select( MODULES_ANALYTICS_4 ).getReport( {
 					...options,
-					dimensionFilters: {
-						audienceResourceName,
-					},
-				} )
-			);
+					dimensionFilters,
+				} );
+			} );
 		}
 	),
 };
