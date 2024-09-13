@@ -19,12 +19,13 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -32,7 +33,7 @@ import {
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-import { useEffect } from 'react';
+import { useRefocus } from '../../../../hooks/useRefocus';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
@@ -61,6 +62,10 @@ export default function PublicationOnboardingStateNotice() {
 		} )
 	);
 
+	const { syncPublicationOnboardingState } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
 	const showNotice =
 		onboardingState &&
 		actionableOnboardingStates.includes( onboardingState );
@@ -76,6 +81,10 @@ export default function PublicationOnboardingStateNotice() {
 			onboardingState
 		);
 	}, [ onboardingState, showNotice, viewContext ] );
+
+	// Sync the publication onboarding state.
+	// TODO: This should be done only on CTA click.
+	useRefocus( syncPublicationOnboardingState, 15000 );
 
 	if ( ! showNotice ) {
 		return null;
