@@ -32,6 +32,7 @@ _Do not alter or remove anything below. The following sections will be managed b
 - [ ] Ensure CI checks pass.
 - [ ] Check Storybook where applicable.
 - [ ] Ensure there is a QA Brief.
+- [ ] Ensure there are no unexpected significant changes to file sizes.
 
 ## Merge Reviewer Checklist
 
