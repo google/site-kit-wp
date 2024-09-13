@@ -43,6 +43,9 @@ import { useFeature } from '../../hooks/useFeature';
 export default function SettingsAdmin() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 
+	const configuredAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getConfiguredAudiences()
+	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -146,11 +149,13 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ audienceSegmentationEnabled && isAnalyticsConnected && (
-				<Cell size={ 12 }>
-					<SettingsCardVisitorGroups />
-				</Cell>
-			) }
+			{ audienceSegmentationEnabled &&
+				isAnalyticsConnected &&
+				!! configuredAudiences(
+					<Cell size={ 12 }>
+						<SettingsCardVisitorGroups />
+					</Cell>
+				) }
 
 			<Cell size={ 12 }>
 				<Layout
