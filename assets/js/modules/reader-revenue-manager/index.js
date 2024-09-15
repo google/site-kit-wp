@@ -34,6 +34,12 @@ import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
 import { isURLUsingHTTPS } from './utils/validation';
+import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
 
 export { registerStore } from './datastore';
 
@@ -68,6 +74,21 @@ export const registerModule = ( modules ) => {
 				),
 				data: null,
 			};
+		},
+	} );
+};
+
+export const registerNotifications = ( notifications ) => {
+	notifications.registerNotification( 'setup-success-notification-rrm', {
+		Component: RRMSetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		checkRequirements: () => {
+			return false;
 		},
 	} );
 };
