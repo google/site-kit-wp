@@ -36,6 +36,7 @@ export default function BadgeWithTooltip( {
 		<span
 			className={ classNames(
 				'googlesitekit-badge-with-tooltip',
+				'googlesitekit-badge',
 				className
 			) }
 		>
