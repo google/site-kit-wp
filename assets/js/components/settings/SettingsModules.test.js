@@ -102,6 +102,11 @@ describe( 'SettingsModules', () => {
 
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
 		history.push( '/admin' );
 
 		const { waitForRegistry } = render( <SettingsModules />, {

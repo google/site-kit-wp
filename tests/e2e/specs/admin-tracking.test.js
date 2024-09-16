@@ -63,6 +63,19 @@ describe( 'admin tracking', () => {
 					)
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/core/user/data/audience-settings'
+					)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [],
+					} ),
+				} );
 			} else {
 				request.continue();
 			}
