@@ -42,6 +42,12 @@ const reportOptions = {
 			filterType: 'inListFilter',
 			value: [ 'submit_lead_form' ],
 		},
+		city: {
+			filterType: 'stringFilter',
+			matchType: 'EXACT',
+			value: '(not set)',
+			notExpression: true,
+		},
 	},
 	metrics: [ { name: 'eventCount' } ],
 	orderby: [
