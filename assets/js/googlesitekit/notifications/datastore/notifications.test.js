@@ -251,6 +251,8 @@ describe( 'core/notifications Notifications', () => {
 					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
 
 				expect( queuedNotifications ).toEqual( [] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 			it( 'should not remove a notification from queue if skipHidingFromQueue option is passed', async () => {
 				fetchMock.postOnce( fetchDismissItem, {
@@ -277,6 +279,8 @@ describe( 'core/notifications Notifications', () => {
 				expect( queuedNotifications ).toEqual( [
 					{ id: 'test-notification' },
 				] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		} );
 	} );
