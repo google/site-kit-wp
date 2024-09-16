@@ -155,14 +155,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	protected $custom_dimensions_data_available;
 
 	/**
-	 * Audience_Settings instance.
-	 *
-	 * @since 1.124.0
-	 * @var Audience_Settings
-	 */
-	protected $audience_settings;
-
-	/**
 	 * Reset_Audiences instance.
 	 *
 	 * @since n.e.x.t
@@ -198,7 +190,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
-		$this->audience_settings                = new Audience_Settings( $this->user_options );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options, $this );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
 	}

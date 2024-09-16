@@ -108,7 +108,7 @@ class Reset_Audiences {
 	}
 
 	/**
-	 * Reset Audience specific settings for all SK users when propertyID changes.
+	 * Reset audience specific settings for all SK users.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -155,8 +155,11 @@ class Reset_Audiences {
 					}
 				}
 
-				// Reset the users Audience Settings, such as configured audiences.
-				$this->audience_settings->reset();
+				// Reset the users audience settings, such as configured audiences.
+				$audience_settings_keys = array_keys( $this->audience_settings->get() );
+				foreach ( $audience_settings_keys as $key ) {
+					$this->audience_settings->delete( $key );
+				}
 			}
 
 			// Restore original user.
