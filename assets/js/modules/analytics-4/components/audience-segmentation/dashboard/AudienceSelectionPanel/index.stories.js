@@ -32,6 +32,7 @@ import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants'
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
@@ -305,6 +306,17 @@ TemporarilyHiddenBadge.args = {
 };
 TemporarilyHiddenBadge.scenario = {};
 
+export const WithNewBadges = Template.bind( {} );
+WithNewBadges.storyName = 'With "New" badges';
+WithNewBadges.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+	},
+};
+WithNewBadges.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithNewBadges',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',
 	component: AudienceSelectionPanel,
@@ -388,6 +400,17 @@ export default {
 						customDimension: {},
 						property: {},
 					} );
+
+				// Prevent displaying "New" badges by default.
+				registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+					availableAudiences.reduce(
+						( acc, { name } ) => ( {
+							...acc,
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]: 0,
+						} ),
+						{}
+					)
+				);
 
 				registry
 					.dispatch( CORE_UI )
