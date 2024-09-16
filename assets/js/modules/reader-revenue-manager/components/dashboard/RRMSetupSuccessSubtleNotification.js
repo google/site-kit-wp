@@ -25,17 +25,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Cell, Grid, Row } from '../../../../material-components';
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import whenActive from '../../../../util/when-active';
 import { trackEvent } from '../../../../util';
+import { useRefocus } from '../../../../hooks/useRefocus';
 import useViewContext from '../../../../hooks/useViewContext';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	READER_REVENUE_MANAGER_NOTICES_FORM,
+	SYNC_PUBLICATION,
 } from '../../datastore/constants';
 
 const {
@@ -44,10 +48,14 @@ const {
 	ONBOARDING_ACTION_REQUIRED,
 } = PUBLICATION_ONBOARDING_STATES;
 
-const targetOnboardingStates = [
-	ONBOARDING_COMPLETE,
+const actionableOnboardingStates = [
 	PENDING_VERIFICATION,
 	ONBOARDING_ACTION_REQUIRED,
+];
+
+const targetOnboardingStates = [
+	...actionableOnboardingStates,
+	ONBOARDING_COMPLETE,
 ];
 
 function RRMSetupSuccessSubtleNotification() {
@@ -70,6 +78,20 @@ function RRMSetupSuccessSubtleNotification() {
 				publication: publicationID,
 			},
 		} )
+	);
+
+	const shouldSyncPublication = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				READER_REVENUE_MANAGER_NOTICES_FORM,
+				SYNC_PUBLICATION
+			) &&
+			actionableOnboardingStates.includes( publicationOnboardingState )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { syncPublicationOnboardingState } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
 	);
 
 	const showNotification =
@@ -95,6 +117,15 @@ function RRMSetupSuccessSubtleNotification() {
 	};
 
 	const onCTAClick = () => {
+		// Set publication data to be reset when user re-focuses window.
+		if (
+			actionableOnboardingStates.includes( publicationOnboardingState )
+		) {
+			setValues( READER_REVENUE_MANAGER_NOTICES_FORM, {
+				[ SYNC_PUBLICATION ]: true,
+			} );
+		}
+
 		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
 				`${ viewContext }_rrm-setup-success-notification`,
@@ -102,6 +133,14 @@ function RRMSetupSuccessSubtleNotification() {
 				publicationOnboardingState
 			);
 		}
+	};
+
+	const syncPublication = () => {
+		if ( ! shouldSyncPublication ) {
+			return;
+		}
+
+		syncPublicationOnboardingState();
 	};
 
 	useEffect( () => {
@@ -116,6 +155,9 @@ function RRMSetupSuccessSubtleNotification() {
 			);
 		}
 	}, [ publicationOnboardingState, showNotification, viewContext ] );
+
+	// Sync publication data when user re-focuses window.
+	useRefocus( syncPublication, 15000 );
 
 	if ( ! showNotification ) {
 		return null;
