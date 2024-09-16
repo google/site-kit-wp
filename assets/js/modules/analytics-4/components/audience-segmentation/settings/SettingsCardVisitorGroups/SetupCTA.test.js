@@ -27,9 +27,11 @@ import {
 	freezeFetch,
 	muteFetch,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 	untilResolved,
+	waitFor,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import { AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupCTAWidget';
@@ -39,6 +41,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
 import SetupCTA from './SetupCTA';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 
 describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	let registry;
@@ -80,6 +84,10 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
+	} );
+
+	afterEach( () => {
+		jest.clearAllMocks();
 	} );
 
 	it( 'should render the setup CTA', () => {
@@ -156,5 +164,144 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		expect( fetchMock ).toHaveFetched( syncAvailableAudiencesEndpoint );
 
 		await act( waitForDefaultTimeouts );
+	} );
+
+	describe( 'AudienceErrorModal', () => {
+		it( 'should show the OAuth error modal when the required scopes are not granted', () => {
+			provideSiteInfo( registry, {
+				setupErrorCode: 'access_denied',
+			} );
+
+			provideUserAuthentication( registry, {
+				grantedScopes: [],
+			} );
+
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetAudienceSettings( settings );
+
+			const { getByRole, getByText } = render( <SetupCTA />, {
+				registry,
+			} );
+
+			expect(
+				getByRole( 'button', { name: /Enable groups/i } )
+			).toBeInTheDocument();
+
+			act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
+
+			// Verify the error is an OAuth error variant.
+			expect(
+				getByText( /Analytics update failed/i )
+			).toBeInTheDocument();
+
+			// Verify the "Get help" link is displayed.
+			expect( getByText( /get help/i ) ).toBeInTheDocument();
+
+			expect(
+				getByRole( 'link', { name: /get help/i } )
+			).toHaveAttribute(
+				'href',
+				registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+					code: 'access_denied',
+				} )
+			);
+
+			// Verify the "Retry" button is displayed.
+			expect( getByText( /retry/i ) ).toBeInTheDocument();
+		} );
+
+		it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
+			const errorResponse = {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+			};
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				body: errorResponse,
+				status: 500,
+			} );
+
+			const { getByRole, getByText } = render( <SetupCTA />, {
+				registry,
+			} );
+
+			expect(
+				getByRole( 'button', { name: /Enable groups/i } )
+			).toBeInTheDocument();
+
+			act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
+
+			// Verify the error is "Insufficient permissions" variant.
+			await waitFor( () => {
+				expect(
+					getByText( /Insufficient permissions/i )
+				).toBeInTheDocument();
+
+				// Verify the "Get help" link is displayed.
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
+
+				// Verify the "Request access" button is displayed.
+				expect( getByText( /request access/i ) ).toBeInTheDocument();
+			} );
+		} );
+
+		it( 'should show the generic error modal when an internal server error occurs', async () => {
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				body: errorResponse,
+				status: 500,
+			} );
+
+			const { getByRole, getByText } = render( <SetupCTA />, {
+				registry,
+			} );
+
+			expect(
+				getByRole( 'button', { name: /Enable groups/i } )
+			).toBeInTheDocument();
+
+			act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
+
+			// Verify the error is general error variant.
+			await waitFor( () => {
+				expect(
+					getByText( /Failed to set up visitor groups/i )
+				).toBeInTheDocument();
+
+				// Verify the "Retry" button is displayed.
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
+			} );
+		} );
 	} );
 } );
