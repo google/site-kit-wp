@@ -51,8 +51,6 @@ class Debug_DataTest extends TestCase {
 	}
 
 	public function test_registered_debug_information() {
-		self::enable_feature( 'conversionInfra' );
-
 		remove_all_filters( 'debug_information' );
 		$debug_data = $this->new_debug_data();
 		$debug_data->register();

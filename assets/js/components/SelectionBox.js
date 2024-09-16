@@ -28,6 +28,7 @@ import classnames from 'classnames';
 import { Checkbox } from 'googlesitekit-components';
 
 export default function SelectionBox( {
+	badge,
 	checked,
 	children,
 	disabled,
@@ -52,12 +53,14 @@ export default function SelectionBox( {
 				value={ value }
 			>
 				{ title }
+				{ badge }
 			</Checkbox>
 		</div>
 	);
 }
 
 SelectionBox.propTypes = {
+	badge: PropTypes.node,
 	checked: PropTypes.bool,
 	children: PropTypes.node,
 	disabled: PropTypes.bool,

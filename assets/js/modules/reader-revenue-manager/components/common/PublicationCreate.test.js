@@ -53,7 +53,7 @@ describe( 'PublicationCreate', () => {
 		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
-			'To complete your Reader Revenue Manager account setup you will need to create a publication.'
+			'To complete your Reader Revenue Manager account setup you will need to create a publication and set up Reader Revenue Manager in Publisher Center.'
 		);
 		expect( container ).toHaveTextContent(
 			'Once you have created your publication, it is submitted for review.'
