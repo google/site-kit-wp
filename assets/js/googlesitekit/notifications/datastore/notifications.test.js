@@ -229,6 +229,55 @@ describe( 'core/notifications Notifications', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
+			it( 'should remove a notification from queue if skipHidingFromQueue option is not passed', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'test-notification' ],
+				} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'test-notification', {
+						expiresInSeconds: 3,
+					} );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+
+				expect( queuedNotifications ).toEqual( [] );
+			} );
+			it( 'should not remove a notification from queue if skipHidingFromQueue option is passed', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'test-notification' ],
+				} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'test-notification', {
+						expiresInSeconds: 3,
+						skipHidingFromQueue: true,
+					} );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+
+				expect( queuedNotifications ).toEqual( [
+					{ id: 'test-notification' },
+				] );
+			} );
 		} );
 	} );
 
