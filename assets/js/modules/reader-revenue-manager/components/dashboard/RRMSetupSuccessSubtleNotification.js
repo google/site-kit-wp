@@ -29,13 +29,11 @@ import { useSelect } from 'googlesitekit-data';
 import { Cell, Grid, Row } from '../../../../material-components';
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import whenActive from '../../../../util/when-active';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 
 const {
@@ -50,7 +48,7 @@ const targetOnboardingStates = [
 	ONBOARDING_ACTION_REQUIRED,
 ];
 
-function RRMSetupSuccessSubtleNotification() {
+export default function RRMSetupSuccessSubtleNotification() {
 	const viewContext = useViewContext();
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
@@ -195,7 +193,3 @@ function RRMSetupSuccessSubtleNotification() {
 
 	return null;
 }
-
-export default whenActive( { moduleName: READER_REVENUE_MANAGER_MODULE_SLUG } )(
-	RRMSetupSuccessSubtleNotification
-);
