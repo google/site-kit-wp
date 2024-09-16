@@ -58,11 +58,11 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 	/**
 	 * @dataProvider report_dimensions
 	 */
-	public function test_check_for_events( $detected_events, $report_rows ) {
+	public function test_sync_detected_events( $detected_events, $report_rows ) {
 		$this->setup_fake_handler_and_analytics( $report_rows );
 
 		$event_check = $this->get_instance();
-		$event_check->check_for_events();
+		$event_check->sync_detected_events();
 
 		$this->assertEquals( $detected_events, $this->settings->get()['detectedEvents'] );
 	}

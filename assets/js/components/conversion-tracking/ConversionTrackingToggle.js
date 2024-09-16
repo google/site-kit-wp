@@ -29,14 +29,12 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import ErrorText from '../../components/ErrorText';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
-import { useFeature } from '../../hooks/useFeature';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();
-	const iceEnabled = useFeature( 'conversionInfra' );
 	const [ saveError ] = useState( null );
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
 
@@ -49,10 +47,6 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 	);
 
 	const { setConversionTrackingEnabled } = useDispatch( CORE_SITE );
-
-	if ( ! iceEnabled ) {
-		return null;
-	}
 
 	return (
 		<Fragment>

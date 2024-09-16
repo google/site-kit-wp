@@ -60,18 +60,12 @@ Default.storyName = 'SettingsView';
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'SettingsView ICE Enabled';
-IceEnabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
 
 export const IceDisabled = Template.bind( null );
 IceDisabled.storyName = 'SettingsView ICE Disabled';
-IceDisabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceDisabled.args = {
 	enhancedConversionTracking: false,
 };

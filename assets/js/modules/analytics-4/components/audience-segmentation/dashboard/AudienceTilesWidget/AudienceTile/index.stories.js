@@ -311,7 +311,7 @@ ViewOnlyNoDimensions.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			availableAudiences: null,
+			availableAudiences: [],
 			availableCustomDimensions: [],
 			propertyID: '123456789',
 		} );

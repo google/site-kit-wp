@@ -77,6 +77,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
 
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+	);
+
 	const testPropertyID = propertiesFixture[ 0 ]._id;
 
 	beforeEach( () => {
@@ -509,6 +513,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			);
 
 			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
 
 			const { container, getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
@@ -617,6 +622,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			);
 
 			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
 
 			const { getByRole } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,

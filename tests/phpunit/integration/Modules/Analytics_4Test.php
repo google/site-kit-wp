@@ -2967,12 +2967,13 @@ class Analytics_4Test extends TestCase {
 	 * Creates a fake HTTP handler with call tracking.
 	 *
 	 * @param string $property_id The GA4 property ID to use.
+	 * @param Closure $local_request_handler [optional] A handler to use for local requests.
 	 * @return Closure The fake HTTP client.
 	 */
-	protected function create_fake_http_handler( $property_id ) {
+	protected function create_fake_http_handler( $property_id, $local_request_handler = null ) {
 		$this->request_handler_calls = array();
 
-		return function ( Request $request ) use ( $property_id ) {
+		return function ( Request $request ) use ( $property_id, $local_request_handler ) {
 			$url    = parse_url( $request->getUri() );
 			$params = json_decode( (string) $request->getBody(), true );
 
@@ -2989,6 +2990,10 @@ class Analytics_4Test extends TestCase {
 				)
 			) {
 				return new Response( 200 );
+			}
+
+			if ( is_callable( $local_request_handler ) ) {
+				return $local_request_handler( $request );
 			}
 
 			switch ( $url['path'] ) {
@@ -4078,7 +4083,150 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * @dataProvider data_access_token
 	 */
-	public function test_sync_audiences( $access_token ) {
+	public function data_available_audiences( $access_token ) {
+		$raw_audiences = json_decode(
+			file_get_contents( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'assets/js/modules/analytics-4/datastore/__fixtures__/audiences.json' ),
+			true
+		);
+
+		$available_audiences = json_decode(
+			file_get_contents( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'assets/js/modules/analytics-4/datastore/__fixtures__/available-audiences.json' ),
+			true
+		);
+
+		$raw_audience_default_all_users           = $raw_audiences[0];
+		$raw_audience_default_purchasers          = $raw_audiences[1];
+		$raw_audience_site_kit_new_visitors       = $raw_audiences[2];
+		$raw_audience_site_kit_returning_visitors = $raw_audiences[3];
+		$raw_audience_user_test                   = $raw_audiences[4];
+
+		$available_audience_default_all_users           = $available_audiences[0];
+		$available_audience_default_purchasers          = $available_audiences[1];
+		$available_audience_site_kit_new_visitors       = $available_audiences[2];
+		$available_audience_site_kit_returning_visitors = $available_audiences[3];
+		$available_audience_user_test                   = $available_audiences[4];
+
+		return array(
+			'Site Kit audiences in correct order'   => array(
+				$access_token,
+				array(
+					'raw_audiences'                => array(
+						$raw_audience_site_kit_new_visitors,
+						$raw_audience_site_kit_returning_visitors,
+					),
+					'expected_available_audiences' => array(
+						$available_audience_site_kit_new_visitors,
+						$available_audience_site_kit_returning_visitors,
+					),
+				),
+			),
+			'Site Kit audiences in incorrect order' => array(
+				$access_token,
+				array(
+					'raw_audiences'                => array(
+						$raw_audience_site_kit_returning_visitors,
+						$raw_audience_site_kit_new_visitors,
+					),
+					'expected_available_audiences' => array(
+						$available_audience_site_kit_new_visitors,
+						$available_audience_site_kit_returning_visitors,
+					),
+				),
+			),
+			'default audiences, case 1'             => array(
+				$access_token,
+				array(
+					'raw_audiences'                => array(
+						$raw_audience_default_all_users,
+						$raw_audience_default_purchasers,
+					),
+					// As the audiences are of the same type, and not Site Kit-created audiences, they should be returned in the order returned by the API.
+					'expected_available_audiences' => array(
+						$available_audience_default_all_users,
+						$available_audience_default_purchasers,
+					),
+				),
+			),
+			'default audiences, case 2'             => array(
+				$access_token,
+				array(
+					'raw_audiences'                => array(
+						$raw_audience_default_purchasers,
+						$raw_audience_default_all_users,
+					),
+					'expected_available_audiences' => array(
+						$available_audience_default_purchasers,
+						$available_audience_default_all_users,
+					),
+				),
+			),
+			'all audiences, case 1'                 => array(
+				$access_token,
+				array(
+					'raw_audiences'                => array(
+						$raw_audience_user_test,
+						$raw_audience_site_kit_new_visitors,
+						$raw_audience_site_kit_returning_visitors,
+						$raw_audience_default_all_users,
+						$raw_audience_default_purchasers,
+					),
+					'expected_available_audiences' => array(
+						$available_audience_user_test,
+						$available_audience_site_kit_new_visitors,
+						$available_audience_site_kit_returning_visitors,
+						$available_audience_default_all_users,
+						$available_audience_default_purchasers,
+					),
+				),
+			),
+			'all audiences, case 2'                 => array(
+				$access_token,
+				array(
+					'raw_audiences'                => array(
+						$raw_audience_site_kit_returning_visitors,
+						$raw_audience_user_test,
+						$raw_audience_default_purchasers,
+						$raw_audience_site_kit_new_visitors,
+						$raw_audience_default_all_users,
+					),
+					'expected_available_audiences' => array(
+						$available_audience_user_test,
+						$available_audience_site_kit_new_visitors,
+						$available_audience_site_kit_returning_visitors,
+						$available_audience_default_purchasers,
+						$available_audience_default_all_users,
+					),
+				),
+			),
+			'all audiences, case 3'                 => array(
+				$access_token,
+				array(
+					'raw_audiences'                => array(
+						$raw_audience_default_purchasers,
+						$raw_audience_default_all_users,
+						$raw_audience_site_kit_returning_visitors,
+						$raw_audience_site_kit_new_visitors,
+						$raw_audience_user_test,
+					),
+					'expected_available_audiences' => array(
+						$available_audience_user_test,
+						$available_audience_site_kit_new_visitors,
+						$available_audience_site_kit_returning_visitors,
+						$available_audience_default_purchasers,
+						$available_audience_default_all_users,
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_available_audiences
+	 */
+	public function test_sync_audiences( $access_token, $available_audiences ) {
+		$raw_audiences                = $available_audiences['raw_audiences'];
+		$expected_available_audiences = $available_audiences['expected_available_audiences'];
+
 		$this->enable_feature( 'audienceSegmentation' );
 
 		$this->setup_user_authentication( $access_token );
@@ -4096,7 +4244,25 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$this->fake_handler_and_invoke_register_method( $property_id );
+		$this->fake_handler_and_invoke_register_method(
+			$property_id,
+			function ( Request $request ) use ( $raw_audiences, $property_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( "/v1alpha/properties/$property_id/audiences" === $url['path'] ) {
+					$audiences = new GoogleAnalyticsAdminV1alphaListAudiencesResponse();
+					$audiences->setAudiences( $raw_audiences );
+
+					return new Response(
+						200,
+						array(),
+						json_encode( $audiences )
+					);
+				}
+
+				return new Response( 200 );
+			}
+		);
 
 		// Verify that the module setting is not set yet.
 		$this->assertEquals(
@@ -4130,43 +4296,7 @@ class Analytics_4Test extends TestCase {
 		// including various audience types and slugs.
 		$this->assertEquals(
 			$this->analytics->get_settings()->get()['availableAudiences'],
-			array(
-				array(
-					'name'         => 'properties/12345/audiences/5',
-					'displayName'  => 'Test Audience',
-					'description'  => 'Description',
-					'audienceType' => 'USER_AUDIENCE',
-					'audienceSlug' => '',
-				),
-				array(
-					'name'         => 'properties/12345/audiences/3',
-					'displayName'  => 'New visitors',
-					'description'  => 'People who visited the site for the first time',
-					'audienceType' => 'SITE_KIT_AUDIENCE',
-					'audienceSlug' => 'new-visitors',
-				),
-				array(
-					'name'         => 'properties/12345/audiences/4',
-					'displayName'  => 'Returning visitors',
-					'description'  => 'People who have visited your site at least once before',
-					'audienceType' => 'SITE_KIT_AUDIENCE',
-					'audienceSlug' => 'returning-visitors',
-				),
-				array(
-					'name'         => 'properties/12345/audiences/1',
-					'displayName'  => 'All visitors',
-					'description'  => 'All users',
-					'audienceType' => 'DEFAULT_AUDIENCE',
-					'audienceSlug' => 'all-users',
-				),
-				array(
-					'name'         => 'properties/12345/audiences/2',
-					'displayName'  => 'Purchasers',
-					'description'  => 'Users who have made a purchase',
-					'audienceType' => 'DEFAULT_AUDIENCE',
-					'audienceSlug' => 'purchasers',
-				),
-			)
+			$expected_available_audiences
 		);
 
 		// Verify that a sync timestamp has been set.
@@ -4422,10 +4552,10 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function fake_handler_and_invoke_register_method( $property_id ) {
+	public function fake_handler_and_invoke_register_method( $property_id, $local_request_handler = null ) {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
+			$this->create_fake_http_handler( $property_id, $local_request_handler )
 		);
 		$this->analytics->register();
 	}
