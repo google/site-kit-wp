@@ -21,12 +21,15 @@
  */
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
+	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import {
@@ -38,6 +41,7 @@ import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
 } from '../../../../../../../../tests/js/utils';
@@ -45,7 +49,6 @@ import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
 import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import AudienceSelectionPanel from '.';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
@@ -807,6 +810,81 @@ describe( 'AudienceSelectionPanel', () => {
 					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
 				)[ 3 ]
 			).toHaveTextContent( 'Returning visitors' );
+		} );
+
+		it( 'should display an audience creation notice with an OAuth error notice', async () => {
+			const nonSiteKitAvailableAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			);
+
+			const nonSiteKitConfiguredAudiences =
+				nonSiteKitAvailableAudiences.map( ( { name } ) => name );
+
+			const nonSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: nonSiteKitConfiguredAudiences,
+				},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( nonSiteKitAvailableAudiences );
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
+
+			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
+
+			provideSiteInfo( registry, {
+				setupErrorCode: 'access_denied',
+			} );
+
+			provideUserAuthentication( registry, {
+				grantedScopes: [],
+			} );
+
+			registry.dispatch( CORE_FORMS ).setValues( AUDIENCE_CREATION_FORM, {
+				autoSubmit: true,
+			} );
+
+			const { getByText, getByRole, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( /Create groups suggested by Site Kit/i )
+			).toBeInTheDocument();
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel__audience-creation-notice-audience .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
+				)
+				?.forEach( ( element, index ) => {
+					expect( element ).toHaveTextContent(
+						index === 0 ? 'New visitors' : 'Returning visitors'
+					);
+				} );
+
+			expect(
+				getByText(
+					/Setup was interrupted because you didn’t grant the necessary permissions. Click on Create again to retry. If that doesn’t work/i
+				)
+			).toBeInTheDocument();
+
+			expect(
+				getByRole( 'link', { name: /get help/i } )
+			).toHaveAttribute(
+				'href',
+				registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+					code: 'access_denied',
+				} )
+			);
 		} );
 	} );
 
