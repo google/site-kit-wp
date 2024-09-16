@@ -52,8 +52,8 @@ const targetOnboardingStates = [
 
 function RRMSetupSuccessSubtleNotification() {
 	const viewContext = useViewContext();
-	const [ notification, setNotification ] = useQueryArg( 'notification' );
-	const [ slug, setSlug ] = useQueryArg( 'slug' );
+	const [ , setNotification ] = useQueryArg( 'notification' );
+	const [ , setSlug ] = useQueryArg( 'slug' );
 
 	const publicationOnboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
@@ -71,11 +71,6 @@ function RRMSetupSuccessSubtleNotification() {
 			},
 		} )
 	);
-
-	const showNotification =
-		notification === 'authentication_success' &&
-		slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
-		publicationOnboardingState !== undefined;
 
 	const dismissNotice = () => {
 		setNotification( undefined );
@@ -105,21 +100,14 @@ function RRMSetupSuccessSubtleNotification() {
 	};
 
 	useEffect( () => {
-		if (
-			showNotification &&
-			targetOnboardingStates.includes( publicationOnboardingState )
-		) {
+		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
 				`${ viewContext }_rrm-setup-success-notification`,
 				'view_notification',
 				publicationOnboardingState
 			);
 		}
-	}, [ publicationOnboardingState, showNotification, viewContext ] );
-
-	if ( ! showNotification ) {
-		return null;
-	}
+	}, [ publicationOnboardingState, viewContext ] );
 
 	function WithGridWrapped( { children } ) {
 		return (
