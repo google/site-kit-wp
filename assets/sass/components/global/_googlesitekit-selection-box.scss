@@ -28,6 +28,10 @@
 
 	.mdc-checkbox__content {
 		padding-top: 9px;
+
+		&:has(.googlesitekit-badge) {
+			padding-top: 8px;
+		}
 	}
 
 	label {
@@ -38,12 +42,21 @@
 		position: relative;
 		width: 100%;
 
+		&:has(.googlesitekit-badge) {
+			align-items: center;
+			display: flex;
+		}
+
 		&:hover {
 			text-decoration: none;
 		}
 
 		&:focus {
 			outline-offset: 0;
+		}
+
+		.googlesitekit-badge {
+			margin-left: 10px;
 		}
 	}
 
