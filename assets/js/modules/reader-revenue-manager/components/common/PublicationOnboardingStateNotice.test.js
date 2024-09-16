@@ -40,6 +40,7 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'PublicationOnboardingStateNotice', () => {
 	let registry;
+	let mockSyncPublication;
 
 	const {
 		ONBOARDING_ACTION_REQUIRED,
@@ -144,4 +145,49 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			);
 		}
 	);
+
+	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', () => {
+		jest.useFakeTimers();
+
+		mockSyncPublication = jest.spyOn(
+			registry.dispatch( MODULES_READER_REVENUE_MANAGER ),
+			'syncPublicationOnboardingState'
+		);
+		mockSyncPublication.mockImplementation( () => Promise.resolve() );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID: 'ABCDEFGH',
+				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			} );
+
+		const { getByText } = render( <PublicationOnboardingStateNotice />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		act( () => {
+			fireEvent.click( getByText( 'Complete publication setup' ) );
+		} );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'blur' ) );
+		} );
+
+		expect( mockSyncPublication ).toHaveBeenCalledTimes( 0 );
+
+		act( () => {
+			jest.advanceTimersByTime( 15000 );
+		} );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'focus' ) );
+		} );
+
+		expect( mockSyncPublication ).toHaveBeenCalledTimes( 1 );
+
+		mockSyncPublication.mockReset();
+	} );
 } );
