@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -28,6 +29,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from './datastore/constants';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { SetupMain } from './components/setup';
@@ -87,7 +89,23 @@ export const registerNotifications = ( notifications ) => {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: () => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+			const publicationOnboardingState = await select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationOnboardingState();
+
+			if (
+				notification === 'authentication_success' &&
+				slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
+				publicationOnboardingState !== undefined
+			) {
+				return true;
+			}
+
 			return false;
 		},
 	} );
