@@ -62,7 +62,6 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 };
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
-	const [ activeTile, setActiveTile ] = useState( 0 );
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
@@ -397,6 +396,24 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		} );
 	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
 
+	const [ activeTile, setActiveTile ] = useState( visibleAudiences[ 0 ] );
+
+	const getAudienceTileIndex = useCallback(
+		( audienceResourceName ) => {
+			const index = visibleAudiences.indexOf( audienceResourceName );
+			return index === -1 ? 0 : index;
+		},
+		[ visibleAudiences ]
+	);
+
+	useEffect( () => {
+		if ( ! visibleAudiences.includes( activeTile ) ) {
+			setActiveTile( visibleAudiences[ 0 ] );
+		}
+	}, [ activeTile, visibleAudiences ] );
+
+	const activeTileIndex = getAudienceTileIndex( activeTile );
+
 	const loading =
 		widgetLoading ||
 		! reportLoaded ||
@@ -413,45 +430,54 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 				isTabbedBreakpoint &&
 				visibleAudiences.length > 0 && (
 					<TabBar
+						// Force re-render when the number of audiences change, this is a workaround for a bug in TabBar which maintains an internal list of tabs but doesn't update it when the number of tabs is reduced.
+						key={ visibleAudiences.length }
 						className="googlesitekit-widget-audience-tiles__tabs"
-						activeIndex={ activeTile }
+						activeIndex={ activeTileIndex }
 						handleActiveIndexUpdate={ ( index ) =>
-							setActiveTile( index )
+							setActiveTile( visibleAudiences[ index ] )
 						}
 					>
-						{ visibleAudiences.map( ( audienceResourceName ) => {
-							const audienceName =
-								audiences?.filter(
-									( { name } ) =>
-										name === audienceResourceName
-								)?.[ 0 ]?.displayName || '';
+						{ visibleAudiences.map(
+							( audienceResourceName, index ) => {
+								const audienceName =
+									audiences?.filter(
+										( { name } ) =>
+											name === audienceResourceName
+									)?.[ 0 ]?.displayName || '';
 
-							const audienceSlug =
-								audiences?.filter(
-									( { name } ) =>
-										name === audienceResourceName
-								)?.[ 0 ]?.audienceSlug || '';
+								const audienceSlug =
+									audiences?.filter(
+										( { name } ) =>
+											name === audienceResourceName
+									)?.[ 0 ]?.audienceSlug || '';
 
-							const tooltipMessage = (
-								<AudienceTooltipMessage
-									audienceName={ audienceName }
-									audienceSlug={ audienceSlug }
-								/>
-							);
-
-							return (
-								<Tab
-									key={ audienceResourceName }
-									aria-label={ audienceName }
-								>
-									{ audienceName }
-									<InfoTooltip
-										title={ tooltipMessage }
-										tooltipClassName="googlesitekit-info-tooltip__content--audience"
+								const tooltipMessage = (
+									<AudienceTooltipMessage
+										audienceName={ audienceName }
+										audienceSlug={ audienceSlug }
 									/>
-								</Tab>
-							);
-						} ) }
+								);
+
+								return (
+									<Tab
+										// It's a bit counterintuitive, but we need to use `index` as the key here due to how the internal implementation of TabBar works.
+										// Specifically, how it maintains an internal list of tabs and pushes new tabs onto the end of the list when it sees a new child. See the use of pushToTabList in renderTab:
+										// https://github.com/material-components/material-components-web-react/blob/04ecb80383e49ff0dea765d5fc0d14a442a73c92/packages/tab-bar/index.tsx#L202-L212
+										// If we use `audienceResourceName` as the key, and the list of audiences changes, the TabBar's internal list of tabs may go out of sync with the rendered list
+										// and the wrong tab will be selected when switching between audiences.
+										key={ index }
+										aria-label={ audienceName }
+									>
+										{ audienceName }
+										<InfoTooltip
+											title={ tooltipMessage }
+											tooltipClassName="googlesitekit-info-tooltip__content--audience"
+										/>
+									</Tab>
+								);
+							}
+						) }
 					</TabBar>
 				) }
 			<div className="googlesitekit-widget-audience-tiles__body">
@@ -468,7 +494,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 				{ ( allTilesError === false || loading ) &&
 					visibleAudiences.map( ( audienceResourceName, index ) => {
 						// Conditionally render only the selected audience tile on mobile.
-						if ( isTabbedBreakpoint && index !== activeTile ) {
+						if ( isTabbedBreakpoint && index !== activeTileIndex ) {
 							return null;
 						}
 

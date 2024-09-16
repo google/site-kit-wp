@@ -152,7 +152,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 				body: {
 					data: {
 						settings: {
-							configuredAudiences: [ 'audienceB', 'audienceA' ],
+							configuredAudiences: [ 'audienceA', 'audienceB' ],
 							isAudienceSegmentationWidgetHidden: false,
 						},
 					},
