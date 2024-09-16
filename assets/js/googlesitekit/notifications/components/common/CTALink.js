@@ -70,7 +70,10 @@ export default function CTALink( {
 
 		if ( dismissExpires >= 0 ) {
 			ctaClickActions.push(
-				dismissNotification( id, { expiresInSeconds: dismissExpires } )
+				dismissNotification( id, {
+					expiresInSeconds: dismissExpires,
+					skipHidingFromQueue: true,
+				} )
 			);
 		}
 
