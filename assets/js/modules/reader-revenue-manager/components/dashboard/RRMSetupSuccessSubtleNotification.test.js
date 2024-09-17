@@ -16,18 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import {
 	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
 	render,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
-
-/**
- * Internal dependencies
- */
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
+import * as fixtures from '../../datastore/__fixtures__';
 import * as tracking from '../../../../util/tracking';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -51,7 +52,6 @@ const {
 
 describe( 'RRMSetupSuccessSubtleNotification', () => {
 	let registry;
-	let mockSyncPublication;
 
 	const invalidPublicationOnboardingStates = [ UNSPECIFIED ];
 
@@ -75,6 +75,13 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
 		],
 	];
+
+	const publicationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+	);
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	);
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -221,27 +228,58 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		}
 	);
 
-	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', () => {
-		jest.useFakeTimers();
+	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
+		const originalDateNow = Date.now;
 
-		mockSyncPublication = jest.spyOn(
-			registry.dispatch( MODULES_READER_REVENUE_MANAGER ),
-			'syncPublicationOnboardingState'
-		);
-		mockSyncPublication.mockImplementation( () => Promise.resolve() );
+		// Mock the date to be an arbitrary time.
+		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
+		Date.now = jest.fn( () => mockNow );
+
+		jest.useFakeTimers();
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {
-				publicationID: 'ABCDEFGH',
+				publicationID: 'QRSTUVWX',
 				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
 				publicationOnboardingStateLastSyncedAtMs: 0,
 			} );
 
-		const { getByText } = render( <RRMSetupSuccessSubtleNotification />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		fetchMock.getOnce( publicationsEndpoint, {
+			body: fixtures.publications,
+			status: 200,
 		} );
+
+		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+
+			// Return the same settings passed to the API.
+			return { body: data, status: 200 };
+		} );
+
+		const { getByText, queryByText } = render(
+			<RRMSetupSuccessSubtleNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		// Verify that the message relevant to the ONBOARDING_ACTION_REQUIRED
+		// state is displayed.
+		expect(
+			getByText(
+				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
+			)
+		).toBeInTheDocument();
+
+		// Verify that the message relevant to the ONBOARDING_COMPLETE
+		// state is not displayed.
+		expect(
+			queryByText(
+				'Your Reader Revenue Manager account was successfully set up!'
+			)
+		).not.toBeInTheDocument();
 
 		act( () => {
 			fireEvent.click( getByText( 'Complete publication setup' ) );
@@ -251,8 +289,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			global.window.dispatchEvent( new Event( 'blur' ) );
 		} );
 
-		expect( mockSyncPublication ).toHaveBeenCalledTimes( 0 );
-
 		act( () => {
 			jest.advanceTimersByTime( 15000 );
 		} );
@@ -261,8 +297,43 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			global.window.dispatchEvent( new Event( 'focus' ) );
 		} );
 
-		expect( mockSyncPublication ).toHaveBeenCalledTimes( 1 );
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( publicationsEndpoint );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
+				body: {
+					data: {
+						publicationID: 'QRSTUVWX',
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+					},
+				},
+			} );
+		} );
 
-		mockSyncPublication.mockReset();
+		// Verify that the onboarding state has been synced.
+		expect(
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationOnboardingState()
+		).toBe( ONBOARDING_COMPLETE );
+
+		// Verify that the message relevant to the ONBOARDING_COMPLETE
+		// state is displayed.
+		expect(
+			getByText(
+				'Your Reader Revenue Manager account was successfully set up!'
+			)
+		).toBeInTheDocument();
+
+		// Verify that the message relevant to the ONBOARDING_ACTION_REQUIRED
+		// state is not displayed.
+		expect(
+			queryByText(
+				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
+			)
+		).not.toBeInTheDocument();
+
+		// Restore Date.now method.
+		Date.now = originalDateNow;
 	} );
 } );
