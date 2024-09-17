@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -116,7 +116,9 @@ function RRMSetupSuccessSubtleNotification() {
 		dismissNotice();
 	};
 
-	const onCTAClick = () => {
+	const onCTAClick = ( event ) => {
+		event.preventDefault();
+
 		// Set publication data to be reset when user re-focuses window.
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
@@ -133,15 +135,17 @@ function RRMSetupSuccessSubtleNotification() {
 				publicationOnboardingState
 			);
 		}
+
+		global.open( serviceURL, '_blank' );
 	};
 
-	const syncPublication = () => {
+	const syncPublication = useCallback( () => {
 		if ( ! shouldSyncPublication ) {
 			return;
 		}
 
 		syncPublicationOnboardingState();
-	};
+	}, [ shouldSyncPublication, syncPublicationOnboardingState ] );
 
 	useEffect( () => {
 		if (
