@@ -65,7 +65,10 @@ function RRMSetupSuccessSubtleNotification() {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			publicationID,
+			path: 'reader-revenue-manager',
+			query: {
+				publication: publicationID,
+			},
 		} )
 	);
 

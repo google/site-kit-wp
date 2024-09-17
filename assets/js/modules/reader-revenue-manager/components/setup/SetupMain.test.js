@@ -86,7 +86,7 @@ describe( 'SetupMain', () => {
 
 		expect(
 			getByText(
-				'To complete your Reader Revenue Manager account setup you will need to create a publication.'
+				'To complete your Reader Revenue Manager account setup you will need to create a publication and set up Reader Revenue Manager in Publisher Center.'
 			)
 		).toBeInTheDocument();
 	} );

@@ -36,7 +36,10 @@ import {
 import { isFeatureEnabled } from '../../features';
 import PartnerAdsPAXWidget from './components/dashboard/PartnerAdsPAXWidget';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '../../googlesitekit/widgets/default-areas';
-import { PAXSetupSuccessSubtleNotification } from './components/notifications';
+import {
+	PAXSetupSuccessSubtleNotification,
+	SetupSuccessSubtleNotification,
+} from './components/notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -102,6 +105,25 @@ export const registerWidgets = ( widgets ) => {
 };
 
 export const registerNotifications = ( notifications ) => {
+	notifications.registerNotification( 'setup-success-notification-ads', {
+		Component: SetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if ( 'authentication_success' === notification && slug === 'ads' ) {
+				return true;
+			}
+
+			return false;
+		},
+	} );
 	notifications.registerNotification( 'setup-success-notification-pax', {
 		Component: PAXSetupSuccessSubtleNotification,
 		priority: 10,

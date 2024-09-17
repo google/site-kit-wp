@@ -24,7 +24,6 @@ import {
 	act,
 	fireEvent,
 	render,
-	screen,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import {
@@ -33,7 +32,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -77,6 +75,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 	const createAudienceEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
+	);
+
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
 	const testPropertyID = propertiesFixture[ 0 ]._id;
@@ -125,6 +127,17 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
+
+		const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+				expires: currentTimeInSeconds - 10,
+				count: 0,
+			},
+		} );
+		registry
+			.dispatch( CORE_USER )
+			.finishResolution( 'getDismissedPrompts', [] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableAudiences: null,
@@ -269,6 +282,23 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					/Learn how different types of visitors interact with your site/i
 				)
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not render the widget when the prompt dismiss count is not resolved', () => {
+			registry
+				.dispatch( CORE_USER )
+				.startResolution( 'getDismissedPrompts', [] );
+
+			const { container } = render(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+				}
+			);
+			expect( container ).toBeEmptyDOMElement();
 		} );
 	} );
 
@@ -483,8 +513,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			);
 
 			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
 
-			const { getByRole, waitForRegistry } = render(
+			const { container, getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 				{
 					registry,
@@ -504,11 +535,28 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 			} );
 
+			// Dismiss prompt endpoint must be called when the CTA is clicked.
+			const dismissPromptEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+			);
+
 			expect(
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
 
-			await act( () => waitForTimeouts( 30 ) );
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
+					body: {
+						data: {
+							slug: AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+							expiration: 0,
+						},
+					},
+					method: 'POST',
+				} );
+			} );
+
+			expect( container ).toBeEmptyDOMElement();
 		} );
 
 		it( 'should initialise the list of configured audiences when autoSubmit is set to true.', async () => {
@@ -574,28 +622,24 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			);
 
 			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
 
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				render(
-					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-					{
-						registry,
-					}
-				);
-			} );
+			const { getByRole } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
 
-			await waitFor( () => {
-				expect(
-					screen.getByRole( 'button', { name: /Enabling groups/i } )
-				).toBeInTheDocument();
-			} );
+			expect(
+				getByRole( 'button', { name: /Enabling groups/i } )
+			).toBeInTheDocument();
 
 			await act( () => waitForTimeouts( 30 ) );
 		} );
 
 		describe( 'AudienceErrorModal', () => {
-			it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
+			it( 'should show the OAuth error modal when the required scopes are not granted', () => {
 				provideSiteInfo( registry, {
 					setupErrorCode: 'access_denied',
 				} );
@@ -618,55 +662,44 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( settings );
 
-				// eslint-disable-next-line require-await
-				await act( async () => {
-					render(
-						<AudienceSegmentationSetupCTAWidget
-							Widget={ Widget }
-						/>,
-						{
-							registry,
-						}
-					);
-				} );
+				const { getByRole, getByText } = render(
+					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					{
+						registry,
+					}
+				);
 
 				expect(
-					screen.getByRole( 'button', { name: /Enable groups/i } )
+					getByRole( 'button', { name: /Enable groups/i } )
 				).toBeInTheDocument();
 
 				act( () => {
 					fireEvent.click(
-						screen.getByRole( 'button', { name: /Enable groups/i } )
+						getByRole( 'button', { name: /Enable groups/i } )
 					);
 				} );
 
 				// Verify the error is an OAuth error variant.
-				await waitFor( () => {
-					expect(
-						screen.getByText( /Analytics update failed/i )
-					).toBeInTheDocument();
+				expect(
+					getByText( /Analytics update failed/i )
+				).toBeInTheDocument();
 
-					// Verify the "Get help" link is displayed.
-					expect(
-						screen.getByText( /get help/i )
-					).toBeInTheDocument();
+				// Verify the "Get help" link is displayed.
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
 
-					expect(
-						screen.getByRole( 'link', { name: /get help/i } )
-					).toHaveAttribute(
-						'href',
-						registry
-							.select( CORE_SITE )
-							.getErrorTroubleshootingLinkURL( {
-								code: 'access_denied',
-							} )
-					);
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toHaveAttribute(
+					'href',
+					registry
+						.select( CORE_SITE )
+						.getErrorTroubleshootingLinkURL( {
+							code: 'access_denied',
+						} )
+				);
 
-					// Verify the "Retry" button is displayed.
-					expect( screen.getByText( /retry/i ) ).toBeInTheDocument();
-				} );
-
-				await act( waitForDefaultTimeouts );
+				// Verify the "Retry" button is displayed.
+				expect( getByText( /retry/i ) ).toBeInTheDocument();
 			} );
 
 			it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
@@ -681,46 +714,37 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				// eslint-disable-next-line require-await
-				await act( async () => {
-					render(
-						<AudienceSegmentationSetupCTAWidget
-							Widget={ Widget }
-						/>,
-						{
-							registry,
-						}
-					);
-				} );
+				const { getByRole, getByText } = render(
+					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					{
+						registry,
+					}
+				);
 
 				expect(
-					screen.getByRole( 'button', { name: /Enable groups/i } )
+					getByRole( 'button', { name: /Enable groups/i } )
 				).toBeInTheDocument();
 
 				act( () => {
 					fireEvent.click(
-						screen.getByRole( 'button', { name: /Enable groups/i } )
+						getByRole( 'button', { name: /Enable groups/i } )
 					);
 				} );
 
 				// Verify the error is "Insufficient permissions" variant.
 				await waitFor( () => {
 					expect(
-						screen.getByText( /Insufficient permissions/i )
+						getByText( /Insufficient permissions/i )
 					).toBeInTheDocument();
 
 					// Verify the "Get help" link is displayed.
-					expect(
-						screen.getByText( /get help/i )
-					).toBeInTheDocument();
+					expect( getByText( /get help/i ) ).toBeInTheDocument();
 
 					// Verify the "Request access" button is displayed.
 					expect(
-						screen.getByText( /request access/i )
+						getByText( /request access/i )
 					).toBeInTheDocument();
 				} );
-
-				await act( waitForDefaultTimeouts );
 			} );
 
 			it( 'should show the generic error modal when an internal server error occurs', async () => {
@@ -735,41 +759,34 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				// eslint-disable-next-line require-await
-				await act( async () => {
-					render(
-						<AudienceSegmentationSetupCTAWidget
-							Widget={ Widget }
-						/>,
-						{
-							registry,
-						}
-					);
-				} );
+				const { getByRole, getByText } = render(
+					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					{
+						registry,
+					}
+				);
 
 				expect(
-					screen.getByRole( 'button', { name: /Enable groups/i } )
+					getByRole( 'button', { name: /Enable groups/i } )
 				).toBeInTheDocument();
 
 				act( () => {
 					fireEvent.click(
-						screen.getByRole( 'button', { name: /Enable groups/i } )
+						getByRole( 'button', { name: /Enable groups/i } )
 					);
 				} );
 
 				// Verify the error is "Insufficient permissions" variant.
 				await waitFor( () => {
 					expect(
-						screen.getByText( /Failed to set up visitor groups/i )
+						getByText( /Failed to set up visitor groups/i )
 					).toBeInTheDocument();
 
 					// Verify the "Retry" button is displayed.
 					expect(
-						screen.getByRole( 'button', { name: /retry/i } )
+						getByRole( 'button', { name: /retry/i } )
 					).toBeInTheDocument();
 				} );
-
-				await act( waitForDefaultTimeouts );
 			} );
 		} );
 	} );

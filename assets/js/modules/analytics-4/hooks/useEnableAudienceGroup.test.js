@@ -45,11 +45,17 @@ describe( 'useEnableAudienceGroup', () => {
 	const audienceSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
+	const analyticsSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
 	beforeEach( () => {
@@ -59,6 +65,12 @@ describe( 'useEnableAudienceGroup', () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'enableAudienceGroup'
 		);
+
+		fetchMock.postOnce( analyticsSettingsEndpoint, ( url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+			// Return the same settings passed to the API.
+			return { body: data, status: 200 };
+		} );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
@@ -168,6 +180,7 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		muteFetch( reportEndpoint );
+		muteFetch( expirableItemEndpoint );
 
 		// Set autoSubmit to true.
 		registry
@@ -206,6 +219,7 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		muteFetch( reportEndpoint );
+		muteFetch( expirableItemEndpoint );
 
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,

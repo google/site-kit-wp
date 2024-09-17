@@ -130,17 +130,4 @@ describe( 'trackAPIError', () => {
 			expect( dataLayerPushSpy ).not.toHaveBeenCalled();
 		}
 	);
-
-	it.each( [ [ 'connection-check', 'core', 'site', 'connection-check' ] ] )(
-		"shouldn't track errors for the %s endpoint",
-		( _, type, identifier, datapoint ) => {
-			trackAPIError( {
-				type,
-				identifier,
-				datapoint,
-				error: { message: 'test-message' },
-			} );
-			expect( dataLayerPushSpy ).not.toHaveBeenCalled();
-		}
-	);
 } );

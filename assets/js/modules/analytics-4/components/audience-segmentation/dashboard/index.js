@@ -28,3 +28,4 @@ export { default as ConnectAnalyticsCTAWidget } from './ConnectAnalyticsCTAWidge
 export { default as InfoNoticeWidget } from './InfoNoticeWidget';
 export { default as InfoNotice } from './InfoNotice';
 export { default as NoAudienceBannerWidget } from './NoAudienceBannerWidget';
+export { default as SecondaryUserSetupWidget } from './SecondaryUserSetupWidget';

@@ -36,8 +36,13 @@ import {
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { numFmt } from '../../../../../../util';
+import NewBadge from '../../../../../../components/NewBadge';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
 
 export default function AudienceItem( {
@@ -46,17 +51,26 @@ export default function AudienceItem( {
 	description,
 	subtitle,
 	userCount,
+	audienceType,
 } ) {
+	const newBadgeSlug = `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`;
+
 	const selectedItems = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AUDIENCE_SELECTION_FORM,
 			AUDIENCE_SELECTED
 		)
 	);
+	const hasNewBadgeBeenSeen = useSelect( ( select ) =>
+		select( CORE_USER ).hasExpirableItem( newBadgeSlug )
+	);
+	const isNewBadgeActive = useSelect( ( select ) =>
+		select( CORE_USER ).isExpirableItemActive( newBadgeSlug )
+	);
 	const [ siteKitUserCountReportError, otherUserCountReportError ] =
 		useSelect( ( select ) =>
 			select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
-		);
+		) || [];
 
 	const errors = [];
 
@@ -84,6 +98,12 @@ export default function AudienceItem( {
 		[ selectedItems, setValues, slug ]
 	);
 
+	// Show the new badge if it has not been seen yet, or the badge has been
+	// seen and is still active.
+	const showNewBadge =
+		'DEFAULT_AUDIENCE' !== audienceType &&
+		( hasNewBadgeBeenSeen === false || isNewBadgeActive );
+
 	const isItemSelected = selectedItems?.includes( slug );
 
 	const id = `audience-selection-checkbox-${ slug }`;
@@ -98,6 +118,7 @@ export default function AudienceItem( {
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
 			suffix={ errors.length ? '-' : numFmt( userCount ) }
+			badge={ showNewBadge && <NewBadge /> }
 		/>
 	);
 }
@@ -108,4 +129,5 @@ AudienceItem.propTypes = {
 	description: PropTypes.string.isRequired,
 	subtitle: PropTypes.string.isRequired,
 	userCount: PropTypes.number.isRequired,
+	audienceType: PropTypes.string.isRequired,
 };

@@ -31,8 +31,10 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserInfo,
 	render,
+	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import ErrorNotice from './ErrorNotice';
@@ -77,6 +79,7 @@ describe( 'ErrorNotice', () => {
 		provideUserInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -289,6 +292,11 @@ describe( 'ErrorNotice', () => {
 						},
 					},
 				} );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getAudienceSettings();
 
 				expect(
 					registry
