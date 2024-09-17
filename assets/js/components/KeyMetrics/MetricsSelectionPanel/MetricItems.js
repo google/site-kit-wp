@@ -49,7 +49,8 @@ export default function MetricItems( { savedMetrics } ) {
 		( select ) => ( metric ) =>
 			KEY_METRICS_WIDGETS[ metric ].displayInList(
 				select,
-				isViewOnlyDashboard
+				isViewOnlyDashboard,
+				metric
 			)
 	);
 
