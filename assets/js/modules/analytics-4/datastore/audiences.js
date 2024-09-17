@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
@@ -522,6 +523,16 @@ const baseActions = {
 			return { error };
 		}
 
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 1,
+				} ) )
+			)
+		);
+
 		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupComplete(
 			true
 		);
@@ -619,6 +630,16 @@ const baseActions = {
 		if ( error ) {
 			return { error };
 		}
+
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 1,
+				} ) )
+			)
+		);
 	},
 };
 
@@ -869,7 +890,7 @@ const baseSelectors = {
 				getAudiencesUserCountReportOptions,
 				getSiteKitAudiencesUserCountReportOptions,
 				getErrorForSelector,
-				getConfiguredSiteKitAndOtherAudiences,
+				getConfigurableSiteKitAndOtherAudiences,
 				hasAudiencePartialData,
 			} = select( MODULES_ANALYTICS_4 );
 
@@ -881,7 +902,7 @@ const baseSelectors = {
 
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const [ siteKitAudiences, otherAudiences ] =
-				getConfiguredSiteKitAndOtherAudiences();
+				getConfigurableSiteKitAndOtherAudiences();
 
 			const isSiteKitAudiencePartialData =
 				hasAudiencePartialData( siteKitAudiences );
@@ -944,7 +965,7 @@ const baseSelectors = {
 	 * @since 1.134.0
 	 *
 	 * @param {Array} audiences Array of audiences to check.
-	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences are undefined.
+	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences or any partial data state is not loaded yet.
 	 */
 	hasAudiencePartialData: createRegistrySelector(
 		( select ) => ( state, audiences ) => {
@@ -952,22 +973,70 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			return ( audiences || [] ).some( ( { name } ) => {
-				return select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					name
-				);
-			} );
+			for ( const audience of audiences || [] ) {
+				const isPartialData = select(
+					MODULES_ANALYTICS_4
+				).isAudiencePartialData( audience.name );
+
+				if ( isPartialData === undefined ) {
+					return undefined;
+				}
+
+				if ( isPartialData ) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 	),
 
 	/**
-	 * Gets the configured Site Kit and other (non Site Kit) audiences.
+	 * Checks if the provided audience is a Site Kit audience in the partial data state and returns the audience object if so.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} audienceResourceName The audience resource name.
+	 * @return {(Object|null|undefined)} The audience object if the audience is a Site Kit audience in the partial data state, otherwise null. Undefined if available audiences or the partial data state is not loaded yet.
+	 */
+	getPartialDataSiteKitAudience: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audience = availableAudiences.find(
+				( { name } ) => name === audienceResourceName
+			);
+
+			if ( audience?.audienceType !== 'SITE_KIT_AUDIENCE' ) {
+				return null;
+			}
+
+			const isPartialData =
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audienceResourceName
+				);
+
+			if ( isPartialData === undefined ) {
+				return undefined;
+			}
+
+			return isPartialData ? audience : null;
+		}
+	),
+
+	/**
+	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
 	 *
 	 * @since 1.134.0
 	 *
 	 * @return {Array} Array of Site Kit and other audiences.
 	 */
-	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
+	getConfigurableSiteKitAndOtherAudiences: createRegistrySelector(
 		( select ) => () => {
 			const audiences =
 				select( MODULES_ANALYTICS_4 ).getConfigurableAudiences();
@@ -991,6 +1060,52 @@ const baseSelectors = {
 				},
 				[ [], [] ] // Initial values.
 			);
+
+			return [ siteKitAudiences, otherAudiences ];
+		}
+	),
+
+	/**
+	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array} Array of Site Kit and other audiences.
+	 */
+	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
+		( select ) => () => {
+			const configuredAudiences =
+				select( CORE_USER ).getConfiguredAudiences();
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if (
+				undefined === configuredAudiences ||
+				undefined === availableAudiences
+			) {
+				return undefined;
+			}
+
+			if ( ! configuredAudiences?.length ) {
+				return [];
+			}
+
+			const [ siteKitAudiences, otherAudiences ] =
+				configuredAudiences.reduce(
+					( [ siteKit, other ], configuredAudience ) => {
+						const audience = availableAudiences.find(
+							( { name } ) => name === configuredAudience
+						);
+
+						if ( audience?.audienceType === 'SITE_KIT_AUDIENCE' ) {
+							siteKit.push( audience );
+						} else {
+							other.push( audience );
+						}
+						return [ siteKit, other ];
+					},
+					[ [], [] ] // Initial values.
+				);
 
 			return [ siteKitAudiences, otherAudiences ];
 		}

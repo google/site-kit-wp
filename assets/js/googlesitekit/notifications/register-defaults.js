@@ -206,76 +206,76 @@ export function registerDefaults( notificationsAPI ) {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
-			const isAnalyticsConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-
-			const canViewSharedAnalytics = ! viewOnly
-				? true
-				: select( CORE_USER ).canViewSharedModule( 'analytics-4' );
-
-			const canViewSharedSearchConsole = ! viewOnly
-				? true
-				: select( CORE_USER ).canViewSharedModule( 'search-console' );
-
-			const showRecoverableAnalytics = await ( async () => {
-				if ( ! viewOnly ) {
-					return false;
+			const getModuleState = async ( moduleSlug, datastoreSlug ) => {
+				// Check if the module connected and return early if not.
+				const isConnected =
+					select( CORE_MODULES ).isModuleConnected( moduleSlug );
+				if ( ! isConnected ) {
+					return 'disconnected';
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				// If we are in the view only mode, we need to ensure the user can view the module
+				// and it is not in the recovering state. Return early if either of these is wrong.
+				if ( viewOnly ) {
+					const canView =
+						select( CORE_USER ).canViewSharedModule( moduleSlug );
+					if ( ! canView ) {
+						return 'cant-view';
+					}
 
-				return Object.keys( recoverableModules ).includes(
-					'analytics-4'
-				);
-			} )();
-			const showRecoverableSearchConsole = await ( async () => {
-				if ( ! viewOnly ) {
-					return false;
+					const modules = await resolveSelect(
+						CORE_MODULES
+					).getRecoverableModules();
+					if ( !! modules[ moduleSlug ] ) {
+						return 'recovering';
+					}
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				// Next, we need to check gathering data state and return early
+				// if the module is in the gathering state.
+				const isGatheringData = await resolveSelect(
+					datastoreSlug
+				).isGatheringData();
+				if ( isGatheringData ) {
+					return 'gathering';
+				}
 
-				return Object.keys( recoverableModules ).includes(
-					'search-console'
+				// Finally, we need to preload the sample report and check if it has zero data.
+				await resolveSelect( datastoreSlug ).getReport(
+					select( datastoreSlug ).getSampleReportArgs()
 				);
-			} )();
 
-			const analyticsGatheringData =
-				isAnalyticsConnected &&
-				canViewSharedAnalytics &&
-				false === showRecoverableAnalytics
-					? await resolveSelect(
-							MODULES_ANALYTICS_4
-					  ).isGatheringData()
-					: false;
-			const searchConsoleGatheringData =
-				canViewSharedSearchConsole &&
-				false === showRecoverableSearchConsole &&
-				( await resolveSelect(
-					MODULES_SEARCH_CONSOLE
-				).isGatheringData() );
+				if ( select( datastoreSlug ).hasZeroData() ) {
+					return 'zero-data';
+				}
 
-			if ( analyticsGatheringData || searchConsoleGatheringData ) {
+				return 'connected';
+			};
+
+			// Get Analytics-4 and Search Console states.
+			const analyticsState = await getModuleState(
+				'analytics-4',
+				MODULES_ANALYTICS_4
+			);
+
+			const searchConsoleState = await getModuleState(
+				'search-console',
+				MODULES_SEARCH_CONSOLE
+			);
+
+			// If either of the modules is gathering data, we don't show the notification.
+			if (
+				analyticsState === 'gathering' ||
+				searchConsoleState === 'gathering'
+			) {
 				return false;
 			}
 
-			const analyticsHasZeroData =
-				isAnalyticsConnected &&
-				canViewSharedAnalytics &&
-				false === showRecoverableAnalytics
-					? select( MODULES_ANALYTICS_4 ).hasZeroData()
-					: false;
-
-			const searchConsoleHasZeroData =
-				canViewSharedSearchConsole &&
-				false === showRecoverableSearchConsole &&
-				select( MODULES_SEARCH_CONSOLE ).hasZeroData();
-
-			return analyticsHasZeroData || searchConsoleHasZeroData;
+			// If either of the modules is in the zero data state, we need to show the notification.
+			return (
+				analyticsState === 'zero-data' ||
+				searchConsoleState === 'zero-data'
+			);
 		},
 		isDismissible: true,
 	} );

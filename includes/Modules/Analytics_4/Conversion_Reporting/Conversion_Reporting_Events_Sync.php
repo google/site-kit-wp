@@ -61,11 +61,11 @@ class Conversion_Reporting_Events_Sync {
 	}
 
 	/**
-	 * Checks for available events and save them in settings.
+	 * Syncs detected events into settings.
 	 *
 	 * @since 1.135.0
 	 */
-	public function check_for_events() {
+	public function sync_detected_events() {
 		$report          = $this->get_report();
 		$detected_events = array();
 
