@@ -128,7 +128,7 @@ export const actions = {
 	 * @param {string} id                            Notification id to dismiss.
 	 * @param {Object} options                       Dismiss notification options.
 	 * @param {number} [options.expiresInSeconds]    Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
-	 * @param {number} [options.skipHidingFromQueue] Optional. A boolean value if notification should not be removed from the queue immediatelly.
+	 * @param {number} [options.skipHidingFromQueue] Optional. A boolean value if notification should not be removed from the queue immediately.
 	 * @return {Object} Generator instance.
 	 */
 	dismissNotification: createValidatedAction(
