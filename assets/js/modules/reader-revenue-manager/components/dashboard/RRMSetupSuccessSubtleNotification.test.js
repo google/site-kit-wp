@@ -97,6 +97,13 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					return [ READER_REVENUE_MANAGER_MODULE_SLUG, setValueMock ];
 			}
 		} );
+
+		// Provide fallback for `window.open`.
+		global.open = jest.fn();
+	} );
+
+	afterEach( () => {
+		global.open.mockClear();
 	} );
 
 	it.each( invalidPublicationOnboardingStates )(
