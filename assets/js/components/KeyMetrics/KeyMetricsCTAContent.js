@@ -36,9 +36,8 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
-	// BREAKPOINT_SMALL,
-	BREAKPOINT_DESKTOP,
 	useBreakpoint,
+	BREAKPOINT_DESKTOP,
 	BREAKPOINT_TABLET,
 	BREAKPOINT_SMALL,
 } from '../../hooks/useBreakpoint';
