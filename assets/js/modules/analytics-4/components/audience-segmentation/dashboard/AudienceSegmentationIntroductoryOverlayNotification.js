@@ -56,14 +56,24 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	);
 
 	const shouldShowAudienceSegmentationIntroductoryOverlay = useSelect(
-		( select ) =>
-			select( CORE_MODULES ).isModuleActive( 'analytics-4' ) &&
-			( ! isViewOnly ||
-				select( CORE_USER ).canViewSharedModule( 'analytics-4' ) ) &&
-			select(
-				MODULES_ANALYTICS_4
-			).getAudienceSegmentationSetupCompletedBy() !==
-				select( CORE_USER ).getID()
+		( select ) => {
+			const isModuleActive =
+				select( CORE_MODULES ).isModuleActive( 'analytics-4' );
+			const canViewModule =
+				! isViewOnly ||
+				select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+			const userID = select( CORE_USER ).getID();
+			return (
+				isModuleActive &&
+				canViewModule &&
+				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
+				audienceSegmentationSetupCompletedBy !== userID
+			);
+		}
 	);
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
@@ -82,10 +92,12 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		const widgetAreaClass =
 			'.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation';
 
-		global.scrollTo( {
-			top: getNavigationalScrollTop( widgetAreaClass, breakpoint ),
-			behavior: 'smooth',
-		} );
+		setTimeout( () => {
+			global.scrollTo( {
+				top: getNavigationalScrollTop( widgetAreaClass, breakpoint ),
+				behavior: 'smooth',
+			} );
+		}, 0 );
 
 		dismissNotification();
 	};

@@ -74,7 +74,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
-		const { queryByText, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
 			{
 				registry,
@@ -85,7 +85,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect(
-			queryByText(
+			getByText(
 				'You can now learn more about your site visitor groups by comparing different metrics'
 			)
 		).toBeInTheDocument();
