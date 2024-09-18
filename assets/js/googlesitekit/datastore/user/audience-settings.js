@@ -307,7 +307,7 @@ const baseSelectors = {
 	/**
 	 * Gets the `didSetAudiences` flag from the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} Whether or not the audience selection has ever been populated for the current user; `undefined` if not loaded.

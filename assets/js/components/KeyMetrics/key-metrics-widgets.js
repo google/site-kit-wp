@@ -131,7 +131,7 @@ function shouldDisplayWidgetWithCustomDimensions(
  * This function is attached to the widget object that requires the conversion reporting events and
  * has the `requiredConversionEventName` property.
  *
- * @since n.e.x.t
+ * @since 1.136.0
  *
  * @param {Function} select              Data store select function.
  * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
