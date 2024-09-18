@@ -72,7 +72,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'availableCustomDimensions',
 			'adSenseLinked',
 			'availableAudiences',
-			'audienceSegmentationSetupComplete',
+			'audienceSegmentationSetupCompletedBy',
 		);
 	}
 
@@ -85,30 +85,30 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'                           => 0,
-			'accountID'                         => '',
-			'adsConversionID'                   => '',
-			'propertyID'                        => '',
-			'webDataStreamID'                   => '',
-			'measurementID'                     => '',
-			'trackingDisabled'                  => array( 'loggedinUsers' ),
-			'useSnippet'                        => true,
-			'googleTagID'                       => '',
-			'googleTagAccountID'                => '',
-			'googleTagContainerID'              => '',
-			'googleTagContainerDestinationIDs'  => null,
-			'googleTagLastSyncedAtMs'           => 0,
-			'availableCustomDimensions'         => null,
-			'propertyCreateTime'                => 0,
-			'adSenseLinked'                     => false,
-			'adSenseLinkedLastSyncedAt'         => 0,
-			'adsConversionIDMigratedAtMs'       => 0,
-			'adsLinked'                         => false,
-			'adsLinkedLastSyncedAt'             => 0,
-			'availableAudiences'                => null,
-			'availableAudiencesLastSyncedAt'    => 0,
-			'audienceSegmentationSetupComplete' => false,
-			'detectedEvents'                    => array(),
+			'ownerID'                              => 0,
+			'accountID'                            => '',
+			'adsConversionID'                      => '',
+			'propertyID'                           => '',
+			'webDataStreamID'                      => '',
+			'measurementID'                        => '',
+			'trackingDisabled'                     => array( 'loggedinUsers' ),
+			'useSnippet'                           => true,
+			'googleTagID'                          => '',
+			'googleTagAccountID'                   => '',
+			'googleTagContainerID'                 => '',
+			'googleTagContainerDestinationIDs'     => null,
+			'googleTagLastSyncedAtMs'              => 0,
+			'availableCustomDimensions'            => null,
+			'propertyCreateTime'                   => 0,
+			'adSenseLinked'                        => false,
+			'adSenseLinkedLastSyncedAt'            => 0,
+			'adsConversionIDMigratedAtMs'          => 0,
+			'adsLinked'                            => false,
+			'adsLinkedLastSyncedAt'                => 0,
+			'availableAudiences'                   => null,
+			'availableAudiencesLastSyncedAt'       => 0,
+			'audienceSegmentationSetupCompletedBy' => null,
+			'detectedEvents'                       => array(),
 		);
 	}
 
@@ -207,8 +207,10 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 
-				if ( isset( $option['audienceSegmentationSetupComplete'] ) ) {
-					$option['audienceSegmentationSetupComplete'] = (bool) $option['audienceSegmentationSetupComplete'];
+				if ( isset( $option['audienceSegmentationSetupCompletedBy'] ) ) {
+					if ( ! is_int( $option['audienceSegmentationSetupCompletedBy'] ) ) {
+						$option['audienceSegmentationSetupCompletedBy'] = null;
+					}
 				}
 			}
 

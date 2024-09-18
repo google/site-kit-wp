@@ -87,6 +87,10 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.setAudienceSegmentationSetupCompletedBy( null );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsDataAvailableOnLoad( true );
 
 				const referenceDate = '2024-05-10';
