@@ -16,18 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import {
 	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
 	render,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
-
-/**
- * Internal dependencies
- */
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
+import * as fixtures from '../../datastore/__fixtures__';
 import * as tracking from '../../../../util/tracking';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -75,6 +76,13 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		],
 	];
 
+	const publicationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+	);
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	);
+
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
@@ -96,6 +104,13 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					return [ READER_REVENUE_MANAGER_MODULE_SLUG, setValueMock ];
 			}
 		} );
+
+		// Provide fallback for `window.open`.
+		global.open = jest.fn();
+	} );
+
+	afterEach( () => {
+		global.open.mockClear();
 	} );
 
 	it.each( invalidPublicationOnboardingStates )(
@@ -151,7 +166,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				1,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'view_notification',
 				onboardingState
 			);
@@ -162,7 +177,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'confirm_notification',
 				onboardingState
 			);
@@ -195,7 +210,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				1,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'view_notification',
 				onboardingState
 			);
@@ -206,10 +221,119 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'dismiss_notification',
 				onboardingState
 			);
 		}
 	);
+
+	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
+		const originalDateNow = Date.now;
+
+		// Mock the date to be an arbitrary time.
+		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
+		Date.now = jest.fn( () => mockNow );
+
+		jest.useFakeTimers();
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID: 'QRSTUVWX',
+				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			} );
+
+		fetchMock.getOnce( publicationsEndpoint, {
+			body: fixtures.publications,
+			status: 200,
+		} );
+
+		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+
+			// Return the same settings passed to the API.
+			return { body: data, status: 200 };
+		} );
+
+		const { getByText, queryByText } = render(
+			<RRMSetupSuccessSubtleNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		// Verify that the message relevant to the ONBOARDING_ACTION_REQUIRED
+		// state is displayed.
+		expect(
+			getByText(
+				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
+			)
+		).toBeInTheDocument();
+
+		// Verify that the message relevant to the ONBOARDING_COMPLETE
+		// state is not displayed.
+		expect(
+			queryByText(
+				'Your Reader Revenue Manager account was successfully set up!'
+			)
+		).not.toBeInTheDocument();
+
+		act( () => {
+			fireEvent.click( getByText( 'Complete publication setup' ) );
+		} );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'blur' ) );
+		} );
+
+		act( () => {
+			jest.advanceTimersByTime( 15000 );
+		} );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'focus' ) );
+		} );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( publicationsEndpoint );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
+				body: {
+					data: {
+						publicationID: 'QRSTUVWX',
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+					},
+				},
+			} );
+		} );
+
+		// Verify that the onboarding state has been synced.
+		expect(
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationOnboardingState()
+		).toBe( ONBOARDING_COMPLETE );
+
+		// Verify that the message relevant to the ONBOARDING_COMPLETE
+		// state is displayed.
+		expect(
+			getByText(
+				'Your Reader Revenue Manager account was successfully set up!'
+			)
+		).toBeInTheDocument();
+
+		// Verify that the message relevant to the ONBOARDING_ACTION_REQUIRED
+		// state is not displayed.
+		expect(
+			queryByText(
+				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
+			)
+		).not.toBeInTheDocument();
+
+		// Restore Date.now method.
+		Date.now = originalDateNow;
+	} );
 } );
