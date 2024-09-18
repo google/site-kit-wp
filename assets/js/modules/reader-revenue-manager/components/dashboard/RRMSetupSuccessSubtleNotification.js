@@ -107,7 +107,7 @@ function RRMSetupSuccessSubtleNotification() {
 	const handleDismiss = () => {
 		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
-				`${ viewContext }_rrm-setup-success-notification`,
+				`${ viewContext }_setup-success-notification-rrm`,
 				'dismiss_notification',
 				publicationOnboardingState
 			);
@@ -130,7 +130,7 @@ function RRMSetupSuccessSubtleNotification() {
 
 		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
-				`${ viewContext }_rrm-setup-success-notification`,
+				`${ viewContext }_setup-success-notification-rrm`,
 				'confirm_notification',
 				publicationOnboardingState
 			);
@@ -153,7 +153,7 @@ function RRMSetupSuccessSubtleNotification() {
 			targetOnboardingStates.includes( publicationOnboardingState )
 		) {
 			trackEvent(
-				`${ viewContext }_rrm-setup-success-notification`,
+				`${ viewContext }_setup-success-notification-rrm`,
 				'view_notification',
 				publicationOnboardingState
 			);
