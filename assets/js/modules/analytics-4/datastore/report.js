@@ -325,7 +325,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.107.0
 	 * @since 1.124.0 Moved from the main analytics-4 datastore file to utils.
-	 * @since n.e.x.t Moved back to the main analytics-4 datastore file and updated to be a selector.
+	 * @since 1.136.0 Moved back to the main analytics-4 datastore file and updated to be a selector.
 	 *
 	 * @param {Function} select The select function of the registry.
 	 * @return {Object} Report args.

@@ -42,7 +42,7 @@ class Audience_Settings extends User_Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.124.0
-	 * @since n.e.x.t Added `didSetAudiences` default value.
+	 * @since 1.136.0 Added `didSetAudiences` default value.
 	 *
 	 * @return array The default value.
 	 */

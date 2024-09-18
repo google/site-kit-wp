@@ -37,7 +37,7 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
  * Monitors the user's internet connection status.
  *
  * @since 1.118.0
- * @since n.e.x.t Changed the connection check endpoint.
+ * @since 1.136.0 Changed the connection check endpoint.
  */
 export function useMonitorInternetConnection() {
 	const { setIsOnline } = useDispatch( CORE_UI );
