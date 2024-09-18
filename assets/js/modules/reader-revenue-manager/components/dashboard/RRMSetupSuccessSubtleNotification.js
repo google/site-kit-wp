@@ -79,16 +79,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 		setSlug( undefined );
 	};
 
-	const onCTAClick = () => {
-		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
-			trackEvent(
-				`${ viewContext }_rrm-setup-success-notification`,
-				'confirm_notification',
-				publicationOnboardingState
-			);
-		}
-	};
-
 	useEffect( () => {
 		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
@@ -131,8 +121,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'google-site-kit'
 							) }
 							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
 							isCTALinkExternal
+							gaConfirmEventLabel={ publicationOnboardingState }
 						/>
 					}
 				/>
@@ -169,8 +159,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'google-site-kit'
 							) }
 							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
 							isCTALinkExternal
+							gaConfirmEventLabel={ publicationOnboardingState }
 						/>
 					}
 				/>
@@ -203,8 +193,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'google-site-kit'
 							) }
 							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
 							isCTALinkExternal
+							gaConfirmEventLabel={ publicationOnboardingState }
 						/>
 					}
 				/>
