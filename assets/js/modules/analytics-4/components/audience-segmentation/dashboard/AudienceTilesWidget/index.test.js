@@ -27,7 +27,7 @@ import {
 } from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
-	muteFetch,
+	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -199,10 +199,6 @@ describe( 'AudienceTilesWidget', () => {
 		'analyticsAudienceTiles'
 	)( AudienceTilesWidget );
 
-	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
-	);
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -236,79 +232,11 @@ describe( 'AudienceTilesWidget', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should not render when availableAudiences and configuredAudiences are not loaded', async () => {
-		muteFetch( audienceSettingsRegExp );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
+	it( 'should render loading tiles when audiences are not syncing', async () => {
+		const syncAvailableAudiencesEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 		);
 
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when availableAudiences is not loaded', async () => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/1' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when configuredAudiences is not loaded', async () => {
-		muteFetch( audienceSettingsRegExp );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when there is no available audience', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render when there is no configured audience', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -318,41 +246,24 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
+		freezeFetch( syncAvailableAudiencesEndpoint );
 
-		await waitForRegistry();
+		await act( async () => {
+			// Render the component and wait for the registry updates
+			const { container, waitForRegistry } = render(
+				<WidgetWithComponentProps />,
+				{
+					registry,
+				}
+			);
 
-		expect( container ).toBeEmptyDOMElement();
-	} );
+			await waitForRegistry();
 
-	it( 'should not render when configuredAudiences is null (not set)', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: null,
-			isAudienceSegmentationWidgetHidden: false,
+			expect( container ).toMatchSnapshot();
 		} );
-
-		const { container, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when there is no matching audience', async () => {
+	it( 'should not the "no audiences" banner when there is no matching audience', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -362,7 +273,7 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { container, waitForRegistry } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
 			{
 				registry,
@@ -371,7 +282,11 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
-		expect( container ).toBeEmptyDOMElement();
+		expect(
+			getByText( /You don’t have any visitor groups selected./ )
+		).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should render when configured audience is matching available audiences', async () => {

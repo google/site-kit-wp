@@ -394,6 +394,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 				} );
 
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.maybeSyncAvailableAudiences();

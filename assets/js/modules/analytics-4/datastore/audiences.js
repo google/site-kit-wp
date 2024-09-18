@@ -241,6 +241,10 @@ const baseActions = {
 			return;
 		}
 
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
 
