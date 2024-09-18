@@ -30,8 +30,9 @@ import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
-import NoAudienceBanner from '../NoAudienceBannerWidget/NoAudienceBanner';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import NoAudienceBannerWidget from '../NoAudienceBannerWidget';
+import WidgetNull from '../../../../../../googlesitekit/widgets/components/WidgetNull';
 
 function AudienceTilesWidget( { Widget } ) {
 	const availableAudiences = useSelect( ( select ) => {
@@ -71,7 +72,10 @@ function AudienceTilesWidget( { Widget } ) {
 
 	if ( ! hasMatchingAudience ) {
 		return availableAudiencesSynced ? (
-			<NoAudienceBanner />
+			<NoAudienceBannerWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>
 		) : (
 			<Widget className="googlesitekit-widget-audience-tiles" noPadding>
 				<div className="googlesitekit-widget-audience-tiles__body">

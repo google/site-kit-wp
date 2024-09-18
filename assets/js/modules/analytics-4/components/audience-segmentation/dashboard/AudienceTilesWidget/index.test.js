@@ -27,7 +27,7 @@ import {
 } from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
-	muteFetch,
+	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -199,10 +199,6 @@ describe( 'AudienceTilesWidget', () => {
 		'analyticsAudienceTiles'
 	)( AudienceTilesWidget );
 
-	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
-	);
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -236,35 +232,9 @@ describe( 'AudienceTilesWidget', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should render no audiences banner when availableAudiences and configuredAudiences are not loaded', async () => {
-		muteFetch( audienceSettingsRegExp );
-
-		const { getByText, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText( /You don’t have any visitor groups selected./i )
-		).toBeInTheDocument();
-	} );
-
 	it( 'should render loading tiles when audiences are not syncing', async () => {
-		const maybeSyncAvailableAudiencesSpy = jest.spyOn(
-			registry.dispatch( MODULES_ANALYTICS_4 ),
-			'maybeSyncAvailableAudiences'
-		);
-
-		/**
-		 * Mock the maybeSyncAvailableAudiences function to return a promise that never resolves
-		 * so that availableAudiencesSynced is never set to true.
-		 */
-		maybeSyncAvailableAudiencesSpy.mockImplementation(
-			() => new Promise( () => {} )
+		const syncAvailableAudiencesEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 		);
 
 		registry
@@ -276,9 +246,7 @@ describe( 'AudienceTilesWidget', () => {
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			availableAudiencesLastSyncedAt: Date.now() - 100,
-		} );
+		freezeFetch( syncAvailableAudiencesEndpoint );
 
 		await act( async () => {
 			// Render the component and wait for the registry updates
@@ -291,14 +259,7 @@ describe( 'AudienceTilesWidget', () => {
 
 			await waitForRegistry();
 
-			// Wait for async updates using waitFor
-			await waitFor( () => {
-				expect( maybeSyncAvailableAudiencesSpy ).toHaveBeenCalledTimes(
-					1
-				);
-
-				expect( container ).toMatchSnapshot();
-			} );
+			expect( container ).toMatchSnapshot();
 		} );
 	} );
 
