@@ -22,6 +22,7 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useIntersection } from 'react-use';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * WordPress dependencies
@@ -38,14 +39,15 @@ import {
 	// BREAKPOINT_SMALL,
 	BREAKPOINT_DESKTOP,
 	useBreakpoint,
-	BREAKPOINT_XLARGE,
 	BREAKPOINT_TABLET,
+	BREAKPOINT_SMALL,
 } from '../../hooks/useBreakpoint';
 import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { Cell, Grid, Row } from '../../material-components';
 import KeyMetricsSetupDesktopSVG from './KeyMetricsSetupDesktopSVG';
 import KeyMetricsSetupTabletSVG from './KeyMetricsSetupTabletSVG';
+import KeyMetricsSetupMobileSVG from './KeyMetricsSetupMobileSVG';
 
 export default function KeyMetricsCTAContent( {
 	className,
@@ -56,11 +58,16 @@ export default function KeyMetricsCTAContent( {
 } ) {
 	const trackingRef = useRef();
 	const breakpoint = useBreakpoint();
+	const onlyWidth = useWindowWidth();
 	const viewContext = useViewContext();
-	// const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
-	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
-	const isDesktopBreakpoint =
-		breakpoint === BREAKPOINT_DESKTOP || breakpoint === BREAKPOINT_XLARGE;
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const isTabletBreakpoint =
+		breakpoint === BREAKPOINT_TABLET ||
+		( breakpoint === BREAKPOINT_DESKTOP && onlyWidth < 1280 );
+	// onlyWidth is used directly here since BREAKPOINT_XLARGE only
+	// accounts for screens that are over 1280px and desktop layout should
+	// fit on the screens starting from desktop size of 1280px and over.
+	const isDesktopBreakpoint = onlyWidth > 1279;
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
@@ -110,9 +117,9 @@ export default function KeyMetricsCTAContent( {
 			<Grid>
 				<Row>
 					<Cell
-						smSize={ 6 }
-						mdSize={ 5 }
-						lgSize={ 6 }
+						smSize={ 5 }
+						mdSize={ 6 }
+						lgSize={ 5 }
 						className="googlesitekit-widget-key-metrics-content__wrapper"
 					>
 						<div className="googlesitekit-widget-key-metrics-text__wrapper">
@@ -127,6 +134,11 @@ export default function KeyMetricsCTAContent( {
 						{ isTabletBreakpoint && (
 							<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
 								<KeyMetricsSetupTabletSVG />
+							</Cell>
+						) }
+						{ isMobileBreakpoint && (
+							<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
+								<KeyMetricsSetupMobileSVG />
 							</Cell>
 						) }
 					</Cell>
