@@ -31,12 +31,10 @@ Default.storyName = 'Default';
 Default.args = {
 	label: 'Title for badge with tooltip',
 	tooltipTitle:
-		'Still collecting full data for this timeframe, partial data is displayed for this group',
+		'This is an example of tooltip content for a badge with tooltip',
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/BadgeWithTooltip/Default',
-};
+Default.scenario = {};
 
 export default {
-	title: 'Modules/Analytics4/Components/BadgeWithTooltip',
+	title: 'Components/BadgeWithTooltip',
 };
