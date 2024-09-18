@@ -26,7 +26,12 @@ import ViewedStateObserver from './ViewedStateObserver';
 import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function Notification( { id, className, children } ) {
+export default function Notification( {
+	id,
+	className,
+	gaViewEventLabel,
+	children,
+} ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
 	const trackEvents = useNotificationEvents( id );
@@ -36,10 +41,10 @@ export default function Notification( { id, className, children } ) {
 	// Track view once.
 	useEffect( () => {
 		if ( ! isViewedOnce && viewed ) {
-			trackEvents.view();
+			trackEvents.view( gaViewEventLabel );
 			setIsViewedOnce( true );
 		}
-	}, [ viewed, trackEvents, isViewedOnce ] );
+	}, [ viewed, trackEvents, isViewedOnce, gaViewEventLabel ] );
 
 	return (
 		<section id={ id } ref={ ref } className={ className }>
