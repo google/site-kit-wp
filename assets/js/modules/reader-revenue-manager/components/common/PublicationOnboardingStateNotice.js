@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,7 +33,6 @@ import {
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-import { useEffect } from 'react';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;

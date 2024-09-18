@@ -214,14 +214,22 @@ exports.createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [
+						'@wordpress/babel-preset-default',
+						'@babel/preset-react',
+					],
+					plugins: [ '@babel/plugin-proposal-optional-chaining' ],
 				},
 			},
 		],
 		...noAMDParserRule,
 	},
 	{
-		test: RegExp( 'node_modules/@material/web/.*.js' ),
+		test: [
+			RegExp( 'node_modules/@material/web/.*.js' ),
+			RegExp( 'node_modules/@wordpress/dom/.*.js' ),
+			RegExp( 'node_modules/@wordpress/hooks/.*.js' ),
+		],
 		use: [
 			{
 				loader: 'babel-loader',
@@ -230,7 +238,11 @@ exports.createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [
+						'@wordpress/babel-preset-default',
+						'@babel/preset-react',
+					],
+					plugins: [ '@babel/plugin-proposal-optional-chaining' ],
 				},
 			},
 		],

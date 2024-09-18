@@ -101,7 +101,11 @@ module.exports = async ( { config } ) => {
 			include: path.resolve( __dirname, '../' ),
 		},
 		{
-			test: RegExp( 'node_modules/@material/web/.*.js' ),
+			test: [
+				RegExp( 'node_modules/@material/web/.*.js' ),
+				RegExp( 'node_modules/@wordpress/dom/.*.js' ),
+				RegExp( 'node_modules/@wordpress/hooks/.*.js' ),
+			],
 			use: [
 				{
 					loader: 'babel-loader',
@@ -111,9 +115,10 @@ module.exports = async ( { config } ) => {
 						configFile: false,
 						cacheDirectory: true,
 						presets: [
-							'@wordpress/default',
+							'@wordpress/babel-preset-default',
 							'@babel/preset-react',
 						],
+						plugins: [ '@babel/plugin-proposal-optional-chaining' ],
 					},
 				},
 			],

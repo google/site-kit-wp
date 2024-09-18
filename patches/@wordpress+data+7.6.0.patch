@@ -1,0 +1,75 @@
+diff --git a/node_modules/@wordpress/data/build/components/use-select/index.js b/node_modules/@wordpress/data/build/components/use-select/index.js
+index 4e94ea0..6cebb46 100644
+--- a/node_modules/@wordpress/data/build/components/use-select/index.js
++++ b/node_modules/@wordpress/data/build/components/use-select/index.js
+@@ -145,8 +145,7 @@ function useSelect(mapSelect, deps) {
+   const latestMapOutputError = (0, _element.useRef)(); // Keep track of the stores being selected in the _mapSelect function,
+   // and only subscribe to those stores later.
+ 
+-  const listeningStores = (0, _element.useRef)([]);
+-  const wrapSelect = (0, _element.useCallback)(callback => registry.__unstableMarkListeningStores(() => callback(registry.select, registry), listeningStores), [registry]); // Generate a "flag" for used in the effect dependency array.
++  // Generate a "flag" for used in the effect dependency array.
+   // It's different than just using `mapSelect` since deps could be undefined,
+   // in that case, we would still want to memoize it.
+ 
+@@ -163,7 +162,7 @@ function useSelect(mapSelect, deps) {
+ 
+     if (hasReplacedRegistry || hasReplacedMapSelect || hasLeftAsyncMode || lastMapSelectFailed) {
+       try {
+-        mapOutput = wrapSelect(_mapSelect);
++        mapOutput = _mapSelect(registry.select, registry);
+         selectorRan = true;
+       } catch (error) {
+         let errorMessage = `An error occurred while running 'mapSelect': ${error.message}`;
+@@ -210,7 +209,7 @@ function useSelect(mapSelect, deps) {
+ 
+     const onStoreChange = () => {
+       try {
+-        const newMapOutput = wrapSelect(latestMapSelect.current);
++        const newMapOutput = latestMapSelect.current(registry.select, registry);
+ 
+         if ((0, _isShallowEqual.default)(latestMapOutput.current, newMapOutput)) {
+           return;
+@@ -224,32 +223,28 @@ function useSelect(mapSelect, deps) {
+       forceRender();
+     };
+ 
+-    const onChange = () => {
+-      if (!isMounted.current) {
+-        return;
+-      }
+-
+-      if (latestIsAsync.current) {
+-        renderQueue.add(queueContext, onStoreChange);
+-      } else {
+-        onStoreChange();
+-      }
+-    }; // Catch any possible state changes during mount before the subscription
++    // Catch any possible state changes during mount before the subscription
+     // could be set.
+ 
+ 
+     onStoreChange();
+-    const unsubscribers = listeningStores.current.map(storeName => registry.__unstableSubscribeStore(storeName, onChange));
++    const unsubscriber = registry.subscribe( () => {
++			if ( latestIsAsync.current ) {
++				renderQueue.add( queueContext, onStoreChange );
++			} else {
++				onStoreChange();
++			}
++		} );
+     isMounted.current = true;
+     return () => {
+       // The return value of the subscribe function could be undefined if the store is a custom generic store.
+-      unsubscribers.forEach(unsubscribe => unsubscribe === null || unsubscribe === void 0 ? void 0 : unsubscribe());
++      typeof unsubscriber === 'function' && unsubscriber();
+       renderQueue.cancel(queueContext);
+       isMounted.current = false;
+     }; // If you're tempted to eliminate the spread dependencies below don't do it!
+     // We're passing these in from the calling function and want to make sure we're
+     // examining every individual value inside the `deps` array.
+-  }, [registry, wrapSelect, hasMappingFunction, depsChangedFlag]);
++  }, [registry, hasMappingFunction, depsChangedFlag]);
+   (0, _element.useDebugValue)(mapOutput);
+   return hasMappingFunction ? mapOutput : registry.select(mapSelect);
+ }
