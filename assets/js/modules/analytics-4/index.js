@@ -169,15 +169,15 @@ export const registerWidgets = ( widgets ) => {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 
-				const audienceSegmentationSetupComplete =
+				const audienceSegmentationSetupCompletedBy =
 					select(
 						MODULES_ANALYTICS_4
-					).getAudienceSegmentationSetupComplete();
+					).getAudienceSegmentationSetupCompletedBy();
 
 				return (
 					availableAudiences?.length &&
 					configuredAudiences === null &&
-					audienceSegmentationSetupComplete === true
+					audienceSegmentationSetupCompletedBy !== null
 				);
 			},
 		},

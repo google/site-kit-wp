@@ -533,8 +533,10 @@ const baseActions = {
 			)
 		);
 
-		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupComplete(
-			true
+		const userID = select( CORE_USER ).getID();
+
+		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupCompletedBy(
+			userID
 		);
 
 		const { saveSettingsError } = yield commonActions.await(
