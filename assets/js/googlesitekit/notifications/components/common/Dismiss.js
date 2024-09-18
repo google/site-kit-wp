@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -56,3 +61,13 @@ export default function Dismiss( {
 		</Button>
 	);
 }
+
+Dismiss.propTypes = {
+	id: PropTypes.string,
+	primary: PropTypes.bool,
+	dismissLabel: PropTypes.string,
+	dismissExpires: PropTypes.number,
+	disabled: PropTypes.bool,
+	onDismiss: PropTypes.func,
+	gaDismissEventLabel: PropTypes.string,
+};
