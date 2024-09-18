@@ -166,7 +166,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				1,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'view_notification',
 				onboardingState
 			);
@@ -177,7 +177,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'confirm_notification',
 				onboardingState
 			);
@@ -210,7 +210,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				1,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'view_notification',
 				onboardingState
 			);
@@ -221,7 +221,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-success-notification`,
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
 				'dismiss_notification',
 				onboardingState
 			);
