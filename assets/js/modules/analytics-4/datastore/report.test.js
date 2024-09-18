@@ -25,11 +25,11 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 	freezeFetch,
 	subscribeUntil,
 	muteFetch,
 	waitForTimeouts,
+	provideSiteInfo,
 } from '../../../../../tests/js/utils';
 import { DAY_IN_SECONDS } from '../../../util';
 import { isZeroReport } from '../utils';
@@ -44,10 +44,6 @@ describe( 'modules/analytics-4 report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {
@@ -635,6 +631,33 @@ describe( 'modules/analytics-4 report', () => {
 			);
 		} );
 
+		describe( 'getSampleReportArgs', () => {
+			it( 'should return report arguments relative to the current reference date', () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-01' );
+
+				const args = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getSampleReportArgs();
+
+				expect( args.startDate ).toBe( '2024-04-03' );
+				expect( args.endDate ).toBe( '2024-04-30' );
+				expect( args.metrics?.[ 0 ]?.name ).toBe( 'totalUsers' );
+				expect( args.dimensions?.[ 0 ] ).toBe( 'date' );
+				expect( args.url ).toBeUndefined();
+			} );
+
+			it( 'should include the URL property from the current entity URL', () => {
+				const entityURL = 'http://example.com';
+				provideSiteInfo( registry, { currentEntityURL: entityURL } );
+
+				const args = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getSampleReportArgs();
+
+				expect( args.url ).toBe( entityURL );
+			} );
+		} );
+
 		describe( 'getReportForAllAudiences', () => {
 			const getAudiencesEndpoint = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/audiences'
@@ -643,6 +666,28 @@ describe( 'modules/analytics-4 report', () => {
 			const audiences = fixtures.audiences.map( ( { name } ) => name );
 
 			it( 'should trigger a separate report for each provided audience', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( fixtures.availableAudiences );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: fixtures.availableAudiences.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
 				const options = {
 					startDate: '2022-11-02',
 					endDate: '2022-11-04',

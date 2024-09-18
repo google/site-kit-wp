@@ -82,7 +82,8 @@ class Web_Tag extends Module_Web_Tag {
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		wp_register_script( 'google_swgjs', 'https://news.google.com/swg/js/v1/swg-basic.js', array(), null, true );
-		wp_add_inline_script( 'google_swgjs', $swg_inline_script );
+		wp_script_add_data( 'google_swgjs', 'strategy', 'async' );
+		wp_add_inline_script( 'google_swgjs', $swg_inline_script, 'before' );
 
 		wp_enqueue_script( 'google_swgjs' );
 	}

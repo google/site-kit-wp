@@ -24,10 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data, {
-	commonActions,
-	createRegistrySelector,
-} from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
@@ -39,6 +36,7 @@ import { createValidatedAction } from '../../data/utils';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
+const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 
 export const initialState = {
 	notifications: {},
@@ -127,9 +125,10 @@ export const actions = {
 	 *
 	 * @since 1.132.0
 	 *
-	 * @param {string} id                         Notification id to dismiss.
-	 * @param {Object} options                    Dismiss notification options.
-	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
+	 * @param {string} id                            Notification id to dismiss.
+	 * @param {Object} options                       Dismiss notification options.
+	 * @param {number} [options.expiresInSeconds]    Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
+	 * @param {number} [options.skipHidingFromQueue] Optional. A boolean value if notification should not be removed from the queue immediately.
 	 * @return {Object} Generator instance.
 	 */
 	dismissNotification: createValidatedAction(
@@ -147,7 +146,16 @@ export const actions = {
 		function* ( id, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
 			const registry = yield commonActions.getRegistry();
-			return yield registry
+
+			if ( ! options.skipHidingFromQueue ) {
+				// Remove the notification from the queue of notifications in state.
+				yield {
+					type: DISMISS_NOTIFICATION,
+					payload: { id },
+				};
+			}
+
+			return registry
 				.dispatch( CORE_USER )
 				.dismissItem( id, { expiresInSeconds } );
 		}
@@ -177,6 +185,22 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			break;
 		}
 
+		case DISMISS_NOTIFICATION: {
+			const { id } = payload;
+			const dismissedNotificationIndex =
+				state.queuedNotifications.findIndex(
+					( notification ) => notification.id === id
+				);
+
+			if ( dismissedNotificationIndex >= 0 ) {
+				state.queuedNotifications.splice(
+					dismissedNotificationIndex,
+					1
+				);
+			}
+			break;
+		}
+
 		default:
 			break;
 	}
@@ -184,14 +208,14 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getQueuedNotifications( viewContext ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const notifications = registry
 			.select( CORE_NOTIFICATIONS )
 			.getNotifications();
 
 		// Wait for all dismissed items to be available before filtering.
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			registry.resolveSelect( CORE_USER ).getDismissedItems()
 		);
 
@@ -214,12 +238,15 @@ export const resolvers = {
 			}
 		);
 
-		const checkRequirementsResults = yield Data.commonActions.await(
+		const checkRequirementsResults = yield commonActions.await(
 			Promise.all(
 				filteredNotifications.map( async ( { checkRequirements } ) => {
 					if ( typeof checkRequirements === 'function' ) {
 						try {
-							return await checkRequirements( registry );
+							return await checkRequirements(
+								registry,
+								viewContext
+							);
 						} catch ( e ) {
 							return false; // Prevent `Promise.all()` from being rejected for a single failed promise.
 						}
@@ -246,7 +273,7 @@ export const selectors = {
 	/**
 	 * Fetches all registered notifications from state, regardless of whether they are dismissed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of notification objects.
@@ -261,7 +288,7 @@ export const selectors = {
 	 * They are filtered based on the given `viewContext`, their dismissal state
 	 * and their `checkRequirements` callback. They are sorted by their `priority`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} viewContext The viewContext to fetch notifications for.

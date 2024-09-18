@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Guards\Guard_Interface;
 /**
  * Class handling the synchronization of remote features with local storage.
  *
- * @since n.e.x.t
+ * @since 1.133.0
  * @access private
  * @ignore
  */
@@ -46,7 +46,7 @@ class Remote_Features_Syncer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param Remote_Features $remote_features Remote_Features instance.
 	 * @param Closure         $fetch_features  Function which fetches features.
@@ -65,7 +65,7 @@ class Remote_Features_Syncer {
 	/**
 	 * Fetches the latest remote features and sets them in storage.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 */
 	public function pull_remote_features() {
 		foreach ( $this->guards as $guard ) {
@@ -77,7 +77,7 @@ class Remote_Features_Syncer {
 		$features = ( $this->fetch_features )();
 
 		if ( ! is_wp_error( $features ) && is_array( $features ) ) {
-			$this->remote_features->set( $features );
+			$this->remote_features->update( $features );
 		}
 	}
 }

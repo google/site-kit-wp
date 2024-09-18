@@ -210,26 +210,6 @@ ReadyLongCityNames.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyLongCityNames',
 };
 
-export const Loading = Template.bind( {} );
-Loading.storyName = 'Loading';
-Loading.args = {
-	...readyProps,
-	isLoading: true,
-};
-Loading.decorators = [
-	( Story ) => {
-		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
-		return (
-			<div className="googlesitekit-vrt-animation-paused">
-				<Story />
-			</div>
-		);
-	},
-];
-Loading.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/Loading',
-};
-
 export const NoData = Template.bind( {} );
 NoData.storyName = 'NoData';
 NoData.args = {
@@ -322,6 +302,22 @@ TopContentPartialData.args = {
 TopContentPartialData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/TopContentPartialData',
 };
+
+export const ViewOnlyNoDimensions = Template.bind( {} );
+ViewOnlyNoDimensions.storyName =
+	"Top content hidden when dimension doesn't exist for view only user";
+ViewOnlyNoDimensions.args = {
+	...readyProps,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableAudiences: [],
+			availableCustomDimensions: [],
+			propertyID: '123456789',
+		} );
+	},
+};
+ViewOnlyNoDimensions.scenario = {};
 
 export const ZeroDataHideable = Template.bind( {} );
 ZeroDataHideable.storyName = 'ZeroDataHideable';

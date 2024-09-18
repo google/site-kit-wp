@@ -18,6 +18,21 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-setup-module--reader-revenue-manager {
+
+		form > .googlesitekit-cta-link {
+			font-weight: $fw-medium;
+		}
+
+		// Ensure that the descendent styles only apply to the module setup screen.
+		.googlesitekit-setup-module__step {
+
+			.googlesitekit-publication-onboarding-state-notice {
+				margin-bottom: 40px;
+			}
+		}
+	}
+
 	.googlesitekit-setup-module__publication-create-screen {
 
 		.googlesitekit-setup-module__title,
@@ -30,12 +45,10 @@
 		}
 
 		.googlesitekit-setup-module__title {
-			color: $c-surfaces-on-surface;
 			margin-bottom: 0;
 		}
 
 		.googlesitekit-setup-module__description {
-			color: $c-surfaces-on-background-variant;
 			margin-top: 3px;
 		}
 

@@ -19,29 +19,97 @@
 /**
  * Internal dependencies
  */
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '../../datastore/constants';
+import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import SetupMain from './SetupMain';
+import { publications } from '../../datastore/__fixtures__';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 function Template() {
-	return <SetupMain />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<ModuleSetup moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG } />
+		</ViewContextProvider>
+	);
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.scenario = {
-	// No parameters are needed for this scenario, but we still need to define the scenario object to include the story in the VRT suite.
+export const NoPublications = Template.bind( {} );
+NoPublications.storyName = 'No publications';
+NoPublications.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+	},
 };
+NoPublications.scenario = {};
+
+export const PublicationCreated = Template.bind( {} );
+PublicationCreated.storyName = 'Publication created';
+PublicationCreated.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [ publications[ 0 ] ] );
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ SHOW_PUBLICATION_CREATE ]: true,
+			} );
+	},
+};
+PublicationCreated.scenario = {};
+
+export const OnePublication = Template.bind( {} );
+OnePublication.storyName = 'One publication';
+OnePublication.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [ publications[ 0 ] ] );
+	},
+};
+OnePublication.scenario = {};
+
+export const MultiplePublications = Template.bind( {} );
+MultiplePublications.storyName = 'Multiple publications';
+MultiplePublications.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+	},
+};
+MultiplePublications.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMain',
-	component: SetupMain,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			function setupRegistry( registry ) {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetPublications( [] );
+				provideModules( registry, [
+					{
+						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+						active: true,
+						connected: false,
+					},
+				] );
+				provideModuleRegistrations( registry );
+
+				// Call story-specific setup.
+				args?.setupRegistry?.( registry );
 			}
 
 			return (
@@ -51,4 +119,5 @@ export default {
 			);
 		},
 	],
+	parameters: { padding: 0 },
 };

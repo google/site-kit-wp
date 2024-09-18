@@ -21,11 +21,12 @@ use Google\Site_Kit\Core\Storage\Options;
 /**
  * Class providing the integration of remote features.
  *
- * @since n.e.x.t
+ * @since 1.133.0
  * @access private
  * @ignore
  */
 class Remote_Features_Provider {
+
 	/**
 	 * Credentials instance.
 	 *
@@ -62,9 +63,16 @@ class Remote_Features_Provider {
 	private Remote_Features_Cron $cron;
 
 	/**
+	 * Remote_Features_Fallback instance.
+	 *
+	 * @var Remote_Features_Fallback
+	 */
+	private Remote_Features_Fallback $fallback;
+
+	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param Context $context Context instance.
 	 * @param Options $options Options instance.
@@ -80,12 +88,13 @@ class Remote_Features_Provider {
 			new Using_Proxy_Connection_Guard( $this->credentials )
 		);
 		$this->cron        = new Remote_Features_Cron( array( $this->syncer, 'pull_remote_features' ) );
+		$this->fallback    = new Remote_Features_Fallback( $this->setting, $this->syncer );
 	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 */
 	public function register() {
 		$this->setting->register();
@@ -93,6 +102,25 @@ class Remote_Features_Provider {
 		$this->cron->register();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
+		add_action(
+			'heartbeat_tick',
+			fn ( $response, $screen_id ) => $this->on_heartbeat_tick( $screen_id ),
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Handles the heartbeat AJAX callback.
+	 *
+	 * @param string $screen_id The screen ID.
+	 */
+	protected function on_heartbeat_tick( $screen_id ) {
+		if ( 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
+			return;
+		}
+
+		$this->fallback->remote_features_sync_fallback();
 	}
 
 	/**

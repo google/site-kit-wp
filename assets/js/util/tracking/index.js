@@ -38,7 +38,6 @@ const initialConfig = {
 	activeModules,
 	trackingEnabled,
 	trackingID,
-	trackingID_GA4: 'G-EQDN3BWDSD',
 	referenceSiteURL,
 	userIDHash,
 	isSiteKitScreen,

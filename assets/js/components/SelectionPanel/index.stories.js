@@ -24,20 +24,25 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import NewBadge from '../NewBadge';
 import SelectionPanel from './SelectionPanel';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import SelectionPanelHeader from './SelectionPanelHeader';
 import SelectionPanelItem from './SelectionPanelItem';
 import SelectionPanelItems from './SelectionPanelItems';
 
-function Template( { availableSavedItems = {}, savedItemSlugs = [] } ) {
+function Template( {
+	availableSavedItems = {},
+	savedItemSlugs = [],
+	itemComponentProps = {},
+} ) {
 	const [ selectedItems, setSeletectedItems ] = useState(
 		Object.keys( availableSavedItems )
 	);
 
 	const availableUnsavedItems =
-		// Create an array of numbers from 1 to 24.
-		Array.from( { length: 24 }, ( _, index ) => index + 1 )
+		// Create an array of numbers from 1 to 5.
+		Array.from( { length: 5 }, ( _, index ) => index + 1 )
 			// Filter out saved items.
 			.filter(
 				( number ) =>
@@ -55,6 +60,7 @@ function Template( { availableSavedItems = {}, savedItemSlugs = [] } ) {
 						slug,
 						title: `Item ${ current }`,
 						description: `Description for item ${ current }`,
+						...itemComponentProps,
 					},
 				};
 			}, {} );
@@ -89,7 +95,7 @@ function Template( { availableSavedItems = {}, savedItemSlugs = [] } ) {
 				savedItemSlugs={ savedItemSlugs }
 			/>
 			<SelectionPanelFooter
-				maxSelectedItemCount={ 24 }
+				maxSelectedItemCount={ 5 }
 				selectedItemSlugs={ selectedItems }
 			/>
 		</SelectionPanel>
@@ -126,6 +132,42 @@ WithSavedItems.args = {
 };
 WithSavedItems.scenario = {
 	label: 'Components/SelectionPanel/WithSavedItems',
+};
+
+export const withZeroUnsavedItems = Template.bind( {} );
+withZeroUnsavedItems.storyName = 'With zero unsaved items';
+withZeroUnsavedItems.args = {
+	availableSavedItems: Array.from(
+		{ length: 5 },
+		( _, index ) => index + 1
+	).reduce( ( acc, current ) => {
+		const slug = `item-${ current }`;
+
+		return {
+			...acc,
+			[ slug ]: {
+				slug,
+				title: `Item ${ current }`,
+				description: `Description for item ${ current }`,
+			},
+		};
+	}, {} ),
+	savedItemSlugs: Array.from(
+		{ length: 5 },
+		( _, index ) => `item-${ index + 1 }`
+	),
+};
+withZeroUnsavedItems.scenario = {};
+
+export const WithNewBadges = Template.bind( {} );
+WithNewBadges.storyName = 'With "New" badges';
+WithNewBadges.args = {
+	itemComponentProps: {
+		badge: <NewBadge />,
+	},
+};
+WithNewBadges.scenario = {
+	label: 'Components/SelectionPanel/WithNewBadges',
 };
 
 export default {

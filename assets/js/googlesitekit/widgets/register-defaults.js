@@ -157,6 +157,21 @@ export function registerDefaults( widgetsAPI ) {
 				priority: 2,
 				CTA: ChangeGroupsLink,
 				Footer: AudienceAreaFooter,
+				filterActiveWidgets( select, areaWidgets ) {
+					const isAudienceSegmentationWidgetHidden =
+						select(
+							CORE_USER
+						).isAudienceSegmentationWidgetHidden();
+
+					if (
+						isAudienceSegmentationWidgetHidden === undefined ||
+						isAudienceSegmentationWidgetHidden
+					) {
+						return [];
+					}
+
+					return areaWidgets;
+				},
 			},
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
 		);

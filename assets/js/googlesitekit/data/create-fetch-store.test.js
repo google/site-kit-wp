@@ -32,7 +32,7 @@ import { createRegistry } from '@wordpress/data';
  */
 import API from 'googlesitekit-api';
 import { combineStores } from 'googlesitekit-data';
-import { subscribeUntil, unsubscribeFromAll } from '../../../../tests/js/utils';
+import { subscribeUntil } from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
 import { createErrorStore } from './create-error-store';
 
@@ -91,10 +91,6 @@ describe( 'createFetchStore store', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

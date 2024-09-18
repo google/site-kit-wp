@@ -25,7 +25,6 @@ import {
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
@@ -93,7 +92,6 @@ describe( 'core/modules sharing-settings', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		delete global[ dashboardSharingDataBaseVar ];
 	} );
 

@@ -20,17 +20,23 @@
  * Internal dependencies.
  */
 import {
+	act,
 	createTestRegistry,
+	fireEvent,
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import * as tracking from '../../../../util/tracking';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'PublicationOnboardingStateNotice', () => {
 	let registry;
@@ -42,6 +48,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 	} = PUBLICATION_ONBOARDING_STATES;
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideUserInfo( registry );
@@ -61,6 +68,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it.each( [
@@ -89,36 +97,50 @@ describe( 'PublicationOnboardingStateNotice', () => {
 				<PublicationOnboardingStateNotice />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
 			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-onboarding-state-notification`,
+				'view_notification',
+				publicationState
+			);
 
 			expect( getByText( expectedText ) ).toBeInTheDocument();
 
 			const expectedServiceURL = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getServiceURL( {
-					path: '/reader-revenue-manager',
-					publicationID: 'ABCDEFGH',
+					path: 'reader-revenue-manager',
+					query: {
+						publication: 'ABCDEFGH',
+					},
 				} );
 
 			// Ensure that CTA is present and class name is correct.
 			expect( getByText( ctaText ) ).toBeInTheDocument();
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-notice__button'
-				)
-			).toBeInTheDocument();
 
 			expect(
 				container.querySelector(
-					'.googlesitekit-cta-link.googlesitekit-cta-link--inverse'
+					'.googlesitekit-subtle-notification__cta'
 				)
 			).toHaveAttribute( 'href', expectedServiceURL );
 
 			expect( container.firstChild ).toHaveClass(
 				'googlesitekit-publication-onboarding-state-notice'
+			);
+
+			act( () => {
+				fireEvent.click( getByText( ctaText ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-onboarding-state-notification`,
+				'confirm_notification',
+				publicationState
 			);
 		}
 	);

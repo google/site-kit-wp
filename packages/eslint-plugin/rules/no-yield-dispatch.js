@@ -29,8 +29,11 @@ module.exports = {
 				) {
 					const callee = node.argument.callee;
 
-					// Checking for 'yield dispatch'
-					if ( callee.name === 'dispatch' ) {
+					// Checking for 'yield dispatch', and 'yield registry.dispatch().action()'
+					if (
+						callee.name === 'dispatch' ||
+						callee.object?.callee?.property?.name === 'dispatch'
+					) {
 						context.report( {
 							node,
 							message: ERROR_MESSAGE,

@@ -63,6 +63,19 @@ describe( 'admin tracking', () => {
 					)
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/core/user/data/audience-settings'
+					)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [],
+					} ),
+				} );
 			} else {
 				request.continue();
 			}
@@ -112,7 +125,7 @@ describe( 'admin tracking', () => {
 
 			// Make sure the script tags are not yet loaded on the page.
 			await expect( page ).not.toMatchElement(
-				'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+				'script[src^="https://www.googletagmanager.com/gtag/js?id=G-EQDN3BWDSD"]'
 			);
 
 			// Opt-in to tracking to ensure the checkbox is selected.
@@ -129,12 +142,12 @@ describe( 'admin tracking', () => {
 			// Ensure the script tags are injected into the page if they weren't
 			// loaded already.
 			await page.waitForSelector(
-				'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+				'script[src^="https://www.googletagmanager.com/gtag/js?id=G-EQDN3BWDSD"]'
 			);
 
 			// Ensure tag manager script tag exists.
 			await expect( page ).toMatchElement(
-				'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+				'script[src^="https://www.googletagmanager.com/gtag/js?id=G-EQDN3BWDSD"]'
 			);
 
 			// Opt-out again.
@@ -182,7 +195,7 @@ describe( 'admin tracking', () => {
 			await expect( page ).not.toHaveTracking();
 			// Ensure no tag manager script exists.
 			await expect( page ).not.toMatchElement(
-				'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+				'script[src^="https://www.googletagmanager.com/gtag/js?id=G-EQDN3BWDSD"]'
 			);
 		} );
 	} );

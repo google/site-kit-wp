@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Guards\Guard_Interface;
 /**
  * Class providing guard logic based on proxy connection.
  *
- * @since n.e.x.t
+ * @since 1.133.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Using_Proxy_Connection_Guard implements Guard_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 * @param Credentials $credentials Credentials instance.
 	 */
 	public function __construct( Credentials $credentials ) {
@@ -42,7 +42,7 @@ class Using_Proxy_Connection_Guard implements Guard_Interface {
 	/**
 	 * Determines whether the guarded entity can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 * @return bool|\WP_Error
 	 */
 	public function can_activate() {

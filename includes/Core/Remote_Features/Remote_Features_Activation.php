@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class handling the application of remote feature activation.
  *
- * @since n.e.x.t
+ * @since 1.133.0
  * @access private
  * @ignore
  */
@@ -48,7 +48,7 @@ class Remote_Features_Activation {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 */
 	public function register() {
 		add_filter(
@@ -75,7 +75,7 @@ class Remote_Features_Activation {
 	/**
 	 * Filters feature flags using features stored in options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.133.0
 	 *
 	 * @param boolean $feature_enabled Original value of the feature.
 	 * @param string  $feature_name    Feature name.

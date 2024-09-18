@@ -68,10 +68,76 @@ class UninstallationTest extends TestCase {
 		$this->assertFalse( $this->issued_delete_site_request );
 	}
 
+	public function test_clear_scheduled_events__uninstall() {
+		$this->set_scheduled_events();
+
+		// Assert scheduled events were set.
+		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
+			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+		}
+
+		remove_all_actions( 'googlesitekit_uninstallation' );
+
+		$this->uninstallation->register();
+
+		do_action( 'googlesitekit_uninstallation' );
+
+		// Assert scheduled events were cleared.
+		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
+			$this->assertEmpty( wp_next_scheduled( $event ) );
+		}
+	}
+
+	public function test_clear_scheduled_events__reset() {
+		$this->set_scheduled_events();
+
+		// Assert scheduled events were set.
+		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
+			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+		}
+
+		remove_all_actions( 'googlesitekit_reset' );
+
+		$this->uninstallation->register();
+
+		do_action( 'googlesitekit_reset' );
+
+		// Assert scheduled events were cleared.
+		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
+			$this->assertEmpty( wp_next_scheduled( $event ) );
+		}
+	}
+
+	public function test_clear_scheduled_events__deactivation() {
+		$this->set_scheduled_events();
+
+		// Assert scheduled events were set.
+		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
+			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+		}
+
+		remove_all_actions( 'googlesitekit_deactivation' );
+
+		$this->uninstallation->register();
+
+		do_action( 'googlesitekit_deactivation' );
+
+		// Assert scheduled events were cleared.
+		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
+			$this->assertEmpty( wp_next_scheduled( $event ) );
+		}
+	}
+
 	public function check_proxy_delete_site_url( $preempt, $args, $url ) {
 		if ( $this->google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI ) === $url ) {
 			$this->issued_delete_site_request = true;
 		}
 		return $preempt;
+	}
+
+	private function set_scheduled_events() {
+		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
+			wp_schedule_event( time(), 'daily', $event );
+		}
 	}
 }

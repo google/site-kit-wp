@@ -36,7 +36,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 
 export default function SettingsForm() {
-	const iceEnabled = useFeature( 'conversionInfra' );
 	const paxEnabled = useFeature( 'adsPax' );
 
 	const conversionID = useSelect( ( select ) =>
@@ -67,32 +66,30 @@ export default function SettingsForm() {
 			<div className="googlesitekit-ads-settings-fields">
 				<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
 
-				{ iceEnabled && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<ConversionTrackingToggle>
-							{ createInterpolateElement(
-								__(
-									'Conversion tracking allows you to measure additional events on your site from other plugins that Site Kit integrates with to optimize your campaign performance. <a>Learn more</a>',
-									'google-site-kit'
+				<div className="googlesitekit-settings-module__meta-item">
+					<ConversionTrackingToggle>
+						{ createInterpolateElement(
+							__(
+								'Conversion tracking allows you to measure additional events on your site from other plugins that Site Kit integrates with to optimize your campaign performance. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<Link
+										href={
+											conversionTrackingDocumentationURL
+										}
+										external
+										aria-label={ __(
+											'Learn more about conversion tracking',
+											'google-site-kit'
+										) }
+									/>
 								),
-								{
-									a: (
-										<Link
-											href={
-												conversionTrackingDocumentationURL
-											}
-											external
-											aria-label={ __(
-												'Learn more about conversion tracking',
-												'google-site-kit'
-											) }
-										/>
-									),
-								}
-							) }
-						</ConversionTrackingToggle>
-					</div>
-				) }
+							}
+						) }
+					</ConversionTrackingToggle>
+				</div>
 
 				{ ! isPaxView && (
 					<div className="googlesitekit-setup-module__inputs">

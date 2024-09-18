@@ -31,7 +31,6 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import {
 	CORE_USER,
@@ -40,6 +39,9 @@ import {
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
 
 // Map of scope IDs to Site Kit module slugs.
 const scopeIDToSlug = {
@@ -82,7 +84,7 @@ function mapScopesToModuleNames( scopes, modules ) {
 	);
 }
 
-export default function UnsatisfiedScopesAlert() {
+export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	const doingCTARef = useRef();
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo(
@@ -195,18 +197,21 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	return (
-		<BannerNotification
-			id="authentication error"
-			title={ title }
-			description={ message }
-			format="small"
-			type="win-error"
-			isDismissible={ false }
-			ctaLink={ connectURL }
-			onCTAClick={ () => {
-				doingCTARef.current = true;
-			} }
-			ctaLabel={ ctaLabel }
-		/>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+			<NotificationError
+				title={ title }
+				description={ <Description text={ message } /> }
+				actions={
+					<CTALink
+						id={ id }
+						ctaLabel={ ctaLabel }
+						ctaLink={ connectURL }
+						onCTAClick={ () => {
+							doingCTARef.current = true;
+						} }
+					/>
+				}
+			/>
+		</Notification>
 	);
 }
