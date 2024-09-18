@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SubtleNotification from '../../../../components/notifications/SubtleNotification';
+import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -34,6 +34,8 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
+import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -47,7 +49,10 @@ const targetOnboardingStates = [
 	ONBOARDING_ACTION_REQUIRED,
 ];
 
-export default function RRMSetupSuccessSubtleNotification( { Notification } ) {
+export default function RRMSetupSuccessSubtleNotification( {
+	id,
+	Notification,
+} ) {
 	const viewContext = useViewContext();
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
@@ -118,12 +123,29 @@ export default function RRMSetupSuccessSubtleNotification( { Notification } ) {
 						'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
 						'google-site-kit'
 					) }
-					onDismiss={ handleDismiss }
-					dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-					ctaLabel={ __( 'Customize settings', 'google-site-kit' ) }
-					ctaLink={ serviceURL }
-					onCTAClick={ onCTAClick }
-					isCTALinkExternal
+					dismissCTA={
+						<Dismiss
+							id={ id }
+							primary={ false }
+							dismissLabel={ __(
+								'Maybe later',
+								'google-site-kit'
+							) }
+							onDismiss={ handleDismiss }
+						/>
+					}
+					additionalCTA={
+						<CTALinkSubtle
+							id={ id }
+							ctaLabel={ __(
+								'Customize settings',
+								'google-site-kit'
+							) }
+							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
+							isCTALinkExternal
+						/>
+					}
 				/>
 			</Notification>
 		);
@@ -141,15 +163,26 @@ export default function RRMSetupSuccessSubtleNotification( { Notification } ) {
 						'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
 						'google-site-kit'
 					) }
-					onDismiss={ handleDismiss }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					ctaLabel={ __(
-						'Check publication status',
-						'google-site-kit'
-					) }
-					ctaLink={ serviceURL }
-					onCTAClick={ onCTAClick }
-					isCTALinkExternal
+					dismissCTA={
+						<Dismiss
+							id={ id }
+							primary={ false }
+							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+							onDismiss={ handleDismiss }
+						/>
+					}
+					additionalCTA={
+						<CTALinkSubtle
+							id={ id }
+							ctaLabel={ __(
+								'Check publication status',
+								'google-site-kit'
+							) }
+							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
+							isCTALinkExternal
+						/>
+					}
 				/>
 			</Notification>
 		);
@@ -163,16 +196,26 @@ export default function RRMSetupSuccessSubtleNotification( { Notification } ) {
 						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
 						'google-site-kit'
 					) }
-					onDismiss={ handleDismiss }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					ctaLabel={ __(
-						'Complete publication setup',
-						'google-site-kit'
-					) }
-					ctaLink={ serviceURL }
-					onCTAClick={ onCTAClick }
-					isCTALinkExternal
-					variant="warning"
+					dismissCTA={
+						<Dismiss
+							id={ id }
+							primary={ false }
+							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+							onDismiss={ handleDismiss }
+						/>
+					}
+					additionalCTA={
+						<CTALinkSubtle
+							id={ id }
+							ctaLabel={ __(
+								'Complete publication setup',
+								'google-site-kit'
+							) }
+							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
+							isCTALinkExternal
+						/>
+					}
 				/>
 			</Notification>
 		);
