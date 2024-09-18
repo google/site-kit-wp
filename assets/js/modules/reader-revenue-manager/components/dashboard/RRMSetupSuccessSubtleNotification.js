@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,8 +27,6 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -43,17 +40,10 @@ const {
 	ONBOARDING_ACTION_REQUIRED,
 } = PUBLICATION_ONBOARDING_STATES;
 
-const targetOnboardingStates = [
-	ONBOARDING_COMPLETE,
-	PENDING_VERIFICATION,
-	ONBOARDING_ACTION_REQUIRED,
-];
-
 export default function RRMSetupSuccessSubtleNotification( {
 	id,
 	Notification,
 } ) {
-	const viewContext = useViewContext();
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
 
@@ -79,19 +69,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 		setSlug( undefined );
 	};
 
-	useEffect( () => {
-		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
-			trackEvent(
-				`${ viewContext }_rrm-setup-success-notification`,
-				'view_notification',
-				publicationOnboardingState
-			);
-		}
-	}, [ publicationOnboardingState, viewContext ] );
-
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
-			<Notification>
+			<Notification gaViewEventLabel={ publicationOnboardingState }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -132,7 +112,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<Notification>
+			<Notification gaViewEventLabel={ publicationOnboardingState }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -170,7 +150,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<Notification>
+			<Notification gaViewEventLabel={ publicationOnboardingState }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
