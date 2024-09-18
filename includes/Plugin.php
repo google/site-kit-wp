@@ -224,6 +224,7 @@ final class Plugin {
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
 				( new Core\Consent_Mode\Consent_Mode( $this->context, $options ) )->register();
+				( new Core\Gemini\Gemini( $this->context, $options ) )->register();
 				( new Core\Tags\GTag() )->register();
 				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
 

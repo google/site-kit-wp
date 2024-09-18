@@ -58,6 +58,7 @@ function ModalDialog( {
 	small = false,
 	medium = false,
 	buttonLink = null,
+	hideCancel = false,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
@@ -118,14 +119,16 @@ function ModalDialog( {
 				) }
 			</DialogContent>
 			<DialogFooter>
-				<Button
-					className="mdc-dialog__cancel-button"
-					tertiary
-					onClick={ handleDialog }
-					disabled={ inProgress }
-				>
-					{ __( 'Cancel', 'google-site-kit' ) }
-				</Button>
+				{ ! hideCancel && (
+					<Button
+						className="mdc-dialog__cancel-button"
+						tertiary
+						onClick={ handleDialog }
+						disabled={ inProgress }
+					>
+						{ __( 'Cancel', 'google-site-kit' ) }
+					</Button>
+				) }
 				{ buttonLink ? (
 					<Button
 						href={ buttonLink }

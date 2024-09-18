@@ -17,14 +17,16 @@
     "yoast/phpunit-polyfills": "^2.0"
   },
   "require": {
-    "php": ">=7.4",
+    "php": ">=8.1",
     "ext-json": "*",
     "ext-openssl": "*",
+    "google-gemini-php/client": "dev-sitekit",
     "google/apiclient": "^2.14.0",
     "google/apiclient-services": "^0.343.0",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
-    "guzzlehttp/guzzle": "^6.5.8",
+    "guzzlehttp/guzzle": "^7.8",
+    "http-interop/http-factory-guzzle": "^1.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
   "replace": {
@@ -43,12 +45,13 @@
   },
   "config": {
     "platform": {
-      "php": "7.4.33"
+      "php": "8.1.29"
     },
     "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "roots/wordpress-core-installer": true
+      "roots/wordpress-core-installer": true,
+      "php-http/discovery": true
     }
   },
   "extra": {
@@ -68,6 +71,10 @@
       "options": {
         "symlink": false
       }
+    },
+    {
+      "url": "git@github.com:benbowler/google-gemini-php-client.git",
+      "type": "git"
     }
   ],
   "scripts": {
@@ -84,6 +91,7 @@
       "@autoload-third-party",
       "@composer dump-autoload --no-dev",
       "cp vendor/composer/autoload_files.php third-party/vendor/",
+      "sed -i='' 's#\\\\class_alias(\\x27Google\\\\\\\\Site_Kit_Dependencies\\\\\\\\Google_Task_Composer\\x27, \\x27Google\\\\Site_Kit_Dependencies\\\\Google_Task_Composer\\x27, \\\\false);##g' third-party/google/apiclient/src/aliases.php",
       "@composer dump-autoload"
     ],
     "autoload-includes": [
@@ -100,8 +108,8 @@
       "rm -rf third-party/vendor && rm third-party/composer.json",
       "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
     ],
-    "lint": "phpcs",
-    "lint-fix": "phpcbf",
+    "lint": "phpcs --ignore='blocks/build/*'",
+    "lint-fix": "phpcbf --ignore='blocks/build/*'",
     "test": "phpunit",
     "test:multisite": "@test --configuration=phpunit.multisite.xml"
   }

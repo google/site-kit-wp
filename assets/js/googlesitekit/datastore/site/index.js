@@ -27,6 +27,7 @@ import conversionTracking from './conversion-tracking';
 import errors from './errors';
 import html from './html';
 import info from './info';
+import memorableQuotes from './gemini';
 import reset from './reset';
 import enableAutoUpdate from './enable-auto-update';
 import settings from './settings';
@@ -44,6 +45,7 @@ const store = combineStores(
 	errors,
 	html,
 	info,
+	memorableQuotes,
 	developerPlugin,
 	reset,
 	enableAutoUpdate,

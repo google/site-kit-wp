@@ -4,3 +4,4 @@
 /tests/backstop/html_report/*
 /php-scoper/*
 /vendor/*
+/blocks/build/*
