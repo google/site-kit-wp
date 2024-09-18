@@ -30,14 +30,13 @@ export default function CTALinkSubtle( {
 	id,
 	ctaLink,
 	ctaLabel,
-	onCTAClick,
 	isCTALinkExternal = false,
+	gaConfirmEventLabel,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
-	const handleCTAClick = async ( event ) => {
-		await onCTAClick?.( event );
-		trackEvents.confirm();
+	const handleCTAClick = () => {
+		trackEvents.confirm( gaConfirmEventLabel );
 	};
 
 	return (
@@ -62,6 +61,6 @@ CTALinkSubtle.propTypes = {
 	id: PropTypes.string,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
-	onCTAClick: PropTypes.func,
 	isCTALinkExternal: PropTypes.bool,
+	gaConfirmEventLabel: PropTypes.string,
 };
