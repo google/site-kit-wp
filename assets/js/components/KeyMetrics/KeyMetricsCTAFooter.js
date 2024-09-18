@@ -32,21 +32,28 @@ import { __ } from '@wordpress/i18n';
 import { Cell, Row } from '../../material-components';
 import Link from '../Link';
 
-export default function KeyMetricsCTAFooter( { onActionClick = () => {} } ) {
+export default function KeyMetricsCTAFooter( {
+	onActionClick = () => {},
+	showDismiss,
+} ) {
 	return (
 		<Row className="googlesitekit-widget-key-metrics-footer">
 			<Cell
 				size={ 12 }
 				className="googlesitekit-widget-key-metrics-footer__cta-wrapper"
 			>
-				<p>
-					{ __(
-						'Intereseted in specific metrics?',
-						'google-site-kit'
-					) }
-				</p>
-				<Link tertiary onClick={ onActionClick }>
-					{ __( 'Select your own metrics', 'google-site-kit' ) }
+				{ ! showDismiss && (
+					<p>
+						{ __(
+							'Intereseted in specific metrics?',
+							'google-site-kit'
+						) }
+					</p>
+				) }
+				<Link onClick={ onActionClick }>
+					{ showDismiss
+						? __( 'Maybe later', 'google-site-kit' )
+						: __( 'Select your own metrics', 'google-site-kit' ) }
 				</Link>
 			</Cell>
 		</Row>
