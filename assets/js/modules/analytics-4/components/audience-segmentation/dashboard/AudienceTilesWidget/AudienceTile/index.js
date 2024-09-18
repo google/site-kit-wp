@@ -30,12 +30,13 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../../../hooks/useBreakpoint';
+import useViewOnly from '../../../../../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
 import AudienceMetricIconVisitors from '../../../../../../../../svg/icons/audience-metric-icon-visitors.svg';
 import AudienceMetricIconVisitsPerVisitor from '../../../../../../../../svg/icons/audience-metric-icon-visits-per-visitor.svg';
@@ -53,13 +54,11 @@ import PartialDataNotice from './PartialDataNotice';
 import { numFmt } from '../../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
-import AudienceTileLoading from './AudienceTileLoading';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
 // in AudienceTiles.
 export default function AudienceTile( {
-	loaded,
 	title,
 	infoTooltip,
 	visitors,
@@ -72,15 +71,15 @@ export default function AudienceTile( {
 	topContentTitles,
 	Widget,
 	audienceResourceName,
-	isLoading,
 	isZeroData,
 	isPartialData,
 	isTileHideable,
 	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
+	const isViewOnly = useViewOnly();
 
-	const isPropertyPartialData = useSelect( ( select ) => {
+	const isPropertyPartialData = useInViewSelect( ( select ) => {
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 		return (
@@ -88,38 +87,45 @@ export default function AudienceTile( {
 			select( MODULES_ANALYTICS_4 ).isPropertyPartialData( propertyID )
 		);
 	} );
-	const isAudiencePartialData = useSelect(
-		( select ) =>
-			! isPropertyPartialData &&
-			audienceResourceName &&
-			select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-				audienceResourceName
-			)
+	const isSiteKitAudience = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSiteKitAudience( audienceResourceName )
 	);
-	const isTopContentPartialData = useSelect(
+	const isAudiencePartialData = useInViewSelect(
+		( select ) => {
+			if ( isSiteKitAudience ) {
+				return false;
+			}
+
+			return (
+				! isPropertyPartialData &&
+				audienceResourceName &&
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audienceResourceName
+				)
+			);
+		},
+		[ isPropertyPartialData, isSiteKitAudience, audienceResourceName ]
+	);
+	const isTopContentPartialData = useInViewSelect(
 		( select ) =>
 			! isAudiencePartialData &&
 			select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
 				'googlesitekit_post_type'
-			)
+			),
+		[ isAudiencePartialData ]
+	);
+
+	const postTypeDimensionExists = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				'googlesitekit_post_type'
+			),
+		[]
 	);
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
-
-	if (
-		! loaded ||
-		isLoading ||
-		isZeroData === undefined ||
-		isPartialData === undefined
-	) {
-		return (
-			<Widget noPadding>
-				<AudienceTileLoading />
-			</Widget>
-		);
-	}
 
 	if ( isPartialData && isZeroData ) {
 		return (
@@ -262,16 +268,18 @@ export default function AudienceTile( {
 						topCities={ topCities }
 					/>
 
-					<AudienceTilePagesMetric
-						TileIcon={ AudienceMetricIconTopContent }
-						title={ __(
-							'Top content by pageviews',
-							'google-site-kit'
-						) }
-						topContentTitles={ topContentTitles }
-						topContent={ topContent }
-						isTopContentPartialData={ isTopContentPartialData }
-					/>
+					{ ( ! isViewOnly || postTypeDimensionExists ) && (
+						<AudienceTilePagesMetric
+							TileIcon={ AudienceMetricIconTopContent }
+							title={ __(
+								'Top content by pageviews',
+								'google-site-kit'
+							) }
+							topContentTitles={ topContentTitles }
+							topContent={ topContent }
+							isTopContentPartialData={ isTopContentPartialData }
+						/>
+					) }
 				</div>
 			</div>
 		</Widget>
@@ -279,7 +287,6 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
-	loaded: PropTypes.bool,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
@@ -292,7 +299,6 @@ AudienceTile.propTypes = {
 	topContentTitles: PropTypes.object,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
-	isLoading: PropTypes.bool,
 	isZeroData: PropTypes.bool,
 	isPartialData: PropTypes.bool,
 	isTileHideable: PropTypes.bool,

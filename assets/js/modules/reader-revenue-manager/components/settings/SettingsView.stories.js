@@ -19,16 +19,130 @@
 /**
  * Internal dependencies
  */
+import { provideModuleRegistrations } from '../../../../../../tests/js/utils';
+import { Grid, Row, Cell } from '../../../../material-components';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
+} from '../../datastore/constants';
+import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
 
 function Template() {
-	return <SettingsView />;
+	return (
+		<div className="googlesitekit-layout">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--reader-revenue-manager">
+				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SettingsView />
+							</Cell>
+						</Row>
+					</Grid>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.scenario = {};
+
+export const WithPendingVerificationNotice = Template.bind( {} );
+WithPendingVerificationNotice.storyName = 'WithPendingVerificationNotice';
+WithPendingVerificationNotice.args = {
+	setupRegistry: ( registry ) => {
+		const publication = publications[ 1 ];
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationOnboardingState( publication.onboardingState );
+	},
+};
+WithPendingVerificationNotice.scenario = {};
+
+export const WithActionRequiredNotice = Template.bind( {} );
+WithActionRequiredNotice.storyName = 'WithActionRequiredNotice';
+WithActionRequiredNotice.args = {
+	setupRegistry: ( registry ) => {
+		const publication = publications[ 2 ];
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publication.publicationId );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationOnboardingState( publication.onboardingState );
+	},
+};
+WithActionRequiredNotice.scenario = {};
+
+export const WithoutModuleAccess = Template.bind( {} );
+WithoutModuleAccess.storyName = 'WithoutModuleAccess';
+WithoutModuleAccess.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setOwnerID( 2 );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+			);
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.selectPublication( publications[ 2 ] );
+	},
+};
+WithoutModuleAccess.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Settings/SettingsView',
 	component: SettingsView,
+	decorators: [
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				provideModuleRegistrations( registry, [
+					{
+						slug: 'reader-revenue-manager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const settings = {
+					ownerID: 1,
+					publicationID: 'ABCDEFGH',
+					publicationOnboardingState: '',
+					publicationOnboardingStateLastSyncedAtMs: 0,
+				};
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( publications );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( settings );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

@@ -64,6 +64,9 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="mdc-layout-grid__inner"
+    />
   </div>
   <div
     class="mdc-layout-grid googlesitekit-widget-area googlesitekit-widget-area--TestArea2 googlesitekit-widget-area--composite"
@@ -125,6 +128,9 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="mdc-layout-grid__inner"
+    />
   </div>
 </div>
 `;

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useDeepCompareEffect } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -31,19 +32,22 @@ import { useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { WEEK_IN_SECONDS } from '../../../../../../util';
 import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import AudienceItemPreviewBlock from './AudienceItemPreviewBlock';
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const [ firstView, setFirstView ] = useState( true );
+	const { setExpirableItemTimers } = useDispatch( CORE_USER );
 	const { syncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const isOpen = useSelect( ( select ) =>
@@ -81,6 +85,8 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			getConfigurableAudiences,
 			getReport,
 			getAudiencesUserCountReportOptions,
+			getConfigurableSiteKitAndOtherAudiences,
+			hasAudiencePartialData,
 		} = select( MODULES_ANALYTICS_4 );
 
 		const audiences = getConfigurableAudiences();
@@ -94,32 +100,11 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		}
 
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return -- We might return before `otherAudiences` is used.
-		const [ siteKitAudiences, otherAudiences ] = audiences.reduce(
-			( [ siteKit, other ], audience ) => {
-				if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
-					siteKit.push( audience );
-				} else {
-					other.push( audience );
-				}
-				return [ siteKit, other ];
-			},
-			[ [], [] ] // Initial values.
-		);
-
-		const siteKitAudiencesPartialData = siteKitAudiences.map(
-			( audience ) =>
-				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					audience.name
-				)
-		);
-
-		// If any of the Site Kit audiences' partial data state is still loading, return undefined.
-		if ( siteKitAudiencesPartialData.includes( undefined ) ) {
-			return undefined;
-		}
+		const [ siteKitAudiences, otherAudiences ] =
+			getConfigurableSiteKitAndOtherAudiences();
 
 		const isSiteKitAudiencePartialData =
-			siteKitAudiencesPartialData.includes( true );
+			hasAudiencePartialData( siteKitAudiences );
 
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -140,11 +125,18 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			} );
 
 		// Get the user count for the available audiences using the `audienceResourceName` dimension.
-		const audienceResourceNameReport = getReport(
-			getAudiencesUserCountReportOptions(
-				isSiteKitAudiencePartialData ? otherAudiences : audiences
-			)
-		);
+		const audienceResourceNameReport =
+			isSiteKitAudiencePartialData === false ||
+			( isSiteKitAudiencePartialData === true &&
+				otherAudiences?.length > 0 )
+				? getReport(
+						getAudiencesUserCountReportOptions(
+							isSiteKitAudiencePartialData
+								? otherAudiences
+								: audiences
+						)
+				  )
+				: {};
 
 		const { rows: newVsReturningRows = [] } = newVsReturningReport || {};
 		const { rows: audienceResourceNameRows = [] } =
@@ -216,6 +208,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 				subtitle: description,
 				description: citation,
 				userCount,
+				audienceType,
 			},
 		};
 	};
@@ -227,6 +220,53 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const availableUnsavedItems = availableAudiences
 		?.filter( ( { name } ) => ! savedItemSlugs.includes( name ) )
 		.reduce( audiencesListReducer, {} );
+
+	const newBadgesToActivate = useSelect( ( select ) => {
+		if ( undefined === availableAudiences ) {
+			return undefined;
+		}
+
+		const { hasFinishedResolution, hasExpirableItem } = select( CORE_USER );
+
+		if ( ! hasFinishedResolution( 'getExpirableItems' ) ) {
+			return undefined;
+		}
+
+		return availableAudiences
+			.filter( ( { audienceType, name } ) => {
+				// Only activate if it is not a default audience, the badge is
+				// new and the user is viewing it for the first time.
+				return (
+					'DEFAULT_AUDIENCE' !== audienceType &&
+					! hasExpirableItem(
+						`${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }`
+					)
+				);
+			} )
+			.map( ( { name } ) => {
+				return `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }`;
+			} );
+	} );
+
+	// Set an expiry for the new badges so that it is no longer shown after
+	// a certain time.
+	// `useDeepCompareEffect` is used here instead of `useEffect` because
+	// the array reference of `newBadgesToActivate` is not reliable and can
+	// cause the effect to unexpectedly run multiple times.
+	useDeepCompareEffect( () => {
+		if (
+			isOpen && // Only activate when the badge is viewed, i.e. the panel is opened.
+			newBadgesToActivate !== undefined &&
+			newBadgesToActivate.length
+		) {
+			setExpirableItemTimers(
+				newBadgesToActivate.map( ( slug ) => ( {
+					slug,
+					expiresInSeconds: WEEK_IN_SECONDS * 4,
+				} ) )
+			);
+		}
+	}, [ isOpen, setExpirableItemTimers, newBadgesToActivate ] );
 
 	return (
 		<SelectionPanelItems

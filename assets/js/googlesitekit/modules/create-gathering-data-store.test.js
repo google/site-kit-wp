@@ -22,7 +22,6 @@
 import { createRegistry } from '@wordpress/data';
 import { combineStores, commonStore } from 'googlesitekit-data';
 import {
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/utils';
@@ -34,10 +33,6 @@ const STORE_NAME = `modules/${ MODULE_SLUG }`;
 
 describe( 'createGatheringDataStore', () => {
 	let registry;
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
 
 	describe( 'args', () => {
 		it( 'should throw an error if no module slug is provided', () => {

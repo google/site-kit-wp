@@ -52,7 +52,43 @@ ConfirmDisconnectWithFeatures.decorators = [
 
 			registry
 				.dispatch( CORE_UI )
-				.setValue( 'module-analytics-dialogActive', true );
+				.setValue( 'module-analytics-4-dialogActive', true );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+ConfirmDisconnectWithFeatures.scenario = {};
+
+export const ConfirmDisconnectWithFeaturesAndLongText = Template.bind( {} );
+ConfirmDisconnectWithFeaturesAndLongText.storyName =
+	'ConfirmDisconnect dialog with features and long text';
+ConfirmDisconnectWithFeaturesAndLongText.args = {
+	slug: 'third-party-module',
+};
+ConfirmDisconnectWithFeaturesAndLongText.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'third-party-module',
+					active: true,
+					connected: true,
+					name: 'Third Party Module With A Long Name',
+					features: [
+						'Module overview, on a long line to test wrapping, and more text to test wrapping with a long line of text',
+						'Another feature',
+					],
+				},
+			] );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( 'module-third-party-module-dialogActive', true );
 		};
 
 		return (

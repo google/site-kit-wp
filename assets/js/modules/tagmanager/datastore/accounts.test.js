@@ -36,7 +36,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
-	unsubscribeFromAll,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
@@ -73,10 +72,6 @@ describe( 'modules/tagmanager accounts', () => {
 
 	afterAll( () => {
 		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {

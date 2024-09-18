@@ -59,6 +59,7 @@ class SettingsTest extends SettingsTestCase {
 				'publicationID'                            => '',
 				'publicationOnboardingState'               => '',
 				'publicationOnboardingStateLastSyncedAtMs' => 0,
+				'ownerID'                                  => 0,
 			),
 			get_option( Settings::OPTION )
 		);

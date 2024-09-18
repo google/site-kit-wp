@@ -21,6 +21,7 @@
  */
 import { availableAudiences as audiencesFixture } from '../../../../datastore/__fixtures__';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
@@ -28,6 +29,8 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
+	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import { AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupCTAWidget';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -41,7 +44,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	let registry;
 
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -73,7 +76,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 			propertyID: '123456789',
 		} );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -126,23 +129,13 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		expect( getByText( 'Enabling groups' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should initialize the list of configured audiences when the CTA is clicked', () => {
+	it( 'should initialize the list of configured audiences when the CTA is clicked', async () => {
 		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 			status: 200,
 			body: audiencesFixture,
 		} );
 
-		fetchMock.postOnce( audienceSettingsEndpoint, {
-			status: 200,
-			body: {
-				configuredAudiences: [
-					audiencesFixture[ 3 ].name,
-					audiencesFixture[ 4 ].name,
-				],
-				isAudienceSegmentationWidgetHidden: false,
-			},
-		} );
-
+		freezeFetch( audienceSettingsEndpoint );
 		muteFetch( reportEndpoint );
 
 		const { getByText, getByRole } = render( <SetupCTA />, { registry } );
@@ -154,6 +147,14 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		fireEvent.click( getByRole( 'button', { name: /Enable groups/i } ) );
 
 		expect( getByText( 'Enabling groups' ) ).toBeInTheDocument();
+
+		await act(
+			async () =>
+				await untilResolved( registry, CORE_USER ).getAudienceSettings()
+		);
+
 		expect( fetchMock ).toHaveFetched( syncAvailableAudiencesEndpoint );
+
+		await act( waitForDefaultTimeouts );
 	} );
 } );

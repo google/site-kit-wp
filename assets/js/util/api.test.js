@@ -46,9 +46,9 @@ describe( 'trackAPIError', () => {
 				code: 'test-error-code',
 			},
 		} );
-		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 4 );
+		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 3 );
 		const [ event, eventName, eventData ] =
-			dataLayerPushSpy.mock.calls[ 3 ][ 0 ];
+			dataLayerPushSpy.mock.calls[ 2 ][ 0 ];
 		expect( event ).toEqual( 'event' );
 		expect( eventName ).toEqual(
 			'test-method:test-type/test-identifier/data/test-datapoint'
@@ -126,19 +126,6 @@ describe( 'trackAPIError', () => {
 					message: 'test-error-message',
 					code: excludedCode,
 				},
-			} );
-			expect( dataLayerPushSpy ).not.toHaveBeenCalled();
-		}
-	);
-
-	it.each( [ [ 'connection-check', 'core', 'site', 'connection-check' ] ] )(
-		"shouldn't track errors for the %s endpoint",
-		( _, type, identifier, datapoint ) => {
-			trackAPIError( {
-				type,
-				identifier,
-				datapoint,
-				error: { message: 'test-message' },
 			} );
 			expect( dataLayerPushSpy ).not.toHaveBeenCalled();
 		}

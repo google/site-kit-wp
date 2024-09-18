@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
@@ -36,8 +37,11 @@ import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate } from '../../../util';
 import { validateAudience } from '../utils/validation';
+import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const MAX_INITIAL_AUDIENCES = 2;
+const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
+const FINISH_AUDIENCES_SETUP = 'FINISH_AUDIENCES_SETUP';
 
 /**
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
@@ -123,6 +127,10 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	},
 } );
 
+export const baseInitialState = {
+	isSettingUpAudiences: false,
+};
+
 const baseActions = {
 	/**
 	 * Creates new property audience.
@@ -166,6 +174,22 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*syncAvailableAudiences() {
+		const registry = yield commonActions.getRegistry();
+		const { select, dispatch, resolveSelect } = registry;
+
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getAuthentication()
+		);
+
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+		if ( ! isAuthenticated ) {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			return { response: availableAudiences ?? [] };
+		}
+
 		const { response: availableAudiences, error } =
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 
@@ -173,12 +197,9 @@ const baseActions = {
 			return { response: availableAudiences, error };
 		}
 
-		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
-
 		// Remove any configuredAudiences that are no longer available in availableAudiences.
 		const configuredAudiences =
-			select( MODULES_ANALYTICS_4 ).getConfiguredAudiences();
+			select( CORE_USER ).getConfiguredAudiences();
 		const newConfiguredAudiences = configuredAudiences?.filter(
 			( configuredAudience ) =>
 				availableAudiences?.some(
@@ -191,7 +212,7 @@ const baseActions = {
 			newConfiguredAudiences &&
 			newConfiguredAudiences !== configuredAudiences
 		) {
-			dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
+			dispatch( CORE_USER ).setConfiguredAudiences(
 				newConfiguredAudiences || []
 			);
 		}
@@ -208,7 +229,17 @@ const baseActions = {
 	 */
 	*maybeSyncAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
+		const { select, dispatch, resolveSelect } = registry;
+
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getAuthentication()
+		);
+
+		const isAuthenticated = select( CORE_USER ).isAuthenticated();
+
+		if ( ! isAuthenticated ) {
+			return;
+		}
 
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
@@ -227,6 +258,88 @@ const baseActions = {
 	},
 
 	/**
+	 * Retrives the initial set of audiences for selection.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} availableAudiences List of available audiences.
+	 * @return {Object} Object with properties `configuredAudiences` or `error`.
+	 */
+	*retrieveInitialAudienceSelection( availableAudiences ) {
+		const registry = yield commonActions.getRegistry();
+
+		const { select } = registry;
+
+		const configuredAudiences = [];
+
+		const userAudiences = availableAudiences.filter(
+			( { audienceType } ) => audienceType === 'USER_AUDIENCE'
+		);
+
+		if ( userAudiences.length > 0 ) {
+			// If there are user audiences, filter and sort them by total users over the last 90 days,
+			// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
+
+			const endDate = select( CORE_USER ).getReferenceDate();
+
+			const startDate = getPreviousDate(
+				endDate,
+				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
+			);
+
+			const { audienceResourceNames, error } = yield commonActions.await(
+				getNonZeroDataAudiencesSortedByTotalUsers(
+					registry,
+					userAudiences,
+					startDate,
+					endDate
+				)
+			);
+
+			if ( error ) {
+				return { error };
+			}
+
+			configuredAudiences.push(
+				...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
+			);
+		}
+
+		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+			// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences
+			// if they exist, up to the limit of two.
+
+			const siteKitAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+			);
+
+			// Audience slugs to sort by:
+			const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
+
+			const sortedSiteKitAudiences = siteKitAudiences.sort(
+				( audienceA, audienceB ) => {
+					const indexA = sortedSlugs.indexOf(
+						audienceA.audienceSlug
+					);
+					const indexB = sortedSlugs.indexOf(
+						audienceB.audienceSlug
+					);
+
+					return indexA - indexB;
+				}
+			);
+
+			const audienceResourceNames = sortedSiteKitAudiences
+				.slice( 0, MAX_INITIAL_AUDIENCES - configuredAudiences.length )
+				.map( ( { name } ) => name );
+
+			configuredAudiences.push( ...audienceResourceNames );
+		}
+
+		return { configuredAudiences };
+	},
+
+	/**
 	 * Populates the configured audiences with the top two user audiences and/or the Site Kit-created audiences,
 	 * depending on their availability and suitability (data over the last 90 days is required for user audiences).
 	 *
@@ -240,6 +353,26 @@ const baseActions = {
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
 	 */
 	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
+		yield { type: START_AUDIENCES_SETUP };
+
+		const response = yield baseActions.enableAudienceGroupMain(
+			failedSiteKitAudienceSlugs
+		);
+
+		yield { type: FINISH_AUDIENCES_SETUP };
+
+		return response;
+	},
+
+	/**
+	 * This contains the main logic for the `*enableAudienceGroup()` action above.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
+	 */
+	*enableAudienceGroupMain( failedSiteKitAudienceSlugs ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { dispatch, select, resolveSelect } = registry;
@@ -253,76 +386,21 @@ const baseActions = {
 			return { error: syncError };
 		}
 
-		const userAudiences = availableAudiences.filter(
-			( { audienceType } ) => audienceType === 'USER_AUDIENCE'
-		);
-
 		const configuredAudiences = [];
 
 		if ( ! failedSiteKitAudienceSlugs?.length ) {
-			if ( userAudiences.length > 0 ) {
-				// If there are user audiences, filter and sort them by total users over the last 90 days,
-				// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
-
-				const endDate = select( CORE_USER ).getReferenceDate();
-
-				const startDate = getPreviousDate(
-					endDate,
-					90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
+			const { error, configuredAudiences: audiences } =
+				yield commonActions.await(
+					dispatch(
+						MODULES_ANALYTICS_4
+					).retrieveInitialAudienceSelection( availableAudiences )
 				);
 
-				const { audienceResourceNames, error } =
-					yield commonActions.await(
-						getNonZeroDataAudiencesSortedByTotalUsers(
-							registry,
-							userAudiences,
-							startDate,
-							endDate
-						)
-					);
-
-				if ( error ) {
-					return { error };
-				}
-
-				configuredAudiences.push(
-					...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
-				);
+			if ( error ) {
+				return { error };
 			}
 
-			if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
-				// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences if they exist,
-				// up to the limit of two.
-
-				const siteKitAudiences = availableAudiences.filter(
-					( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
-				);
-
-				// Audience slugs to sort by:
-				const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
-
-				const sortedSiteKitAudiences = siteKitAudiences.sort(
-					( audienceA, audienceB ) => {
-						const indexA = sortedSlugs.indexOf(
-							audienceA.audienceSlug
-						);
-						const indexB = sortedSlugs.indexOf(
-							audienceB.audienceSlug
-						);
-
-						return indexA - indexB;
-					}
-				);
-
-				const audienceResourceNames = sortedSiteKitAudiences
-					.slice(
-						0,
-						MAX_INITIAL_AUDIENCES - configuredAudiences.length
-					)
-					.map( ( { name } ) => name );
-
-				configuredAudiences.push( ...audienceResourceNames );
-			}
+			configuredAudiences.push( ...audiences );
 		}
 
 		if ( configuredAudiences.length === 0 ) {
@@ -358,7 +436,7 @@ const baseActions = {
 			} );
 
 			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
+				resolveSelect( CORE_USER ).getAudienceSettings()
 			);
 
 			if ( failedAudiencesToRetry.length > 0 ) {
@@ -368,7 +446,7 @@ const baseActions = {
 			}
 
 			const existingConfiguredAudiences =
-				select( MODULES_ANALYTICS_4 ).getConfiguredAudiences() || [];
+				select( CORE_USER ).getConfiguredAudiences() || [];
 
 			configuredAudiences.push( ...existingConfiguredAudiences );
 
@@ -435,22 +513,150 @@ const baseActions = {
 			);
 		}
 
-		dispatch( MODULES_ANALYTICS_4 ).setConfiguredAudiences(
-			configuredAudiences
-		);
+		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings()
+			dispatch( CORE_USER ).saveAudienceSettings()
 		);
 
 		if ( error ) {
 			return { error };
 		}
+
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 1,
+				} ) )
+			)
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupComplete(
+			true
+		);
+
+		const { saveSettingsError } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).saveSettings()
+		);
+
+		if ( saveSettingsError ) {
+			return { error: saveSettingsError };
+		}
+	},
+
+	/**
+	 * Populates the configured audiences for the secondary user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `error`.
+	 */
+	*enableSecondaryUserAudienceGroup() {
+		yield { type: START_AUDIENCES_SETUP };
+
+		const response =
+			yield baseActions.enableSecondaryUserAudienceGroupMain();
+
+		yield { type: FINISH_AUDIENCES_SETUP };
+
+		return response;
+	},
+
+	/**
+	 * This contains the main logic for the `*enableSecondaryUserAudienceGroup()` action above.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `error`.
+	 */
+	*enableSecondaryUserAudienceGroupMain() {
+		const registry = yield commonActions.getRegistry();
+
+		const { dispatch, resolveSelect } = registry;
+
+		const { response: availableAudiences, error: syncError } =
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
+
+		if ( syncError ) {
+			return { error: syncError };
+		}
+
+		const {
+			error: retrieveInitialAudienceSelectionError,
+			configuredAudiences,
+		} = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
+				availableAudiences
+			)
+		);
+
+		if ( retrieveInitialAudienceSelectionError ) {
+			return { error: retrieveInitialAudienceSelectionError };
+		}
+
+		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+			// Add 'Purchasers' audience if it has data.
+			const purchasersAudience = availableAudiences.find(
+				( { audienceSlug } ) => audienceSlug === 'purchasers'
+			);
+
+			if ( purchasersAudience ) {
+				const purchasersResourceDataAvailabilityDate =
+					yield commonActions.await(
+						resolveSelect(
+							MODULES_ANALYTICS_4
+						).getResourceDataAvailabilityDate(
+							purchasersAudience.name,
+							RESOURCE_TYPE_AUDIENCE
+						)
+					);
+
+				if ( purchasersResourceDataAvailabilityDate ) {
+					configuredAudiences.push( purchasersAudience.name );
+				}
+			}
+		}
+
+		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
+
+		const { error } = yield commonActions.await(
+			dispatch( CORE_USER ).saveAudienceSettings()
+		);
+
+		if ( error ) {
+			return { error };
+		}
+
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 1,
+				} ) )
+			)
+		);
 	},
 };
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
+		case START_AUDIENCES_SETUP: {
+			return {
+				...state,
+				isSettingUpAudiences: true,
+			};
+		}
+		case FINISH_AUDIENCES_SETUP: {
+			return {
+				...state,
+				isSettingUpAudiences: false,
+			};
+		}
 		default: {
 			return state;
 		}
@@ -460,19 +666,28 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {
 	*getAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
+		const { select } = registry;
 
-		const audiences = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAvailableAudiences();
+		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
 		// If available audiences not present, sync the audience in state.
 		if ( audiences === null ) {
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			yield baseActions.syncAvailableAudiences();
 		}
 	},
 };
 
 const baseSelectors = {
+	/**
+	 * Checks if the audience group setup is in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the audience group setup is in progress, otherwise false.
+	 */
+	isSettingUpAudiences: ( state ) => state.isSettingUpAudiences,
+
 	/**
 	 * Checks if the given audience is a default audience.
 	 *
@@ -668,12 +883,15 @@ const baseSelectors = {
 	 *
 	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 	 */
-	getAudiencesUserCountReportError: createRegistrySelector(
+	getAudienceUserCountReportErrors: createRegistrySelector(
 		( select ) => () => {
 			const {
-				getAudiencesUserCountReportOptions,
 				getConfigurableAudiences,
+				getAudiencesUserCountReportOptions,
+				getSiteKitAudiencesUserCountReportOptions,
 				getErrorForSelector,
+				getConfigurableSiteKitAndOtherAudiences,
+				hasAudiencePartialData,
 			} = select( MODULES_ANALYTICS_4 );
 
 			const configurableAudiences = getConfigurableAudiences();
@@ -682,12 +900,214 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			const audiencesUserCountReportOptions =
-				getAudiencesUserCountReportOptions( configurableAudiences );
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const [ siteKitAudiences, otherAudiences ] =
+				getConfigurableSiteKitAndOtherAudiences();
 
-			return getErrorForSelector( 'getReport', [
-				audiencesUserCountReportOptions,
-			] );
+			const isSiteKitAudiencePartialData =
+				hasAudiencePartialData( siteKitAudiences );
+
+			if ( undefined === isSiteKitAudiencePartialData ) {
+				return undefined;
+			}
+
+			const siteKitUserCountReportError = isSiteKitAudiencePartialData
+				? getErrorForSelector( 'getReport', [
+						getSiteKitAudiencesUserCountReportOptions(),
+				  ] )
+				: undefined;
+
+			const otherUserCountReportError =
+				isSiteKitAudiencePartialData === false ||
+				otherAudiences?.length > 0
+					? getErrorForSelector( 'getReport', [
+							getAudiencesUserCountReportOptions(
+								isSiteKitAudiencePartialData
+									? otherAudiences
+									: configurableAudiences
+							),
+					  ] )
+					: undefined;
+
+			return [ siteKitUserCountReportError, otherUserCountReportError ];
+		}
+	),
+
+	/**
+	 * Gets the report options for the Site Kit audiences user count report.
+	 *
+	 * @since 1.134.0
+	 *
+	 * @return {Object} Returns the report options for the Site Kit audiences user count report.
+	 */
+	getSiteKitAudiencesUserCountReportOptions: createRegistrySelector(
+		( select ) => () => {
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+			return {
+				startDate: dateRangeDates.startDate,
+				endDate: dateRangeDates.endDate,
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				dimensions: [ { name: 'newVsReturning' } ],
+			};
+		}
+	),
+
+	/**
+	 * Checks if any of the provided audiences are in the partial data state.
+	 *
+	 * @since 1.134.0
+	 *
+	 * @param {Array} audiences Array of audiences to check.
+	 * @return {boolean|undefined} True if any of the provided audiences is in partial data state, otherwise false. Undefined if available audiences or any partial data state is not loaded yet.
+	 */
+	hasAudiencePartialData: createRegistrySelector(
+		( select ) => ( state, audiences ) => {
+			if ( undefined === audiences ) {
+				return undefined;
+			}
+
+			for ( const audience of audiences || [] ) {
+				const isPartialData = select(
+					MODULES_ANALYTICS_4
+				).isAudiencePartialData( audience.name );
+
+				if ( isPartialData === undefined ) {
+					return undefined;
+				}
+
+				if ( isPartialData ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	),
+
+	/**
+	 * Checks if the provided audience is a Site Kit audience in the partial data state and returns the audience object if so.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} audienceResourceName The audience resource name.
+	 * @return {(Object|null|undefined)} The audience object if the audience is a Site Kit audience in the partial data state, otherwise null. Undefined if available audiences or the partial data state is not loaded yet.
+	 */
+	getPartialDataSiteKitAudience: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if ( availableAudiences === undefined ) {
+				return undefined;
+			}
+
+			const audience = availableAudiences.find(
+				( { name } ) => name === audienceResourceName
+			);
+
+			if ( audience?.audienceType !== 'SITE_KIT_AUDIENCE' ) {
+				return null;
+			}
+
+			const isPartialData =
+				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+					audienceResourceName
+				);
+
+			if ( isPartialData === undefined ) {
+				return undefined;
+			}
+
+			return isPartialData ? audience : null;
+		}
+	),
+
+	/**
+	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
+	 *
+	 * @since 1.134.0
+	 *
+	 * @return {Array} Array of Site Kit and other audiences.
+	 */
+	getConfigurableSiteKitAndOtherAudiences: createRegistrySelector(
+		( select ) => () => {
+			const audiences =
+				select( MODULES_ANALYTICS_4 ).getConfigurableAudiences();
+
+			if ( undefined === audiences ) {
+				return undefined;
+			}
+
+			if ( ! audiences?.length ) {
+				return [];
+			}
+
+			const [ siteKitAudiences, otherAudiences ] = audiences.reduce(
+				( [ siteKit, other ], audience ) => {
+					if ( audience.audienceType === 'SITE_KIT_AUDIENCE' ) {
+						siteKit.push( audience );
+					} else {
+						other.push( audience );
+					}
+					return [ siteKit, other ];
+				},
+				[ [], [] ] // Initial values.
+			);
+
+			return [ siteKitAudiences, otherAudiences ];
+		}
+	),
+
+	/**
+	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array} Array of Site Kit and other audiences.
+	 */
+	getConfiguredSiteKitAndOtherAudiences: createRegistrySelector(
+		( select ) => () => {
+			const configuredAudiences =
+				select( CORE_USER ).getConfiguredAudiences();
+			const availableAudiences =
+				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+			if (
+				undefined === configuredAudiences ||
+				undefined === availableAudiences
+			) {
+				return undefined;
+			}
+
+			if ( ! configuredAudiences?.length ) {
+				return [];
+			}
+
+			const [ siteKitAudiences, otherAudiences ] =
+				configuredAudiences.reduce(
+					( [ siteKit, other ], configuredAudience ) => {
+						const audience = availableAudiences.find(
+							( { name } ) => name === configuredAudience
+						);
+
+						if ( audience?.audienceType === 'SITE_KIT_AUDIENCE' ) {
+							siteKit.push( audience );
+						} else {
+							other.push( audience );
+						}
+						return [ siteKit, other ];
+					},
+					[ [], [] ] // Initial values.
+				);
+
+			return [ siteKitAudiences, otherAudiences ];
 		}
 	),
 };
@@ -696,7 +1116,7 @@ const store = combineStores(
 	fetchCreateAudienceStore,
 	fetchSyncAvailableAudiencesStore,
 	{
-		initialState: {},
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: {},
 		reducer: baseReducer,

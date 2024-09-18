@@ -37,10 +37,12 @@ export default function SelectionPanelItem( {
 	onCheckboxChange,
 	subtitle,
 	suffix,
+	badge,
 } ) {
 	return (
 		<div className="googlesitekit-selection-panel-item">
 			<SelectionBox
+				badge={ badge }
 				checked={ isItemSelected }
 				disabled={ isItemDisabled }
 				id={ id }
@@ -76,4 +78,5 @@ SelectionPanelItem.propTypes = {
 	onCheckboxChange: PropTypes.func,
 	subtitle: PropTypes.string,
 	suffix: PropTypes.node,
+	badge: PropTypes.node,
 };

@@ -128,9 +128,6 @@ IceEnabled.scenario = {
 	label: 'Modules/Ads/Settings/SettingsEdit/ICE',
 	delay: 250,
 };
-IceEnabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceEnabled.decorators = [
 	( Story, { parameters } ) => {
 		const setupRegistry = ( registry ) => {
@@ -162,7 +159,7 @@ IcePaxEnabled.scenario = {
 	delay: 250,
 };
 IcePaxEnabled.parameters = {
-	features: [ 'conversionInfra', 'adsPax' ],
+	features: [ 'adsPax' ],
 };
 IcePaxEnabled.decorators = [
 	( Story, { parameters } ) => {

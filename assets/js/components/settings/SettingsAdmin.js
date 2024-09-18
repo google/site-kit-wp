@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import Layout from '../layout/Layout';
@@ -44,6 +45,9 @@ import { useFeature } from '../../hooks/useFeature';
 export default function SettingsAdmin() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 
+	const configuredAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).getConfiguredAudiences()
+	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -151,11 +155,12 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ audienceSegmentationEnabled && isAnalyticsConnected && (
-				<Cell size={ 12 }>
-					<SettingsCardVisitorGroups />
-				</Cell>
-			) }
+			{ audienceSegmentationEnabled &&
+				( isAnalyticsConnected || !! configuredAudiences ) && (
+					<Cell size={ 12 }>
+						<SettingsCardVisitorGroups />
+					</Cell>
+				) }
 
 			<Cell size={ 12 }>
 				<Layout

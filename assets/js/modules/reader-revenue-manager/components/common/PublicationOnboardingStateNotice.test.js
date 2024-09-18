@@ -20,20 +20,35 @@
  * Internal dependencies.
  */
 import {
+	act,
 	createTestRegistry,
+	fireEvent,
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
-
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import * as fixtures from '../../datastore/__fixtures__';
+import * as tracking from '../../../../util/tracking';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'PublicationOnboardingStateNotice', () => {
 	let registry;
+
+	const publicationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+	);
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	);
 
 	const {
 		ONBOARDING_ACTION_REQUIRED,
@@ -42,6 +57,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 	} = PUBLICATION_ONBOARDING_STATES;
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideUserInfo( registry );
@@ -61,6 +77,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it.each( [
@@ -89,37 +106,131 @@ describe( 'PublicationOnboardingStateNotice', () => {
 				<PublicationOnboardingStateNotice />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
 			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-onboarding-state-notification`,
+				'view_notification',
+				publicationState
+			);
 
 			expect( getByText( expectedText ) ).toBeInTheDocument();
 
 			const expectedServiceURL = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getServiceURL( {
-					path: '/reader-revenue-manager',
-					publicationID: 'ABCDEFGH',
+					path: 'reader-revenue-manager',
+					query: {
+						publication: 'ABCDEFGH',
+					},
 				} );
 
 			// Ensure that CTA is present and class name is correct.
 			expect( getByText( ctaText ) ).toBeInTheDocument();
-			expect(
-				container.querySelector(
-					'.googlesitekit-settings-notice__button'
-				)
-			).toBeInTheDocument();
 
 			expect(
 				container.querySelector(
-					'.googlesitekit-cta-link.googlesitekit-cta-link--inverse'
+					'.googlesitekit-subtle-notification__cta'
 				)
 			).toHaveAttribute( 'href', expectedServiceURL );
 
 			expect( container.firstChild ).toHaveClass(
 				'googlesitekit-publication-onboarding-state-notice'
 			);
+
+			act( () => {
+				fireEvent.click( getByText( ctaText ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-onboarding-state-notification`,
+				'confirm_notification',
+				publicationState
+			);
 		}
 	);
+
+	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
+		const originalDateNow = Date.now;
+
+		// Mock the date to be an arbitrary time.
+		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
+		Date.now = jest.fn( () => mockNow );
+
+		jest.useFakeTimers();
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID: 'QRSTUVWX',
+				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+				publicationOnboardingStateLastSyncedAtMs: 0,
+			} );
+
+		fetchMock.getOnce( publicationsEndpoint, {
+			body: fixtures.publications,
+			status: 200,
+		} );
+
+		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+
+			// Return the same settings passed to the API.
+			return { body: data, status: 200 };
+		} );
+
+		const { container, getByText } = render(
+			<PublicationOnboardingStateNotice />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		act( () => {
+			fireEvent.click( getByText( 'Complete publication setup' ) );
+		} );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'blur' ) );
+		} );
+
+		act( () => {
+			jest.advanceTimersByTime( 15000 );
+		} );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'focus' ) );
+		} );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( publicationsEndpoint );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
+				body: {
+					data: {
+						publicationID: 'QRSTUVWX',
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+					},
+				},
+			} );
+		} );
+
+		// Verify that the onboarding state has been synced.
+		expect(
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationOnboardingState()
+		).toBe( ONBOARDING_COMPLETE );
+
+		// Verify the the notice is removed.
+		expect( container ).toBeEmptyDOMElement();
+
+		// Restore Date.now method.
+		Date.now = originalDateNow;
+	} );
 } );

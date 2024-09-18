@@ -24,40 +24,54 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-
-/**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	RESET_PUBLICATIONS,
+} from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublications()
 	);
-
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
-	if ( publications === undefined ) {
-		return null;
-	}
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { selectPublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const hasPublication = publications && publications.length > 0;
 
-	const handleCompleteSetupClick = () => {
-		// TODO: Track event for completing setup.
+	const handleLinkClick = useCallback( () => {
+		setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+			[ RESET_PUBLICATIONS ]: true,
+		} );
+	}, [ setValues ] );
+
+	const handleCompleteSetupClick = useCallback( async () => {
+		if ( ! hasPublication ) {
+			return;
+		}
+
+		await selectPublication( publications[ 0 ] );
+
 		onCompleteSetup();
-	};
+	}, [ hasPublication, onCompleteSetup, publications, selectPublication ] );
+
+	if ( publications === undefined ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-setup-module__publication-create-screen">
@@ -65,7 +79,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 				<Fragment>
 					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 						{ __(
-							'To complete your Reader Revenue Manager account setup you will need to create a publication.',
+							'To complete your Reader Revenue Manager account setup you will need to create a publication and set up Reader Revenue Manager in Publisher Center.',
 							'google-site-kit'
 						) }
 					</h3>
@@ -82,6 +96,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 							trailingIcon={
 								<ExternalIcon width={ 14 } height={ 14 } />
 							}
+							onClick={ handleLinkClick }
 						>
 							{ __( 'Create publication', 'google-site-kit' ) }
 						</Button>

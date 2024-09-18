@@ -19,24 +19,30 @@
 /**
  * WordPress dependencies
  */
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import InfoIcon from '../../../../../svg/icons/info-circle.svg';
-import Link from '../../../../components/Link';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
+	READER_REVENUE_MANAGER_NOTICES_FORM,
+	SYNC_PUBLICATION,
 } from '../../datastore/constants';
-import SettingsNotice from '../../../../components/SettingsNotice';
-import { useSelect } from '@wordpress/data';
+import SubtleNotification from '../../../../components/notifications/SubtleNotification';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
+import { useRefocus } from '../../../../hooks/useRefocus';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
 
 export default function PublicationOnboardingStateNotice() {
+	const viewContext = useViewContext();
 	const onboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
@@ -52,15 +58,67 @@ export default function PublicationOnboardingStateNotice() {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: '/reader-revenue-manager',
-			publicationID,
+			path: 'reader-revenue-manager',
+			query: {
+				publication: publicationID,
+			},
 		} )
 	);
 
-	if (
-		! onboardingState ||
-		! actionableOnboardingStates.includes( onboardingState )
-	) {
+	const shouldSyncPublication = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				READER_REVENUE_MANAGER_NOTICES_FORM,
+				SYNC_PUBLICATION
+			) && actionableOnboardingStates.includes( onboardingState )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { syncPublicationOnboardingState } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
+	const showNotice =
+		onboardingState &&
+		actionableOnboardingStates.includes( onboardingState );
+
+	const onCTAClick = useCallback( () => {
+		// Set publication data to be reset when user re-focuses window.
+		setValues( READER_REVENUE_MANAGER_NOTICES_FORM, {
+			[ SYNC_PUBLICATION ]: true,
+		} );
+
+		trackEvent(
+			`${ viewContext }_rrm-onboarding-state-notification`,
+			'confirm_notification',
+			onboardingState
+		);
+	}, [ onboardingState, setValues, viewContext ] );
+
+	const syncPublication = useCallback( () => {
+		if ( ! shouldSyncPublication ) {
+			return;
+		}
+
+		syncPublicationOnboardingState();
+	}, [ shouldSyncPublication, syncPublicationOnboardingState ] );
+
+	useEffect( () => {
+		if ( ! showNotice ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_rrm-onboarding-state-notification`,
+			'view_notification',
+			onboardingState
+		);
+	}, [ onboardingState, showNotice, viewContext ] );
+
+	// Sync publication data when user re-focuses window.
+	useRefocus( syncPublication, 15000 );
+
+	if ( ! showNotice ) {
 		return null;
 	}
 
@@ -80,21 +138,15 @@ export default function PublicationOnboardingStateNotice() {
 			? __( 'Check publication status', 'google-site-kit' )
 			: __( 'Complete publication setup', 'google-site-kit' );
 
-	const noticeCTA = () => {
-		return (
-			<Link href={ serviceURL } external inverse>
-				{ buttonText }
-			</Link>
-		);
-	};
-
 	return (
-		<SettingsNotice
+		<SubtleNotification
 			className="googlesitekit-publication-onboarding-state-notice"
-			type="warning"
-			Icon={ InfoIcon }
-			notice={ noticeText }
-			OuterCTA={ noticeCTA }
+			title={ noticeText }
+			ctaLabel={ buttonText }
+			ctaLink={ serviceURL }
+			isCTALinkExternal
+			variant="warning"
+			onCTAClick={ onCTAClick }
 		/>
 	);
 }

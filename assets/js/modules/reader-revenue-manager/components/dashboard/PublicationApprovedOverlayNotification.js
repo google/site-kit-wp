@@ -28,8 +28,10 @@ import OverlayNotification from '../../../../components/OverlayNotification/Over
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import useViewContext from '../../../../hooks/useViewContext';
 import useDashboardType from '../../../../hooks/useDashboardType';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
+import { trackEvent } from '../../../../util';
 import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -44,6 +46,7 @@ export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';
 
 export default function PublicationApprovedOverlayNotification() {
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
 
@@ -83,12 +86,21 @@ export default function PublicationApprovedOverlayNotification() {
 		)
 	);
 
-	const dismissNotification = () => {
-		// Dismiss the notification, which also dismisses it from
-		// the current user's profile with the `dismissItem` action.
+	const dismissNotice = () => {
 		dismissOverlayNotification(
 			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
 		);
+	};
+
+	const dismissNotification = () => {
+		trackEvent(
+			`${ viewContext }_rrm-publication-approved-notification`,
+			'dismiss_notification'
+		).finally( () => {
+			// Dismiss the notification, which also dismisses it from
+			// the current user's profile with the `dismissItem` action.
+			dismissNotice();
+		} );
 	};
 
 	return (
@@ -96,6 +108,12 @@ export default function PublicationApprovedOverlayNotification() {
 			className="googlesitekit-reader-revenue-manager-publication-approved-notification"
 			GraphicDesktop={ ReaderRevenueManagerIntroductoryGraphicDesktop }
 			GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
+			onShow={ () => {
+				trackEvent(
+					`${ viewContext }_rrm-publication-approved-notification`,
+					'view_notification'
+				);
+			} }
 			shouldShowNotification={ shouldShowNotification }
 			notificationID={ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION }
 		>
@@ -125,6 +143,14 @@ export default function PublicationApprovedOverlayNotification() {
 				<Button
 					disabled={ isDismissing }
 					href={ serviceURL }
+					onClick={ () => {
+						trackEvent(
+							`${ viewContext }_rrm-publication-approved-notification`,
+							'confirm_notification'
+						).finally( () => {
+							dismissNotice();
+						} );
+					} }
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
 					target="_blank"
 				>

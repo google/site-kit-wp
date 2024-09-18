@@ -167,6 +167,9 @@ final class Plugin {
 
 				$user_input->register();
 
+				$user = new Core\User\User( $user_options );
+				$user->register();
+
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
 
@@ -223,10 +226,7 @@ final class Plugin {
 				( new Core\Consent_Mode\Consent_Mode( $this->context, $options ) )->register();
 				( new Core\Gemini\Gemini( $this->context, $options ) )->register();
 				( new Core\Tags\GTag() )->register();
-
-				if ( Feature_Flags::enabled( 'conversionInfra' ) ) {
-					( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
-				}
+				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

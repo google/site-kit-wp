@@ -41,5 +41,4 @@ module.exports = {
 
 		return head;
 	},
-	staticDirs: [ '../dist' ],
 };

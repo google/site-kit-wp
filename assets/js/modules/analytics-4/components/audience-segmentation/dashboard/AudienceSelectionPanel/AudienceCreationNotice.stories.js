@@ -19,8 +19,12 @@
 /**
  * Internal dependencies
  */
+import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceCreationNotice from './AudienceCreationNotice';
@@ -54,10 +58,21 @@ WithOneAudience.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiencesWithoutNewVisitors );
 		registry
-			.dispatch( MODULES_ANALYTICS_4 )
+			.dispatch( CORE_USER )
 			.setConfiguredAudiences(
 				availableAudiencesWithoutNewVisitors.map( ( { name } ) => name )
 			);
+	},
+};
+
+export const WithMissingScopeNotice = Template.bind( {} );
+WithMissingScopeNotice.storyName = 'WithMissingScopeNotice';
+WithMissingScopeNotice.scenario = {};
+WithMissingScopeNotice.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
 	},
 };
 
@@ -67,6 +82,10 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ EDIT_SCOPE ],
+				} );
+
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				registry

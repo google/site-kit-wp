@@ -57,6 +57,7 @@ describe( 'SettingsApp', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetAuthentication( { needsReauthentication: false } );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry
 			.dispatch( CORE_SITE )
@@ -120,6 +121,11 @@ describe( 'SettingsApp', () => {
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
 		history.push( '/admin-settings' );
 
 		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
@@ -168,6 +174,11 @@ describe( 'SettingsApp', () => {
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
 
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
