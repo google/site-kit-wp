@@ -20,11 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 import CheckFill from '../../../../../svg/icons/check-fill.svg';
+import WarningSVG from '../../../../../svg/icons/warning.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
 export default function SubtleNotification( {
@@ -32,6 +34,7 @@ export default function SubtleNotification( {
 	description,
 	dismissCTA,
 	additionalCTA,
+	type = 'success',
 } ) {
 	return (
 		<Grid>
@@ -39,18 +42,34 @@ export default function SubtleNotification( {
 				<Cell
 					alignMiddle
 					size={ 12 }
-					className="googlesitekit-subtle-notification"
+					className={ classnames(
+						'googlesitekit-subtle-notification',
+						{
+							'googlesitekit-subtle-notification--success':
+								type === 'success',
+							'googlesitekit-subtle-notification--warning':
+								type === 'warning',
+						}
+					) }
 				>
 					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
+						{ type === 'success' && (
+							<CheckFill width={ 24 } height={ 24 } />
+						) }
+						{ type === 'warning' && (
+							<WarningSVG width={ 24 } height={ 24 } />
+						) }
 					</div>
+
 					<div className="googlesitekit-subtle-notification__content">
 						<p>{ title }</p>
 						<p className="googlesitekit-subtle-notification__secondary_description">
 							{ description }
 						</p>
 					</div>
+
 					{ dismissCTA }
+
 					{ additionalCTA }
 				</Cell>
 			</Row>
@@ -63,4 +82,5 @@ SubtleNotification.propTypes = {
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
+	type: PropTypes.string,
 };
