@@ -147,6 +147,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 							KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
 						)
 					}
+					showDismiss
 				/>
 			) }
 		>
