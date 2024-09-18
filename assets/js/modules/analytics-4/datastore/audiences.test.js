@@ -739,8 +739,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -753,8 +753,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -835,8 +835,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableNewVisitorsAudienceFixture.name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -1885,8 +1885,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -1899,8 +1899,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -1981,8 +1981,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableNewVisitorsAudienceFixture.name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],

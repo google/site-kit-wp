@@ -133,18 +133,26 @@ function shouldDisplayWidgetWithCustomDimensions(
  *
  * @since n.e.x.t
  *
- * @param {Function} select Data store select function.
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {string}   slug                Key metric widget slug.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithConversionEvent( select ) {
+function shouldDisplayWidgetWithConversionEvent(
+	select,
+	isViewOnlyDashboard,
+	slug
+) {
 	if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
 		return false;
 	}
 
-	return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
-		// This property is available to the widget object that requires the
-		// conversion reporting events, where the function is attached.
-		this.requiredConversionEventName
+	return (
+		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+			// This property is available to the widget object that requires the
+			// conversion reporting events, where the function is attached.
+			this.requiredConversionEventName
+		) || select( CORE_USER ).isKeyMetricActive( slug )
 	);
 }
 

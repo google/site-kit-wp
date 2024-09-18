@@ -125,9 +125,10 @@ export const actions = {
 	 *
 	 * @since 1.132.0
 	 *
-	 * @param {string} id                         Notification id to dismiss.
-	 * @param {Object} options                    Dismiss notification options.
-	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
+	 * @param {string} id                            Notification id to dismiss.
+	 * @param {Object} options                       Dismiss notification options.
+	 * @param {number} [options.expiresInSeconds]    Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
+	 * @param {number} [options.skipHidingFromQueue] Optional. A boolean value if notification should not be removed from the queue immediately.
 	 * @return {Object} Generator instance.
 	 */
 	dismissNotification: createValidatedAction(
@@ -146,11 +147,13 @@ export const actions = {
 			const { expiresInSeconds = 0 } = options;
 			const registry = yield commonActions.getRegistry();
 
-			// Remove the notification from the queue of notifications in state.
-			yield {
-				type: DISMISS_NOTIFICATION,
-				payload: { id },
-			};
+			if ( ! options.skipHidingFromQueue ) {
+				// Remove the notification from the queue of notifications in state.
+				yield {
+					type: DISMISS_NOTIFICATION,
+					payload: { id },
+				};
+			}
 
 			return registry
 				.dispatch( CORE_USER )
