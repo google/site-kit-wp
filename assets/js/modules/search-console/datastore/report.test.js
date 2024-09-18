@@ -20,11 +20,13 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	muteFetch,
+	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
 	waitForTimeouts,
@@ -317,6 +319,32 @@ describe( 'modules/search-console report', () => {
 				);
 
 				expect( hasZeroData() ).toBe( false );
+			} );
+		} );
+
+		describe( 'getSampleReportArgs', () => {
+			it( 'should return report arguments relative to the current reference date', () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-01' );
+
+				const args = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getSampleReportArgs();
+
+				expect( args.startDate ).toBe( '2024-03-06' );
+				expect( args.endDate ).toBe( '2024-04-30' );
+				expect( args.dimensions ).toBe( 'date' );
+				expect( args.url ).toBeUndefined();
+			} );
+
+			it( 'should include the URL property from the current entity URL', () => {
+				const entityURL = 'http://example.com';
+				provideSiteInfo( registry, { currentEntityURL: entityURL } );
+
+				const args = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getSampleReportArgs();
+
+				expect( args.url ).toBe( entityURL );
 			} );
 		} );
 	} );

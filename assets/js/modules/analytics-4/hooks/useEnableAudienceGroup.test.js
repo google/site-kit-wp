@@ -55,6 +55,9 @@ describe( 'useEnableAudienceGroup', () => {
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -180,6 +183,7 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		muteFetch( reportEndpoint );
+		muteFetch( expirableItemEndpoint );
 
 		// Set autoSubmit to true.
 		registry
@@ -218,6 +222,7 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		muteFetch( reportEndpoint );
+		muteFetch( expirableItemEndpoint );
 
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,

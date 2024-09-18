@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
@@ -522,6 +523,16 @@ const baseActions = {
 			return { error };
 		}
 
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 1,
+				} ) )
+			)
+		);
+
 		const userID = select( CORE_USER ).getID();
 
 		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupCompletedBy(
@@ -621,6 +632,16 @@ const baseActions = {
 		if ( error ) {
 			return { error };
 		}
+
+		// Expire new badges for initially configured audiences.
+		yield commonActions.await(
+			dispatch( CORE_USER ).setExpirableItemTimers(
+				configuredAudiences.map( ( slug ) => ( {
+					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+					expiresInSeconds: 1,
+				} ) )
+			)
+		);
 	},
 };
 

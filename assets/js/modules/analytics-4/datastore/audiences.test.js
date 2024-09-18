@@ -33,6 +33,7 @@ import {
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -60,6 +61,9 @@ describe( 'modules/analytics-4 audiences', () => {
 	);
 	const analyticsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
 	const audience = {
@@ -627,6 +631,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				muteFetch( expirableItemEndpoint );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions(
@@ -680,6 +686,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 					status: 200,
 				} );
+
+				muteFetch( expirableItemEndpoint );
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -735,8 +743,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -749,8 +757,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -772,6 +780,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -829,8 +839,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableNewVisitorsAudienceFixture.name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -869,6 +879,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -991,6 +1003,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					}
 				);
 
+				muteFetch( expirableItemEndpoint );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions(
@@ -1077,6 +1091,82 @@ describe( 'modules/analytics-4 audiences', () => {
 				).toEqual( expectedConfiguredAudiences );
 			} );
 
+			it( 'should make a request to expire new badges for configured audiences', async () => {
+				const totalUsersByAudience = {
+					[ availableUserAudiences[ 0 ].name ]: 0,
+					[ availableUserAudiences[ 1 ].name ]: 0,
+					[ availableUserAudiences[ 2 ].name ]: 0,
+				};
+
+				const configuredAudiences = [
+					availableNewVisitorsAudienceFixture.name,
+					availableReturningVisitorsAudienceFixture.name,
+				];
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						...availableAudiencesFixture,
+						...availableUserAudiences.slice( 1 ),
+					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( expirableItemEndpoint, {
+					body: configuredAudiences.map( ( slug ) => ( {
+						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 1,
+					} ) ),
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						availableUserAudiences,
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport(
+						createAudiencesTotalUsersMockReport(
+							totalUsersByAudience
+						),
+						{ options }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect(
+					registry.select( CORE_USER ).getConfiguredAudiences()
+				).toEqual( configuredAudiences );
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					expirableItemEndpoint,
+					{
+						body: {
+							data: configuredAudiences.map( ( slug ) => ( {
+								slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+								expiration: 1,
+							} ) ),
+						},
+					}
+				);
+			} );
+
 			describe( 'custom dimension handling', () => {
 				const createCustomDimensionEndpoint = new RegExp(
 					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
@@ -1136,6 +1226,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						body: CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1416,6 +1508,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						}
 					);
 
+					muteFetch( expirableItemEndpoint );
+
 					await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.enableAudienceGroup( failedAudiencesToRetry );
@@ -1644,6 +1738,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				muteFetch( expirableItemEndpoint );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions(
@@ -1697,6 +1793,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				muteFetch( expirableItemEndpoint );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions(
@@ -1734,6 +1832,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 					status: 200,
 				} );
+
+				muteFetch( expirableItemEndpoint );
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1789,8 +1889,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -1803,8 +1903,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableUserAudiences[ 0 ].name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -1826,6 +1926,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1883,8 +1985,8 @@ describe( 'modules/analytics-4 audiences', () => {
 							[ availableUserAudiences[ 2 ].name ]: 123,
 						},
 						expectedConfiguredAudiences: [
-							availableUserAudiences[ 2 ].name,
 							availableNewVisitorsAudienceFixture.name,
+							availableUserAudiences[ 2 ].name,
 						],
 					},
 				],
@@ -1923,6 +2025,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 						status: 200,
 					} );
+
+					muteFetch( expirableItemEndpoint );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1969,6 +2073,82 @@ describe( 'modules/analytics-4 audiences', () => {
 					).toEqual( expectedConfiguredAudiences );
 				}
 			);
+
+			it( 'should make a request to expire new badges for configured audiences', async () => {
+				const totalUsersByAudience = {
+					[ availableUserAudiences[ 0 ].name ]: 0,
+					[ availableUserAudiences[ 1 ].name ]: 0,
+					[ availableUserAudiences[ 2 ].name ]: 0,
+				};
+
+				const configuredAudiences = [
+					availableNewVisitorsAudienceFixture.name,
+					availableReturningVisitorsAudienceFixture.name,
+				];
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						...availableAudiencesFixture,
+						...availableUserAudiences.slice( 1 ),
+					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( expirableItemEndpoint, {
+					body: configuredAudiences.map( ( slug ) => ( {
+						[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }` ]: 1,
+					} ) ),
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions(
+						availableUserAudiences,
+						{ startDate, endDate: referenceDate }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport(
+						createAudiencesTotalUsersMockReport(
+							totalUsersByAudience
+						),
+						{ options }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableSecondaryUserAudienceGroup();
+
+				expect(
+					registry.select( CORE_USER ).getConfiguredAudiences()
+				).toEqual( configuredAudiences );
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					expirableItemEndpoint,
+					{
+						body: {
+							data: configuredAudiences.map( ( slug ) => ( {
+								slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+								expiration: 1,
+							} ) ),
+						},
+					}
+				);
+			} );
 		} );
 	} );
 

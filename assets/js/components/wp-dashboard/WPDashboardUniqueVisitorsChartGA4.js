@@ -37,6 +37,7 @@ import {
 import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
+import { stringToDate } from '../../util';
 
 export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	const { WPDashboardReportError } = props;
@@ -140,7 +141,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		);
 
 	if ( isZeroChart ) {
-		options.hAxis.ticks = [ refDate ];
+		options.hAxis.ticks = [ stringToDate( refDate ) ];
 	}
 
 	return (
