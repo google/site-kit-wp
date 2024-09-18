@@ -79,18 +79,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 		setSlug( undefined );
 	};
 
-	const handleDismiss = () => {
-		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
-			trackEvent(
-				`${ viewContext }_rrm-setup-success-notification`,
-				'dismiss_notification',
-				publicationOnboardingState
-			);
-		}
-
-		dismissNotice();
-	};
-
 	const onCTAClick = () => {
 		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
 			trackEvent(
@@ -131,7 +119,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'Maybe later',
 								'google-site-kit'
 							) }
-							onDismiss={ handleDismiss }
+							onDismiss={ dismissNotice }
+							gaDismissEventLabel={ publicationOnboardingState }
 						/>
 					}
 					additionalCTA={
@@ -168,7 +157,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 							id={ id }
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ handleDismiss }
+							onDismiss={ dismissNotice }
+							gaDismissEventLabel={ publicationOnboardingState }
 						/>
 					}
 					additionalCTA={
@@ -201,7 +191,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 							id={ id }
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ handleDismiss }
+							onDismiss={ dismissNotice }
+							gaDismissEventLabel={ publicationOnboardingState }
 						/>
 					}
 					additionalCTA={
