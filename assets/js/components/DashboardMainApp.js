@@ -78,6 +78,7 @@ import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
 import { getContextScrollTop } from '../util/scroll';
+import SiteKitAssistant from './Gemini/SiteKitAssistant';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -297,6 +298,8 @@ export default function DashboardMainApp() {
 			{ audienceSegmentationEnabled && <AudienceSelectionPanel /> }
 
 			<OfflineNotification />
+
+			<SiteKitAssistant />
 		</Fragment>
 	);
 }

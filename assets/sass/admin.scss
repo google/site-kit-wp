@@ -197,6 +197,9 @@
 // Feature Tours
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
+// Gemini Widget: To be refactored into the usual widget structure if updated in future.
+@import "components/gemini/googlesitekit-gemini";
+
 // Modules
 @import "components/ads";
 @import "components/adsense";
