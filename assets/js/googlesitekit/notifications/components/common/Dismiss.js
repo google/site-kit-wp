@@ -34,6 +34,7 @@ export default function Dismiss( {
 	dismissExpires = 0,
 	disabled,
 	onDismiss = () => {},
+	gaDismissEventLabel,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
@@ -41,7 +42,7 @@ export default function Dismiss( {
 
 	const handleDismiss = async ( event ) => {
 		await onDismiss?.( event );
-		trackEvents.dismiss();
+		trackEvents.dismiss( gaDismissEventLabel );
 		dismissNotification( id, { expiresInSeconds: dismissExpires } );
 	};
 
