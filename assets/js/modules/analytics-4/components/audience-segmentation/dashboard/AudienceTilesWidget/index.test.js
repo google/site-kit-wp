@@ -263,6 +263,32 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 	} );
 
+	it( 'should not the "no audiences" banner when there is no matching audience', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/9' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( /You don’t have any visitor groups selected./ )
+		).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
 	it( 'should render when configured audience is matching available audiences', async () => {
 		const configuredAudiences = [ 'properties/12345/audiences/1' ];
 
