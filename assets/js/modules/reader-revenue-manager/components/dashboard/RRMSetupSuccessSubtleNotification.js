@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Cell, Grid, Row } from '../../../../material-components';
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { trackEvent } from '../../../../util';
@@ -48,7 +47,7 @@ const targetOnboardingStates = [
 	ONBOARDING_ACTION_REQUIRED,
 ];
 
-export default function RRMSetupSuccessSubtleNotification() {
+export default function RRMSetupSuccessSubtleNotification( { Notification } ) {
 	const viewContext = useViewContext();
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
@@ -107,21 +106,9 @@ export default function RRMSetupSuccessSubtleNotification() {
 		}
 	}, [ publicationOnboardingState, viewContext ] );
 
-	function WithGridWrapped( { children } ) {
-		return (
-			<Grid>
-				<Row>
-					<Cell alignMiddle size={ 12 }>
-						{ children }
-					</Cell>
-				</Row>
-			</Grid>
-		);
-	}
-
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
-			<WithGridWrapped>
+			<Notification>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -138,13 +125,13 @@ export default function RRMSetupSuccessSubtleNotification() {
 					onCTAClick={ onCTAClick }
 					isCTALinkExternal
 				/>
-			</WithGridWrapped>
+			</Notification>
 		);
 	}
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<WithGridWrapped>
+			<Notification>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -164,13 +151,13 @@ export default function RRMSetupSuccessSubtleNotification() {
 					onCTAClick={ onCTAClick }
 					isCTALinkExternal
 				/>
-			</WithGridWrapped>
+			</Notification>
 		);
 	}
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<WithGridWrapped>
+			<Notification>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
@@ -187,7 +174,7 @@ export default function RRMSetupSuccessSubtleNotification() {
 					isCTALinkExternal
 					variant="warning"
 				/>
-			</WithGridWrapped>
+			</Notification>
 		);
 	}
 
