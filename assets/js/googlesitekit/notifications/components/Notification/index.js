@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
@@ -61,3 +66,10 @@ export default function Notification( {
 		</section>
 	);
 }
+
+Notification.propTypes = {
+	id: PropTypes.string,
+	className: PropTypes.string,
+	gaViewEventLabel: PropTypes.string,
+	children: PropTypes.node,
+};
