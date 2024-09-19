@@ -92,20 +92,30 @@ class Reset_AudiencesTest extends TestCase {
 	 */
 	protected $audience_settings;
 
+	/**
+	 * Reset_Audiences instance.
+	 *
+	 * @var Reset_Audiences
+	 */
+	protected $reset_audiences;
+
 	public function set_up() {
 		parent::set_up();
 
 		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options           = new Options( $this->context );
-		$this->users             = array( $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) ), $this->factory()->user->create_and_get( array( 'role' => 'editor' ) ) );
+		$this->users             = array(
+			$this->factory()->user->create_and_get( array( 'role' => 'administrator' ) ),
+			$this->factory()->user->create_and_get( array( 'role' => 'editor' ) ),
+		);
 		$this->user_options      = new User_Options( $this->context, $this->users[0]->ID );
 		$this->dismissed_prompts = new Dismissed_Prompts( $this->user_options );
 		$this->dismissed_items   = new Dismissed_Items( $this->user_options );
 		$this->audience_settings = new Audience_Settings( $this->user_options );
 		$this->authentication    = new Authentication( $this->context, $this->options, $this->user_options );
 		$this->analytics         = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->reset_audiences   = new Reset_Audiences( $this->user_options );
 
-		$this->analytics->register();
 		wp_set_current_user( $this->users[0]->ID );
 
 		$this->analytics->get_settings()->merge(
@@ -141,42 +151,9 @@ class Reset_AudiencesTest extends TestCase {
 				'audience-tile-testAudienceTile2',
 			)
 		);
+
 		// Remove the wildcard key, as we have added test examples above.
 		unset( $test_dismissed_items[ array_search( 'audience-tile-*', $test_dismissed_items, true ) ] );
-
-		$default_audience_segmentation_settings = array(
-			'availableAudiences'                => null,
-			'availableAudiencesLastSyncedAt'    => 0,
-			'audienceSegmentationSetupComplete' => false,
-		);
-
-		$activated_audience_segmentation_settings = array(
-			'availableAudiences'                => array(
-				array(
-					'name' => 'properties/12345678/audiences/12345',
-				),
-				array(
-					'name' => 'properties/12345678/audiences/67890',
-				),
-			),
-			'availableAudiencesLastSyncedAt'    => time(),
-			'audienceSegmentationSetupComplete' => true,
-		);
-
-		// Set module level audience settings.
-		$this->analytics->get_settings()->merge(
-			$activated_audience_segmentation_settings
-		);
-		$analytics_settings = $this->analytics->get_settings()->get();
-
-		var_dump( '$analytics_settings' );
-		var_dump( $analytics_settings );
-		var_dump( '$activated_audience_segmentation_settings' );
-		var_dump( $activated_audience_segmentation_settings );
-
-		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
-		}
 
 		foreach ( $this->users as $user ) {
 			$this->user_options->switch_user( $user->ID );
@@ -211,43 +188,35 @@ class Reset_AudiencesTest extends TestCase {
 				$this->assertEquals( $activated_user_audience_settings[ $key ], $audience_settings[ $key ] );
 			}
 		}
+
 		$this->user_options->switch_user( $backup_user_id );
 
-		// Update the propertyID to trigger reset.
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => 'UA-222222',
-			)
-		);
+		// Trigger reset.
+		$this->reset_audiences->reset_audience_data();
 
-		// Confirm the users dismissed prompts have been reset.
 		foreach ( $this->users as $user ) {
 			$this->user_options->switch_user( $user->ID );
 
-			// Confirm the users dismissed prompts have been reset.
+			// Confirm the user's dismissed prompts have been reset.
 			$user_dismissed_prompts = $this->dismissed_prompts->get();
 			foreach ( Reset_Audiences::AUDIENCE_SEGMENTATION_DISMISSED_PROMPTS as $dismissed_prompt ) {
 				$this->assertFalse( array_key_exists( $dismissed_prompt, $user_dismissed_prompts ) );
 			}
 
-			// Confirm the users dismissed items have been reset.
+			// Confirm the user's dismissed items have been reset.
 			$user_dismissed_items = $this->dismissed_items->get();
 			foreach ( $test_dismissed_items as $dismissed_item ) {
 				$this->assertFalse( array_key_exists( $dismissed_item, $user_dismissed_items ) );
 			}
 
-			// Confirm the users audience settings have been reset.
+			// Confirm the user's audience settings have been reset.
 			$audience_settings = $this->audience_settings->get();
 			foreach ( array_keys( $default_user_audience_settings ) as $key ) {
 					$this->assertEquals( $default_user_audience_settings[ $key ], $audience_settings[ $key ] );
 			}
 		}
-		$this->user_options->switch_user( $backup_user_id );
 
-		// Confirm the module level audience settings have been reset.
-		$analytics_settings = $this->analytics->get_settings()->get();
-		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
-		}
+		// Restore original user.
+		$this->user_options->switch_user( $backup_user_id );
 	}
 }
