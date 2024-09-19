@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserInfo,
 	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -89,6 +90,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -145,6 +147,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 			propertyID: testPropertyID,
 		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( null );
 	} );
 
 	afterEach( () => {
