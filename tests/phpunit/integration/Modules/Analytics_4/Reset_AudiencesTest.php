@@ -168,6 +168,12 @@ class Reset_AudiencesTest extends TestCase {
 			$activated_audience_segmentation_settings
 		);
 		$analytics_settings = $this->analytics->get_settings()->get();
+
+		var_dump( '$analytics_settings' );
+		var_dump( $analytics_settings );
+		var_dump( '$activated_audience_segmentation_settings' );
+		var_dump( $activated_audience_segmentation_settings );
+
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
 			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
 		}
