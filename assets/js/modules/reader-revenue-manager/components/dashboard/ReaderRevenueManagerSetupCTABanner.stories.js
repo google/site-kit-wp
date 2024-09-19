@@ -17,14 +17,23 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../datastore/constants';
+import {
+	READER_REVENUE_MANAGER_MODULE_SLUG,
+	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+} from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { WEEK_IN_SECONDS } from '../../../../util';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'readerRevenueManagerSetupCTABanner'
@@ -51,12 +60,43 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+					),
+					{
+						body: {
+							[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]:
+								{
+									expires:
+										Date.now() / 1000 + WEEK_IN_SECONDS,
+									count: 1,
+								},
+						},
+						status: 200,
+					}
+				);
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<div
+					style={ {
+						minHeight: '200px',
+						display: 'flex',
+						alignItems: 'center',
+					} }
+				>
+					<div id="adminmenu">
+						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
+						<a href="http://test.test/?page=googlesitekit-settings" />
+					</div>
+					<div style={ { flex: 1 } }>
+						<WithRegistrySetup func={ setupRegistry }>
+							<Story />
+						</WithRegistrySetup>
+					</div>
+				</div>
 			);
 		},
 	],

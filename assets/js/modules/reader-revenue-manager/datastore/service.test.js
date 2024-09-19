@@ -69,25 +69,6 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				);
 			} );
 
-			it( 'should append a publication ID to the URL', () => {
-				const publicationID = 'ABCDEFG';
-
-				const serviceURL = registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getServiceURL( {
-						publicationID,
-					} );
-
-				const query = {
-					publication: publicationID,
-					utm_source: 'sitekit',
-				};
-
-				expect( decodeServiceURL( serviceURL ) ).toMatchQueryParameters(
-					query
-				);
-			} );
-
 			it( 'should add the path parameter', () => {
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
@@ -104,6 +85,7 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				const query = {
 					param1: '1',
 					param2: '2',
+					publicationID: 'ABCDEFG',
 				};
 
 				const serviceURL = registry

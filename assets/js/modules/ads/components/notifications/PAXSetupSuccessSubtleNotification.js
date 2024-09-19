@@ -25,11 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { getContextScrollTop } from '../../../../util/scroll';
+import { getNavigationalScrollTop } from '../../../../util/scroll';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 
 export default function PAXSetupSuccessSubtleNotification( {
@@ -38,7 +37,7 @@ export default function PAXSetupSuccessSubtleNotification( {
 } ) {
 	const breakpoint = useBreakpoint();
 
-	const [ notification, setNotification ] = useQueryArg( 'notification' );
+	const [ , setNotification ] = useQueryArg( 'notification' );
 
 	const onDismiss = () => {
 		setNotification( undefined );
@@ -51,17 +50,13 @@ export default function PAXSetupSuccessSubtleNotification( {
 			const widgetClass = '.googlesitekit-widget--partnerAdsPAX';
 
 			global.scrollTo( {
-				top: getContextScrollTop( widgetClass, breakpoint ),
+				top: getNavigationalScrollTop( widgetClass, breakpoint ),
 				behavior: 'smooth',
 			} );
 
 			setNotification( undefined );
 		}, 50 );
 	};
-
-	if ( PAX_SETUP_SUCCESS_NOTIFICATION !== notification ) {
-		return null;
-	}
 
 	return (
 		<Notification>

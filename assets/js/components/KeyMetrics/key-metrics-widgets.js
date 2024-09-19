@@ -34,6 +34,7 @@ import {
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -131,20 +132,28 @@ function shouldDisplayWidgetWithCustomDimensions(
  * This function is attached to the widget object that requires the conversion reporting events and
  * has the `requiredConversionEventName` property.
  *
- * @since n.e.x.t
+ * @since 1.136.0
  *
- * @param {Function} select Data store select function.
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {string}   slug                Key metric widget slug.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithConversionEvent( select ) {
+function shouldDisplayWidgetWithConversionEvent(
+	select,
+	isViewOnlyDashboard,
+	slug
+) {
 	if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
 		return false;
 	}
 
-	return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
-		// This property is available to the widget object that requires the
-		// conversion reporting events, where the function is attached.
-		this.requiredConversionEventName
+	return (
+		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+			// This property is available to the widget object that requires the
+			// conversion reporting events, where the function is attached.
+			this.requiredConversionEventName
+		) || select( CORE_USER ).isKeyMetricActive( slug )
 	);
 }
 
@@ -372,6 +381,23 @@ const KEY_METRICS_WIDGETS = {
 			'The cities where most of your visitors came from',
 			'google-site-kit'
 		),
+	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS ]: {
+		title: __( 'Top cities driving leads', 'google-site-kit' ),
+		description: __(
+			'Cities driving the most contact form submissions',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities driving the most contact form submissions',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
 		title: __( 'Top countries driving traffic', 'google-site-kit' ),

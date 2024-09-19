@@ -133,8 +133,8 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
 
-	const audienceSegmentationSetupComplete = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupComplete()
+	const audienceSegmentationSetupCompletedBy = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
 	);
 
 	const handleDismissClick = async () => {
@@ -193,7 +193,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
-		audienceSegmentationSetupComplete ||
+		audienceSegmentationSetupCompletedBy !== null ||
 		configuredAudiences === undefined ||
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||

@@ -67,7 +67,7 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import { getContextScrollTop } from '../../util/scroll';
+import { getNavigationalScrollTop } from '../../util/scroll';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
@@ -226,7 +226,7 @@ export default function Navigation() {
 			global.scrollTo( {
 				top:
 					chipID !== getDefaultChipID()
-						? getContextScrollTop( `#${ chipID }`, breakpoint )
+						? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
 						: 0,
 				behavior: 'smooth',
 			} );
@@ -262,7 +262,7 @@ export default function Navigation() {
 		setTimeout( () => {
 			const scrollTo =
 				chipID !== defaultChipID
-					? getContextScrollTop( `#${ chipID }`, breakpoint )
+					? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
 					: 0;
 
 			if ( global.scrollY === scrollTo ) {
