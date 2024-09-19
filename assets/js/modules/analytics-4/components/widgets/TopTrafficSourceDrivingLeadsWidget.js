@@ -78,15 +78,6 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		eventNames.splice( eventNames.indexOf( 'contact' ), 1 );
 	}
 
-	const isTopTrafficSourceDrivingLeadsWidgetActive = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricActive(
-			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS
-		)
-	);
-
-	const showWidget =
-		isTopTrafficSourceDrivingLeadsWidgetActive || eventNames?.length;
-
 	const totalLeadsReportOptions = {
 		...dates,
 		metrics: [
@@ -123,22 +114,22 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 
 	const totalLeadsReport = useInViewSelect(
 		( select ) =>
-			showWidget && eventNames.length
+			eventNames.length
 				? select( MODULES_ANALYTICS_4 ).getReport(
 						totalLeadsReportOptions
 				  )
 				: undefined,
-		[ showWidget, eventNames, totalLeadsReportOptions ]
+		[ eventNames, totalLeadsReportOptions ]
 	);
 
 	const trafficSourceReport = useInViewSelect(
 		( select ) =>
-			showWidget && eventNames.length
+			eventNames.length
 				? select( MODULES_ANALYTICS_4 ).getReport(
 						trafficSourceReportOptions
 				  )
 				: undefined,
-		[ showWidget, eventNames, trafficSourceReportOptions ]
+		[ eventNames, trafficSourceReportOptions ]
 	);
 
 	const error = useSelect( ( select ) => {
@@ -157,16 +148,17 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		return trafficSourceReportErrors || totalLeadsReportErrors || undefined;
 	} );
 
-	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ totalLeadsReportOptions ]
-			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ trafficSourceReportOptions ]
-			)
+	const loading = useSelect( ( select ) =>
+		eventNames.length
+			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ totalLeadsReportOptions ]
+			  ) ||
+			  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ trafficSourceReportOptions ]
+			  )
+			: undefined
 	);
 
 	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
