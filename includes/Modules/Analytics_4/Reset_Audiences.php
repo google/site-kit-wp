@@ -156,10 +156,7 @@ class Reset_Audiences {
 				}
 
 				// Reset the users audience settings, such as configured audiences.
-				$audience_settings_keys = array_keys( $this->audience_settings->get() );
-				foreach ( $audience_settings_keys as $key ) {
-					$this->audience_settings->delete( $key );
-				}
+				$this->audience_settings->delete();
 			}
 
 			// Restore original user.
