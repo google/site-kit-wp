@@ -50,14 +50,6 @@ class Reset_Audiences {
 	protected $dismissed_items;
 
 	/**
-	 * Analytics_4 instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Analytics_4
-	 */
-	protected $analytics;
-
-	/**
 	 * Audience Settings instance.
 	 *
 	 * @since n.e.x.t
@@ -81,30 +73,12 @@ class Reset_Audiences {
 	 * @since n.e.x.t
 	 *
 	 * @param User_Options $user_options User option API.
-	 * @param Analytics_4  $analytics    Analytics_4 instance.
 	 */
-	public function __construct( User_Options $user_options = null, Analytics_4 $analytics ) {
+	public function __construct( User_Options $user_options = null ) {
 		$this->user_options      = $user_options;
 		$this->dismissed_prompts = new Dismissed_Prompts( $this->user_options );
 		$this->dismissed_items   = new Dismissed_Items( $this->user_options );
 		$this->audience_settings = new Audience_Settings( $this->user_options );
-		$this->analytics         = $analytics;
-	}
-
-	/**
-	 * Register on change actions.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function register() {
-		$this->analytics->get_settings()->on_change(
-			function ( $old_value, $new_value ) {
-				// Reset Audience specific settings, only when the Analytics propertyID changes.
-				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
-					$this->reset_audience_data();
-				}
-			}
-		);
 	}
 
 	/**
@@ -162,14 +136,5 @@ class Reset_Audiences {
 			// Restore original user.
 			$this->user_options->switch_user( $backup_user_id );
 		}
-
-		// Reset the main Analytics Module, Audience Segmentation settings.
-		$this->analytics->get_settings()->merge(
-			array(
-				'availableAudiences'                => null,
-				'availableAudiencesLastSyncedAt'    => 0,
-				'audienceSegmentationSetupComplete' => false,
-			)
-		);
 	}
 }
