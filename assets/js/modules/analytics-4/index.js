@@ -33,6 +33,7 @@ import {
 	PopularProductsWidget,
 	ReturningVisitorsWidget,
 	TopCitiesWidget,
+	TopCitiesDrivingLeadsWidget,
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
@@ -67,6 +68,7 @@ import {
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
@@ -86,7 +88,6 @@ import {
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
-	NoAudienceBannerWidget,
 	SecondaryUserSetupWidget,
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
@@ -138,7 +139,7 @@ export const registerWidgets = ( widgets ) => {
 			isActive: ( select ) => {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
-				return configuredAudiences?.length > 0;
+				return !! configuredAudiences;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
@@ -167,33 +168,16 @@ export const registerWidgets = ( widgets ) => {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 
-				const audienceSegmentationSetupComplete =
+				const audienceSegmentationSetupCompletedBy =
 					select(
 						MODULES_ANALYTICS_4
-					).getAudienceSegmentationSetupComplete();
+					).getAudienceSegmentationSetupCompletedBy();
 
 				return (
 					availableAudiences?.length &&
 					configuredAudiences === null &&
-					audienceSegmentationSetupComplete === true
+					audienceSegmentationSetupCompletedBy !== null
 				);
-			},
-		},
-		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
-	);
-
-	widgets.registerWidget(
-		'analyticsNoAudienceBanner',
-		{
-			Component: NoAudienceBannerWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'analytics-4' ],
-			isActive: ( select ) => {
-				const configuredAudiences =
-					select( CORE_USER ).getConfiguredAudiences();
-				return !! configuredAudiences;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
@@ -531,6 +515,22 @@ export const registerWidgets = ( widgets ) => {
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+		{
+			Component: TopCitiesDrivingLeadsWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS
 				),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

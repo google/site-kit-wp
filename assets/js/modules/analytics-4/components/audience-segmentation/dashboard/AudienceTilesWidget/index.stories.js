@@ -37,10 +37,7 @@ import {
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
 } from '../../../../utils/data-mock';
-import {
-	audiences as audiencesFixture,
-	availableAudiences,
-} from '../../../../datastore/__fixtures__';
+import { availableAudiences } from '../../../../datastore/__fixtures__';
 import AudienceTilesWidget from './';
 
 function excludeAudienceFromReport( report, audienceResourceName ) {
@@ -169,7 +166,7 @@ DefaultWithZeroTile.args = {
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport = excludeAudienceFromReport(
 			report,
-			audienceResourceNames[ 2 ]
+			audienceResourceNames[ 0 ]
 		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
@@ -187,9 +184,9 @@ DefaultWithZeroTile.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
 				audience: {
-					'properties/12345/audiences/1': audienceDate,
+					'properties/12345/audiences/1': dataAvailabilityDate,
 					'properties/12345/audiences/3': audienceDate,
-					'properties/12345/audiences/4': dataAvailabilityDate,
+					'properties/12345/audiences/4': audienceDate,
 				},
 				customDimension: {},
 				property: {},
@@ -260,7 +257,7 @@ TwoTilesWithZeroTile.args = {
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport = excludeAudienceFromReport(
 			report,
-			audienceResourceNames[ 1 ]
+			audienceResourceNames[ 0 ]
 		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
@@ -278,8 +275,8 @@ TwoTilesWithZeroTile.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
 				audience: {
-					'properties/12345/audiences/1': audienceDate,
-					'properties/12345/audiences/4': dataAvailabilityDate,
+					'properties/12345/audiences/1': dataAvailabilityDate,
+					'properties/12345/audiences/4': audienceDate,
 				},
 				customDimension: {},
 				property: {},
@@ -294,12 +291,12 @@ export const ZeroTileWithPlaceholder = Template.bind( {} );
 ZeroTileWithPlaceholder.storyName = 'ZeroTileWithPlaceholder';
 ZeroTileWithPlaceholder.args = {
 	configuredAudiences: [
-		'properties/12345/audiences/4', // Returning visitors
+		'properties/12345/audiences/1', // All Users
 	],
 
 	setupRegistry: ( registry ) => {
 		const audienceResourceNames = [
-			'properties/12345/audiences/4', // Returning visitors
+			'properties/12345/audiences/1', // All Users
 		];
 		const reportOptions = {
 			compareEndDate: '2024-02-28',
@@ -338,7 +335,7 @@ ZeroTileWithPlaceholder.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
 				audience: {
-					'properties/12345/audiences/4': dataAvailabilityDate,
+					'properties/12345/audiences/1': dataAvailabilityDate,
 				},
 				customDimension: {},
 				property: {},
@@ -348,6 +345,110 @@ ZeroTileWithPlaceholder.args = {
 ZeroTileWithPlaceholder.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/ZeroTileWithPlaceholder',
 };
+
+export const DefaultAudiencesPartialData = Template.bind( {} );
+DefaultAudiencesPartialData.storyName = 'DefaultAudiencesPartialData';
+DefaultAudiencesPartialData.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/2', // Purchasers
+	],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/1': dataAvailabilityDate,
+					'properties/12345/audiences/2': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+	},
+};
+DefaultAudiencesPartialData.scenario = {};
+
+export const SiteKitAudiencesPartialData = Template.bind( {} );
+SiteKitAudiencesPartialData.storyName = 'SiteKitAudiencesPartialData';
+SiteKitAudiencesPartialData.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const dataAvailabilityDate = Number(
+			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveResourceDataAvailabilityDates( {
+				audience: {
+					'properties/12345/audiences/3': dataAvailabilityDate,
+					'properties/12345/audiences/4': dataAvailabilityDate,
+				},
+				customDimension: {},
+				property: {},
+			} );
+
+		availableAudiences
+			.filter(
+				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+			)
+			.forEach( ( { audienceSlug } ) => {
+				const dimensionFilters = {
+					newVsReturning:
+						audienceSlug === 'new-visitors' ? 'new' : 'returning',
+				};
+
+				provideAnalytics4MockReport( registry, {
+					...topCitiesReportOptions,
+					dimensionFilters,
+				} );
+
+				provideAnalytics4MockReport( registry, {
+					...topContentReportOptions,
+					dimensionFilters,
+				} );
+
+				const pageTitlesReport = getAnalytics4MockResponse(
+					topContentPageTitlesReportOptions,
+					// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+					// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+					// page paths to page titles.
+					{ dimensionCombinationStrategy: STRATEGY_ZIP }
+				);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( pageTitlesReport, {
+						options: {
+							...topContentPageTitlesReportOptions,
+							dimensionFilters,
+						},
+					} );
+			} );
+	},
+};
+SiteKitAudiencesPartialData.scenario = {};
 
 export const AllTilesErrored = Template.bind( {} );
 AllTilesErrored.storyName = 'AllTilesErrored';
@@ -517,6 +618,22 @@ export default {
 					{ name: 'screenPageViews' },
 				],
 			};
+			const newVsReturningReportOptions = {
+				compareEndDate: '2024-02-28',
+				compareStartDate: '2024-02-01',
+				endDate: '2024-03-27',
+				startDate: '2024-02-29',
+				dimensions: [ { name: 'newVsReturning' } ],
+				dimensionFilters: {
+					newVsReturning: [ 'new', 'returning' ],
+				},
+				metrics: [
+					{ name: 'totalUsers' },
+					{ name: 'sessionsPerUser' },
+					{ name: 'screenPageViewsPerSession' },
+					{ name: 'screenPageViews' },
+				],
+			};
 
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry, {
@@ -548,25 +665,21 @@ export default {
 					totalPageviewsReportOptions
 				);
 
-				audiencesFixture.forEach( ( audience ) => {
+				availableAudiences.forEach( ( audience ) => {
+					const dimensionFilters = {
+						audienceResourceName: audience.name,
+					};
+
 					provideAnalytics4MockReport( registry, {
 						...topCitiesReportOptions,
-						dimensionFilters: {
-							audienceResourceName: audience.name,
-						},
+						dimensionFilters,
 					} );
-				} );
 
-				audiencesFixture.forEach( ( audience ) => {
 					provideAnalytics4MockReport( registry, {
 						...topContentReportOptions,
-						dimensionFilters: {
-							audienceResourceName: audience.name,
-						},
+						dimensionFilters,
 					} );
-				} );
 
-				audiencesFixture.forEach( ( audience ) => {
 					const pageTitlesReport = getAnalytics4MockResponse(
 						topContentPageTitlesReportOptions,
 						// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -579,12 +692,20 @@ export default {
 						.receiveGetReport( pageTitlesReport, {
 							options: {
 								...topContentPageTitlesReportOptions,
-								dimensionFilters: {
-									audienceResourceName: audience.name,
-								},
+								dimensionFilters,
 							},
 						} );
 				} );
+
+				const newVsReturningReport = getAnalytics4MockResponse(
+					newVsReturningReportOptions
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( newVsReturningReport, {
+						options: newVsReturningReportOptions,
+					} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
@@ -603,7 +724,7 @@ export default {
 				const audienceDate = Number( startDate.replace( /-/g, '' ) );
 
 				const audienceResourceData = {};
-				audiencesFixture.forEach( ( audience ) => {
+				availableAudiences.forEach( ( audience ) => {
 					audienceResourceData[ audience.name ] = audienceDate;
 				} );
 				registry
@@ -613,6 +734,10 @@ export default {
 						customDimension: {},
 						property: {},
 					} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiencesLastSyncedAt: Date.now() - 1000,
+				} );
 
 				setupRegistryFn?.( registry );
 			};

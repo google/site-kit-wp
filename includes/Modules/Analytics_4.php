@@ -89,10 +89,10 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\User\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
+use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
 use stdClass;
 use WP_Error;
 
@@ -154,12 +154,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	protected $custom_dimensions_data_available;
 
 	/**
-	 * Audience_Settings instance.
+	 * Reset_Audiences instance.
 	 *
-	 * @since 1.124.0
-	 * @var Audience_Settings
+	 * @since n.e.x.t
+	 * @var Reset_Audiences
 	 */
-	protected $audience_settings;
+	protected $reset_audiences;
 
 	/**
 	 * Resource_Data_Availability_Date instance.
@@ -189,7 +189,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
-		$this->audience_settings                = new Audience_Settings( $this->user_options );
+		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
 	}
 
@@ -234,7 +234,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
 		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
-		add_action( 'admin_init', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
+		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_ads_linked, 'maybe_schedule_synchronize_ads_linked' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 
 		// For non-AMP and AMP.
@@ -309,6 +309,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							do_action( Conversion_Reporting_Cron::CRON_ACTION );
 						}
 					}
+
+					// Reset audience specific settings.
+					$this->reset_audiences->reset_audience_data();
 				}
 			}
 		);
@@ -321,8 +324,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			'pre_update_option_googlesitekit_analytics-4_settings',
 			function ( $new_value, $old_value ) {
 				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-					$new_value['availableCustomDimensions'] = null;
-					$new_value['availableAudiences']        = null;
+					$new_value['availableCustomDimensions']            = null;
+					$new_value['availableAudiences']                   = null;
+					$new_value['audienceSegmentationSetupCompletedBy'] = null;
 				}
 
 				return $new_value;
@@ -464,6 +468,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$this->get_settings()->delete();
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
+		$this->reset_audiences->reset_audience_data();
 	}
 
 	/**
@@ -2405,11 +2410,36 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		usort(
 			$available_audiences,
-			function ( $a, $b ) {
-				$a_weight = self::AUDIENCE_TYPE_SORT_ORDER[ $a['audienceType'] ];
-				$b_weight = self::AUDIENCE_TYPE_SORT_ORDER[ $b['audienceType'] ];
+			function ( $audience_a, $audience_b ) use ( $available_audiences ) {
+				$audience_index_a = array_search( $audience_a, $available_audiences, true );
+				$audience_index_b = array_search( $audience_b, $available_audiences, true );
 
-				return $a_weight - $b_weight;
+				if ( false === $audience_index_a || false === $audience_index_b ) {
+					return 0;
+				}
+
+				$audience_a = $available_audiences[ $audience_index_a ];
+				$audience_b = $available_audiences[ $audience_index_b ];
+
+				$audience_type_a = $audience_a['audienceType'];
+				$audience_type_b = $audience_b['audienceType'];
+
+				if ( $audience_type_a === $audience_type_b ) {
+					if ( 'SITE_KIT_AUDIENCE' === $audience_type_b ) {
+						return 'new-visitors' === $audience_a['audienceSlug'] ? -1 : 1;
+					}
+
+					return $audience_index_a - $audience_index_b;
+				}
+
+				$weight_a = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_a ];
+				$weight_b = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_b ];
+
+				if ( $weight_a === $weight_b ) {
+					return $audience_index_a - $audience_index_b;
+				}
+
+				return $weight_a - $weight_b;
 			}
 		);
 
