@@ -139,6 +139,13 @@ function provideAudienceTilesMockReport(
 		endDate,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: 'post',
+			},
+		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
 	};
@@ -148,6 +155,13 @@ function provideAudienceTilesMockReport(
 		endDate,
 		dimensions: [ 'pagePath', 'pageTitle' ],
 		metrics: [ { name: 'screenPageViews' } ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: 'post',
+			},
+		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
 	};
@@ -172,7 +186,10 @@ function provideAudienceTilesMockReport(
 
 			const individualReportOptions = {
 				...value,
-				dimensionFilters,
+				dimensionFilters: {
+					...value.dimensionFilters,
+					...dimensionFilters,
+				},
 			};
 
 			const individualReportData = getAnalytics4MockResponse(
