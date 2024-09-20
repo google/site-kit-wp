@@ -92,6 +92,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
+use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
 use stdClass;
 use WP_Error;
 
@@ -153,6 +154,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	protected $custom_dimensions_data_available;
 
 	/**
+	 * Reset_Audiences instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Reset_Audiences
+	 */
+	protected $reset_audiences;
+
+	/**
 	 * Resource_Data_Availability_Date instance.
 	 *
 	 * @since 1.127.0
@@ -180,6 +189,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
+		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
 	}
 
@@ -299,6 +309,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							do_action( Conversion_Reporting_Cron::CRON_ACTION );
 						}
 					}
+
+					// Reset audience specific settings.
+					$this->reset_audiences->reset_audience_data();
 				}
 			}
 		);
@@ -311,8 +324,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			'pre_update_option_googlesitekit_analytics-4_settings',
 			function ( $new_value, $old_value ) {
 				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-					$new_value['availableCustomDimensions'] = null;
-					$new_value['availableAudiences']        = null;
+					$new_value['availableCustomDimensions']            = null;
+					$new_value['availableAudiences']                   = null;
+					$new_value['audienceSegmentationSetupCompletedBy'] = null;
 				}
 
 				return $new_value;
@@ -454,6 +468,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$this->get_settings()->delete();
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
+		$this->reset_audiences->reset_audience_data();
 	}
 
 	/**
