@@ -25,14 +25,14 @@ import { finiteNumberOrZero } from './finite-number-or-zero';
 /**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
  *
- * @since 1.48.0
+ * @since n.e.x.t Renamed from getContextScrollTop to getNavigationalScrollTop.
  *
- * @param {string} context    The id (prepend #) or class (prepend .) of the context element to scroll to.
+ * @param {string} selector   Selector for the element to scroll to. The id (prepend #) or class (prepend .).
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The offset to scroll to.
  */
-export function getContextScrollTop( context, breakpoint ) {
-	const contextElement = document.querySelector( context );
+export function getNavigationalScrollTop( selector, breakpoint ) {
+	const contextElement = document.querySelector( selector );
 	if ( ! contextElement ) {
 		return 0;
 	}

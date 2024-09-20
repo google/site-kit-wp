@@ -38,6 +38,11 @@ export const READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY =
 export const READER_REVENUE_MANAGER_SETUP_FORM =
 	'readerRevenueManagerSetupForm';
 
+export const READER_REVENUE_MANAGER_NOTICES_FORM =
+	'readerRevenueManagerNoticesForm';
+
 export const SHOW_PUBLICATION_CREATE = 'showPublicationCreate';
 
 export const RESET_PUBLICATIONS = 'resetPublications';
+
+export const SYNC_PUBLICATION = 'syncPublication';
