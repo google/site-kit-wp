@@ -25,17 +25,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupCTAWidget';
 import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
-import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../../../components/Link';
 import { AudienceErrorModal } from '../../dashboard';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
+import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 
 export default function SetupCTA() {
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
