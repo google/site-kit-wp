@@ -78,6 +78,13 @@ const topContentReportOptions = {
 	startDate: '2024-02-29',
 	dimensions: [ 'pagePath' ],
 	metrics: [ { name: 'screenPageViews' } ],
+	dimensionFilters: {
+		'customEvent:googlesitekit_post_type': {
+			filterType: 'stringFilter',
+			matchType: 'EXACT',
+			value: 'post',
+		},
+	},
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 3,
 };
@@ -87,6 +94,13 @@ const topContentPageTitlesReportOptions = {
 	startDate: '2024-02-29',
 	dimensions: [ 'pagePath', 'pageTitle' ],
 	metrics: [ { name: 'screenPageViews' } ],
+	dimensionFilters: {
+		'customEvent:googlesitekit_post_type': {
+			filterType: 'stringFilter',
+			matchType: 'EXACT',
+			value: 'post',
+		},
+	},
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
 };
@@ -427,7 +441,10 @@ SiteKitAudiencesPartialData.args = {
 
 				provideAnalytics4MockReport( registry, {
 					...topContentReportOptions,
-					dimensionFilters,
+					dimensionFilters: {
+						...topContentReportOptions.dimensionFilters,
+						...dimensionFilters,
+					},
 				} );
 
 				const pageTitlesReport = getAnalytics4MockResponse(
@@ -442,7 +459,10 @@ SiteKitAudiencesPartialData.args = {
 					.receiveGetReport( pageTitlesReport, {
 						options: {
 							...topContentPageTitlesReportOptions,
-							dimensionFilters,
+							dimensionFilters: {
+								...topContentPageTitlesReportOptions.dimensionFilters,
+								...dimensionFilters,
+							},
 						},
 					} );
 			} );
@@ -677,7 +697,10 @@ export default {
 
 					provideAnalytics4MockReport( registry, {
 						...topContentReportOptions,
-						dimensionFilters,
+						dimensionFilters: {
+							...topContentReportOptions.dimensionFilters,
+							...dimensionFilters,
+						},
 					} );
 
 					const pageTitlesReport = getAnalytics4MockResponse(
@@ -692,7 +715,10 @@ export default {
 						.receiveGetReport( pageTitlesReport, {
 							options: {
 								...topContentPageTitlesReportOptions,
-								dimensionFilters,
+								dimensionFilters: {
+									...topContentPageTitlesReportOptions.dimensionFilters,
+									...dimensionFilters,
+								},
 							},
 						} );
 				} );
