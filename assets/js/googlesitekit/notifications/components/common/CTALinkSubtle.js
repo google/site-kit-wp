@@ -22,6 +22,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_LOCATION } from '../../../datastore/location/constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { Button } from 'googlesitekit-components';
 import ExternalSVG from '../../../../../svg/icons/external.svg';
@@ -30,13 +32,27 @@ export default function CTALinkSubtle( {
 	id,
 	ctaLink,
 	ctaLabel,
+	onCTAClick,
 	isCTALinkExternal = false,
 	gaConfirmEventLabel,
 } ) {
 	const trackEvents = useNotificationEvents( id );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const handleCTAClick = () => {
-		trackEvents.confirm( gaConfirmEventLabel );
+	const handleCTAClick = async ( event ) => {
+		if ( ! event.defaultPrevented ) {
+			event.preventDefault();
+		}
+
+		await onCTAClick?.( event );
+
+		await trackEvents.confirm( gaConfirmEventLabel );
+
+		if ( isCTALinkExternal ) {
+			global.open( ctaLink, '_blank' );
+		} else {
+			navigateTo( ctaLink );
+		}
 	};
 
 	return (
@@ -61,6 +77,7 @@ CTALinkSubtle.propTypes = {
 	id: PropTypes.string,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
+	onCTAClick: PropTypes.func,
 	isCTALinkExternal: PropTypes.bool,
 	gaConfirmEventLabel: PropTypes.string,
 };
