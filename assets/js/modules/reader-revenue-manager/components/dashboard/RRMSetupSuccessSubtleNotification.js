@@ -19,17 +19,22 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
+import { useRefocus } from '../../../../hooks/useRefocus';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
+	READER_REVENUE_MANAGER_NOTICES_FORM,
+	SYNC_PUBLICATION,
 } from '../../datastore/constants';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
@@ -46,6 +51,11 @@ export default function RRMSetupSuccessSubtleNotification( {
 } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
+
+	const actionableOnboardingStates = [
+		PENDING_VERIFICATION,
+		ONBOARDING_ACTION_REQUIRED,
+	];
 
 	const publicationOnboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
@@ -64,10 +74,50 @@ export default function RRMSetupSuccessSubtleNotification( {
 		} )
 	);
 
+	const shouldSyncPublication = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				READER_REVENUE_MANAGER_NOTICES_FORM,
+				SYNC_PUBLICATION
+			) &&
+			actionableOnboardingStates.includes( publicationOnboardingState )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { syncPublicationOnboardingState } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
 	const dismissNotice = () => {
 		setNotification( undefined );
 		setSlug( undefined );
 	};
+
+	const onCTAClick = ( event ) => {
+		event.preventDefault();
+
+		// Set publication data to be reset when user re-focuses window.
+		if (
+			actionableOnboardingStates.includes( publicationOnboardingState )
+		) {
+			setValues( READER_REVENUE_MANAGER_NOTICES_FORM, {
+				[ SYNC_PUBLICATION ]: true,
+			} );
+		}
+
+		global.open( serviceURL, '_blank' );
+	};
+
+	const syncPublication = useCallback( () => {
+		if ( ! shouldSyncPublication ) {
+			return;
+		}
+
+		syncPublicationOnboardingState();
+	}, [ shouldSyncPublication, syncPublicationOnboardingState ] );
+
+	// Sync publication data when user re-focuses window.
+	useRefocus( syncPublication, 15000 );
 
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
@@ -101,6 +151,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'google-site-kit'
 							) }
 							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
 							isCTALinkExternal
 							gaConfirmEventLabel={ publicationOnboardingState }
 						/>
@@ -139,6 +190,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'google-site-kit'
 							) }
 							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
 							isCTALinkExternal
 							gaConfirmEventLabel={ publicationOnboardingState }
 						/>
@@ -173,6 +225,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'google-site-kit'
 							) }
 							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
 							isCTALinkExternal
 							gaConfirmEventLabel={ publicationOnboardingState }
 						/>

@@ -88,7 +88,6 @@ import {
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
-	NoAudienceBannerWidget,
 	SecondaryUserSetupWidget,
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
@@ -140,7 +139,7 @@ export const registerWidgets = ( widgets ) => {
 			isActive: ( select ) => {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
-				return configuredAudiences?.length > 0;
+				return !! configuredAudiences;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
@@ -179,23 +178,6 @@ export const registerWidgets = ( widgets ) => {
 					configuredAudiences === null &&
 					audienceSegmentationSetupCompletedBy !== null
 				);
-			},
-		},
-		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
-	);
-
-	widgets.registerWidget(
-		'analyticsNoAudienceBanner',
-		{
-			Component: NoAudienceBannerWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'analytics-4' ],
-			isActive: ( select ) => {
-				const configuredAudiences =
-					select( CORE_USER ).getConfiguredAudiences();
-				return !! configuredAudiences;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
