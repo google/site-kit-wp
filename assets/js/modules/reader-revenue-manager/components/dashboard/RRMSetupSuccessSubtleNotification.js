@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
@@ -36,6 +35,7 @@ import {
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 } from '../../datastore/constants';
+import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 
