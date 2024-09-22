@@ -24,11 +24,15 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '../constants';
-import { NOTIFICATION_AREAS } from './datastore/constants';
+import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './datastore/constants';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
+import { isZeroReport } from '../../modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
@@ -131,6 +135,65 @@ export function registerDefaults( notificationsAPI ) {
 				VIEW_CONTEXT_MAIN_DASHBOARD,
 				VIEW_CONTEXT_ENTITY_DASHBOARD,
 			],
+			checkRequirements: async ( {
+				select,
+				resolveSelect,
+				dispatch,
+			} ) => {
+				const adSenseModuleConnected =
+					select( CORE_MODULES ).isModuleConnected( 'adsense' );
+
+				const analyticsModuleConnected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+				const isAdSenseLinked =
+					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+				const analyticsAndAdsenseConnectedAndLinked =
+					adSenseModuleConnected &&
+					analyticsModuleConnected &&
+					isAdSenseLinked;
+
+				if ( ! analyticsAndAdsenseConnectedAndLinked ) {
+					return false;
+				}
+
+				const { startDate, endDate } = select(
+					CORE_USER
+				).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
+
+				const reportOptions = {
+					startDate,
+					endDate,
+					dimensions: [ 'pagePath' ],
+					metrics: [ { name: 'totalAdRevenue' } ],
+					orderby: [
+						{
+							metric: { metricName: 'totalAdRevenue' },
+							desc: true,
+						},
+					],
+					limit: 3,
+				};
+
+				const report = await resolveSelect(
+					MODULES_ANALYTICS_4
+				).getReport( reportOptions );
+
+				if (
+					isZeroReport( report ) === false &&
+					analyticsAndAdsenseConnectedAndLinked
+				) {
+					await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+						'top-earning-pages-success-notification'
+					);
+					return false;
+				}
+
+				return true;
+			},
 			isDismissible: true,
 		}
 	);
