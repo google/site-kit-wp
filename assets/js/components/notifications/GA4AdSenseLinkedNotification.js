@@ -37,12 +37,11 @@ import SubtleNotification from '../../modules/analytics-4/components/SubtleNotif
 import useDashboardType from '../../hooks/useDashboardType';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
-import whenInViewContext from '../../util/whenInViewContext';
 
 export const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'ga4_adsense_linked_notification';
 
-function GA4AdSenseLinkedNotification() {
+export default function GA4AdSenseLinkedNotification() {
 	const dashboardType = useDashboardType();
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
@@ -195,8 +194,3 @@ function GA4AdSenseLinkedNotification() {
 		/>
 	);
 }
-
-export default whenInViewContext( { allNonViewOnly: true } )(
-	// eslint-disable-next-line sitekit/acronym-case
-	GA4AdSenseLinkedNotification
-);
