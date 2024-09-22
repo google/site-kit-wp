@@ -24,22 +24,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SubtleNotification from '../../modules/analytics-4/components/SubtleNotification';
+import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
+import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 
-export const GA4_ADSENSE_LINKED_NOTIFICATION =
-	'ga4_adsense_linked_notification';
-
-export default function GA4AdSenseLinkedNotification() {
+export default function GA4AdSenseLinkedNotification( { id, Notification } ) {
 	return (
-		<SubtleNotification
-			title={ __(
-				'Your AdSense and Analytics accounts are linked.',
-				'google-site-kit'
-			) }
-			description={ __(
-				'We’ll let you know as soon as there’s enough data available.',
-				'google-site-kit'
-			) }
-		/>
+		<Notification>
+			<SubtleNotification
+				title={ __(
+					'Your AdSense and Analytics accounts are linked.',
+					'google-site-kit'
+				) }
+				description={ __(
+					'We’ll let you know as soon as there’s enough data available.',
+					'google-site-kit'
+				) }
+				dismissCTA={ <Dismiss id={ id } /> }
+			/>
+		</Notification>
 	);
 }
