@@ -35,6 +35,7 @@ import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedSc
 import UnsatisfiedScopesAlertGTE from '../../components/notifications/UnsatisfiedScopesAlertGTE';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
+import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
 
 /**
  * Registers notifications not specific to any one particular module.
@@ -119,6 +120,20 @@ export function registerDefaults( notificationsAPI ) {
 		},
 		isDismissible: false,
 	} );
+
+	notificationsAPI.registerNotification(
+		'top-earning-pages-success-notification',
+		{
+			Component: GA4AdSenseLinkedNotification,
+			priority: 10,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			viewContexts: [
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				VIEW_CONTEXT_ENTITY_DASHBOARD,
+			],
+			isDismissible: true,
+		}
+	);
 
 	notificationsAPI.registerNotification( 'gathering-data-notification', {
 		Component: GatheringDataNotification,
