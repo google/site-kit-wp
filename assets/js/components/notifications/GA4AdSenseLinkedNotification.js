@@ -39,7 +39,13 @@ export default function GA4AdSenseLinkedNotification( { id, Notification } ) {
 					'We’ll let you know as soon as there’s enough data available.',
 					'google-site-kit'
 				) }
-				dismissCTA={ <Dismiss id={ id } /> }
+				dismissCTA={
+					<Dismiss
+						id={ id }
+						primary={ false }
+						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					/>
+				}
 			/>
 		</Notification>
 	);
