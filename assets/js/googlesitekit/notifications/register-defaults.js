@@ -178,10 +178,19 @@ export function registerDefaults( notificationsAPI ) {
 					limit: 3,
 				};
 
+				// Ensure resolution of the report has completed before showing this
+				// notification, since it should only appear when the user has no data in
+				// the report.
 				const report = await resolveSelect(
 					MODULES_ANALYTICS_4
 				).getReport( reportOptions );
 
+				// This notification should only appear when the user has connected their
+				// AdSense and Google Analytics accounts, but has not yet received any data
+				// from linking the accounts. If they have any data from the "linked" report,
+				// we show them a different notification and should not show this one. Check
+				// to see if the user already has data and dismiss this notification without
+				// showing it.
 				if (
 					isZeroReport( report ) === false &&
 					analyticsAndAdsenseConnectedAndLinked
