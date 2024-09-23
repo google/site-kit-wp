@@ -66,6 +66,9 @@ export default function SettingsCardVisitorGroups() {
 		return null;
 	}
 
+	const showSetupCTA =
+		! configuredAudiences && audienceSegmentationSetupCompletedBy === null;
+
 	return (
 		<Layout
 			className="googlesitekit-settings-meta"
@@ -78,12 +81,8 @@ export default function SettingsCardVisitorGroups() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							{ ! configuredAudiences &&
-								audienceSegmentationSetupCompletedBy ===
-									null && <SetupCTA /> }
-							{ ( configuredAudiences ||
-								audienceSegmentationSetupCompletedBy !==
-									null ) && (
+							{ showSetupCTA && <SetupCTA /> }
+							{ ! showSetupCTA && (
 								<Fragment>
 									<SetupSuccess />
 									<Switch
