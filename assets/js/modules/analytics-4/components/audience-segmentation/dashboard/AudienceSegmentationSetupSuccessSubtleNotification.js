@@ -33,7 +33,7 @@ import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
-	'setup-success-notification_audiences';
+	'setup-success-notification-audiences';
 
 export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 	id,
