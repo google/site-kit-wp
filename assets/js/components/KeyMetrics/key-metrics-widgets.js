@@ -29,6 +29,7 @@ import {
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
@@ -330,6 +331,19 @@ const KEY_METRICS_WIDGETS = {
 			'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
 			'google-site-kit'
 		),
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
+		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
+		description: __(
+			'Traffic source that generates the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Traffic source that generates the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
 		title: __( 'Most engaged traffic source', 'google-site-kit' ),
