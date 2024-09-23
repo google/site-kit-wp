@@ -59,7 +59,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 		};
 
 		audienceSettingsSortedResponse = {
-			configuredAudiences: [ 'audienceB', 'audienceA' ],
+			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		};
 
@@ -139,9 +139,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					.setAvailableAudiences( availableAudiences );
 				registry
 					.dispatch( CORE_USER )
-					.setConfiguredAudiences(
-						audienceSettingsResponse.configuredAudiences
-					);
+					.setConfiguredAudiences( [ 'audienceB', 'audienceA' ] );
 				registry
 					.dispatch( CORE_USER )
 					.setAudienceSegmentationWidgetHidden(

@@ -241,6 +241,10 @@ const baseActions = {
 			return;
 		}
 
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
 
@@ -260,7 +264,7 @@ const baseActions = {
 	/**
 	 * Retrives the initial set of audiences for selection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @param {Array} availableAudiences List of available audiences.
 	 * @return {Object} Object with properties `configuredAudiences` or `error`.
@@ -367,7 +371,7 @@ const baseActions = {
 	/**
 	 * This contains the main logic for the `*enableAudienceGroup()` action above.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
@@ -533,8 +537,10 @@ const baseActions = {
 			)
 		);
 
-		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupComplete(
-			true
+		const userID = select( CORE_USER ).getID();
+
+		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupCompletedBy(
+			userID
 		);
 
 		const { saveSettingsError } = yield commonActions.await(
@@ -549,7 +555,7 @@ const baseActions = {
 	/**
 	 * Populates the configured audiences for the secondary user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @return {Object} Object with `error`.
 	 */
@@ -567,7 +573,7 @@ const baseActions = {
 	/**
 	 * This contains the main logic for the `*enableSecondaryUserAudienceGroup()` action above.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @return {Object} Object with `error`.
 	 */
@@ -681,7 +687,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the audience group setup is in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the audience group setup is in progress, otherwise false.
@@ -994,7 +1000,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the provided audience is a Site Kit audience in the partial data state and returns the audience object if so.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @param {string} audienceResourceName The audience resource name.
 	 * @return {(Object|null|undefined)} The audience object if the audience is a Site Kit audience in the partial data state, otherwise null. Undefined if available audiences or the partial data state is not loaded yet.
@@ -1068,7 +1074,7 @@ const baseSelectors = {
 	/**
 	 * Gets the configurable Site Kit and other (non Site Kit) audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 *
 	 * @return {Array} Array of Site Kit and other audiences.
 	 */

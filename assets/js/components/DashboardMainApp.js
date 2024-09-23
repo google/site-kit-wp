@@ -77,7 +77,7 @@ import { useBreakpoint } from '../hooks/useBreakpoint';
 import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
-import { getContextScrollTop } from '../util/scroll';
+import { getNavigationalScrollTop } from '../util/scroll';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -120,7 +120,7 @@ export default function DashboardMainApp() {
 
 			setTimeout( () => {
 				global.scrollTo( {
-					top: getContextScrollTop( widgetClass, breakpoint ),
+					top: getNavigationalScrollTop( widgetClass, breakpoint ),
 					behavior: 'smooth',
 				} );
 

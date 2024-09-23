@@ -309,14 +309,22 @@ export const selectors = {
 	 * @param {Object}   [args]                  Optional arguments for the resulting URL.
 	 * @param {string[]} [args.additionalScopes] Additional scopes to request.
 	 * @param {string}   [args.redirectURL]      URL to redirect to after successful authentication.
+	 * @param {string}   [args.errorRedirectURL] URL to redirect to if an error is returned during authentication.
 	 * @return {(string|undefined)} Full URL to connect, or `undefined` if not loaded yet.
 	 */
 	getConnectURL(
 		state,
-		{ additionalScopes = [], redirectURL = undefined } = {}
+		{
+			additionalScopes = [],
+			redirectURL = undefined,
+			errorRedirectURL = undefined,
+		} = {}
 	) {
 		const { connectURL } = state;
-		const queryArgs = { redirect: redirectURL };
+		const queryArgs = {
+			redirect: redirectURL,
+			errorRedirect: errorRedirectURL,
+		};
 
 		if ( connectURL === undefined ) {
 			return undefined;

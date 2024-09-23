@@ -36,12 +36,12 @@ import {
 	combineStores,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
 import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
 import { normalizeReportOptions, isZeroReport } from '../utils';
-import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
-import { getSampleReportArgs } from '../utils/report-args';
 import { validateReport } from '../utils/validation';
 
 const fetchGetReportStore = createFetchStore( {
@@ -78,7 +78,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		const args = getSampleReportArgs( select );
+		const args = select( MODULES_ANALYTICS_4 ).getSampleReportArgs();
 
 		const hasResolvedReport = select(
 			MODULES_ANALYTICS_4
@@ -292,7 +292,9 @@ const baseSelectors = {
 	 */
 	hasZeroData: createRegistrySelector(
 		( select ) => ( state, reportArgs ) => {
-			const args = reportArgs || getSampleReportArgs( select );
+			const args =
+				reportArgs ||
+				select( MODULES_ANALYTICS_4 ).getSampleReportArgs();
 
 			// Disable reason: select needs to be called here or it will never run.
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -317,6 +319,36 @@ const baseSelectors = {
 			return isZeroReport( report );
 		}
 	),
+
+	/**
+	 * Returns report args for a sample report.
+	 *
+	 * @since 1.107.0
+	 * @since 1.124.0 Moved from the main analytics-4 datastore file to utils.
+	 * @since 1.136.0 Moved back to the main analytics-4 datastore file and updated to be a selector.
+	 *
+	 * @param {Function} select The select function of the registry.
+	 * @return {Object} Report args.
+	 */
+	getSampleReportArgs: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'date' ],
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		return args;
+	} ),
 
 	/**
 	 * Gets a given report for each of the provided audiences.
