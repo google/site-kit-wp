@@ -42,7 +42,7 @@
 			background-color: $c-utility-error-container;
 			display: flex;
 			justify-content: space-between;
-			padding: $grid-gap-phone - 2 $grid-gap-desktop;
+			padding: 10px $grid-gap-desktop;
 
 			p {
 				color: $c-utility-on-error-container;
@@ -64,6 +64,7 @@
 					border-radius: $br-lg;
 					min-height: 32px;
 					padding: 6px $grid-gap-phone;
+					white-space: nowrap;
 
 					@include mdc-button-ink-color( $c-utility-on-error-container );
 
