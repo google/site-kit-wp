@@ -33,9 +33,9 @@ function Template( args ) {
 	return (
 		<div
 			className="googlesitekit-audience-selection-panel"
-			style={ { padding: '20px 20px 0', backgroundColor: '#fff' } }
+			style={ { padding: '20px 20px 10px', backgroundColor: '#fff' } }
 		>
-			<AudienceCreationErrorNotice { ...args } />;
+			<AudienceCreationErrorNotice { ...args } />
 		</div>
 	);
 }
