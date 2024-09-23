@@ -210,13 +210,19 @@
 
 		.googlesitekit-audience-creation-error-notice {
 			align-items: center;
-			background-color: $c-content-on-primary;
+			background-color: $c-surfaces-surface;
 			border: 2px solid $c-utility-error;
-			border-radius: $br-sm;
+			border-radius: $br-xs;
 			display: flex;
 			gap: 16px;
 			margin-bottom: 12px;
 			padding: 14px $grid-gap-phone;
+
+			.googlesitekit-audience-creation-error-notice__content {
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+			}
 
 			svg {
 				color: $c-utility-error;
@@ -225,9 +231,9 @@
 
 			p.googlesitekit-audience-creation-error-notice__title {
 				color: $c-surfaces-on-surface;
-				font-size: $fs-body-md;
+				font-size: $fs-label-md;
 				font-weight: $fw-medium;
-				line-height: $lh-body-md;
+				line-height: $lh-label-md;
 				margin: 0;
 			}
 
@@ -244,7 +250,6 @@
 
 				.mdc-button {
 					font-weight: $fw-medium;
-					gap: 10px;
 					min-height: 32px;
 					padding: 6px $grid-gap-phone;
 					white-space: nowrap;
