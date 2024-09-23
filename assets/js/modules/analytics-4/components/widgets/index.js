@@ -30,6 +30,7 @@ export { default as TopCitiesDrivingLeadsWidget } from './TopCitiesDrivingLeadsW
 export { default as TopCountriesWidget } from './TopCountriesWidget';
 export { default as TopTrafficSourceWidget } from './TopTrafficSourceWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';
+export { default as TopTrafficSourceDrivingPurchasesWidget } from './TopTrafficSourceDrivingPurchasesWidget';
 export { default as PagesPerVisitWidget } from './PagesPerVisitWidget';
 export { default as VisitLengthWidget } from './VisitLengthWidget';
 export { default as TopReturningVisitorPages } from './TopReturningVisitorPages';
