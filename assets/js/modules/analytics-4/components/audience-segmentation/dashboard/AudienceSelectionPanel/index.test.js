@@ -48,9 +48,15 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
-import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	waitFor,
+} from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import AudienceSelectionPanel from '.';
 
@@ -985,79 +991,210 @@ describe( 'AudienceSelectionPanel', () => {
 			).toHaveTextContent( 'Returning visitors' );
 		} );
 
-		it( 'should display an audience creation notice with an OAuth error notice', async () => {
-			const nonSiteKitAvailableAudiences = availableAudiences.filter(
-				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+		describe( 'AudienceCreationErrorNotice', () => {
+			const createAudienceEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 			);
 
-			const nonSiteKitConfiguredAudiences =
-				nonSiteKitAvailableAudiences.map( ( { name } ) => name );
+			beforeEach( () => {
+				const nonSiteKitAvailableAudiences = availableAudiences.filter(
+					( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+				);
 
-			const nonSiteKitReportOptions = {
-				...reportOptions,
-				dimensionFilters: {
-					audienceResourceName: nonSiteKitConfiguredAudiences,
-				},
-			};
+				const nonSiteKitConfiguredAudiences =
+					nonSiteKitAvailableAudiences.map( ( { name } ) => name );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableAudiences( nonSiteKitAvailableAudiences );
+				const nonSiteKitReportOptions = {
+					...reportOptions,
+					dimensionFilters: {
+						audienceResourceName: nonSiteKitConfiguredAudiences,
+					},
+				};
 
-			registry
-				.dispatch( CORE_USER )
-				.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( nonSiteKitAvailableAudiences );
 
-			provideAnalytics4MockReport( registry, nonSiteKitReportOptions );
+				registry
+					.dispatch( CORE_USER )
+					.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
 
-			provideSiteInfo( registry, {
-				setupErrorCode: 'access_denied',
-			} );
-
-			provideUserAuthentication( registry, {
-				grantedScopes: [],
-			} );
-
-			registry.dispatch( CORE_FORMS ).setValues( AUDIENCE_CREATION_FORM, {
-				autoSubmit: true,
-			} );
-
-			const { getByText, getByRole, waitForRegistry } = render(
-				<AudienceSelectionPanel />,
-				{
+				provideAnalytics4MockReport(
 					registry,
-				}
-			);
+					nonSiteKitReportOptions
+				);
+			} );
 
-			await waitForRegistry();
-
-			expect(
-				getByText( /Create groups suggested by Site Kit/i )
-			).toBeInTheDocument();
-			document
-				.querySelectorAll(
-					'.googlesitekit-audience-selection-panel__audience-creation-notice-audience .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
-				)
-				?.forEach( ( element, index ) => {
-					expect( element ).toHaveTextContent(
-						index === 0 ? 'New visitors' : 'Returning visitors'
-					);
+			it( 'should display an audience creation notice with an OAuth error notice', async () => {
+				provideSiteInfo( registry, {
+					setupErrorCode: 'access_denied',
 				} );
 
-			expect(
-				getByText(
-					/Setup was interrupted because you didn’t grant the necessary permissions. Click on Create again to retry. If that doesn’t work/i
-				)
-			).toBeInTheDocument();
+				provideUserAuthentication( registry, {
+					grantedScopes: [],
+				} );
 
-			expect(
-				getByRole( 'link', { name: /get help/i } )
-			).toHaveAttribute(
-				'href',
-				registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
-					code: 'access_denied',
-				} )
-			);
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( AUDIENCE_CREATION_FORM, {
+						autoSubmit: true,
+					} );
+
+				const { getByText, getByRole, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByText( /Create groups suggested by Site Kit/i )
+				).toBeInTheDocument();
+				document
+					.querySelectorAll(
+						'.googlesitekit-audience-selection-panel__audience-creation-notice-audience .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
+					)
+					?.forEach( ( element, index ) => {
+						expect( element ).toHaveTextContent(
+							index === 0 ? 'New visitors' : 'Returning visitors'
+						);
+					} );
+
+				expect(
+					getByText(
+						/Setup was interrupted because you didn’t grant the necessary permissions. Click on Create again to retry. If that doesn’t work/i
+					)
+				).toBeInTheDocument();
+
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toHaveAttribute(
+					'href',
+					registry
+						.select( CORE_SITE )
+						.getErrorTroubleshootingLinkURL( {
+							code: 'access_denied',
+						} )
+				);
+			} );
+
+			it( 'should display an audience creation notice with an insufficient permissions error', async () => {
+				const errorResponse = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
+
+				fetchMock.post( createAudienceEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					status: 200,
+					body: availableAudiences,
+				} );
+
+				const { getByText, getAllByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				const createButton = getAllByText( 'Create' )[ 0 ];
+
+				expect( createButton ).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click( createButton );
+				} );
+
+				// Verify the error is "Insufficient permissions" variant.
+				await waitFor( () => {
+					expect(
+						getByText( /Insufficient permissions/i )
+					).toBeInTheDocument();
+
+					expect( getByText( /get help/i ) ).toBeInTheDocument();
+
+					expect(
+						getByText( /request access/i )
+					).toBeInTheDocument();
+				} );
+
+				await act( () => waitForTimeouts( 30 ) );
+
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:create-audience',
+					'type:modules',
+					'identifier:analytics-4',
+					'error:"Error message."'
+				);
+			} );
+
+			it( 'should display an audience creation notice with a general error', async () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( createAudienceEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					status: 200,
+					body: availableAudiences,
+				} );
+
+				const { getByText, getAllByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				const createButton = getAllByText( 'Create' )[ 0 ];
+
+				expect( createButton ).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click( createButton );
+				} );
+
+				// Verify the error is general error variant.
+				await waitFor( () => {
+					expect(
+						getByText( /Analytics update failed/i )
+					).toBeInTheDocument();
+
+					expect(
+						getByText( /Click on Create to try again./i )
+					).toBeInTheDocument();
+				} );
+
+				await act( () => waitForTimeouts( 30 ) );
+
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:create-audience',
+					'type:modules',
+					'identifier:analytics-4',
+					'error:"Internal server error"'
+				);
+			} );
 		} );
 	} );
 
