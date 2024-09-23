@@ -92,6 +92,9 @@ import {
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import AudienceSegmentationSetupSuccessSubtleNotification from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 export { registerStore } from './datastore';
 
@@ -550,5 +553,17 @@ export const registerWidgets = ( widgets ) => {
 				),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+};
+
+export const registerNotifications = ( notifications ) => {
+	notifications.registerNotification(
+		'setup-success-notification-audiences',
+		{
+			Component: AudienceSegmentationSetupSuccessSubtleNotification,
+			priority: 10,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		}
 	);
 };
