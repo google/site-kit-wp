@@ -564,6 +564,15 @@ export const registerNotifications = ( notifications ) => {
 			priority: 10,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			checkRequirements: async ( { select, resolveSelect } ) => {
+				await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+				const configuredAudiences =
+					select( CORE_USER ).getConfiguredAudiences();
+
+				// Only show this notification if the user has a set of configured audiences.
+				return Array.isArray( configuredAudiences );
+			},
+			isDismissible: true,
 		}
 	);
 };
