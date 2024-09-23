@@ -25,7 +25,6 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useFeature } from '../../hooks/useFeature';
-import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import useViewContext from '../../hooks/useViewContext';
@@ -34,7 +33,6 @@ import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/
 
 export default function SubtleNotifications() {
 	const viewContext = useViewContext();
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	const rrmModuleEnabled = useFeature( 'rrmModule' );
 
 	// Each notification component rendered here has its own logic to determine
@@ -46,9 +44,6 @@ export default function SubtleNotifications() {
 	// Because these notifications are subtle and small, this is acceptable UX.
 	return (
 		<Fragment>
-			{ audienceSegmentationEnabled && (
-				<AudienceSegmentationSetupSuccessSubtleNotification />
-			) }
 			<GA4AdSenseLinkedNotification />
 			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
 			<Notifications
