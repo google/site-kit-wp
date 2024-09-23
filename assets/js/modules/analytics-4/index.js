@@ -36,6 +36,7 @@ import {
 	TopCitiesDrivingLeadsWidget,
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
+	TopTrafficSourceDrivingPurchasesWidget,
 	TopConvertingTrafficSourceWidget,
 	PagesPerVisitWidget,
 	VisitLengthWidget,
@@ -74,6 +75,7 @@ import {
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../googlesitekit/datastore/user/constants';
@@ -467,6 +469,22 @@ export const registerWidgets = ( widgets ) => {
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+		{
+			Component: TopTrafficSourceDrivingPurchasesWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES
 				),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
