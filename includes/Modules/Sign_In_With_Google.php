@@ -11,6 +11,10 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 
 /**
  * Class representing the Sign in With Google module.
@@ -19,7 +23,9 @@ use Google\Site_Kit\Core\Modules\Module;
  * @access private
  * @ignore
  */
-final class Sign_In_With_Google extends Module {
+final class Sign_In_With_Google extends Module implements Module_With_Settings, Module_With_Deactivation {
+
+	use Module_With_Settings_Trait;
 
 	/**
 	 * Module slug name.
@@ -32,6 +38,15 @@ final class Sign_In_With_Google extends Module {
 	 * @since n.e.x.t
 	 */
 	public function register() {
+	}
+
+	/**
+	 * Cleans up when the module is deactivated.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function on_deactivation() {
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -49,5 +64,16 @@ final class Sign_In_With_Google extends Module {
 			'order'       => 1,
 			'homepage'    => __( 'https://developers.google.com/identity/gsi/web/guides/overview', 'google-site-kit' ),
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }
