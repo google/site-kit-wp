@@ -25,15 +25,27 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import SubtleNotification from '../../SubtleNotification';
+import SubtleNotification from '../../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
+import Dismiss from '../../../../../googlesitekit/notifications/components/common/Dismiss';
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 
-export default function AudienceSegmentationSetupSuccessSubtleNotification() {
+export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
+	'setup-success-notification_audiences';
+
+export default function AudienceSegmentationSetupSuccessSubtleNotification( {
+	id,
+	Notification,
+} ) {
 	const breakpoint = useBreakpoint();
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const scrollToWidgetArea = ( event ) => {
 		event.preventDefault();
+
+		dismissNotification( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
 
 		setTimeout( () => {
 			const widgetClass =
@@ -47,20 +59,29 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 	};
 
 	return (
-		<SubtleNotification
-			title={ __(
-				'Success! Visitor groups added to your dashboard',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long.',
-				'google-site-kit'
-			) }
-			additionalCTA={
-				<Button onClick={ scrollToWidgetArea }>
-					{ __( 'Show me', 'google-site-kit' ) }
-				</Button>
-			}
-		/>
+		<Notification>
+			<SubtleNotification
+				title={ __(
+					'Success! Visitor groups added to your dashboard',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long.',
+					'google-site-kit'
+				) }
+				dismissCTA={
+					<Dismiss
+						id={ id }
+						primary={ false }
+						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					/>
+				}
+				additionalCTA={
+					<Button onClick={ scrollToWidgetArea }>
+						{ __( 'Show me', 'google-site-kit' ) }
+					</Button>
+				}
+			/>
+		</Notification>
 	);
 }
