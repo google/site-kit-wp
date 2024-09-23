@@ -92,7 +92,9 @@ import {
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import AudienceSegmentationSetupSuccessSubtleNotification from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
+import AudienceSegmentationSetupSuccessSubtleNotification, {
+	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
+} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
@@ -558,7 +560,7 @@ export const registerWidgets = ( widgets ) => {
 
 export const registerNotifications = ( notifications ) => {
 	notifications.registerNotification(
-		'setup-success-notification-audiences',
+		AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 		{
 			Component: AudienceSegmentationSetupSuccessSubtleNotification,
 			priority: 10,
