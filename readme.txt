@@ -136,6 +136,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Automatically configure the audience selection for additional admins and view-only users once an admin has set up the feature. See [#8130](https://github.com/google/site-kit-wp/issues/8130).
 * Remove scheduled events upon deactivation, reset or uninstall. See [#6992](https://github.com/google/site-kit-wp/issues/6992).
 * Improve error notice when no "Retry" button is present. See [#6707](https://github.com/google/site-kit-wp/issues/6707).
+* Fix a bug that could cause the "Top content" metric not to appear on the view-only dashboard. See [#8175](https://github.com/google/site-kit-wp/issues/8175).
 
 **Changed**
 
