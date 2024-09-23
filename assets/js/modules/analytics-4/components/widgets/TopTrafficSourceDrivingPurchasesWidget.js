@@ -44,16 +44,6 @@ import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function getDateRangeIndex( reportRows, dateRangeSlug ) {
-	const dateRange = reportRows?.[ 0 ]?.dimensionValues?.find(
-		( dimension ) => dimension.value === dateRangeSlug
-	);
-	const dateRangeIndex =
-		reportRows?.[ 0 ]?.dimensionValues?.indexOf( dateRange );
-
-	return dateRangeIndex;
-}
-
 function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -157,42 +147,22 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 	const { rows: totalPurchasesReportRows = [] } = totalPurchasesReport || {};
 	const { rows: trafficSourceReportRows = [] } = trafficSourceReport || {};
 
-	const topTrafficSourceDateRangeIndex = getDateRangeIndex(
-		trafficSourceReportRows,
-		'date_range_0'
-	);
-
 	const topTrafficSource =
-		trafficSourceReportRows.filter(
-			makeFilter( 'date_range_0', topTrafficSourceDateRangeIndex )
-		)[ 0 ]?.dimensionValues?.[ 0 ].value || '-';
-
-	const currentTotalPurchasesDateRangeIndex = getDateRangeIndex(
-		totalPurchasesReportRows,
-		'date_range_0'
-	);
+		trafficSourceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
+			?.dimensionValues?.[ 0 ].value || '-';
 
 	const currentTotalPurchases =
 		parseInt(
 			totalPurchasesReportRows.filter(
-				makeFilter(
-					'date_range_0',
-					currentTotalPurchasesDateRangeIndex
-				)
+				makeFilter( 'date_range_0', 0 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const currentTopTrafficSourcePurchasesDateRangeIndex = getDateRangeIndex(
-		trafficSourceReportRows,
-		'date_range_0'
-	);
+
 	const currentTopTrafficSourcePurchases =
 		parseInt(
 			trafficSourceReportRows.filter(
-				makeFilter(
-					'date_range_0',
-					currentTopTrafficSourcePurchasesDateRangeIndex
-				)
+				makeFilter( 'date_range_0', 1 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
@@ -200,35 +170,22 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 		? currentTopTrafficSourcePurchases / currentTotalPurchases
 		: 0;
 
-	const previousTotalPurchasesDateRangeIndex = getDateRangeIndex(
-		totalPurchasesReportRows,
-		'date_range_1'
-	);
 	const previousTotalPurchases =
 		parseInt(
 			totalPurchasesReportRows.filter(
-				makeFilter(
-					'date_range_1',
-					previousTotalPurchasesDateRangeIndex
-				)
+				makeFilter( 'date_range_1', 0 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
 
-	const previousTopTrafficSourcePurchasesDateRangeIndex = getDateRangeIndex(
-		trafficSourceReportRows,
-		'date_range_1'
-	);
 	const previousTopTrafficSourcePurchases =
 		parseInt(
 			trafficSourceReportRows.filter(
-				makeFilter(
-					'date_range_1',
-					previousTopTrafficSourcePurchasesDateRangeIndex
-				)
+				makeFilter( 'date_range_1', 1 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
+
 	const relativePreviousTopTrafficSourcePurchases = previousTotalPurchases
 		? previousTopTrafficSourcePurchases / previousTotalPurchases
 		: 0;
