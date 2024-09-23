@@ -44,16 +44,6 @@ import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function getDateRangeIndex( reportRows, dateRangeSlug ) {
-	const dateRange = reportRows?.[ 0 ]?.dimensionValues?.find(
-		( dimension ) => dimension.value === dateRangeSlug
-	);
-	const dateRangeIndex =
-		reportRows?.[ 0 ]?.dimensionValues?.indexOf( dateRange );
-
-	return dateRangeIndex;
-}
-
 function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -67,7 +57,7 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 	);
 	const hasDetectedEvent = detectedEvents?.includes( 'add_to_cart' );
 
-	const totalLeadsReportOptions = {
+	const totalAddToCartReportOptions = {
 		...dates,
 		metrics: [
 			{
@@ -88,14 +78,14 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 		orderBy: 'addToCarts',
 	};
 
-	const totalLeadsReport = useInViewSelect(
+	const totalAddToCartReport = useInViewSelect(
 		( select ) =>
 			hasDetectedEvent
 				? select( MODULES_ANALYTICS_4 ).getReport(
-						totalLeadsReportOptions
+						totalAddToCartReportOptions
 				  )
 				: undefined,
-		[ hasDetectedEvent, totalLeadsReportOptions ]
+		[ hasDetectedEvent, totalAddToCartReportOptions ]
 	);
 
 	const trafficSourceReport = useInViewSelect(
@@ -113,22 +103,24 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ trafficSourceReportOptions ] );
 
-		const totalLeadsReportErrors = select(
+		const totalAddToCartReportErrors = select(
 			MODULES_ANALYTICS_4
-		).getErrorForSelector( 'getReport', [ totalLeadsReportOptions ] );
+		).getErrorForSelector( 'getReport', [ totalAddToCartReportOptions ] );
 
-		if ( trafficSourceReportErrors && totalLeadsReportErrors ) {
-			return [ trafficSourceReportErrors, totalLeadsReportErrors ];
+		if ( trafficSourceReportErrors && totalAddToCartReportErrors ) {
+			return [ trafficSourceReportErrors, totalAddToCartReportErrors ];
 		}
 
-		return trafficSourceReportErrors || totalLeadsReportErrors || undefined;
+		return (
+			trafficSourceReportErrors || totalAddToCartReportErrors || undefined
+		);
 	} );
 
 	const loading = useSelect( ( select ) =>
 		hasDetectedEvent
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
-					[ totalLeadsReportOptions ]
+					[ totalAddToCartReportOptions ]
 			  ) ||
 			  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
@@ -141,77 +133,49 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
 
 	// Prevents running a filter on `report.rows` which could be undefined.
-	const { rows: totalLeadsReportRows = [] } = totalLeadsReport || {};
+	const { rows: totalAddToCartReportRows = [] } = totalAddToCartReport || {};
 	const { rows: trafficSourceReportRows = [] } = trafficSourceReport || {};
 
-	const topTrafficSourceDateRangeIndex = getDateRangeIndex(
-		trafficSourceReportRows,
-		'date_range_0'
-	);
-
 	const topTrafficSource =
-		trafficSourceReportRows.filter(
-			makeFilter( 'date_range_0', topTrafficSourceDateRangeIndex )
-		)[ 0 ]?.dimensionValues?.[ 0 ].value || '-';
+		trafficSourceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
+			?.dimensionValues?.[ 0 ].value || '-';
 
-	const currentTotalLeadsDateRangeIndex = getDateRangeIndex(
-		totalLeadsReportRows,
-		'date_range_0'
-	);
-
-	const currentTotalLeads =
+	const currentTotalAddToCart =
 		parseInt(
-			totalLeadsReportRows.filter(
-				makeFilter( 'date_range_0', currentTotalLeadsDateRangeIndex )
+			totalAddToCartReportRows.filter(
+				makeFilter( 'date_range_0', 0 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const currentTopTrafficSourceLeadsDateRangeIndex = getDateRangeIndex(
-		trafficSourceReportRows,
-		'date_range_0'
-	);
-	const currentTopTrafficSourceLeads =
+
+	const currentTopTrafficSourceAddToCart =
 		parseInt(
 			trafficSourceReportRows.filter(
-				makeFilter(
-					'date_range_0',
-					currentTopTrafficSourceLeadsDateRangeIndex
-				)
+				makeFilter( 'date_range_0', 1 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const relativeCurrentTopTrafficSourceUsers = currentTotalLeads
-		? currentTopTrafficSourceLeads / currentTotalLeads
+	const relativeCurrentTopTrafficSourceAddToCart = currentTotalAddToCart
+		? currentTopTrafficSourceAddToCart / currentTotalAddToCart
 		: 0;
 
-	const previousTotalLeadsDateRangeIndex = getDateRangeIndex(
-		totalLeadsReportRows,
-		'date_range_1'
-	);
-	const previousTotalLeads =
+	const previousTotalAddToCart =
 		parseInt(
-			totalLeadsReportRows.filter(
-				makeFilter( 'date_range_1', previousTotalLeadsDateRangeIndex )
+			totalAddToCartReportRows.filter(
+				makeFilter( 'date_range_1', 0 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
 
-	const previousTopTrafficSourceUsersDateRangeIndex = getDateRangeIndex(
-		trafficSourceReportRows,
-		'date_range_1'
-	);
-	const previousTopTrafficSourceUsers =
+	const previousTopTrafficSourceAddToCart =
 		parseInt(
 			trafficSourceReportRows.filter(
-				makeFilter(
-					'date_range_1',
-					previousTopTrafficSourceUsersDateRangeIndex
-				)
+				makeFilter( 'date_range_1', 1 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const relativePreviousTopTrafficSourceUsers = previousTotalLeads
-		? previousTopTrafficSourceUsers / previousTotalLeads
+	const relativePreviousTopTrafficSourceAddToCart = previousTotalAddToCart
+		? previousTopTrafficSourceAddToCart / previousTotalAddToCart
 		: 0;
 
 	const format = {
@@ -231,11 +195,11 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 				sprintf(
 					/* translators: %d: Percentage of leads for the current top traffic source compared to the number of total leads for all traffic sources. */
 					__( '%s of total add to carts', 'google-site-kit' ),
-					numFmt( relativeCurrentTopTrafficSourceUsers, format )
+					numFmt( relativeCurrentTopTrafficSourceAddToCart, format )
 				)
 			}
-			previousValue={ relativePreviousTopTrafficSourceUsers }
-			currentValue={ relativeCurrentTopTrafficSourceUsers }
+			previousValue={ relativePreviousTopTrafficSourceAddToCart }
+			currentValue={ relativeCurrentTopTrafficSourceAddToCart }
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
