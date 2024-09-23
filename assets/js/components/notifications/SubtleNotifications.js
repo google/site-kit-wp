@@ -24,8 +24,6 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useFeature } from '../../hooks/useFeature';
-import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import useViewContext from '../../hooks/useViewContext';
 import Notifications from './Notifications';
@@ -33,7 +31,6 @@ import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/
 
 export default function SubtleNotifications() {
 	const viewContext = useViewContext();
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 
 	// Each notification component rendered here has its own logic to determine
 	// whether it should be displayed; in most cases none of these components
@@ -44,9 +41,6 @@ export default function SubtleNotifications() {
 	// Because these notifications are subtle and small, this is acceptable UX.
 	return (
 		<Fragment>
-			{ audienceSegmentationEnabled && (
-				<AudienceSegmentationSetupSuccessSubtleNotification />
-			) }
 			<GA4AdSenseLinkedNotification />
 			<Notifications
 				viewContext={ viewContext }
