@@ -27,12 +27,10 @@ import { Fragment } from '@wordpress/element';
 import { useFeature } from '../../hooks/useFeature';
 import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import useViewContext from '../../hooks/useViewContext';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function SubtleNotifications() {
-	const viewContext = useViewContext();
 	const rrmModuleEnabled = useFeature( 'rrmModule' );
 
 	// Each notification component rendered here has its own logic to determine
@@ -46,10 +44,7 @@ export default function SubtleNotifications() {
 		<Fragment>
 			<GA4AdSenseLinkedNotification />
 			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
-			<Notifications
-				viewContext={ viewContext }
-				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
-			/>
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />
 		</Fragment>
 	);
 }
