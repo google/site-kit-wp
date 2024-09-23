@@ -69,6 +69,7 @@ export default function AudienceTile( {
 	topCities,
 	topContent,
 	topContentTitles,
+	hasInvalidCustomDimensionError,
 	Widget,
 	audienceResourceName,
 	isZeroData,
@@ -268,7 +269,9 @@ export default function AudienceTile( {
 						topCities={ topCities }
 					/>
 
-					{ ( ! isViewOnly || postTypeDimensionExists ) && (
+					{ ( ! isViewOnly ||
+						( postTypeDimensionExists &&
+							! hasInvalidCustomDimensionError ) ) && (
 						<AudienceTilePagesMetric
 							TileIcon={ AudienceMetricIconTopContent }
 							title={ __(
@@ -297,6 +300,7 @@ AudienceTile.propTypes = {
 	topCities: PropTypes.object,
 	topContent: PropTypes.object,
 	topContentTitles: PropTypes.object,
+	hasInvalidCustomDimensionError: PropTypes.bool,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
 	isZeroData: PropTypes.bool,
