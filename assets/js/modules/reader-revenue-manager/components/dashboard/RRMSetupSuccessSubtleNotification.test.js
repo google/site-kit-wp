@@ -64,7 +64,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		[
 			ONBOARDING_COMPLETE,
 			'Customize settings',
-			'Maybe later',
+			'Got it',
 			'Your Reader Revenue Manager account was successfully set up!',
 		],
 		[

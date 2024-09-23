@@ -131,10 +131,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 						<Dismiss
 							id={ id }
 							primary={ false }
-							dismissLabel={ __(
-								'Maybe later',
-								'google-site-kit'
-							) }
+							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 							onDismiss={ dismissNotice }
 							gaDismissEventLabel={ publicationOnboardingState }
 						/>
