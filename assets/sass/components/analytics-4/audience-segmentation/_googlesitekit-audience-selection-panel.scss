@@ -20,8 +20,15 @@
 
 	.googlesitekit-audience-selection-panel {
 
-		.googlesitekit-selection-box .mdc-checkbox__description {
-			padding-top: 4px;
+		.googlesitekit-selection-box {
+
+			.mdc-checkbox__description {
+				padding-top: 4px;
+			}
+
+			.googlesitekit-badge-with-tooltip {
+				padding: 4px 10px;
+			}
 		}
 
 		.googlesitekit-audience-selection-panel__learn-more {

@@ -572,6 +572,115 @@ describe( 'AudienceSelectionPanel', () => {
 				} );
 		} );
 
+		it( 'should show a "Temporarily hidden" badge for temporarily hidden audiences', async () => {
+			const temporarilyHiddenAudiences = [
+				'properties/12345/audiences/3',
+			];
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					'audience-tile-properties/12345/audiences/3',
+				] );
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const audienceName = item?.querySelector(
+						'input[type="checkbox"]'
+					)?.value;
+
+					const sourceInDOM = item?.querySelector(
+						'.googlesitekit-badge-with-tooltip'
+					);
+
+					if (
+						! temporarilyHiddenAudiences.includes( audienceName )
+					) {
+						expect( sourceInDOM ).not.toBeInTheDocument();
+					} else {
+						expect( sourceInDOM ).toBeInTheDocument();
+					}
+				} );
+		} );
+
+		it( 'should show a "Temporarily hidden" badge taking precedence over the "New" badge', async () => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+				availableAudiences
+					.filter(
+						( { audienceType } ) =>
+							audienceType !== 'DEFAULT_AUDIENCE'
+					)
+					.reduce(
+						( acc, { name } ) => ( {
+							...acc,
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]:
+								currentTimeInSeconds + WEEK_IN_SECONDS,
+						} ),
+						{}
+					)
+			);
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					'audience-tile-properties/12345/audiences/3',
+				] );
+
+			const { container, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			container
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const audienceName = item?.querySelector(
+						'input[type="checkbox"]'
+					)?.value;
+
+					const temporarilyHiddenBadgeSourceInDOM =
+						item?.querySelector(
+							'.googlesitekit-badge-with-tooltip'
+						);
+
+					const newBadgeSourceInDOM = item?.querySelector(
+						'.googlesitekit-new-badge'
+					);
+
+					if ( audienceName === 'properties/12345/audiences/3' ) {
+						expect( item ).toContainElement(
+							temporarilyHiddenBadgeSourceInDOM
+						);
+
+						expect( item ).not.toContainElement(
+							newBadgeSourceInDOM
+						);
+					} else {
+						expect( item ).not.toContainElement(
+							temporarilyHiddenBadgeSourceInDOM
+						);
+						expect( item ).toContainElement( newBadgeSourceInDOM );
+					}
+				} );
+		} );
+
 		it( 'should not show "New" badges if they have expired', async () => {
 			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
