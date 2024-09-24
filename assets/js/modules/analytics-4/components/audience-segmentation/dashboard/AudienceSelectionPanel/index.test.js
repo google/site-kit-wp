@@ -646,7 +646,7 @@ describe( 'AudienceSelectionPanel', () => {
 						'input[type="checkbox"]'
 					)?.value;
 
-					const TemporarilyHiddenBadgeSourceInDOM =
+					const temporarilyHiddenBadgeSourceInDOM =
 						item?.querySelector(
 							'.googlesitekit-badge-with-tooltip'
 						);
@@ -657,7 +657,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 					if ( audienceName === 'properties/12345/audiences/3' ) {
 						expect( item ).toContainElement(
-							TemporarilyHiddenBadgeSourceInDOM
+							temporarilyHiddenBadgeSourceInDOM
 						);
 
 						expect( item ).not.toContainElement(
@@ -665,7 +665,7 @@ describe( 'AudienceSelectionPanel', () => {
 						);
 					} else {
 						expect( item ).not.toContainElement(
-							TemporarilyHiddenBadgeSourceInDOM
+							temporarilyHiddenBadgeSourceInDOM
 						);
 						expect( item ).toContainElement( newBadgeSourceInDOM );
 					}
