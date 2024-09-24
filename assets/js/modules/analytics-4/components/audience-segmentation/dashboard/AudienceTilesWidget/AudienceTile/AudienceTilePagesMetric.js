@@ -50,6 +50,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../../../util/err
 import PartialDataBadge from './PartialDataBadge';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
 import AudienceErrorModal from '../../AudienceErrorModal';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
 
 export default function AudienceTilePagesMetric( {
 	TileIcon,
@@ -76,6 +77,9 @@ export default function AudienceTilePagesMetric( {
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
+	} );
+	const errorRedirectURL = addQueryArgs( global.location.href, {
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} );
 
 	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
@@ -151,6 +155,7 @@ export default function AudienceTilePagesMetric( {
 						skipModal: true,
 						skipDefaultErrorNotifications: true,
 						redirectURL,
+						errorRedirectURL,
 					},
 				} );
 			}
@@ -158,6 +163,7 @@ export default function AudienceTilePagesMetric( {
 		[
 			hasAnalyticsEditScope,
 			redirectURL,
+			errorRedirectURL,
 			setPermissionScopeError,
 			setValues,
 		]
