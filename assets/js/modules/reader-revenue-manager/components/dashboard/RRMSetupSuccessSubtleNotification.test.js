@@ -29,7 +29,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import * as fixtures from '../../datastore/__fixtures__';
-import * as tracking from '../../../../util/tracking';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -41,9 +41,6 @@ import { withNotificationComponentProps } from '../../../../googlesitekit/notifi
 
 jest.mock( '../../../../hooks/useQueryArg' );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
-
 const {
 	ONBOARDING_COMPLETE,
 	PENDING_VERIFICATION,
@@ -51,9 +48,11 @@ const {
 	UNSPECIFIED,
 } = PUBLICATION_ONBOARDING_STATES;
 
-const NotificationWithComponentProps = withNotificationComponentProps(
-	'setup-success-notification-rrm'
-)( RRMSetupSuccessSubtleNotification );
+const id = 'setup-success-notification-rrm';
+
+const NotificationWithComponentProps = withNotificationComponentProps( id )(
+	RRMSetupSuccessSubtleNotification
+);
 
 describe( 'RRMSetupSuccessSubtleNotification', () => {
 	let registry;
@@ -87,9 +86,11 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
+	const dismissItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
 
 	beforeEach( () => {
-		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 
 		provideModules( registry, [
@@ -119,7 +120,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	} );
 
 	it.each( invalidPublicationOnboardingStates )(
-		'should not render a notification and not trigger view_notification event when the publication onboarding state is %s',
+		'should not render a notification when the publication onboarding state is %s',
 		( onboardingState ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -131,13 +132,11 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			} );
 
 			expect( container ).toBeEmptyDOMElement();
-
-			expect( mockTrackEvent ).not.toHaveBeenCalled();
 		}
 	);
 
 	it.each( publicationStatesData )(
-		'should render a notification and trigger confirm_notification event when the publication onboarding state is %s',
+		'should render a notification when the publication onboarding state is %s',
 		( onboardingState, ctaText, dismissText, message ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -166,29 +165,19 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			const dismissElement = getByText( dismissText );
 			expect( dismissElement ).toBeInTheDocument();
 
-			// expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			// 	1,
-			// 	`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-			// 	'view_notification',
-			// 	onboardingState
-			// );
-
 			act( () => {
 				fireEvent.click( ctaElement );
 			} );
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-				'confirm_notification',
-				onboardingState
-			);
 		}
 	);
 
 	it.each( publicationStatesData )(
-		'should dismiss the notification and trigger dismiss_notification event when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
-		( onboardingState, ctaText, dismissText ) => {
+		'should dismiss the notification when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
+		async ( onboardingState, ctaText, dismissText ) => {
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ id ],
+			} );
+
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
@@ -196,6 +185,10 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationID( 'ABCDEFGH' );
+
+			await registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.receiveQueuedNotifications( [ { id } ] );
 
 			const { container, getByText } = render(
 				<NotificationWithComponentProps />,
@@ -210,23 +203,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			const dismissElement = getByText( dismissText );
 			expect( dismissElement ).toBeInTheDocument();
 
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-				'view_notification',
-				onboardingState
-			);
-
 			act( () => {
 				fireEvent.click( dismissElement );
 			} );
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-				'dismiss_notification',
-				onboardingState
-			);
 		}
 	);
 
