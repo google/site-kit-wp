@@ -184,11 +184,11 @@ function GA4AdSenseLinkedNotification() {
 	return (
 		<SubtleNotification
 			title={ __(
-				'Your AdSense and Analytics accounts are linked.',
+				'Your AdSense and Analytics accounts are linked',
 				'google-site-kit'
 			) }
 			description={ __(
-				'We’ll let you know as soon as there’s enough data available.',
+				'We’ll let you know as soon as there’s enough data available',
 				'google-site-kit'
 			) }
 			onDismiss={ dismissNotificationForUser }
