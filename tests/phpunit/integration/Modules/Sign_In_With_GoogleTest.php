@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Sign_In_With_GoogleTest
  *
@@ -38,5 +38,4 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalised experience for your visitors', $this->module->description );
 		$this->assertEquals( 10, $this->module->order );
 	}
-
 }
