@@ -26,6 +26,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
+	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -105,6 +106,9 @@ describe( 'modules/analytics-4 audiences', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		// Setup user.
+		provideUserInfo( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -389,6 +393,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 					},
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )

@@ -29,13 +29,20 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import AudienceIntroductoryGraphicDesktop from '../../../../../../svg/graphics/audience-segmentation-introductory-graphic-desktop.svg';
 import AudienceIntroductoryGraphicMobile from '../../../../../../svg/graphics/audience-segmentation-introductory-graphic-mobile.svg';
 import OverlayNotification from '../../../../../components/OverlayNotification/OverlayNotification';
+import { getNavigationalScrollTop } from '../../../../../util/scroll';
+import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import useViewOnly from '../../../../../hooks/useViewOnly';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
+	const isViewOnly = useViewOnly();
+	const breakpoint = useBreakpoint();
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
@@ -48,6 +55,27 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		)
 	);
 
+	const shouldShowAudienceSegmentationIntroductoryOverlay = useSelect(
+		( select ) => {
+			const isModuleActive =
+				select( CORE_MODULES ).isModuleActive( 'analytics-4' );
+			const canViewModule =
+				! isViewOnly ||
+				select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+			const userID = select( CORE_USER ).getID();
+			return (
+				isModuleActive &&
+				canViewModule &&
+				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
+				audienceSegmentationSetupCompletedBy !== userID
+			);
+		}
+	);
+
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
 	const dismissNotification = () => {
@@ -58,7 +86,25 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		);
 	};
 
-	const shouldShowNotification = isDismissed === false;
+	const scrollToWidgetAndDismissNotification = ( event ) => {
+		event.preventDefault();
+
+		const widgetAreaClass =
+			'.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation';
+
+		setTimeout( () => {
+			global.scrollTo( {
+				top: getNavigationalScrollTop( widgetAreaClass, breakpoint ),
+				behavior: 'smooth',
+			} );
+		}, 0 );
+
+		dismissNotification();
+	};
+
+	const shouldShowNotification =
+		isDismissed === false &&
+		shouldShowAudienceSegmentationIntroductoryOverlay;
 
 	return (
 		<OverlayNotification
@@ -90,7 +136,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 				<Button
 					disabled={ isDismissing }
-					onClick={ dismissNotification }
+					onClick={ scrollToWidgetAndDismissNotification }
 				>
 					{ __( 'Show me', 'google-site-kit' ) }
 				</Button>

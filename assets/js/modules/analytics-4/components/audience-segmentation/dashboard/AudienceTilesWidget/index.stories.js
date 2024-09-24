@@ -735,6 +735,10 @@ export default {
 						property: {},
 					} );
 
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiencesLastSyncedAt: Date.now() - 1000,
+				} );
+
 				setupRegistryFn?.( registry );
 			};
 

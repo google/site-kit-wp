@@ -50,7 +50,7 @@ class Uninstallation {
 	/**
 	 * List of scheduled events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 * @var array
 	 */
 	const SCHEDULED_EVENTS = array(
@@ -129,7 +129,7 @@ class Uninstallation {
 	/**
 	 * Clears all scheduled events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.136.0
 	 */
 	private function clear_scheduled_events() {
 		foreach ( self::SCHEDULED_EVENTS as $event ) {

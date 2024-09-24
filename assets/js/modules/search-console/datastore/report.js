@@ -207,7 +207,7 @@ const baseSelectors = {
 	 * Returns report args for a sample report.
 	 *
 	 * @since 1.107.0
-	 * @since n.e.x.t Updated the function to be a selector.
+	 * @since 1.136.0 Updated the function to be a selector.
 	 *
 	 * @param {Function} select The select function of the registry.
 	 * @return {Object} Report args.
