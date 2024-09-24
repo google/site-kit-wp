@@ -15,5 +15,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export const AREA_MODULE_SEARCH_CONSOLE_MAIN = 'moduleSearchConsoleMain';
