@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation PartialDataBadge component.
+ * Audience Segmentation BadgeWithTooltip component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

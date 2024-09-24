@@ -118,7 +118,6 @@ export default function AudienceItem( {
 		if ( temporarilyHidden ) {
 			return (
 				<BadgeWithTooltip
-					className="googlesitekit-audience-segmentation-temporary-hidden-badge"
 					label={ __( 'Temporarily hidden', 'google-site-kit' ) }
 					tooltipTitle={ __(
 						'Site Kit is collecting data for this group. Once data is available the group will be added to your dashboard.',
