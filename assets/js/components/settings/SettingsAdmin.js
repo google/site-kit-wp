@@ -44,8 +44,10 @@ import { useFeature } from '../../hooks/useFeature';
 export default function SettingsAdmin() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
+	const configuredAudiences = useSelect(
+		( select ) =>
+			audienceSegmentationEnabled &&
+			select( CORE_USER ).getConfiguredAudiences()
 	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )

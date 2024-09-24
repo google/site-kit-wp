@@ -1,5 +1,5 @@
 /**
- * Audience Selection Panel Retry Button
+ * BadgeWithTooltip styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,33 +16,19 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
+.googlesitekit-badge-with-tooltip {
+	background-color: $c-utility-warning-container;
+	color: $c-yellow-y-600;
+	display: inline-flex;
+	line-height: 16px;
+	padding: 6px 10px;
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
+	.googlesitekit-info-tooltip {
+		height: 16px;
+		margin-left: 4px;
 
-/**
- * Internal dependencies
- */
-import { Button } from 'googlesitekit-components';
-
-export default function RetryButton( { handleRetry } ) {
-	return (
-		<Button
-			className="googlesitekit-audience-selection-panel__error-notice-action"
-			onClick={ handleRetry }
-			tertiary
-		>
-			{ __( 'Retry', 'google-site-kit' ) }
-		</Button>
-	);
+		svg path {
+			fill: $c-utility-on-warning-container;
+		}
+	}
 }
-
-RetryButton.propTypes = {
-	handleRetry: PropTypes.func.isRequired,
-};

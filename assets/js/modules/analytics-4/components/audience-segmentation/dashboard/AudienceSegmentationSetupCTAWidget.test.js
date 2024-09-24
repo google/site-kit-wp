@@ -782,7 +782,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					);
 				} );
 
-				// Verify the error is "Insufficient permissions" variant.
+				// Verify the error is general error variant.
 				await waitFor( () => {
 					expect(
 						getByText( /Failed to set up visitor groups/i )
