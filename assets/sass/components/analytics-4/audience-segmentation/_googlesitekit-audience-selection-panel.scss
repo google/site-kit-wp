@@ -42,7 +42,7 @@
 			background-color: $c-utility-error-container;
 			display: flex;
 			justify-content: space-between;
-			padding: $grid-gap-phone - 2 $grid-gap-desktop;
+			padding: 10px $grid-gap-desktop;
 
 			p {
 				color: $c-utility-on-error-container;
@@ -60,11 +60,24 @@
 
 			.googlesitekit-audience-selection-panel__error-notice-actions {
 
-				.googlesitekit-cta-link {
-					color: $c-utility-on-error-container;
-					font-size: $fs-label-md;
-					font-weight: $fw-medium;
-					line-height: $lh-label-md;
+				.googlesitekit-audience-selection-panel__error-notice-action {
+					border-radius: $br-lg;
+					min-height: 32px;
+					padding: 6px $grid-gap-phone;
+					white-space: nowrap;
+
+					@include mdc-button-ink-color( $c-utility-on-error-container );
+
+					&:hover {
+						@include mdc-button-filled-accessible( rgba($c-red-r-100, 0.6) );
+						@include mdc-button-ink-color( $c-utility-on-error-container );
+					}
+
+					&:active,
+					&:focus {
+						@include mdc-button-filled-accessible( $c-red-r-100 );
+						@include mdc-button-ink-color( $c-utility-on-error-container );
+					}
 				}
 			}
 		}
