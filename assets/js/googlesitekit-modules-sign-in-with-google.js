@@ -1,6 +1,4 @@
 /**
- * Settings constants.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +14,10 @@
  * limitations under the License.
  */
 
-export const NEW_MODULES = [
-	'ads',
-	'reader-revenue-manager',
-	'sign-in-with-google',
-];
+/**
+ * Internal dependencies
+ */
+import Modules from 'googlesitekit-modules';
+import { registerModule } from './modules/sign-in-with-google';
 
-export const BETA_MODULES = [ 'sign-in-with-google' ];
-
-export const EXPERIMENTAL_MODULES = [];
+registerModule( Modules );

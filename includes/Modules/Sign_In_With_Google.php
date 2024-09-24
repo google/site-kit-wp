@@ -10,7 +10,10 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
@@ -23,8 +26,9 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
  * @access private
  * @ignore
  */
-final class Sign_In_With_Google extends Module implements Module_With_Settings, Module_With_Deactivation {
+final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation {
 
+	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
@@ -61,8 +65,36 @@ final class Sign_In_With_Google extends Module implements Module_With_Settings, 
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Sign in with Google', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalised experience for your visitors', 'google-site-kit' ),
-			'order'       => 1,
+			'order'       => 10,
 			'homepage'    => __( 'https://developers.google.com/identity/gsi/web/guides/overview', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since 1.122.0
+	 * @since 1.126.0 Added PAX assets.
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		return array(
+			new Script(
+				'googlesitekit-modules-sign-in-with-google',
+				array(
+					'src'          => $this->context->url( 'dist/assets/js/googlesitekit-modules-sign-in-with-google.js' ),
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
+						'googlesitekit-components',
+					),
+				)
+			),
 		);
 	}
 

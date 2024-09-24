@@ -126,5 +126,21 @@
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
+	},
+	{
+		"slug": "sign-in-with-google",
+		"name": "Sign in with Google",
+		"description": "Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalised experience for your visitors",
+		"homepage": "https://developers.google.com/identity/gsi/web/guides/overview",
+		"internal": false,
+		"order": 10,
+		"forceActive": false,
+		"recoverable": false,
+		"shareable": false,
+		"active": false,
+		"connected": false,
+		"dependencies": [],
+		"dependants": [],
+		"owner": null
 	}
 ]
