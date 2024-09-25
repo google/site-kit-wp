@@ -56,12 +56,8 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 
 	const topCitiesReportOptions = {
 		...dates,
-		dimensions: [ 'city', 'eventName' ],
+		dimensions: [ 'city' ],
 		dimensionFilters: {
-			eventName: {
-				filterType: 'inListFilter',
-				value: 'add_to_cart',
-			},
 			city: {
 				filterType: 'stringFilter',
 				matchType: 'EXACT',
@@ -69,11 +65,11 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 				notExpression: true,
 			},
 		},
-		metrics: [ { name: 'eventCount' } ],
+		metrics: [ { name: 'addToCarts' } ],
 		orderby: [
 			{
 				metric: {
-					metricName: 'eventCount',
+					metricName: 'addToCarts',
 				},
 				desc: true,
 			},

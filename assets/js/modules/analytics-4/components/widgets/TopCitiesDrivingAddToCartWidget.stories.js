@@ -36,12 +36,8 @@ import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: [ 'city', 'eventName' ],
+	dimensions: [ 'city' ],
 	dimensionFilters: {
-		eventName: {
-			filterType: 'inListFilter',
-			value: [ 'add_to_cart' ],
-		},
 		city: {
 			filterType: 'stringFilter',
 			matchType: 'EXACT',
@@ -49,11 +45,11 @@ const reportOptions = {
 			notExpression: true,
 		},
 	},
-	metrics: [ { name: 'eventCount' } ],
+	metrics: [ { name: 'addToCarts' } ],
 	orderby: [
 		{
 			metric: {
-				metricName: 'eventCount',
+				metricName: 'addToCarts',
 			},
 			desc: true,
 		},

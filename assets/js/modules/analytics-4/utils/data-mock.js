@@ -57,6 +57,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	sessionsPerUser: 'TYPE_FLOAT',
 	totalAdRevenue: 'TYPE_INTEGER',
 	eventCount: 'TYPE_INTEGER',
+	addToCarts: 'TYPE_INTEGER',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
