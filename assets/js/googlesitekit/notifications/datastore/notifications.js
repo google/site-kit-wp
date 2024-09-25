@@ -159,12 +159,14 @@ export const actions = {
 				.select( CORE_NOTIFICATIONS )
 				.getNotification( id );
 
-			// Persist the dismissal in the database only if the notification is dismissible.
-			if ( notification.isDismissible ) {
-				return registry
-					.dispatch( CORE_USER )
-					.dismissItem( id, { expiresInSeconds } );
+			// Skip persisting notification dismissal in database if the notification is not dismissible.
+			if ( notification?.isDismissible === false ) {
+				return;
 			}
+
+			return registry
+				.dispatch( CORE_USER )
+				.dismissItem( id, { expiresInSeconds } );
 		}
 	),
 };
