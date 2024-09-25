@@ -28,6 +28,7 @@ import {
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -37,6 +38,10 @@ import {
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { getPreviousDate } from '../../../../../../util';
+import {
+	ERROR_REASON_BAD_REQUEST,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '../../../../../../util/errors';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
@@ -263,32 +268,6 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 	} );
 
-	it( 'should not the "no audiences" banner when there is no matching audience', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText( /You don’t have any visitor groups selected./ )
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
 	it( 'should render when configured audience is matching available audiences', async () => {
 		const configuredAudiences = [ 'properties/12345/audiences/1' ];
 
@@ -497,5 +476,127 @@ describe( 'AudienceTilesWidget', () => {
 		).toBeInTheDocument();
 
 		await act( () => waitForTimeouts( 50 ) );
+	} );
+
+	it( 'should show the "no audiences" banner when there is no matching audience', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'properties/12345/audiences/9' ],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const syncAvailableAudiencesEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		);
+
+		muteFetch( syncAvailableAudiencesEndpoint, [] );
+
+		const { container, getByText, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		act( () => {
+			expect(
+				getByText( /You don’t have any visitor groups selected./ )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+	} );
+
+	it( 'should show the audience segmentation error widget without "Retry" button, when there is an insufficient permission error while syncing available audiences', async () => {
+		const maybeSyncAvailableAudiencesSpy = jest.spyOn(
+			registry.dispatch( MODULES_ANALYTICS_4 ),
+			'maybeSyncAvailableAudiences'
+		);
+
+		maybeSyncAvailableAudiencesSpy.mockImplementation( () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+				{
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				},
+				'syncAvailableAudiences',
+				[]
+			);
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( /Your visitor groups data loading failed/ )
+		).toBeInTheDocument();
+
+		// Ensure the retry button is not shown.
+		expect( queryByText( /Retry/ ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should show the audience segmentation error widget with "Retry" button, when there is an error while syncing available audiences', async () => {
+		const maybeSyncAvailableAudiencesSpy = jest.spyOn(
+			registry.dispatch( MODULES_ANALYTICS_4 ),
+			'maybeSyncAvailableAudiences'
+		);
+
+		maybeSyncAvailableAudiencesSpy.mockImplementation( () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+				{
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_BAD_REQUEST,
+					},
+				},
+				'syncAvailableAudiences',
+				[]
+			);
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( /Your visitor groups data loading failed/ )
+		).toBeInTheDocument();
+
+		// Ensure the retry button is shown.
+		expect( queryByText( /Retry/ ) ).toBeInTheDocument();
 	} );
 } );
