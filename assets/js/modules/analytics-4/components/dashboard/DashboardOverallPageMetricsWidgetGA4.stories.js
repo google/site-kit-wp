@@ -82,7 +82,9 @@ const reportOptions = [
 		endDate: '2020-09-07',
 	},
 ];
-const currentEntityURL = 'https://www.example.com/example-page/';
+// This specific URL is important because it creates a faker seed that
+// doesn't require the component to responsively re-render.
+const currentEntityURL = 'https://www.example.com/example-page-3/';
 const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	return {
 		...options,

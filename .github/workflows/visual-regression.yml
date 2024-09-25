@@ -53,25 +53,106 @@ jobs:
         run: npm ci
       - name: Run Backstopjs
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       # TODO: debug remove: run 10 times to see if it ever fails.
       - name: Run Backstopjs 2
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 3
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 4
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 5
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 6
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 7
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 8
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 9
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
       - name: Run Backstopjs 10
         run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 11
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 12
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 13
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 14
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 15
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 16
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 17
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 18
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 19
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 20
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 21
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 22
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 23
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 24
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+      - name: Run Backstopjs 25
+        run: npm run test:visualtest
+        if: ${{ success() || failure() }}
+
+
       # TODO: end debug
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
