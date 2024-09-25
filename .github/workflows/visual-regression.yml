@@ -1,6 +1,8 @@
 name: Visual Regression Testing
 
 on:
+  # TODO: debug: remove: Allow manual dispatch for debugging.
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -30,7 +32,8 @@ on:
 
 concurrency:
   group: visual-regression-${{ github.ref }}
-  cancel-in-progress: true
+  # TODO: debug remove: allow multiple actions to run at the same time.
+  # cancel-in-progress: true
 
 jobs:
   visual-regression:
