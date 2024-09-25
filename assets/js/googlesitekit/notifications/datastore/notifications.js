@@ -282,6 +282,18 @@ export const selectors = {
 		return state.notifications;
 	},
 	/**
+	 * Fetches a registered notification by ID from state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} id    Notification ID.
+	 * @return {(Object|undefined)} The registered notification object or undefined if a notification with the given ID is not registered.
+	 */
+	getNotification: ( state, id ) => {
+		return state.notifications[ id ];
+	},
+	/**
 	 * Fetches the queue of registered notifications which are filtered and sorted.
 	 *
 	 * Notifications are filtered and sorted in the corresponding resolver.
