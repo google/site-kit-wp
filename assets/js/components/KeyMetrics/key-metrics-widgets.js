@@ -389,7 +389,7 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Cities driving the most contact form submissions',
+			'Cities where visitors most frequently add products to their carts',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
