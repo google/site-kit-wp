@@ -39,7 +39,8 @@ jobs:
   visual-regression:
     name: Run VR Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # TODO: debug remove: no limit for testing.
+    # timeout-minutes: 30
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
@@ -52,6 +53,26 @@ jobs:
         run: npm ci
       - name: Run Backstopjs
         run: npm run test:visualtest
+      # TODO: debug remove: run 10 times to see if it ever fails.
+      - name: Run Backstopjs 2
+        run: npm run test:visualtest
+      - name: Run Backstopjs 3
+        run: npm run test:visualtest
+      - name: Run Backstopjs 4
+        run: npm run test:visualtest
+      - name: Run Backstopjs 5
+        run: npm run test:visualtest
+      - name: Run Backstopjs 6
+        run: npm run test:visualtest
+      - name: Run Backstopjs 7
+        run: npm run test:visualtest
+      - name: Run Backstopjs 8
+        run: npm run test:visualtest
+      - name: Run Backstopjs 9
+        run: npm run test:visualtest
+      - name: Run Backstopjs 10
+        run: npm run test:visualtest
+      # TODO: end debug
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: failure()
@@ -61,3 +82,4 @@ jobs:
             tests/backstop/html_report
             tests/backstop/reference
             tests/backstop/tests
+          
