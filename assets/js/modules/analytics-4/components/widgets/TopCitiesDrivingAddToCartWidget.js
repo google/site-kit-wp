@@ -52,9 +52,7 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 	const detectedEvents = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
 	);
-	const eventNames = [ 'add_to_cart' ].filter( ( item ) =>
-		detectedEvents?.includes( item )
-	);
+	const hasRequiredEvent = detectedEvents?.includes( 'add_to_cart' );
 
 	const topCitiesReportOptions = {
 		...dates,
@@ -62,7 +60,7 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 		dimensionFilters: {
 			eventName: {
 				filterType: 'inListFilter',
-				value: eventNames,
+				value: 'add_to_cart',
 			},
 			city: {
 				filterType: 'stringFilter',
@@ -85,12 +83,12 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>
-			eventNames?.length
+			hasRequiredEvent
 				? select( MODULES_ANALYTICS_4 ).getReport(
 						topCitiesReportOptions
 				  )
 				: undefined,
-		[ eventNames, topCitiesReportOptions ]
+		[ topCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -100,7 +98,7 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 	);
 
 	const loading = useSelect( ( select ) =>
-		eventNames?.length
+		hasRequiredEvent
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
 					[ topCitiesReportOptions ]
