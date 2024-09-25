@@ -155,6 +155,8 @@ export default function AudienceCreationNotice() {
 
 			if ( !! error ) {
 				setApiErrors( [ error ] );
+			} else {
+				setApiErrors( [] );
 			}
 
 			await syncAvailableAudiences();
