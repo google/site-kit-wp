@@ -155,6 +155,20 @@ describe( 'core/notifications Notifications', () => {
 			} );
 		} );
 		describe( 'dismissNotification', () => {
+			function TestNotificationComponent() {
+				return <div>Test notification!</div>;
+			}
+			beforeEach( () => {
+				// dismissNotification checks for a registered notification's isDismissible property.
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: true,
+					} );
+			} );
 			it( 'should require a valid id to be provided', () => {
 				expect( () =>
 					registry
@@ -228,6 +242,73 @@ describe( 'core/notifications Notifications', () => {
 				expect( isNotificationDismissed ).toBe( true );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+			it( 'should not persist dismissal if notification is not dismissible', async () => {
+				// dismissNotification checks for a registered notification's isDismissible property.
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'not-dismissible-notification', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: false,
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'not-dismissible-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'not-dismissible-notification', {
+						expiresInSeconds: 3,
+					} );
+
+				expect( fetchMock ).not.toHaveFetched( fetchDismissItem, {
+					body: {
+						data: {
+							slug: 'not-dismissible-notification',
+							expiration: 3,
+						},
+					},
+				} );
+			} );
+			it( 'should persist dismissal if notification is not dismissible', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'dismissible-notification' ],
+				} );
+				// dismissNotification checks for a registered notification's isDismissible property.
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'dismissible-notification', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: true,
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'dismissible-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'dismissible-notification', {
+						expiresInSeconds: 3,
+					} );
+
+				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
+					body: {
+						data: {
+							slug: 'dismissible-notification',
+							expiration: 3,
+						},
+					},
+				} );
 			} );
 			it( 'should remove a notification from queue if skipHidingFromQueue option is not passed', async () => {
 				fetchMock.postOnce( fetchDismissItem, {
