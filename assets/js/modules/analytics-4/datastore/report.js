@@ -389,7 +389,10 @@ const baseSelectors = {
 
 				return select( MODULES_ANALYTICS_4 ).getReport( {
 					...options,
-					dimensionFilters,
+					dimensionFilters: {
+						...options.dimensionFilters,
+						...dimensionFilters,
+					},
 				} );
 			} );
 		}

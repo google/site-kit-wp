@@ -291,46 +291,46 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 3 (opens in a new tab)"
+                          aria-label="Test Post 11 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 3"
+                          title="Test Post 11"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 3
+                            Test Post 11
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          96
+                          77
                         </div>
                       </div>
                       <div
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 12 (opens in a new tab)"
+                          aria-label="Test Post 2 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 12"
+                          title="Test Post 2"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 12
+                            Test Post 2
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          63
+                          42
                         </div>
                       </div>
                       <div
@@ -349,7 +349,7 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          51
+                          42
                         </div>
                       </div>
                     </div>
@@ -752,53 +752,53 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          81
+                          68
                         </div>
                       </div>
                       <div
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 9 (opens in a new tab)"
+                          aria-label="Test Post 6 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 9"
+                          title="Test Post 6"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 9
+                            Test Post 6
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          65
+                          40
                         </div>
                       </div>
                       <div
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 3 (opens in a new tab)"
+                          aria-label="Test Post 2 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 3"
+                          title="Test Post 2"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 3
+                            Test Post 2
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          11
+                          6
                         </div>
                       </div>
                       <span
@@ -1291,46 +1291,46 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 3 (opens in a new tab)"
+                          aria-label="Test Post 11 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 3"
+                          title="Test Post 11"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 3
+                            Test Post 11
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          96
+                          77
                         </div>
                       </div>
                       <div
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 12 (opens in a new tab)"
+                          aria-label="Test Post 2 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 12"
+                          title="Test Post 2"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 12
+                            Test Post 2
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          63
+                          42
                         </div>
                       </div>
                       <div
@@ -1349,7 +1349,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          51
+                          42
                         </div>
                       </div>
                     </div>
@@ -1656,46 +1656,46 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 3 (opens in a new tab)"
+                          aria-label="Test Post 11 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 3"
+                          title="Test Post 11"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 3
+                            Test Post 11
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          96
+                          77
                         </div>
                       </div>
                       <div
                         class="googlesitekit-audience-segmentation-tile-metric__page-metric-container"
                       >
                         <a
-                          aria-label="Test Post 12 (opens in a new tab)"
+                          aria-label="Test Post 2 (opens in a new tab)"
                           class="googlesitekit-cta-link"
                           href=""
                           rel="noopener noreferrer"
                           target="_blank"
-                          title="Test Post 12"
+                          title="Test Post 2"
                         >
                           <span
                             class="googlesitekit-cta-link__contents"
                           >
-                            Test Post 12
+                            Test Post 2
                           </span>
                         </a>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          63
+                          42
                         </div>
                       </div>
                       <div
@@ -1714,7 +1714,7 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__page-metric-value"
                         >
-                          51
+                          42
                         </div>
                       </div>
                     </div>

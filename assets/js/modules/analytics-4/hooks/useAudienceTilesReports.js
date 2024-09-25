@@ -60,7 +60,10 @@ function useReportLoaded( reportOptions, configuredAudiences ) {
 				[
 					{
 						...reportOptions,
-						dimensionFilters,
+						dimensionFilters: {
+							...reportOptions.dimensionFilters,
+							...dimensionFilters,
+						},
 					},
 				]
 			);
@@ -105,7 +108,10 @@ function useReportErrors( reportOptions, configuredAudiences ) {
 				[
 					{
 						...reportOptions,
-						dimensionFilters,
+						dimensionFilters: {
+							...reportOptions.dimensionFilters,
+							...dimensionFilters,
+						},
 					},
 				]
 			);
@@ -324,6 +330,13 @@ export default function useAudienceTilesReports( {
 		endDate,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: 'post',
+			},
+		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
 	};
@@ -348,6 +361,13 @@ export default function useAudienceTilesReports( {
 		endDate,
 		dimensions: [ 'pagePath', 'pageTitle' ],
 		metrics: [ { name: 'screenPageViews' } ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: 'post',
+			},
+		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
 	};
