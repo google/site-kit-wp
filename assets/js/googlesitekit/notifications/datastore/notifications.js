@@ -155,9 +155,16 @@ export const actions = {
 				};
 			}
 
-			return registry
-				.dispatch( CORE_USER )
-				.dismissItem( id, { expiresInSeconds } );
+			const notification = registry
+				.select( CORE_NOTIFICATIONS )
+				.getNotification( id );
+
+			// Persist the dismissal in the database only if the notification is dismissible.
+			if ( notification.isDismissible ) {
+				return registry
+					.dispatch( CORE_USER )
+					.dismissItem( id, { expiresInSeconds } );
+			}
 		}
 	),
 };
