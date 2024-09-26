@@ -95,6 +95,7 @@ export default function useEnableAudienceGroup( {
 					skipModal: true,
 					skipDefaultErrorNotifications: true,
 					redirectURL,
+					errorRedirectURL: global.location.href,
 				},
 			} );
 

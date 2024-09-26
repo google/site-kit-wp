@@ -26,7 +26,6 @@ import { Fragment } from '@wordpress/element';
  */
 import { useFeature } from '../../hooks/useFeature';
 import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import useViewContext from '../../hooks/useViewContext';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
@@ -47,7 +46,6 @@ export default function SubtleNotifications() {
 			{ audienceSegmentationEnabled && (
 				<AudienceSegmentationSetupSuccessSubtleNotification />
 			) }
-			<GA4AdSenseLinkedNotification />
 			<Notifications
 				viewContext={ viewContext }
 				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }

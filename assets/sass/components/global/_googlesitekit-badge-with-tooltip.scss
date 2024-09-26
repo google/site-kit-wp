@@ -1,7 +1,7 @@
 /**
- * Search Console module constants
+ * BadgeWithTooltip styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,4 +16,19 @@
  * limitations under the License.
  */
 
-export const AREA_MODULE_SEARCH_CONSOLE_MAIN = 'moduleSearchConsoleMain';
+.googlesitekit-badge-with-tooltip {
+	background-color: $c-utility-warning-container;
+	color: $c-yellow-y-600;
+	display: inline-flex;
+	line-height: 16px;
+	padding: 6px 10px;
+
+	.googlesitekit-info-tooltip {
+		height: 16px;
+		margin-left: 4px;
+
+		svg path {
+			fill: $c-utility-on-warning-container;
+		}
+	}
+}
