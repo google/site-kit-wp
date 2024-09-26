@@ -37,4 +37,5 @@ export { default as TopReturningVisitorPages } from './TopReturningVisitorPages'
 export { default as VisitsPerVisitorWidget } from './VisitsPerVisitorWidget';
 export { default as TopRecentTrendingPagesWidget } from './TopRecentTrendingPagesWidget';
 export { default as TopCategoriesWidget } from './TopCategoriesWidget';
+export { default as TopPagesDrivingLeadsWidget } from './TopPagesDrivingLeadsWidget';
 export { default as PopularAuthorsWidget } from './PopularAuthorsWidget';

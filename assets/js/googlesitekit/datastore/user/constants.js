@@ -67,6 +67,8 @@ export const KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES =
 export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
 	'kmAnalyticsTopConvertingTrafficSource';
 export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
+export const KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS =
+	'kmAnalyticsTopPagesDrivingLeads';
 export const KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES =
 	'kmAnalyticsTopRecentTrendingPages';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';

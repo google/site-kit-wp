@@ -48,11 +48,12 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { isFeatureEnabled } from '../../features';
+import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
 
 /**
  * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
@@ -122,38 +123,6 @@ function shouldDisplayWidgetWithCustomDimensions(
 		// This property is available to the widget object that requires the
 		// custom dimensions, where the function is attached.
 		this.requiredCustomDimensions
-	);
-}
-
-/**
- * Determines whether to display a widget that requires conversion reporting events
- * in the key metrics selection panel.
- *
- * This function is attached to the widget object that requires the conversion reporting events and
- * has the `requiredConversionEventName` property.
- *
- * @since 1.136.0
- *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
- * @param {string}   slug                Key metric widget slug.
- * @return {boolean} Whether to display the widget.
- */
-function shouldDisplayWidgetWithConversionEvent(
-	select,
-	isViewOnlyDashboard,
-	slug
-) {
-	if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-		return false;
-	}
-
-	return (
-		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
-			// This property is available to the widget object that requires the
-			// conversion reporting events, where the function is attached.
-			this.requiredConversionEventName
-		) || select( CORE_USER ).isKeyMetricActive( slug )
 	);
 }
 
@@ -416,6 +385,19 @@ const KEY_METRICS_WIDGETS = {
 			'The top search queries for your site by highest clickthrough rate',
 			'google-site-kit'
 		),
+	},
+	[ KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS ]: {
+		title: __( 'Top pages driving leads', 'google-site-kit' ),
+		description: __(
+			'Pages on which forms are most frequently submitted',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 };
 

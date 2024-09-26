@@ -1,7 +1,7 @@
 /**
- * PopularContentWidget component.
+ * TopPagesDrivingLeadsWidget component.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 
-function PopularContentWidget( props ) {
+function TopPagesDrivingLeadsWidget( props ) {
 	const { Widget } = props;
 
 	const viewOnlyDashboard = useViewOnly();
@@ -57,9 +57,8 @@ function PopularContentWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pagePath', 'eventName' ],
-		metrics: [ { name: 'eventCount' } ],
-		dimensionFilters: {},
+		dimensions: [ 'pagePath' ],
+		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [
 			{
 				metric: { metricName: 'screenPageViews' },
@@ -164,11 +163,11 @@ function PopularContentWidget( props ) {
 	);
 }
 
-PopularContentWidget.propTypes = {
+TopPagesDrivingLeadsWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( {
 	moduleName: 'analytics-4',
 	FallbackComponent: ConnectGA4CTATileWidget,
-} )( PopularContentWidget );
+} )( TopPagesDrivingLeadsWidget );
