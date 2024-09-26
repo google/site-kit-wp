@@ -29,13 +29,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../../components/Link';
+import { Button } from 'googlesitekit-components';
 
 export default function RetryButton( { handleRetry } ) {
 	return (
-		<Link danger onClick={ handleRetry }>
+		<Button
+			className="googlesitekit-audience-selection-panel__error-notice-action"
+			onClick={ handleRetry }
+			tertiary
+		>
 			{ __( 'Retry', 'google-site-kit' ) }
-		</Link>
+		</Button>
 	);
 }
 

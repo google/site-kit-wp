@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation PartialDataBadge styles.
+ * BadgeWithTooltip Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,23 +16,25 @@
  * limitations under the License.
  */
 
-.googlesitekit-audience-segmentation-partial-data-badge {
-	background-color: $c-utility-warning-container;
-	border-radius: $br-lg;
-	color: $c-yellow-y-600;
-	display: inline-flex;
-	font-size: $fs-label-sm;
-	font-weight: $fw-medium;
-	letter-spacing: $ls-xs;
-	line-height: 16px;
-	padding: 6px 10px;
+/**
+ * Internal dependencies
+ */
+import BadgeWithTooltip from './BadgeWithTooltip';
 
-	.googlesitekit-info-tooltip {
-		height: 16px;
-		margin-left: 4px;
-
-		svg path {
-			fill: $c-utility-on-warning-container;
-		}
-	}
+function Template( args ) {
+	return <BadgeWithTooltip { ...args } />;
 }
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+
+Default.args = {
+	label: 'Title for badge with tooltip',
+	tooltipTitle:
+		'This is an example of tooltip content for a badge with tooltip',
+};
+Default.scenario = {};
+
+export default {
+	title: 'Components/BadgeWithTooltip',
+};
