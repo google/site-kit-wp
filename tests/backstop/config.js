@@ -47,5 +47,5 @@ module.exports = {
 	scenarios,
 	viewports,
 	misMatchThreshold: 0,
-	delay: 500, // Default delay to ensure components render complete.
+	delay: 1000, // Default delay to ensure components render complete.
 };
