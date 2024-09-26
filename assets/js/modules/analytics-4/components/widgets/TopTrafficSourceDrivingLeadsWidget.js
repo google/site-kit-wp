@@ -148,21 +148,31 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		return trafficSourceReportErrors || totalLeadsReportErrors || undefined;
 	} );
 
-	const loading = useSelect( ( select ) =>
-		eventNames.length
-			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ totalLeadsReportOptions ]
-			  ) ||
-			  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ trafficSourceReportOptions ]
-			  )
-			: undefined
-	);
+	const loading = useSelect( ( select ) => {
+		if ( ! eventNames.length ) {
+			return undefined;
+		}
 
-	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
+		return (
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ totalLeadsReportOptions ]
+			) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ trafficSourceReportOptions ]
+			)
+		);
+	} );
+
+	const makeFilter = ( dateRange, dimensionIndex ) => {
+		return ( row ) => {
+			return (
+				get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
+				dateRange
+			);
+		};
+	};
 
 	// Prevents running a filter on `report.rows` which could be undefined.
 	const { rows: totalLeadsReportRows = [] } = totalLeadsReport || {};
