@@ -158,7 +158,7 @@ export async function submitChanges( { select, dispatch } ) {
 	const { error } = await saveSettings( select, dispatch );
 
 	if ( error ) {
-		return error;
+		return { error };
 	}
 
 	await API.invalidateCache( 'modules', 'analytics-4' );
