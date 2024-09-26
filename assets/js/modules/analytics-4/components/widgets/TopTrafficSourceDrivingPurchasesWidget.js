@@ -87,7 +87,7 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 				: undefined,
 		[ hasDetectedEvent, totalPurchasesReportOptions ]
 	);
-	// ecommercePurchases metric will always be assigned a value, unline most
+	// ecommercePurchases metric will always be assigned a value, unlike most
 	// other metrics, where rows would be empty if there is no data, ecommercePurchases
 	// will assign value `0` for each date range if there is no event data. So we need
 	// to verify that value is non-zero for one of the rows, to allow report request for
