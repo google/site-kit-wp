@@ -33,6 +33,16 @@
 		.googlesitekit-widget-key-metrics-content__wrapper {
 			padding: $grid-gap-desktop $grid-gap-desktop 0;
 
+			@media (min-width: $bp-desktop) {
+				max-width: 56%;
+				padding: $grid-gap-desktop + 11 $grid-gap-desktop 31px;
+			}
+
+			@media (min-width: 1024px) and (max-width: 1279px) {
+				max-width: 60%;
+				padding: $grid-gap-desktop + 11 $grid-gap-desktop 31px;
+			}
+
 			@media (min-width: $bp-xlarge) {
 				max-width: 54%;
 				padding: $grid-gap-desktop + 10 $grid-gap-desktop 43px;
@@ -47,7 +57,7 @@
 				grid-row: auto;
 				padding-top: 20px;
 
-				@media (min-width: $bp-xlarge) {
+				@media (min-width: $bp-desktop) {
 					grid-column: unset;
 					grid-column-end: span 4;
 					grid-row: 1 / -1;
@@ -60,13 +70,19 @@
 				margin: 0 auto;
 				max-height: 140px;
 
-				@media (min-width: $bp-xlarge) {
-					max-height: 235px;
+				@media (min-width: $bp-desktop) {
+					max-height: 335px;
 					position: absolute;
 					right: 0;
+					top: 5px;
+				}
+
+				@media (min-width: $bp-xlarge) {
+					max-height: 290px;
+					right: 0;
+					top: 0;
 				}
 				@media (min-width: $bp-xxlarge + 1 + px) {
-					max-height: 300px;
 					top: -50px;
 				}
 				@media (min-width: $bp-wpdb4) {
@@ -94,7 +110,7 @@
 				place-content: start;
 			}
 
-			@media (min-width: $bp-xlarge) {
+			@media (min-width: $bp-desktop) {
 				font-size: $fs-headline-md;
 				line-height: $lh-headline-md;
 			}
@@ -114,7 +130,7 @@
 				line-height: $lh-title-sm;
 			}
 
-			@media (min-width: $bp-xlarge) {
+			@media (min-width: $bp-desktop) {
 				font-size: $fs-title-md;
 				letter-spacing: $ls-m;
 				line-height: $lh-title-md;
@@ -154,7 +170,7 @@
 	.googlesitekit-widget-key-metrics-footer {
 		padding: 0 8px;
 
-		@media (min-width: $bp-xlarge) {
+		@media (min-width: $bp-desktop) {
 			padding: 0;
 		}
 	}
