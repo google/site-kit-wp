@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
-	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -55,13 +55,35 @@ function TopPagesDrivingLeadsWidget( props ) {
 		} )
 	);
 
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const eventNames = [
+		'submit_lead_form',
+		'contact',
+		'generate_lead',
+	].filter( ( item ) => detectedEvents?.includes( item ) );
+
+	if (
+		eventNames.includes( 'submit_lead_form' ) &&
+		eventNames.includes( 'contact' )
+	) {
+		eventNames.splice( eventNames.indexOf( 'contact' ), 1 );
+	}
+
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pagePath' ],
-		metrics: [ { name: 'screenPageViews' } ],
+		dimensions: [ 'pagePath', 'eventName' ],
+		dimensionFilters: {
+			eventName: {
+				filterType: 'inListFilter',
+				value: eventNames,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
 		orderby: [
 			{
-				metric: { metricName: 'screenPageViews' },
+				metric: { metricName: 'eventCount' },
 				desc: true,
 			},
 		],
@@ -69,8 +91,11 @@ function TopPagesDrivingLeadsWidget( props ) {
 	};
 
 	const report = useInViewSelect(
-		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
-		[ reportOptions ]
+		( select ) =>
+			eventNames?.length
+				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+				: undefined,
+		[ eventNames, reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -80,23 +105,31 @@ function TopPagesDrivingLeadsWidget( props ) {
 	);
 
 	const titles = useInViewSelect(
-		( select ) =>
-			! error
-				? select( MODULES_ANALYTICS_4 ).getPageTitles(
-						report,
-						reportOptions
-				  )
-				: undefined,
-		[ error, report, reportOptions ]
+		( select ) => {
+			if ( ! eventNames?.length || error ) {
+				return undefined;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).getPageTitles(
+				report,
+				reportOptions
+			);
+		},
+		[ eventNames, error, report, reportOptions ]
 	);
 
-	const loading = useSelect(
-		( select ) =>
+	const loading = useSelect( ( select ) => {
+		if ( ! eventNames?.length ) {
+			return undefined;
+		}
+
+		return (
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
 				[ reportOptions ]
 			) || titles === undefined
-	);
+		);
+	} );
 
 	const { rows = [] } = report || {};
 
@@ -152,7 +185,7 @@ function TopPagesDrivingLeadsWidget( props ) {
 	return (
 		<MetricTileTable
 			Widget={ Widget }
-			widgetSlug={ KM_ANALYTICS_POPULAR_CONTENT }
+			widgetSlug={ KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS }
 			loading={ loading }
 			rows={ rows }
 			columns={ columns }
