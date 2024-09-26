@@ -31,8 +31,10 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
 import NoAudienceBannerWidget from '../NoAudienceBannerWidget';
 import WidgetNull from '../../../../../../googlesitekit/widgets/components/WidgetNull';
+import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 
 function AudienceTilesWidget( { Widget } ) {
 	const availableAudiences = useSelect( ( select ) => {
@@ -45,10 +47,17 @@ function AudienceTilesWidget( { Widget } ) {
 
 	const [ availableAudiencesSynced, setAvailableAudiencesSynced ] =
 		useState( false );
-	const { maybeSyncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
+	const { clearErrors, maybeSyncAvailableAudiences, syncAvailableAudiences } =
+		useDispatch( MODULES_ANALYTICS_4 );
 
 	const isSettingUpAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSettingUpAudiences()
+	);
+
+	const syncAvailableAudiencesError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForAction(
+			'syncAvailableAudiences'
+		)
 	);
 
 	useEffect( () => {
@@ -65,6 +74,28 @@ function AudienceTilesWidget( { Widget } ) {
 		isSettingUpAudiences,
 		maybeSyncAvailableAudiences,
 	] );
+
+	if ( syncAvailableAudiencesError ) {
+		const insufficientPermissionsError = isInsufficientPermissionsError(
+			syncAvailableAudiencesError
+		);
+
+		return (
+			<AudienceSegmentationErrorWidget
+				errors={ syncAvailableAudiencesError }
+				Widget={ Widget }
+				onRetry={
+					! insufficientPermissionsError
+						? async () => {
+								await clearErrors( 'syncAvailableAudiences' );
+								await syncAvailableAudiences();
+						  }
+						: undefined
+				}
+				showRetryButton={ ! insufficientPermissionsError }
+			/>
+		);
+	}
 
 	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
 		availableAudiences?.includes( audience )
