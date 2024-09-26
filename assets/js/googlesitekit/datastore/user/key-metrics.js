@@ -231,6 +231,7 @@ const baseSelectors = {
 					return keyMetricsGA4WidgetsNonAcr.indexOf( slug ) >= 0;
 				} );
 			}
+
 			return answerBasedMetrics;
 		}
 
