@@ -161,11 +161,11 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		>
 			<KeyMetricsCTAContent
 				title={ __(
-					'Get metrics and suggestions tailored to your specific site goals',
+					'Get personalized suggestions for user interaction metrics based on your goals',
 					'google-site-kit'
 				) }
 				description={ __(
-					'Answer 3 questions to show relevant stats for your site',
+					'Answer 3 questions and we’ll suggest relevant metrics for your dashboard. These metrics will help you track how users interact with your site.',
 					'google-site-kit'
 				) }
 				actions={
