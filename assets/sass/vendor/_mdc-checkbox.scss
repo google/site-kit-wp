@@ -1,46 +1,58 @@
 // Overrides for .mdc-checkbox
-.googlesitekit-plugin .mdc-checkbox {
+.googlesitekit-plugin {
+	.mdc-checkbox {
 
-	@include mdc-checkbox-container-colors($c-surfaces-on-surface, $c-base, $c-surfaces-on-surface, $c-black, true);
-	@include mdc-checkbox-ink-color($c-white);
-	@include mdc-checkbox-focus-indicator-color($c-content-on-primary-container);
+		@include mdc-checkbox-container-colors($c-surfaces-on-surface, $c-base, $c-surfaces-on-surface, $c-black, true);
+		@include mdc-checkbox-ink-color($c-white);
+		@include mdc-checkbox-focus-indicator-color($c-content-on-primary-container);
 
-	box-sizing: content-box;
+		box-sizing: content-box;
 
-	// Overriding WordPress load-styles.php
-	.mdc-checkbox__native-control {
-		appearance: none;
-		background: transparent;
-		border: none;
-		border-radius: 0;
-		box-shadow: none;
-		clear: none;
-		color: $c-primary;
-		cursor: inherit;
-		display: block;
-		height: 100%;
-		line-height: normal;
-		margin: 0;
-		min-width: auto;
-		opacity: 0;
-		outline: 0;
-		padding: 0;
-		text-align: center;
-		transition: none;
-		vertical-align: middle;
-		width: 100%;
-		z-index: 1;
+		// Overriding WordPress load-styles.php
+		.mdc-checkbox__native-control {
+			appearance: none;
+			background: transparent;
+			border: none;
+			border-radius: 0;
+			box-shadow: none;
+			clear: none;
+			color: $c-primary;
+			cursor: inherit;
+			display: block;
+			height: 100%;
+			line-height: normal;
+			margin: 0;
+			min-width: auto;
+			opacity: 0;
+			outline: 0;
+			padding: 0;
+			text-align: center;
+			transition: none;
+			vertical-align: middle;
+			width: 100%;
+			z-index: 1;
+		}
+
+		// The Checkbox component has an essential padding of 11 pixels to accommodate
+		// its hover/focus background. This makes it not possible to align the checkbox
+		// to the absolute left when required. The following style compensates for the
+		// padding and aligns it to the absolute left.
+		&.mdc-checkbox--align-left {
+			margin-left: -11px;
+		}
+
+		+ .mdc-checkbox__content {
+			padding-left: 4px;
+		}
 	}
 
-	// The Checkbox component has an essential padding of 11 pixels to accommodate
-	// its hover/focus background. This makes it not possible to align the checkbox
-	// to the absolute left when required. The following style compensates for the
-	// padding and aligns it to the absolute left.
-	&.mdc-checkbox--align-left {
-		margin-left: -11px;
-	}
+	.mdc-checkbox__label-wrapper {
+		align-items: center;
+		column-gap: 10px;
+		display: flex;
 
-	+ .mdc-checkbox__content {
-		padding-left: 4px;
+		.googlesitekit-badge {
+			margin-left: 0;
+		}
 	}
 }
