@@ -57,9 +57,8 @@ function PopularContentWidget( props ) {
 
 	const reportOptions = {
 		...dates,
-		dimensions: [ 'pagePath', 'eventName' ],
-		metrics: [ { name: 'eventCount' } ],
-		dimensionFilters: {},
+		dimensions: [ 'pagePath' ],
+		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [
 			{
 				metric: { metricName: 'screenPageViews' },
