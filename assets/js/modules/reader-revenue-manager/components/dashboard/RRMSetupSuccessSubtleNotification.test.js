@@ -86,9 +86,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
-	const dismissItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -174,10 +171,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	it.each( publicationStatesData )(
 		'should dismiss the notification when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
 		async ( onboardingState, ctaText, dismissText ) => {
-			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ id ],
-			} );
-
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
@@ -185,6 +178,15 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationID( 'ABCDEFGH' );
+
+			await registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( id, {
+					Component: NotificationWithComponentProps,
+					areaSlug: 'notification-area-banners-above-nav',
+					viewContexts: [ 'mainDashboard' ],
+					isDismissible: false,
+				} );
 
 			await registry
 				.dispatch( CORE_NOTIFICATIONS )

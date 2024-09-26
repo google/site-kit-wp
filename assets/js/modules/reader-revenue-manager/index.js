@@ -108,5 +108,6 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
+		isDismissible: false,
 	} );
 };
