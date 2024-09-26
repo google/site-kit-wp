@@ -37,7 +37,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	useBreakpoint,
-	BREAKPOINT_DESKTOP,
 	BREAKPOINT_TABLET,
 	BREAKPOINT_SMALL,
 } from '../../hooks/useBreakpoint';
@@ -45,6 +44,7 @@ import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { Cell, Grid, Row } from '../../material-components';
 import KeyMetricsSetupDesktopSVG from './KeyMetricsSetupDesktopSVG';
+import KeyMetricsSetupSmallDesktopSVG from './KeyMetricsSetupSmallDesktopSVG';
 import KeyMetricsSetupTabletSVG from './KeyMetricsSetupTabletSVG';
 import KeyMetricsSetupMobileSVG from './KeyMetricsSetupMobileSVG';
 
@@ -61,12 +61,14 @@ export default function KeyMetricsCTAContent( {
 	const viewContext = useViewContext();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint =
-		breakpoint === BREAKPOINT_TABLET ||
-		( breakpoint === BREAKPOINT_DESKTOP && onlyWidth < 1280 );
+		breakpoint === BREAKPOINT_TABLET && onlyWidth < 960;
 	// onlyWidth is used directly here since BREAKPOINT_XLARGE only
-	// accounts for screens that are over 1280px and desktop layout should
-	// fit on the screens starting from desktop size of 1280px and over.
-	const isDesktopBreakpoint = onlyWidth > 1279;
+	// accounts for screens that are over 1280px and current layout graphic should
+	// show on the screens starting from size of 1280px and over.
+	const isDesktopBreakpoint = onlyWidth >= 1280;
+	// Also here, BREAKPOINT_DESKTOP accounts for screens over 960, in this particular case
+	// graphic should be shown on screens starting from 960px.
+	const isSmallDesktopBreakpoint = onlyWidth >= 960 && onlyWidth < 1280;
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
@@ -141,6 +143,11 @@ export default function KeyMetricsCTAContent( {
 							</Cell>
 						) }
 					</Cell>
+					{ isSmallDesktopBreakpoint && (
+						<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
+							<KeyMetricsSetupSmallDesktopSVG />
+						</Cell>
+					) }
 					{ isDesktopBreakpoint && (
 						<Cell
 							className="googlesitekit-widget-key-metrics-svg__wrapper"
