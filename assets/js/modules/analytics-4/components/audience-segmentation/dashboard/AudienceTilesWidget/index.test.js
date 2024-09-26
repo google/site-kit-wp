@@ -28,7 +28,6 @@ import {
 import {
 	createTestRegistry,
 	freezeFetch,
-	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -200,6 +199,10 @@ function provideAudienceTilesMockReport(
 describe( 'AudienceTilesWidget', () => {
 	let registry;
 
+	const syncAvailableAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
+
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAudienceTiles'
 	)( AudienceTilesWidget );
@@ -238,10 +241,6 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should render loading tiles when audiences are not syncing', async () => {
-		const syncAvailableAudiencesEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
-		);
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -479,20 +478,15 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should show the "no audiences" banner when there is no matching audience', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences,
+			status: 200,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
-
-		const syncAvailableAudiencesEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
-		);
-
-		muteFetch( syncAvailableAudiencesEndpoint, [] );
 
 		const { container, getByText, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -503,87 +497,31 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
-		act( () => {
-			expect(
-				getByText( /You don’t have any visitor groups selected./ )
-			).toBeInTheDocument();
-
-			expect( container ).toMatchSnapshot();
-		} );
-	} );
-
-	it( 'should show the audience segmentation error widget without "Retry" button, when there is an insufficient permission error while syncing available audiences', async () => {
-		const maybeSyncAvailableAudiencesSpy = jest.spyOn(
-			registry.dispatch( MODULES_ANALYTICS_4 ),
-			'maybeSyncAvailableAudiences'
-		);
-
-		maybeSyncAvailableAudiencesSpy.mockImplementation( () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-				{
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-					},
-				},
-				'syncAvailableAudiences',
-				[]
-			);
-		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { getByText, queryByText, waitForRegistry } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
 		expect(
-			getByText( /Your visitor groups data loading failed/ )
+			getByText( /You don’t have any visitor groups selected./ )
 		).toBeInTheDocument();
 
-		// Ensure the retry button is not shown.
-		expect( queryByText( /Retry/ ) ).not.toBeInTheDocument();
+		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should show the audience segmentation error widget with "Retry" button, when there is an error while syncing available audiences', async () => {
-		const maybeSyncAvailableAudiencesSpy = jest.spyOn(
-			registry.dispatch( MODULES_ANALYTICS_4 ),
-			'maybeSyncAvailableAudiences'
-		);
-
-		maybeSyncAvailableAudiencesSpy.mockImplementation( () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-				{
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: ERROR_REASON_BAD_REQUEST,
-					},
+	it( 'should show the "insufficient permissions" variant of the error banner when there is an insufficient permissions error while syncing available audiences', async () => {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			body: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 				},
-				'syncAvailableAudiences',
-				[]
-			);
+			},
+			status: 403,
 		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
 
-		const { getByText, queryByText, waitForRegistry } = render(
+		const { getByRole, getByText, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
 			{
 				registry,
@@ -592,11 +530,47 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
+		// Verify the error is "Insufficient permissions" variant.
+		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
+
+		// Verify the "Get help" link is displayed.
+		expect(
+			getByRole( 'link', { name: /get help/i } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show the catch-all variant of the error banner when there is a generic error while syncing available audiences', async () => {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			body: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_BAD_REQUEST,
+				},
+			},
+			status: 403,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		const { getByRole, getByText, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// Verify the error is "catch-all" variant.
 		expect(
 			getByText( /Your visitor groups data loading failed/ )
 		).toBeInTheDocument();
 
 		// Ensure the retry button is shown.
-		expect( queryByText( /Retry/ ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /Retry/i } ) ).toBeInTheDocument();
 	} );
 } );

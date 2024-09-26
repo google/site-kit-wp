@@ -76,23 +76,23 @@ function AudienceTilesWidget( { Widget } ) {
 	] );
 
 	if ( syncAvailableAudiencesError ) {
-		const insufficientPermissionError = isInsufficientPermissionsError(
+		const insufficientPermissionsError = isInsufficientPermissionsError(
 			syncAvailableAudiencesError
 		);
 
 		return (
 			<AudienceSegmentationErrorWidget
-				error={ syncAvailableAudiencesError }
+				errors={ syncAvailableAudiencesError }
 				Widget={ Widget }
 				onRetry={
-					! insufficientPermissionError
+					! insufficientPermissionsError
 						? async () => {
 								await clearErrors( 'syncAvailableAudiences' );
 								await syncAvailableAudiences();
 						  }
 						: undefined
 				}
-				showRetryButton={ ! insufficientPermissionError }
+				showRetryButton={ ! insufficientPermissionsError }
 			/>
 		);
 	}
