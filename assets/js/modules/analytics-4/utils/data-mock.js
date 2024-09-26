@@ -58,6 +58,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	totalAdRevenue: 'TYPE_INTEGER',
 	eventCount: 'TYPE_INTEGER',
 	addToCarts: 'TYPE_INTEGER',
+	ecommercePurchases: 'TYPE_INTEGER',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
