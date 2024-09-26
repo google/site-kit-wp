@@ -29,13 +29,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../../components/Link';
+import { Button } from 'googlesitekit-components';
 
 export default function RequestAccessButton( { requestAccessURL } ) {
 	return (
-		<Link danger href={ requestAccessURL } target="_blank">
+		<Button
+			className="googlesitekit-audience-selection-panel__error-notice-action"
+			tertiary
+			href={ requestAccessURL }
+			target="_blank"
+		>
 			{ __( 'Request access', 'google-site-kit' ) }
-		</Link>
+		</Button>
 	);
 }
 
