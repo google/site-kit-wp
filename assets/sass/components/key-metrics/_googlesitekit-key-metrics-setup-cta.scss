@@ -71,15 +71,19 @@
 				max-height: 140px;
 
 				@media (min-width: $bp-desktop) {
-					max-height: 335px;
+					max-height: 315px;
 					position: absolute;
 					right: 0;
-					top: 5px;
+					top: 0;
+				}
+
+				@media (min-width: 1181px) and (max-width: 1279px) {
+					max-height: 340px;
+					top: -35px;
 				}
 
 				@media (min-width: $bp-xlarge) {
 					max-height: 290px;
-					right: 0;
 					top: 0;
 				}
 				@media (min-width: $bp-xxlarge + 1 + px) {
