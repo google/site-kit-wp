@@ -491,7 +491,7 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 70 ) );
+		await act( () => waitForTimeouts( 100 ) );
 	} );
 
 	it( 'should show the "no audiences" banner when there is no matching audience', async () => {
