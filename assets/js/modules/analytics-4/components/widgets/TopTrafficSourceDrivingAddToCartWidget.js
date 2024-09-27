@@ -193,7 +193,7 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 			subText={
 				// eslint-disable-next-line @wordpress/valid-sprintf
 				sprintf(
-					/* translators: %d: Percentage of leads for the current top traffic source compared to the number of total leads for all traffic sources. */
+					/* translators: %s: Percentage of add to carts for the current top traffic source compared to the number of total add to carts for all traffic sources. */
 					__( '%s of total add to carts', 'google-site-kit' ),
 					numFmt( relativeCurrentTopTrafficSourceAddToCart, format )
 				)
