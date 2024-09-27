@@ -75,6 +75,7 @@ function getRootMargin( breakpoint ) {
 	return `${ -top }px ${ -gap }px ${ -gap }px ${ -gap }px`;
 }
 
+/* eslint-disable complexity */
 export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const viewOnlyDashboard = useViewOnly();
 
@@ -215,7 +216,11 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 								<div className="googlesitekit-widget-area-header__details">
 									{ subtitle && (
 										<h4 className="googlesitekit-widget-area-header__subtitle">
-											{ subtitle }
+											{ typeof subtitle === 'function' ? (
+												<widgetArea.subtitle />
+											) : (
+												subtitle
+											) }
 											{ ! title && (
 												<WidgetNewBadge slug={ slug } />
 											) }
@@ -300,6 +305,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		</InViewProvider>
 	);
 }
+/* eslint-enable complexity */
 
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
