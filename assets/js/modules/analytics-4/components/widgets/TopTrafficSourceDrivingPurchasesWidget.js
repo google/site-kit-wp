@@ -205,7 +205,7 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 			subText={
 				// eslint-disable-next-line @wordpress/valid-sprintf
 				sprintf(
-					/* translators: %d: Percentage of leads for the current top traffic source compared to the number of total leads for all traffic sources. */
+					/* translators: %s: Percentage of purchases for the current top traffic source compared to the number of total purchases for all traffic sources. */
 					__( '%s of total purchases', 'google-site-kit' ),
 					numFmt( relativeCurrentTopTrafficSourcePurchases, format )
 				)
