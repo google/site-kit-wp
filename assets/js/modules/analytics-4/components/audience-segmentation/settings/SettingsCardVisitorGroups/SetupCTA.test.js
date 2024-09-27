@@ -34,7 +34,6 @@ import {
 	waitFor,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
-import { AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupCTAWidget';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
@@ -72,8 +71,6 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 			},
 		] );
 
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
-
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableAudiences: null,
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
@@ -102,29 +99,6 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		expect(
 			getByRole( 'button', { name: /Enable groups/i } )
 		).toBeInTheDocument();
-	} );
-
-	it( 'should not render the setup CTA if dismissed', () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-			[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
-				expires: 0,
-				count: 1,
-			},
-		} );
-
-		const { queryByText, queryByRole } = render( <SetupCTA />, {
-			registry,
-		} );
-
-		expect(
-			queryByText(
-				'To set up new visitor groups for your site, Site Kit needs to update your Google Analytics property.'
-			)
-		).not.toBeInTheDocument();
-
-		expect(
-			queryByRole( 'button', { name: /Enable groups/i } )
-		).not.toBeInTheDocument();
 	} );
 
 	it( 'should show in progress state when enabling groups', () => {

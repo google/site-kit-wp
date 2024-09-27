@@ -18,13 +18,13 @@ use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 
 /**
- * Class Migration_Conversion_ID
+ * Class Migration_1_129_0
  *
  * @since 1.129.0
  * @access private
  * @ignore
  */
-class Migration_Conversion_ID {
+class Migration_1_129_0 {
 	/**
 	 * Target DB version.
 	 */

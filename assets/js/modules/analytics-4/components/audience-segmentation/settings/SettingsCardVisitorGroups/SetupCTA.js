@@ -31,7 +31,6 @@ import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/cons
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupCTAWidget';
 import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import Link from '../../../../../../components/Link';
 import { AudienceErrorModal } from '../../dashboard';
@@ -53,12 +52,6 @@ export default function SetupCTA() {
 				setShowErrorModal( true );
 			},
 		} );
-
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isPromptDismissed(
-			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-		)
-	);
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
@@ -85,10 +78,6 @@ export default function SetupCTA() {
 		setSetupErrorCode( null );
 		setShowErrorModal( false );
 	};
-
-	if ( isDismissed === undefined || isDismissed ) {
-		return null;
-	}
 
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">

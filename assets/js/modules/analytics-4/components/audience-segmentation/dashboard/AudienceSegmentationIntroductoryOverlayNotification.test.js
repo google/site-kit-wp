@@ -38,7 +38,10 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 } from './AudienceSegmentationIntroductoryOverlayNotification';
 import * as scrollUtils from '../../../../../util/scroll';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '../../../../../googlesitekit/constants';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -78,7 +81,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			<AudienceSegmentationIntroductoryOverlayNotification />,
 			{
 				registry,
-				context: VIEW_CONTEXT_MAIN_DASHBOARD,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -138,7 +141,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			<AudienceSegmentationIntroductoryOverlayNotification />,
 			{
 				registry,
-				context: VIEW_CONTEXT_MAIN_DASHBOARD,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -161,5 +164,27 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			top: 12345,
 			behavior: 'smooth',
 		} );
+	} );
+
+	it( 'should not render if the dashboard is entity dashboard', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const userID = registry.select( CORE_USER ).getID();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
+
+		const { container, waitForRegistry } = render(
+			<AudienceSegmentationIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
