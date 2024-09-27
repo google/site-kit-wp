@@ -185,7 +185,7 @@ IceEnabled.scenario = {
 	delay: 250,
 };
 IceEnabled.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			global._googlesitekitDashboardSharingData = {
 				settings: {},
@@ -235,10 +235,7 @@ IceEnabled.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);
