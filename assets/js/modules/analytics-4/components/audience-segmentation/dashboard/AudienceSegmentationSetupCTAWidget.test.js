@@ -641,7 +641,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
 
-			await act( () => waitForTimeouts( 30 ) );
+			await act( () => waitForTimeouts( 50 ) );
 		} );
 
 		describe( 'AudienceErrorModal', () => {
