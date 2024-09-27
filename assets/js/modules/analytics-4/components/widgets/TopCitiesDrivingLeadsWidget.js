@@ -42,7 +42,7 @@ import {
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopCitiesDrivingLeadsWidget( { Widget, WidgetNull } ) {
+function TopCitiesDrivingLeadsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -65,15 +65,6 @@ function TopCitiesDrivingLeadsWidget( { Widget, WidgetNull } ) {
 		eventNames.splice( eventNames.indexOf( 'contact' ), 1 );
 	}
 
-	const isTopCitiesDrivingLeadsWidgetActive = useSelect( ( select ) =>
-		select( CORE_USER ).isKeyMetricActive(
-			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS
-		)
-	);
-
-	const showWidget =
-		isTopCitiesDrivingLeadsWidgetActive || eventNames?.length;
-
 	const topCitiesReportOptions = {
 		...dates,
 		dimensions: [ 'city', 'eventName' ],
@@ -81,6 +72,12 @@ function TopCitiesDrivingLeadsWidget( { Widget, WidgetNull } ) {
 			eventName: {
 				filterType: 'inListFilter',
 				value: eventNames,
+			},
+			city: {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: '(not set)',
+				notExpression: true,
 			},
 		},
 		metrics: [ { name: 'eventCount' } ],
@@ -97,12 +94,12 @@ function TopCitiesDrivingLeadsWidget( { Widget, WidgetNull } ) {
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>
-			showWidget && eventNames.length
+			eventNames?.length
 				? select( MODULES_ANALYTICS_4 ).getReport(
 						topCitiesReportOptions
 				  )
 				: undefined,
-		[ showWidget, eventNames, topCitiesReportOptions ]
+		[ eventNames, topCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -112,7 +109,7 @@ function TopCitiesDrivingLeadsWidget( { Widget, WidgetNull } ) {
 	);
 
 	const loading = useSelect( ( select ) =>
-		showWidget
+		eventNames?.length
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
 					[ topCitiesReportOptions ]
@@ -138,10 +135,6 @@ function TopCitiesDrivingLeadsWidget( { Widget, WidgetNull } ) {
 			},
 		},
 	];
-
-	if ( ! showWidget ) {
-		return <WidgetNull />;
-	}
 
 	return (
 		<MetricTileTable

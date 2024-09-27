@@ -34,6 +34,7 @@ import {
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -47,6 +48,7 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -131,20 +133,28 @@ function shouldDisplayWidgetWithCustomDimensions(
  * This function is attached to the widget object that requires the conversion reporting events and
  * has the `requiredConversionEventName` property.
  *
- * @since n.e.x.t
+ * @since 1.136.0
  *
- * @param {Function} select Data store select function.
+ * @param {Function} select              Data store select function.
+ * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {string}   slug                Key metric widget slug.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithConversionEvent( select ) {
+function shouldDisplayWidgetWithConversionEvent(
+	select,
+	isViewOnlyDashboard,
+	slug
+) {
 	if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
 		return false;
 	}
 
-	return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
-		// This property is available to the widget object that requires the
-		// conversion reporting events, where the function is attached.
-		this.requiredConversionEventName
+	return (
+		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+			// This property is available to the widget object that requires the
+			// conversion reporting events, where the function is attached.
+			this.requiredConversionEventName
+		) || select( CORE_USER ).isKeyMetricActive( slug )
 	);
 }
 
@@ -371,6 +381,31 @@ const KEY_METRICS_WIDGETS = {
 			'contact',
 			'generate_lead',
 		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART ]: {
+		title: __( 'Top cities driving add to cart', 'google-site-kit' ),
+		description: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'add_to_cart' ],
+	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
+		title: __( 'Top cities driving purchases', 'google-site-kit' ),
+		description: __(
+			'Cities driving the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities driving the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {

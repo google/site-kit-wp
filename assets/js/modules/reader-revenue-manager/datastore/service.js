@@ -32,7 +32,7 @@ const selectors = {
 	 * Returns a link to the Reader Revenue Manager platform.
 	 *
 	 * @since 1.132.0
-	 * @since n.e.x.t Removed `publicationID` arg.
+	 * @since 1.136.0 Removed `publicationID` arg.
 	 *
 	 * @param {Object} state                Data store's state.
 	 * @param {Object} [args]               Object containing optional publication ID, path and query args.

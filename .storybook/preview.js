@@ -110,6 +110,11 @@ export const decorators = [
 
 export const parameters = {
 	layout: 'fullscreen',
+	options: {
+		storySort: {
+			method: 'alphabetical',
+		},
+	},
 	async puppeteerTest( page ) {
 		await page.waitForTimeout( 50 );
 

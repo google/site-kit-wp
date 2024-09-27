@@ -1,7 +1,5 @@
 /**
- * Search Console module constants
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,4 +14,4 @@
  * limitations under the License.
  */
 
-export const AREA_MODULE_SEARCH_CONSOLE_MAIN = 'moduleSearchConsoleMain';
+export const MODULES_SIGN_IN_WITH_GOOGLE = 'modules/sign-in-with-google';

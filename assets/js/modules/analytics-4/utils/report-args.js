@@ -30,9 +30,6 @@ import {
 	REPORT_ARGS_SELECTED_DIMENSION_KEY,
 	REPORT_ARGS_SELECTED_METRIC_KEY,
 } from '../constants';
-import { DATE_RANGE_OFFSET } from '../datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 /**
  * Generates a set of report detail arguments for a Google Analytics 4 report.
@@ -126,32 +123,3 @@ export function generateReportFilterArgs( filters ) {
 		[ REPORT_ARGS_DATA_FILTERS_KEY ]: JSON.stringify( dataFilters ),
 	};
 }
-
-/**
- * Returns report args for a sample report.
- *
- * @since 1.107.0
- * @since 1.124.0 Moved from the main analytics-4 datastore file to utils.
- *
- * @param {Function} select The select function of the registry.
- * @return {Object} Report args.
- */
-export const getSampleReportArgs = ( select ) => {
-	const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
-
-	const args = {
-		dimensions: [ 'date' ],
-		metrics: [ { name: 'totalUsers' } ],
-		startDate,
-		endDate,
-	};
-
-	const url = select( CORE_SITE ).getCurrentEntityURL();
-	if ( url ) {
-		args.url = url;
-	}
-
-	return args;
-};

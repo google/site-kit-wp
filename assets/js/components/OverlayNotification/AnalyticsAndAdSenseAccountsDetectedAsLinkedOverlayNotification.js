@@ -42,7 +42,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-import { getContextScrollTop } from '../../util/scroll';
+import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
 import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
 import { trackEvent } from '../../util';
@@ -192,7 +192,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 				`#${ ANCHOR_ID_MONETIZATION }`
 			);
 			global.scrollTo( {
-				top: getContextScrollTop( widgetClass, breakpoint ),
+				top: getNavigationalScrollTop( widgetClass, breakpoint ),
 				behavior: 'smooth',
 			} );
 		}, 50 );

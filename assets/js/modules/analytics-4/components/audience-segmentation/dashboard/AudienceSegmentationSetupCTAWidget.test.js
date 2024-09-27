@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserInfo,
 	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -77,6 +78,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
 
+	const expirableItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+	);
+
 	const testPropertyID = propertiesFixture[ 0 ]._id;
 
 	beforeEach( () => {
@@ -85,6 +90,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -141,6 +147,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 			propertyID: testPropertyID,
 		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( null );
 	} );
 
 	afterEach( () => {
@@ -509,6 +519,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			);
 
 			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
 
 			const { container, getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
@@ -617,6 +628,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			);
 
 			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
 
 			const { getByRole } = render(
 				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
@@ -770,7 +782,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					);
 				} );
 
-				// Verify the error is "Insufficient permissions" variant.
+				// Verify the error is general error variant.
 				await waitFor( () => {
 					expect(
 						getByText( /Failed to set up visitor groups/i )

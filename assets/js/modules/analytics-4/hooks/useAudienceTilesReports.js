@@ -26,7 +26,7 @@ import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
 /**
  * Checks if the audience reports are loaded for the given report options.
  *
- * @since n.e.x.t
+ * @since 1.136.0
  *
  * @param {Object} reportOptions       Report options.
  * @param {Array}  configuredAudiences Configured audiences.
@@ -60,7 +60,10 @@ function useReportLoaded( reportOptions, configuredAudiences ) {
 				[
 					{
 						...reportOptions,
-						dimensionFilters,
+						dimensionFilters: {
+							...reportOptions.dimensionFilters,
+							...dimensionFilters,
+						},
 					},
 				]
 			);
@@ -71,7 +74,7 @@ function useReportLoaded( reportOptions, configuredAudiences ) {
 /**
  * Checks if there are errors for the audience reports with the given report options.
  *
- * @since n.e.x.t
+ * @since 1.136.0
  *
  * @param {Object} reportOptions       Report options.
  * @param {Array}  configuredAudiences Configured audiences.
@@ -105,7 +108,10 @@ function useReportErrors( reportOptions, configuredAudiences ) {
 				[
 					{
 						...reportOptions,
-						dimensionFilters,
+						dimensionFilters: {
+							...reportOptions.dimensionFilters,
+							...dimensionFilters,
+						},
 					},
 				]
 			);
@@ -122,7 +128,7 @@ function useReportErrors( reportOptions, configuredAudiences ) {
 /**
  * Fetch reports for audience tiles.
  *
- * @since n.e.x.t
+ * @since 1.136.0
  *
  * @param {Object}  args                              Arguments for the hook.
  * @param {boolean} args.isSiteKitAudiencePartialData Whether the Site Kit audiences are partially loaded.
@@ -324,6 +330,13 @@ export default function useAudienceTilesReports( {
 		endDate,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: 'post',
+			},
+		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
 	};
@@ -348,6 +361,13 @@ export default function useAudienceTilesReports( {
 		endDate,
 		dimensions: [ 'pagePath', 'pageTitle' ],
 		metrics: [ { name: 'screenPageViews' } ],
+		dimensionFilters: {
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: 'post',
+			},
+		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
 	};

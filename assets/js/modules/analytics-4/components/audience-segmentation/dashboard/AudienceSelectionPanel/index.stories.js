@@ -25,13 +25,17 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
+	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
+	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
@@ -43,6 +47,7 @@ import { availableAudiences } from './../../../../datastore/__fixtures__';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
 import {
 	provideModuleRegistrations,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
@@ -271,6 +276,42 @@ AudienceCreationNoticeOneAdded.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNoticeOneAdded',
 };
 
+export const AudienceCreationNoticeWithOAuthError = Template.bind( {} );
+AudienceCreationNoticeWithOAuthError.storyName =
+	'Audience creation notice with OAuth error';
+AudienceCreationNoticeWithOAuthError.args = {
+	configuredAudiences: availableAudiences.reduce(
+		( acc, audience ) =>
+			audience.audienceType !== 'SITE_KIT_AUDIENCE'
+				? [ ...acc, audience.name ]
+				: acc,
+		[]
+	),
+	availableAudiences: availableAudiences.filter(
+		( audience ) => audience.audienceType !== 'SITE_KIT_AUDIENCE'
+	),
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, {
+			setupErrorCode: 'access_denied',
+		} );
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [],
+		} );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
+			] );
+
+		registry.dispatch( CORE_FORMS ).setValues( AUDIENCE_CREATION_FORM, {
+			autoSubmit: true,
+		} );
+	},
+};
+AudienceCreationNoticeWithOAuthError.scenario = {};
+
 export const AudienceCreationSuccessNotice = Template.bind( {} );
 AudienceCreationSuccessNotice.storyName = 'Audience creation success notice';
 AudienceCreationSuccessNotice.args = {
@@ -282,6 +323,38 @@ AudienceCreationSuccessNotice.args = {
 };
 AudienceCreationSuccessNotice.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationSuccessNotice',
+};
+
+export const TemporarilyHiddenBadge = Template.bind( {} );
+TemporarilyHiddenBadge.storyName =
+	'Audience item with temporarily hidden badge';
+TemporarilyHiddenBadge.args = {
+	configuredAudiences: availableAudiences.reduce(
+		( acc, audience ) =>
+			audience.name !== 'properties/12345/audiences/1' // All visitors
+				? [ ...acc, audience.name ]
+				: acc,
+		[]
+	),
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				'audience-tile-properties/12345/audiences/3',
+			] );
+	},
+};
+TemporarilyHiddenBadge.scenario = {};
+
+export const WithNewBadges = Template.bind( {} );
+WithNewBadges.storyName = 'With "New" badges';
+WithNewBadges.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+	},
+};
+WithNewBadges.scenario = {
+	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithNewBadges',
 };
 
 export default {
@@ -367,6 +440,17 @@ export default {
 						customDimension: {},
 						property: {},
 					} );
+
+				// Prevent displaying "New" badges by default.
+				registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+					availableAudiences.reduce(
+						( acc, { name } ) => ( {
+							...acc,
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]: 0,
+						} ),
+						{}
+					)
+				);
 
 				registry
 					.dispatch( CORE_UI )

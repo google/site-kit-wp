@@ -220,3 +220,6 @@ export const AUDIENCE_TYPE_SORT_ORDER = {
 	SITE_KIT_AUDIENCE: 1,
 	DEFAULT_AUDIENCE: 2,
 };
+
+export const AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX =
+	'audience-selection-panel-expirable-new-badge-';
