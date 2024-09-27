@@ -48,6 +48,7 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -381,6 +382,18 @@ const KEY_METRICS_WIDGETS = {
 			'generate_lead',
 		],
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART ]: {
+		title: __( 'Top cities driving add to cart', 'google-site-kit' ),
+		description: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'add_to_cart' ],
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
 		title: __( 'Top cities driving purchases', 'google-site-kit' ),
