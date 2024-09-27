@@ -192,6 +192,30 @@
 				}
 			}
 		}
+
+		.googlesitekit-widget--keyMetricsConnectGA4All {
+			div.googlesitekit-widget-key-metrics-svg__wrapper {
+				svg {
+					@media (min-width: $bp-desktop) {
+						max-height: 270px;
+						position: absolute;
+						right: 0;
+						top: -39px;
+					}
+
+					@media (min-width: $bp-xlarge) {
+						max-height: 280px;
+						right: 0;
+						top: -30px;
+					}
+					@media (min-width: $bp-wpdb4) {
+						max-height: 300px;
+						right: 0;
+						top: -49px;
+					}
+				}
+			}
+		}
 	}
 
 	.googlesitekit-km-connect-ga4-cta {
