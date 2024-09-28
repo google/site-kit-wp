@@ -87,6 +87,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
 
+	const setValueMock = jest.fn();
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -99,7 +101,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		] );
 
 		useQueryArg.mockImplementation( ( arg ) => {
-			const setValueMock = jest.fn();
 			switch ( arg ) {
 				case 'notification':
 					return [ 'authentication_success', setValueMock ];
@@ -113,6 +114,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	} );
 
 	afterEach( () => {
+		setValueMock.mockClear();
+		useQueryArg.mockClear();
 		global.open.mockClear();
 	} );
 
@@ -161,10 +164,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			const dismissElement = getByText( dismissText );
 			expect( dismissElement ).toBeInTheDocument();
-
-			act( () => {
-				fireEvent.click( ctaElement );
-			} );
 		}
 	);
 
@@ -208,6 +207,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			act( () => {
 				fireEvent.click( dismissElement );
 			} );
+
+			expect( setValueMock ).toHaveBeenCalledTimes( 2 );
+			expect( setValueMock ).toHaveBeenCalledWith( undefined );
 		}
 	);
 
