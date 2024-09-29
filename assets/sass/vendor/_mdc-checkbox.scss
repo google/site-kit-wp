@@ -48,11 +48,8 @@
 	}
 
 	.mdc-checkbox__label {
-
-		&:has(.googlesitekit-badge) {
-			align-items: center;
-			display: flex;
-		}
+		align-items: center;
+		display: flex;
 
 		.googlesitekit-badge {
 			margin-left: 10px;
