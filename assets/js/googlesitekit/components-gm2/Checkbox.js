@@ -49,13 +49,6 @@ export default function Checkbox( props ) {
 		badge,
 	} = props;
 
-	const label = (
-		<div className="mdc-checkbox__label-wrapper">
-			<label htmlFor={ id }>{ children }</label>
-			{ badge }
-		</div>
-	);
-
 	return (
 		<div className="mdc-form-field">
 			<div
@@ -98,16 +91,17 @@ export default function Checkbox( props ) {
 				) }
 			</div>
 
-			{ ! description && label }
-
-			{ description && (
-				<div className="mdc-checkbox__content">
-					{ label }
+			<div className="mdc-checkbox__content">
+				<div className="mdc-checkbox__label">
+					<label htmlFor={ id }>{ children }</label>
+					{ badge }
+				</div>
+				{ description && (
 					<div className="mdc-checkbox__description">
 						{ description }
 					</div>
-				</div>
-			) }
+				) }
+			</div>
 		</div>
 	);
 }
