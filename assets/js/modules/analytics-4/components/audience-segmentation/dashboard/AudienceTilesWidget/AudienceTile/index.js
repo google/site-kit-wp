@@ -49,11 +49,11 @@ import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
 import ChangeBadge from '../../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../../components/InfoTooltip';
-import PartialDataBadge from './PartialDataBadge';
 import PartialDataNotice from './PartialDataNotice';
 import { numFmt } from '../../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
+import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
@@ -69,6 +69,7 @@ export default function AudienceTile( {
 	topCities,
 	topContent,
 	topContentTitles,
+	hasInvalidCustomDimensionError,
 	Widget,
 	audienceResourceName,
 	isZeroData,
@@ -182,7 +183,12 @@ export default function AudienceTile( {
 							) }
 						</div>
 						{ isAudiencePartialData && (
-							<PartialDataBadge
+							<BadgeWithTooltip
+								className="googlesitekit-audience-segmentation-partial-data-badge"
+								label={ __(
+									'Partial data',
+									'google-site-kit'
+								) }
 								tooltipTitle={ __(
 									'Still collecting full data for this timeframe, partial data is displayed for this group',
 									'google-site-kit'
@@ -268,7 +274,9 @@ export default function AudienceTile( {
 						topCities={ topCities }
 					/>
 
-					{ ( ! isViewOnly || postTypeDimensionExists ) && (
+					{ ( ! isViewOnly ||
+						( postTypeDimensionExists &&
+							! hasInvalidCustomDimensionError ) ) && (
 						<AudienceTilePagesMetric
 							TileIcon={ AudienceMetricIconTopContent }
 							title={ __(
@@ -297,6 +305,7 @@ AudienceTile.propTypes = {
 	topCities: PropTypes.object,
 	topContent: PropTypes.object,
 	topContentTitles: PropTypes.object,
+	hasInvalidCustomDimensionError: PropTypes.bool,
 	Widget: PropTypes.elementType.isRequired,
 	audienceResourceName: PropTypes.string.isRequired,
 	isZeroData: PropTypes.bool,

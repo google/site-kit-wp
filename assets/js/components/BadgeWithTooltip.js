@@ -1,5 +1,5 @@
 /**
- * PartialDataBadge Component Stories.
+ * BadgeWithTooltip component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,25 +17,37 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+
+/**
  * Internal dependencies
  */
-import PartialDataBadge from './PartialDataBadge';
+import InfoTooltip from './InfoTooltip';
 
-function Template( args ) {
-	return <PartialDataBadge { ...args } />;
+export default function BadgeWithTooltip( {
+	className = '',
+	label,
+	tooltipTitle,
+} ) {
+	return (
+		<span
+			className={ classNames(
+				'googlesitekit-badge-with-tooltip',
+				'googlesitekit-badge',
+				className
+			) }
+		>
+			{ label }
+			{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
+		</span>
+	);
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-
-Default.args = {
-	tooltipTitle:
-		'Still collecting full data for this timeframe, partial data is displayed for this group',
-};
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PartialDataBadge/Default',
-};
-
-export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PartialDataBadge',
+BadgeWithTooltip.propTypes = {
+	tooltipTitle: PropTypes.node,
+	className: PropTypes.string,
+	label: PropTypes.node.isRequired,
 };

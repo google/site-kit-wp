@@ -26,7 +26,6 @@ import { Fragment } from '@wordpress/element';
  */
 import { useFeature } from '../../hooks/useFeature';
 import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
@@ -42,7 +41,6 @@ export default function SubtleNotifications() {
 	// Because these notifications are subtle and small, this is acceptable UX.
 	return (
 		<Fragment>
-			<GA4AdSenseLinkedNotification />
 			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />
 		</Fragment>
