@@ -47,12 +47,14 @@
 	}
 
 	.mdc-checkbox__label-wrapper {
-		align-items: center;
-		column-gap: 10px;
-		display: flex;
+
+		&:has(.googlesitekit-badge) {
+			align-items: center;
+			display: flex;
+		}
 
 		.googlesitekit-badge {
-			margin-left: 0;
+			margin-left: 10px;
 		}
 	}
 }

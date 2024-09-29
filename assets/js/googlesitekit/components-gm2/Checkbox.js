@@ -49,16 +49,11 @@ export default function Checkbox( props ) {
 		badge,
 	} = props;
 
-	// If we do have a badge but it's rendered as null, we can treat it as if it doesn't exist.
-	const hasBadge = !! badge && badge.type() !== null;
-
-	const label = hasBadge ? (
+	const label = (
 		<div className="mdc-checkbox__label-wrapper">
 			<label htmlFor={ id }>{ children }</label>
 			{ badge }
 		</div>
-	) : (
-		<label htmlFor={ id }>{ children }</label>
 	);
 
 	return (
