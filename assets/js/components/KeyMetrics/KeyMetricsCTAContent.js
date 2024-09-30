@@ -60,7 +60,7 @@ export default function KeyMetricsCTAContent( {
 	const onlyWidth = useWindowWidth();
 	const viewContext = useViewContext();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
-	const isTabletBreakpoint =
+	let isTabletBreakpoint =
 		breakpoint === BREAKPOINT_TABLET && onlyWidth < 960;
 	// onlyWidth is used directly here since BREAKPOINT_XLARGE only
 	// accounts for screens that are over 1280px and current layout graphic should
@@ -68,7 +68,16 @@ export default function KeyMetricsCTAContent( {
 	const isDesktopBreakpoint = onlyWidth >= 1280;
 	// Also here, BREAKPOINT_DESKTOP accounts for screens over 960, in this particular case
 	// graphic should be shown on screens starting from 960px.
-	const isSmallDesktopBreakpoint = onlyWidth >= 960 && onlyWidth < 1280;
+	let isSmallDesktopBreakpoint = onlyWidth >= 960 && onlyWidth < 1280;
+
+	if ( ! ga4Connected ) {
+		// When 4 metrics were selected and then GA4 was disconnected
+		// the full width disconnected banner can display desktop layout
+		// graphic, since it has very short text.
+		isTabletBreakpoint =
+			breakpoint === BREAKPOINT_TABLET && onlyWidth < 800;
+		isSmallDesktopBreakpoint = onlyWidth >= 800 && onlyWidth < 1280;
+	}
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
