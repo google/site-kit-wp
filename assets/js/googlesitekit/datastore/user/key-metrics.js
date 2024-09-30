@@ -212,7 +212,7 @@ const baseSelectors = {
 		if ( userPickedMetrics.length ) {
 			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
 				return userPickedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonACR.indexOf( slug ) >= 0;
+					return keyMetricsGA4WidgetsNonACR.includes( slug );
 				} );
 			}
 
@@ -228,7 +228,7 @@ const baseSelectors = {
 		if ( answerBasedMetrics.length ) {
 			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
 				return answerBasedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonACR.indexOf( slug ) >= 0;
+					return keyMetricsGA4WidgetsNonACR.includes( slug );
 				} );
 			}
 
