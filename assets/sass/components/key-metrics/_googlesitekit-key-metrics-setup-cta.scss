@@ -180,9 +180,7 @@
 	}
 
 	.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary {
-
 		div.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
-			display: none;
 			div.googlesitekit-widget-key-metrics-footer__cta-wrapper {
 				gap: 6px;
 				grid-template-columns: 1fr 1fr;
@@ -200,17 +198,17 @@
 		.googlesitekit-widget--keyMetricsConnectGA4All {
 			div.googlesitekit-widget-key-metrics-svg__wrapper {
 				svg {
-					@media (min-width: $bp-desktop) {
-						max-height: 270px;
+					@media (min-width: 800px) {
+						max-height: 228px;
 						position: absolute;
 						right: 0;
-						top: -39px;
+						top: -25px;
 					}
 
 					@media (min-width: $bp-xlarge) {
-						max-height: 280px;
+						max-height: 260px;
 						right: 0;
-						top: -30px;
+						top: -14px;
 					}
 					@media (min-width: $bp-wpdb4) {
 						max-height: 300px;
