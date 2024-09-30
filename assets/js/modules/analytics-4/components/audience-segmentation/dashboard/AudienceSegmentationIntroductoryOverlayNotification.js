@@ -36,6 +36,9 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../../../../../hooks/useDashboardType';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
@@ -43,6 +46,8 @@ export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
+	const dashboardType = useDashboardType();
+
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
@@ -104,7 +109,8 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	const shouldShowNotification =
 		isDismissed === false &&
-		shouldShowAudienceSegmentationIntroductoryOverlay;
+		shouldShowAudienceSegmentationIntroductoryOverlay &&
+		DASHBOARD_TYPE_MAIN === dashboardType;
 
 	return (
 		<OverlayNotification

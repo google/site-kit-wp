@@ -100,7 +100,7 @@ PaxConnected.parameters = {
 	features: [ 'adsPax' ],
 };
 PaxConnected.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// Unset the value set in the prrevious scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
@@ -112,10 +112,7 @@ PaxConnected.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);
@@ -129,7 +126,7 @@ IceEnabled.scenario = {
 	delay: 250,
 };
 IceEnabled.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
@@ -142,10 +139,7 @@ IceEnabled.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);
@@ -162,7 +156,7 @@ IcePaxEnabled.parameters = {
 	features: [ 'adsPax' ],
 };
 IcePaxEnabled.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: '',
@@ -172,10 +166,7 @@ IcePaxEnabled.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);
