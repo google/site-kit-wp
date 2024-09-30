@@ -203,7 +203,6 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
 			subText={
-				// eslint-disable-next-line @wordpress/valid-sprintf
 				sprintf(
 					/* translators: %s: Percentage of purchases for the current top traffic source compared to the number of total purchases for all traffic sources. */
 					__( '%s of total purchases', 'google-site-kit' ),
