@@ -49,6 +49,7 @@ import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -403,6 +404,19 @@ const KEY_METRICS_WIDGETS = {
 		),
 		infoTooltip: __(
 			'Cities driving the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]: {
+		title: __( 'Top device driving purchases', 'google-site-kit' ),
+		description: __(
+			'Top device driving the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Top device driving the most purchases',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'purchase' ],
