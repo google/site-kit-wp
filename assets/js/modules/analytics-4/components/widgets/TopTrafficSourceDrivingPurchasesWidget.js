@@ -202,13 +202,11 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={
-				sprintf(
-					/* translators: %s: Percentage of purchases for the current top traffic source compared to the number of total purchases for all traffic sources. */
-					__( '%s of total purchases', 'google-site-kit' ),
-					numFmt( relativeCurrentTopTrafficSourcePurchases, format )
-				)
-			}
+			subText={ sprintf(
+				/* translators: %s: Percentage of purchases for the current top traffic source compared to the number of total purchases for all traffic sources. */
+				__( '%s of total purchases', 'google-site-kit' ),
+				numFmt( relativeCurrentTopTrafficSourcePurchases, format )
+			) }
 			previousValue={ relativePreviousTopTrafficSourcePurchases }
 			currentValue={ relativeCurrentTopTrafficSourcePurchases }
 			loading={ loading }
