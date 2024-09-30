@@ -105,7 +105,7 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_CATEGORIES,
 ];
 
-export const keyMetricsGA4WidgetsNonAcr = [
+export const keyMetricsGA4WidgetsNonACR = [
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,

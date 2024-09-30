@@ -42,7 +42,7 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	keyMetricsGA4WidgetsNonAcr,
+	keyMetricsGA4WidgetsNonACR,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -212,7 +212,7 @@ const baseSelectors = {
 		if ( userPickedMetrics.length ) {
 			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
 				return userPickedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonAcr.indexOf( slug ) >= 0;
+					return keyMetricsGA4WidgetsNonACR.indexOf( slug ) >= 0;
 				} );
 			}
 
@@ -228,7 +228,7 @@ const baseSelectors = {
 		if ( answerBasedMetrics.length ) {
 			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
 				return answerBasedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonAcr.indexOf( slug ) >= 0;
+					return keyMetricsGA4WidgetsNonACR.indexOf( slug ) >= 0;
 				} );
 			}
 
