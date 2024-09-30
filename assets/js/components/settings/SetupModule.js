@@ -41,8 +41,7 @@ import NewBadge from '../NewBadge.js';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { EXPERIMENTAL_MODULES } from '../dashboard-sharing/DashboardSharingSettings/constants';
-import { NEW_MODULES } from './constants';
+import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from './constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -114,6 +113,9 @@ export default function SetupModule( { slug, name, description } ) {
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
+					) }
+					{ BETA_MODULES.includes( slug ) && (
+						<Badge label={ __( 'Beta', 'google-site-kit' ) } />
 					) }
 					{ NEW_MODULES.includes( slug ) && (
 						<NewBadge hasNoSpacing />

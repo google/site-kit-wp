@@ -42,6 +42,7 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	keyMetricsGA4WidgetsNonACR,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -50,6 +51,8 @@ import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+
+import { isFeatureEnabled } from '../../../features';
 
 const { receiveError, clearError } = errorStoreActions;
 
@@ -207,6 +210,12 @@ const baseSelectors = {
 		}
 
 		if ( userPickedMetrics.length ) {
+			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
+				return userPickedMetrics.filter( ( slug ) => {
+					return keyMetricsGA4WidgetsNonACR.includes( slug );
+				} );
+			}
+
 			return userPickedMetrics;
 		}
 
@@ -217,6 +226,12 @@ const baseSelectors = {
 		}
 
 		if ( answerBasedMetrics.length ) {
+			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
+				return answerBasedMetrics.filter( ( slug ) => {
+					return keyMetricsGA4WidgetsNonACR.includes( slug );
+				} );
+			}
+
 			return answerBasedMetrics;
 		}
 

@@ -29,6 +29,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { getDateString } from '../../util';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 // Generate referenced dates.
 const today = new Date();
@@ -53,18 +54,22 @@ const reportOptions = {
 	limit: 3,
 };
 
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'top-earning-pages-success-notification'
+)( GA4AdSenseLinkedNotification );
+
 function Template( { viewContext } ) {
 	return (
 		<ViewContextProvider
 			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
 		>
-			<GA4AdSenseLinkedNotification />
+			<NotificationWithComponentProps />
 		</ViewContextProvider>
 	);
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+Default.storyName = 'GA4AdSenseLinkedNotification';
 Default.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
@@ -98,7 +103,7 @@ Default.scenario = {
 };
 
 export default {
-	title: 'Components/GA4AdSenseLinkedNotification',
+	title: 'Components/Notifications/Subtle/GA4AdSenseLinkedNotification',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
