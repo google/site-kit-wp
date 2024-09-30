@@ -42,7 +42,6 @@ import { Provider as ViewContextProvider } from '../../assets/js/components/Root
  * @private
  *
  * @param {Object}      args                              Widget arguments.
- * @param {number}      args.delay                        Delay in milliseconds after generating stories. Currently applies to all variants.
  * @param {Array}       args.moduleSlugs                  List of modules to activate.
  * @param {string}      args.datastore                    Module datastore name.
  * @param {string}      args.group                        Stories group name.
@@ -60,7 +59,6 @@ import { Provider as ViewContextProvider } from '../../assets/js/components/Root
  */
 export function generateReportBasedWidgetStories( args ) {
 	const {
-		delay,
 		moduleSlugs,
 		datastore,
 		group,
@@ -398,7 +396,6 @@ export function generateReportBasedWidgetStories( args ) {
 				</WithTestRegistry>
 			),
 			{
-				delay: delay || 0,
 				decorators: [ withRegistry( variant ) ],
 				padding,
 			}
