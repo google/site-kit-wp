@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2023 Google LLC
+ * AdSense Alerts styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +16,19 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-adsense-ad-blocking-recovery";
-@import "googlesitekit-adsense-alerts";
+.googlesitekit-plugin {
+
+	.googlesitekit-adsense-alert {
+
+		&.googlesitekit-publisher-win .googlesitekit-publisher-win__module-name {
+			font-size: $fs-title-md;
+		}
+
+		.googlesitekit-publisher-win__image-small {
+
+			svg {
+				width: 68px;
+			}
+		}
+	}
+}
