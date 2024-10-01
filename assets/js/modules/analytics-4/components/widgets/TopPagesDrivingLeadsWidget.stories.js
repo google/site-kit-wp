@@ -112,9 +112,6 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopPagesDrivingLeadsWidget/Ready',
-};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -134,9 +131,6 @@ ReadyViewOnly.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-};
-ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/TopPagesDrivingLeadsWidget/ReadyViewOnly',
 };
 
 export const Loading = Template.bind( {} );
