@@ -216,11 +216,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 								<div className="googlesitekit-widget-area-header__details">
 									{ subtitle && (
 										<h4 className="googlesitekit-widget-area-header__subtitle">
-											{ typeof subtitle === 'function' ? (
-												<widgetArea.subtitle />
-											) : (
-												subtitle
-											) }
+											{ subtitle }
 											{ ! title && (
 												<WidgetNewBadge slug={ slug } />
 											) }
