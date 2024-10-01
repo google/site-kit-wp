@@ -196,6 +196,12 @@
 		}
 
 		.googlesitekit-widget--keyMetricsConnectGA4All {
+			.googlesitekit-widget-key-metrics-text__wrapper {
+				text-align: center;
+				@media (min-width: $bp-nonMobile) {
+					text-align: initial;
+				}
+			}
 			div.googlesitekit-widget-key-metrics-svg__wrapper {
 				svg {
 					@media (min-width: 800px) {
