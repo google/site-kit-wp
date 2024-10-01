@@ -484,7 +484,6 @@ export const registerWidgets = ( widgets ) => {
 		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 		{
 			Component: TopTrafficSourceDrivingLeadsWidget,
-			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
