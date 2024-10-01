@@ -24,6 +24,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { KM_ANALYTICS_LEAST_ENGAGING_PAGES } from '../../googlesitekit/datastore/user/constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
 function Template() {
@@ -43,7 +44,9 @@ export default {
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
-				provideKeyMetrics( registry, { widgetSlugs: [ 'metricA' ] } );
+				provideKeyMetrics( registry, {
+					widgetSlugs: [ KM_ANALYTICS_LEAST_ENGAGING_PAGES ],
+				} );
 			};
 
 			return (
