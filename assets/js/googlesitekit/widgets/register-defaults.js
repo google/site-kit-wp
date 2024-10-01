@@ -439,7 +439,7 @@ export function registerDefaults( widgetsAPI ) {
 						return false;
 					}
 
-					return keyMetrics.length < 7 && global.outerWidth;
+					return keyMetrics.length < 7;
 				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
@@ -464,7 +464,7 @@ export function registerDefaults( widgetsAPI ) {
 						return false;
 					}
 
-					return keyMetrics.length < 6 && global.outerWidth;
+					return keyMetrics.length < 6;
 				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
