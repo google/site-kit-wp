@@ -29,14 +29,17 @@ import {
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -48,7 +51,6 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -301,6 +303,19 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
+		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
+		description: __(
+			'Traffic source that generates the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Traffic source that generates the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
 		title: __( 'Most engaged traffic source', 'google-site-kit' ),
 		description: __(
@@ -350,6 +365,18 @@ const KEY_METRICS_WIDGETS = {
 			'generate_lead',
 		],
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART ]: {
+		title: __( 'Top cities driving add to cart', 'google-site-kit' ),
+		description: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'add_to_cart' ],
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
 		title: __( 'Top cities driving purchases', 'google-site-kit' ),

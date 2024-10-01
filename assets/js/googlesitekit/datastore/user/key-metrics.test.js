@@ -44,10 +44,12 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import { enabledFeatures } from '../../../features';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -168,6 +170,63 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
 				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should filter out ACR metrics from the user-selected key metrics if the conversionReporting feature flag is not enabled', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [
+							KM_ANALYTICS_RETURNING_VISITORS,
+							KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+						],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not filter out ACR metrics from the user-selected key metrics if the conversionReporting feature flag is enabled', async () => {
+				enabledFeatures.add( 'conversionReporting' );
+
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [
+							KM_ANALYTICS_RETURNING_VISITORS,
+							KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+						],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );

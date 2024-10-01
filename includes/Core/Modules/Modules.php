@@ -24,6 +24,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Exception;
@@ -180,6 +181,10 @@ final class Modules {
 
 		if ( Feature_Flags::enabled( 'rrmModule' ) ) {
 			$this->core_modules[ Reader_Revenue_Manager::MODULE_SLUG ] = Reader_Revenue_Manager::class;
+		}
+
+		if ( Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
+			$this->core_modules[ Sign_In_With_Google::MODULE_SLUG ] = Sign_In_With_Google::class;
 		}
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
