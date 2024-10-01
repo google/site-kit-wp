@@ -190,14 +190,11 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={
-				// eslint-disable-next-line @wordpress/valid-sprintf
-				sprintf(
-					/* translators: %s: Percentage of add to carts for the current top traffic source compared to the number of total add to carts for all traffic sources. */
-					__( '%s of total add to carts', 'google-site-kit' ),
-					numFmt( relativeCurrentTopTrafficSourceAddToCart, format )
-				)
-			}
+			subText={ sprintf(
+				/* translators: %s: Percentage of add to carts for the current top traffic source compared to the number of total add to carts for all traffic sources. */
+				__( '%s of total add to carts', 'google-site-kit' ),
+				numFmt( relativeCurrentTopTrafficSourceAddToCart, format )
+			) }
 			previousValue={ relativePreviousTopTrafficSourceAddToCart }
 			currentValue={ relativeCurrentTopTrafficSourceAddToCart }
 			loading={ loading }
