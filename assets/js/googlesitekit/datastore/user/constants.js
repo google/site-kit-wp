@@ -74,6 +74,8 @@ export const KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES =
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART =
 	'kmAnalyticsTopTrafficSourceDrivingAddToCart';
+export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS =
+	'kmAnalyticsTopTrafficSourceDrivingLeads';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES =
 	'kmAnalyticsTopTrafficSourceDrivingPurchases';
 export const KM_ANALYTICS_PAGES_PER_VISIT = 'kmAnalyticsPagesPerVisit';
