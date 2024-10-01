@@ -30,6 +30,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
+import NewBadge from '../assets/js/components/NewBadge';
 
 function InteractiveCheckbox( props ) {
 	const [ checked, setChecked ] = useState( false );
@@ -134,7 +135,7 @@ storiesOf( 'Global', module ).add(
 
 			<div>
 				<Checkbox
-					id="googlesitekit-checkbox-5"
+					id="googlesitekit-checkbox-7"
 					name="googlesitekit__checkbox"
 					value="value-7"
 					onChange={ ( event ) => {
@@ -143,6 +144,20 @@ storiesOf( 'Global', module ).add(
 					description="This is a checkbox with a description."
 				>
 					Checkbox with description
+				</Checkbox>
+			</div>
+
+			<div>
+				<Checkbox
+					id="googlesitekit-checkbox-8"
+					name="googlesitekit__checkbox"
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
+					} }
+					value="value-8"
+					badge={ <NewBadge /> }
+				>
+					Checkbox with Badge
 				</Checkbox>
 			</div>
 		</div>
