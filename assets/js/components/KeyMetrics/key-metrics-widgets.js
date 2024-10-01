@@ -29,6 +29,8 @@ import {
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_POPULAR_CONTENT,
@@ -302,6 +304,39 @@ const KEY_METRICS_WIDGETS = {
 			'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
 			'google-site-kit'
 		),
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART ]: {
+		title: __(
+			'Top traffic source driving add to cart',
+			'google-site-kit'
+		),
+		description: __(
+			'Traffic source that generates the most add to cart events',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Traffic source that generates the most add to cart events',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
+		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
+		description: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
 		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
