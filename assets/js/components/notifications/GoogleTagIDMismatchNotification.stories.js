@@ -168,7 +168,10 @@ export default {
 				};
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( accountSummaries );
+					.receiveGetAccountSummaries( {
+						accountSummaries,
+						nextPageToken: null,
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch( datastreams, {

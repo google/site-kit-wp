@@ -32,7 +32,7 @@ import { Provider as ViewContextProvider } from '../../../../components/Root/Vie
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 const { accountSummaries, webDataStreamsBatch } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
