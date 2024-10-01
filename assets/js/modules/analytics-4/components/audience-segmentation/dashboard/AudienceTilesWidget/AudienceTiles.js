@@ -52,6 +52,8 @@ import AudienceTileError from './AudienceTile/AudienceTileError';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 import MaybePlaceholderTile from './MaybePlaceholderTile';
 import useAudienceTilesReports from '../../../../hooks/useAudienceTilesReports';
+import { isInvalidCustomDimensionError } from '../../../../utils/custom-dimensions';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
@@ -62,6 +64,7 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 };
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
+	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
@@ -246,7 +249,10 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 				topContentPageTitlesReportErrors,
 			].forEach( ( reportErrors ) => {
 				const error = reportErrors[ audienceResourceName ];
-				if ( error ) {
+
+				// Filter out invalid custom dimension errors which only relate to the "Top content" metric area,
+				// as we still want to show the tile in this case.
+				if ( error && ! isInvalidCustomDimensionError( error ) ) {
 					acc[ audienceResourceName ].push( error );
 				}
 			} );
@@ -396,6 +402,33 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		} );
 	}, [ audiencesToClearDismissal, dismissItem, isDismissingItem ] );
 
+	// Sync available custom dimensions if there is a custom dimension error.
+	const isSyncingAvailableCustomDimensions = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
+	);
+
+	const { fetchSyncAvailableCustomDimensions } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	const hasInvalidCustomDimensionError =
+		Object.values( topContentReportErrors ).some(
+			isInvalidCustomDimensionError
+		) ||
+		Object.values( topContentPageTitlesReportErrors ).some(
+			isInvalidCustomDimensionError
+		);
+
+	useEffect( () => {
+		if ( ! isViewOnly && hasInvalidCustomDimensionError ) {
+			fetchSyncAvailableCustomDimensions();
+		}
+	}, [
+		fetchSyncAvailableCustomDimensions,
+		hasInvalidCustomDimensionError,
+		isViewOnly,
+	] );
+
+	// Ensure the active tile is always correctly selected.
 	const [ activeTile, setActiveTile ] = useState( visibleAudiences[ 0 ] );
 
 	const getAudienceTileIndex = useCallback(
@@ -414,6 +447,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	const activeTileIndex = getAudienceTileIndex( activeTile );
 
+	// Determine loading state.
 	const loading =
 		widgetLoading ||
 		! reportLoaded ||
@@ -421,7 +455,8 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! totalPageviewsReportLoaded ||
 		! topCitiesReportLoaded ||
 		! topContentReportLoaded ||
-		! topContentPageTitlesReportLoaded;
+		! topContentPageTitlesReportLoaded ||
+		isSyncingAvailableCustomDimensions;
 
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
@@ -615,6 +650,9 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 									],
 								} }
 								topContentTitles={ topContentTitles }
+								hasInvalidCustomDimensionError={
+									hasInvalidCustomDimensionError
+								}
 								Widget={ Widget }
 								audienceResourceName={ audienceResourceName }
 								isZeroData={ isZeroData }

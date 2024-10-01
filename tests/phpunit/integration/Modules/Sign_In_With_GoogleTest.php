@@ -35,7 +35,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( Sign_In_With_Google::MODULE_SLUG, $this->module->slug );
 		$this->assertEquals( 'Sign in with Google', $this->module->name );
 		$this->assertEquals( 'https://developers.google.com/identity/gsi/web/guides/overview', $this->module->homepage );
-		$this->assertEquals( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalised experience for your visitors', $this->module->description );
+		$this->assertEquals( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalized experience for your visitors', $this->module->description );
 		$this->assertEquals( 10, $this->module->order );
 	}
 }

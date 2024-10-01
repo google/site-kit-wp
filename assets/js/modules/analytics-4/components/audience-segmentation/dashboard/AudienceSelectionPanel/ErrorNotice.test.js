@@ -210,7 +210,7 @@ describe( 'ErrorNotice', () => {
 
 			expect( getByText( /request access/i ) ).toBeInTheDocument();
 			expect(
-				getByRole( 'link', { name: /request access/i } )
+				getByRole( 'button', { name: /request access/i } )
 			).toHaveAttribute(
 				'href',
 				registry

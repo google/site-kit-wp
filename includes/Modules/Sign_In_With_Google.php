@@ -64,7 +64,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Sign in with Google', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalised experience for your visitors', 'google-site-kit' ),
+			'description' => __( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalized experience for your visitors', 'google-site-kit' ),
 			'order'       => 10,
 			'homepage'    => __( 'https://developers.google.com/identity/gsi/web/guides/overview', 'google-site-kit' ),
 		);
@@ -73,8 +73,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since 1.122.0
-	 * @since 1.126.0 Added PAX assets.
+	 * @since n.e.x.t
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
