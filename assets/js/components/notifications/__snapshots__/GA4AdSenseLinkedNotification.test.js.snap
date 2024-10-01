@@ -20,12 +20,12 @@ exports[`GA4AdSenseLinkedNotification renders when both Analytics and AdSense mo
           class="googlesitekit-subtle-notification__content"
         >
           <p>
-            Your AdSense and Analytics accounts are linked.
+            Your AdSense and Analytics accounts are linked
           </p>
           <p
             class="googlesitekit-subtle-notification__secondary_description"
           >
-            We’ll let you know as soon as there’s enough data available.
+            We’ll let you know as soon as there’s enough data available
           </p>
         </div>
         <button
