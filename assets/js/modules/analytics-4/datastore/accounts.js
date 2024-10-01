@@ -358,27 +358,38 @@ const baseResolvers = {
 	*getAccountSummaries() {
 		const registry = yield commonActions.getRegistry();
 		let nextPageToken = null;
+		const errors = [];
 		const summaries = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAccountSummaries();
 
 		// Fetch initial account summaries if they are undefined.
 		if ( summaries === undefined ) {
-			const { response } =
+			const { error, response } =
 				yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
 			nextPageToken = response?.nextPageToken || null;
+
+			if ( error ) {
+				errors.push( error );
+			}
 		}
 
 		// Continue fetching additional summaries if nextPageToken exists.
 		while ( nextPageToken ) {
-			const { response } =
+			const { error, response } =
 				yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries(
 					{ pageToken: nextPageToken }
 				);
 			nextPageToken = response?.nextPageToken || null;
+
+			if ( error ) {
+				errors.push( error );
+			}
 		}
 
-		yield baseActions.transformAndSortAccountSummaries();
+		if ( ! errors.length ) {
+			yield baseActions.transformAndSortAccountSummaries();
+		}
 	},
 };
 

@@ -47,7 +47,7 @@ const {
 	webDataStreamsBatch,
 	webDataStreams,
 } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
@@ -211,12 +211,15 @@ describe( 'SetupForm', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-			accountSummaries.map( ( account ) => ( {
-				...account,
-				propertySummaries: [],
-			} ) )
-		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: accountSummaries.accountSummaries.map(
+				( account ) => ( {
+					...account,
+					propertySummaries: [],
+				} )
+			),
+			nextPageToken: null,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetProperty( properties[ 0 ], {
@@ -345,12 +348,15 @@ describe( 'SetupForm', () => {
 	it( 'auto-submits the form only once in the case of an error', async () => {
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-			accountSummaries.map( ( account ) => ( {
-				...account,
-				propertySummaries: [],
-			} ) )
-		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: accountSummaries.accountSummaries.map(
+				( account ) => ( {
+					...account,
+					propertySummaries: [],
+				} )
+			),
+			nextPageToken: null,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {

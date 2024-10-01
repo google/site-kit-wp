@@ -31,6 +31,7 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { caseInsensitiveListSort } from '../../../util/sort';
 
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;
@@ -165,7 +166,8 @@ describe( 'modules/analytics-4 accounts', () => {
 		} );
 
 		describe( 'selectAccount', () => {
-			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const accountID =
+				fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 
 			beforeEach( () => {
 				[
@@ -179,7 +181,8 @@ describe( 'modules/analytics-4 accounts', () => {
 						new RegExp(
 							'^/google-site-kit/v1/modules/analytics-4/data/property?'
 						),
-						fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ],
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries[ 0 ],
 					],
 					[
 						new RegExp(
@@ -204,7 +207,8 @@ describe( 'modules/analytics-4 accounts', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties(
-						fixtures.accountSummaries[ 1 ].propertySummaries,
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries,
 						{
 							accountID,
 						}
@@ -236,7 +240,8 @@ describe( 'modules/analytics-4 accounts', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
 				).toBe(
-					fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id
+					fixtures.accountSummaries.accountSummaries[ 1 ]
+						.propertySummaries[ 0 ]._id
 				);
 			} );
 		} );
@@ -264,10 +269,16 @@ describe( 'modules/analytics-4 accounts', () => {
 				const accountSummaries = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAccountSummaries();
+
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
+				expect( accountSummaries ).toEqual(
+					caseInsensitiveListSort(
+						fixtures.accountSummaries.accountSummaries,
+						'displayName'
+					)
+				);
 				expect( accountSummaries ).toHaveLength(
-					fixtures.accountSummaries.length
+					fixtures.accountSummaries.accountSummaries.length
 				);
 			} );
 
@@ -287,9 +298,14 @@ describe( 'modules/analytics-4 accounts', () => {
 				expect( fetchMock ).not.toHaveFetched(
 					accountSummariesEndpoint
 				);
-				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
+				expect( accountSummaries ).toEqual(
+					caseInsensitiveListSort(
+						fixtures.accountSummaries.accountSummaries,
+						'displayName'
+					)
+				);
 				expect( accountSummaries ).toHaveLength(
-					fixtures.accountSummaries.length
+					fixtures.accountSummaries.accountSummaries.length
 				);
 			} );
 

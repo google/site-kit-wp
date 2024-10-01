@@ -64,9 +64,10 @@ describe( 'AccountCreate', () => {
 		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: [],
+			nextPageToken: null,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getAccountSummaries', [] );
