@@ -82,14 +82,15 @@ export function createWidgets( registry ) {
 		 *
 		 * @since 1.9.0
 		 *
-		 * @param {string}                slug                  Widget's slug.
-		 * @param {Object}                settings              Widget's settings.
-		 * @param {WPComponent}           settings.Component    React component used to display the contents of this widget.
-		 * @param {number}                [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-		 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-		 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
-		 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated moduels.
-		 * @param {(string|Array)}        [widgetAreaSlugs]     Optional. Widget area slug(s).
+		 * @param {string}                slug                         Widget's slug.
+		 * @param {Object}                settings                     Widget's settings.
+		 * @param {WPComponent}           settings.Component           React component used to display the contents of this widget.
+		 * @param {number}                [settings.priority]          Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+		 * @param {string|Array.<string>} [settings.width]             Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+		 * @param {boolean}               [settings.wrapWidget]        Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+		 * @param {string|Array.<string>} [settings.modules]           Optional. Widget's associated moduels.
+		 * @param {string|Array.<string>} [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. One of: "BREAKPOINT_SMALL", "BREAKPOINT_TABLET", "BREAKPOINT_DESKTOP", "BREAKPOINT_XLARGE".
+		 * @param {(string|Array)}        [widgetAreaSlugs]            Optional. Widget area slug(s).
 		 */
 		registerWidget( slug, settings, widgetAreaSlugs ) {
 			dispatch( CORE_WIDGETS ).registerWidget( slug, settings );
