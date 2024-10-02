@@ -50,18 +50,12 @@ Default.scenario = {};
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE enabled';
-IceEnabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
 
 export const IceDisabled = Template.bind( null );
 IceDisabled.storyName = 'With ICE disabled';
-IceDisabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceDisabled.args = {
 	enhancedConversionTracking: false,
 };

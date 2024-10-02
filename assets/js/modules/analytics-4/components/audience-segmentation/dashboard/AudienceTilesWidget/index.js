@@ -30,9 +30,13 @@ import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
-import { useInView } from '../../../../../../hooks/useInView';
+import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
+import NoAudienceBannerWidget from '../NoAudienceBannerWidget';
+import WidgetNull from '../../../../../../googlesitekit/widgets/components/WidgetNull';
+import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 
-function AudienceTilesWidget( { Widget, WidgetNull } ) {
+function AudienceTilesWidget( { Widget } ) {
 	const availableAudiences = useSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
@@ -43,22 +47,78 @@ function AudienceTilesWidget( { Widget, WidgetNull } ) {
 
 	const [ availableAudiencesSynced, setAvailableAudiencesSynced ] =
 		useState( false );
-	const { maybeSyncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
+	const { clearErrors, maybeSyncAvailableAudiences, syncAvailableAudiences } =
+		useDispatch( MODULES_ANALYTICS_4 );
 
-	const inView = useInView();
+	const isSettingUpAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSettingUpAudiences()
+	);
+
+	const syncAvailableAudiencesError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForAction(
+			'syncAvailableAudiences'
+		)
+	);
+
 	useEffect( () => {
-		if ( inView && ! availableAudiencesSynced ) {
-			maybeSyncAvailableAudiences();
-			setAvailableAudiencesSynced( true );
+		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
+			const syncAudiences = async () => {
+				await maybeSyncAvailableAudiences();
+				setAvailableAudiencesSynced( true );
+			};
+
+			syncAudiences();
 		}
-	}, [ inView, availableAudiencesSynced, maybeSyncAvailableAudiences ] );
+	}, [
+		availableAudiencesSynced,
+		isSettingUpAudiences,
+		maybeSyncAvailableAudiences,
+	] );
+
+	if ( syncAvailableAudiencesError ) {
+		const insufficientPermissionsError = isInsufficientPermissionsError(
+			syncAvailableAudiencesError
+		);
+
+		return (
+			<AudienceSegmentationErrorWidget
+				errors={ syncAvailableAudiencesError }
+				Widget={ Widget }
+				onRetry={
+					! insufficientPermissionsError
+						? async () => {
+								await clearErrors( 'syncAvailableAudiences' );
+								await syncAvailableAudiences();
+						  }
+						: undefined
+				}
+				showRetryButton={ ! insufficientPermissionsError }
+			/>
+		);
+	}
 
 	const hasMatchingAudience = configuredAudiences?.some( ( audience ) =>
 		availableAudiences?.includes( audience )
 	);
 
 	if ( ! hasMatchingAudience ) {
-		return <WidgetNull />;
+		return availableAudiencesSynced ? (
+			<NoAudienceBannerWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>
+		) : (
+			<Widget className="googlesitekit-widget-audience-tiles" noPadding>
+				<div className="googlesitekit-widget-audience-tiles__body">
+					<Widget noPadding>
+						<AudienceTileLoading />
+					</Widget>
+					<Widget noPadding>
+						<AudienceTileLoading />
+					</Widget>
+				</div>
+			</Widget>
+		);
 	}
 
 	return (

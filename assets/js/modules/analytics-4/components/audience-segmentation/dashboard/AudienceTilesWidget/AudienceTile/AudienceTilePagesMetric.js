@@ -38,6 +38,7 @@ import {
 	useBreakpoint,
 } from '../../../../../../../hooks/useBreakpoint';
 import { CORE_FORMS } from '../../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -46,9 +47,10 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../../../util/errors';
-import PartialDataBadge from './PartialDataBadge';
+import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
 import AudienceErrorModal from '../../AudienceErrorModal';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
 
 export default function AudienceTilePagesMetric( {
 	TileIcon,
@@ -75,6 +77,9 @@ export default function AudienceTilePagesMetric( {
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
+	} );
+	const errorRedirectURL = addQueryArgs( global.location.href, {
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} );
 
 	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
@@ -116,6 +121,20 @@ export default function AudienceTilePagesMetric( {
 		)
 	);
 
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'autoSubmit'
+		)
+	);
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+
 	const onCreateCustomDimension = useCallback(
 		( { isRetrying } = {} ) => {
 			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
@@ -136,6 +155,7 @@ export default function AudienceTilePagesMetric( {
 						skipModal: true,
 						skipDefaultErrorNotifications: true,
 						redirectURL,
+						errorRedirectURL,
 					},
 				} );
 			}
@@ -143,6 +163,7 @@ export default function AudienceTilePagesMetric( {
 		[
 			hasAnalyticsEditScope,
 			redirectURL,
+			errorRedirectURL,
 			setPermissionScopeError,
 			setValues,
 		]
@@ -152,12 +173,19 @@ export default function AudienceTilePagesMetric( {
 		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 			autoSubmit: false,
 		} );
+		setSetupErrorCode( null );
 		clearPermissionScopeError();
 		clearError( 'createCustomDimension', [
 			propertyID,
 			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 		] );
-	}, [ clearError, clearPermissionScopeError, propertyID, setValues ] );
+	}, [
+		clearError,
+		clearPermissionScopeError,
+		propertyID,
+		setSetupErrorCode,
+		setValues,
+	] );
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
@@ -177,7 +205,9 @@ export default function AudienceTilePagesMetric( {
 				<div className="googlesitekit-audience-segmentation-tile-metric__title">
 					{ title }
 					{ ! isMobileBreakpoint && isTopContentPartialData && (
-						<PartialDataBadge
+						<BadgeWithTooltip
+							className="googlesitekit-audience-segmentation-partial-data-badge"
+							label={ __( 'Partial data', 'google-site-kit' ) }
 							tooltipTitle={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this metric',
 								'google-site-kit'
@@ -194,7 +224,9 @@ export default function AudienceTilePagesMetric( {
 					isSaving={ isSaving }
 				/>
 				{ ( ( customDimensionError && ! isSaving ) ||
-					isRetryingCustomDimensionCreate ) && (
+					( isRetryingCustomDimensionCreate &&
+						! isAutoCreatingCustomDimensionsForAudience ) ||
+					hasOAuthError ) && (
 					<AudienceErrorModal
 						apiErrors={ [ customDimensionError ] }
 						title={ __(
@@ -210,6 +242,7 @@ export default function AudienceTilePagesMetric( {
 						}
 						onCancel={ onCancel }
 						inProgress={ isSaving }
+						hasOAuthError={ hasOAuthError }
 					/>
 				) }
 			</div>

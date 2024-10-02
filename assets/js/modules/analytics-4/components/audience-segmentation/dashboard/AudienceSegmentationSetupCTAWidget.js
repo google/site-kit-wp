@@ -88,6 +88,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const dismissedPromptsLoaded = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
+	);
+
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
 	);
@@ -106,6 +110,9 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			onSuccess: () => {
+				dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION, {
+					expiresInSeconds: 0,
+				} );
 				// Dismiss success notification in settings.
 				dismissItem(
 					SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
@@ -125,6 +132,10 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).isGatheringData();
 		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
+
+	const audienceSegmentationSetupCompletedBy = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
+	);
 
 	const handleDismissClick = async () => {
 		showTooltip();
@@ -182,10 +193,12 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if (
+		audienceSegmentationSetupCompletedBy !== null ||
 		configuredAudiences === undefined ||
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
-		isDismissed
+		isDismissed ||
+		! dismissedPromptsLoaded
 	) {
 		return null;
 	}

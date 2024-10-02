@@ -45,9 +45,12 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 	it( 'should render the setup CTA if groups are not configured', () => {
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
+			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( null );
 
 		const { getByRole } = render( <SettingsCardVisitorGroups />, {
 			registry,
@@ -58,16 +61,25 @@ describe( 'SettingsCardVisitorGroups', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the setup success notification once groups are configured', () => {
+	it( 'should render the setup success notification once groups are configured', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
+		const userID = registry.select( CORE_USER ).getID();
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
-		const { getByText } = render( <SettingsCardVisitorGroups />, {
-			registry,
-		} );
+		const { getByText, waitForRegistry } = render(
+			<SettingsCardVisitorGroups />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect(
 			getByText( 'We’ve added the audiences section to your dashboard!' )
@@ -79,6 +91,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( null );
 
 		const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
 			registry,
@@ -124,6 +139,10 @@ describe( 'SettingsCardVisitorGroups', () => {
 			isAudienceSegmentationWidgetHidden: true,
 		} );
 
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( null );
+
 		fetchMock.postOnce( audienceSettingsEndpoint, {
 			body: {
 				configuredAudiences: [ 'audienceA', 'audienceB' ],
@@ -152,7 +171,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 				body: {
 					data: {
 						settings: {
-							configuredAudiences: [ 'audienceB', 'audienceA' ],
+							configuredAudiences: [ 'audienceA', 'audienceB' ],
 							isAudienceSegmentationWidgetHidden: false,
 						},
 					},

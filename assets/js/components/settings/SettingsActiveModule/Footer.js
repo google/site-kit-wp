@@ -116,6 +116,7 @@ export default function Footer( props ) {
 					'update_module_settings',
 					slug
 				);
+				setValue( errorKey, undefined );
 				await clearErrors?.();
 				history.push( `/connected-services/${ slug }` );
 

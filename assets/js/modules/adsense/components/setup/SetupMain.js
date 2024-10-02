@@ -257,7 +257,7 @@ export default function SetupMain( { finishSetup } ) {
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasErrors ) {
-		viewComponent = <ErrorNotices />;
+		viewComponent = <ErrorNotices hasButton />;
 	} else if ( ! accounts?.length ) {
 		viewComponent = <SetupCreateAccount />;
 	} else if ( ! accountID ) {

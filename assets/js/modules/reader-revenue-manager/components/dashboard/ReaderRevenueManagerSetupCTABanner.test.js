@@ -31,6 +31,7 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -43,6 +44,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import * as tracking from '../../../../util/tracking';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import { WEEK_IN_SECONDS } from '../../../../util';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -62,7 +64,11 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		registry = createTestRegistry();
 		activateModuleMock = jest.fn( () => jest.fn() );
 
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+
+		registry
+			.dispatch( CORE_USER )
+			.finishResolution( 'getDismissedPrompts', [] );
 
 		provideModules( registry, [
 			{
@@ -99,11 +105,12 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should not render the Reader Revenue Manager setup CTA banner when dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-			] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+				expires: Date.now() / 1000 + WEEK_IN_SECONDS,
+				count: 1,
+			},
+		} );
 		const { container, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABanner
 				Widget={ Widget }
@@ -166,7 +173,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
 		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
 				body: JSON.stringify( [
 					READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
@@ -176,10 +183,17 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 		const { getByRole, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<ReaderRevenueManagerSetupCTABanner
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			</div>,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -240,5 +254,146 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		expect( container ).toBeEmptyDOMElement();
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should not render the banner when the dismissed prompts selector is not resolved', async () => {
+		registry
+			.dispatch( CORE_USER )
+			.startResolution( 'getDismissedPrompts', [] );
+
+		const { container, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABanner
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should call dismiss prompt with the correct expiration time when dismissed once', async () => {
+		fetchMock.postOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
+			{
+				body: {
+					[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+						expires: 2 * WEEK_IN_SECONDS, // Expiry of 0 permanently dismisses the prompt.
+						count: 1,
+					},
+				},
+				status: 200,
+			}
+		);
+
+		const { getByText, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<ReaderRevenueManagerSetupCTABanner
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			</div>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const dismissPromptEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+		);
+
+		act( () => {
+			fireEvent.click( getByText( /Maybe later/i ) );
+		} );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
+				body: {
+					data: {
+						slug: READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+						expiration: WEEK_IN_SECONDS * 2,
+					},
+				},
+				method: 'POST',
+			} );
+
+			expect(
+				getByText(
+					/You can always enable Reader Revenue Manager from Settings later/
+				)
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should dismiss the prompt permanently when dismissed for the second time', async () => {
+		fetchMock.postOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
+			{
+				body: {
+					[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+						expires: 0, // Expiry of 0 permanently dismisses the prompt.
+						count: 2,
+					},
+				},
+				status: 200,
+			}
+		);
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+				expires: Date.now() / 1000 - 2 * WEEK_IN_SECONDS + 1,
+				count: 1,
+			},
+		} );
+
+		const { getByText, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<ReaderRevenueManagerSetupCTABanner
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			</div>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const dismissPromptEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+		);
+
+		act( () => {
+			fireEvent.click( getByText( /Don’t show again/i ) );
+		} );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
+				body: {
+					data: {
+						slug: READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+						expiration: 0,
+					},
+				},
+				method: 'POST',
+			} );
+		} );
 	} );
 } );

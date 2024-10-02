@@ -43,8 +43,10 @@ export default function SettingsView() {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: '/reader-revenue-manager',
-			publicationID,
+			path: 'reader-revenue-manager',
+			query: {
+				publication: publicationID,
+			},
 		} )
 	);
 

@@ -28,15 +28,18 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
 import SubtleNotification from '../../SubtleNotification';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+import { getNavigationalScrollTop } from '../../../../../util/scroll';
+import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../hooks/useDashboardType';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 	'audience_segmentation_setup_success_notification';
 
 export default function AudienceSegmentationSetupSuccessSubtleNotification() {
+	const breakpoint = useBreakpoint();
 	const dashboardType = useDashboardType();
 	const viewOnly = useViewOnly();
 
@@ -60,11 +63,21 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 		dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
 	}
 
-	function scrollToWidgetArea() {
+	const scrollToWidgetArea = ( event ) => {
+		event.preventDefault();
+
 		dismissNotificationForUser();
 
-		// TODO: Scrolling to the widget area will be implemented in a subsequent issue.
-	}
+		setTimeout( () => {
+			const widgetClass =
+				'.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation';
+
+			global.scrollTo( {
+				top: getNavigationalScrollTop( widgetClass, breakpoint ),
+				behavior: 'smooth',
+			} );
+		}, 50 );
+	};
 
 	const shouldShowNotification =
 		// Only show this notification on the main dashboard, where the Setup CTA Banner is shown.
@@ -88,7 +101,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 				'google-site-kit'
 			) }
 			description={ __(
-				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long.',
+				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long',
 				'google-site-kit'
 			) }
 			onDismiss={ dismissNotificationForUser }

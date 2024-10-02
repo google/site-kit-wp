@@ -42,6 +42,7 @@ class Audience_Settings extends User_Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.124.0
+	 * @since 1.136.0 Added `didSetAudiences` default value.
 	 *
 	 * @return array The default value.
 	 */
@@ -49,6 +50,7 @@ class Audience_Settings extends User_Setting {
 		return array(
 			'configuredAudiences'                => null,
 			'isAudienceSegmentationWidgetHidden' => false,
+			'didSetAudiences'                    => false,
 		);
 	}
 
@@ -76,6 +78,14 @@ class Audience_Settings extends User_Setting {
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
 
+		if ( empty( $settings['didSetAudiences'] )
+			&& isset( $updated['configuredAudiences'] )
+			&& is_array( $updated['configuredAudiences'] )
+			&& ! empty( $updated['configuredAudiences'] )
+		) {
+			$updated['didSetAudiences'] = true;
+		}
+
 		return $this->set( array_merge( $settings, $updated ) );
 	}
 
@@ -100,6 +110,10 @@ class Audience_Settings extends User_Setting {
 
 			if ( isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
 				$sanitized_settings['isAudienceSegmentationWidgetHidden'] = false !== $settings['isAudienceSegmentationWidgetHidden'];
+			}
+
+			if ( isset( $settings['didSetAudiences'] ) ) {
+				$sanitized_settings['didSetAudiences'] = false !== $settings['didSetAudiences'];
 			}
 
 			return $sanitized_settings;

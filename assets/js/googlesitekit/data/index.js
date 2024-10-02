@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import {
+	controls,
 	createRegistry,
 	createRegistryControl,
 	createRegistrySelector,
@@ -73,6 +74,7 @@ Data.useInViewSelect = useInViewSelect;
 
 // Attach some WordPress data functions to the registry so third-party
 // developers can use them without importing '@wordpress/data'.
+Data.controls = controls;
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;
@@ -87,6 +89,7 @@ export {
 	commonActions,
 	commonControls,
 	commonStore,
+	controls,
 	createReducer,
 	useInViewSelect,
 	createRegistryControl,

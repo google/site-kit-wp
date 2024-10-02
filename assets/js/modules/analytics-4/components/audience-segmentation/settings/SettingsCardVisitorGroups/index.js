@@ -26,8 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { Switch } from 'googlesitekit-components';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../../../material-components';
 import Layout from '../../../../../../components/layout/Layout';
 import SetupCTA from './SetupCTA';
@@ -39,6 +40,9 @@ export default function SettingsCardVisitorGroups() {
 	);
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
+	);
+	const audienceSegmentationSetupCompletedBy = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
 	);
 
 	const { setAudienceSegmentationWidgetHidden, saveAudienceSettings } =
@@ -55,9 +59,15 @@ export default function SettingsCardVisitorGroups() {
 		setAudienceSegmentationWidgetHidden,
 	] );
 
-	if ( configuredAudiences === undefined ) {
+	if (
+		configuredAudiences === undefined ||
+		audienceSegmentationSetupCompletedBy === undefined
+	) {
 		return null;
 	}
+
+	const showSetupCTA =
+		! configuredAudiences && audienceSegmentationSetupCompletedBy === null;
 
 	return (
 		<Layout
@@ -71,8 +81,8 @@ export default function SettingsCardVisitorGroups() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							{ ! configuredAudiences?.length && <SetupCTA /> }
-							{ !! configuredAudiences?.length && (
+							{ showSetupCTA && <SetupCTA /> }
+							{ ! showSetupCTA && (
 								<Fragment>
 									<SetupSuccess />
 									<Switch

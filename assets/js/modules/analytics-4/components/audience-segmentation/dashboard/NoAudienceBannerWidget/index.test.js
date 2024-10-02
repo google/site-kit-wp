@@ -20,19 +20,29 @@
  * Internal dependencies
  */
 import NoAudienceBannerWidget from '.';
-import { render } from '../../../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 } from '../../../../../../../../tests/js/utils';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../../googlesitekit/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
+import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
 
 describe( 'NoAudienceBannerWidget', () => {
+	mockLocation();
+
 	let registry;
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
@@ -89,23 +99,6 @@ describe( 'NoAudienceBannerWidget', () => {
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should render when there is no configured audience.', () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
-
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
-
-		const { container } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
-
-		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should not render when configured audience is matching available audiences', () => {
@@ -165,48 +158,186 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render with correct message when there are additional configurable audiences available', () => {
+	it( "should render correctly for an authenticated user who's never populated their audience selection.", () => {
+		provideSiteInfo( registry );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
+			configuredAudiences: [],
+			didSetAudiences: false,
 		} );
 
-		const { container, getByText } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, getByRole, getByText } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		expect(
-			container.querySelector( '.googlesitekit-no-audience-banner' )
+			getByText( /You don’t have any visitor groups selected./i )
 		).toBeInTheDocument();
 
-		expect( getByText( /Select other groups/i ) ).toBeInTheDocument();
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBeUndefined();
+
+		fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
+
+		expect( global.location.assign ).not.toHaveBeenCalled();
+
+		fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+		);
 
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render with correct message when there is no additional configurable audience available', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
+	it( "should render correctly for an authenticated user who's previously populated their audience selection.", () => {
+		provideSiteInfo( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
 
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/9' ],
-			isAudienceSegmentationWidgetHidden: false,
+			configuredAudiences: [],
+			didSetAudiences: true,
 		} );
 
-		const { container, getByText } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
+		const { container, getByRole, getByText } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		expect(
-			container.querySelector( '.googlesitekit-no-audience-banner' )
+			getByText(
+				/It looks like your visitor groups aren’t available anymore./i
+			)
 		).toBeInTheDocument();
 
 		expect(
-			getByText( /Learn more about how to group site visitors in/i )
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBeUndefined();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Select other groups' } )
+		);
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
+
+		expect( global.location.assign ).not.toHaveBeenCalled();
+
+		fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+		);
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( "should render correctly for a view-only user who's never populated their audience selection.", () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: false,
+		} );
+
+		const { container, getByRole, getByText } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect(
+			getByText( /You don’t have any visitor groups selected./i )
 		).toBeInTheDocument();
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBeUndefined();
+
+		fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( "should render correctly for a view-only user who's previously populated their audience selection.", () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			didSetAudiences: true,
+		} );
+
+		const { container, getByRole, getByText } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect(
+			getByText(
+				/It looks like your visitor groups aren’t available anymore./i
+			)
+		).toBeInTheDocument();
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBeUndefined();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Select other groups' } )
+		);
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
 
 		expect( container ).toMatchSnapshot();
 	} );

@@ -15,7 +15,12 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 
 /**
  * Utility class for handling uninstallation of the plugin.
@@ -41,6 +46,21 @@ class Uninstallation {
 	 * @var Options
 	 */
 	private $options;
+
+	/**
+	 * List of scheduled events.
+	 *
+	 * @since 1.136.0
+	 * @var array
+	 */
+	const SCHEDULED_EVENTS = array(
+		Conversion_Reporting_Cron::CRON_ACTION,
+		OAuth_Client::CRON_REFRESH_PROFILE_DATA,
+		Remote_Features_Cron::CRON_ACTION,
+		Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED,
+		Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED,
+		Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY,
+	);
 
 	/**
 	 * Constructor.
@@ -72,6 +92,21 @@ class Uninstallation {
 			'googlesitekit_uninstallation',
 			function () {
 				$this->uninstall();
+				$this->clear_scheduled_events();
+			}
+		);
+
+		add_action(
+			'googlesitekit_deactivation',
+			function () {
+				$this->clear_scheduled_events();
+			}
+		);
+
+		add_action(
+			'googlesitekit_reset',
+			function () {
+				$this->clear_scheduled_events();
 			}
 		);
 	}
@@ -88,6 +123,17 @@ class Uninstallation {
 		if ( $credentials->has() && $credentials->using_proxy() ) {
 			$google_proxy = new Google_Proxy( $this->context );
 			$google_proxy->unregister_site( $credentials );
+		}
+	}
+
+	/**
+	 * Clears all scheduled events.
+	 *
+	 * @since 1.136.0
+	 */
+	private function clear_scheduled_events() {
+		foreach ( self::SCHEDULED_EVENTS as $event ) {
+			wp_clear_scheduled_hook( $event );
 		}
 	}
 }

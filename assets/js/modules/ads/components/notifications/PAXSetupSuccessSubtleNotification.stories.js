@@ -30,7 +30,7 @@ import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	'gathering-data-notification'
+	'setup-success-notification-pax'
 )( PAXSetupSuccessSubtleNotification );
 
 function Template( { ...args } ) {
@@ -38,7 +38,7 @@ function Template( { ...args } ) {
 }
 
 export const Ads = Template.bind( {} );
-Ads.storyName = 'PAX Setup Success';
+Ads.storyName = 'PAXSetupSuccessSubtleNotification';
 Ads.parameters = {
 	query: {
 		notification: PAX_SETUP_SUCCESS_NOTIFICATION,

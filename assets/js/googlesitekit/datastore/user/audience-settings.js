@@ -31,10 +31,7 @@ import {
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
-import {
-	AUDIENCE_TYPE_SORT_ORDER,
-	MODULES_ANALYTICS_4,
-} from '../../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 import { createReducer } from '../../data/create-reducer';
@@ -140,17 +137,18 @@ const baseActions = {
 			const sortedConfiguredAudiences = [
 				...finalSettings.configuredAudiences,
 			].sort( ( audienceNameA, audienceNameB ) => {
-				const audienceTypeA = availableAudiences?.find(
+				const audienceIndexA = availableAudiences.findIndex(
 					( audience ) => audience.name === audienceNameA
-				)?.audienceType;
-				const audienceTypeB = availableAudiences?.find(
+				);
+				const audienceIndexB = availableAudiences.findIndex(
 					( audience ) => audience.name === audienceNameB
-				)?.audienceType;
+				);
 
-				const weightA = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeA ] || 0;
-				const weightB = AUDIENCE_TYPE_SORT_ORDER[ audienceTypeB ] || 0;
+				if ( audienceIndexA === -1 || audienceIndexB === -1 ) {
+					return 0;
+				}
 
-				return weightA - weightB;
+				return audienceIndexA - audienceIndexB;
 			} );
 
 			finalSettings.configuredAudiences = sortedConfiguredAudiences;
@@ -305,6 +303,20 @@ const baseSelectors = {
 			return audienceSettings?.isAudienceSegmentationWidgetHidden;
 		}
 	),
+
+	/**
+	 * Gets the `didSetAudiences` flag from the audience settings.
+	 *
+	 * @since 1.136.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Whether or not the audience selection has ever been populated for the current user; `undefined` if not loaded.
+	 */
+	didSetAudiences: createRegistrySelector( ( select ) => () => {
+		const audienceSettings = select( CORE_USER ).getAudienceSettings();
+
+		return audienceSettings?.didSetAudiences;
+	} ),
 
 	/**
 	 * Checks if the configured audiences have changed from the saved settings.

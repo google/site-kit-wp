@@ -29,12 +29,19 @@ import {
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -50,6 +57,7 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
 
 /**
  * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
@@ -297,6 +305,52 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART ]: {
+		title: __(
+			'Top traffic source driving add to cart',
+			'google-site-kit'
+		),
+		description: __(
+			'Traffic source that generates the most add to cart events',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Traffic source that generates the most add to cart events',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
+		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
+		description: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
+		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
+		description: __(
+			'Traffic source that generates the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Traffic source that generates the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
 		title: __( 'Most engaged traffic source', 'google-site-kit' ),
 		description: __(
@@ -330,6 +384,48 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS ]: {
+		title: __( 'Top cities driving leads', 'google-site-kit' ),
+		description: __(
+			'Cities driving the most contact form submissions',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities driving the most contact form submissions',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART ]: {
+		title: __( 'Top cities driving add to cart', 'google-site-kit' ),
+		description: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities where visitors most frequently add products to their carts',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'add_to_cart' ],
+	},
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
+		title: __( 'Top cities driving purchases', 'google-site-kit' ),
+		description: __(
+			'Cities driving the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Cities driving the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
 		title: __( 'Top countries driving traffic', 'google-site-kit' ),
 		description: __(
@@ -351,6 +447,19 @@ const KEY_METRICS_WIDGETS = {
 			'The top search queries for your site by highest clickthrough rate',
 			'google-site-kit'
 		),
+	},
+	[ KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS ]: {
+		title: __( 'Top pages driving leads', 'google-site-kit' ),
+		description: __(
+			'Pages on which forms are most frequently submitted',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 };
 

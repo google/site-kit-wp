@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -36,9 +37,15 @@ import {
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { numFmt } from '../../../../../../util';
+import NewBadge from '../../../../../../components/NewBadge';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
+import BadgeWithTooltip from '../../../../../../components/BadgeWithTooltip';
 
 export default function AudienceItem( {
 	slug,
@@ -46,17 +53,26 @@ export default function AudienceItem( {
 	description,
 	subtitle,
 	userCount,
+	audienceType,
 } ) {
+	const newBadgeSlug = `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`;
+
 	const selectedItems = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AUDIENCE_SELECTION_FORM,
 			AUDIENCE_SELECTED
 		)
 	);
+	const hasNewBadgeBeenSeen = useSelect( ( select ) =>
+		select( CORE_USER ).hasExpirableItem( newBadgeSlug )
+	);
+	const isNewBadgeActive = useSelect( ( select ) =>
+		select( CORE_USER ).isExpirableItemActive( newBadgeSlug )
+	);
 	const [ siteKitUserCountReportError, otherUserCountReportError ] =
 		useSelect( ( select ) =>
 			select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
-		);
+		) || [];
 
 	const errors = [];
 
@@ -69,6 +85,10 @@ export default function AudienceItem( {
 	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
+
+	const temporarilyHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( `audience-tile-${ slug }` )
+	);
 
 	const onCheckboxChange = useCallback(
 		( event ) => {
@@ -84,9 +104,33 @@ export default function AudienceItem( {
 		[ selectedItems, setValues, slug ]
 	);
 
+	// Show the new badge if it has not been seen yet, or the badge has been
+	// seen and is still active.
+	const showNewBadge =
+		'DEFAULT_AUDIENCE' !== audienceType &&
+		( hasNewBadgeBeenSeen === false || isNewBadgeActive );
+
 	const isItemSelected = selectedItems?.includes( slug );
 
 	const id = `audience-selection-checkbox-${ slug }`;
+
+	function ItemBadge() {
+		if ( temporarilyHidden ) {
+			return (
+				<BadgeWithTooltip
+					label={ __( 'Temporarily hidden', 'google-site-kit' ) }
+					tooltipTitle={ __(
+						'Site Kit is collecting data for this group. Once data is available the group will be added to your dashboard.',
+						'google-site-kit'
+					) }
+				/>
+			);
+		} else if ( showNewBadge ) {
+			return <NewBadge />;
+		}
+
+		return null;
+	}
 
 	return (
 		<SelectionPanelItem
@@ -98,6 +142,7 @@ export default function AudienceItem( {
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
 			suffix={ errors.length ? '-' : numFmt( userCount ) }
+			badge={ ( temporarilyHidden || showNewBadge ) && <ItemBadge /> }
 		/>
 	);
 }
@@ -108,4 +153,5 @@ AudienceItem.propTypes = {
 	description: PropTypes.string.isRequired,
 	subtitle: PropTypes.string.isRequired,
 	userCount: PropTypes.number.isRequired,
+	audienceType: PropTypes.string.isRequired,
 };

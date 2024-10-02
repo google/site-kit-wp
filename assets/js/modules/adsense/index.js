@@ -43,7 +43,6 @@ import {
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
-import { AREA_MODULE_ADSENSE_MAIN } from './constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,
@@ -145,7 +144,7 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 			modules: [ 'adsense' ],
 		},
-		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY, AREA_MODULE_ADSENSE_MAIN ]
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 
 	widgets.registerWidget(
