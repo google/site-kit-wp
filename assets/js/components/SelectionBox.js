@@ -51,9 +51,9 @@ export default function SelectionBox( {
 				name={ id }
 				onChange={ onChange }
 				value={ value }
+				badge={ badge }
 			>
 				{ title }
-				{ badge }
 			</Checkbox>
 		</div>
 	);
