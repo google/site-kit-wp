@@ -32,6 +32,7 @@ export { default as TopCitiesDrivingPurchasesWidget } from './TopCitiesDrivingPu
 export { default as TopCountriesWidget } from './TopCountriesWidget';
 export { default as TopTrafficSourceWidget } from './TopTrafficSourceWidget';
 export { default as TopTrafficSourceDrivingAddToCartWidget } from './TopTrafficSourceDrivingAddToCartWidget';
+export { default as TopTrafficSourceDrivingLeadsWidget } from './TopTrafficSourceDrivingLeadsWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';
 export { default as TopTrafficSourceDrivingPurchasesWidget } from './TopTrafficSourceDrivingPurchasesWidget';
 export { default as PagesPerVisitWidget } from './PagesPerVisitWidget';
@@ -40,4 +41,5 @@ export { default as TopReturningVisitorPages } from './TopReturningVisitorPages'
 export { default as VisitsPerVisitorWidget } from './VisitsPerVisitorWidget';
 export { default as TopRecentTrendingPagesWidget } from './TopRecentTrendingPagesWidget';
 export { default as TopCategoriesWidget } from './TopCategoriesWidget';
+export { default as TopPagesDrivingLeadsWidget } from './TopPagesDrivingLeadsWidget';
 export { default as PopularAuthorsWidget } from './PopularAuthorsWidget';
