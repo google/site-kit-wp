@@ -75,7 +75,6 @@ function getRootMargin( breakpoint ) {
 	return `${ -top }px ${ -gap }px ${ -gap }px ${ -gap }px`;
 }
 
-/* eslint-disable complexity */
 export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const viewOnlyDashboard = useViewOnly();
 
@@ -301,7 +300,6 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		</InViewProvider>
 	);
 }
-/* eslint-enable complexity */
 
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
