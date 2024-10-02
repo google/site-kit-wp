@@ -34,7 +34,7 @@ export default function CTALinkSubtle( {
 	ctaLabel,
 	onCTAClick,
 	isCTALinkExternal = false,
-	gaConfirmEventLabel,
+	gaTrackingEventArgs,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -46,7 +46,7 @@ export default function CTALinkSubtle( {
 
 		await onCTAClick?.( event );
 
-		await trackEvents.confirm( gaConfirmEventLabel );
+		await trackEvents.confirm( ...gaTrackingEventArgs );
 
 		if ( isCTALinkExternal ) {
 			global.open( ctaLink, '_blank' );
@@ -79,5 +79,5 @@ CTALinkSubtle.propTypes = {
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	isCTALinkExternal: PropTypes.bool,
-	gaConfirmEventLabel: PropTypes.string,
+	gaTrackingEventArgs: PropTypes.array,
 };
