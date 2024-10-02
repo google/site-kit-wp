@@ -245,95 +245,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		$this->get_settings()->on_change(
-			function ( $old_value, $new_value ) {
-				// Ensure that the data available state is reset when the property ID or measurement ID changes.
-				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
-					$this->reset_data_available();
-					$this->custom_dimensions_data_available->reset_data_available();
-
-					$available_audiences = $old_value['availableAudiences'] ?? array();
-
-					$available_audience_names = array_map(
-						function ( $audience ) {
-							return $audience['name'];
-						},
-						$available_audiences
-					);
-
-					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
-				}
-
-				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
-				$old_available_audiences = $old_value['availableAudiences'];
-				if ( $old_available_audiences ) {
-					$old_available_audience_names = array_map(
-						function ( $audience ) {
-							return $audience['name'];
-						},
-						$old_available_audiences
-					);
-
-					$new_available_audiences      = $new_value['availableAudiences'] ?? array();
-					$new_available_audience_names = array_map(
-						function ( $audience ) {
-							return $audience['name'];
-						},
-						$new_available_audiences
-					);
-
-					$unavailable_audience_names = array_diff( $old_available_audience_names, $new_available_audience_names );
-
-					foreach ( $unavailable_audience_names as $unavailable_audience_name ) {
-						$this->resource_data_availability_date->reset_resource_date( $unavailable_audience_name, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE );
-					}
-				}
-
-				// Reset property specific settings when propertyID changes.
-				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
-					$this->get_settings()->merge(
-						array(
-							'adSenseLinked'             => false,
-							'adSenseLinkedLastSyncedAt' => 0,
-							'adsLinked'                 => false,
-							'adsLinkedLastSyncedAt'     => 0,
-							'detectedEvents'            => array(),
-							'availableAudiencesLastSyncedAt' => 0,
-						)
-					);
-
-					if ( ! empty( $new_value['propertyID'] ) ) {
-						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
-
-						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-							do_action( Conversion_Reporting_Cron::CRON_ACTION );
-						}
-					}
-
-					// Reset audience specific settings.
-					$this->reset_audiences->reset_audience_data();
-				}
-			}
-		);
-
-		// Check if the property ID has changed and reset applicable settings to null.
-		//
-		// This is not done using the `get_settings()->merge` method because
-		// `Module_Settings::merge` doesn't support setting a value to `null`.
-		add_filter(
-			'pre_update_option_googlesitekit_analytics-4_settings',
-			function ( $new_value, $old_value ) {
-				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-					$new_value['availableCustomDimensions']            = null;
-					$new_value['availableAudiences']                   = null;
-					$new_value['audienceSegmentationSetupCompletedBy'] = null;
-				}
-
-				return $new_value;
-			},
-			10,
-			2
-		);
+		$this->register_property_change_handlers();
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ), 10 );
 
@@ -409,6 +321,123 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	}
 
 	/**
+	 * Function that unregisters property change handler hooks.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Closure
+	 */
+	protected $unregister_property_change_handlers;
+
+	/**
+	 * Registers property change handlers.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register_property_change_handlers() {
+		$remove_on_change = $this->get_settings()->on_change(
+			function ( $old_value, $new_value ) {
+				// Ensure that the data available state is reset when the property ID or measurement ID changes.
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
+					$this->reset_data_available();
+					$this->custom_dimensions_data_available->reset_data_available();
+
+					$available_audiences = $old_value['availableAudiences'] ?? array();
+
+					$available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$available_audiences
+					);
+
+					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
+				}
+
+				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
+				$old_available_audiences = $old_value['availableAudiences'];
+				if ( $old_available_audiences ) {
+					$old_available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$old_available_audiences
+					);
+
+					$new_available_audiences      = $new_value['availableAudiences'] ?? array();
+					$new_available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$new_available_audiences
+					);
+
+					$unavailable_audience_names = array_diff( $old_available_audience_names, $new_available_audience_names );
+
+					foreach ( $unavailable_audience_names as $unavailable_audience_name ) {
+						$this->resource_data_availability_date->reset_resource_date( $unavailable_audience_name, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE );
+					}
+				}
+
+				// Reset property specific settings when propertyID changes.
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+					$this->get_settings()->merge(
+						array(
+							'adSenseLinked'             => false,
+							'adSenseLinkedLastSyncedAt' => 0,
+							'adsLinked'                 => false,
+							'adsLinkedLastSyncedAt'     => 0,
+							'detectedEvents'            => array(),
+						)
+					);
+
+					if ( ! empty( $new_value['propertyID'] ) ) {
+						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+
+						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+							do_action( Conversion_Reporting_Cron::CRON_ACTION );
+						}
+					}
+				}
+			}
+		);
+
+		$on_pre_update_option = function ( $new_value, $old_value ) {
+			if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
+				$new_value['availableCustomDimensions'] = null;
+
+				if ( $new_value['propertyID'] !== $new_value['previousPropertyID'] ) {
+					$new_value['availableAudiences']                   = null;
+					$new_value['audienceSegmentationSetupCompletedBy'] = null;
+					$new_value['availableAudiencesLastSyncedAt']       = 0;
+					$new_value['previousPropertyID']                   = $new_value['propertyID'];
+
+					$this->reset_audiences->reset_audience_data();
+				}
+			}
+
+			return $new_value;
+		};
+
+		// Check if the property ID has changed and reset applicable settings to null.
+		//
+		// This is not done using the `get_settings()->merge` method because
+		// `Module_Settings::merge` doesn't support setting a value to `null`.
+		add_filter(
+			'pre_update_option_googlesitekit_analytics-4_settings',
+			$on_pre_update_option,
+			10,
+			2
+		);
+
+		$this->unregister_property_change_handlers = function () use ( $remove_on_change, $on_pre_update_option ) {
+			$remove_on_change();
+			remove_filter( 'pre_update_option_googlesitekit_analytics-4_settings', $on_pre_update_option, 10 );
+		};
+	}
+
+
+	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.30.0
@@ -465,10 +494,22 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		// We need to reset the resource data availability dates before deleting the settings.
 		// This is because the property ID and the audience resource names are pulled from settings.
 		$this->resource_data_availability_date->reset_all_resource_dates();
-		$this->get_settings()->delete();
+
+		( $this->unregister_property_change_handlers )();
+
+		/**
+		 * Analytics_4\Settings instance.
+		 *
+		 * @var Settings $settings
+		 */
+		$settings = $this->get_settings();
+		$settings->clear_non_persistent_settings();
+
+		// TODO: We probably don't need to re-register the property change handlers here, but can if necessary.
+		$this->register_property_change_handlers();
+
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
-		$this->reset_audiences->reset_audience_data();
 	}
 
 	/**

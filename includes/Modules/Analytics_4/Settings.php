@@ -77,6 +77,35 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
+	 * Gets the keys for settings that will persist when deactivating the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of keys.
+	 */
+	public function get_persistent_keys() {
+		return array(
+			'availableAudiences',
+			'audienceSegmentationSetupCompletedBy',
+			'availableAudiencesLastSyncedAt',
+			'previousPropertyID',
+		);
+	}
+
+	/**
+	 * Clears non-persistent settings.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function clear_non_persistent_settings() {
+		$current_settings = $this->get();
+
+		$persistent_settings = array_intersect_key( $current_settings, array_flip( $this->get_persistent_keys() ) );
+
+		$this->set( $persistent_settings );
+	}
+
+	/**
 	 * Gets the default value.
 	 *
 	 * @since 1.30.0
@@ -89,6 +118,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'accountID'                            => '',
 			'adsConversionID'                      => '',
 			'propertyID'                           => '',
+			'previousPropertyID'                   => null,
 			'webDataStreamID'                      => '',
 			'measurementID'                        => '',
 			'trackingDisabled'                     => array( 'loggedinUsers' ),
@@ -211,6 +241,11 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					if ( ! is_int( $option['audienceSegmentationSetupCompletedBy'] ) ) {
 						$option['audienceSegmentationSetupCompletedBy'] = null;
 					}
+				}
+
+				// Populate previousPropertyID if it's not set.
+				if ( ! isset( $option['previousPropertyID'] ) ) {
+					$option['previousPropertyID'] = $option['propertyID'];
 				}
 			}
 
