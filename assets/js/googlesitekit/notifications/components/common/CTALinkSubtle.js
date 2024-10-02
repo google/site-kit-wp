@@ -32,7 +32,7 @@ export default function CTALinkSubtle( {
 	ctaLabel,
 	onCTAClick,
 	isCTALinkExternal = false,
-	gaTrackingEventArgs,
+	gaTrackingEventArgs = [],
 } ) {
 	const trackEvents = useNotificationEvents( id );
 

@@ -39,7 +39,7 @@ export default function Dismiss( {
 	dismissExpires = 0,
 	disabled,
 	onDismiss = () => {},
-	gaTrackingEventArgs,
+	gaTrackingEventArgs = [],
 } ) {
 	const trackEvents = useNotificationEvents( id );
 

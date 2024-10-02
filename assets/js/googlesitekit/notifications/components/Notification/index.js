@@ -34,7 +34,7 @@ import useNotificationEvents from '../../hooks/useNotificationEvents';
 export default function Notification( {
 	id,
 	className,
-	gaTrackingEventArgs,
+	gaTrackingEventArgs = [],
 	children,
 } ) {
 	const ref = useRef();
