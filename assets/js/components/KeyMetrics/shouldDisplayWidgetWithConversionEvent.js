@@ -10,7 +10,7 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
  * has the `requiredConversionEventName` property.
  *
  * @since 1.136.0
- * @since n.e.x.t Moved function to its own file.
+ * @since 1.137.0 Moved function to its own file.
  *
  * @param {Function} select              Data store select function.
  * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
