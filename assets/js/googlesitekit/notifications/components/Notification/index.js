@@ -34,7 +34,7 @@ import useNotificationEvents from '../../hooks/useNotificationEvents';
 export default function Notification( {
 	id,
 	className,
-	gaViewEventLabel,
+	gaTrackingEventArgs,
 	children,
 } ) {
 	const ref = useRef();
@@ -46,10 +46,10 @@ export default function Notification( {
 	// Track view once.
 	useEffect( () => {
 		if ( ! isViewedOnce && viewed ) {
-			trackEvents.view( gaViewEventLabel );
+			trackEvents.view( ...gaTrackingEventArgs );
 			setIsViewedOnce( true );
 		}
-	}, [ viewed, trackEvents, isViewedOnce, gaViewEventLabel ] );
+	}, [ viewed, trackEvents, isViewedOnce, gaTrackingEventArgs ] );
 
 	return (
 		<section id={ id } ref={ ref } className={ className }>
@@ -70,6 +70,6 @@ export default function Notification( {
 Notification.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
-	gaViewEventLabel: PropTypes.string,
+	gaViewEventLabel: PropTypes.array,
 	children: PropTypes.node,
 };
