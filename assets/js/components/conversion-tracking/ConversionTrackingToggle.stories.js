@@ -40,7 +40,7 @@ Enabled.scenario = {
 	delay: 250,
 };
 Enabled.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( CORE_SITE )
@@ -57,10 +57,7 @@ Enabled.decorators = [
 			);
 		};
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);
@@ -74,7 +71,7 @@ Default.scenario = {
 	delay: 250,
 };
 Default.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( CORE_SITE )
@@ -91,10 +88,7 @@ Default.decorators = [
 			);
 		};
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);

@@ -30,6 +30,10 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../../googlesitekit/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { getPreviousDate } from '../../../../../../util';
 import {
@@ -38,6 +42,7 @@ import {
 	STRATEGY_ZIP,
 } from '../../../../utils/data-mock';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
 import AudienceTilesWidget from './';
 
 function excludeAudienceFromReport( report, audienceResourceName ) {
@@ -78,6 +83,13 @@ const topContentReportOptions = {
 	startDate: '2024-02-29',
 	dimensions: [ 'pagePath' ],
 	metrics: [ { name: 'screenPageViews' } ],
+	dimensionFilters: {
+		'customEvent:googlesitekit_post_type': {
+			filterType: 'stringFilter',
+			matchType: 'EXACT',
+			value: 'post',
+		},
+	},
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 3,
 };
@@ -87,6 +99,13 @@ const topContentPageTitlesReportOptions = {
 	startDate: '2024-02-29',
 	dimensions: [ 'pagePath', 'pageTitle' ],
 	metrics: [ { name: 'screenPageViews' } ],
+	dimensionFilters: {
+		'customEvent:googlesitekit_post_type': {
+			filterType: 'stringFilter',
+			matchType: 'EXACT',
+			value: 'post',
+		},
+	},
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
 };
@@ -130,6 +149,39 @@ DefaultWithMissingCustomDimension.args = {
 DefaultWithMissingCustomDimension.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/DefaultWithMissingCustomDimension',
 };
+
+export const DefaultViewOnlyWithCustomDimensionError = Template.bind( {} );
+DefaultViewOnlyWithCustomDimensionError.storyName =
+	'DefaultViewOnlyWithCustomDimensionError';
+DefaultViewOnlyWithCustomDimensionError.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+	setupRegistry: ( registry ) => {
+		const options = {
+			...topContentReportOptions,
+			dimensionFilters: {
+				...topContentReportOptions.dimensionFilters,
+				audienceResourceName: 'properties/12345/audiences/1',
+			},
+		};
+
+		const error = {
+			code: 400,
+			message:
+				'Field customEvent:googlesitekit_post_type is not a valid dimension. For a list of valid dimensions and metrics, see https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema ',
+			status: 'INVALID_ARGUMENT',
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( error, 'getReport', [ options ] );
+	},
+	isAuthenticated: false,
+};
+DefaultViewOnlyWithCustomDimensionError.scenario = {};
 
 export const DefaultWithZeroTile = Template.bind( {} );
 DefaultWithZeroTile.storyName = 'DefaultWithZeroTile';
@@ -223,6 +275,38 @@ TwoTilesWithMissingCustomDimension.args = {
 		} );
 	},
 };
+
+export const TwoTilesViewOnlyWithCustomDimensionError = Template.bind( {} );
+TwoTilesViewOnlyWithCustomDimensionError.storyName =
+	'TwoTilesViewOnlyWithCustomDimensionError';
+TwoTilesViewOnlyWithCustomDimensionError.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+	],
+	setupRegistry: ( registry ) => {
+		const options = {
+			...topContentReportOptions,
+			dimensionFilters: {
+				...topContentReportOptions.dimensionFilters,
+				audienceResourceName: 'properties/12345/audiences/1',
+			},
+		};
+
+		const error = {
+			code: 400,
+			message:
+				'Field customEvent:googlesitekit_post_type is not a valid dimension. For a list of valid dimensions and metrics, see https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema ',
+			status: 'INVALID_ARGUMENT',
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( error, 'getReport', [ options ] );
+	},
+	isAuthenticated: false,
+};
+TwoTilesViewOnlyWithCustomDimensionError.scenario = {};
 
 export const TwoTilesWithZeroTile = Template.bind( {} );
 TwoTilesWithZeroTile.storyName = 'TwoTilesWithZeroTile';
@@ -427,7 +511,10 @@ SiteKitAudiencesPartialData.args = {
 
 				provideAnalytics4MockReport( registry, {
 					...topContentReportOptions,
-					dimensionFilters,
+					dimensionFilters: {
+						...topContentReportOptions.dimensionFilters,
+						...dimensionFilters,
+					},
 				} );
 
 				const pageTitlesReport = getAnalytics4MockResponse(
@@ -442,7 +529,10 @@ SiteKitAudiencesPartialData.args = {
 					.receiveGetReport( pageTitlesReport, {
 						options: {
 							...topContentPageTitlesReportOptions,
-							dimensionFilters,
+							dimensionFilters: {
+								...topContentPageTitlesReportOptions.dimensionFilters,
+								...dimensionFilters,
+							},
 						},
 					} );
 			} );
@@ -597,6 +687,7 @@ export default {
 					grantedScopes,
 					configuredAudiences,
 					setupRegistry: setupRegistryFn,
+					isAuthenticated = true,
 				},
 			}
 		) => {
@@ -638,6 +729,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry, {
 					grantedScopes,
+					authenticated: isAuthenticated,
 				} );
 				provideModules( registry, [
 					{
@@ -677,7 +769,10 @@ export default {
 
 					provideAnalytics4MockReport( registry, {
 						...topContentReportOptions,
-						dimensionFilters,
+						dimensionFilters: {
+							...topContentReportOptions.dimensionFilters,
+							...dimensionFilters,
+						},
 					} );
 
 					const pageTitlesReport = getAnalytics4MockResponse(
@@ -692,7 +787,10 @@ export default {
 						.receiveGetReport( pageTitlesReport, {
 							options: {
 								...topContentPageTitlesReportOptions,
-								dimensionFilters,
+								dimensionFilters: {
+									...topContentPageTitlesReportOptions.dimensionFilters,
+									...dimensionFilters,
+								},
 							},
 						} );
 				} );
@@ -735,12 +833,24 @@ export default {
 						property: {},
 					} );
 
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					availableAudiencesLastSyncedAt: Date.now() - 1000,
+				} );
+
 				setupRegistryFn?.( registry );
 			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<ViewContextProvider
+						value={
+							isAuthenticated
+								? VIEW_CONTEXT_MAIN_DASHBOARD
+								: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+						}
+					>
+						<Story />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},

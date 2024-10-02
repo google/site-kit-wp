@@ -80,6 +80,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 				'./assets/js/googlesitekit-modules-reader-revenue-manager.js',
 			'googlesitekit-modules-search-console':
 				'./assets/js/googlesitekit-modules-search-console.js',
+			'googlesitekit-modules-sign-in-with-google':
+				'./assets/js/googlesitekit-modules-sign-in-with-google.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':

@@ -15,9 +15,7 @@ $google_services = implode(
 	'|',
 	array(
 		'Adsense',
-		'Analytics',
 		'AnalyticsData',
-		'AnalyticsReporting',
 		'GoogleAnalyticsAdmin',
 		'PagespeedInsights',
 		'PeopleService',

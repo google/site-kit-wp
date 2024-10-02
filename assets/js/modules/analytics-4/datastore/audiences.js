@@ -241,6 +241,10 @@ const baseActions = {
 			return;
 		}
 
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
 
@@ -533,8 +537,10 @@ const baseActions = {
 			)
 		);
 
-		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupComplete(
-			true
+		const userID = select( CORE_USER ).getID();
+
+		dispatch( MODULES_ANALYTICS_4 ).setAudienceSegmentationSetupCompletedBy(
+			userID
 		);
 
 		const { saveSettingsError } = yield commonActions.await(

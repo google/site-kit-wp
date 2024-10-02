@@ -4,5 +4,6 @@
 	"conversionReporting",
 	"gm3Components",
 	"privacySandboxModule",
-	"rrmModule"
+	"rrmModule",
+	"signInWithGoogleModule"
 ]

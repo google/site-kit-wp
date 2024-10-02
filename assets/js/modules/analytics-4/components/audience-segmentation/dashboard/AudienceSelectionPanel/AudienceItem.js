@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -44,6 +45,7 @@ import {
 import { numFmt } from '../../../../../../util';
 import NewBadge from '../../../../../../components/NewBadge';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
+import BadgeWithTooltip from '../../../../../../components/BadgeWithTooltip';
 
 export default function AudienceItem( {
 	slug,
@@ -84,6 +86,10 @@ export default function AudienceItem( {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const temporarilyHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( `audience-tile-${ slug }` )
+	);
+
 	const onCheckboxChange = useCallback(
 		( event ) => {
 			setValues( AUDIENCE_SELECTION_FORM, {
@@ -108,6 +114,24 @@ export default function AudienceItem( {
 
 	const id = `audience-selection-checkbox-${ slug }`;
 
+	function ItemBadge() {
+		if ( temporarilyHidden ) {
+			return (
+				<BadgeWithTooltip
+					label={ __( 'Temporarily hidden', 'google-site-kit' ) }
+					tooltipTitle={ __(
+						'Site Kit is collecting data for this group. Once data is available the group will be added to your dashboard.',
+						'google-site-kit'
+					) }
+				/>
+			);
+		} else if ( showNewBadge ) {
+			return <NewBadge />;
+		}
+
+		return null;
+	}
+
 	return (
 		<SelectionPanelItem
 			id={ id }
@@ -118,7 +142,7 @@ export default function AudienceItem( {
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
 			suffix={ errors.length ? '-' : numFmt( userCount ) }
-			badge={ showNewBadge && <NewBadge /> }
+			badge={ ( temporarilyHidden || showNewBadge ) && <ItemBadge /> }
 		/>
 	);
 }

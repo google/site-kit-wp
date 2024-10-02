@@ -28,7 +28,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
 import SubtleNotification from '../../SubtleNotification';
-import { getContextScrollTop } from '../../../../../util/scroll';
+import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
@@ -73,7 +73,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 				'.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation';
 
 			global.scrollTo( {
-				top: getContextScrollTop( widgetClass, breakpoint ),
+				top: getNavigationalScrollTop( widgetClass, breakpoint ),
 				behavior: 'smooth',
 			} );
 		}, 50 );
@@ -101,7 +101,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 				'google-site-kit'
 			) }
 			description={ __(
-				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long.',
+				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long',
 				'google-site-kit'
 			) }
 			onDismiss={ dismissNotificationForUser }
