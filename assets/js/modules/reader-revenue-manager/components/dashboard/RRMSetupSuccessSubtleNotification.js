@@ -223,6 +223,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							gaConfirmEventLabel={ publicationOnboardingState }
 						/>
 					}
+					type="warning"
 				/>
 			</Notification>
 		);
