@@ -193,14 +193,11 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES }
 			metricValue={ topDevice }
 			metricValueFormat={ format }
-			subText={
-				// eslint-disable-next-line @wordpress/valid-sprintf
-				sprintf(
-					/* translators: %d: Percentage of purchases for the current top device compared to the number of purchases for all devices. */
-					__( '%s of total purchases', 'google-site-kit' ),
-					numFmt( relativeCurrentTopDevicePurchases, format )
-				)
-			}
+			subText={ sprintf(
+				/* translators: %d: Percentage of purchases for the current top device compared to the number of purchases for all devices. */
+				__( '%s of total purchases', 'google-site-kit' ),
+				numFmt( relativeCurrentTopDevicePurchases, format )
+			) }
 			previousValue={ relativePreviousTopDevicePurchases }
 			currentValue={ relativeCurrentTopDevicePurchases }
 			loading={ loading }
