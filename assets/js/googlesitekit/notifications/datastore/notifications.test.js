@@ -275,7 +275,7 @@ describe( 'core/notifications Notifications', () => {
 					},
 				} );
 			} );
-			it( 'should persist dismissal if notification is not dismissible', async () => {
+			it( 'should persist dismissal if notification is dismissible', async () => {
 				fetchMock.postOnce( fetchDismissItem, {
 					body: [ 'dismissible-notification' ],
 				} );
