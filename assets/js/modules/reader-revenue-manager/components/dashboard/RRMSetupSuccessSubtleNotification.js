@@ -139,7 +139,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 							onDismiss={ dismissNotice }
-							gaDismissEventLabel={ [
+							gaTrackingEventArgs={ [
 								publicationOnboardingState,
 							] }
 						/>
@@ -184,7 +184,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 							onDismiss={ dismissNotice }
-							gaDismissEventLabel={ [
+							gaTrackingEventArgs={ [
 								publicationOnboardingState,
 							] }
 						/>
@@ -225,7 +225,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 							onDismiss={ dismissNotice }
-							gaDismissEventLabel={ [
+							gaTrackingEventArgs={ [
 								publicationOnboardingState,
 							] }
 						/>
