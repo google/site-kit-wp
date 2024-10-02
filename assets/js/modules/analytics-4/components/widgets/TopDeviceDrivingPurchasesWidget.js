@@ -123,16 +123,17 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 		return deviceReportErrors || totalPurchasesReportErrors || undefined;
 	} );
 
-	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ totalPurchasesReportOptions ]
-			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ deviceReportOptions ]
-			)
+	const loading = useSelect( ( select ) =>
+		hasDetectedEvent
+			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ totalPurchasesReportOptions ]
+			  ) ||
+			  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ deviceReportOptions ]
+			  )
+			: undefined
 	);
 
 	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
