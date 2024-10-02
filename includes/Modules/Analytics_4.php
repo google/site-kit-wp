@@ -495,6 +495,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		// This is because the property ID and the audience resource names are pulled from settings.
 		$this->resource_data_availability_date->reset_all_resource_dates();
 
+		// Unregister property change handlers to avoid the on-change logic from running when settings are
+		// updated in $settings->clear_non_persistent_settings().
 		( $this->unregister_property_change_handlers )();
 
 		/**
