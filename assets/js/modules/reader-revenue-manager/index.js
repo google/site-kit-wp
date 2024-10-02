@@ -38,10 +38,7 @@ import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manag
 import { isURLUsingHTTPS } from './utils/validation';
 import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 export { registerStore } from './datastore';
 
@@ -85,10 +82,7 @@ export const registerNotifications = ( notifications ) => {
 		Component: RRMSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [
-			VIEW_CONTEXT_MAIN_DASHBOARD,
-			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-		],
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
