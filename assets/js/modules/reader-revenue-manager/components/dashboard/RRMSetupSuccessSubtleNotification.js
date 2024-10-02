@@ -150,7 +150,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
-							gaConfirmEventLabel={ publicationOnboardingState }
+							gaTrackingEventArgs={ [
+								publicationOnboardingState,
+							] }
 						/>
 					}
 				/>
@@ -193,7 +195,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
-							gaConfirmEventLabel={ publicationOnboardingState }
+							gaTrackingEventArgs={ [
+								publicationOnboardingState,
+							] }
 						/>
 					}
 				/>
@@ -232,7 +236,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
-							gaConfirmEventLabel={ publicationOnboardingState }
+							gaTrackingEventArgs={ [
+								publicationOnboardingState,
+							] }
 						/>
 					}
 					type="warning"
