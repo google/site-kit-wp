@@ -1,6 +1,4 @@
 /**
- * PartialDataBadge Component Stories.
- *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,23 +17,21 @@
 /**
  * Internal dependencies
  */
-import PartialDataBadge from './PartialDataBadge';
+import Icon from '../../../svg/graphics/sign-in-with-google.svg';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from './datastore/constants';
 
-function Template( args ) {
-	return <PartialDataBadge { ...args } />;
+export function registerModule( modules ) {
+	modules.registerModule( 'sign-in-with-google', {
+		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
+		SettingsEditComponent() {
+			return null;
+		},
+		SettingsViewComponent() {
+			return null;
+		},
+		SetupComponent() {
+			return null;
+		},
+		Icon,
+	} );
 }
-
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-
-Default.args = {
-	tooltipTitle:
-		'Still collecting full data for this timeframe, partial data is displayed for this group',
-};
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PartialDataBadge/Default',
-};
-
-export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PartialDataBadge',
-};

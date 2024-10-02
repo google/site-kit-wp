@@ -75,7 +75,7 @@ SearchConsoleAndAnalyticsGatheringData.args = {
 };
 
 export default {
-	title: 'Components/Notifications/GatheringDataNotification',
+	title: 'Components/Notifications/Banners/GatheringDataNotification',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

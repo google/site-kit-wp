@@ -35,6 +35,7 @@ import {
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -51,6 +52,7 @@ import SpinnerButton, {
 import SubtleNotification, {
 	VARIANTS,
 } from '../../../../../../components/notifications/SubtleNotification';
+import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 
 export default function AudienceCreationNotice() {
 	const [ isCreatingAudience, setIsCreatingAudience ] = useState( false );
@@ -112,6 +114,8 @@ export default function AudienceCreationNotice() {
 		)
 	);
 
+	const [ apiErrors, setApiErrors ] = useState( [] );
+
 	const handleCreateAudience = useCallback(
 		async ( audienceSlug ) => {
 			setIsCreatingAudience( audienceSlug );
@@ -149,6 +153,12 @@ export default function AudienceCreationNotice() {
 				SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
 			);
 
+			if ( !! error ) {
+				setApiErrors( [ error ] );
+			} else {
+				setApiErrors( [] );
+			}
+
 			await syncAvailableAudiences();
 
 			setIsCreatingAudience( false );
@@ -171,6 +181,13 @@ export default function AudienceCreationNotice() {
 	const handleDismissEditScopeNotice = () => {
 		dismissItem( AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG );
 	};
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const hasOAuthError =
+		isCreatingAudienceFromOAuth && setupErrorCode === 'access_denied';
 
 	useEffect( () => {
 		async function createAudienceFromOAuth() {
@@ -278,6 +295,12 @@ export default function AudienceCreationNotice() {
 						hideIcon
 					/>
 				</div>
+			) }
+			{ ( apiErrors.length > 0 || hasOAuthError ) && (
+				<AudienceCreationErrorNotice
+					apiErrors={ apiErrors }
+					hasOAuthError={ hasOAuthError }
+				/>
 			) }
 		</div>
 	);

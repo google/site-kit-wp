@@ -46,7 +46,17 @@ export default function Checkbox( props ) {
 		loading,
 		alignLeft,
 		description,
+		badge,
 	} = props;
+
+	const label = !! badge ? (
+		<div className="mdc-checkbox__label-wrapper">
+			<label htmlFor={ id }>{ children }</label>
+			{ badge }
+		</div>
+	) : (
+		<label htmlFor={ id }>{ children }</label>
+	);
 
 	return (
 		<div className="mdc-form-field">
@@ -90,11 +100,11 @@ export default function Checkbox( props ) {
 				) }
 			</div>
 
-			{ ! description && <label htmlFor={ id }>{ children }</label> }
+			{ ! description && label }
 
 			{ description && (
 				<div className="mdc-checkbox__content">
-					<label htmlFor={ id }>{ children }</label>
+					{ label }
 					<div className="mdc-checkbox__description">
 						{ description }
 					</div>
@@ -117,6 +127,7 @@ Checkbox.propTypes = {
 	loading: PropTypes.bool,
 	alignLeft: PropTypes.bool,
 	description: PropTypes.node,
+	badge: PropTypes.node,
 };
 
 Checkbox.defaultProps = {

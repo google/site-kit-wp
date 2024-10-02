@@ -21,6 +21,7 @@
  */
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
+	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
@@ -28,6 +29,8 @@ import {
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import {
@@ -42,14 +45,20 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
-import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	waitFor,
+} from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import AudienceSelectionPanel from '.';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
@@ -563,6 +572,115 @@ describe( 'AudienceSelectionPanel', () => {
 				} );
 		} );
 
+		it( 'should show a "Temporarily hidden" badge for temporarily hidden audiences', async () => {
+			const temporarilyHiddenAudiences = [
+				'properties/12345/audiences/3',
+			];
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					'audience-tile-properties/12345/audiences/3',
+				] );
+
+			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			document
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const audienceName = item?.querySelector(
+						'input[type="checkbox"]'
+					)?.value;
+
+					const sourceInDOM = item?.querySelector(
+						'.googlesitekit-badge-with-tooltip'
+					);
+
+					if (
+						! temporarilyHiddenAudiences.includes( audienceName )
+					) {
+						expect( sourceInDOM ).not.toBeInTheDocument();
+					} else {
+						expect( sourceInDOM ).toBeInTheDocument();
+					}
+				} );
+		} );
+
+		it( 'should show a "Temporarily hidden" badge taking precedence over the "New" badge', async () => {
+			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+				availableAudiences
+					.filter(
+						( { audienceType } ) =>
+							audienceType !== 'DEFAULT_AUDIENCE'
+					)
+					.reduce(
+						( acc, { name } ) => ( {
+							...acc,
+							[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]:
+								currentTimeInSeconds + WEEK_IN_SECONDS,
+						} ),
+						{}
+					)
+			);
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					'audience-tile-properties/12345/audiences/3',
+				] );
+
+			const { container, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			container
+				.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				)
+				?.forEach( ( item ) => {
+					const audienceName = item?.querySelector(
+						'input[type="checkbox"]'
+					)?.value;
+
+					const temporarilyHiddenBadgeSourceInDOM =
+						item?.querySelector(
+							'.googlesitekit-badge-with-tooltip'
+						);
+
+					const newBadgeSourceInDOM = item?.querySelector(
+						'.googlesitekit-new-badge'
+					);
+
+					if ( audienceName === 'properties/12345/audiences/3' ) {
+						expect( item ).toContainElement(
+							temporarilyHiddenBadgeSourceInDOM
+						);
+
+						expect( item ).not.toContainElement(
+							newBadgeSourceInDOM
+						);
+					} else {
+						expect( item ).not.toContainElement(
+							temporarilyHiddenBadgeSourceInDOM
+						);
+						expect( item ).toContainElement( newBadgeSourceInDOM );
+					}
+				} );
+		} );
+
 		it( 'should not show "New" badges if they have expired', async () => {
 			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
@@ -980,6 +1098,212 @@ describe( 'AudienceSelectionPanel', () => {
 					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
 				)[ 3 ]
 			).toHaveTextContent( 'Returning visitors' );
+		} );
+
+		describe( 'AudienceCreationErrorNotice', () => {
+			const createAudienceEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
+			);
+
+			beforeEach( () => {
+				const nonSiteKitAvailableAudiences = availableAudiences.filter(
+					( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+				);
+
+				const nonSiteKitConfiguredAudiences =
+					nonSiteKitAvailableAudiences.map( ( { name } ) => name );
+
+				const nonSiteKitReportOptions = {
+					...reportOptions,
+					dimensionFilters: {
+						audienceResourceName: nonSiteKitConfiguredAudiences,
+					},
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( nonSiteKitAvailableAudiences );
+
+				registry
+					.dispatch( CORE_USER )
+					.setConfiguredAudiences( nonSiteKitConfiguredAudiences );
+
+				provideAnalytics4MockReport(
+					registry,
+					nonSiteKitReportOptions
+				);
+			} );
+
+			it( 'should display an audience creation notice with an OAuth error notice', async () => {
+				provideSiteInfo( registry, {
+					setupErrorCode: 'access_denied',
+				} );
+
+				provideUserAuthentication( registry, {
+					grantedScopes: [],
+				} );
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( AUDIENCE_CREATION_FORM, {
+						autoSubmit: true,
+					} );
+
+				const { getByText, getByRole, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByText( /Create groups suggested by Site Kit/i )
+				).toBeInTheDocument();
+				document
+					.querySelectorAll(
+						'.googlesitekit-audience-selection-panel__audience-creation-notice-audience .googlesitekit-audience-selection-panel__audience-creation-notice-audience-details h3'
+					)
+					?.forEach( ( element, index ) => {
+						expect( element ).toHaveTextContent(
+							index === 0 ? 'New visitors' : 'Returning visitors'
+						);
+					} );
+
+				expect(
+					getByText(
+						/Setup was interrupted because you didn’t grant the necessary permissions. Click on Create again to retry. If that doesn’t work/i
+					)
+				).toBeInTheDocument();
+
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toHaveAttribute(
+					'href',
+					registry
+						.select( CORE_SITE )
+						.getErrorTroubleshootingLinkURL( {
+							code: 'access_denied',
+						} )
+				);
+			} );
+
+			it( 'should display an audience creation notice with an insufficient permissions error', async () => {
+				const errorResponse = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
+
+				fetchMock.post( createAudienceEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					status: 200,
+					body: availableAudiences,
+				} );
+
+				const { getByText, getAllByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				const createButton = getAllByText( 'Create' )[ 0 ];
+
+				expect( createButton ).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click( createButton );
+				} );
+
+				// Verify the error is "Insufficient permissions" variant.
+				await waitFor( () => {
+					expect(
+						getByText( /Insufficient permissions/i )
+					).toBeInTheDocument();
+
+					expect( getByText( /get help/i ) ).toBeInTheDocument();
+
+					expect(
+						getByText( /request access/i )
+					).toBeInTheDocument();
+				} );
+
+				await act( () => waitForTimeouts( 30 ) );
+
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:create-audience',
+					'type:modules',
+					'identifier:analytics-4',
+					'error:"Error message."'
+				);
+			} );
+
+			it( 'should display an audience creation notice with a general error', async () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( createAudienceEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					status: 200,
+					body: availableAudiences,
+				} );
+
+				const { getByText, getAllByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				const createButton = getAllByText( 'Create' )[ 0 ];
+
+				expect( createButton ).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click( createButton );
+				} );
+
+				// Verify the error is general error variant.
+				await waitFor( () => {
+					expect(
+						getByText( /Analytics update failed/i )
+					).toBeInTheDocument();
+
+					expect(
+						getByText( /Click on Create to try again./i )
+					).toBeInTheDocument();
+				} );
+
+				await act( () => waitForTimeouts( 30 ) );
+
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:create-audience',
+					'type:modules',
+					'identifier:analytics-4',
+					'error:"Internal server error"'
+				);
+			} );
 		} );
 	} );
 

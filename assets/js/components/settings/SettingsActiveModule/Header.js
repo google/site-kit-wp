@@ -36,8 +36,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
-import { NEW_MODULES } from '../constants';
+import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from '../constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
 import ModuleIcon from '../../ModuleIcon';
@@ -178,6 +177,13 @@ export default function Header( { slug } ) {
 										'Experimental',
 										'google-site-kit'
 									) }
+									hasLeftSpacing
+								/>
+							) }
+							{ BETA_MODULES.includes( slug ) && (
+								<Badge
+									className="googlesitekit-beta-badge"
+									label={ __( 'Beta', 'google-site-kit' ) }
 									hasLeftSpacing
 								/>
 							) }

@@ -1,5 +1,5 @@
 /**
- * Audience Segmentation PartialDataBadge component.
+ * KeyMetricsSetupMobileSVG component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,29 +17,31 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
+import { lazy, Suspense } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import InfoTooltip from '../../../../../../../components/InfoTooltip';
+import PreviewBlock from '../../components/PreviewBlock';
+import MediaErrorHandler from '../../components/MediaErrorHandler';
+const LazyMobileGraphicSVG = lazy( () =>
+	import( '../../../svg/graphics/key-metrics-setup-cta-mobile.svg' )
+);
 
-export default function PartialDataBadge( { tooltipTitle } ) {
+export default function KeyMetricsSetupMobileSVG() {
 	return (
-		<span className="googlesitekit-audience-segmentation-partial-data-badge">
-			{ __( 'Partial data', 'google-site-kit' ) }
-			{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
-		</span>
+		<Suspense fallback={ <PreviewBlock width="100%" height="235px" /> }>
+			<MediaErrorHandler
+				errorMessage={ __(
+					'Failed to load graphic',
+					'google-site-kit'
+				) }
+			>
+				<LazyMobileGraphicSVG />
+			</MediaErrorHandler>
+		</Suspense>
 	);
 }
-
-PartialDataBadge.propTypes = {
-	tooltipTitle: PropTypes.node,
-};
