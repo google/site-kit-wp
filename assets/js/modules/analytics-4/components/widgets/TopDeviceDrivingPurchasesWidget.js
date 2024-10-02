@@ -52,6 +52,11 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 		} )
 	);
 
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const hasDetectedEvent = detectedEvents?.includes( 'purchase' );
+
 	const totalPurchasesReportOptions = {
 		...dates,
 		metrics: [
@@ -75,15 +80,30 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 
 	const totalPurchasesReport = useInViewSelect(
 		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport(
-				totalPurchasesReportOptions
-			),
+			hasDetectedEvent
+				? select( MODULES_ANALYTICS_4 ).getReport(
+						totalPurchasesReportOptions
+				  )
+				: undefined,
 		[ totalPurchasesReportOptions ]
 	);
 
+	// ecommercePurchases metric will always be assigned a value, unlike most
+	// other metrics, where rows would be empty if there is no data, ecommercePurchases
+	// will assign value `0` for each date range if there is no event data. So we need
+	// to verify that value is non-zero for one of the rows, to allow report request for
+	// traffic source. Otherwise zero data will be incorrectly displayed, showing zero for
+	// purchases and comparison, but still include the traffic source.
+	const hasPurchases = totalPurchasesReport?.rows
+		? totalPurchasesReport?.rows?.[ 0 ]?.metricValues?.[ 0 ]?.value > 0 ||
+		  totalPurchasesReport?.rows?.[ 1 ]?.metricValues?.[ 0 ]?.value > 0
+		: false;
+
 	const deviceReport = useInViewSelect(
 		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport( deviceReportOptions ),
+			hasDetectedEvent && hasPurchases
+				? select( MODULES_ANALYTICS_4 ).getReport( deviceReportOptions )
+				: undefined,
 		[ deviceReportOptions ]
 	);
 
