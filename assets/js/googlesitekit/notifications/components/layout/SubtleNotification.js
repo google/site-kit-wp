@@ -67,10 +67,11 @@ export default function SubtleNotification( {
 							{ description }
 						</p>
 					</div>
+					<div className="googlesitekit-subtle-notification__action">
+						{ dismissCTA }
 
-					{ dismissCTA }
-
-					{ additionalCTA }
+						{ additionalCTA }
+					</div>
 				</Cell>
 			</Row>
 		</Grid>
