@@ -70,6 +70,6 @@ export default function Notification( {
 Notification.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
-	gaViewEventLabel: PropTypes.array,
+	gaTrackingEventArgs: PropTypes.array,
 	children: PropTypes.node,
 };
