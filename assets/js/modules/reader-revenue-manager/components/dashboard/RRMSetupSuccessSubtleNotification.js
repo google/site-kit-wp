@@ -117,7 +117,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
-			<Notification gaViewEventLabel={ publicationOnboardingState }>
+			<Notification
+				gaTrackingEventArgs={ [ publicationOnboardingState ] }
+			>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -156,7 +158,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<Notification gaViewEventLabel={ publicationOnboardingState }>
+			<Notification
+				gaTrackingEventArgs={ [ publicationOnboardingState ] }
+			>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -195,7 +199,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<Notification gaViewEventLabel={ publicationOnboardingState }>
+			<Notification
+				gaTrackingEventArgs={ [ publicationOnboardingState ] }
+			>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
