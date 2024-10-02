@@ -29,6 +29,7 @@ export { default as TopCitiesWidget } from './TopCitiesWidget';
 export { default as TopCitiesDrivingLeadsWidget } from './TopCitiesDrivingLeadsWidget';
 export { default as TopCitiesDrivingAddToCartWidget } from './TopCitiesDrivingAddToCartWidget';
 export { default as TopCitiesDrivingPurchasesWidget } from './TopCitiesDrivingPurchasesWidget';
+export { default as TopDeviceDrivingPurchasesWidget } from './TopDeviceDrivingPurchasesWidget';
 export { default as TopCountriesWidget } from './TopCountriesWidget';
 export { default as TopTrafficSourceWidget } from './TopTrafficSourceWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';

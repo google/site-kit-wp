@@ -36,6 +36,7 @@ import {
 	TopCitiesDrivingLeadsWidget,
 	TopCitiesDrivingAddToCartWidget,
 	TopCitiesDrivingPurchasesWidget,
+	TopDeviceDrivingPurchasesWidget,
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
@@ -576,7 +577,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 		{
-			Component: TopCitiesDrivingPurchasesWidget,
+			Component: TopDeviceDrivingPurchasesWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
