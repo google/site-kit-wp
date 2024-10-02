@@ -40,12 +40,6 @@
 		font-weight: $fw-medium;
 		line-height: $lh-label-md;
 		position: relative;
-		width: 100%;
-
-		&:has(.googlesitekit-badge) {
-			align-items: center;
-			display: flex;
-		}
 
 		&:hover {
 			text-decoration: none;
@@ -53,10 +47,6 @@
 
 		&:focus {
 			outline-offset: 0;
-		}
-
-		.googlesitekit-badge {
-			margin-left: 10px;
 		}
 	}
 

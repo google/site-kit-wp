@@ -115,7 +115,10 @@ export default function SetupModule( { slug, name, description } ) {
 						/>
 					) }
 					{ BETA_MODULES.includes( slug ) && (
-						<Badge label={ __( 'Beta', 'google-site-kit' ) } />
+						<Badge
+							className="googlesitekit-beta-badge"
+							label={ __( 'Beta', 'google-site-kit' ) }
+						/>
 					) }
 					{ NEW_MODULES.includes( slug ) && (
 						<NewBadge hasNoSpacing />
