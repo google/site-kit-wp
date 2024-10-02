@@ -101,7 +101,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 				'google-site-kit'
 			) }
 			description={ __(
-				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long.',
+				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long',
 				'google-site-kit'
 			) }
 			onDismiss={ dismissNotificationForUser }

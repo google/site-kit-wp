@@ -16,4 +16,12 @@
  * limitations under the License.
  */
 
-export const NEW_MODULES = [ 'ads', 'reader-revenue-manager' ];
+export const NEW_MODULES = [
+	'ads',
+	'reader-revenue-manager',
+	'sign-in-with-google',
+];
+
+export const BETA_MODULES = [ 'sign-in-with-google' ];
+
+export const EXPERIMENTAL_MODULES = [];
