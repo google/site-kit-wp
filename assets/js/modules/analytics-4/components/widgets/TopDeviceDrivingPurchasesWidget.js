@@ -147,38 +147,38 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 		deviceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
 			?.dimensionValues?.[ 0 ].value || '-';
 
-	const currentTotalPurchasers =
+	const currentTotalPurchases =
 		parseInt(
 			totalPurchasesReportRows.filter(
 				makeFilter( 'date_range_0', 0 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const currentTopDevicePurchasers =
+	const currentTopDevicePurchases =
 		parseInt(
 			deviceReportRows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
 				?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const relativeCurrentTopDevicePurchasers = currentTotalPurchasers
-		? currentTopDevicePurchasers / currentTotalPurchasers
+	const relativeCurrentTopDevicePurchases = currentTotalPurchases
+		? currentTopDevicePurchases / currentTotalPurchases
 		: 0;
 
-	const previousTotalPurchasers =
+	const previousTotalPurchases =
 		parseInt(
 			totalPurchasesReportRows.filter(
 				makeFilter( 'date_range_1', 0 )
 			)[ 0 ]?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const previousTopDevicePurchasers =
+	const previousTopDevicePurchases =
 		parseInt(
 			deviceReportRows.filter( makeFilter( 'date_range_1', 1 ) )[ 0 ]
 				?.metricValues?.[ 0 ]?.value,
 			10
 		) || 0;
-	const relativePreviousTopDevicePurchasers = previousTotalPurchasers
-		? previousTopDevicePurchasers / previousTotalPurchasers
+	const relativePreviousTopDevicePurchases = previousTotalPurchases
+		? previousTopDevicePurchases / previousTotalPurchases
 		: 0;
 
 	const format = {
@@ -198,11 +198,11 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 				sprintf(
 					/* translators: %d: Percentage of purchases for the current top device compared to the number of purchases for all devices. */
 					__( '%s of total purchases', 'google-site-kit' ),
-					numFmt( relativeCurrentTopDevicePurchasers, format )
+					numFmt( relativeCurrentTopDevicePurchases, format )
 				)
 			}
-			previousValue={ relativePreviousTopDevicePurchasers }
-			currentValue={ relativeCurrentTopDevicePurchasers }
+			previousValue={ relativePreviousTopDevicePurchases }
+			currentValue={ relativeCurrentTopDevicePurchases }
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
