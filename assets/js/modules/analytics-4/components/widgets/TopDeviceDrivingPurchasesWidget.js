@@ -175,8 +175,8 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 			subText={
 				// eslint-disable-next-line @wordpress/valid-sprintf
 				sprintf(
-					/* translators: %d: Percentage of purchasers for the current top device compared to the number of total purchasers for all devices. */
-					__( '%s of total traffic', 'google-site-kit' ),
+					/* translators: %d: Percentage of purchases for the current top device compared to the number of purchases for all devices. */
+					__( '%s of total purchases', 'google-site-kit' ),
 					numFmt( relativeCurrentTopDevicePurchasers, format )
 				)
 			}
