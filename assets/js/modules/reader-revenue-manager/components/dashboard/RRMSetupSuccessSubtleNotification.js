@@ -93,7 +93,9 @@ export default function RRMSetupSuccessSubtleNotification( {
 		setSlug( undefined );
 	};
 
-	const onCTAClick = () => {
+	const onCTAClick = ( event ) => {
+		event.preventDefault();
+
 		// Set publication data to be reset when user re-focuses window.
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
@@ -102,6 +104,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 				[ SYNC_PUBLICATION ]: true,
 			} );
 		}
+
+		global.open( serviceURL, '_blank' );
 	};
 
 	const syncPublication = useCallback( () => {
