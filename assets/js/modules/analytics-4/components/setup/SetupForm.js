@@ -48,6 +48,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
+import SetupEnhancedConversionTrackingNotice from './SetupEnhancedConversionTrackingNotice';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
@@ -126,6 +127,9 @@ export default function SetupForm( { finishSetup } ) {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 			<SetupFormFields />
+
+			<SetupEnhancedConversionTrackingNotice />
+
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
 					disabled={ ! canSubmitChanges || isSaving }

@@ -30,6 +30,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { accountSummaries, webDataStreamsBatch } = fixtures;
 const accounts = accountSummaries;
@@ -92,6 +93,12 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectAccount( accountID );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConversionTrackingSettings( {
+						enabled: false,
+					} );
 			};
 
 			return (

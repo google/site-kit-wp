@@ -50,6 +50,7 @@ import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
+import SetupEnhancedConversionTrackingNotice from '../../setup/SetupEnhancedConversionTrackingNotice';
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -245,6 +246,10 @@ export default function AccountCreate() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<EnhancedMeasurementSwitch formName={ FORM_ACCOUNT_CREATE } />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs">
+				<SetupEnhancedConversionTrackingNotice />
 			</div>
 
 			<p>

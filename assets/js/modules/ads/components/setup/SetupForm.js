@@ -35,6 +35,7 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
+import SetupEnhancedConversionTrackingNotice from './SetupEnhancedConversionTrackingNotice';
 
 export default function SetupForm( {
 	finishSetup,
@@ -78,6 +79,8 @@ export default function SetupForm( {
 					{ createAccountCTA }
 				</div>
 			) }
+
+			<SetupEnhancedConversionTrackingNotice />
 
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
