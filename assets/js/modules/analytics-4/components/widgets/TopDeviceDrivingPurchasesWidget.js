@@ -85,7 +85,7 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 						totalPurchasesReportOptions
 				  )
 				: undefined,
-		[ totalPurchasesReportOptions ]
+		[ hasDetectedEvent, totalPurchasesReportOptions ]
 	);
 
 	// ecommercePurchases metric will always be assigned a value, unlike most
@@ -104,7 +104,7 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 			hasDetectedEvent && hasPurchases
 				? select( MODULES_ANALYTICS_4 ).getReport( deviceReportOptions )
 				: undefined,
-		[ deviceReportOptions ]
+		[ hasPurchases, hasDetectedEvent, deviceReportOptions ]
 	);
 
 	const error = useSelect( ( select ) => {
@@ -124,7 +124,7 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 	} );
 
 	const loading = useSelect( ( select ) =>
-		hasDetectedEvent
+		hasDetectedEvent && hasPurchases
 			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getReport',
 					[ totalPurchasesReportOptions ]
