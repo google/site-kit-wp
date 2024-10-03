@@ -49,6 +49,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import SetupEnhancedConversionTrackingNotice from './SetupEnhancedConversionTrackingNotice';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
@@ -69,6 +70,8 @@ export default function SetupForm( { finishSetup } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
 
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -91,6 +94,9 @@ export default function SetupForm( { finishSetup } ) {
 			}
 
 			if ( ! error ) {
+				setConversionTrackingEnabled( true );
+				await saveConversionTrackingSettings();
+
 				if ( isEnhancedMeasurementEnabled === true ) {
 					await trackEvent(
 						`${ viewContext }_analytics`,
@@ -103,6 +109,8 @@ export default function SetupForm( { finishSetup } ) {
 		[
 			finishSetup,
 			isEnhancedMeasurementEnabled,
+			setConversionTrackingEnabled,
+			saveConversionTrackingSettings,
 			setValues,
 			submitChanges,
 			viewContext,

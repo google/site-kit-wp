@@ -36,6 +36,7 @@ import { MODULES_ADS } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 import SetupEnhancedConversionTrackingNotice from './SetupEnhancedConversionTrackingNotice';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 export default function SetupForm( {
 	finishSetup,
@@ -52,6 +53,8 @@ export default function SetupForm( {
 	);
 
 	const { submitChanges } = useDispatch( MODULES_ADS );
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -60,10 +63,17 @@ export default function SetupForm( {
 			const { error } = await submitChanges();
 
 			if ( ! error ) {
+				setConversionTrackingEnabled( true );
+				await saveConversionTrackingSettings();
 				finishSetup();
 			}
 		},
-		[ finishSetup, submitChanges ]
+		[
+			finishSetup,
+			saveConversionTrackingSettings,
+			setConversionTrackingEnabled,
+			submitChanges,
+		]
 	);
 
 	return (

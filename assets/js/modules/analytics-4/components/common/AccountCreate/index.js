@@ -99,6 +99,8 @@ export default function AccountCreate() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
 
 	const hasRequiredScope = hasEditScope;
 
@@ -172,16 +174,19 @@ export default function AccountCreate() {
 
 		const { error } = await createAccount();
 		if ( ! error ) {
+			setConversionTrackingEnabled( true );
+			await saveConversionTrackingSettings();
 			setIsNavigating( true );
 		}
 	}, [
-		createAccount,
-		setIsNavigating,
 		hasEditScope,
 		hasGTMScope,
-		setPermissionScopeError,
 		setValues,
 		viewContext,
+		createAccount,
+		setPermissionScopeError,
+		setConversionTrackingEnabled,
+		saveConversionTrackingSettings,
 	] );
 
 	// If the user ends up back on this component with the required scope granted,
