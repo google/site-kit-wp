@@ -114,7 +114,10 @@ export function isValidDateString( dateString = '' ) {
 		return false;
 	}
 
+	// Valid use of `new Date()`, constructing a new date from the string.
+	// eslint-disable-next-line sitekit/no-direct-date
 	const date = new Date( dateString );
+
 	return isDate( date ) && ! isNaN( date );
 }
 
@@ -217,5 +220,8 @@ export function dateSub( relativeDate, duration ) {
 	const timestamp = isValidDateString( relativeDate )
 		? Date.parse( relativeDate )
 		: relativeDate.getTime();
+
+	// Valid use of `new Date()` using calculations.
+	// eslint-disable-next-line sitekit/no-direct-date
 	return new Date( timestamp - duration * 1000 );
 }

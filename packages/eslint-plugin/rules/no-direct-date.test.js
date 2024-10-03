@@ -36,7 +36,7 @@ const ruleTester = new RuleTester( {
 ruleTester.run( 'no-direct-date', rule, {
 	valid: [
 		'const date = select( CORE_USER ).getReferenceDate();',
-		'const createTime = new Date( Date.now() - DAY_IN_SECONDS * 1.5 * 1000 ).toISOString();',
+		'const createTime = new Date( DAY_IN_SECONDS * 1.5 * 1000, 20, 3 ).toISOString();',
 	],
 	invalid: [
 		{
@@ -50,6 +50,42 @@ ruleTester.run( 'no-direct-date', rule, {
 		},
 		{
 			code: 'const timestamp = Date.now();',
+			errors: [
+				{
+					message:
+						"Avoid using 'Date.now()'. Use select( CORE_USER ).getReferenceDate() or add a comment explaining why the reference date should not be used here.",
+				},
+			],
+		},
+		{
+			code: 'const date = new Date( 12345 );',
+			errors: [
+				{
+					message:
+						"Avoid using 'new Date()'. Use select( CORE_USER ).getReferenceDate() or add a comment explaining why the reference date should not be used here.",
+				},
+			],
+		},
+		{
+			code: 'const timestamp = Date.now( 12345 );',
+			errors: [
+				{
+					message:
+						"Avoid using 'Date.now()'. Use select( CORE_USER ).getReferenceDate() or add a comment explaining why the reference date should not be used here.",
+				},
+			],
+		},
+		{
+			code: 'const date = new Date( 12345, 2 );',
+			errors: [
+				{
+					message:
+						"Avoid using 'new Date()'. Use select( CORE_USER ).getReferenceDate() or add a comment explaining why the reference date should not be used here.",
+				},
+			],
+		},
+		{
+			code: 'const timestamp = Date.now( 12345, 2 );',
 			errors: [
 				{
 					message:

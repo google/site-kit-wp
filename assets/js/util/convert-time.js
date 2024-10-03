@@ -58,7 +58,9 @@ export const convertSecondsToArray = ( seconds ) => {
 export const convertDateStringToUNIXTimestamp = ( dateStringValue ) => {
 	const unixTimestamp =
 		dateStringValue && ! Number.isInteger( dateStringValue )
-			? new Date( dateStringValue ).getTime()
+			? // Valid use of `new Date()` with an argument.
+			  // eslint-disable-next-line sitekit/no-direct-date
+			  new Date( dateStringValue ).getTime()
 			: dateStringValue;
 
 	if ( isNaN( unixTimestamp ) || ! unixTimestamp ) {
