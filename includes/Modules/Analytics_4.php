@@ -156,7 +156,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Reset_Audiences instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 * @var Reset_Audiences
 	 */
 	protected $reset_audiences;
