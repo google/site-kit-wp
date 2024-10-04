@@ -23,11 +23,9 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Fragment } from '@wordpress/element';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 export default function SetupEnhancedConversionTrackingNotice( {
-	Wrapper = Fragment,
 	className,
 	message,
 } ) {
@@ -40,15 +38,13 @@ export default function SetupEnhancedConversionTrackingNotice( {
 	}
 
 	return (
-		<Wrapper>
-			<p
-				className={ classnames(
-					className,
-					'googlesitekit-color--surfaces-on-background-variant'
-				) }
-			>
-				{ message }
-			</p>
-		</Wrapper>
+		<p
+			className={ classnames(
+				className,
+				'googlesitekit-color--surfaces-on-background-variant'
+			) }
+		>
+			{ message }
+		</p>
 	);
 }
