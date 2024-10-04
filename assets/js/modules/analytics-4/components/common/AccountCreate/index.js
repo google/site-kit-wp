@@ -253,9 +253,13 @@ export default function AccountCreate() {
 				<EnhancedMeasurementSwitch formName={ FORM_ACCOUNT_CREATE } />
 			</div>
 
-			<div className="googlesitekit-setup-module__inputs">
-				<SetupEnhancedConversionTrackingNotice />
-			</div>
+			<SetupEnhancedConversionTrackingNotice
+				Wrapper={ ( children ) => (
+					<div className="googlesitekit-setup-module__inputs">
+						{ children }
+					</div>
+				) }
+			/>
 
 			<p>
 				{ hasRequiredScope && (
