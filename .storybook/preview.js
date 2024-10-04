@@ -79,7 +79,9 @@ export const decorators = [
 				features={ features }
 				route={ route }
 				// Expose registry as global for tinkering.
-				callback={ ( registry ) => ( global.registry = registry ) }
+				callback={ ( registry ) => {
+					global.registry = registry;
+				} }
 			>
 				<Story />
 			</WithTestRegistry>
