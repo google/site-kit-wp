@@ -43,7 +43,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../utils/validation';
-import { caseInsensitiveListSort } from '../../../util/sort';
+import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
 import { appendAccountID, appendPropertyAndAccountIds } from '../utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;

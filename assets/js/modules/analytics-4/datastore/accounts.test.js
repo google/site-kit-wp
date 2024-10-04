@@ -31,7 +31,7 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { caseInsensitiveListSort } from '../../../util/sort';
+import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
 
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;

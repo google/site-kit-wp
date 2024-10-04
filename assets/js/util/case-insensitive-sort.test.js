@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { caseInsensitiveListSort } from './sort';
+import { caseInsensitiveListSort } from './case-insensitive-sort';
 
 describe( 'caseInsensitiveListSort', () => {
 	it( 'should sort an array of objects by a given field (case-insensitive)', () => {
