@@ -40,6 +40,7 @@ import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../..
 import * as fixtures from '../../datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const {
 	accountSummaries,
@@ -65,6 +66,9 @@ const REGEX_REST_GA4_CREATE_WEBDATASTREAM = new RegExp(
 const REGEX_REST_GA4_ACCOUNT_SUMMARIES = new RegExp(
 	'/analytics-4/data/account-summaries'
 );
+const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
+	'^/google-site-kit/v1/core/site/data/conversion-tracking'
+);
 
 describe( 'SetupForm', () => {
 	let registry;
@@ -76,9 +80,16 @@ describe( 'SetupForm', () => {
 		provideModules( registry, [ { slug: 'analytics-4', active: true } ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: false,
+		} );
+		muteFetch( REGEX_REST_CONVERSION_TRACKING_SETTINGS );
 	} );
 
 	it( 'renders the form correctly', async () => {
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: true, // Hide notice for this case.
+		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
