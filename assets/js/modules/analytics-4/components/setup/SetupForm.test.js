@@ -111,8 +111,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
-
 		const { container, getByText, waitForRegistry } = render(
 			<SetupForm />,
 			{
@@ -159,8 +157,6 @@ describe( 'SetupForm', () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -257,8 +253,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
-
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
 		// In this situation, the autoSubmit is set before the user goes to oAuth,
@@ -349,8 +343,6 @@ describe( 'SetupForm', () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
@@ -474,8 +466,6 @@ describe( 'SetupForm', () => {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.selectAccount( accountID );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 			const { getByRole, getByLabelText, waitForRegistry } = render(
 				<SetupForm />,
