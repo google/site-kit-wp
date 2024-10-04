@@ -50,7 +50,7 @@ import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
-import SetupEnhancedConversionTrackingNotice from '../../setup/SetupEnhancedConversionTrackingNotice';
+import SetupEnhancedConversionTrackingNotice from '../../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -254,10 +254,14 @@ export default function AccountCreate() {
 			</div>
 
 			<SetupEnhancedConversionTrackingNotice
-				Wrapper={ ( children ) => (
+				Wrapper={ ( { children } ) => (
 					<div className="googlesitekit-setup-module__inputs">
 						{ children }
 					</div>
+				) }
+				message={ __(
+					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'google-site-kit'
 				) }
 			/>
 

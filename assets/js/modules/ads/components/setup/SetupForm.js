@@ -35,8 +35,8 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
-import SetupEnhancedConversionTrackingNotice from './SetupEnhancedConversionTrackingNotice';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
 export default function SetupForm( {
 	finishSetup,
@@ -90,7 +90,13 @@ export default function SetupForm( {
 				</div>
 			) }
 
-			<SetupEnhancedConversionTrackingNotice />
+			<SetupEnhancedConversionTrackingNotice
+				className="googlesitekit-margin-top-1"
+				message={ __(
+					'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'google-site-kit'
+				) }
+			/>
 
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton

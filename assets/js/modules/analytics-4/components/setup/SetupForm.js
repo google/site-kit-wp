@@ -48,8 +48,8 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
-import SetupEnhancedConversionTrackingNotice from './SetupEnhancedConversionTrackingNotice';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
@@ -136,7 +136,12 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			<SetupFormFields />
 
-			<SetupEnhancedConversionTrackingNotice />
+			<SetupEnhancedConversionTrackingNotice
+				message={ __(
+					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'google-site-kit'
+				) }
+			/>
 
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton

@@ -15,17 +15,22 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { __ } from '@wordpress/i18n';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { Fragment } from '@wordpress/element';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
-export default function SetupEnhancedConversionTrackingNotice() {
+export default function SetupEnhancedConversionTrackingNotice( {
+	Wrapper = Fragment,
+	className,
+	message,
+} ) {
 	const isCTEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
@@ -35,11 +40,15 @@ export default function SetupEnhancedConversionTrackingNotice() {
 	}
 
 	return (
-		<p className="googlesitekit-color--surfaces-on-background-variant">
-			{ __(
-				'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
-				'google-site-kit'
-			) }
-		</p>
+		<Wrapper>
+			<p
+				className={ classnames(
+					className,
+					'googlesitekit-color--surfaces-on-background-variant'
+				) }
+			>
+				{ message }
+			</p>
+		</Wrapper>
 	);
 }
