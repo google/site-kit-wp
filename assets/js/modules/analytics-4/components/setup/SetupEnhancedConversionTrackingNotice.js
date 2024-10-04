@@ -24,8 +24,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { Fragment } from '@wordpress/element';
 
-export default function SetupEnhancedConversionTrackingNotice() {
+export default function SetupEnhancedConversionTrackingNotice( {
+	Wrapper = Fragment,
+} ) {
 	const isCTEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
@@ -35,11 +38,13 @@ export default function SetupEnhancedConversionTrackingNotice() {
 	}
 
 	return (
-		<p className="googlesitekit-color--surfaces-on-background-variant">
-			{ __(
-				'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
-				'google-site-kit'
-			) }
-		</p>
+		<Wrapper>
+			<p className="googlesitekit-color--surfaces-on-background-variant">
+				{ __(
+					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'google-site-kit'
+				) }
+			</p>
+		</Wrapper>
 	);
 }
