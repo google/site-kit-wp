@@ -53,7 +53,6 @@ module.exports = {
 			NewExpression( node ) {
 				if (
 					node.callee.name === 'Date' &&
-					node.arguments.length >= 0 &&
 					node.arguments.length <= 2
 				) {
 					report( node );
@@ -64,7 +63,6 @@ module.exports = {
 					node.callee.object &&
 					node.callee.object.name === 'Date' &&
 					node.callee.property.name === 'now' &&
-					node.arguments.length >= 0 &&
 					node.arguments.length <= 2
 				) {
 					// Don't show an error if Date.now() is used within another Date expression.
