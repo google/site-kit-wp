@@ -44,6 +44,7 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../utils/validation';
 import { caseInsensitiveListSort } from '../../../util/sort';
+import { appendAccountID, appendPropertyAndAccountIds } from '../utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 
@@ -253,65 +254,16 @@ const baseActions = {
 		return matchedAccount || null;
 	},
 
-	*transformAndSortAccountSummaries() {
-		const registry = yield commonActions.getRegistry();
-		let accountSummaries = [
-			...registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries(),
-		]; // Create a shallow copy to avoid mutating the original array.
-
-		const filterAccountWithIds = ( account, idKey = 'account' ) => {
-			const obj = { ...account };
-
-			const matches = account[ idKey ].match( /accounts\/([^/]+)/ );
-			if ( matches ) {
-				obj._id = matches[ 1 ];
-			}
-
-			return obj;
-		};
-
-		const filterPropertyWithIds = ( property, idKey = 'property' ) => {
-			const obj = { ...property };
-
-			const propertyMatches =
-				property[ idKey ]?.match( /properties\/([^/]+)/ );
-			if ( propertyMatches ) {
-				obj._id = propertyMatches[ 1 ];
-			}
-
-			const accountMatches =
-				property.parent?.match( /accounts\/([^/]+)/ );
-			if ( accountMatches ) {
-				obj._accountID = accountMatches[ 1 ];
-			}
-
-			return obj;
-		};
-
-		accountSummaries = accountSummaries.map( ( account ) => {
-			const obj = filterAccountWithIds( account, 'account' );
-			obj.propertySummaries = account.propertySummaries.map(
-				( property ) => filterPropertyWithIds( property, 'property' )
-			);
-
-			return obj;
-		} );
-
-		const sortedAccountSummaries = caseInsensitiveListSort(
-			accountSummaries,
-			'displayName'
-		);
-
-		yield {
+	transformAndSortAccountSummaries() {
+		return {
 			type: TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES,
-			payload: sortedAccountSummaries,
 		};
 	},
 };
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
 		case START_SELECTING_ACCOUNT: {
 			return {
@@ -342,9 +294,24 @@ const baseReducer = ( state, { type, payload } ) => {
 		}
 
 		case TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES: {
+			const accountSummaries = [ ...state.accountSummaries ].map(
+				( account ) => {
+					const obj = appendAccountID( account, 'account' );
+					obj.propertySummaries = account.propertySummaries.map(
+						( property ) =>
+							appendPropertyAndAccountIds( property, 'property' )
+					);
+
+					return obj;
+				}
+			);
+
 			return {
 				...state,
-				accountSummaries: payload,
+				accountSummaries: caseInsensitiveListSort(
+					accountSummaries,
+					'displayName'
+				),
 			};
 		}
 
