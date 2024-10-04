@@ -250,7 +250,10 @@ export default function AccountCreate() {
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<EnhancedMeasurementSwitch formName={ FORM_ACCOUNT_CREATE } />
+				<EnhancedMeasurementSwitch
+					formName={ FORM_ACCOUNT_CREATE }
+					className="googlesitekit-margin-bottom-0"
+				/>
 			</div>
 
 			<SetupEnhancedConversionTrackingNotice
