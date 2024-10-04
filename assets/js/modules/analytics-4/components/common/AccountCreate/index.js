@@ -254,19 +254,15 @@ export default function AccountCreate() {
 					formName={ FORM_ACCOUNT_CREATE }
 					className="googlesitekit-margin-bottom-0"
 				/>
-			</div>
 
-			<SetupEnhancedConversionTrackingNotice
-				Wrapper={ ( { children } ) => (
-					<div className="googlesitekit-setup-module__inputs">
-						{ children }
-					</div>
-				) }
-				message={ __(
-					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
-					'google-site-kit'
-				) }
-			/>
+				<SetupEnhancedConversionTrackingNotice
+					className="googlesitekit-margin-top-0"
+					message={ __(
+						'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+						'google-site-kit'
+					) }
+				/>
+			</div>
 
 			<p>
 				{ hasRequiredScope && (
