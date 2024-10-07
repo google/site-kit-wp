@@ -26,7 +26,7 @@
  * @return {Array} The sorted list.
  */
 export function caseInsensitiveListSort( listToSort, orderBy ) {
-	return listToSort.sort( ( a, b ) => {
+	return [ ...listToSort ].sort( ( a, b ) => {
 		const nameA = a[ orderBy ]?.toLowerCase() || '';
 		const nameB = b[ orderBy ]?.toLowerCase() || '';
 

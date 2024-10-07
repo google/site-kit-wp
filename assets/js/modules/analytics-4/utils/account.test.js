@@ -119,15 +119,15 @@ describe( 'getAccountDefaults', () => {
 		} );
 	} );
 
-	describe( 'appendAccountID', () => {
-		const { appendAccountID } = accountUtils;
+	describe( 'populateAccountID', () => {
+		const { populateAccountID } = accountUtils;
 
 		test( 'should append the account ID if a valid account URL is present', () => {
 			const account = {
 				account: 'accounts/12345',
 			};
 
-			const result = appendAccountID( account );
+			const result = populateAccountID( account );
 
 			expect( result ).toEqual( {
 				account: 'accounts/12345',
@@ -140,7 +140,7 @@ describe( 'getAccountDefaults', () => {
 				account: 'not-a-valid-url',
 			};
 
-			const result = appendAccountID( account );
+			const result = populateAccountID( account );
 
 			expect( result ).toEqual( {
 				account: 'not-a-valid-url',
@@ -152,29 +152,16 @@ describe( 'getAccountDefaults', () => {
 				account: '',
 			};
 
-			const result = appendAccountID( account );
+			const result = populateAccountID( account );
 
 			expect( result ).toEqual( {
 				account: '',
 			} );
 		} );
-
-		test( 'should handle cases where the idKey is different', () => {
-			const account = {
-				customKey: 'accounts/67890',
-			};
-
-			const result = appendAccountID( account, 'customKey' );
-
-			expect( result ).toEqual( {
-				customKey: 'accounts/67890',
-				_id: '67890',
-			} );
-		} );
 	} );
 
-	describe( 'appendPropertyAndAccountIds', () => {
-		const { appendPropertyAndAccountIds } = accountUtils;
+	describe( 'populatePropertyAndAccountIds', () => {
+		const { populatePropertyAndAccountIds } = accountUtils;
 
 		it( 'should append _id and _accountID when both property and parent fields are valid', () => {
 			const property = {
@@ -182,7 +169,7 @@ describe( 'getAccountDefaults', () => {
 				parent: 'accounts/456',
 			};
 
-			const result = appendPropertyAndAccountIds( property );
+			const result = populatePropertyAndAccountIds( property );
 
 			expect( result._id ).toBe( '123' );
 			expect( result._accountID ).toBe( '456' );
@@ -194,7 +181,7 @@ describe( 'getAccountDefaults', () => {
 				parent: 'invalid-string',
 			};
 
-			const result = appendPropertyAndAccountIds( property );
+			const result = populatePropertyAndAccountIds( property );
 
 			expect( result._id ).toBe( '123' );
 			expect( result._accountID ).toBeUndefined();
@@ -206,7 +193,7 @@ describe( 'getAccountDefaults', () => {
 				parent: 'accounts/456',
 			};
 
-			const result = appendPropertyAndAccountIds( property );
+			const result = populatePropertyAndAccountIds( property );
 
 			expect( result._id ).toBeUndefined();
 			expect( result._accountID ).toBe( '456' );
@@ -218,22 +205,10 @@ describe( 'getAccountDefaults', () => {
 				parent: 'invalid-string',
 			};
 
-			const result = appendPropertyAndAccountIds( property );
+			const result = populatePropertyAndAccountIds( property );
 
 			expect( result._id ).toBeUndefined();
 			expect( result._accountID ).toBeUndefined();
-		} );
-
-		it( 'should work when a different idKey is passed', () => {
-			const property = {
-				customKey: 'properties/789',
-				parent: 'accounts/456',
-			};
-
-			const result = appendPropertyAndAccountIds( property, 'customKey' );
-
-			expect( result._id ).toBe( '789' );
-			expect( result._accountID ).toBe( '456' );
 		} );
 
 		it( 'should not append _id or _accountID for empty property and parent fields', () => {
@@ -242,7 +217,7 @@ describe( 'getAccountDefaults', () => {
 				parent: '',
 			};
 
-			const result = appendPropertyAndAccountIds( property );
+			const result = populatePropertyAndAccountIds( property );
 
 			expect( result._id ).toBeUndefined();
 			expect( result._accountID ).toBeUndefined();
@@ -251,7 +226,7 @@ describe( 'getAccountDefaults', () => {
 		it( 'should not throw and should return an unchanged object when fields are missing', () => {
 			const property = {};
 
-			const result = appendPropertyAndAccountIds( property );
+			const result = populatePropertyAndAccountIds( property );
 
 			expect( result._id ).toBeUndefined();
 			expect( result._accountID ).toBeUndefined();

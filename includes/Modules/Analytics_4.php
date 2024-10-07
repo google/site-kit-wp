@@ -1050,8 +1050,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries(
 					array(
-						'pageSize'  => 200,
-						'pageToken' => $data['pageToken'] ?? '',
+						'pageSize'  => 2,
+						'pageToken' => $data['pageToken'],
 					)
 				);
 			case 'GET:ads-links':
@@ -1670,11 +1670,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
-			case 'GET:account-summaries':
-				return array(
-					'accountSummaries' => $response->getAccountSummaries(),
-					'nextPageToken'    => $response->getNextPageToken(),
-				);
 			case 'GET:ads-links':
 				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':

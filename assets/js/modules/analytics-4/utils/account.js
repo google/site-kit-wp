@@ -74,10 +74,10 @@ export function getAccountDefaults(
  * @since n.e.x.t
  *
  * @param {Object} account Account object.
- * @param {string} idKey   Key of the account ID.
  * @return {Object} Account object with an appended ID.
  */
-export const appendAccountID = ( account, idKey = 'account' ) => {
+export const populateAccountID = ( account ) => {
+	const idKey = 'account';
 	const obj = { ...account };
 
 	const matches = account[ idKey ].match( /accounts\/([^/]+)/ );
@@ -94,10 +94,10 @@ export const appendAccountID = ( account, idKey = 'account' ) => {
  * @since n.e.x.t
  *
  * @param {Object} property Property object.
- * @param {string} idKey    Key of the property ID.
  * @return {Object} Property object with appended IDs.
  */
-export const appendPropertyAndAccountIds = ( property, idKey = 'property' ) => {
+export const populatePropertyAndAccountIds = ( property ) => {
+	const idKey = 'property';
 	const obj = { ...property };
 
 	const propertyMatches = property[ idKey ]?.match( /properties\/([^/]+)/ );

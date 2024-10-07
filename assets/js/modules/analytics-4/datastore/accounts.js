@@ -44,28 +44,28 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../utils/validation';
 import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
-import { appendAccountID, appendPropertyAndAccountIds } from '../utils/account';
+import {
+	populateAccountID,
+	populatePropertyAndAccountIds,
+} from '../utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
-	controlCallback( params ) {
-		const { pageToken = '' } = params || {};
+	controlCallback( { pageToken } ) {
 		return API.get(
 			'modules',
 			'analytics-4',
 			'account-summaries',
-			{
-				pageToken,
-			},
+			pageToken,
 			{
 				useCache: false,
 			}
 		);
 	},
-	argsToParams: ( args ) => {
-		return { pageToken: args?.pageToken ?? '' };
+	argsToParams: ( pageToken ) => {
+		return { pageToken };
 	},
 	reducerCallback( state, response ) {
 		const { accountSummaries: newAccountSummaries } = response;
@@ -254,6 +254,17 @@ const baseActions = {
 		return matchedAccount || null;
 	},
 
+	/**
+	 * Creates an action to transform and sort account summaries.
+	 *
+	 * This action is typically dispatched when account summaries need to be
+	 * transformed (e.g., extracting and populating relevant account and property
+	 * IDs) and then sorted in a case-insensitive manner by display name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} The action object with the type `TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES`.
+	 */
 	transformAndSortAccountSummaries() {
 		return {
 			type: TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES,
@@ -294,12 +305,19 @@ const baseReducer = ( state, { type } ) => {
 		}
 
 		case TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES: {
-			const accountSummaries = [ ...state.accountSummaries ].map(
+			const stateAccountSummaries = state.accountSummaries || [];
+
+			if ( ! stateAccountSummaries?.length ) {
+				return state;
+			}
+
+			const accountSummaries = [ ...stateAccountSummaries ].map(
 				( account ) => {
-					const obj = appendAccountID( account, 'account' );
-					obj.propertySummaries = account.propertySummaries.map(
-						( property ) =>
-							appendPropertyAndAccountIds( property, 'property' )
+					const obj = populateAccountID( account );
+					obj.propertySummaries = (
+						account.propertySummaries || []
+					).map( ( property ) =>
+						populatePropertyAndAccountIds( property )
 					);
 
 					return obj;
@@ -332,31 +350,23 @@ const baseResolvers = {
 
 		// Fetch initial account summaries if they are undefined.
 		if ( summaries === undefined ) {
-			const { error, response } =
-				yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
-			nextPageToken = response?.nextPageToken || null;
+			do {
+				const { error, response } =
+					yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries(
+						{
+							pageToken: nextPageToken,
+						}
+					);
+				nextPageToken = response?.nextPageToken || null;
 
-			if ( error ) {
-				errors.push( error );
-			}
+				if ( error ) {
+					errors.push( error );
+					break;
+				}
+			} while ( nextPageToken );
 		}
 
-		// Continue fetching additional summaries if nextPageToken exists.
-		while ( nextPageToken ) {
-			const { error, response } =
-				yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries(
-					{ pageToken: nextPageToken }
-				);
-			nextPageToken = response?.nextPageToken || null;
-
-			if ( error ) {
-				errors.push( error );
-			}
-		}
-
-		if ( ! errors.length ) {
-			yield baseActions.transformAndSortAccountSummaries();
-		}
+		yield baseActions.transformAndSortAccountSummaries();
 	},
 };
 

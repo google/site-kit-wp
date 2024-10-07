@@ -245,6 +245,21 @@ describe( 'modules/analytics-4 accounts', () => {
 				);
 			} );
 		} );
+
+		describe( 'transformAndSortAccountSummaries action', () => {
+			it( 'should create an action to transform and sort account summaries', async () => {
+				const expectedAction = {
+					type: 'TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES',
+				};
+
+				const receivedAction = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.transformAndSortAccountSummaries();
+
+				// Call the action and check if the output matches the expected action object
+				expect( receivedAction ).toEqual( expectedAction );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -285,7 +300,11 @@ describe( 'modules/analytics-4 accounts', () => {
 			it( 'should not make a network request if properties for this account are already present', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( fixtures.accountSummaries );
+					.receiveGetAccountSummaries( {
+						accountSummaries:
+							fixtures.accountSummaries.accountSummaries,
+						nextPageToken: null,
+					} );
 
 				const accountSummaries = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -299,10 +318,7 @@ describe( 'modules/analytics-4 accounts', () => {
 					accountSummariesEndpoint
 				);
 				expect( accountSummaries ).toEqual(
-					caseInsensitiveListSort(
-						fixtures.accountSummaries.accountSummaries,
-						'displayName'
-					)
+					fixtures.accountSummaries.accountSummaries
 				);
 				expect( accountSummaries ).toHaveLength(
 					fixtures.accountSummaries.accountSummaries.length
