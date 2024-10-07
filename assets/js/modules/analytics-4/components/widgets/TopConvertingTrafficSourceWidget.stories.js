@@ -152,11 +152,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopConvertingTrafficSource/InsufficientPermissions',
-	delay: 250,
-};
-
 export default {
 	title: 'Key Metrics/TopConvertingTrafficSourceWidget',
 	decorators: [

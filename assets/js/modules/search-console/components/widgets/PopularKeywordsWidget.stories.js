@@ -157,11 +157,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularKeywords/InsufficientPermissions',
-	delay: 250,
-};
-
 export default {
 	title: 'Key Metrics/PopularKeywordsWidget',
 	decorators: [

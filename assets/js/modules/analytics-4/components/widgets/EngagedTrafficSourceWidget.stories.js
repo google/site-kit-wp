@@ -144,10 +144,6 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/InsufficientPermissions',
-	delay: 250,
-};
 
 export default {
 	title: 'Key Metrics/EngagedTrafficSourceWidget',

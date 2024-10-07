@@ -161,10 +161,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopCitiesDrivingAddToCartWidget/InsufficientPermissions',
-};
-
 export default {
 	title: 'Key Metrics/TopCitiesDrivingAddToCartWidget',
 	decorators: [

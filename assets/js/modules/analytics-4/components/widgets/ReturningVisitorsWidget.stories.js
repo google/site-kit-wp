@@ -149,11 +149,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/ReturningVisitors/InsufficientPermissions',
-	delay: 250,
-};
-
 export default {
 	title: 'Key Metrics/ReturningVisitors',
 	decorators: [

@@ -335,11 +335,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/LeastEngagingPagesWidget/InsufficientPermissions',
-	delay: 250,
-};
-
 export default {
 	title: 'Key Metrics/LeastEngagingPagesWidget',
 	decorators: [

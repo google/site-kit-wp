@@ -217,10 +217,6 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularContent/InsufficientPermissions',
-	delay: 250,
-};
 
 export const AdSenseNotLinked = Template.bind( {} );
 AdSenseNotLinked.storyName = 'AdSense Not Linked';

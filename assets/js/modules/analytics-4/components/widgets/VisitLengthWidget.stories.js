@@ -165,11 +165,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/VisitLength/InsufficientPermissions',
-	delay: 250,
-};
-
 export default {
 	title: 'Key Metrics/VisitLength',
 	decorators: [

@@ -335,10 +335,6 @@ InsufficientPermissions.args = {
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
 };
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularProducts/InsufficientPermissions',
-	delay: 250,
-};
 
 export default {
 	title: 'Key Metrics/PopularProductsWidget',

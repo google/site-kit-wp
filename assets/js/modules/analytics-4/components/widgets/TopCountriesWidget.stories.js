@@ -165,11 +165,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopCountriesWidget/InsufficientPermissions',
-	delay: 250,
-};
-
 export default {
 	title: 'Key Metrics/TopCountriesWidget',
 	decorators: [

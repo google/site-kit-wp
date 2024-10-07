@@ -172,10 +172,6 @@ InsufficientPermissions.args = {
 	},
 };
 
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingAddToCart/InsufficientPermissions',
-};
-
 export default {
 	title: 'Key Metrics/TopTrafficSourceDrivingAddToCart',
 	decorators: [
