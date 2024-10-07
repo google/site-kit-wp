@@ -35,6 +35,8 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
 export default function SetupForm( {
 	finishSetup,
@@ -51,6 +53,8 @@ export default function SetupForm( {
 	);
 
 	const { submitChanges } = useDispatch( MODULES_ADS );
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -59,10 +63,17 @@ export default function SetupForm( {
 			const { error } = await submitChanges();
 
 			if ( ! error ) {
+				setConversionTrackingEnabled( true );
+				await saveConversionTrackingSettings();
 				finishSetup();
 			}
 		},
-		[ finishSetup, submitChanges ]
+		[
+			finishSetup,
+			saveConversionTrackingSettings,
+			setConversionTrackingEnabled,
+			submitChanges,
+		]
 	);
 
 	return (
@@ -78,6 +89,14 @@ export default function SetupForm( {
 					{ createAccountCTA }
 				</div>
 			) }
+
+			<SetupEnhancedConversionTrackingNotice
+				className="googlesitekit-margin-top-1"
+				message={ __(
+					'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'google-site-kit'
+				) }
+			/>
 
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
