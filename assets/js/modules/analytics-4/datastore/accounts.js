@@ -30,6 +30,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
@@ -274,44 +275,33 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+/**
+ * Creates immer reducer.
+ */
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case START_SELECTING_ACCOUNT: {
-			return {
-				...state,
-				finishedSelectingAccount: false,
-			};
-		}
+		case START_SELECTING_ACCOUNT:
+			state.finishedSelectingAccount = false;
+			break;
 
-		case FINISH_SELECTING_ACCOUNT: {
-			return {
-				...state,
-				finishedSelectingAccount: true,
-			};
-		}
+		case FINISH_SELECTING_ACCOUNT:
+			state.finishedSelectingAccount = true;
+			break;
 
-		case RESET_ACCOUNT_SUMMARIES: {
-			return {
-				...state,
-				accountSummaries: undefined,
-				settings: {
-					...state.settings,
-					accountID: undefined,
-					propertyID: undefined,
-					measurementID: undefined,
-					webDataStreamID: undefined,
-				},
-			};
-		}
+		case RESET_ACCOUNT_SUMMARIES:
+			state.accountSummaries = undefined;
+			state.settings.accountID = undefined;
+			state.settings.propertyID = undefined;
+			state.settings.measurementID = undefined;
+			state.settings.webDataStreamID = undefined;
+			break;
 
-		case TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES: {
-			const stateAccountSummaries = state.accountSummaries || [];
-
-			if ( ! stateAccountSummaries?.length ) {
+		case TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES:
+			if ( ! state.accountSummaries?.length ) {
 				return state;
 			}
 
-			const accountSummaries = [ ...stateAccountSummaries ].map(
+			state.accountSummaries = state.accountSummaries.map(
 				( account ) => {
 					const obj = populateAccountID( account );
 					obj.propertySummaries = (
@@ -324,20 +314,14 @@ const baseReducer = ( state, { type } ) => {
 				}
 			);
 
-			return {
-				...state,
-				accountSummaries: caseInsensitiveListSort(
-					accountSummaries,
-					'displayName'
-				),
-			};
-		}
+			state.accountSummaries = caseInsensitiveListSort(
+				state.accountSummaries,
+				'displayName'
+			);
 
-		default: {
 			return state;
-		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAccountSummaries() {
