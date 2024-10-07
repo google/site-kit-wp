@@ -40,6 +40,7 @@ import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../..
 import * as fixtures from '../../datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const {
 	accountSummaries,
@@ -52,6 +53,22 @@ const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
 const webDataStreamID = webDataStreamsBatch[ propertyID ][ 0 ]._id;
+const REGEX_REST_GA4_SETTINGS = new RegExp( '/analytics-4/data/settings' );
+const REGEX_REST_DISMISS_ITEM = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismiss-item'
+);
+const REGEX_REST_GA4_CREATE_PROPERTY = new RegExp(
+	'/analytics-4/data/create-property'
+);
+const REGEX_REST_GA4_CREATE_WEBDATASTREAM = new RegExp(
+	'/analytics-4/data/create-webdatastream'
+);
+const REGEX_REST_GA4_ACCOUNT_SUMMARIES = new RegExp(
+	'/analytics-4/data/account-summaries'
+);
+const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
+	'^/google-site-kit/v1/core/site/data/conversion-tracking'
+);
 
 describe( 'SetupForm', () => {
 	let registry;
@@ -61,9 +78,18 @@ describe( 'SetupForm', () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideModules( registry, [ { slug: 'analytics-4', active: true } ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: false,
+		} );
+		muteFetch( REGEX_REST_CONVERSION_TRACKING_SETTINGS );
 	} );
 
 	it( 'renders the form correctly', async () => {
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: true, // Hide notice for this case.
+		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
@@ -95,8 +121,6 @@ describe( 'SetupForm', () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		const { container, getByText, waitForRegistry } = render(
 			<SetupForm />,
@@ -145,8 +169,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
-
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
@@ -171,17 +193,9 @@ describe( 'SetupForm', () => {
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
-		const updateAnalyticsSettingsRegexp = new RegExp(
-			'/analytics-4/data/settings'
-		);
+		muteFetch( REGEX_REST_GA4_SETTINGS );
 
-		const dismissItemEndpointRegexp = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismiss-item'
-		);
-
-		muteFetch( updateAnalyticsSettingsRegexp );
-
-		fetchMock.post( dismissItemEndpointRegexp, {
+		fetchMock.post( REGEX_REST_DISMISS_ITEM, {
 			status: 200,
 			body: JSON.stringify( [
 				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
@@ -199,10 +213,7 @@ describe( 'SetupForm', () => {
 		// An additional wait is required in order for all resolvers to finish.
 		await act( waitForDefaultTimeouts );
 
-		expect( fetchMock ).toHaveFetchedTimes(
-			1,
-			updateAnalyticsSettingsRegexp
-		);
+		expect( fetchMock ).toHaveFetchedTimes( 1, REGEX_REST_GA4_SETTINGS );
 
 		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
 	} );
@@ -210,7 +221,6 @@ describe( 'SetupForm', () => {
 	it( 'auto-submits the form', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 			accountSummaries.map( ( account ) => ( {
 				...account,
@@ -254,8 +264,6 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
-
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
 		// In this situation, the autoSubmit is set before the user goes to oAuth,
@@ -273,38 +281,22 @@ describe( 'SetupForm', () => {
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
-		const createPropertyRegexp = new RegExp(
-			'/analytics-4/data/create-property'
-		);
-
-		const createWebDataStreamRegexp = new RegExp(
-			'/analytics-4/data/create-webdatastream'
-		);
-
-		const updateAnalyticsSettingsRegexp = new RegExp(
-			'/analytics-4/data/settings'
-		);
-
-		const accountSummariesRegexp = new RegExp(
-			'/analytics-4/data/account-summaries'
-		);
-
-		fetchMock.post( createPropertyRegexp, {
+		fetchMock.post( REGEX_REST_GA4_CREATE_PROPERTY, {
 			status: 200,
 			body: properties[ 0 ],
 		} );
 
-		fetchMock.post( createWebDataStreamRegexp, {
+		fetchMock.post( REGEX_REST_GA4_CREATE_WEBDATASTREAM, {
 			status: 200,
 			body: webDataStreams[ 2 ],
 		} );
 
-		fetchMock.get( accountSummariesRegexp, {
+		fetchMock.get( REGEX_REST_GA4_ACCOUNT_SUMMARIES, {
 			status: 200,
 			body: accountSummaries,
 		} );
 
-		muteFetch( updateAnalyticsSettingsRegexp );
+		muteFetch( REGEX_REST_GA4_SETTINGS );
 
 		const finishSetup = jest.fn();
 		const { getByRole, waitForRegistry } = render(
@@ -332,19 +324,21 @@ describe( 'SetupForm', () => {
 			await waitForDefaultTimeouts();
 		} );
 
-		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
-		expect( fetchMock ).toHaveFetchedTimes( 1, createWebDataStreamRegexp );
 		expect( fetchMock ).toHaveFetchedTimes(
 			1,
-			updateAnalyticsSettingsRegexp
+			REGEX_REST_GA4_CREATE_PROPERTY
 		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			REGEX_REST_GA4_CREATE_WEBDATASTREAM
+		);
+		expect( fetchMock ).toHaveFetchedTimes( 1, REGEX_REST_GA4_SETTINGS );
 
 		expect( finishSetup ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'auto-submits the form only once in the case of an error', async () => {
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
 			accountSummaries.map( ( account ) => ( {
 				...account,
@@ -360,8 +354,6 @@ describe( 'SetupForm', () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 		// Simulate an auto-submit case where the user is returning to the page
 		// after granting extra scopes necessary to submit.
@@ -380,11 +372,7 @@ describe( 'SetupForm', () => {
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
-		const createPropertyRegexp = new RegExp(
-			'/analytics-4/data/create-property'
-		);
-
-		fetchMock.post( createPropertyRegexp, {
+		fetchMock.post( REGEX_REST_GA4_CREATE_PROPERTY, {
 			status: 403,
 			body: {
 				code: 403,
@@ -413,7 +401,10 @@ describe( 'SetupForm', () => {
 		} );
 
 		// Create property should have only been called once.
-		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyRegexp );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			REGEX_REST_GA4_CREATE_PROPERTY
+		);
 		// Setup was not successful, so the finish function should not be called.
 		expect( finishSetup ).not.toHaveBeenCalled();
 		// Expect a console error due to the API error (otherwise this test will fail).
@@ -486,8 +477,6 @@ describe( 'SetupForm', () => {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.selectAccount( accountID );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
 			const { getByRole, getByLabelText, waitForRegistry } = render(
 				<SetupForm />,

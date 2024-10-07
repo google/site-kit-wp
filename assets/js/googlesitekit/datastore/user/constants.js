@@ -69,9 +69,17 @@ export const KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES =
 export const KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE =
 	'kmAnalyticsTopConvertingTrafficSource';
 export const KM_ANALYTICS_TOP_COUNTRIES = 'kmAnalyticsTopCountries';
+export const KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS =
+	'kmAnalyticsTopPagesDrivingLeads';
 export const KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES =
 	'kmAnalyticsTopRecentTrendingPages';
 export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE = 'kmAnalyticsTopTrafficSource';
+export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART =
+	'kmAnalyticsTopTrafficSourceDrivingAddToCart';
+export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS =
+	'kmAnalyticsTopTrafficSourceDrivingLeads';
+export const KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES =
+	'kmAnalyticsTopTrafficSourceDrivingPurchases';
 export const KM_ANALYTICS_PAGES_PER_VISIT = 'kmAnalyticsPagesPerVisit';
 export const KM_ANALYTICS_VISIT_LENGTH = 'kmAnalyticsVisitLength';
 export const KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES =
@@ -100,6 +108,7 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
