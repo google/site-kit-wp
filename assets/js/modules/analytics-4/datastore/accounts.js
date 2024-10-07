@@ -303,14 +303,14 @@ const baseReducer = createReducer( ( state, { type } ) => {
 
 			state.accountSummaries = state.accountSummaries.map(
 				( account ) => {
-					const obj = populateAccountID( account );
-					obj.propertySummaries = (
-						account.propertySummaries || []
+					const accountObj = populateAccountID( account );
+					accountObj.propertySummaries = (
+						accountObj.propertySummaries || []
 					).map( ( property ) =>
 						populatePropertyAndAccountIds( property )
 					);
 
-					return obj;
+					return accountObj;
 				}
 			);
 

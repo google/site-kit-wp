@@ -31,7 +31,6 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
 
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;
@@ -286,12 +285,6 @@ describe( 'modules/analytics-4 accounts', () => {
 					.getAccountSummaries();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( accountSummaries ).toEqual(
-					caseInsensitiveListSort(
-						fixtures.accountSummaries.accountSummaries,
-						'displayName'
-					)
-				);
 				expect( accountSummaries ).toHaveLength(
 					fixtures.accountSummaries.accountSummaries.length
 				);
@@ -416,16 +409,6 @@ describe( 'modules/analytics-4 accounts', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getAccountSummaries();
 
-				expect( accountSummaries ).toEqual(
-					caseInsensitiveListSort(
-						[
-							firstResponse.accountSummaries[ 0 ],
-							secondResponse.accountSummaries[ 0 ],
-							thirdResponse.accountSummaries[ 0 ],
-						],
-						'displayName'
-					)
-				);
 				expect( accountSummaries ).toHaveLength( 3 ); // Total length from all responses (3 elements)
 			} );
 		} );

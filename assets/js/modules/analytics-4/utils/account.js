@@ -78,14 +78,14 @@ export function getAccountDefaults(
  */
 export const populateAccountID = ( account ) => {
 	const idKey = 'account';
-	const obj = { ...account };
 
-	const matches = account[ idKey ].match( /accounts\/([^/]+)/ );
-	if ( matches ) {
-		obj._id = matches[ 1 ];
-	}
+	const matches = account[ idKey ]?.match( /accounts\/([^/]+)/ );
+	const _id = matches?.[ 1 ];
 
-	return obj;
+	return {
+		...account,
+		_id,
+	};
 };
 
 /**
@@ -98,17 +98,15 @@ export const populateAccountID = ( account ) => {
  */
 export const populatePropertyAndAccountIds = ( property ) => {
 	const idKey = 'property';
-	const obj = { ...property };
-
 	const propertyMatches = property[ idKey ]?.match( /properties\/([^/]+)/ );
-	if ( propertyMatches ) {
-		obj._id = propertyMatches[ 1 ];
-	}
+	const _id = propertyMatches?.[ 1 ];
 
 	const accountMatches = property.parent?.match( /accounts\/([^/]+)/ );
-	if ( accountMatches ) {
-		obj._accountID = accountMatches[ 1 ];
-	}
+	const _accountID = accountMatches?.[ 1 ];
 
-	return obj;
+	return {
+		...property,
+		_id,
+		_accountID,
+	};
 };
