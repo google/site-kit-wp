@@ -28,7 +28,6 @@ import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-	PERMISSION_VIEW_SHARED_DASHBOARD,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
@@ -82,6 +81,60 @@ DefaultWithStagingEnvironmentWarning.args = {
 				active: false,
 				connected: false,
 			},
+		] );
+	},
+};
+
+export const DefaultWithDashboardSharing = Template.bind( {} );
+DefaultWithDashboardSharing.storyName =
+	'Default - with Dashboard Sharing enabled and available';
+DefaultWithDashboardSharing.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+		} );
+
+		const commonModuleCapabilities = {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'search-console'
+			) ]: true,
+		};
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+
+		provideModules( registry, [
+			{ slug: 'search-console', active: true, connected: true },
+		] );
+	},
+};
+
+export const DefaultWithDashboardSharingOneAdmin = Template.bind( {} );
+DefaultWithDashboardSharingOneAdmin.storyName =
+	'Default - with Dashboard Sharing enabled and available but there is only one admin';
+DefaultWithDashboardSharingOneAdmin.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: false,
+		} );
+
+		const commonModuleCapabilities = {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'search-console'
+			) ]: true,
+		};
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+
+		provideModules( registry, [
+			{ slug: 'search-console', active: true, connected: true },
 		] );
 	},
 };
@@ -166,88 +219,6 @@ ResetSuccess.parameters = {
 	query: {
 		googlesitekit_context: '',
 		notification: 'reset_success',
-	},
-};
-
-export const SkipSignIn = Template.bind( {} );
-SkipSignIn.storyName = 'Skip sign-in';
-SkipSignIn.args = {
-	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: true,
-			hasMultipleAdmins: true,
-		} );
-
-		const commonModuleCapabilities = {
-			[ getMetaCapabilityPropertyName(
-				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
-			) ]: true,
-		};
-		provideUserCapabilities( registry, {
-			[ PERMISSION_AUTHENTICATE ]: true,
-			...commonModuleCapabilities,
-		} );
-
-		provideModules( registry, [
-			{ slug: 'search-console', active: true, connected: true },
-		] );
-	},
-};
-
-export const SharedDashboardAdminCanView = Template.bind( {} );
-SharedDashboardAdminCanView.storyName =
-	'Default - with Dashboard Sharing enabled and available';
-SharedDashboardAdminCanView.args = {
-	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: true,
-			hasMultipleAdmins: true,
-		} );
-
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideUserCapabilities( registry, {
-			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
-			[ getMetaCapabilityPropertyName(
-				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
-			) ]: true,
-		} );
-	},
-};
-
-export const SharedDashboardSingleAdminCanView = Template.bind( {} );
-SharedDashboardSingleAdminCanView.storyName =
-	'Default - with Dashboard Sharing enabled and available but there is only one admin';
-SharedDashboardSingleAdminCanView.args = {
-	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: true,
-			hasMultipleAdmins: false,
-		} );
-
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideUserCapabilities( registry, {
-			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
-			[ getMetaCapabilityPropertyName(
-				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
-			) ]: true,
-		} );
 	},
 };
 
