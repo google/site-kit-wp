@@ -38,6 +38,8 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
 
 /**
@@ -60,13 +62,42 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	const MODULE_SLUG = 'reader-revenue-manager';
 
 	/**
+	 * User options instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var User_Options
+	 */
+	protected $user_options;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context $context Plugin context.
+	 * @param array   $options Array of module options.
+	 * @param array   $user_options Array of user options.
+	 */
+	public function __construct( $context, $options, $user_options ) {
+		parent::__construct( $context, $options );
+		$this->user_options = $user_options;
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.130.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+		// Create instance of Synchronize_OnboardingState class and store it in $synchronize_onboarding_state.
+		$synchronize_onboarding_state = new Synchronize_OnboardingState( $this, $this->user_options );
 
+		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
+		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
+
+		$synchronize_onboarding_state->register();
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 	}
@@ -380,11 +411,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'label' => __( 'Reader Revenue Manager publication onboarding state', 'google-site-kit' ),
 				'value' => $settings['publicationOnboardingState'],
 				'debug' => $settings['publicationOnboardingState'],
-			),
-			'reader_revenue_manager_publication_onboarding_state_last_synced_at' => array(
-				'label' => __( 'Reader Revenue Manager publication onboarding state last synced at', 'google-site-kit' ),
-				'value' => $settings['publicationOnboardingStateLastSyncedAtMs'] ? gmdate( 'Y-m-d H:i:s', $settings['publicationOnboardingStateLastSyncedAtMs'] / 1000 ) : __( 'Never synced', 'google-site-kit' ),
-				'debug' => $settings['publicationOnboardingStateLastSyncedAtMs'],
 			),
 		);
 	}
