@@ -255,10 +255,6 @@ Error.args = {
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/PopularProducts/Error',
-	delay: 250,
-};
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
