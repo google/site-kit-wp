@@ -194,10 +194,6 @@ Error.args = {
 		} );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/TopCategoriesWidget/Error',
-	delay: 250,
-};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -230,11 +226,6 @@ InsufficientPermissions.args = {
 			],
 		} );
 	},
-};
-
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopCategoriesWidget/InsufficientPermissions',
-	delay: 250,
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
