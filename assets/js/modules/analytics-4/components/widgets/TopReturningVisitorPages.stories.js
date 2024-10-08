@@ -161,10 +161,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopReturningVisitorPages/ZeroData',
-	delay: 250,
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';

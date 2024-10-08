@@ -111,9 +111,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopCitiesDrivingLeadsWidget/ZeroData',
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';

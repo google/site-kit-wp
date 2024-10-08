@@ -107,9 +107,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/ZeroData',
-};
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';

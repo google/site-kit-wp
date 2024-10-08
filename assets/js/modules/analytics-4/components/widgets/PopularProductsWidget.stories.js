@@ -207,10 +207,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/PopularProductsWidget/ZeroData',
-	delay: 250,
-};
 
 export const NoProductPostType = Template.bind( {} );
 NoProductPostType.storyName = 'No Product Post Type';

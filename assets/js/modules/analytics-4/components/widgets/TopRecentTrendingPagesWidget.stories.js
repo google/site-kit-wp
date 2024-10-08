@@ -148,9 +148,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/ZeroData',
-};
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';

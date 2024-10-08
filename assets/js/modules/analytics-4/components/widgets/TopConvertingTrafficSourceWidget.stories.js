@@ -98,9 +98,6 @@ ZeroData.args = {
 		);
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopConvertingTrafficSourceWidget/ZeroData',
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
