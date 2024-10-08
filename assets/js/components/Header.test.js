@@ -23,6 +23,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForTimeouts,
 } from '../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -74,13 +75,15 @@ describe( 'Header', () => {
 			'googlesitekit-header--has-subheader'
 		);
 
-		await act( async () => {
+		await act( () => {
 			rerender( <Header subHeader={ <div /> } /> );
-			await new Promise( ( resolve ) => setImmediate( resolve ) );
+			return new Promise( ( resolve ) => setImmediate( resolve ) );
 		} );
 
 		expect( container.firstChild ).toHaveClass(
 			'googlesitekit-header--has-subheader'
 		);
+
+		await act( () => waitForTimeouts( 30 ) );
 	} );
 } );
