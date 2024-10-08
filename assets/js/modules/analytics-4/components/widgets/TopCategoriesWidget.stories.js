@@ -155,9 +155,6 @@ GatheringData.args = {
 		);
 	},
 };
-GatheringData.scenario = {
-	label: 'KeyMetrics/TopCategoriesWidget/GatheringData',
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -236,11 +233,6 @@ ErrorMissingCustomDimensions.args = {
 	},
 };
 
-ErrorMissingCustomDimensions.scenario = {
-	label: 'KeyMetrics/TopCategoriesWidget/ErrorMissingCustomDimensions',
-	delay: 250,
-};
-
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
 ErrorCustomDimensionsInsufficientPermissions.storyName =
 	'Error - Custom dimensions creation - Insufficient Permissions';
@@ -269,10 +261,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 			error,
 		} );
 	},
-};
-ErrorCustomDimensionsInsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsInsufficientPermissions',
-	delay: 250,
 };
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
@@ -303,10 +291,6 @@ ErrorCustomDimensionsGeneric.args = {
 			error,
 		} );
 	},
-};
-ErrorCustomDimensionsGeneric.scenario = {
-	label: 'KeyMetrics/TopCategoriesWidget/ErrorCustomDimensionsGeneric',
-	delay: 250,
 };
 
 export default {
