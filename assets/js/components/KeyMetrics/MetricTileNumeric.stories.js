@@ -71,6 +71,20 @@ ZeroChange.scenario = {
 	delay: 250,
 };
 
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	title: 'New Visitors',
+	metricValue: 0,
+	subText: 'of 0 total visitors',
+	currentValue: 0,
+	previousValue: 0,
+};
+ZeroData.scenario = {
+	label: 'KeyMetrics/MetricTileNumeric/ZeroData',
+	delay: 250,
+};
+
 export default {
 	title: 'Key Metrics/WidgetTiles/MetricTileNumeric',
 	component: MetricTileNumeric,
