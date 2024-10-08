@@ -119,6 +119,9 @@ GatheringData.args = {
 		);
 	},
 };
+// Since the "Gathering Data" state is the same for all KMW tiles that require
+// custom dimensions, this is the sole scenario and should not be added to any
+// other generic `MetricTile___` or KMW component.
 GatheringData.scenario = {
 	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
 };
@@ -132,6 +135,13 @@ ErrorMissingCustomDimensions.args = {
 			availableCustomDimensions: [],
 		} );
 	},
+};
+// Since the "Error Missing Custom Dimensions" state is the same for all KMW tiles
+// that require custom dimensions, this is the sole scenario and should not be
+// added to any other generic `MetricTile___` or KMW component.
+ErrorMissingCustomDimensions.scenario = {
+	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
+	delay: 250,
 };
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
@@ -155,6 +165,13 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 		} );
 	},
 };
+// Since the "Error Custom Dimensions Insufficient Permissions" state is the same for
+// all KMW tiles that require custom dimensions,, this is the sole scenario and should
+// not be added to any other generic `MetricTile___` or KMW component.
+ErrorCustomDimensionsInsufficientPermissions.scenario = {
+	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
+	delay: 250,
+};
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
 ErrorCustomDimensionsGeneric.storyName =
@@ -176,6 +193,13 @@ ErrorCustomDimensionsGeneric.args = {
 			error,
 		} );
 	},
+};
+// Since the "Error Custom Dimensions Generic" state is the same for all KMW tiles
+// that require custom dimensions, this is the sole scenario and should not be added
+// to any other generic `MetricTile___` or KMW component.
+ErrorCustomDimensionsGeneric.scenario = {
+	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
+	delay: 250,
 };
 
 export default {
