@@ -95,6 +95,21 @@ Loading.args = {
 	previousValue: 0,
 	loading: true,
 };
+// Since the "Loading" state is the same for all KMW tiles, this is the sole scenario
+// and should not be added to any other generic `MetricTile___` or KMW component.
+Loading.scenario = {
+	label: 'KeyMetrics/MetricTileNumeric/Loading',
+};
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 
 export default {
 	title: 'Key Metrics/WidgetTiles/MetricTileNumeric',
