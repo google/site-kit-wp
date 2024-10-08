@@ -167,9 +167,6 @@ GatheringData.args = {
 		);
 	},
 };
-GatheringData.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/GatheringData',
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
