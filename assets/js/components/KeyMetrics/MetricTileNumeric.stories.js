@@ -85,6 +85,17 @@ ZeroData.scenario = {
 	delay: 250,
 };
 
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	title: 'New Visitors',
+	metricValue: 0,
+	subText: 'of 0 total visitors',
+	currentValue: 0,
+	previousValue: 0,
+	loading: true,
+};
+
 export default {
 	title: 'Key Metrics/WidgetTiles/MetricTileNumeric',
 	component: MetricTileNumeric,
