@@ -80,6 +80,8 @@ ZeroData.args = {
 	currentValue: 0,
 	previousValue: 0,
 };
+// Since the "Zero" state is similar for all "numeric" KMW tiles, this should be
+// the sole scenario and should not be added to any other "numeric" type KMW components.
 ZeroData.scenario = {
 	label: 'KeyMetrics/MetricTileNumeric/ZeroData',
 	delay: 250,
