@@ -34,9 +34,13 @@ import {
 	ReturningVisitorsWidget,
 	TopCitiesWidget,
 	TopCitiesDrivingLeadsWidget,
+	TopCitiesDrivingAddToCartWidget,
 	TopCitiesDrivingPurchasesWidget,
 	TopCountriesWidget,
 	TopTrafficSourceWidget,
+	TopTrafficSourceDrivingAddToCartWidget,
+	TopTrafficSourceDrivingLeadsWidget,
+	TopTrafficSourceDrivingPurchasesWidget,
 	TopConvertingTrafficSourceWidget,
 	PagesPerVisitWidget,
 	VisitLengthWidget,
@@ -45,6 +49,7 @@ import {
 	TopRecentTrendingPagesWidget,
 	TopCategoriesWidget,
 	PopularAuthorsWidget,
+	TopPagesDrivingLeadsWidget,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
@@ -69,13 +74,18 @@ import {
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../googlesitekit/datastore/user/constants';
@@ -475,6 +485,54 @@ export const registerWidgets = ( widgets ) => {
 	);
 
 	widgets.registerWidget(
+		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+		{
+			Component: TopTrafficSourceDrivingAddToCartWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		{
+			Component: TopTrafficSourceDrivingLeadsWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+		{
+			Component: TopTrafficSourceDrivingPurchasesWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
 		KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 		{
 			Component: EngagedTrafficSourceWidget,
@@ -533,6 +591,38 @@ export const registerWidgets = ( widgets ) => {
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+		{
+			Component: TopPagesDrivingLeadsWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS
+				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+		{
+			Component: TopCitiesDrivingAddToCartWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+			isActive: ( select ) =>
+				select( CORE_USER ).isKeyMetricActive(
+					KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART
 				),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
