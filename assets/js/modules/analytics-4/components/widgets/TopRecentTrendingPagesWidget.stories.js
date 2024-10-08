@@ -128,9 +128,6 @@ Loading.args = {
 		] );
 	},
 };
-Loading.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Loading',
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
