@@ -71,6 +71,20 @@ ZeroChange.scenario = {
 	delay: 250,
 };
 
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	title: 'Most engaged traffic source',
+	metricValue: '-',
+	subText: '0% of engaged sessions',
+	currentValue: 0,
+	previousValue: 0,
+};
+ZeroData.scenario = {
+	label: 'KeyMetrics/MetricTileText/ZeroData',
+	delay: 250,
+};
+
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
