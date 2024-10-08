@@ -74,9 +74,9 @@ describe( 'Header', () => {
 			'googlesitekit-header--has-subheader'
 		);
 
-		await act( () => {
+		await act( async () => {
 			rerender( <Header subHeader={ <div /> } /> );
-			return new Promise( ( resolve ) => setImmediate( resolve ) );
+			await new Promise( ( resolve ) => setImmediate( resolve ) );
 		} );
 
 		expect( container.firstChild ).toHaveClass(
