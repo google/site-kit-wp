@@ -77,9 +77,7 @@ export function getAccountDefaults(
  * @return {Object} Account object with an appended ID.
  */
 export const populateAccountID = ( account ) => {
-	const idKey = 'account';
-
-	const matches = account[ idKey ]?.match( /accounts\/([^/]+)/ );
+	const matches = account.account?.match( /accounts\/([^/]+)/ );
 	const _id = matches?.[ 1 ];
 
 	return {
@@ -97,8 +95,7 @@ export const populateAccountID = ( account ) => {
  * @return {Object} Property object with appended IDs.
  */
 export const populatePropertyAndAccountIds = ( property ) => {
-	const idKey = 'property';
-	const propertyMatches = property[ idKey ]?.match( /properties\/([^/]+)/ );
+	const propertyMatches = property.property?.match( /properties\/([^/]+)/ );
 	const _id = propertyMatches?.[ 1 ];
 
 	const accountMatches = property.parent?.match( /accounts\/([^/]+)/ );

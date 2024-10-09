@@ -327,7 +327,6 @@ const baseResolvers = {
 	*getAccountSummaries() {
 		const registry = yield commonActions.getRegistry();
 		let nextPageToken = null;
-		const errors = [];
 		const summaries = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAccountSummaries();
@@ -344,7 +343,6 @@ const baseResolvers = {
 				nextPageToken = response?.nextPageToken || null;
 
 				if ( error ) {
-					errors.push( error );
 					break;
 				}
 			} while ( nextPageToken );

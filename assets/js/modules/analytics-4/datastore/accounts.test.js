@@ -31,6 +31,7 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
 
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;
@@ -236,27 +237,31 @@ describe( 'modules/analytics-4 accounts', () => {
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectAccount( accountID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe(
+				expect( store.getState().settings.propertyID ).toBe(
 					fixtures.accountSummaries.accountSummaries[ 1 ]
 						.propertySummaries[ 0 ]._id
 				);
 			} );
 		} );
 
-		describe( 'transformAndSortAccountSummaries action', () => {
+		describe( 'transformAndSortAccountSummaries', () => {
 			it( 'should create an action to transform and sort account summaries', async () => {
-				const expectedAction = {
-					type: 'TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES',
-				};
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
 
-				const receivedAction = await registry
+				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.transformAndSortAccountSummaries();
 
-				// Call the action and check if the output matches the expected action object
-				expect( receivedAction ).toEqual( expectedAction );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries()
+				).toEqual(
+					caseInsensitiveListSort(
+						fixtures.accountSummaries.accountSummaries,
+						'displayName'
+					)
+				);
 			} );
 		} );
 	} );

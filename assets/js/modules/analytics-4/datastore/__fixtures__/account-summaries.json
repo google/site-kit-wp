@@ -14,6 +14,7 @@
       "propertySummaries": [
         {
           "displayName": "Example Property",
+          "parent": "accounts/987654321",
           "property": "properties/1122334455",
           "_id": "1122334455",
           "_accountID": "987654321"
@@ -28,6 +29,7 @@
       "propertySummaries": [
         {
           "displayName": "Example Property",
+          "parent": "accounts/152925174",
           "property": "properties/1122334455",
           "_id": "1122334455",
           "_accountID": "152925174"

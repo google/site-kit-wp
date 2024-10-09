@@ -1050,7 +1050,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries(
 					array(
-						'pageSize'  => 200,
+						'pageSize'  => 2,
 						'pageToken' => $data['pageToken'],
 					)
 				);
