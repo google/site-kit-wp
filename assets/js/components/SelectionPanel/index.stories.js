@@ -106,6 +106,8 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Components/SelectionPanel/Default',
+	// Delay to ensure the component focus is set consistently.
+	delay: 1500,
 };
 
 export const WithSavedItems = Template.bind( {} );
