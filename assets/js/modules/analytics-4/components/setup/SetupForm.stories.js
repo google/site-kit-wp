@@ -33,7 +33,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { accountSummaries, webDataStreamsBatch } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
