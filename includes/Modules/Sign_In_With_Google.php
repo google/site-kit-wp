@@ -22,7 +22,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 /**
  * Class representing the Sign in With Google module.
  *
- * @since n.e.x.t
+ * @since 1.137.0
  * @access private
  * @ignore
  */
@@ -39,7 +39,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 */
 	public function register() {
 	}
@@ -47,7 +47,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -56,7 +56,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -73,7 +73,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -100,7 +100,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 *
 	 * @return Settings
 	 */
