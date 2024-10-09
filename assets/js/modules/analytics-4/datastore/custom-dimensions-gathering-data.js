@@ -326,6 +326,8 @@ const baseSelectors = {
 			const endDate = select( CORE_USER ).getReferenceDate();
 
 			return {
+				// Valid use of `new Date()` with an argument.
+				// eslint-disable-next-line sitekit/no-direct-date
 				startDate: getDateString( new Date( propertyCreateTime ) ),
 				endDate,
 				dimensions: [ `customEvent:${ customDimension }` ],

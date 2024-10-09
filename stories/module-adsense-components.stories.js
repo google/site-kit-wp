@@ -43,8 +43,8 @@ const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
 
 // @TODO: Update it to GA4.
 const topEarningPagesArgs = {
-	startDate: '2020-08-15',
-	endDate: '2020-09-11',
+	startDate: '2021-08-15',
+	endDate: '2021-09-11',
 	dimensions: [ 'pageTitle', 'pagePath' ],
 	metrics: [ { name: 'totalAdRevenue' } ],
 	orderBys: [ { metric: { metricName: 'totalAdRevenue' } } ],
@@ -54,8 +54,8 @@ const topEarningPagesArgs = {
 // These components make a simple AdSense report query to determine the
 // currency that should be displayed in the report table.
 const getCurrencyFromReportOptions = {
-	startDate: '2020-08-15',
-	endDate: '2020-09-11',
+	startDate: '2021-08-15',
+	endDate: '2021-09-11',
 	metrics: 'ESTIMATED_EARNINGS',
 };
 
@@ -63,7 +63,7 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics-4' ],
 	datastore: MODULES_ANALYTICS_4,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
-	referenceDate: '2020-09-12',
+	referenceDate: '2021-09-12',
 	...generateAnalyticsData( topEarningPagesArgs ),
 	options: topEarningPagesArgs,
 	setup: ( registry, variantName ) => {
@@ -97,10 +97,11 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
+	delay: 3000, // Allow time for the text resizing code to finish to prevent inconsistent rendering of chart during VRTs.
 	moduleSlugs: [ 'adsense' ],
 	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Module/Overview Widget',
-	referenceDate: '2020-11-25',
+	referenceDate: '2021-11-25',
 	zeroing,
 	...generateAdSenseData( [
 		{
@@ -110,8 +111,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-10-28',
-			endDate: '2020-11-24',
+			startDate: '2021-10-28',
+			endDate: '2021-11-24',
 		},
 		{
 			dimensions: [ 'DATE' ],
@@ -121,8 +122,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-10-28',
-			endDate: '2020-11-24',
+			startDate: '2021-10-28',
+			endDate: '2021-11-24',
 		},
 		{
 			metrics: [
@@ -131,8 +132,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-09-30',
-			endDate: '2020-10-27',
+			startDate: '2021-09-30',
+			endDate: '2021-10-27',
 		},
 		{
 			dimensions: [ 'DATE' ],
@@ -142,8 +143,8 @@ generateReportBasedWidgetStories( {
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
 			],
-			startDate: '2020-09-30',
-			endDate: '2020-10-27',
+			startDate: '2021-09-30',
+			endDate: '2021-10-27',
 		},
 	] ),
 	additionalVariants: {
