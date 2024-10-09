@@ -36,16 +36,6 @@ class Settings extends Module_Settings {
 	const SHAPE_PILL        = 'pill';
 
 	/**
-	 * Registers the setting in WordPress.
-	 *
-	 * @since 1.137.0
-	 */
-	public function register() {
-		parent::register();
-		$this->register_owned_keys();
-	}
-
-	/**
 	 * Gets the default value.
 	 *
 	 * @since 1.137.0
