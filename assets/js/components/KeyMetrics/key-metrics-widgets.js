@@ -29,15 +29,19 @@ import {
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -49,12 +53,11 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { isFeatureEnabled } from '../../features';
+import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
 
 /**
  * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
@@ -124,38 +127,6 @@ function shouldDisplayWidgetWithCustomDimensions(
 		// This property is available to the widget object that requires the
 		// custom dimensions, where the function is attached.
 		this.requiredCustomDimensions
-	);
-}
-
-/**
- * Determines whether to display a widget that requires conversion reporting events
- * in the key metrics selection panel.
- *
- * This function is attached to the widget object that requires the conversion reporting events and
- * has the `requiredConversionEventName` property.
- *
- * @since 1.136.0
- *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
- * @param {string}   slug                Key metric widget slug.
- * @return {boolean} Whether to display the widget.
- */
-function shouldDisplayWidgetWithConversionEvent(
-	select,
-	isViewOnlyDashboard,
-	slug
-) {
-	if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-		return false;
-	}
-
-	return (
-		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
-			// This property is available to the widget object that requires the
-			// conversion reporting events, where the function is attached.
-			this.requiredConversionEventName
-		) || select( CORE_USER ).isKeyMetricActive( slug )
 	);
 }
 
@@ -334,6 +305,39 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART ]: {
+		title: __(
+			'Top traffic source driving add to cart',
+			'google-site-kit'
+		),
+		description: __(
+			'Traffic source that generates the most add to cart events',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Traffic source that generates the most add to cart events',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
+		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
+		description: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Total number of leads for the top traffic source',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
 		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
 		description: __(
@@ -408,6 +412,7 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
 		title: __( 'Top cities driving purchases', 'google-site-kit' ),
@@ -443,6 +448,19 @@ const KEY_METRICS_WIDGETS = {
 			'The top search queries for your site by highest clickthrough rate',
 			'google-site-kit'
 		),
+	},
+	[ KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS ]: {
+		title: __( 'Top pages driving leads', 'google-site-kit' ),
+		description: __(
+			'Pages on which forms are most frequently submitted',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 };
 

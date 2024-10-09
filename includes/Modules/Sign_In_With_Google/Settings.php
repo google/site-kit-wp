@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 /**
  * Class for Sign_In_With_Google settings.
  *
- * @since n.e.x.t
+ * @since 1.137.0
  * @access private
  * @ignore
  */
@@ -36,9 +36,19 @@ class Settings extends Module_Settings {
 	const SHAPE_PILL        = 'pill';
 
 	/**
+	 * Registers the setting in WordPress.
+	 *
+	 * @since 1.137.0
+	 */
+	public function register() {
+		parent::register();
+		$this->register_owned_keys();
+	}
+
+	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 *
 	 * @return array An array of default settings values.
 	 */
@@ -54,7 +64,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 *
 	 * @return callable|null
 	 */
