@@ -50,7 +50,6 @@ class Synchronize_OnboardingState {
 	 * Registers functionality through WordPress hooks.
 	 */
 	public function register() {
-		$this->synchronize_publication_data();
 		add_action(
 			self::CRON_SYNCHRONIZE_ONBOARDING_STATE,
 			function () {
