@@ -36,7 +36,7 @@ const ruleTester = new RuleTester( {
 ruleTester.run( 'no-direct-date', rule, {
 	valid: [
 		'const date = select( CORE_USER ).getReferenceDate();',
-		'const createTime = new Date( DAY_IN_SECONDS * 1.5 * 1000, 20, 3 ).toISOString();',
+		'const createTime = new Date( 2024, 5, 9 ).toISOString();',
 	],
 	invalid: [
 		{

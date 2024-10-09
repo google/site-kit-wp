@@ -62,8 +62,7 @@ module.exports = {
 				if (
 					node.callee.object &&
 					node.callee.object.name === 'Date' &&
-					node.callee.property.name === 'now' &&
-					node.arguments.length <= 2
+					node.callee.property.name === 'now'
 				) {
 					// Don't show an error if Date.now() is used within another Date expression.
 					if (

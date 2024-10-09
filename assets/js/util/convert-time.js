@@ -58,7 +58,10 @@ export const convertSecondsToArray = ( seconds ) => {
 export const convertDateStringToUNIXTimestamp = ( dateStringValue ) => {
 	const unixTimestamp =
 		dateStringValue && ! Number.isInteger( dateStringValue )
-			? // Valid use of `new Date()` with an argument.
+			? // Valid use of `new Date()` with an argument, because this should only
+			  // be passed full time strings, not `YYYY-MM-DD` style dates.
+			  //
+			  // See: https://github.com/google/site-kit-wp/pull/9459#discussion_r1790660073
 			  // eslint-disable-next-line sitekit/no-direct-date
 			  new Date( dateStringValue ).getTime()
 			: dateStringValue;
