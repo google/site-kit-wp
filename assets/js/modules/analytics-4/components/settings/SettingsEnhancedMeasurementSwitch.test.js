@@ -37,7 +37,7 @@ import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwit
 
 describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	const { webDataStreams, accountSummaries } = fixtures;
-	const accounts = accountSummaries;
+	const accounts = accountSummaries.accountSummaries;
 	const properties = accounts[ 1 ].propertySummaries;
 	const accountID = accounts[ 1 ]._id;
 	const propertyID = properties[ 0 ]._id;
@@ -68,9 +68,10 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			webDataStreamID,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( accounts );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: accounts,
+			nextPageToken: null,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getAccountSummaries', [] );

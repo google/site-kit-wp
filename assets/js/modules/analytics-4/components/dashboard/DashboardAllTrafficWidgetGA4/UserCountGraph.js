@@ -145,6 +145,8 @@ export default function UserCountGraph( props ) {
 						? [
 								{
 									date: getDateString(
+										// Valid use of `new Date()` with an argument.
+										// eslint-disable-next-line sitekit/no-direct-date
 										new Date( propertyCreateTime )
 									),
 									text: __(

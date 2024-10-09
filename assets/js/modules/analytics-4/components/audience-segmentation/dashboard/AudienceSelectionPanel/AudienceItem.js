@@ -142,7 +142,7 @@ export default function AudienceItem( {
 			isItemSelected={ isItemSelected }
 			onCheckboxChange={ onCheckboxChange }
 			suffix={ errors.length ? '-' : numFmt( userCount ) }
-			badge={ <ItemBadge /> }
+			badge={ ( temporarilyHidden || showNewBadge ) && <ItemBadge /> }
 		/>
 	);
 }

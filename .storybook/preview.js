@@ -75,7 +75,14 @@ export const decorators = [
 		}
 
 		return (
-			<WithTestRegistry features={ features } route={ route }>
+			<WithTestRegistry
+				features={ features }
+				route={ route }
+				// Expose registry as global for tinkering.
+				callback={ ( registry ) => {
+					global.registry = registry;
+				} }
+			>
 				<Story />
 			</WithTestRegistry>
 		);
