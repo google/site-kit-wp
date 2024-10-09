@@ -65,6 +65,7 @@ function AdSenseAlerts() {
 					isDismissable,
 				} ) => (
 					<BannerNotification
+						className="googlesitekit-adsense-alert"
 						key={ id }
 						id={ id }
 						title={ title || '' }

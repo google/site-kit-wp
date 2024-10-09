@@ -48,6 +48,8 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
@@ -68,6 +70,8 @@ export default function SetupForm( { finishSetup } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
 
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -90,6 +94,9 @@ export default function SetupForm( { finishSetup } ) {
 			}
 
 			if ( ! error ) {
+				setConversionTrackingEnabled( true );
+				await saveConversionTrackingSettings();
+
 				if ( isEnhancedMeasurementEnabled === true ) {
 					await trackEvent(
 						`${ viewContext }_analytics`,
@@ -102,6 +109,8 @@ export default function SetupForm( { finishSetup } ) {
 		[
 			finishSetup,
 			isEnhancedMeasurementEnabled,
+			setConversionTrackingEnabled,
+			saveConversionTrackingSettings,
 			setValues,
 			submitChanges,
 			viewContext,
@@ -126,6 +135,14 @@ export default function SetupForm( { finishSetup } ) {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 			<SetupFormFields />
+
+			<SetupEnhancedConversionTrackingNotice
+				message={ __(
+					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'google-site-kit'
+				) }
+			/>
+
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
 					disabled={ ! canSubmitChanges || isSaving }
