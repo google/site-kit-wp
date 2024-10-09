@@ -59,7 +59,7 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 			'modules',
 			'analytics-4',
 			'account-summaries',
-			pageToken,
+			{ pageToken },
 			{
 				useCache: false,
 			}
@@ -336,9 +336,7 @@ const baseResolvers = {
 			do {
 				const { error, response } =
 					yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries(
-						{
-							pageToken: nextPageToken,
-						}
+						nextPageToken
 					);
 				nextPageToken = response?.nextPageToken || null;
 
