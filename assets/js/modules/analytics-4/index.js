@@ -109,6 +109,7 @@ import AudienceSegmentationSetupSuccessSubtleNotification, {
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -667,22 +668,24 @@ export const registerWidgets = ( widgets ) => {
 };
 
 export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification(
-		AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-		{
-			Component: AudienceSegmentationSetupSuccessSubtleNotification,
-			priority: 10,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			checkRequirements: async ( { select, resolveSelect } ) => {
-				await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-				const configuredAudiences =
-					select( CORE_USER ).getConfiguredAudiences();
+	if ( isFeatureEnabled( 'audienceSegmentation' ) ) {
+		notifications.registerNotification(
+			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
+			{
+				Component: AudienceSegmentationSetupSuccessSubtleNotification,
+				priority: 10,
+				areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				checkRequirements: async ( { select, resolveSelect } ) => {
+					await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+					const configuredAudiences =
+						select( CORE_USER ).getConfiguredAudiences();
 
-				// Only show this notification if the user has a set of configured audiences.
-				return Array.isArray( configuredAudiences );
-			},
-			isDismissible: true,
-		}
-	);
+					// Only show this notification if the user has a set of configured audiences.
+					return Array.isArray( configuredAudiences );
+				},
+				isDismissible: true,
+			}
+		);
+	}
 };
