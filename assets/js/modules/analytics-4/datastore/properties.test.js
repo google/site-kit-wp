@@ -110,7 +110,10 @@ describe( 'modules/analytics-4 properties', () => {
 						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 					),
 					{
-						body: [],
+						body: {
+							accountSummaries: [],
+							nextPageToken: null,
+						},
 						status: 200,
 					}
 				);
@@ -410,16 +413,19 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAccountProperty', () => {
-			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const accountID =
+				fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 			const propertyID =
-				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
+				fixtures.accountSummaries.accountSummaries[ 1 ]
+					.propertySummaries[ 0 ]._id;
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties(
-						fixtures.accountSummaries[ 1 ].propertySummaries,
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries,
 						{ accountID }
 					);
 				registry
@@ -465,9 +471,11 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAndSelectProperty', () => {
-			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const accountID =
+				fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 			const propertyID =
-				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
+				fixtures.accountSummaries.accountSummaries[ 1 ]
+					.propertySummaries[ 0 ]._id;
 			const webDataStreamID = '4000';
 			const measurementID = fixtures.webDataStreams.find(
 				( stream ) => stream._propertyID === propertyID
@@ -481,7 +489,8 @@ describe( 'modules/analytics-4 properties', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties(
-						fixtures.accountSummaries[ 1 ].propertySummaries,
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries,
 						{ accountID }
 					);
 				registry
@@ -1379,12 +1388,14 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( fixtures.accountSummaries );
 
-				const accountID = fixtures.accountSummaries[ 1 ]._id;
+				const accountID =
+					fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 				const propertySummaries = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getPropertySummaries( accountID );
 				expect( propertySummaries ).toEqual(
-					fixtures.accountSummaries[ 1 ].propertySummaries
+					fixtures.accountSummaries.accountSummaries[ 1 ]
+						.propertySummaries
 				);
 			} );
 		} );
@@ -1723,7 +1734,7 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'isLoadingPropertySummaries', () => {
-			const accounts = fixtures.accountSummaries;
+			const accounts = fixtures.accountSummaries.accountSummaries;
 			const properties = accounts[ 1 ].propertySummaries;
 			const accountID = accounts[ 1 ]._id;
 			const propertyID = properties[ 0 ]._id;
@@ -1745,7 +1756,10 @@ describe( 'modules/analytics-4 properties', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( accounts );
+					.receiveGetAccountSummaries( {
+						accountSummaries: accounts,
+						nextPageToken: null,
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getAccountSummaries', [] );
