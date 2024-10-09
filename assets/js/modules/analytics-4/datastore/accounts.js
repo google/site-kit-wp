@@ -242,9 +242,9 @@ const baseActions = {
 			return null;
 		}
 
-		const accountSummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAccountSummaries();
+		const accountSummaries = yield commonActions.await(
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
+		);
 
 		const matchedAccount = accountSummaries.find( ( account ) =>
 			account.propertySummaries.some(
