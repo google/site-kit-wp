@@ -53,10 +53,13 @@ export default function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
-	const { dispatch } = useDispatch();
+	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
 	const { publicationOnboardingState, publicationOnboardingStateChanged } =
-		useSelect( ( select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getSettings()
+		useSelect(
+			( select ) =>
+				select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
 		);
 	const initialPublicationOnboardingStateChanged = useRef(
 		publicationOnboardingStateChanged
@@ -122,13 +125,10 @@ export default function PublicationApprovedOverlayNotification() {
 	// In useEffect, set publicationOnboardingStateChanged to false using setPublicationOnboardingStateChanged method and save the setting using saveSettings action. This effect should be run only once when component is mounted.
 	useEffect( () => {
 		if ( initialPublicationOnboardingStateChanged.current === true ) {
-			dispatch(
-				MODULES_READER_REVENUE_MANAGER
-			).setPublicationOnboardingStateChanged( false );
-
-			dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
+			setPublicationOnboardingStateChanged( false );
+			saveSettings();
 		}
-	}, [ dispatch ] );
+	}, [ saveSettings, setPublicationOnboardingStateChanged ] );
 
 	return (
 		<OverlayNotification

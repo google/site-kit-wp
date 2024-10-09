@@ -116,13 +116,6 @@ const baseActions = {
 			return;
 		}
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			// eslint-disable-next-line sitekit/no-direct-date
-			.setPublicationOnboardingStateLastSyncedAtMs( Date.now() );
-
 		yield commonActions.await(
 			registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings()
 		);
