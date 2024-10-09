@@ -506,6 +506,8 @@ const baseSelectors = {
 				return undefined;
 			}
 
+			// Valid use of `new Date()` with an argument.
+			// eslint-disable-next-line sitekit/no-direct-date
 			const startDate = getDateString( new Date( propertyCreateTime ) );
 			const endDate = select( CORE_USER ).getReferenceDate();
 
