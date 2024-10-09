@@ -326,7 +326,7 @@ const baseReducer = createReducer( ( state, { type } ) => {
 const baseResolvers = {
 	*getAccountSummaries() {
 		const registry = yield commonActions.getRegistry();
-		let nextPageToken = null;
+		let nextPageToken = '';
 		const summaries = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAccountSummaries();
@@ -338,7 +338,7 @@ const baseResolvers = {
 					yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries(
 						nextPageToken
 					);
-				nextPageToken = response?.nextPageToken || null;
+				nextPageToken = response?.nextPageToken || '';
 
 				if ( error ) {
 					break;
