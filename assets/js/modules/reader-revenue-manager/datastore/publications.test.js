@@ -100,19 +100,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should update the settings and call the saveSettings endpoint', async () => {
-				const originalDateNow = Date.now;
-
-				// Mock the date to be an arbitrary time.
-				const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
-				Date.now = jest.fn( () => mockNow );
-
 				const publication = fixtures.publications[ 0 ];
 
 				const settings = {
 					publicationID: publication.publicationId,
 					publicationOnboardingState:
 						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
 				fetchMock.getOnce( publicationsEndpoint, {
@@ -125,7 +118,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						...settings,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-						publicationOnboardingStateLastSyncedAtMs: mockNow,
 					},
 					status: 200,
 				} );
@@ -156,17 +148,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toEqual( PUBLICATION_ONBOARDING_STATES.UNSPECIFIED );
-
-				const syncTimeMs = registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPublicationOnboardingStateLastSyncedAtMs();
-
-				// Restore Date.now method.
-				Date.now = originalDateNow;
-
-				// Ensure that the sync time is set.
-				expect( syncTimeMs ).not.toBe( 0 );
-				expect( syncTimeMs ).toBe( mockNow );
 			} );
 
 			it( 'should set UI_KEY_SHOW_RRM_PUBLICATION_APPROVED_NOTIFICATION to true in CORE_UI store if onboarding state changes to complete', async () => {
@@ -285,7 +266,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.receiveGetSettings( {
 						publicationID: '',
 						publicationOnboardingState: '',
-						publicationOnboardingStateLastSyncedAtMs: 0,
+						publicationOnboardingStateChanged: false,
 					} );
 
 				const publication = fixtures.publications[ 0 ];
@@ -305,13 +286,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toEqual( PUBLICATION_ONBOARDING_STATES.UNSPECIFIED );
-
-				// Verify that the timestamp was not updated.
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingStateLastSyncedAtMs()
-				).toEqual( 0 );
 
 				// Verify that the saveSettings endpoint was not called.
 				expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
@@ -389,183 +363,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.findMatchedPublication();
 
 				expect( publication ).toEqual( publications[ 0 ] );
-			} );
-		} );
-
-		describe( 'maybeSyncPublicationOnboardingState', () => {
-			it( 'should not sync publication onboarding state when last sync was less than an hour ago', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetPublications( fixtures.publications );
-
-				const publication = fixtures.publications[ 0 ];
-
-				const lastSyncedMS = Date.now();
-
-				const settings = {
-					publicationID: publication.publicationId,
-					publicationOnboardingState:
-						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
-					publicationOnboardingStateLastSyncedAtMs: lastSyncedMS,
-				};
-
-				fetchMock.postOnce( settingsEndpoint, {
-					body: {
-						...settings,
-						publicationOnboardingState:
-							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
-					},
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( settings );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.maybeSyncPublicationOnboardingState();
-
-				expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingStateLastSyncedAtMs()
-				).toBe( lastSyncedMS );
-			} );
-
-			it( 'should sync publication onboarding state when last sync was more than an hour ago', async () => {
-				const publication = fixtures.publications[ 0 ];
-
-				const lastSyncedMS = Date.now() - 1000 * 60 * 60 - 1;
-
-				const settings = {
-					publicationID: publication.publicationId,
-					publicationOnboardingState:
-						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
-					publicationOnboardingStateLastSyncedAtMs: lastSyncedMS,
-				};
-
-				fetchMock.getOnce( publicationsEndpoint, {
-					body: fixtures.publications,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( settingsEndpoint, {
-					body: {
-						...settings,
-						publicationOnboardingState:
-							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
-					},
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( settings );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.maybeSyncPublicationOnboardingState();
-
-				expect( fetchMock ).toHaveFetched( settingsEndpoint );
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingStateLastSyncedAtMs()
-				).not.toBe( lastSyncedMS );
-			} );
-
-			it( 'should sync publication onboarding state when `publicationOnboardingStateLastSyncedAtMs` is 0', async () => {
-				const publication = fixtures.publications[ 0 ];
-
-				const settings = {
-					publicationID: publication.publicationId,
-					publicationOnboardingState:
-						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
-					publicationOnboardingStateLastSyncedAtMs: 0,
-				};
-
-				fetchMock.getOnce( publicationsEndpoint, {
-					body: fixtures.publications,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( settingsEndpoint, {
-					body: {
-						...settings,
-						publicationOnboardingState:
-							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
-					},
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( settings );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.maybeSyncPublicationOnboardingState();
-
-				expect( fetchMock ).toHaveFetched( settingsEndpoint );
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingStateLastSyncedAtMs()
-				).not.toBe( 0 );
-			} );
-
-			it( 'should not sync publication onboarding state if the publication ID in state is not the saved publication ID', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetPublications( fixtures.publications );
-
-				const publication = fixtures.publications[ 0 ];
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						publicationID: publication.publicationId,
-						publicationOnboardingState: publication.onboardingState,
-						publicationOnboardingStateLastSyncedAtMs: 0,
-					} );
-
-				// Set a different publication ID in state.
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setPublicationID(
-						fixtures.publications[ 1 ].publicationId
-					);
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.maybeSyncPublicationOnboardingState();
-
-				// Verify that the onboarding state was not updated in state.
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingState()
-				).toEqual( publication.onboardingState );
-
-				// Verify that the timestamp was not updated.
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingStateLastSyncedAtMs()
-				).toEqual( 0 );
-
-				// Verify that the saveSettings endpoint was not called.
-				expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 			} );
 		} );
 
@@ -653,11 +450,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toBeUndefined();
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingStateLastSyncedAtMs()
-				).toBeUndefined();
 
 				const [ publicationId, onboardingState ] = [
 					'publication-id',
@@ -681,11 +473,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toEqual( onboardingState );
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingStateLastSyncedAtMs()
-				).toBeGreaterThan( 0 );
 			} );
 		} );
 	} );

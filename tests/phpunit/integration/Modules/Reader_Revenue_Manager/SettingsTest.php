@@ -56,10 +56,10 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'publicationID'                            => '',
-				'publicationOnboardingState'               => '',
-				'publicationOnboardingStateLastSyncedAtMs' => 0,
-				'ownerID'                                  => 0,
+				'publicationID'                     => '',
+				'publicationOnboardingState'        => '',
+				'publicationOnboardingStateChanged' => false,
+				'ownerID'                           => 0,
 			),
 			get_option( Settings::OPTION )
 		);

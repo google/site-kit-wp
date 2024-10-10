@@ -232,8 +232,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected() {
+		$user_options           = new User_Options( $this->context, get_current_user_id() );
 		$options                = new Options( $this->context );
-		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
+		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options );
 
 		$this->assertFalse( $reader_revenue_manager->is_connected() );
 
@@ -248,10 +249,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_on_deactivation() {
-		$options = new Options( $this->context );
+		$user_options = new User_Options( $this->context, get_current_user_id() );
+		$options      = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
 
-		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
+		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options, $user_options );
 		$reader_revenue_manager->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
@@ -293,7 +295,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'reader_revenue_manager_publication_id',
 				'reader_revenue_manager_publication_onboarding_state',
-				'reader_revenue_manager_publication_onboarding_state_last_synced_at',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);

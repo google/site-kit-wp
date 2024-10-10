@@ -144,8 +144,15 @@ export default {
 				const newAnalyticsPropertyID = '1122334455';
 				const accountSummaries = [
 					{
+						account: 'accounts/123456',
+						name: 'accountSummaries/987654321',
+						propertySummaries: [
+							{
+								property: `properties/${ newAnalyticsPropertyID }`,
+								_id: newAnalyticsPropertyID,
+							},
+						],
 						_id: '123456',
-						propertySummaries: [ { _id: newAnalyticsPropertyID } ],
 					},
 				];
 
@@ -170,7 +177,7 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( {
 						accountSummaries,
-						nextPageToken: null,
+						nextPageToken: '',
 					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
