@@ -41,6 +41,7 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT,
+	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
 } from '../constants';
 import {
 	EDIT_SCOPE,
@@ -200,7 +201,7 @@ export default function Footer( {
 
 	const selectedMetricsCount = selectedMetrics?.length || 0;
 	const maxSelectedMetricsLimit = isConversionReportingEnabled
-		? 8
+		? MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
 		: MAX_SELECTED_METRICS_COUNT;
 	let metricsLimitError;
 	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
