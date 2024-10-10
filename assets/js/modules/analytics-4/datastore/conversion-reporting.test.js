@@ -24,6 +24,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
@@ -79,6 +80,81 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					] );
 
 				expect( hasConversionReportingEvents ).toBe( true );
+			} );
+		} );
+
+		describe( 'getConversionReportingEventsChange', () => {
+			it( 'uses a resolver to load conversion reporting inline data from a global variable by default', async () => {
+				const inlineData = {
+					newEvents: [ 'contact' ],
+					lostEvents: [],
+				};
+
+				global._googlesitekitModulesData = {
+					'analytics-4': inlineData,
+				};
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionReportingEventsChange();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getConversionReportingEventsChange();
+
+				const data = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionReportingEventsChange();
+
+				expect( data ).toEqual( inlineData );
+
+				global._googlesitekitModulesData = undefined;
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				expect( global._googlesitekitModulesData ).toEqual( undefined );
+
+				const data = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionReportingEventsChange();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getConversionReportingEventsChange();
+
+				expect( data ).toBe( undefined );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe.each( [
+			[ 'hasNewConversionReportingEvents', 'newEvents' ],
+			[ 'hasLostConversionReportingEvents', 'lostEvents' ],
+		] )( '%s', ( selector, dataKey ) => {
+			it( 'uses a resolver to load conversion reporting data then returns the data when this specific selector is used', async () => {
+				const inlineData = {
+					newEvents: [ 'submit_lead_form' ],
+					lostEvents: [ 'contact' ],
+				};
+
+				global._googlesitekitModulesData = {
+					'analytics-4': inlineData,
+				};
+
+				registry.select( MODULES_ANALYTICS_4 )[ selector ]();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getConversionReportingEventsChange();
+
+				const data = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionReportingEventsChange();
+
+				expect( data ).toHaveProperty( dataKey );
+				expect( data ).toEqual( inlineData );
 			} );
 		} );
 	} );
