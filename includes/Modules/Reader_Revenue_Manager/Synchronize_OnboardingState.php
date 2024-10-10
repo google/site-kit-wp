@@ -106,7 +106,7 @@ class Synchronize_OnboardingState {
 			$publication = array_filter(
 				$publications,
 				function ( $pub ) use ( $publication_id ) {
-					return $pub['publicationId'] === $publication_id;
+					return $pub->getPublicationId() === $publication_id;
 				}
 			);
 
@@ -116,10 +116,9 @@ class Synchronize_OnboardingState {
 			}
 
 			$publication = reset( $publication );
-
-			if ( $publication['onboardingState'] !== $onboarding_state ) {
+			if ( $publication->getOnboardingState() !== $onboarding_state ) {
 				$new_settings                                      = $settings;
-				$new_settings['publicationOnboardingState']        = $publication['onboardingState'];
+				$new_settings['publicationOnboardingState']        = $publication->getOnboardingState();
 				$new_settings['publicationOnboardingStateChanged'] = true;
 
 				$this->reader_revenue_manager->get_settings()->set( $new_settings );
