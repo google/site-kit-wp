@@ -43,7 +43,7 @@ export default function Notifications( { areaSlug } ) {
 	}
 
 	const { id, Component: ActiveNotification } = queuedNotifications[ 0 ];
-	const props = { id, ...getNotificationComponentProps( id ) };
+	const props = { ...getNotificationComponentProps( id ) };
 
 	return <ActiveNotification { ...props } />;
 }

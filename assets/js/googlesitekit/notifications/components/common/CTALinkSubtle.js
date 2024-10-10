@@ -20,58 +20,55 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { Button } from 'googlesitekit-components';
+import ExternalSVG from '../../../../../svg/icons/external.svg';
 
-export default function Dismiss( {
+export default function CTALinkSubtle( {
 	id,
-	primary = true,
-	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
-	dismissExpires = 0,
-	disabled,
-	onDismiss = () => {},
+	ctaLink,
+	ctaLabel,
+	onCTAClick,
+	isCTALinkExternal = false,
 	gaTrackingEventArgs,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const handleCTAClick = async ( event ) => {
+		await onCTAClick?.( event );
 
-	const handleDismiss = async ( event ) => {
-		await onDismiss?.( event );
-		trackEvents.dismiss(
+		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
-		dismissNotification( id, { expiresInSeconds: dismissExpires } );
 	};
 
 	return (
 		<Button
-			tertiary={ ! primary }
-			onClick={ handleDismiss }
-			disabled={ disabled }
+			className="googlesitekit-subtle-notification__cta"
+			href={ ctaLink }
+			onClick={ handleCTAClick }
+			target={ isCTALinkExternal ? '_blank' : '_self' }
+			trailingIcon={
+				isCTALinkExternal ? (
+					<ExternalSVG width={ 14 } height={ 14 } />
+				) : undefined
+			}
 		>
-			{ dismissLabel }
+			{ ctaLabel }
 		</Button>
 	);
 }
 
-Dismiss.propTypes = {
+// eslint-disable-next-line sitekit/acronym-case
+CTALinkSubtle.propTypes = {
 	id: PropTypes.string,
-	primary: PropTypes.bool,
-	dismissLabel: PropTypes.string,
-	dismissExpires: PropTypes.number,
-	disabled: PropTypes.bool,
-	onDismiss: PropTypes.func,
+	ctaLink: PropTypes.string,
+	ctaLabel: PropTypes.string,
+	onCTAClick: PropTypes.func,
+	isCTALinkExternal: PropTypes.bool,
 	gaTrackingEventArgs: PropTypes.shape( {
 		label: PropTypes.string,
 		value: PropTypes.string,
