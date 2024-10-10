@@ -89,7 +89,7 @@ export function createWidgets( registry ) {
 		 * @param {string|Array.<string>} [settings.width]             Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 		 * @param {boolean}               [settings.wrapWidget]        Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
 		 * @param {string|Array.<string>} [settings.modules]           Optional. Widget's associated moduels.
-		 * @param {string|Array.<string>} [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. One of: "BREAKPOINT_SMALL", "BREAKPOINT_TABLET", "BREAKPOINT_DESKTOP", "BREAKPOINT_XLARGE".
+		 * @param {Array.<string>}        [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. Array with any of: `BREAKPOINT_SMALL`, `BREAKPOINT_TABLET`, `BREAKPOINT_DESKTOP`, `BREAKPOINT_XLARGE`.
 		 * @param {(string|Array)}        [widgetAreaSlugs]            Optional. Widget area slug(s).
 		 */
 		registerWidget( slug, settings, widgetAreaSlugs ) {

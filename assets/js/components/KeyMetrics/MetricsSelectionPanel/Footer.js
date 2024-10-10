@@ -53,7 +53,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 import { SelectionPanelFooter } from '../../SelectionPanel';
-import { isFeatureEnabled } from '../../../features';
+import { useFeature } from '../../../hooks/useFeature';
 
 export default function Footer( {
 	isOpen,
@@ -62,9 +62,7 @@ export default function Footer( {
 	onNavigationToOAuthURL = () => {},
 } ) {
 	const viewContext = useViewContext();
-	const isConversionReportingEnabled = isFeatureEnabled(
-		'conversionReporting'
-	);
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
