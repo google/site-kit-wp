@@ -30,6 +30,7 @@ import { ProgressBar } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '../../../../../../googlesitekit/notifications/datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import Link from '../../../../../../components/Link';
@@ -39,14 +40,16 @@ import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 export default function SetupCTA() {
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			redirectURL: global.location.href,
 			onSuccess: () => {
 				// Dismiss success notification in dashboard.
-				dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
+				dismissNotification(
+					AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
+				);
 			},
 			onError: () => {
 				setShowErrorModal( true );

@@ -22,12 +22,15 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
+import Notifications from 'googlesitekit-notifications';
 import {
 	registerStore,
 	registerModule,
 	registerWidgets,
+	registerNotifications,
 } from './modules/analytics-4';
 
 registerStore( Data );
 registerModule( Modules );
 registerWidgets( Widgets );
+registerNotifications( Notifications );

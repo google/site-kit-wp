@@ -39,6 +39,7 @@ import whenActive from '../../../../../util/when-active';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
@@ -51,6 +52,7 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import useViewContext from '../../../../../hooks/useViewContext';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
@@ -65,11 +67,16 @@ export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
 
 function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
+
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
+	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
+
 	const { setValues } = useDispatch( CORE_FORMS );
+
 	const showTooltip = useShowTooltip(
 		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 	);
@@ -110,6 +117,9 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			onSuccess: () => {
+				invalidateResolution( 'getQueuedNotifications', [
+					viewContext,
+				] );
 				dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION, {
 					expiresInSeconds: 0,
 				} );
