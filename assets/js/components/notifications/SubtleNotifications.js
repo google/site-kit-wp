@@ -26,7 +26,6 @@ import { Fragment } from '@wordpress/element';
  */
 import { useFeature } from '../../hooks/useFeature';
 import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
 import useViewContext from '../../hooks/useViewContext';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
@@ -34,7 +33,6 @@ import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/
 export default function SubtleNotifications() {
 	const viewContext = useViewContext();
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-	const rrmModuleEnabled = useFeature( 'rrmModule' );
 
 	// Each notification component rendered here has its own logic to determine
 	// whether it should be displayed; in most cases none of these components
@@ -48,7 +46,6 @@ export default function SubtleNotifications() {
 			{ audienceSegmentationEnabled && (
 				<AudienceSegmentationSetupSuccessSubtleNotification />
 			) }
-			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
 			<Notifications
 				viewContext={ viewContext }
 				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
