@@ -21,15 +21,13 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.14.0",
-    "google/apiclient-services": "^0.343.0",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
     "guzzlehttp/guzzle": "^6.5.8",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
   "replace": {
-    "paragonie/random_compat": ">=2",
-    "phpseclib/phpseclib": ">=3.0.36"
+    "paragonie/random_compat": ">=2"
   },
   "autoload": {
     "psr-4": {
@@ -79,7 +77,7 @@
     ],
     "prefix-dependencies": [
       "@composer --working-dir=php-scoper install",
-      "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
+      "@php -dxdebug.mode=off php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
       "@autoload-includes",
       "@autoload-third-party",
       "@composer dump-autoload --no-dev",
