@@ -59,7 +59,10 @@ const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( [] );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+		accountSummaries: [],
+		nextPageToken: null,
+	} );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getAccountSummaries', [] );
@@ -73,7 +76,7 @@ describe( 'AccountSelect', () => {
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new account".
 		expect( listItems ).toHaveLength(
-			fixtures.accountSummaries.length + 1
+			fixtures.accountSummaries.accountSummaries.length + 1
 		);
 	} );
 

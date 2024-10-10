@@ -27,16 +27,6 @@ module.exports = {
 		'sitekit/jsdoc-tag-grouping': [ 'error' ],
 		'sitekit/jsdoc-tag-order': [ 'error' ],
 		'sitekit/no-yield-dispatch': [ 'error' ],
-		'sitekit/no-direct-date': [
-			'error',
-			{
-				ignoreFiles: [
-					'*/webpack/*',
-					'*/__factories__/*',
-					'*.stories.js',
-					'*.test.js',
-				],
-			},
-		],
+		'sitekit/no-direct-date': [ 'error' ],
 	},
 };
