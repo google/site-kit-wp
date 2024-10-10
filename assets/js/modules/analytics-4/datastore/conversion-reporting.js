@@ -17,10 +17,100 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+
+function getInlineDataProperty( propName ) {
+	return createRegistrySelector( ( select ) => () => {
+		const inlineData =
+			select(
+				MODULES_ANALYTICS_4
+			).getConversionReportingEventsChange() || {};
+		return inlineData[ propName ];
+	} );
+}
+
+// Actions.
+const RECEIVE_CONVERSION_REPORTING_INLINE_DATA =
+	'RECEIVE_CONVERSION_REPORTING_INLINE_DATA';
+
+export const initialState = {
+	detectedEventsChange: undefined,
+};
+
+export const resolvers = {
+	*getConversionReportingEventsChange() {
+		const registry = yield commonActions.getRegistry();
+
+		if (
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getConversionReportingEventsChange()
+		) {
+			return;
+		}
+
+		if ( ! global._googlesitekitModulesData ) {
+			global.console.error( 'Could not load modules data.' );
+			return;
+		}
+
+		const { newEvents, lostEvents } =
+			global._googlesitekitModulesData[ 'analytics-4' ];
+
+		yield actions.receiveConversionReportingInlineData( {
+			newEvents,
+			lostEvents,
+		} );
+	},
+};
+
+export const actions = {
+	/**
+	 * Stores conversion reporting inline data in the datastore.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} data Inline data, usually supplied via a global variable from PHP.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveConversionReportingInlineData( data ) {
+		invariant( data, 'data is required.' );
+
+		return {
+			payload: { data },
+			type: RECEIVE_CONVERSION_REPORTING_INLINE_DATA,
+		};
+	},
+};
+
+export const reducer = ( state, { payload, type } ) => {
+	switch ( type ) {
+		case RECEIVE_CONVERSION_REPORTING_INLINE_DATA: {
+			const { newEvents, lostEvents } = payload.data;
+
+			return {
+				...state,
+				detectedEventsChange: {
+					newEvents,
+					lostEvents,
+				},
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
+};
 
 export const selectors = {
 	/**
@@ -49,8 +139,48 @@ export const selectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets all conversion reporting inline data from this data store.
+	 *
+	 * Not intended to be used publicly; this is largely here so other selectors can
+	 * request data using the selector/resolver pattern.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Conversion reporting inline data.
+	 */
+	getConversionReportingEventsChange( state ) {
+		return state.detectedEventsChange;
+	},
+
+	/**
+	 * Gets newEvents list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} `newEvents` list.
+	 */
+	hasNewConversionReportingEvents: getInlineDataProperty( 'newEvents' ),
+
+	/**
+	 * Gets lostEvents list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} `lostEvents` list.
+	 */
+	hasLostConversionReportingEvents: getInlineDataProperty( 'lostEvents' ),
 };
 
 export default {
+	initialState,
+	resolvers,
+	actions,
 	selectors,
+	reducer,
 };
