@@ -119,11 +119,13 @@ export default function RRMSetupSuccessSubtleNotification( {
 	// Sync publication data when user re-focuses window.
 	useRefocus( syncPublication, 15000 );
 
+	const gaTrackingProps = {
+		gaTrackingEventArgs: { label: publicationOnboardingState },
+	};
+
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
-			<Notification
-				gaTrackingEventArgs={ [ publicationOnboardingState ] }
-			>
+			<Notification { ...gaTrackingProps }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -139,9 +141,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 							onDismiss={ dismissNotice }
-							gaTrackingEventArgs={ [
-								publicationOnboardingState,
-							] }
+							{ ...gaTrackingProps }
 						/>
 					}
 					additionalCTA={
@@ -154,9 +154,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
-							gaTrackingEventArgs={ [
-								publicationOnboardingState,
-							] }
+							{ ...gaTrackingProps }
 						/>
 					}
 				/>
@@ -166,9 +164,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<Notification
-				gaTrackingEventArgs={ [ publicationOnboardingState ] }
-			>
+			<Notification { ...gaTrackingProps }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -184,9 +180,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 							onDismiss={ dismissNotice }
-							gaTrackingEventArgs={ [
-								publicationOnboardingState,
-							] }
+							{ ...gaTrackingProps }
 						/>
 					}
 					additionalCTA={
@@ -199,9 +193,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
-							gaTrackingEventArgs={ [
-								publicationOnboardingState,
-							] }
+							{ ...gaTrackingProps }
 						/>
 					}
 				/>
@@ -211,9 +203,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<Notification
-				gaTrackingEventArgs={ [ publicationOnboardingState ] }
-			>
+			<Notification { ...gaTrackingProps }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
@@ -225,9 +215,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							primary={ false }
 							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 							onDismiss={ dismissNotice }
-							gaTrackingEventArgs={ [
-								publicationOnboardingState,
-							] }
+							{ ...gaTrackingProps }
 						/>
 					}
 					additionalCTA={
@@ -240,9 +228,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
-							gaTrackingEventArgs={ [
-								publicationOnboardingState,
-							] }
+							{ ...gaTrackingProps }
 						/>
 					}
 					type="warning"

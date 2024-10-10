@@ -39,7 +39,7 @@ export default function Dismiss( {
 	dismissExpires = 0,
 	disabled,
 	onDismiss = () => {},
-	gaTrackingEventArgs = [],
+	gaTrackingEventArgs,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
@@ -47,7 +47,10 @@ export default function Dismiss( {
 
 	const handleDismiss = async ( event ) => {
 		await onDismiss?.( event );
-		trackEvents.dismiss( ...gaTrackingEventArgs );
+		trackEvents.dismiss(
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
+		);
 		dismissNotification( id, { expiresInSeconds: dismissExpires } );
 	};
 
@@ -69,5 +72,8 @@ Dismiss.propTypes = {
 	dismissExpires: PropTypes.number,
 	disabled: PropTypes.bool,
 	onDismiss: PropTypes.func,
-	gaTrackingEventArgs: PropTypes.array,
+	gaTrackingEventArgs: PropTypes.shape( {
+		label: PropTypes.string,
+		value: PropTypes.string,
+	} ),
 };

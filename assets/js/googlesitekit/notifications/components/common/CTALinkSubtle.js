@@ -32,14 +32,17 @@ export default function CTALinkSubtle( {
 	ctaLabel,
 	onCTAClick,
 	isCTALinkExternal = false,
-	gaTrackingEventArgs = [],
+	gaTrackingEventArgs,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
 	const handleCTAClick = async ( event ) => {
 		await onCTAClick?.( event );
 
-		trackEvents.confirm( ...gaTrackingEventArgs );
+		trackEvents.confirm(
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
+		);
 	};
 
 	return (
@@ -66,5 +69,8 @@ CTALinkSubtle.propTypes = {
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	isCTALinkExternal: PropTypes.bool,
-	gaTrackingEventArgs: PropTypes.array,
+	gaTrackingEventArgs: PropTypes.shape( {
+		label: PropTypes.string,
+		value: PropTypes.string,
+	} ),
 };
