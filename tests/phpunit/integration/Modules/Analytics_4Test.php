@@ -1280,6 +1280,39 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_datapoints__conversionReporting() {
+		$this->enable_feature( 'conversionReporting' );
+
+		$this->assertEqualSets(
+			array(
+				'account-summaries',
+				'accounts',
+				'ads-links',
+				'adsense-links',
+				'container-lookup',
+				'container-destinations',
+				'google-tag-settings',
+				'conversion-events',
+				'create-property',
+				'create-webdatastream',
+				'pivot-report',
+				'properties',
+				'property',
+				'report',
+				'webdatastreams',
+				'webdatastreams-batch',
+				'create-account-ticket',
+				'enhanced-measurement-settings',
+				'create-custom-dimension',
+				'sync-custom-dimensions',
+				'custom-dimension-data-available',
+				'set-google-tag-id-mismatch',
+				'clear-conversion-reporting-new-events',
+				'clear-conversion-reporting-lost-events',
+			),
+			$this->analytics->get_datapoints()
+		);
+	}
 	public function test_get_debug_fields() {
 		$this->assertEqualSets(
 			array(
