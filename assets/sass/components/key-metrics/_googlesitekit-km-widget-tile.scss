@@ -289,7 +289,7 @@
 			}
 
 			@media (min-width: $bp-desktop) {
-				grid-row: 1 / -1;
+				grid-row: span 2;
 			}
 		}
 

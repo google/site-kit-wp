@@ -689,6 +689,15 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			);
 		}
 
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$datapoints['POST:clear-conversion-reporting-new-events']  = array(
+				'service' => '',
+			);
+			$datapoints['POST:clear-conversion-reporting-lost-events'] = array(
+				'service' => '',
+			);
+		}
+
 		return $datapoints;
 	}
 
@@ -1048,7 +1057,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			case 'GET:accounts':
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:account-summaries':
-				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
+				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries(
+					array(
+						'pageSize'  => 200,
+						'pageToken' => $data['pageToken'],
+					)
+				);
 			case 'GET:ads-links':
 				if ( empty( $data['propertyID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'propertyID' );
@@ -1646,6 +1660,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				return function () use ( $data ) {
 					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
 				};
+			case 'POST:clear-conversion-reporting-new-events':
+				return function () {
+					return $this->transients->delete( 'googlesitekit_conversion_reporting_detected_events' );
+				};
+			case 'POST:clear-conversion-reporting-lost-events':
+				return function () {
+					return $this->transients->delete( 'googlesitekit_conversion_reporting_lost_events' );
+				};
 		}
 
 		return parent::create_data_request( $data );
@@ -1665,25 +1687,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
-			case 'GET:account-summaries':
-				$account_summaries = array_map(
-					function ( $account ) {
-						$obj                    = self::filter_account_with_ids( $account, 'account' );
-						$obj->propertySummaries = array_map( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-							function ( $property ) {
-								return self::filter_property_with_ids( $property, 'property' );
-							},
-							$account->getPropertySummaries()
-						);
-
-						return $obj;
-					},
-					$response->getAccountSummaries()
-				);
-				return Sort::case_insensitive_list_sort(
-					$account_summaries,
-					'displayName'
-				);
 			case 'GET:ads-links':
 				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':

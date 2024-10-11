@@ -47,6 +47,7 @@ import {
 	ChangeGroupsLink,
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { isFeatureEnabled } from '../../features';
+import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -61,6 +62,10 @@ const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
  * @param {Object} widgetsAPI Widgets API.
  */
 export function registerDefaults( widgetsAPI ) {
+	const isConversionReportingEnabled = isFeatureEnabled(
+		'conversionReporting'
+	);
+
 	const {
 		// Main dashboard
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
@@ -389,4 +394,80 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
+
+	if ( isConversionReportingEnabled ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsAddMetricThird',
+			{
+				Component: AddMetricCTATile,
+				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				isActive: ( select ) => {
+					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+					if (
+						! Array.isArray( keyMetrics ) ||
+						keyMetrics.length < 5
+					) {
+						return false;
+					}
+
+					return keyMetrics.length < 8;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgetsAPI.registerWidget(
+			'keyMetricsAddMetricFourth',
+			{
+				Component: AddMetricCTATile,
+				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				hideOnBreakpoints: [ BREAKPOINT_SMALL ],
+				isActive: ( select ) => {
+					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+					if (
+						! Array.isArray( keyMetrics ) ||
+						keyMetrics.length < 5
+					) {
+						return false;
+					}
+
+					return keyMetrics.length < 7;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgetsAPI.registerWidget(
+			'keyMetricsAddMetricFifth',
+			{
+				Component: AddMetricCTATile,
+				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+				hideOnBreakpoints: [ BREAKPOINT_SMALL ],
+				isActive: ( select ) => {
+					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+					if (
+						! Array.isArray( keyMetrics ) ||
+						keyMetrics.length < 5
+					) {
+						return false;
+					}
+
+					return keyMetrics.length < 6;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 }

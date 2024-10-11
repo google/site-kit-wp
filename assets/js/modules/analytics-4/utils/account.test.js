@@ -118,4 +118,119 @@ describe( 'getAccountDefaults', () => {
 			).toHaveProperty( ENHANCED_MEASUREMENT_ENABLED, true );
 		} );
 	} );
+
+	describe( 'populateAccountID', () => {
+		const { populateAccountID } = accountUtils;
+
+		test( 'should append the account ID if a valid account URL is present', () => {
+			const account = {
+				account: 'accounts/12345',
+			};
+
+			const result = populateAccountID( account );
+
+			expect( result ).toEqual( {
+				account: 'accounts/12345',
+				_id: '12345',
+			} );
+		} );
+
+		test( 'should return the same object if account ID is not in expected format', () => {
+			const account = {
+				account: 'not-a-valid-url',
+			};
+
+			const result = populateAccountID( account );
+
+			expect( result ).toEqual( {
+				account: 'not-a-valid-url',
+			} );
+		} );
+
+		test( 'should return the same object if account ID is missing', () => {
+			const account = {
+				account: '',
+			};
+
+			const result = populateAccountID( account );
+
+			expect( result ).toEqual( {
+				account: '',
+			} );
+		} );
+	} );
+
+	describe( 'populatePropertyAndAccountIds', () => {
+		const { populatePropertyAndAccountIds } = accountUtils;
+
+		it( 'should append _id and _accountID when both property and parent fields are valid', () => {
+			const property = {
+				property: 'properties/123',
+				parent: 'accounts/456',
+			};
+
+			const result = populatePropertyAndAccountIds( property );
+
+			expect( result._id ).toBe( '123' );
+			expect( result._accountID ).toBe( '456' );
+		} );
+
+		it( 'should append only _id when parent is not valid', () => {
+			const property = {
+				property: 'properties/123',
+				parent: 'invalid-string',
+			};
+
+			const result = populatePropertyAndAccountIds( property );
+
+			expect( result._id ).toBe( '123' );
+			expect( result._accountID ).toBeUndefined();
+		} );
+
+		it( 'should append only _accountID when property is not valid', () => {
+			const property = {
+				property: 'invalid-string',
+				parent: 'accounts/456',
+			};
+
+			const result = populatePropertyAndAccountIds( property );
+
+			expect( result._id ).toBeUndefined();
+			expect( result._accountID ).toBe( '456' );
+		} );
+
+		it( 'should not append _id or _accountID when there are no valid matches', () => {
+			const property = {
+				property: 'invalid-string',
+				parent: 'invalid-string',
+			};
+
+			const result = populatePropertyAndAccountIds( property );
+
+			expect( result._id ).toBeUndefined();
+			expect( result._accountID ).toBeUndefined();
+		} );
+
+		it( 'should not append _id or _accountID for empty property and parent fields', () => {
+			const property = {
+				property: '',
+				parent: '',
+			};
+
+			const result = populatePropertyAndAccountIds( property );
+
+			expect( result._id ).toBeUndefined();
+			expect( result._accountID ).toBeUndefined();
+		} );
+
+		it( 'should not throw and should return an unchanged object when fields are missing', () => {
+			const property = {};
+
+			const result = populatePropertyAndAccountIds( property );
+
+			expect( result._id ).toBeUndefined();
+			expect( result._accountID ).toBeUndefined();
+			expect( result ).toEqual( {} );
+		} );
+	} );
 } );

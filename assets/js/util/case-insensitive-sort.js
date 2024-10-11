@@ -1,5 +1,5 @@
 /**
- * SubtleNotifications component.
+ * Sorting functions.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,11 +17,19 @@
  */
 
 /**
- * Internal dependencies
+ * Sorts the provided list in a case-insensitive manner.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array}  listToSort The list to sort (Array of objects or arrays).
+ * @param {string} orderBy    The field by which the list should be ordered.
+ * @return {Array} The sorted list.
  */
-import Notifications from './Notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+export function caseInsensitiveListSort( listToSort, orderBy ) {
+	return [ ...listToSort ].sort( ( a, b ) => {
+		const nameA = a[ orderBy ]?.toLowerCase() || '';
+		const nameB = b[ orderBy ]?.toLowerCase() || '';
 
-export default function SubtleNotifications() {
-	return <Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />;
+		return nameA.localeCompare( nameB );
+	} );
 }
