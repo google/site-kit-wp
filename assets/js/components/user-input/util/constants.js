@@ -40,6 +40,51 @@ export const USER_INPUT_MAX_ANSWERS = {
 export const USER_INPUT_CURRENTLY_EDITING_KEY =
 	'googlesitekit-user-input-currently-editing';
 
+export const FORM_USER_INPUT_QUESTION_NUMBER = 'user_input_question_number';
+
+/**
+ * Gets available questions for user input settings.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @return {Object} Questions object.
+ */
+export function getUserInputQuestions() {
+	return {
+		1: {
+			title: __(
+				'What is the main purpose of this site?',
+				'google-site-kit'
+			),
+			description: __(
+				'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track progress towards your specific goals',
+				'google-site-kit'
+			),
+		},
+		2: {
+			title: __(
+				'How often do you create new content for this site?',
+				'google-site-kit'
+			),
+			description: __(
+				'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation',
+				'google-site-kit'
+			),
+		},
+		3: {
+			title: __(
+				'What are your top goals for this site?',
+				'google-site-kit'
+			),
+			description: __(
+				'Based on your answers, Site Kit will tailor the metrics and recommendations you see on your dashboard to help you make progress in these areas',
+				'google-site-kit'
+			),
+		},
+	};
+}
+
 /**
  * Gets available answers for user input settings.
  *
@@ -109,6 +154,42 @@ export function getUserInputAnswers() {
 				'google-site-kit'
 			),
 			other: __( 'Other', 'google-site-kit' ),
+		},
+	};
+}
+
+/**
+ * Gets available answer descriptions for user input settings.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @return {Object} Answer descriptions object.
+ */
+export function getUserInputAnswersDescription() {
+	return {
+		USER_INPUT_ANSWERS_PURPOSE: {
+			sell_products_or_service: __(
+				'E.g. selling products like devices, apparel, equipment, etc or offering services like courses, consulting, tutoring, etc.',
+				'google-site-kit'
+			),
+			monetize_content: __(
+				'Using display ads, affiliate links, sponsored content, etc',
+				'google-site-kit'
+			),
+			publish_blog: __(
+				"Writing on a topic you're passionate about, no focus on monetizing content",
+				'google-site-kit'
+			),
+			publish_news: __(
+				'E.g. local news, investigative pieces, interviews, etc',
+				'google-site-kit'
+			),
+			share_portfolio: __(
+				'My website represents me or my company',
+				'google-site-kit'
+			),
+			other: undefined,
 		},
 	};
 }

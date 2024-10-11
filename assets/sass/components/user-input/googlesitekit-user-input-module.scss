@@ -18,6 +18,10 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-user-input {
+		margin-bottom: 30px;
+	}
+
 	.googlesitekit-user-input__header {
 		padding-bottom: 30px;
 		padding-top: 30px;
@@ -28,8 +32,9 @@
 	}
 
 	.googlesitekit-user-input__heading {
+		color: $c-surfaces-on-surface;
 		font-family: $f-secondary;
-		font-size: $fs-headline-sm;
+		font-size: $fs-headline-md;
 		font-weight: $fw-normal;
 		line-height: $lh-headline-md;
 	}
@@ -66,40 +71,73 @@
 		margin: 0;
 	}
 
-	.googlesitekit-user-input__footer {
+	.googlesitekit-user-input__error {
+		background-color: $c-utility-error-container;
+		bottom: 77px;
+		color: $c-utility-on-error-container;
 		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
+		gap: 7px;
+		left: 0;
+		margin: 42px 0 0;
+		padding: 1px 30px;
+		position: fixed;
+		right: 0;
+
+		.googlesitekit-error-notice__icon {
+			height: 24px;
+			margin: 12px 0;
+		}
+
+		.googlesitekit-error-text {
+			color: $c-utility-on-error-container;
+			font-weight: $fw-medium;
+		}
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			left: 160px;
+		}
 
 		@media (min-width: $bp-desktop) {
-			align-items: center;
-			border-top: 1px solid $c-mercury;
-			flex-direction: row-reverse;
-			margin: 42px 0 0;
+			bottom: 97px;
+			left: 160px;
+			padding: 1px 40px;
+		}
+	}
+
+	.googlesitekit-user-input__footer {
+		align-items: center;
+		background-color: $c-white;
+		border-top: 1px solid $c-mercury;
+		bottom: 0;
+		display: flex;
+		flex-direction: column;
+		flex-direction: row-reverse;
+		justify-content: space-between;
+		left: 0;
+		margin: 42px 0 0;
+		padding: 18px 14px;
+		position: fixed;
+		right: 0;
+		z-index: 1; // Required to prevent the WordPress version number to appear over this section.
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			left: 160px;
+		}
+
+		@media (min-width: $bp-desktop) {
+			left: 160px;
 			padding: 28px 24px;
 		}
 	}
 
 	.googlesitekit-user-input__footer-nav {
-		align-items: center;
 		column-gap: 4px;
 		display: flex;
-		padding: 17px 17px 33px;
-
-		@media (min-width: $bp-desktop) {
-			flex-direction: row-reverse;
-			padding: 0;
-		}
 	}
 
 	.googlesitekit-user-input__footer-cancel {
-		border-top: 1px solid $c-mercury;
-		padding: 17px;
-
-		@media (min-width: $bp-desktop) {
-			border: none;
-			padding: 0;
-		}
+		border: none;
+		padding: 0;
 	}
 
 	.googlesitekit-user-input__select-options-wrapper {
@@ -147,4 +185,33 @@
 			}
 		}
 	}
+}
+
+// Adapt the fixed position bar based on the folded state of the WordPress menu
+.folded .googlesitekit-plugin .googlesitekit-user-input__footer {
+	left: 36px !important;
+}
+.auto-fold .googlesitekit-plugin .googlesitekit-user-input__footer {
+	@media (min-width: $bp-wpAdminBarTablet) {
+		left: 36px;
+	}
+	@media (min-width: $bp-desktop) {
+		left: 160px;
+		padding: 28px 24px;
+	}
+}
+.folded .googlesitekit-plugin .googlesitekit-user-input__error {
+	left: 36px !important;
+}
+.auto-fold .googlesitekit-plugin .googlesitekit-user-input__error {
+	@media (min-width: $bp-wpAdminBarTablet) {
+		left: 36px;
+	}
+	@media (min-width: $bp-desktop) {
+		left: 160px;
+	}
+}
+.sb-show-main .googlesitekit-plugin .googlesitekit-user-input__footer,
+.sb-show-main .googlesitekit-plugin .googlesitekit-user-input__error {
+	left: 0;
 }
