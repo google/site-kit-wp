@@ -166,6 +166,7 @@ export function registerDefaults( notificationsAPI ) {
 					CORE_MODULES
 				).isModuleConnected( 'analytics-4' );
 
+				await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
 				const isAdSenseLinked =
 					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
