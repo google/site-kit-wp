@@ -61,6 +61,10 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_SETTINGS,
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
+			// rely on the resolution of getAuthentication().
+			await resolveSelect( CORE_USER ).getAuthentication();
+
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
 
