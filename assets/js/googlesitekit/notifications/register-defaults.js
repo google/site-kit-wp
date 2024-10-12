@@ -246,6 +246,11 @@ export function registerDefaults( notificationsAPI ) {
 				CORE_MODULES
 			).isModuleConnected( 'analytics-4' );
 
+			if ( viewOnly ) {
+				// This ensures resolution for the canViewSharedModule() selectors.
+				await resolveSelect( CORE_MODULES ).getModules();
+			}
+
 			const canViewSharedAnalytics = ! viewOnly
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'analytics-4' );
@@ -327,6 +332,9 @@ export function registerDefaults( notificationsAPI ) {
 				// If we are in the view only mode, we need to ensure the user can view the module
 				// and it is not in the recovering state. Return early if either of these is wrong.
 				if ( viewOnly ) {
+					// This ensures resolution for the canViewSharedModule() selectors.
+					await resolveSelect( CORE_MODULES ).getModules();
+
 					const canView =
 						select( CORE_USER ).canViewSharedModule( moduleSlug );
 					if ( ! canView ) {
