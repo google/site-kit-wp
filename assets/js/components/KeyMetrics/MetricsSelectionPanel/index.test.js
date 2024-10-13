@@ -499,6 +499,14 @@ describe( 'MetricsSelectionPanel', () => {
 		it( 'should not list metrics dependent on modules that a view-only user does not have access to', async () => {
 			provideUserAuthentication( registry, { authenticated: false } );
 
+			await registry
+				.dispatch( CORE_USER )
+				.receiveIsUserInputCompleted( false );
+			await registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+				widgetSlugs: [],
+				includeConversionTailoredMetrics: false,
+			} );
+
 			provideKeyMetrics( registry );
 
 			provideModules( registry, [
