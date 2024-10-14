@@ -1,5 +1,5 @@
 /**
- * `modules/reader-revenue-manager` data store.
+ * `modules/sign-in-with-google` data store.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
