@@ -77,6 +77,7 @@ class Audience_Settings extends User_Setting {
 		$allowed_settings = array(
 			'configuredAudiences'                => true,
 			'isAudienceSegmentationWidgetHidden' => true,
+			'didSetAudiences'                    => true,
 		);
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
@@ -108,11 +109,11 @@ class Audience_Settings extends User_Setting {
 
 			$sanitized_settings = array();
 
-			if ( isset( $settings['configuredAudiences'] ) ) {
-				$sanitized_settings['configuredAudiences'] = Sanitize::sanitize_string_list( $settings['configuredAudiences'] );
-			} elseif ( is_null( $settings['configuredAudiences'] ) ) {
-				// Allow setting `null` for `configuredAudiences`.
-				$sanitized_settings['configuredAudiences'] = null;
+			// Allow setting `null` for `configuredAudiences`.
+			if ( array_key_exists( 'configuredAudiences', $settings ) ) {
+				$sanitized_settings['configuredAudiences'] = is_null( $settings['configuredAudiences'] )
+					? null
+					: Sanitize::sanitize_string_list( $settings['configuredAudiences'] );
 			}
 
 			if ( isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
