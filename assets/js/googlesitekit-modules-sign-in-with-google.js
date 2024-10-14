@@ -17,7 +17,9 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import { registerModule } from './modules/sign-in-with-google';
+import { registerModule, registerStore } from './modules/sign-in-with-google';
 
 registerModule( Modules );
+registerStore( Data );
