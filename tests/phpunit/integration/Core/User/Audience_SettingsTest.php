@@ -259,13 +259,12 @@ class Audience_SettingsTest extends TestCase {
 			$this->audience_settings->get()
 		);
 
-		// Make sure that we can't set wrong format for the isAudienceSegmentationWidgetHidden property
+		// Make sure that we can't set wrong format (or `null`) for the isAudienceSegmentationWidgetHidden property
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
 
-		// Make sure that we can't set wrong format (or `null`) for the
-		// configuredAudiences property.
+		// Make sure that we can't set wrong format for the configuredAudiences property.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( array( 'configuredAudiences' => false ) );
 		$this->assertEqualSetsWithIndex(
