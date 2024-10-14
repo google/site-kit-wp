@@ -25,7 +25,6 @@ import { useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import {
@@ -45,6 +44,7 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import ProgressSegments from '../ProgressSegments';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -185,13 +185,9 @@ export default function UserInputQuestionnaire() {
 	}, [ isScreenLoading, submitChanges ] );
 
 	const settingsProgress = (
-		<ProgressBar
-			height={ 4 }
-			indeterminate={ false }
-			progress={
-				( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length
-			}
-			segments={ USER_INPUT_QUESTIONS_LIST.length }
+		<ProgressSegments
+			currentSegment={ activeSlugIndex + 1 }
+			totalSegments={ USER_INPUT_QUESTIONS_LIST.length }
 			className="googlesitekit-user-input__question--progress"
 		/>
 	);

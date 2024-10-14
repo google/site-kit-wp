@@ -17,34 +17,4 @@
 	.mdc-linear-progress--compress {
 		margin: 0;
 	}
-
-	// Custom segmented linear progress style introduced for the User Input app.
-	.mdc-linear-progress--segmented {
-		border-radius: 4px;
-		height: 8px;
-
-		&.mdc-linear-progress .mdc-linear-progress__bar-inner {
-			background-color: $c-site-kit-sk-100;
-		}
-
-		div.mdc-linear-progress__buffer {
-			background-color: $c-surfaces-surface-1;
-		}
-
-		// Add white "gaps" between segments.
-		.mdc-linear-progress__dividers {
-			bottom: 0;
-			display: flex;
-			justify-content: space-evenly;
-			left: 0;
-			position: absolute;
-			right: 0;
-			top: 0;
-		}
-		.mdc-linear-progress__divider {
-			background-color: $c-white;
-			height: 8px;
-			width: 4px;
-		}
-	}
 }

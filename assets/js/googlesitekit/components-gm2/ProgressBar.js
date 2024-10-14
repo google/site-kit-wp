@@ -40,7 +40,6 @@ export default function ProgressBar( {
 	tabletHeight,
 	desktopHeight,
 	progress,
-	segments,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -79,7 +78,6 @@ export default function ProgressBar( {
 				'mdc-linear-progress--indeterminate': indeterminate,
 				'mdc-linear-progress--small': small,
 				'mdc-linear-progress--compress': compress,
-				'mdc-linear-progress--segmented': typeof segments === 'number',
 			} ) }
 		>
 			<div className="mdc-linear-progress__buffering-dots" />
@@ -93,18 +91,6 @@ export default function ProgressBar( {
 			<div className="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
 				<span className="mdc-linear-progress__bar-inner" />
 			</div>
-			{ typeof segments === 'number' && (
-				<div className="mdc-linear-progress__dividers">
-					{ Array.from( Array( segments - 1 ).keys() ).map(
-						( key ) => (
-							<div
-								key={ key }
-								className="mdc-linear-progress__divider"
-							></div>
-						)
-					) }
-				</div>
-			) }
 		</div>
 	);
 }
@@ -119,7 +105,6 @@ ProgressBar.propTypes = {
 	smallHeight: PropTypes.number,
 	tabletHeight: PropTypes.number,
 	desktopHeight: PropTypes.number,
-	segments: PropTypes.number,
 };
 
 ProgressBar.defaultProps = {
