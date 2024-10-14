@@ -61,9 +61,15 @@ export default function PublicationApprovedOverlayNotification() {
 			( select ) =>
 				select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
 		);
-	const initialPublicationOnboardingStateChanged = useRef(
-		publicationOnboardingStateChanged
+
+	// Check if settings has been resolved.
+	const hasSettingsResolved = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+			'getSettings'
+		)
 	);
+
+	const initialPublicationOnboardingStateChanged = useRef( undefined );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -93,11 +99,11 @@ export default function PublicationApprovedOverlayNotification() {
 	 */
 	const shouldShowNotification =
 		isDismissed === false &&
-		showApprovedNotificationUI === true &&
 		! isViewOnly &&
 		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
-		initialPublicationOnboardingStateChanged.current === true &&
-		publicationOnboardingState === ONBOARDING_COMPLETE;
+		( showApprovedNotificationUI === true ||
+			( initialPublicationOnboardingStateChanged.current === true &&
+				publicationOnboardingState === ONBOARDING_COMPLETE ) );
 
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
@@ -124,11 +130,21 @@ export default function PublicationApprovedOverlayNotification() {
 
 	// In useEffect, set publicationOnboardingStateChanged to false using setPublicationOnboardingStateChanged method and save the setting using saveSettings action. This effect should be run only once when component is mounted.
 	useEffect( () => {
-		if ( initialPublicationOnboardingStateChanged.current === true ) {
-			setPublicationOnboardingStateChanged( false );
-			saveSettings();
+		if ( initialPublicationOnboardingStateChanged.current === undefined ) {
+			initialPublicationOnboardingStateChanged.current =
+				publicationOnboardingStateChanged;
+
+			if ( publicationOnboardingStateChanged === true ) {
+				setPublicationOnboardingStateChanged( false );
+				saveSettings();
+			}
 		}
-	}, [ saveSettings, setPublicationOnboardingStateChanged ] );
+	}, [
+		hasSettingsResolved,
+		publicationOnboardingStateChanged,
+		saveSettings,
+		setPublicationOnboardingStateChanged,
+	] );
 
 	return (
 		<OverlayNotification
