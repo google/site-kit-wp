@@ -139,7 +139,6 @@ class Synchronize_OnboardingStateTest extends TestCase {
 		$this->assertFalse( $settings['publicationOnboardingStateChanged'] );
 
 		do_action( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE );
-		$test_synced_at = time();
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertTrue( $settings['publicationOnboardingStateChanged'] );
@@ -149,19 +148,8 @@ class Synchronize_OnboardingStateTest extends TestCase {
 		$this->assertFalse( wp_next_scheduled( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE ) );
 		$this->synchronize_onboarding_state->maybe_schedule_synchronize_onboarding_state();
 
-		// Get cron list and check if the cron is scheduled.
-		$crons       = _get_cron_array();
-		$cron_exists = false;
-
-		foreach ( $crons as $timestamp => $cron_events ) {
-			foreach ( $cron_events as $event_key => $cron_event ) {
-				if ( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE === $event_key ) {
-					$cron_exists = true;
-					break 2;
-				}
-			}
-		}
-
-		$this->assertTrue( $cron_exists );
+		$this->assertTrue(
+			(bool) wp_next_scheduled( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE )
+		);
 	}
 }

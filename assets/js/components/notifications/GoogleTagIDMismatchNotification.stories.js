@@ -177,7 +177,7 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( {
 						accountSummaries,
-						nextPageToken: '',
+						nextPageToken: null,
 					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

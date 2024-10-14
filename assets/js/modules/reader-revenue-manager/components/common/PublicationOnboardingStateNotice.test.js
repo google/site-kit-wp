@@ -69,7 +69,6 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			.receiveGetSettings( {
 				publicationID: 'ABCDEFGH',
 				publicationOnboardingState: ONBOARDING_COMPLETE,
-				publicationOnboardingStateLastSyncedAtMs: 0,
 			} );
 
 		const { container } = render( <PublicationOnboardingStateNotice />, {
@@ -99,7 +98,6 @@ describe( 'PublicationOnboardingStateNotice', () => {
 				.receiveGetSettings( {
 					publicationID: 'ABCDEFGH',
 					publicationOnboardingState: publicationState,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				} );
 
 			const { container, getByText, waitForRegistry } = render(

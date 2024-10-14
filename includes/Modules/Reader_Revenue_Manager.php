@@ -11,9 +11,6 @@
 namespace Google\Site_Kit\Modules;
 
 use Exception;
-use Google\Site_Kit\Core\Assets\Assets;
-use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
@@ -30,20 +27,18 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
-use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
-use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
 
 /**
@@ -64,37 +59,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Module slug name.
 	 */
 	const MODULE_SLUG = 'reader-revenue-manager';
-
-	/**
-	 * User options instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
-	 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-		$this->user_options = $user_options;
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.

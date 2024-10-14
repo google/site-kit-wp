@@ -158,7 +158,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					publicationID: publication.publicationId,
 					publicationOnboardingState:
 						PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
 				fetchMock.getOnce( publicationsEndpoint, {
@@ -171,7 +170,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						...settings,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
 					},
 					status: 200,
 				} );
@@ -210,7 +208,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					publicationID: publication.publicationId,
 					publicationOnboardingState:
 						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
 				fetchMock.getOnce( publicationsEndpoint, {
@@ -223,7 +220,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						...settings,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
 					},
 					status: 200,
 				} );

@@ -1,9 +1,11 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics_4\Synchronize_OnboardingState.
+ * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState
  *
- * @since n.e.x.t
  * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager
+ * @copyright 2024 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
  */
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
@@ -14,6 +16,10 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 /**
  * Class for synchronizing the onboarding state.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 class Synchronize_OnboardingState {
 	/**
@@ -38,6 +44,8 @@ class Synchronize_OnboardingState {
 	/**
 	 * Constructor.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param Reader_Revenue_Manager $reader_revenue_manager Reader Revenue Manager instance.
 	 * @param User_Options           $user_options           User_Options instance.
 	 */
@@ -48,6 +56,10 @@ class Synchronize_OnboardingState {
 
 	/**
 	 * Registers functionality through WordPress hooks.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return void
 	 */
 	public function register() {
 		add_action(
@@ -59,7 +71,7 @@ class Synchronize_OnboardingState {
 	}
 
 	/**
-	 * Synchronizes the onboarding state.
+	 * Cron callback for synchronizing the publication.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -95,7 +107,7 @@ class Synchronize_OnboardingState {
 		$publication_id   = $settings['publicationID'];
 		$onboarding_state = $settings['publicationOnboardingState'];
 
-		if ( $connected && 'ONBOARDING_COMPLETE' !== $onboarding_state ) {
+		if ( 'ONBOARDING_COMPLETE' !== $onboarding_state ) {
 			$publications = $this->reader_revenue_manager->get_data( 'publications' );
 
 			// If publications is empty, return early.
@@ -117,17 +129,18 @@ class Synchronize_OnboardingState {
 
 			$publication = reset( $publication );
 			if ( $publication->getOnboardingState() !== $onboarding_state ) {
-				$new_settings                                      = $settings;
-				$new_settings['publicationOnboardingState']        = $publication->getOnboardingState();
-				$new_settings['publicationOnboardingStateChanged'] = true;
-
-				$this->reader_revenue_manager->get_settings()->set( $new_settings );
+				$this->reader_revenue_manager->get_settings()->merge(
+					array(
+						'publicationOnboardingState' => $publication->getOnboardingState(),
+						'publicationOnboardingStateChanged' => true,
+					)
+				);
 			}
 		}
 	}
 
 	/**
-	 * Maybe schedules the synchronize onboarding state cron event.
+	 * Maybe schedule the synchronize onboarding state cron event.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -135,11 +148,13 @@ class Synchronize_OnboardingState {
 	 */
 	public function maybe_schedule_synchronize_onboarding_state() {
 		$connected              = $this->reader_revenue_manager->is_connected();
+		$settings               = $this->reader_revenue_manager->get_settings()->get();
+		$onboarding_state       = $settings['publicationOnboardingState'] ?? '';
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_ONBOARDING_STATE );
 
-		if ( $connected && ! $cron_already_scheduled ) {
+		if ( $connected && 'ONBOARDING_COMPLETE' !== $onboarding_state && ! $cron_already_scheduled ) {
 			wp_schedule_single_event(
-				time() + ( HOUR_IN_SECONDS ),
+				time() + HOUR_IN_SECONDS,
 				self::CRON_SYNCHRONIZE_ONBOARDING_STATE
 			);
 		}
