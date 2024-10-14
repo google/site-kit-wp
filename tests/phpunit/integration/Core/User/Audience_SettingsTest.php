@@ -73,6 +73,14 @@ class Audience_SettingsTest extends TestCase {
 				array( 'configuredAudiences' => array( 'validAudienceResourceName1', 'validAudienceResourceName2', 'validAudienceResourceName3' ) ),
 				array( 'configuredAudiences' => array( 'validAudienceResourceName1', 'validAudienceResourceName2', 'validAudienceResourceName3' ) ),
 			),
+			'null configuredAudiences setting'             => array(
+				array(
+					'configuredAudiences' => null,
+				),
+				array(
+					'configuredAudiences' => null,
+				),
+			),
 			'null isAudienceSegmentationWidgetHidden flag' => array(
 				array(
 					'isAudienceSegmentationWidgetHidden' => null,
@@ -256,10 +264,32 @@ class Audience_SettingsTest extends TestCase {
 		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
 
-		// Make sure that we can't set wrong format for the configuredAudiences property
+		// Make sure that we can't set wrong format (or `null`) for the
+		// configuredAudiences property.
+		$this->audience_settings->set( $original_settings );
+		$this->audience_settings->merge( array( 'configuredAudiences' => false ) );
+		$this->assertEqualSetsWithIndex(
+			array_merge(
+				$original_settings,
+				array(
+					'configuredAudiences' => array(),
+				)
+			),
+			$this->audience_settings->get()
+		);
+
+		// Make sure we can set `null` for the configuredAudiences property.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( array( 'configuredAudiences' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
+		$this->assertEqualSetsWithIndex(
+			array_merge(
+				$original_settings,
+				array(
+					'configuredAudiences' => null,
+				)
+			),
+			$this->audience_settings->get()
+		);
 	}
 
 	public function test_merge__did_set_audiences() {
@@ -287,6 +317,18 @@ class Audience_SettingsTest extends TestCase {
 
 		// Verify that `didSetAudiences` retains its value when `configuredAudiences` is updated to an empty array.
 		$this->audience_settings->merge( array( 'configuredAudiences' => array() ) );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'configuredAudiences'                => array(),
+				'isAudienceSegmentationWidgetHidden' => false,
+				'didSetAudiences'                    => true,
+			),
+			$this->audience_settings->get()
+		);
+
+		// Make sure that we can't set wrong format (or `null`) for the
+		// `didSetAudiences` property.
+		$this->audience_settings->merge( array( 'didSetAudiences' => null ) );
 		$this->assertEqualSetsWithIndex(
 			array(
 				'configuredAudiences'                => array(),
