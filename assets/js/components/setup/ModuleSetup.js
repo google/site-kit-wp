@@ -49,7 +49,10 @@ export default function ModuleSetup( { moduleSlug } ) {
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
+	const onCompleteSetup = module?.onCompleteSetup;
+
 	const registry = useRegistry();
+
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 *
@@ -84,6 +87,10 @@ export default function ModuleSetup( { moduleSlug } ) {
 		},
 		[ registry, navigateTo, moduleSlug ]
 	);
+
+	const onCompleteSetupCallback = useCallback( async () => {
+		return await onCompleteSetup( registry, finishSetup );
+	}, [ onCompleteSetup, registry, finishSetup ] );
 
 	const onCancelButtonClick = useCallback( async () => {
 		await trackEvent( 'moduleSetup', 'cancel_module_setup', moduleSlug );
@@ -129,6 +136,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 								<ModuleSetupFooter
 									module={ module }
 									onCancel={ onCancelButtonClick }
+									onComplete={
+										typeof onCompleteSetup === 'function'
+											? onCompleteSetupCallback
+											: undefined
+									}
 								/>
 							</section>
 						</Cell>
