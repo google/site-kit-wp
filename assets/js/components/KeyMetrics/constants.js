@@ -23,3 +23,24 @@ export const KEY_METRICS_SELECTION_FORM = 'key-metrics-selection-form';
 export const KEY_METRICS_SELECTED = 'key-metrics-selected';
 export const MIN_SELECTED_METRICS_COUNT = 2;
 export const MAX_SELECTED_METRICS_COUNT = 4;
+
+export const KEY_METRICS_GROUP_VISITORS = {
+	SLUG: 'visitors',
+	LABEL: 'Visitors',
+};
+export const KEY_METRICS_GROUP_DRIVING_TRAFFIC = {
+	SLUG: 'drivingTraffic',
+	LABEL: 'Driving traffic',
+};
+export const KEY_METRICS_GROUP_GENERATING_LEADS = {
+	SLUG: 'generatingLeads',
+	LABEL: 'Generating leads',
+};
+export const KEY_METRICS_GROUP_SELLING_PRODUCTS = {
+	SLUG: 'sellingProducts',
+	LABEL: 'Selling products',
+};
+export const KEY_METRICS_GROUP_CONTENT_PERFORMANCE = {
+	SLUG: 'contentPerformance',
+	LABEL: 'Content performance',
+};
