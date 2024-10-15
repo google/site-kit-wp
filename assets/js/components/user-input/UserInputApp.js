@@ -50,7 +50,7 @@ export default function UserInputApp() {
 		) || 1;
 
 	const questions = getUserInputQuestions();
-	const questionTitle = questions[ questionNumber ]?.title || '';
+	const questionTitle = questions[ questionNumber - 1 ]?.title || '';
 
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
@@ -91,7 +91,7 @@ export default function UserInputApp() {
 											className="googlesitekit-user-input__question-number"
 										>
 											{ sprintf(
-												'%s / 3',
+												'%d / 3',
 												questionNumber
 											) }
 										</Cell>

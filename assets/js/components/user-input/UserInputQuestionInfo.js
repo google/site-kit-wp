@@ -50,7 +50,7 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 	);
 
 	const questions = getUserInputQuestions();
-	const description = questions[ questionNumber ]?.description || '';
+	const description = questions[ questionNumber - 1 ]?.description || '';
 
 	return (
 		<Fragment>

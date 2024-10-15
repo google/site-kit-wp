@@ -188,8 +188,9 @@
 }
 
 // Adapt the fixed position bar based on the folded state of the WordPress menu
-.folded .googlesitekit-plugin .googlesitekit-user-input__footer {
-	left: 36px !important;
+.sb-show-main .googlesitekit-plugin .googlesitekit-user-input__footer,
+.sb-show-main .googlesitekit-plugin .googlesitekit-user-input__error {
+	left: 0;
 }
 .auto-fold .googlesitekit-plugin .googlesitekit-user-input__footer {
 	@media (min-width: $bp-wpAdminBarTablet) {
@@ -200,8 +201,8 @@
 		padding: 28px 24px;
 	}
 }
-.folded .googlesitekit-plugin .googlesitekit-user-input__error {
-	left: 36px !important;
+.folded .googlesitekit-plugin .googlesitekit-user-input__question .googlesitekit-user-input__footer {
+	left: 36px;
 }
 .auto-fold .googlesitekit-plugin .googlesitekit-user-input__error {
 	@media (min-width: $bp-wpAdminBarTablet) {
@@ -211,7 +212,6 @@
 		left: 160px;
 	}
 }
-.sb-show-main .googlesitekit-plugin .googlesitekit-user-input__footer,
-.sb-show-main .googlesitekit-plugin .googlesitekit-user-input__error {
-	left: 0;
+.folded .googlesitekit-plugin .googlesitekit-user-input__question .googlesitekit-user-input__error {
+	left: 36px;
 }

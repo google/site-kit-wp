@@ -51,8 +51,8 @@ export const FORM_USER_INPUT_QUESTION_NUMBER = 'user_input_question_number';
  * @return {Object} Questions object.
  */
 export function getUserInputQuestions() {
-	return {
-		1: {
+	return [
+		{
 			title: __(
 				'What is the main purpose of this site?',
 				'google-site-kit'
@@ -62,7 +62,7 @@ export function getUserInputQuestions() {
 				'google-site-kit'
 			),
 		},
-		2: {
+		{
 			title: __(
 				'How often do you create new content for this site?',
 				'google-site-kit'
@@ -72,7 +72,7 @@ export function getUserInputQuestions() {
 				'google-site-kit'
 			),
 		},
-		3: {
+		{
 			title: __(
 				'What are your top goals for this site?',
 				'google-site-kit'
@@ -82,7 +82,7 @@ export function getUserInputQuestions() {
 				'google-site-kit'
 			),
 		},
-	};
+	];
 }
 
 /**
