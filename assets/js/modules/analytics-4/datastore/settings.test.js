@@ -496,8 +496,8 @@ describe( 'modules/analytics-4 settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should reset audience settings in the store', async () => {
-				const validSettings = {
+			it( 'should reset audience settings in the store when Analytics settings have successfully saved', async () => {
+				const analyticsSettings = {
 					accountID: fixtures.createProperty._accountID,
 					propertyID: fixtures.createProperty._id,
 					webDataStreamID: fixtures.createWebDataStream._id,
@@ -505,10 +505,10 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setSettings( validSettings );
+					.setSettings( analyticsSettings );
 
 				fetchMock.postOnce( settingsEndpoint, {
-					body: validSettings,
+					body: analyticsSettings,
 					status: 200,
 				} );
 
@@ -549,6 +549,57 @@ describe( 'modules/analytics-4 settings', () => {
 					registry,
 					CORE_USER
 				).getAudienceSettings();
+			} );
+
+			it( 'should not reset audience settings in the store when Analytics settings have not successfully saved', async () => {
+				const analyticsSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( analyticsSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const audienceSettings = {
+					configuredAudiences: [],
+					isAudienceSegmentationWidgetHidden: false,
+					didSetAudiences: true,
+				};
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetAudienceSettings( audienceSettings );
+
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getAudienceSettings', [] );
+
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toEqual( audienceSettings );
+
+				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				// Verify that the audience settings have not been reset.
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toEqual( audienceSettings );
+
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:settings',
+					'type:modules',
+					'identifier:analytics-4',
+					'error:"Something wrong happened."'
+				);
 			} );
 		} );
 	} );
