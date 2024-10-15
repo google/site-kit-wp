@@ -129,8 +129,15 @@ class Reset_Audiences {
 					}
 				}
 
-				// Reset the users audience settings, such as configured audiences.
-				$this->audience_settings->delete();
+				// Reset the user's audience settings.
+				if ( $this->audience_settings->has() ) {
+					$this->audience_settings->merge(
+						array(
+							'configuredAudiences' => null,
+							'didSetAudiences'     => false,
+						),
+					);
+				}
 			}
 
 			// Restore original user.
