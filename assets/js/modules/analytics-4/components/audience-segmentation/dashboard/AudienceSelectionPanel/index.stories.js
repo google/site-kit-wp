@@ -274,6 +274,7 @@ AudienceCreationNoticeOneAdded.args = {
 };
 AudienceCreationNoticeOneAdded.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNoticeOneAdded',
+	delay: 1500, // Delay here is required to prevent inconsistent rendering of the Create button text.
 };
 
 export const AudienceCreationNoticeWithOAuthError = Template.bind( {} );

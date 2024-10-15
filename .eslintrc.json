@@ -169,6 +169,17 @@
           "off"
         ]
       }
+    },
+    {
+      "files": [
+        "webpack/*",
+        "**/__factories__/*",
+        "*.stories.js",
+        "*.test.js"
+      ],
+      "rules": {
+        "sitekit/no-direct-date": "off"
+      }
     }
   ],
   "plugins": [

@@ -71,6 +71,8 @@ export function getSiteStatsDataForGoogleChart(
 	];
 
 	const nextDate = ( date ) => {
+		// Valid use of `new Date()` with an argument.
+		// eslint-disable-next-line sitekit/no-direct-date
 		const next = new Date( date );
 		next.setDate( date.getDate() + 1 );
 		return next;

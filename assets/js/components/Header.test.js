@@ -23,6 +23,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForTimeouts,
 } from '../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -82,5 +83,7 @@ describe( 'Header', () => {
 		expect( container.firstChild ).toHaveClass(
 			'googlesitekit-header--has-subheader'
 		);
+
+		await act( () => waitForTimeouts( 30 ) );
 	} );
 } );

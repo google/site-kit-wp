@@ -36,7 +36,13 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 )( ConnectGA4CTAWidget );
 
 function Template() {
-	return <WidgetWithComponentProps />;
+	return (
+		<div className="googlesitekit-widget-area--mainDashboardKeyMetricsPrimary">
+			<div className="googlesitekit-widget--keyMetricsConnectGA4All">
+				<WidgetWithComponentProps />
+			</div>
+		</div>
+	);
 }
 
 export const Default = Template.bind( {} );

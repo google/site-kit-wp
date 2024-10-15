@@ -45,6 +45,13 @@ import {
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
@@ -233,6 +240,20 @@ describe( 'core/user key metrics', () => {
 		} );
 
 		describe( 'getAnswerBasedMetrics', () => {
+			// Default to a configuration that will *not* return Conversion Tailored Metrics.
+			beforeEach( async () => {
+				provideUserAuthentication( registry );
+				await registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
+				await registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings( {
+						widgetSlugs: [],
+						includeConversionTailoredMetrics: false,
+					} );
+			} );
+
 			it( 'should return undefined if user input settings are not resolved', async () => {
 				freezeFetch(
 					new RegExp(
@@ -284,6 +305,10 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 					],
+					[
+						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+					],
 				],
 				[
 					'publish_news',
@@ -292,6 +317,10 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_VISIT_LENGTH,
 						KM_ANALYTICS_VISITS_PER_VISITOR,
 						KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					],
+					[
+						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 					],
 				],
 				[
@@ -302,6 +331,7 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_NEW_VISITORS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					],
+					[],
 				],
 				[
 					'sell_products_or_service',
@@ -310,6 +340,13 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					],
+					[
+						KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+						KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 					],
 				],
 				[
@@ -320,10 +357,30 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
+					[
+						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+					],
 				],
 			] )(
 				'should return the correct metrics for the %s purpose',
-				( purpose, expectedMetrics ) => {
+				async (
+					purpose,
+					expectedMetrics,
+					conversionTailoredMetrics
+				) => {
+					provideUserAuthentication( registry );
+					await registry
+						.dispatch( CORE_USER )
+						.receiveIsUserInputCompleted( false );
+					await registry
+						.dispatch( CORE_USER )
+						.receiveGetKeyMetricsSettings( {
+							widgetSlugs: [],
+							includeConversionTailoredMetrics: false,
+						} );
+
 					registry
 						.dispatch( CORE_USER )
 						.receiveGetUserInputSettings( {
@@ -333,6 +390,64 @@ describe( 'core/user key metrics', () => {
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
 					).toEqual( expectedMetrics );
+
+					// Conversion Tailored Metrics should be added to the list if the
+					// isUserInputCompleted value is true.
+					await registry
+						.dispatch( CORE_USER )
+						.receiveIsUserInputCompleted( true );
+					await registry
+						.dispatch( CORE_USER )
+						.receiveGetKeyMetricsSettings( {
+							widgetSlugs: [],
+							includeConversionTailoredMetrics: false,
+						} );
+
+					expect(
+						registry.select( CORE_USER ).getKeyMetricsSettings()
+					).toEqual( {
+						widgetSlugs: [],
+						includeConversionTailoredMetrics: false,
+					} );
+					expect(
+						registry.select( CORE_USER ).isUserInputCompleted()
+					).toEqual( true );
+
+					expect(
+						registry.select( CORE_USER ).getAnswerBasedMetrics()
+					).toEqual( [
+						...expectedMetrics,
+						...conversionTailoredMetrics,
+					] );
+
+					// Conversion Tailored Metrics should be added to the list if the
+					// includeConversionTailoredMetrics setting is true.
+					await registry
+						.dispatch( CORE_USER )
+						.receiveIsUserInputCompleted( false );
+					await registry
+						.dispatch( CORE_USER )
+						.receiveGetKeyMetricsSettings( {
+							widgetSlugs: [],
+							includeConversionTailoredMetrics: true,
+						} );
+
+					expect(
+						registry.select( CORE_USER ).isUserInputCompleted()
+					).toEqual( false );
+					expect(
+						registry.select( CORE_USER ).getKeyMetricsSettings()
+					).toEqual( {
+						widgetSlugs: [],
+						includeConversionTailoredMetrics: true,
+					} );
+
+					expect(
+						registry.select( CORE_USER ).getAnswerBasedMetrics()
+					).toEqual( [
+						...expectedMetrics,
+						...conversionTailoredMetrics,
+					] );
 				}
 			);
 

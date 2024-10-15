@@ -218,6 +218,8 @@ export default function BannerNotification( props ) {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
+			// Valid use of `new Date()` with an argument.
+			// eslint-disable-next-line sitekit/no-direct-date
 			const expiration = new Date( dismissed );
 
 			expiration.setSeconds(

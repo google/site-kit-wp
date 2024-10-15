@@ -154,16 +154,18 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => (
-				<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+				<KeyMetricsCTAFooter
+					onActionClick={ openMetricsSelectionPanel }
+				/>
 			) }
 		>
 			<KeyMetricsCTAContent
 				title={ __(
-					'Get metrics and suggestions tailored to your specific site goals',
+					'Get personalized suggestions for user interaction metrics based on your goals',
 					'google-site-kit'
 				) }
 				description={ __(
-					'Answer 3 questions to show relevant stats for your site',
+					'Answer 3 questions and we’ll suggest relevant metrics for your dashboard. These metrics will help you track how users interact with your site.',
 					'google-site-kit'
 				) }
 				actions={
@@ -176,11 +178,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						>
 							{ __( 'Get tailored metrics', 'google-site-kit' ) }
 						</Button>
-						<Button tertiary onClick={ openMetricsSelectionPanel }>
-							{ __(
-								'I’ll pick metrics myself',
-								'google-site-kit'
-							) }
+						<Button tertiary onClick={ dismissCallback }>
+							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 					</Fragment>
 				}
