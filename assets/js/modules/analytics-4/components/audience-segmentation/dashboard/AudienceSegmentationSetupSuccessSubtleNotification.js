@@ -24,11 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import SubtleNotification from '../../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import Dismiss from '../../../../../googlesitekit/notifications/components/common/Dismiss';
+import CTALinkSubtle from '../../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 
@@ -77,9 +77,11 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 					/>
 				}
 				additionalCTA={
-					<Button onClick={ scrollToWidgetArea }>
-						{ __( 'Show me', 'google-site-kit' ) }
-					</Button>
+					<CTALinkSubtle
+						id={ id }
+						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
+						onCTAClick={ scrollToWidgetArea }
+					/>
 				}
 			/>
 		</Notification>
