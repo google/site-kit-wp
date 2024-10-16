@@ -40,28 +40,6 @@ AlternativeGA4Config.decorators = [
 					gtmContainerID
 				];
 
-			const accountID =
-				fixtures.accountSummaries.accountSummaries[ 1 ]._id;
-			const properties =
-				fixtures.accountSummaries.accountSummaries[ 1 ]
-					.propertySummaries;
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetAccountSummaries( fixtures.accountSummaries );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getAccountSummaries', [] );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperties( properties, {
-					accountID,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getProperties', [ accountID ] );
-
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setGoogleTagAccountID( gtmAccountID );
