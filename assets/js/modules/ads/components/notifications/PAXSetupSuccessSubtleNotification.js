@@ -24,12 +24,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import { getNavigationalScrollTop } from '../../../../util/scroll';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 
 export default function PAXSetupSuccessSubtleNotification( {
 	id,
@@ -78,9 +78,11 @@ export default function PAXSetupSuccessSubtleNotification( {
 					/>
 				}
 				additionalCTA={
-					<Button onClick={ scrollToWidget }>
-						{ __( 'Show me', 'google-site-kit' ) }
-					</Button>
+					<CTALinkSubtle
+						id={ id }
+						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
+						onCTAClick={ scrollToWidget }
+					/>
 				}
 			/>
 		</Notification>
