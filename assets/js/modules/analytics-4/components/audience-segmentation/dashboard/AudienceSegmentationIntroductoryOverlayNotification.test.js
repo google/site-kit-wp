@@ -56,8 +56,9 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
-	beforeAll( () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
+
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
@@ -66,16 +67,28 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				setupComplete: true,
 			},
 		] );
-	} );
-
-	it( 'should render an introductory overlay notification', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const userID = registry.select( CORE_USER ).getID();
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+			didSetAudiences: true,
+		} );
+
+		/*
+		registry
+			.dispatch( CORE_USER )
+			.finishResolution( 'getAudienceSettings', [] );
+			*/
+	} );
+
+	it( 'should render an introductory overlay notification', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { getByText, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
@@ -114,7 +127,29 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
+	it( 'should return null if the audiences widget area is hidden', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		registry
+			.dispatch( CORE_USER )
+			.setAudienceSegmentationWidgetHidden( true );
+
+		const { container, waitForRegistry } = render(
+			<AudienceSegmentationIntroductoryOverlayNotification />,
+			{
+				registry,
+				context: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( 'should scroll to the traffic widget area and dismiss the notification when the notification is clicked', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
 		getNavigationalScrollTopSpy.mockImplementation(
 			( selector, breakpoint ) => {
 				if (
@@ -128,14 +163,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				return 0;
 			}
 		);
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const userID = registry.select( CORE_USER ).getID();
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
 		const { getByRole, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
@@ -168,12 +195,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 	it( 'should not render if the dashboard is entity dashboard', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const userID = registry.select( CORE_USER ).getID();
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
 		const { container, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
