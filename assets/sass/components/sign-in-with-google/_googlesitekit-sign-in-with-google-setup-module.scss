@@ -66,24 +66,27 @@
 			.googlesitekit-setup-module__panel-item--with-svg {
 				margin-bottom: -15px;
 				overflow: hidden;
+				position: relative;
 				text-align: center;
 
 				@media (min-width: $bp-desktop) {
+					bottom: unset;
 					margin-bottom: 0;
+					top: 20px;
 				}
 
 				svg {
 					display: none;
+					position: relative;
 
 					@media (min-width: $bp-tablet) {
+						bottom: -60px;
 						display: inline-block;
-						margin-bottom: -60px;
-						margin-top: 13px;
 						max-height: 260px;
 					}
 
 					@media (min-width: $bp-desktop) {
-						margin-bottom: -20px;
+						bottom: unset;
 						max-height: 300px;
 					}
 				}
