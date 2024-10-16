@@ -66,7 +66,6 @@ AlternativeGA4Config.decorators = [
 ];
 AlternativeGA4Config.scenario = {
 	label: 'Global/GoogleTagIDMismatchNotification/AlternativeGA4Config',
-	delay: 1000,
 };
 
 export const NoAlternativeGA4Config = Template.bind( {} );
