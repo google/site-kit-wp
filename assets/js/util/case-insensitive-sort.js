@@ -19,7 +19,7 @@
 /**
  * Sorts the provided list in a case-insensitive manner.
  *
- * @since n.e.x.t
+ * @since 1.138.0
  *
  * @param {Array}  listToSort The list to sort (Array of objects or arrays).
  * @param {string} orderBy    The field by which the list should be ordered.

@@ -293,7 +293,7 @@ export const selectors = {
 	/**
 	 * Fetches a registered notification by ID from state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.138.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} id    Notification ID.
