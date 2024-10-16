@@ -234,6 +234,8 @@ export default function GoogleChart( props ) {
 
 	// Only use markers if the date is within the current date range.
 	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) => {
+		// Valid use of `new Date()` with an argument.
+		// eslint-disable-next-line sitekit/no-direct-date
 		return isDateWithinRange( new Date( dateMarker.date ) );
 	} );
 
@@ -260,6 +262,8 @@ export default function GoogleChart( props ) {
 
 		// Add the dotted line and tooltip for each date marker.
 		dateMarkersInRange.forEach( ( dateMarker, index ) => {
+			// Valid use of `new Date()` with an argument.
+			// eslint-disable-next-line sitekit/no-direct-date
 			const dateFromMarker = new Date( dateMarker.date );
 
 			const chartLine = document.getElementById(

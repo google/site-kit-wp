@@ -30,8 +30,9 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 
-const accountID = fixtures.accountSummaries[ 1 ]._id;
-const properties = fixtures.accountSummaries[ 1 ].propertySummaries;
+const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;
+const properties =
+	fixtures.accountSummaries.accountSummaries[ 1 ].propertySummaries;
 const propertyIDs = properties.map( ( { _id } ) => _id );
 
 const setupRegistry = ( registry ) => {
@@ -86,12 +87,15 @@ const setupEmptyRegistry = ( registry ) => {
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-		fixtures.accountSummaries.map( ( account ) => ( {
-			...account,
-			propertySummaries: [],
-		} ) )
-	);
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+		accountSummaries: fixtures.accountSummaries.accountSummaries.map(
+			( account ) => ( {
+				...account,
+				propertySummaries: [],
+			} )
+		),
+		nextPageToken: null,
+	} );
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
 		'getAccountSummaries',
 		[]

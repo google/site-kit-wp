@@ -257,9 +257,14 @@ export function getAdSenseMockResponse( args ) {
 	const ops = [
 		// Converts range number to a date string.
 		map( ( item ) => {
+			// Valid use of `new Date()` with an argument.
+			// eslint-disable-next-line sitekit/no-direct-date
 			const updatedMilliseconds = new Date( startDate ).setDate(
 				startDate.getDate() + item
 			);
+
+			// Valid use of `new Date()` with an argument.
+			// eslint-disable-next-line sitekit/no-direct-date
 			return getDateString( new Date( updatedMilliseconds ) );
 		} ),
 		// Add dimension and metric values.

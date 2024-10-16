@@ -19,7 +19,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 /**
  * Class to reset Audience Segmentation Settings across multiple users.
  *
- * @since n.e.x.t
+ * @since 1.137.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Reset_Audiences {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -36,7 +36,7 @@ class Reset_Audiences {
 	/**
 	 * Dismissed_Prompts instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 * @var Dismissed_Prompts
 	 */
 	protected $dismissed_prompts;
@@ -44,7 +44,7 @@ class Reset_Audiences {
 	/**
 	 * Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 * @var Dismissed_Items
 	 */
 	protected $dismissed_items;
@@ -52,7 +52,7 @@ class Reset_Audiences {
 	/**
 	 * Audience Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 * @var Audience_Settings
 	 */
 	protected $audience_settings;
@@ -61,7 +61,7 @@ class Reset_Audiences {
 
 	const AUDIENCE_SEGMENTATION_DISMISSED_ITEMS = array(
 		'audience-segmentation-add-group-notice',
-		'audience_segmentation_setup_success_notification',
+		'setup-success-notification-audiences',
 		'settings_visitor_groups_setup_success_notification',
 		'audience-segmentation-no-audiences-banner',
 		'audience-tile-*',
@@ -70,7 +70,7 @@ class Reset_Audiences {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 *
 	 * @param User_Options $user_options User option API.
 	 */
@@ -84,7 +84,7 @@ class Reset_Audiences {
 	/**
 	 * Reset audience specific settings for all SK users.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.137.0
 	 */
 	public function reset_audience_data() {
 		global $wpdb;
@@ -129,8 +129,15 @@ class Reset_Audiences {
 					}
 				}
 
-				// Reset the users audience settings, such as configured audiences.
-				$this->audience_settings->delete();
+				// Reset the user's audience settings.
+				if ( $this->audience_settings->has() ) {
+					$this->audience_settings->merge(
+						array(
+							'configuredAudiences' => null,
+							'didSetAudiences'     => false,
+						),
+					);
+				}
 			}
 
 			// Restore original user.

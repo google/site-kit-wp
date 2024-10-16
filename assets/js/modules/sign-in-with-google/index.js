@@ -20,6 +20,8 @@
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './datastore/constants';
 
+export { registerStore } from './datastore';
+
 export function registerModule( modules ) {
 	modules.registerModule( 'sign-in-with-google', {
 		storeName: MODULES_SIGN_IN_WITH_GOOGLE,

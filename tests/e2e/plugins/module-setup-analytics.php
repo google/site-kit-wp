@@ -227,7 +227,10 @@ add_action(
 			array(
 				'methods'             => 'GET',
 				'callback'            => function () use ( $account_summaries ) {
-					return $account_summaries;
+					return array(
+						'accountSummaries' => $account_summaries,
+						'nextPageToken'    => null,
+					);
 				},
 				'permission_callback' => '__return_true',
 			),
