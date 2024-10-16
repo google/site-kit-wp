@@ -86,6 +86,7 @@
 
 				@media (min-width: $bp-desktop) {
 					max-height: 310px;
+					max-width: 45%;
 					position: absolute;
 					right: 0;
 					top: 0;
@@ -102,6 +103,10 @@
 				}
 				@media (min-width: $bp-xxlarge + 1 + px) {
 					top: -50px;
+				}
+				@media (min-width: 1700px) {
+					max-height: 340px;
+					max-width: 35%;
 				}
 				@media (min-width: $bp-wpdb4) {
 					max-height: 370px;
