@@ -43,7 +43,10 @@ add_action(
 			array(
 				'methods'             => 'GET',
 				'callback'            => function () {
-					return array();
+					return array(
+						'accountSummaries' => array(),
+						'nextPageToken'    => null,
+					);
 				},
 				'permission_callback' => '__return_true',
 			),

@@ -36,6 +36,7 @@
 
 **Fixed**
 
+* Enable enhanced conversion tracking by default when connecting GA4 or Ads. See [#9458](https://github.com/google/site-kit-wp/issues/9458).
 * Fix UX issues with the "Temporarily hidden" badge in the Audience Selection panel by ensuring the info icon only shows the tooltip without toggling the checkbox and improving tooltip behavior on mobile. See [#9421](https://github.com/google/site-kit-wp/issues/9421).
 * Fix conditions for showing the "Enable groups" and "Display visitor groups in dashboard" toggle on the Settings screen. See [#9366](https://github.com/google/site-kit-wp/issues/9366).
 

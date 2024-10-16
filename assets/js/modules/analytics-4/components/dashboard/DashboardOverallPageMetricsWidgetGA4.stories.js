@@ -82,7 +82,7 @@ const reportOptions = [
 		endDate: '2020-09-07',
 	},
 ];
-const currentEntityURL = 'https://www.example.com/example-page/';
+const currentEntityURL = 'https://www.example.com/example-page-3/';
 const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	return {
 		...options,
@@ -252,7 +252,6 @@ LoadedEntityURL.args = {
 };
 LoadedEntityURL.scenario = {
 	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
-	delay: 1500, // Allow extra time for responsive text in mobile.
 };
 
 export const LoadingEntityURL = Template.bind( {} );

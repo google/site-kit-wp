@@ -34,8 +34,8 @@ function Template() {
 	);
 }
 
-export const Start = Template.bind( {} );
-Start.storyName = 'Start';
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
 export default {
 	title: 'Setup / Using Proxy View-Only',

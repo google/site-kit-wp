@@ -128,7 +128,10 @@ describe( 'modules/analytics-4 settings', () => {
 						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 					),
 					{
-						body: [],
+						body: {
+							accountSummaries: [],
+							nextPageToken: null,
+						},
 						status: 200,
 					}
 				);

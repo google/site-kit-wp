@@ -22,6 +22,7 @@
 import {
 	createTestRegistry,
 	fireEvent,
+	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -40,6 +41,11 @@ import {
 import { createCacheKey } from '../../../../../googlesitekit/api';
 import { getKeys, setItem } from '../../../../../googlesitekit/api/cache';
 import AccountCreate from '.';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+
+const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
+	'^/google-site-kit/v1/core/site/data/conversion-tracking'
+);
 
 describe( 'AccountCreate', () => {
 	mockLocation();
@@ -64,12 +70,19 @@ describe( 'AccountCreate', () => {
 		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: [],
+			nextPageToken: null,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getAccountSummaries', [] );
+
+		// Enable Enhanced Conversion Tracking by default to avoid adding
+		// the notice in existing cases.
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: true,
+		} );
 	} );
 
 	it( 'renders correctly in a loading state', async () => {
@@ -129,6 +142,7 @@ describe( 'AccountCreate', () => {
 					status: 200,
 				}
 			);
+			muteFetch( REGEX_REST_CONVERSION_TRACKING_SETTINGS );
 		} );
 
 		it( 'should invalidate the module cache', async () => {
@@ -184,6 +198,18 @@ describe( 'AccountCreate', () => {
 				new RegExp(
 					`analytics.google.com.*termsofservice.*${ accountTicketID }`
 				)
+			);
+		} );
+
+		it( 'should enable conversion tracking', async () => {
+			fireEvent.click(
+				getByRole( 'button', { name: 'Create Account' } )
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched(
+				REGEX_REST_CONVERSION_TRACKING_SETTINGS
 			);
 		} );
 	} );

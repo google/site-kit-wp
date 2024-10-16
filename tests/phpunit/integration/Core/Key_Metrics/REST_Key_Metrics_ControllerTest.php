@@ -213,6 +213,61 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		);
 	}
 
+	public function test_set_settings__with_conversionReporting_enabled() {
+		$this->enable_feature( 'conversionReporting' );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array(
+						'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4', 'widget5' ),
+						'isWidgetHidden' => false,
+					),
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		// When conversionReporting feature flag is enabled
+		// it should be possible to save more than 4 KMW.
+		$this->assertEquals( 200, $response->get_status() );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array(
+						'widgetSlugs'    => array(
+							'widget0',
+							'widget1',
+							'widget2',
+							'widget3',
+							'widget4',
+							'widget5',
+							'widget6',
+							'widget7',
+							'widget8',
+							'widget9',
+						),
+						'isWidgetHidden' => false,
+					),
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		// When conversionReporting feature flag is enabled
+		// it should be possible to save more than 4 KMW, but
+		// not more than 8.
+		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+	}
+
 	/**
 	 * @dataProvider provider_wrong_data
 	 */

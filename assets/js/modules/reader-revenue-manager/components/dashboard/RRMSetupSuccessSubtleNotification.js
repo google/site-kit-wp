@@ -19,28 +19,25 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Cell, Grid, Row } from '../../../../material-components';
-import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import whenActive from '../../../../util/when-active';
-import { trackEvent } from '../../../../util';
 import { useRefocus } from '../../../../hooks/useRefocus';
-import useViewContext from '../../../../hooks/useViewContext';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 } from '../../datastore/constants';
+import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
+import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -48,20 +45,17 @@ const {
 	ONBOARDING_ACTION_REQUIRED,
 } = PUBLICATION_ONBOARDING_STATES;
 
-const actionableOnboardingStates = [
-	PENDING_VERIFICATION,
-	ONBOARDING_ACTION_REQUIRED,
-];
+export default function RRMSetupSuccessSubtleNotification( {
+	id,
+	Notification,
+} ) {
+	const [ , setNotification ] = useQueryArg( 'notification' );
+	const [ , setSlug ] = useQueryArg( 'slug' );
 
-const targetOnboardingStates = [
-	...actionableOnboardingStates,
-	ONBOARDING_COMPLETE,
-];
-
-function RRMSetupSuccessSubtleNotification() {
-	const viewContext = useViewContext();
-	const [ notification, setNotification ] = useQueryArg( 'notification' );
-	const [ slug, setSlug ] = useQueryArg( 'slug' );
+	const actionableOnboardingStates = [
+		PENDING_VERIFICATION,
+		ONBOARDING_ACTION_REQUIRED,
+	];
 
 	const publicationOnboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
@@ -94,26 +88,9 @@ function RRMSetupSuccessSubtleNotification() {
 		MODULES_READER_REVENUE_MANAGER
 	);
 
-	const showNotification =
-		notification === 'authentication_success' &&
-		slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
-		publicationOnboardingState !== undefined;
-
 	const dismissNotice = () => {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
-
-	const handleDismiss = () => {
-		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
-			trackEvent(
-				`${ viewContext }_setup-success-notification-rrm`,
-				'dismiss_notification',
-				publicationOnboardingState
-			);
-		}
-
-		dismissNotice();
 	};
 
 	const onCTAClick = ( event ) => {
@@ -128,14 +105,6 @@ function RRMSetupSuccessSubtleNotification() {
 			} );
 		}
 
-		if ( targetOnboardingStates.includes( publicationOnboardingState ) ) {
-			trackEvent(
-				`${ viewContext }_setup-success-notification-rrm`,
-				'confirm_notification',
-				publicationOnboardingState
-			);
-		}
-
 		global.open( serviceURL, '_blank' );
 	};
 
@@ -147,41 +116,16 @@ function RRMSetupSuccessSubtleNotification() {
 		syncPublicationOnboardingState();
 	}, [ shouldSyncPublication, syncPublicationOnboardingState ] );
 
-	useEffect( () => {
-		if (
-			showNotification &&
-			targetOnboardingStates.includes( publicationOnboardingState )
-		) {
-			trackEvent(
-				`${ viewContext }_setup-success-notification-rrm`,
-				'view_notification',
-				publicationOnboardingState
-			);
-		}
-	}, [ publicationOnboardingState, showNotification, viewContext ] );
-
 	// Sync publication data when user re-focuses window.
 	useRefocus( syncPublication, 15000 );
 
-	if ( ! showNotification ) {
-		return null;
-	}
-
-	function WithGridWrapped( { children } ) {
-		return (
-			<Grid>
-				<Row>
-					<Cell alignMiddle size={ 12 }>
-						{ children }
-					</Cell>
-				</Row>
-			</Grid>
-		);
-	}
+	const gaTrackingProps = {
+		gaTrackingEventArgs: { label: publicationOnboardingState },
+	};
 
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
 		return (
-			<WithGridWrapped>
+			<Notification { ...gaTrackingProps }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -191,20 +135,36 @@ function RRMSetupSuccessSubtleNotification() {
 						'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
 						'google-site-kit'
 					) }
-					onDismiss={ handleDismiss }
-					dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-					ctaLabel={ __( 'Customize settings', 'google-site-kit' ) }
-					ctaLink={ serviceURL }
-					onCTAClick={ onCTAClick }
-					isCTALinkExternal
+					dismissCTA={
+						<Dismiss
+							id={ id }
+							primary={ false }
+							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+							onDismiss={ dismissNotice }
+							{ ...gaTrackingProps }
+						/>
+					}
+					additionalCTA={
+						<CTALinkSubtle
+							id={ id }
+							ctaLabel={ __(
+								'Customize settings',
+								'google-site-kit'
+							) }
+							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
+							isCTALinkExternal
+							{ ...gaTrackingProps }
+						/>
+					}
 				/>
-			</WithGridWrapped>
+			</Notification>
 		);
 	}
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<WithGridWrapped>
+			<Notification { ...gaTrackingProps }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
@@ -214,46 +174,68 @@ function RRMSetupSuccessSubtleNotification() {
 						'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
 						'google-site-kit'
 					) }
-					onDismiss={ handleDismiss }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					ctaLabel={ __(
-						'Check publication status',
-						'google-site-kit'
-					) }
-					ctaLink={ serviceURL }
-					onCTAClick={ onCTAClick }
-					isCTALinkExternal
+					dismissCTA={
+						<Dismiss
+							id={ id }
+							primary={ false }
+							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+							onDismiss={ dismissNotice }
+							{ ...gaTrackingProps }
+						/>
+					}
+					additionalCTA={
+						<CTALinkSubtle
+							id={ id }
+							ctaLabel={ __(
+								'Check publication status',
+								'google-site-kit'
+							) }
+							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
+							isCTALinkExternal
+							{ ...gaTrackingProps }
+						/>
+					}
 				/>
-			</WithGridWrapped>
+			</Notification>
 		);
 	}
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<WithGridWrapped>
+			<Notification { ...gaTrackingProps }>
 				<SubtleNotification
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
 						'google-site-kit'
 					) }
-					onDismiss={ handleDismiss }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					ctaLabel={ __(
-						'Complete publication setup',
-						'google-site-kit'
-					) }
-					ctaLink={ serviceURL }
-					onCTAClick={ onCTAClick }
-					isCTALinkExternal
-					variant="warning"
+					dismissCTA={
+						<Dismiss
+							id={ id }
+							primary={ false }
+							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+							onDismiss={ dismissNotice }
+							{ ...gaTrackingProps }
+						/>
+					}
+					additionalCTA={
+						<CTALinkSubtle
+							id={ id }
+							ctaLabel={ __(
+								'Complete publication setup',
+								'google-site-kit'
+							) }
+							ctaLink={ serviceURL }
+							onCTAClick={ onCTAClick }
+							isCTALinkExternal
+							{ ...gaTrackingProps }
+						/>
+					}
+					type="warning"
 				/>
-			</WithGridWrapped>
+			</Notification>
 		);
 	}
 
 	return null;
 }
-
-export default whenActive( { moduleName: READER_REVENUE_MANAGER_MODULE_SLUG } )(
-	RRMSetupSuccessSubtleNotification
-);
