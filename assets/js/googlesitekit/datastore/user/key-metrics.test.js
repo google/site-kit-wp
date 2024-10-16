@@ -406,7 +406,7 @@ describe( 'core/user key metrics', () => {
 				async (
 					purpose,
 					expectedMetrics,
-					conversionTailoredMetrics
+					expectedMetricsIncludingConversionTailored
 				) => {
 					provideUserAuthentication( registry );
 					await registry
@@ -453,9 +453,9 @@ describe( 'core/user key metrics', () => {
 
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
-					).toEqual( conversionTailoredMetrics );
+					).toEqual( expectedMetricsIncludingConversionTailored );
 
-					// Conversion Tailored Metrics should be added to the list if the
+					// Conversion Tailored Metrics should be included in the list if the
 					// includeConversionTailoredMetrics setting is true.
 					await registry
 						.dispatch( CORE_USER )
@@ -479,7 +479,7 @@ describe( 'core/user key metrics', () => {
 
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
-					).toEqual( conversionTailoredMetrics );
+					).toEqual( expectedMetricsIncludingConversionTailored );
 				}
 			);
 
