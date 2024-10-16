@@ -1,5 +1,34 @@
 == Changelog ==
 
+= 1.138.0 =
+
+**Added**
+
+* Add datastore infrastructure for Sign in With Google settings. See [#9480](https://github.com/google/site-kit-wp/issues/9480).
+* Add Sign in with Google module settings. See [#9333](https://github.com/google/site-kit-wp/issues/9333).
+
+**Enhanced**
+
+* Update the Audience Segmentation support documentation "learn more" link in the tooltip for an Audience Tile. See [#9455](https://github.com/google/site-kit-wp/issues/9455).
+* Update tailored metrics to also include new ACR metrics. See [#9437](https://github.com/google/site-kit-wp/issues/9437).
+* Disallow manual Ads Conversion ID entry when using the Partner Ads Experience. See [#9426](https://github.com/google/site-kit-wp/issues/9426).
+* Update copy text in Google Ads module when Partner Ads Experience is enabled. See [#9425](https://github.com/google/site-kit-wp/issues/9425).
+* Fix OAuth error handling when attempting to create a custom dimension from the "Top content" metric area in an Audience Tile. See [#9350](https://github.com/google/site-kit-wp/issues/9350).
+* Update Analytics setup to support any number of accounts. See [#9348](https://github.com/google/site-kit-wp/issues/9348).
+* Implement the ability to dismiss detected and lost events information in the Analytics module. See [#9343](https://github.com/google/site-kit-wp/issues/9343).
+* Refactor the setup success subtle notification for Audience Segmentation. See [#9281](https://github.com/google/site-kit-wp/issues/9281).
+* Increase maximum Key Metric Widget selection count to 8. See [#9135](https://github.com/google/site-kit-wp/issues/9135).
+* Update the Reader Revenue Manager setup success notification to use the new notifications datastore. See [#8981](https://github.com/google/site-kit-wp/issues/8981).
+* Update the design of the Key Metrics setup CTA banner. See [#8895](https://github.com/google/site-kit-wp/issues/8895).
+* Improve UI/UX on AdSense alerts. See [#7642](https://github.com/google/site-kit-wp/issues/7642).
+
+**Fixed**
+
+* Prevent audience settings from being deleted when changing or disconnecting the Analytics property. Reset `configuredAudiences` and `didSetAudiences` to default values while keeping `isAudienceSegmentationWidgetHidden` unchanged. See [#9432](https://github.com/google/site-kit-wp/issues/9432).
+* Improve the availability of the audience widget for secondary administrators. See [#9411](https://github.com/google/site-kit-wp/issues/9411).
+* Fix VRT test failures in CI when launching Chromium, ensuring tests run to completion without errors. See [#9406](https://github.com/google/site-kit-wp/issues/9406).
+* Ensure the error style for the Settings edit screen is cleared when settings are saved successfully. See [#8481](https://github.com/google/site-kit-wp/issues/8481).
+
 = 1.137.0 =
 
 **Added**

@@ -79,7 +79,7 @@ const actions = {
 	/**
 	 * Dismiss new conversion reporting events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.138.0
 	 *
 	 * @return {boolean} Transient deletion response.
 	 */
@@ -89,7 +89,7 @@ const actions = {
 	/**
 	 * Dismiss lost conversion reporting events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.138.0
 	 *
 	 * @return {boolean} Transient deletion response.
 	 */

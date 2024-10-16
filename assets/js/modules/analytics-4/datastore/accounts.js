@@ -262,7 +262,7 @@ const baseActions = {
 	 * transformed (e.g., extracting and populating relevant account and property
 	 * IDs) and then sorted in a case-insensitive manner by display name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.138.0
 	 *
 	 * @return {Object} The action object with the type `TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES`.
 	 */
