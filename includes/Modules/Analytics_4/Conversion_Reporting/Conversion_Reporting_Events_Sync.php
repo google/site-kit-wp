@@ -24,6 +24,16 @@ use Google\Site_Kit\Context;
  */
 class Conversion_Reporting_Events_Sync {
 
+	/**
+	 * The detected events transient name.
+	 */
+	public const DETECTED_EVENTS_TRANSIENT = 'googlesitekit_conversion_reporting_detected_events';
+
+	/**
+	 * The lost events transient name.
+	 */
+	public const LOST_EVENTS_TRANSIENT = 'googlesitekit_conversion_reporting_lost_events';
+
 	const EVENT_NAMES = array(
 		'add_to_cart',
 		'purchase',
@@ -94,12 +104,13 @@ class Conversion_Reporting_Events_Sync {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( empty( $report->rowCount ) ) {
 			$this->settings->merge( array( 'detectedEvents' => array() ) );
-            if ( $this->transients->get( 'googlesitekit_conversion_reporting_detected_events' ) )
-                $this->transients->delete( 'googlesitekit_conversion_reporting_detected_events' );
-            }
+
+			if ( ! empty( $this->transients->get( static::DETECTED_EVENTS_TRANSIENT ) ) ) {
+				$this->transients->delete( static::DETECTED_EVENTS_TRANSIENT );
+			}
 
 			if ( ! empty( $saved_detected_events ) ) {
-				$this->transients->set( 'googlesitekit_conversion_reporting_lost_events', $saved_detected_events );
+				$this->transients->set( static::LOST_EVENTS_TRANSIENT, $saved_detected_events );
 			}
 
 			return;
