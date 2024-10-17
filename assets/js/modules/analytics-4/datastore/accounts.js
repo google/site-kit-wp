@@ -111,6 +111,7 @@ const fetchCreateAccountStore = createFetchStore( {
 const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
 const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
+const RESET_ACCOUNT_SETTINGS = 'RESET_ACCOUNT_SETTINGS';
 const TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES =
 	'TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES';
 
@@ -139,6 +140,20 @@ const baseActions = {
 		return dispatch(
 			MODULES_ANALYTICS_4
 		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
+	},
+
+	/**
+	 * Resets the account settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetAccountSettings() {
+		return {
+			payload: {},
+			type: RESET_ACCOUNT_SETTINGS,
+		};
 	},
 
 	/**
@@ -290,6 +305,9 @@ const baseReducer = createReducer( ( state, { type } ) => {
 
 		case RESET_ACCOUNT_SUMMARIES:
 			state.accountSummaries = undefined;
+			break;
+
+		case RESET_ACCOUNT_SETTINGS:
 			state.settings.accountID = undefined;
 			state.settings.propertyID = undefined;
 			state.settings.measurementID = undefined;
