@@ -4253,6 +4253,31 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_sync_audiences_unauthenticated() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$property_id = '12345';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail with `missing_required_scopes` error.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$data = $this->analytics->set_data( 'sync-audiences', array() );
+		$this->assertWPError( $data );
+		$this->assertEquals( 'forbidden', $data->get_error_code() );
+		$this->assertEquals( 'User must be authenticated to sync audiences.', $data->get_error_message() );
+		$this->assertEquals( array( 'status' => 403 ), $data->get_error_data() );
+	}
+
 	/**
 	 * @dataProvider data_available_audiences
 	 */
@@ -4370,8 +4395,14 @@ class Analytics_4Test extends TestCase {
 		$audience_field = $debug_fields['analytics_4_site_kit_audiences'];
 
 		$this->assertEquals( 'Analytics site created audiences', $audience_field['label'] );
-		$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
-		$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
+
+		if ( $this->authentication->is_authenticated() ) {
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
+		} else {
+			$this->assertEquals( 'None', $audience_field['value'] );
+			$this->assertEquals( 'none', $audience_field['debug'] );
+		}
 	}
 
 	public function test_register_template_redirect_amp() {

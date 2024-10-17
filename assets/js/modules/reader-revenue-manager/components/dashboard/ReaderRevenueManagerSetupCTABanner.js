@@ -197,7 +197,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 										<p className="googlesitekit-setup-cta-banner__description">
 											{ createInterpolateElement(
 												__(
-													'Turn casual visitors into loyal readers and earn more from your content with contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
+													'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
 													'google-site-kit'
 												),
 												{
@@ -214,6 +214,12 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 														/>
 													),
 												}
+											) }
+											<br />
+											<br />
+											{ __(
+												'* Support for subscriptions coming soon',
+												'google-site-kit'
 											) }
 										</p>
 
