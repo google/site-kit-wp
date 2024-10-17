@@ -685,7 +685,17 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'service' => '',
 			);
 			$datapoints['POST:sync-audiences']                       = array(
-				'service' => 'analyticsaudiences',
+				'service'   => 'analyticsaudiences',
+				'shareable' => true,
+			);
+		}
+
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$datapoints['POST:clear-conversion-reporting-new-events']  = array(
+				'service' => '',
+			);
+			$datapoints['POST:clear-conversion-reporting-lost-events'] = array(
+				'service' => '',
 			);
 		}
 
@@ -1446,6 +1456,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$custom_dimension
 					);
 			case 'POST:sync-audiences':
+				if ( ! $this->authentication->is_authenticated() ) {
+					return new WP_Error(
+						'forbidden',
+						__( 'User must be authenticated to sync audiences.', 'google-site-kit' ),
+						array( 'status' => 403 )
+					);
+				}
+
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
@@ -1650,6 +1668,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				return function () use ( $data ) {
 					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+				};
+			case 'POST:clear-conversion-reporting-new-events':
+				return function () {
+					return $this->transients->delete( 'googlesitekit_conversion_reporting_detected_events' );
+				};
+			case 'POST:clear-conversion-reporting-lost-events':
+				return function () {
+					return $this->transients->delete( 'googlesitekit_conversion_reporting_lost_events' );
 				};
 		}
 
