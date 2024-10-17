@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Conversion_Reporting;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -29,24 +30,33 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 class Conversion_Reporting_Events_SyncTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
+	private $context;
 	private $user;
 	private $settings;
 	private $analytics;
 	private $authentication;
 	private $request_handler_calls;
 
+	/**
+	 * @var Transients $transients Transients instance.
+	 */
+	private $transients;
+
 	public function set_up() {
 		parent::set_up();
 
 		$this->request_handler_calls = array();
 
-		$this->user   = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( __FILE__ );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $this->user->ID );
+		$this->user    = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context       = new Context( __FILE__ );
+		$this->context = $context;
+		$options       = new Options( $context );
+		$user_options  = new User_Options( $context, $this->user->ID );
 
 		$this->settings = new Settings( $options );
 		$this->settings->register();
+
+		$this->transients = new Transients( $context );
 
 		$this->authentication = new Authentication( $context, $options, $user_options );
 
@@ -67,8 +77,37 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$this->assertEquals( $detected_events, $this->settings->get()['detectedEvents'] );
 	}
 
+	/**
+	 * @dataProvider report_dimensions_with_new_events
+	 */
+	public function test_sync_newly_detected_events( $detected_events, $report_rows ) {
+		$this->setup_fake_handler_and_analytics( $report_rows );
+
+		$event_check = $this->get_instance();
+		$event_check->sync_detected_events();
+
+		$transient_detected_events = $this->transients->get( 'googlesitekit_conversion_reporting_detected_events' );
+
+		$this->assertSame( $transient_detected_events, array( 'addToCarts' ) );
+	}
+
+	/**
+	 * @dataProvider report_dimensions_with_removed_events
+	 */
+	public function test_sync_detected_events_lost( $detected_events, $report_rows ) {
+		$this->setup_fake_handler_and_analytics( $report_rows );
+
+		$event_check = $this->get_instance();
+		$event_check->sync_detected_events();
+
+		$transient_lost_events = $this->transients->get( 'googlesitekit_conversion_reporting_lost_events' );
+
+		$this->assertSame( $transient_lost_events, array( 'addToCarts' ) );
+	}
+
 	public function get_instance() {
 		return new Conversion_Reporting_Events_Sync(
+			$this->context,
 			$this->settings,
 			$this->analytics
 		);
@@ -171,6 +210,40 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 			array(
 				array(),
 				array(),
+			),
+		);
+	}
+
+	public function report_dimensions_with_new_events() {
+		return array(
+			array(
+				array( 'addToCarts' ),
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'addToCarts',
+							),
+						),
+					),
+				),
+			),
+		);
+	}
+
+	public function report_dimensions_with_removed_events() {
+		return array(
+			array(
+				array( 'generate_lead' ),
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'generate_lead',
+							),
+						),
+					),
+				),
 			),
 		);
 	}
