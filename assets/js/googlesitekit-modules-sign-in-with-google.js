@@ -20,6 +20,9 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { registerModule, registerStore } from './modules/sign-in-with-google';
+import { isFeatureEnabled } from './features';
 
-registerModule( Modules );
-registerStore( Data );
+if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
+	registerModule( Modules );
+	registerStore( Data );
+}

@@ -44,10 +44,11 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
-			'clientID' => '',
-			'text'     => self::TEXT_SIGN_IN_WITH_GOOGLE,
-			'theme'    => self::THEME_LIGHT,
-			'shape'    => self::SHAPE_RECTANGULAR,
+			'clientID'      => '',
+			'text'          => self::TEXT_SIGN_IN_WITH_GOOGLE,
+			'theme'         => self::THEME_LIGHT,
+			'shape'         => self::SHAPE_RECTANGULAR,
+			'oneTapEnabled' => false,
 		);
 	}
 

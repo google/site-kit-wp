@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Common components.
+ * Sign in with Google Preview component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,9 +16,17 @@
  * limitations under the License.
  */
 
-export { default as ButtonTextSelect } from './ButtonTextSelect';
-export { default as ButtonThemeSelect } from './ButtonThemeSelect';
-export { default as ButtonShapeSelect } from './ButtonShapeSelect';
-export { default as ClientIDTextField } from './ClientIDTextField';
-export { default as OneTapToggle } from './OneTapToggle';
-export { default as Preview } from './Preview';
+export default function Preview() {
+	// TODO: this preview of the Sign in with Google button will be implemented in a future epic ticket.
+	return (
+		<div
+			className="googlesitekit-sign-in-with-google__preview"
+			style={ {
+				width: '100%',
+				height: '145px',
+				borderRadius: '4px',
+				backgroundColor: '#CBD0D3',
+			} }
+		></div>
+	);
+}
