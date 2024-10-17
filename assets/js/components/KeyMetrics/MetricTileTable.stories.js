@@ -104,6 +104,8 @@ ZeroData.args = {
 		return <div>No data available</div>;
 	},
 };
+// Since the "Zero" state is similar for all "tabular" KMW tiles, this should be
+// the sole scenario and should not be added to any other "table" type KMW components.
 ZeroData.scenario = {
 	label: 'KeyMetrics/MetricTileTable/ZeroData',
 	delay: 250,

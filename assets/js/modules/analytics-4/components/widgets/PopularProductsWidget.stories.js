@@ -207,10 +207,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/PopularProductsWidget/ZeroData',
-	delay: 250,
-};
 
 export const NoProductPostType = Template.bind( {} );
 NoProductPostType.storyName = 'No Product Post Type';
@@ -254,10 +250,6 @@ Error.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
-};
-Error.scenario = {
-	label: 'KeyMetrics/PopularProducts/Error',
-	delay: 250,
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
@@ -338,10 +330,6 @@ InsufficientPermissions.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
-};
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularProducts/InsufficientPermissions',
-	delay: 250,
 };
 
 export default {

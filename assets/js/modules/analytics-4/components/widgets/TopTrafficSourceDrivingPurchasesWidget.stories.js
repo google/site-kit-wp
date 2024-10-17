@@ -118,9 +118,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingPurchasesWidget/ZeroData',
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -146,9 +143,6 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingPurchases/Error',
-};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -173,10 +167,6 @@ InsufficientPermissions.args = {
 			reportOptions[ 1 ],
 		] );
 	},
-};
-
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingPurchases/InsufficientPermissions',
 };
 
 export default {
