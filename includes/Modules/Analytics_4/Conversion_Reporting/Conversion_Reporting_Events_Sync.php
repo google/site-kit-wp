@@ -94,7 +94,9 @@ class Conversion_Reporting_Events_Sync {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( empty( $report->rowCount ) ) {
 			$this->settings->merge( array( 'detectedEvents' => array() ) );
-			$this->transients->set( 'googlesitekit_conversion_reporting_detected_events', array() );
+            if ( $this->transients->get( 'googlesitekit_conversion_reporting_detected_events' ) )
+                $this->transients->delete( 'googlesitekit_conversion_reporting_detected_events' );
+            }
 
 			if ( ! empty( $saved_detected_events ) ) {
 				$this->transients->set( 'googlesitekit_conversion_reporting_lost_events', $saved_detected_events );
