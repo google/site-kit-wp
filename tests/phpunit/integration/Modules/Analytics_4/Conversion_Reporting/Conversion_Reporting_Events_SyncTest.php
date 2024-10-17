@@ -80,29 +80,39 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 	/**
 	 * @dataProvider report_dimensions_with_new_events
 	 */
-	public function test_sync_newly_detected_events( $detected_events, $report_rows ) {
+	public function test_sync_newly_detected_events( $initially_saved_events, $detected_new_events, $report_rows ) {
 		$this->setup_fake_handler_and_analytics( $report_rows );
 
 		$event_check = $this->get_instance();
+		$this->settings->merge(
+			array(
+				'detectedEvents' => $initially_saved_events,
+			)
+		);
 		$event_check->sync_detected_events();
 
 		$transient_detected_events = $this->transients->get( 'googlesitekit_conversion_reporting_detected_events' );
 
-		$this->assertSame( $transient_detected_events, array( 'addToCarts' ) );
+		$this->assertSame( $transient_detected_events, $detected_new_events );
 	}
 
 	/**
 	 * @dataProvider report_dimensions_with_removed_events
 	 */
-	public function test_sync_detected_events_lost( $detected_events, $report_rows ) {
+	public function test_sync_detected_events_lost( $initially_saved_events, $lost_events, $report_rows ) {
 		$this->setup_fake_handler_and_analytics( $report_rows );
 
 		$event_check = $this->get_instance();
+		$this->settings->merge(
+			array(
+				'detectedEvents' => $initially_saved_events,
+			)
+		);
 		$event_check->sync_detected_events();
 
 		$transient_lost_events = $this->transients->get( 'googlesitekit_conversion_reporting_lost_events' );
 
-		$this->assertSame( $transient_lost_events, array( 'addToCarts' ) );
+		$this->assertEquals( $transient_lost_events, $lost_events );
 	}
 
 	public function get_instance() {
@@ -217,12 +227,79 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 	public function report_dimensions_with_new_events() {
 		return array(
 			array(
-				array( 'addToCarts' ),
+				array( 'contact' ),
+				array( 'add_to_cart' ),
 				array(
 					array(
 						'dimensionValues' => array(
 							array(
-								'value' => 'addToCarts',
+								'value' => 'add_to_cart',
+							),
+						),
+					),
+				),
+			),
+			array(
+				array( 'add_to_cart', 'purchase' ),
+				array( 'submit_lead_form' ),
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'submit_lead_form',
+							),
+						),
+					),
+				),
+			),
+			array(
+				array( 'submit_lead_form' ),
+				array( 'add_to_cart', 'purchase' ),
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'submit_lead_form',
+							),
+						),
+					),
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'add_to_cart',
+							),
+						),
+					),
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'purchase',
+							),
+						),
+					),
+				),
+			),
+			array(
+				array(),
+				array( 'submit_lead_form' ),
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'submit_lead_form',
+							),
+						),
+					),
+				),
+			),
+			array(
+				array( 'submit_lead_form' ),
+				false,
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'submit_lead_form',
 							),
 						),
 					),
@@ -234,7 +311,41 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 	public function report_dimensions_with_removed_events() {
 		return array(
 			array(
+				array( 'generate_lead', 'add_to_cart' ),
+				array( 'add_to_cart' ),
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'generate_lead',
+							),
+						),
+					),
+				),
+			),
+			array(
+				array( 'purchase', 'add_to_cart', 'submit_lead_form' ),
+				array( 'submit_lead_form' ),
+				array(
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'purchase',
+							),
+						),
+					),
+					array(
+						'dimensionValues' => array(
+							array(
+								'value' => 'add_to_cart',
+							),
+						),
+					),
+				),
+			),
+			array(
 				array( 'generate_lead' ),
+				false,
 				array(
 					array(
 						'dimensionValues' => array(
