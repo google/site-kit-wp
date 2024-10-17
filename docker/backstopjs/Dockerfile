@@ -30,8 +30,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm i -g backstopjs@${BACKSTOPJS_VERSION} && \
     npm cache clean -f && \
-    rm -rf /root/.cache && \
-    rc-update add dbus
+    rm -rf /root/.cache
 
 WORKDIR /src
 
