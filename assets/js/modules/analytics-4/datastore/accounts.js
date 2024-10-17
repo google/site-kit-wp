@@ -145,7 +145,7 @@ const baseActions = {
 	/**
 	 * Resets the account settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.138.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
