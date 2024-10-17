@@ -9,6 +9,7 @@
 
 **Enhanced**
 
+* Update the RRM setup CTA copy to explicitly mention that subscriptions aren't available yet as part of the integration. See [#9524](https://github.com/google/site-kit-wp/issues/9524).
 * Update the Audience Segmentation support documentation "learn more" link in the tooltip for an Audience Tile. See [#9455](https://github.com/google/site-kit-wp/issues/9455).
 * Update tailored metrics to also include new ACR metrics. See [#9437](https://github.com/google/site-kit-wp/issues/9437).
 * Disallow manual Ads Conversion ID entry when using the Partner Ads Experience. See [#9426](https://github.com/google/site-kit-wp/issues/9426).
