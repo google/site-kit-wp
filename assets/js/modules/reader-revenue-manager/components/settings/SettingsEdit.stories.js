@@ -132,7 +132,6 @@ export default {
 					publicationID: publications[ 0 ].publicationId,
 					publicationOnboardingState:
 						publications[ 0 ].onboardingState,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
 				registry
