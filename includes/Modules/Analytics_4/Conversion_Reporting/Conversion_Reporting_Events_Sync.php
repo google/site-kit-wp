@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Core\Storage\Transients;
+use Google\Site_Kit\Context;
 
 /**
  * Class providing report implementation for available events for conversion reporting.
@@ -45,19 +47,31 @@ class Conversion_Reporting_Events_Sync {
 	private $analytics;
 
 	/**
+	 * Transients instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Transients
+	 */
+	protected $transients;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.135.0
+	 * @since n.e.x.t Added $context param to constructor.
 	 *
+	 * @param Context     $context   Plugin context.
 	 * @param Settings    $settings  Settings module settings instance.
 	 * @param Analytics_4 $analytics Analytics 4 module instance.
 	 */
 	public function __construct(
+		Context $context,
 		Settings $settings,
 		Analytics_4 $analytics
 	) {
-		$this->settings  = $settings;
-		$this->analytics = $analytics;
+		$this->settings   = $settings;
+		$this->analytics  = $analytics;
+		$this->transients = new Transients( $context );
 	}
 
 	/**
@@ -73,9 +87,18 @@ class Conversion_Reporting_Events_Sync {
 			return;
 		}
 
+		// Get current stored detected events.
+		$settings              = $this->settings->get();
+		$saved_detected_events = isset( $settings['detectedEvents'] ) ? $settings['detectedEvents'] : array();
+
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( empty( $report->rowCount ) ) {
 			$this->settings->merge( array( 'detectedEvents' => array() ) );
+			$this->transients->set( 'googlesitekit_conversion_reporting_detected_events', array() );
+
+			if ( ! empty( $saved_detected_events ) ) {
+				$this->transients->set( 'googlesitekit_conversion_reporting_lost_events', $saved_detected_events );
+			}
 
 			return;
 		}
@@ -84,7 +107,22 @@ class Conversion_Reporting_Events_Sync {
 			$detected_events[] = $row['dimensionValues'][0]['value'];
 		}
 
+		$new_events  = array_diff( $detected_events, $saved_detected_events );
+		$lost_events = array_diff( $saved_detected_events, $detected_events );
+
+		if ( ! empty( $new_events ) ) {
+			$this->transients->set( 'googlesitekit_conversion_reporting_detected_events', $new_events );
+		}
+
+		if ( ! empty( $lost_events ) ) {
+			$this->transients->set( 'googlesitekit_conversion_reporting_lost_events', $lost_events );
+		}
+
 		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
+
+		if ( empty( $saved_detected_events ) ) {
+			$this->transients->set( 'googlesitekit_conversion_reporting_detected_events', $new_events );
+		}
 	}
 
 	/**

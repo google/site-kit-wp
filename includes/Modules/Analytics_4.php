@@ -223,6 +223,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
 			$conversion_reporting_provider = new Conversion_Reporting_Provider(
+				$this->context,
 				$this->settings,
 				$this->user_options,
 				$this
@@ -341,6 +342,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
+		}
+
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 10 );
 		}
 
 		add_filter(
@@ -2583,5 +2588,24 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		return wp_list_pluck( $site_kit_audiences, 'displayName' );
+	}
+
+	/**
+	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	public function inline_conversion_reporting_events_detection( $modules_data ) {
+		if ( $this->is_connected() ) {
+			$conversion_reporting_detected_events      = $this->transients->get( 'googlesitekit_conversion_reporting_detected_events' );
+			$conversion_reporting_lost_events          = $this->transients->get( 'googlesitekit_conversion_reporting_lost_events' );
+			$modules_data['analytics-4']['newEvents']  = is_array( $conversion_reporting_detected_events ) ? $conversion_reporting_detected_events : array();
+			$modules_data['analytics-4']['lostEvents'] = is_array( $conversion_reporting_lost_events ) ? $conversion_reporting_lost_events : array();
+		}
+
+		return $modules_data;
 	}
 }
