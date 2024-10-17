@@ -476,7 +476,7 @@ const baseSelectors = {
 					}
 
 					if ( widget.displayInList ) {
-						return widget.displayInList( select, isViewOnly );
+						return widget.displayInList( select, isViewOnly, slug );
 					}
 
 					return true;
