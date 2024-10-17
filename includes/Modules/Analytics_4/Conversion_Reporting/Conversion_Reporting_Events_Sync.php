@@ -111,11 +111,11 @@ class Conversion_Reporting_Events_Sync {
 		$lost_events = array_diff( $saved_detected_events, $detected_events );
 
 		if ( ! empty( $new_events ) ) {
-			$this->transients->set( 'googlesitekit_conversion_reporting_detected_events', $new_events );
+			$this->transients->set( 'googlesitekit_conversion_reporting_detected_events', array_values( $new_events ) );
 		}
 
 		if ( ! empty( $lost_events ) ) {
-			$this->transients->set( 'googlesitekit_conversion_reporting_lost_events', $lost_events );
+			$this->transients->set( 'googlesitekit_conversion_reporting_lost_events', array_values( $lost_events ) );
 		}
 
 		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
