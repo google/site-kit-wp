@@ -91,7 +91,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		);
 		$event_check->sync_detected_events();
 
-		$transient_detected_events = $this->transients->get( 'googlesitekit_conversion_reporting_detected_events' );
+		$transient_detected_events = $this->transients->get( $this->get_instance()::DETECTED_EVENTS_TRANSIENT );
 
 		$this->assertSame( $transient_detected_events, $detected_new_events );
 	}
@@ -110,7 +110,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		);
 		$event_check->sync_detected_events();
 
-		$transient_lost_events = $this->transients->get( 'googlesitekit_conversion_reporting_lost_events' );
+		$transient_lost_events = $this->transients->get( $this->get_instance()::LOST_EVENTS_TRANSIENT );
 
 		$this->assertEquals( $transient_lost_events, $lost_events );
 	}
