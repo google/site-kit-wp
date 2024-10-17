@@ -345,7 +345,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 10 );
+			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
 		}
 
 		add_filter(
