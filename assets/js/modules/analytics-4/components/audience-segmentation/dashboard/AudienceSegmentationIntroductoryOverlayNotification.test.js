@@ -79,12 +79,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			isAudienceSegmentationWidgetHidden: false,
 			didSetAudiences: true,
 		} );
-
-		/*
-		registry
-			.dispatch( CORE_USER )
-			.finishResolution( 'getAudienceSettings', [] );
-			*/
 	} );
 
 	it( 'should render an introductory overlay notification', async () => {
