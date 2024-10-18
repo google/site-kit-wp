@@ -91,9 +91,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSourceWidget/ZeroData',
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -119,6 +116,8 @@ Error.args = {
 		] );
 	},
 };
+// Since the "Error" state is the same for all KMW tiles, this is the sole scenario
+// and should not be added to any other generic `MetricTile___` or KMW component.
 Error.scenario = {
 	label: 'KeyMetrics/EngagedTrafficSource/Error',
 	delay: 250,
@@ -148,6 +147,9 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
+// Since the "Insufficient Permissions Error" state is the same for all KMW tiles,
+// this is the sole scenario and should not be added to any other generic
+// `MetricTile___` or KMW component.
 InsufficientPermissions.scenario = {
 	label: 'KeyMetrics/EngagedTrafficSource/InsufficientPermissions',
 	delay: 250,
