@@ -26,6 +26,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	protected $settings;
 	protected $user_options;
 	protected $analytics_4;
+	protected $context;
 
 	public function set_up() {
 		parent::set_up();
@@ -41,10 +42,13 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 		$this->user_options = new User_Options( $context );
 
 		$this->analytics_4 = new Analytics_4( $context, $options, $this->user_options );
+
+		$this->context = $context;
 	}
 
 	public function test_register() {
 		$provider = new Conversion_Reporting_Provider(
+			$this->context,
 			$this->settings,
 			$this->user_options,
 			$this->analytics_4
