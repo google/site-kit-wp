@@ -176,6 +176,10 @@ describe( 'AudienceTile', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -183,7 +187,9 @@ describe( 'AudienceTile', () => {
 					[ audienceResourceName ]: 20201220,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	} );
 
@@ -196,6 +202,27 @@ describe( 'AudienceTile', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	describe( 'Partial data badge', () => {
+		it( 'should not display partial data badge for tile or top content metrics when property is in partial state', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-partial-data-badge'
+				)
+			).toBeNull();
+		} );
 	} );
 
 	describe( 'AudienceErrorModal', () => {

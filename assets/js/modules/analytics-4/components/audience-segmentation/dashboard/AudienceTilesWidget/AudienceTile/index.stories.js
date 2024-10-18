@@ -246,6 +246,10 @@ AudiencePartialData.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -261,7 +265,9 @@ AudiencePartialData.args = {
 					[ audienceResourceName ]: dataAvailabilityDate,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	},
 };
@@ -280,6 +286,10 @@ TopContentPartialData.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -295,7 +305,9 @@ TopContentPartialData.args = {
 				customDimension: {
 					googlesitekit_post_type: dataAvailabilityDate,
 				},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	},
 };

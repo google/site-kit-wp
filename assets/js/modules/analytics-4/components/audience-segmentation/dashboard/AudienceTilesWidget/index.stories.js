@@ -449,6 +449,10 @@ DefaultAudiencesPartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -457,7 +461,9 @@ DefaultAudiencesPartialData.args = {
 					'properties/12345/audiences/2': dataAvailabilityDate,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20200101,
+				},
 			} );
 	},
 };
@@ -483,6 +489,10 @@ SiteKitAudiencesPartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -491,7 +501,9 @@ SiteKitAudiencesPartialData.args = {
 					'properties/12345/audiences/4': dataAvailabilityDate,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20200101,
+				},
 			} );
 
 		availableAudiences
