@@ -61,7 +61,7 @@ class Reset_Audiences {
 
 	const AUDIENCE_SEGMENTATION_DISMISSED_ITEMS = array(
 		'audience-segmentation-add-group-notice',
-		'audience_segmentation_setup_success_notification',
+		'setup-success-notification-audiences',
 		'settings_visitor_groups_setup_success_notification',
 		'audience-segmentation-no-audiences-banner',
 		'audience-tile-*',
@@ -129,8 +129,15 @@ class Reset_Audiences {
 					}
 				}
 
-				// Reset the users audience settings, such as configured audiences.
-				$this->audience_settings->delete();
+				// Reset the user's audience settings.
+				if ( $this->audience_settings->has() ) {
+					$this->audience_settings->merge(
+						array(
+							'configuredAudiences' => null,
+							'didSetAudiences'     => false,
+						),
+					);
+				}
 			}
 
 			// Restore original user.

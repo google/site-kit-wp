@@ -24,12 +24,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { getNavigationalScrollTop } from '../../../../util/scroll';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 
 export default function PAXSetupSuccessSubtleNotification( {
 	id,
@@ -37,9 +39,11 @@ export default function PAXSetupSuccessSubtleNotification( {
 } ) {
 	const breakpoint = useBreakpoint();
 
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
 	const [ , setNotification ] = useQueryArg( 'notification' );
 
-	const onDismiss = () => {
+	const dismissNotice = () => {
 		setNotification( undefined );
 	};
 
@@ -54,7 +58,8 @@ export default function PAXSetupSuccessSubtleNotification( {
 				behavior: 'smooth',
 			} );
 
-			setNotification( undefined );
+			dismissNotice();
+			dismissNotification( id );
 		}, 50 );
 	};
 
@@ -74,13 +79,15 @@ export default function PAXSetupSuccessSubtleNotification( {
 						id={ id }
 						primary={ false }
 						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
+						onDismiss={ dismissNotice }
 					/>
 				}
 				additionalCTA={
-					<Button onClick={ scrollToWidget }>
-						{ __( 'Show me', 'google-site-kit' ) }
-					</Button>
+					<CTALinkSubtle
+						id={ id }
+						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
+						onCTAClick={ scrollToWidget }
+					/>
 				}
 			/>
 		</Notification>

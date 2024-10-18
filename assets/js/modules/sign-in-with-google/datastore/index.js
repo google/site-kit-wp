@@ -1,4 +1,6 @@
 /**
+ * `modules/sign-in-with-google` data store.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,23 +19,21 @@
 /**
  * Internal dependencies
  */
-import Icon from '../../../svg/graphics/sign-in-with-google.svg';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './datastore/constants';
+import { combineStores } from 'googlesitekit-data';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import baseModuleStore from './base';
 
-export { registerStore } from './datastore';
+const store = combineStores( baseModuleStore );
 
-export function registerModule( modules ) {
-	modules.registerModule( 'sign-in-with-google', {
-		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
-		SettingsEditComponent() {
-			return null;
-		},
-		SettingsViewComponent() {
-			return null;
-		},
-		SetupComponent() {
-			return null;
-		},
-		Icon,
-	} );
-}
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export const registerStore = ( registry ) => {
+	registry.registerStore( MODULES_SIGN_IN_WITH_GOOGLE, store );
+};
+
+export default store;
