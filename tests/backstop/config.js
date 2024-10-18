@@ -33,7 +33,7 @@ module.exports = {
 			'--disable-setuid-sandbox',
 			'--no-zygote',
 		],
-		executablePath: '/usr/bin/chromium',
+		executablePath: '/usr/bin/chromium-browser',
 	},
 	id: 'google-site-kit',
 	paths: {
