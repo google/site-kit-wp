@@ -176,6 +176,10 @@ describe( 'AudienceTile', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -183,7 +187,9 @@ describe( 'AudienceTile', () => {
 					[ audienceResourceName ]: 20201220,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	} );
 
@@ -203,10 +209,6 @@ describe( 'AudienceTile', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( true );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				propertyID: '12345',
-			} );
 
 			const { container } = render(
 				<WidgetWithComponentProps { ...props } />,
