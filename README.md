@@ -12,3 +12,4 @@ Any kind of contribution to Site Kit by Google is welcome. Head over to the [Con
 
 * WordPress >= 5.2
 * PHP >= 7.4
+
