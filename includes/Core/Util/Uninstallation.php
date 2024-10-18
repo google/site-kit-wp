@@ -133,7 +133,8 @@ class Uninstallation {
 	 */
 	private function clear_scheduled_events() {
 		foreach ( self::SCHEDULED_EVENTS as $event ) {
-			wp_clear_scheduled_hook( $event );
+			// DEBUG: skip clearing scheduled events.
+			// wp_clear_scheduled_hook( $event );
 		}
 	}
 }
