@@ -408,6 +408,7 @@ describe( 'core/user key metrics', () => {
 					expectedMetrics,
 					expectedMetricsIncludingConversionTailored
 				) => {
+					enabledFeatures.add( 'conversionReporting' );
 					provideUserAuthentication( registry );
 					await registry
 						.dispatch( CORE_USER )
@@ -480,6 +481,8 @@ describe( 'core/user key metrics', () => {
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
 					).toEqual( expectedMetricsIncludingConversionTailored );
+
+					enabledFeatures.delete( 'conversionReporting' );
 				}
 			);
 
