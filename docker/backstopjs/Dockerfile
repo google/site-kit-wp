@@ -1,10 +1,9 @@
-FROM ubuntu:20.04
+FROM node:14.21.1-bullseye
 
 # Prevent intractive prompts from apt-get.
 ARG DEBIAN_FRONTEND=noninteractive
 
 ARG BACKSTOPJS_VERSION=6.1.1
-
 ENV BACKSTOPJS_VERSION=$BACKSTOPJS_VERSION
 
 RUN apt-get update
@@ -21,12 +20,10 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 \
 
 # Install the Chromium requirements, specify a Chromium build for stability.
 RUN apt-get install -yq \
-    chromium-browser=1:85.0.4183.83-0ubuntu0.20.04.3 \
+    chromium=120.0.6099.224-1~deb11u1 \
     ca-certificates \
     nodejs \
     npm
-
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm i -g backstopjs@${BACKSTOPJS_VERSION} && \
     npm cache clean -f && \
