@@ -48,7 +48,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			const settings = {
 				publicationID: 12345,
 				publicationOnboardingState: '',
-				publicationOnboardingStateLastSyncedAtMs: 0,
 			};
 
 			registry
@@ -64,7 +63,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			const settings = {
 				publicationID: 'ABCD&*12345',
 				publicationOnboardingState: 'ONBOARDING_ACTION_REQUIRED',
-				publicationOnboardingStateLastSyncedAtMs: 0,
 			};
 
 			registry
@@ -80,7 +78,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			const settings = {
 				publicationID: 'ABCDEFGH',
 				publicationOnboardingState: 'invalid_state',
-				publicationOnboardingStateLastSyncedAtMs: 0,
 			};
 
 			registry
