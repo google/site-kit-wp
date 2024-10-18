@@ -49,8 +49,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
-	const onCompleteSetup = module?.onCompleteSetup;
-
 	const registry = useRegistry();
 
 	/**
@@ -88,9 +86,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 		[ registry, navigateTo, moduleSlug ]
 	);
 
-	const onCompleteSetupCallback = useCallback( async () => {
-		return await onCompleteSetup( registry, finishSetup );
-	}, [ onCompleteSetup, registry, finishSetup ] );
+	const onCompleteSetup = module?.onCompleteSetup;
+	const onCompleteSetupCallback = useCallback(
+		() => onCompleteSetup( registry, finishSetup ),
+		[ onCompleteSetup, registry, finishSetup ]
+	);
 
 	const onCancelButtonClick = useCallback( async () => {
 		await trackEvent( 'moduleSetup', 'cancel_module_setup', moduleSlug );

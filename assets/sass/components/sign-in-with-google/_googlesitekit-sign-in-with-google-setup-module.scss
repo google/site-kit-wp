@@ -19,9 +19,6 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-setup-module--sign-in-with-google {
-		@media (min-width: $bp-desktop) {
-			padding-bottom: 22px;
-		}
 
 		.googlesitekit-badge {
 			margin: 0 0 2px 13px;
@@ -37,7 +34,7 @@
 		}
 
 		.googlesitekit-setup-module__step-description {
-			margin: 1em 0 1.7em;
+			margin: 0 0 1.7em;
 		}
 
 		.googlesitekit-sign-in-with-google-client-id-cta {
@@ -49,21 +46,27 @@
 			}
 		}
 
-		&.googlesitekit-setup-module--with-panels {
-			align-items: flex-end;
+		.googlesitekit-sign-in-with-google-setup__form {
+
+			@media (min-width: $bp-desktop) {
+				display: flex;
+				justify-content: space-between;
+			}
 
 			.googlesitekit-setup-module__panel-item {
-
-				@media (min-width: 1024px) and (max-width: $bp-xlarge) {
-					flex: 1;
-				}
+				flex: 2;
 
 				@media (min-width: $bp-desktop) {
+					max-width: 510px;
+				}
+
+				@media (min-width: $bp-xlarge) {
 					max-width: 670px;
 				}
 			}
 
 			.googlesitekit-setup-module__panel-item--with-svg {
+				flex: 1;
 				margin-bottom: -16px;
 				overflow: hidden;
 				position: relative;
@@ -71,13 +74,16 @@
 
 				@media (min-width: $bp-desktop) {
 					bottom: unset;
-					margin-bottom: 0;
-					top: 20px;
+					margin-bottom: -25px;
+					min-width: 40%;
+					top: -30px;
 				}
 
 				svg {
 					display: none;
+					height: 100%;
 					position: relative;
+					width: 100%;
 
 					@media (min-width: $bp-tablet) {
 						bottom: -60px;
@@ -87,6 +93,10 @@
 
 					@media (min-width: $bp-desktop) {
 						bottom: unset;
+						max-height: 248px;
+					}
+
+					@media (min-width: $bp-xlarge) {
 						max-height: 300px;
 					}
 				}

@@ -21,26 +21,6 @@
 	.googlesitekit-setup-module {
 		flex: 1 1 auto;
 
-		&.googlesitekit-setup-module--with-panels {
-
-			@media (min-width: $bp-desktop) {
-				display: flex;
-				justify-content: space-between;
-			}
-
-			.googlesitekit-setup-module__panel-item {
-				flex: 2;
-			}
-
-			.googlesitekit-setup-module__panel-item--with-svg {
-				flex: 1;
-
-				svg {
-					height: 100%;
-				}
-			}
-		}
-
 		.googlesitekit-setup-module__step {
 			margin-bottom: $grid-gap-phone;
 

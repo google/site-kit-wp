@@ -35,7 +35,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Link from '../Link';
-import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
+import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
@@ -108,4 +108,5 @@ ModuleSetupFooter.propTypes = {
 		storeName: PropTypes.string.isRequired,
 	} ).isRequired,
 	onCancel: PropTypes.func.isRequired,
+	onComplete: PropTypes.func,
 };

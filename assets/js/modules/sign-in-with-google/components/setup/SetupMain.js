@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -32,50 +31,30 @@ import { __, _x } from '@wordpress/i18n';
  */
 import SignInWithGoogleIcon from '../../../../../svg/graphics/sign-in-with-google.svg';
 import SetupForm from './SetupForm';
-import SupportLink from '../../../../components/SupportLink';
 import Badge from '../../../../components/Badge';
-import SetupFormSVG from './SetupFormSVG';
 
-export default function SetupMain( { finishSetup } ) {
+export default function SetupMain( { finishSetup = () => {} } ) {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--with-panels googlesitekit-setup-module--sign-in-with-google">
-			<div className="googlesitekit-setup-module__panel-item">
-				<div className="googlesitekit-setup-module__step">
-					<div className="googlesitekit-setup-module__logo">
-						<SignInWithGoogleIcon width="40" height="40" />
-					</div>
-
-					<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-						{ _x(
-							'Sign In With Google',
-							'Service name',
-							'google-site-kit'
-						) }
-						<Badge
-							className="googlesitekit-beta-badge"
-							label={ __( 'Beta', 'google-site-kit' ) }
-						/>
-					</h2>
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<SignInWithGoogleIcon width="40" height="40" />
 				</div>
-				<div className="googlesitekit-setup-module__step">
-					<p className="googlesitekit-setup-module__step-description">
-						{ createInterpolateElement(
-							__(
-								'To set up Sign in With Google, Site Kit will help you create an "OAuth Client ID" that will be used to enable Sign in With Google on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
-								'google-site-kit'
-							),
-							{
-								a: <SupportLink path="#" external />,
-							}
-						) }
-					</p>
 
-					<SetupForm finishSetup={ finishSetup } />
-				</div>
+				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ _x(
+						'Sign In With Google',
+						'Service name',
+						'google-site-kit'
+					) }
+					<Badge
+						className="googlesitekit-beta-badge"
+						label={ __( 'Beta', 'google-site-kit' ) }
+					/>
+				</h2>
 			</div>
-
-			<div className="googlesitekit-setup-module__panel-item googlesitekit-setup-module__panel-item--with-svg">
-				<SetupFormSVG />
+			<div className="googlesitekit-setup-module__step">
+				<SetupForm finishSetup={ finishSetup } />
 			</div>
 		</div>
 	);
@@ -83,8 +62,4 @@ export default function SetupMain( { finishSetup } ) {
 
 SetupMain.propTypes = {
 	finishSetup: PropTypes.func,
-};
-
-SetupMain.defaultProps = {
-	finishSetup: () => {},
 };
