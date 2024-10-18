@@ -20,11 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,8 +35,12 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Link from '../Link';
+import { SpinnerButton } from 'googlesitekit-components';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
-export default function ModuleSetupFooter( { module, onCancel } ) {
+export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
+	const [ isSaving, setIsSaving ] = useState( false );
+
 	const settingsPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -42,15 +48,32 @@ export default function ModuleSetupFooter( { module, onCancel } ) {
 		select( module?.storeName )?.isSetupBlocked?.()
 	);
 
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( CORE_MODULES ).canSubmitChanges( module?.slug )
+	);
+
+	const onCompleteSubmit = useCallback( async () => {
+		setIsSaving( true );
+
+		await onComplete();
+
+		setIsSaving( false );
+	}, [ setIsSaving, onComplete ] );
+
 	if ( ! module ) {
 		return null;
 	}
 
 	return (
-		<div className="googlesitekit-setup__footer">
+		<div
+			className={ classnames(
+				'googlesitekit-setup__footer',
+				`googlesitekit-setup__footer--${ module?.slug }`
+			) }
+		>
 			<Grid>
 				<Row>
-					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+					<Cell alignMiddle smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
 						<Link
 							id={ `setup-${ module.slug }-cancel` }
 							href={ settingsPageURL }
@@ -61,6 +84,18 @@ export default function ModuleSetupFooter( { module, onCancel } ) {
 								: __( 'Cancel', 'google-site-kit' ) }
 						</Link>
 					</Cell>
+					{ onComplete && (
+						<Cell alignRight smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+							<SpinnerButton
+								id={ `setup-${ module.slug }-complete` }
+								onClick={ onCompleteSubmit }
+								disabled={ ! canSubmitChanges || isSaving }
+								isSaving={ isSaving }
+							>
+								{ __( 'Complete Setup', 'google-site-kit' ) }
+							</SpinnerButton>
+						</Cell>
+					) }
 				</Row>
 			</Grid>
 		</div>
@@ -73,4 +108,5 @@ ModuleSetupFooter.propTypes = {
 		storeName: PropTypes.string.isRequired,
 	} ).isRequired,
 	onCancel: PropTypes.func.isRequired,
+	onComplete: PropTypes.func,
 };

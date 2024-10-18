@@ -50,6 +50,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 	);
 
 	const registry = useRegistry();
+
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 *
@@ -83,6 +84,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 			navigateTo( adminURL );
 		},
 		[ registry, navigateTo, moduleSlug ]
+	);
+
+	const onCompleteSetup = module?.onCompleteSetup;
+	const onCompleteSetupCallback = useCallback(
+		() => onCompleteSetup( registry, finishSetup ),
+		[ onCompleteSetup, registry, finishSetup ]
 	);
 
 	const onCancelButtonClick = useCallback( async () => {
@@ -129,6 +136,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 								<ModuleSetupFooter
 									module={ module }
 									onCancel={ onCancelButtonClick }
+									onComplete={
+										typeof onCompleteSetup === 'function'
+											? onCompleteSetupCallback
+											: undefined
+									}
 								/>
 							</section>
 						</Cell>
