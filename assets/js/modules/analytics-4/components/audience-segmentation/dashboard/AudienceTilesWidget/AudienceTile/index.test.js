@@ -198,6 +198,31 @@ describe( 'AudienceTile', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	describe( 'Partial data badge', () => {
+		it( 'should not display partial data badge for tile or top content metrics when property is in partial state', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				propertyID: '12345',
+			} );
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-partial-data-badge'
+				)
+			).toBeNull();
+		} );
+	} );
+
 	describe( 'AudienceErrorModal', () => {
 		it( 'should show the OAuth error modal when the required scopes are not granted', () => {
 			provideSiteInfo( registry, {
