@@ -469,5 +469,23 @@ export function registerDefaults( widgetsAPI ) {
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
+
+		widgetsAPI.registerWidget(
+			'keyMetricsEventDetectionCalloutNotification',
+			{
+				Component: null,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 0,
+				modules: [ 'analytics-4' ],
+				isActive: () => {
+					if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
+						return false;
+					}
+
+					return true;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
 	}
 }
