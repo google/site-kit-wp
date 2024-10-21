@@ -1,4 +1,4 @@
-FROM node:14.21.1-bullseye
+FROM node:16.14.2-bullseye
 
 # Prevent intractive prompts from apt-get.
 ARG DEBIAN_FRONTEND=noninteractive
