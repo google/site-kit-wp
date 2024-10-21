@@ -60,14 +60,24 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: ( { select } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getSetupErrorMessage selector relies on the resolution
+				// of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
+				// rely on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+			] );
+
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
 
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
@@ -100,14 +110,24 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: ( { select } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getSetupErrorMessage selector relies on the resolution
+				// of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// The isAuthenticated() and hasScope() selectors
+				// rely on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+			] );
+
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
 
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
@@ -140,12 +160,15 @@ export function registerDefaults( notificationsAPI ) {
 				resolveSelect,
 				dispatch,
 			} ) => {
-				const adSenseModuleConnected =
-					select( CORE_MODULES ).isModuleConnected( 'adsense' );
+				const adSenseModuleConnected = await resolveSelect(
+					CORE_MODULES
+				).isModuleConnected( 'adsense' );
 
-				const analyticsModuleConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+				const analyticsModuleConnected = await resolveSelect(
+					CORE_MODULES
+				).isModuleConnected( 'analytics-4' );
 
+				await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
 				const isAdSenseLinked =
 					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
@@ -221,8 +244,14 @@ export function registerDefaults( notificationsAPI ) {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
-			const isAnalyticsConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const isAnalyticsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
+
+			if ( viewOnly ) {
+				// This ensures resolution for the canViewSharedModule() selectors.
+				await resolveSelect( CORE_MODULES ).getModules();
+			}
 
 			const canViewSharedAnalytics = ! viewOnly
 				? true
@@ -295,8 +324,9 @@ export function registerDefaults( notificationsAPI ) {
 
 			const getModuleState = async ( moduleSlug, datastoreSlug ) => {
 				// Check if the module connected and return early if not.
-				const isConnected =
-					select( CORE_MODULES ).isModuleConnected( moduleSlug );
+				const isConnected = await resolveSelect(
+					CORE_MODULES
+				).isModuleConnected( moduleSlug );
 				if ( ! isConnected ) {
 					return 'disconnected';
 				}
@@ -304,6 +334,9 @@ export function registerDefaults( notificationsAPI ) {
 				// If we are in the view only mode, we need to ensure the user can view the module
 				// and it is not in the recovering state. Return early if either of these is wrong.
 				if ( viewOnly ) {
+					// This ensures resolution for the canViewSharedModule() selectors.
+					await resolveSelect( CORE_MODULES ).getModules();
+
 					const canView =
 						select( CORE_USER ).canViewSharedModule( moduleSlug );
 					if ( ! canView ) {
