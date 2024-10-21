@@ -45,6 +45,7 @@ import Link from '../../../../../../../components/Link';
 import PartialDataNotice from './PartialDataNotice';
 import { numFmt, trackEvent } from '../../../../../../../util';
 import withIntersectionObserver from '../../../../../../../util/withIntersectionObserver';
+import useViewContext from '../../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../../hooks/useViewOnly';
 import CreateCustomDimensionCTA from './CreateCustomDimensionCTA';
 
@@ -59,6 +60,7 @@ export default function AudienceTilePagesMetricContent( {
 	onCreateCustomDimension,
 	isSaving,
 } ) {
+	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 	const breakpoint = useBreakpoint();
 
@@ -78,7 +80,7 @@ export default function AudienceTilePagesMetricContent( {
 
 	function handleCreateCustomDimension() {
 		trackEvent(
-			'${viewContext}_audiences-top-content-cta',
+			`${ viewContext }_audiences-top-content-cta`,
 			'create_custom_dimension'
 		).finally( onCreateCustomDimension );
 	}
@@ -128,7 +130,7 @@ export default function AudienceTilePagesMetricContent( {
 					isSaving={ isSaving }
 					onInView={ () => {
 						trackEvent(
-							'${viewContext}_audiences-top-content-cta',
+							`${ viewContext }_audiences-top-content-cta`,
 							'view_cta'
 						);
 					} }
