@@ -111,13 +111,14 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_SETTINGS,
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			// The getSetupErrorMessage selector relies on the resolution
-			// of the getSiteInfo() resolver.
-			await resolveSelect( CORE_SITE ).getSiteInfo();
-
-			// The isAuthenticated() and hasScope() selectors
-			// rely on the resolution of getAuthentication().
-			await resolveSelect( CORE_USER ).getAuthentication();
+			await Promise.all( [
+				// The getSetupErrorMessage selector relies on the resolution
+				// of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// The isAuthenticated() and hasScope() selectors
+				// rely on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+			] );
 
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
