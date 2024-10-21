@@ -33,16 +33,29 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../../tests/js/utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../googlesitekit/constants';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../../googlesitekit/widgets/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../util/errors';
+import * as tracking from '../../../../../../../util/tracking';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
 } from '../../../../../datastore/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn().mockImplementation( () => ( {
+		isIntersecting: true,
+		intersectionRatio: 1,
+	} ) ),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceTile', () => {
 	let registry;
@@ -188,6 +201,10 @@ describe( 'AudienceTile', () => {
 			} );
 	} );
 
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
 	it( 'should render the AudienceTile component', () => {
 		const { container } = render(
 			<WidgetWithComponentProps { ...props } />,
@@ -197,6 +214,28 @@ describe( 'AudienceTile', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	describe( 'Top content metric', () => {
+		it( 'should track an event when the missing custom dimension CTA is viewed', () => {
+			const { getByRole } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect(
+				getByRole( 'button', { name: /update/i } )
+			).toBeInTheDocument();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-top-content-cta',
+				'view_cta'
+			);
+		} );
 	} );
 
 	describe( 'AudienceErrorModal', () => {
