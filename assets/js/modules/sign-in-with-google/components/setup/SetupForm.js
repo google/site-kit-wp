@@ -30,7 +30,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ClientIDTextField from '../common/ClientIDTextField';
-import Button from '../../../../googlesitekit/components-gm2/Button';
+import { Button } from 'googlesitekit-components';
 import SupportLink from '../../../../components/SupportLink';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import PreviewBlock from '../../../../components/PreviewBlock';

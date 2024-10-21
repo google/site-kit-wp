@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -33,7 +28,7 @@ import SignInWithGoogleIcon from '../../../../../svg/graphics/sign-in-with-googl
 import SetupForm from './SetupForm';
 import Badge from '../../../../components/Badge';
 
-export default function SetupMain( { finishSetup = () => {} } ) {
+export default function SetupMain() {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--with-panels googlesitekit-setup-module--sign-in-with-google">
 			<div className="googlesitekit-setup-module__step">
@@ -54,12 +49,8 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 				</h2>
 			</div>
 			<div className="googlesitekit-setup-module__step">
-				<SetupForm finishSetup={ finishSetup } />
+				<SetupForm />
 			</div>
 		</div>
 	);
 }
-
-SetupMain.propTypes = {
-	finishSetup: PropTypes.func,
-};
