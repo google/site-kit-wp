@@ -281,135 +281,264 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'AudienceErrorModal', () => {
-		it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
-			provideSiteInfo( registry, {
-				setupErrorCode: 'access_denied',
+		let getByRole, getByText;
+
+		describe( 'OAuth error modal', () => {
+			beforeEach( async () => {
+				provideSiteInfo( registry, {
+					setupErrorCode: 'access_denied',
+				} );
+
+				provideUserAuthentication( registry, {
+					grantedScopes: [],
+				} );
+
+				( { getByRole, getByText } = render(
+					<WidgetWithComponentProps { ...props } />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /update/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					await waitForDefaultTimeouts();
+				} );
 			} );
 
-			provideUserAuthentication( registry, {
-				grantedScopes: [],
+			it( 'should show the modal when the required scopes are not granted', () => {
+				// Verify the error is an OAuth error variant.
+				expect(
+					getByText( /Analytics update failed/i )
+				).toBeInTheDocument();
+
+				// Verify the "Get help" link is displayed.
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
+
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toHaveAttribute(
+					'href',
+					registry
+						.select( CORE_SITE )
+						.getErrorTroubleshootingLinkURL( {
+							code: 'access_denied',
+						} )
+				);
+
+				// Verify the "Retry" button is displayed.
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
+
+				// Verify the "Cancel" button is displayed.
+				expect(
+					getByRole( 'button', { name: /cancel/i } )
+				).toBeInTheDocument();
 			} );
 
-			const { getByRole, getByText } = render(
-				<WidgetWithComponentProps { ...props } />,
-				{
-					registry,
-				}
-			);
+			it( 'should track an event when the Retry button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
 
-			expect(
-				getByRole( 'button', { name: /update/i } )
-			).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
 
-			await act( async () => {
-				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
-
-				// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
-				await waitForDefaultTimeouts();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'auth_error_retry'
+				);
 			} );
 
-			// Verify the error is an OAuth error variant.
-			expect(
-				getByText( /Analytics update failed/i )
-			).toBeInTheDocument();
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
 
-			// Verify the "Get help" link is displayed.
-			expect( getByText( /get help/i ) ).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
 
-			expect(
-				getByRole( 'link', { name: /get help/i } )
-			).toHaveAttribute(
-				'href',
-				registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
-					code: 'access_denied',
-				} )
-			);
-
-			// Verify the "Retry" button is displayed.
-			expect( getByText( /retry/i ) ).toBeInTheDocument();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'auth_error_cancel'
+				);
+			} );
 		} );
 
-		it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
-			const error = {
-				code: 'test_error',
-				message: 'Error message.',
-				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-			};
+		describe( 'insufficient permissions modal', () => {
+			beforeEach( async () => {
+				const error = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
 
-			provideCustomDimensionError( registry, {
-				customDimension: 'googlesitekit_post_type',
-				error,
+				provideCustomDimensionError( registry, {
+					customDimension: 'googlesitekit_post_type',
+					error,
+				} );
+
+				( { getByRole, getByText } = render(
+					<WidgetWithComponentProps { ...props } />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /update/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					await waitForDefaultTimeouts();
+				} );
 			} );
 
-			const { getByRole, getByText } = render(
-				<WidgetWithComponentProps { ...props } />,
-				{
-					registry,
-				}
-			);
+			it( 'should show the insufficient permission error modal when the user does not have the required permissions', () => {
+				// Verify the error is "Insufficient permissions" variant.
+				expect(
+					getByText( /Insufficient permissions/i )
+				).toBeInTheDocument();
 
-			expect(
-				getByRole( 'button', { name: /update/i } )
-			).toBeInTheDocument();
+				// Verify the "Get help" link is displayed.
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
 
-			await act( async () => {
-				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+				// Verify the "Request access" button is displayed.
+				expect(
+					getByRole( 'button', { name: /request access/i } )
+				).toBeInTheDocument();
 
-				// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
-				await waitForDefaultTimeouts();
+				// Verify the "Cancel" button is displayed.
+				expect(
+					getByRole( 'button', { name: /cancel/i } )
+				).toBeInTheDocument();
 			} );
 
-			// Verify the error is "Insufficient permissions" variant.
-			expect(
-				getByText( /Insufficient permissions/i )
-			).toBeInTheDocument();
+			it( 'should track an event when the "Request access" button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /request access/i } )
+					);
 
-			// Verify the "Get help" link is displayed.
-			expect( getByText( /get help/i ) ).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
 
-			// Verify the "Request access" button is displayed.
-			expect( getByText( /request access/i ) ).toBeInTheDocument();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'insufficient_permissions_error_request_access'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'insufficient_permissions_error_cancel'
+				);
+			} );
 		} );
 
-		it( 'should show the generic error modal when an internal server error occurs', async () => {
-			const error = {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			};
+		describe( 'generic error modal', () => {
+			beforeEach( async () => {
+				const error = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
 
-			provideCustomDimensionError( registry, {
-				customDimension: 'googlesitekit_post_type',
-				error,
+				provideCustomDimensionError( registry, {
+					customDimension: 'googlesitekit_post_type',
+					error,
+				} );
+
+				( { getByRole, getByText } = render(
+					<WidgetWithComponentProps { ...props } />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /update/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					await waitForDefaultTimeouts();
+				} );
 			} );
 
-			const { getByRole, getByText } = render(
-				<WidgetWithComponentProps { ...props } />,
-				{
-					registry,
-				}
-			);
+			it( 'should show the generic error modal when an internal server error occurs', () => {
+				// Verify the error is a generic error variant.
+				expect(
+					getByText( /Failed to enable metric/i )
+				).toBeInTheDocument();
 
-			expect(
-				getByRole( 'button', { name: /update/i } )
-			).toBeInTheDocument();
-
-			await act( async () => {
-				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
-
-				// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
-				await waitForDefaultTimeouts();
+				// Verify the "Retry" button is displayed.
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
 			} );
 
-			// Verify the error is a generic error variant.
-			expect(
-				getByText( /Failed to enable metric/i )
-			).toBeInTheDocument();
+			it( 'should track an event when the Retry button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
 
-			// Verify the "Retry" button is displayed.
-			expect(
-				getByRole( 'button', { name: /retry/i } )
-			).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'setup_error_retry'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'setup_error_cancel'
+				);
+			} );
 		} );
 	} );
 } );
