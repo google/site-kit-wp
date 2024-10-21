@@ -34,6 +34,7 @@ import Notification from '../components/Notification';
  */
 export const getNotificationComponentProps = memize( ( id ) => {
 	return {
+		id,
 		Notification: withNotificationID( id )( Notification ),
 	};
 } );

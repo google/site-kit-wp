@@ -19,8 +19,10 @@
 /**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import API from 'googlesitekit-api';
+import { combineStores, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 export const selectors = {
 	/**
@@ -51,6 +53,56 @@ export const selectors = {
 	),
 };
 
-export default {
-	selectors,
+const dismissNewConversionReportingEventsStore = createFetchStore( {
+	baseName: 'dismissNewConversionReportingEvents',
+	controlCallback: () => {
+		return API.set(
+			'modules',
+			'analytics-4',
+			'clear-conversion-reporting-new-events'
+		);
+	},
+} );
+
+const dismissLostConversionReportingEventsStore = createFetchStore( {
+	baseName: 'dismissLostConversionReportingEvents',
+	controlCallback: () => {
+		return API.set(
+			'modules',
+			'analytics-4',
+			'clear-conversion-reporting-lost-events'
+		);
+	},
+} );
+
+const actions = {
+	/**
+	 * Dismiss new conversion reporting events.
+	 *
+	 * @since 1.138.0
+	 *
+	 * @return {boolean} Transient deletion response.
+	 */
+	dismissNewConversionReportingEvents() {
+		return dismissNewConversionReportingEventsStore.actions.fetchDismissNewConversionReportingEvents();
+	},
+	/**
+	 * Dismiss lost conversion reporting events.
+	 *
+	 * @since 1.138.0
+	 *
+	 * @return {boolean} Transient deletion response.
+	 */
+	dismissLostConversionReportingEvents() {
+		return dismissLostConversionReportingEventsStore.actions.fetchDismissLostConversionReportingEvents();
+	},
 };
+
+export default combineStores(
+	dismissNewConversionReportingEventsStore,
+	dismissLostConversionReportingEventsStore,
+	{
+		actions,
+		selectors,
+	}
+);

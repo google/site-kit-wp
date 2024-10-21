@@ -237,9 +237,7 @@ const baseActions = {
 
 			if ( response ) {
 				// Refresh account summaries to load the new property.
-				yield dispatch(
-					MODULES_ANALYTICS_4
-				).fetchGetAccountSummaries();
+				yield dispatch( MODULES_ANALYTICS_4 ).resetAccountSummaries();
 			}
 
 			return { response, error };

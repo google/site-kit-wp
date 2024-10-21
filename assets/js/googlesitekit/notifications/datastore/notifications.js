@@ -155,6 +155,15 @@ export const actions = {
 				};
 			}
 
+			const notification = registry
+				.select( CORE_NOTIFICATIONS )
+				.getNotification( id );
+
+			// Skip persisting notification dismissal in database if the notification is not dismissible.
+			if ( notification?.isDismissible === false ) {
+				return;
+			}
+
 			return registry
 				.dispatch( CORE_USER )
 				.dismissItem( id, { expiresInSeconds } );
@@ -280,6 +289,18 @@ export const selectors = {
 	 */
 	getNotifications: ( state ) => {
 		return state.notifications;
+	},
+	/**
+	 * Fetches a registered notification by ID from state.
+	 *
+	 * @since 1.138.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} id    Notification ID.
+	 * @return {(Object|undefined)} The registered notification object or undefined if a notification with the given ID is not registered.
+	 */
+	getNotification: ( state, id ) => {
+		return state.notifications[ id ];
 	},
 	/**
 	 * Fetches the queue of registered notifications which are filtered and sorted.

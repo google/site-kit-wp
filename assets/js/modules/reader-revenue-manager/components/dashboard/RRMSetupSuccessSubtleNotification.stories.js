@@ -31,9 +31,14 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'setup-success-notification-rrm'
+)( RRMSetupSuccessSubtleNotification );
 
 function Template() {
-	return <RRMSetupSuccessSubtleNotification />;
+	return <NotificationWithComponentProps />;
 }
 
 export const OnboardingComplete = Template.bind( {} );
