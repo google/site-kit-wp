@@ -31,6 +31,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../../tests/js/utils';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
@@ -199,7 +200,7 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'AudienceErrorModal', () => {
-		it( 'should show the OAuth error modal when the required scopes are not granted', () => {
+		it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
 			provideSiteInfo( registry, {
 				setupErrorCode: 'access_denied',
 			} );
@@ -219,8 +220,11 @@ describe( 'AudienceTile', () => {
 				getByRole( 'button', { name: /update/i } )
 			).toBeInTheDocument();
 
-			act( () => {
+			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+
+				// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+				await waitForDefaultTimeouts();
 			} );
 
 			// Verify the error is an OAuth error variant.
@@ -244,7 +248,7 @@ describe( 'AudienceTile', () => {
 			expect( getByText( /retry/i ) ).toBeInTheDocument();
 		} );
 
-		it( 'should show the insufficient permission error modal when the user does not have the required permissions', () => {
+		it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -267,8 +271,11 @@ describe( 'AudienceTile', () => {
 				getByRole( 'button', { name: /update/i } )
 			).toBeInTheDocument();
 
-			act( () => {
+			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+
+				// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+				await waitForDefaultTimeouts();
 			} );
 
 			// Verify the error is "Insufficient permissions" variant.
@@ -283,7 +290,7 @@ describe( 'AudienceTile', () => {
 			expect( getByText( /request access/i ) ).toBeInTheDocument();
 		} );
 
-		it( 'should show the generic error modal when an internal server error occurs', () => {
+		it( 'should show the generic error modal when an internal server error occurs', async () => {
 			const error = {
 				code: 'internal_server_error',
 				message: 'Internal server error',
@@ -306,8 +313,11 @@ describe( 'AudienceTile', () => {
 				getByRole( 'button', { name: /update/i } )
 			).toBeInTheDocument();
 
-			act( () => {
+			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+
+				// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+				await waitForDefaultTimeouts();
 			} );
 
 			// Verify the error is a generic error variant.
