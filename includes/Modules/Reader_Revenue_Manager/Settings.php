@@ -69,10 +69,10 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'                                  => 0,
-			'publicationID'                            => '',
-			'publicationOnboardingState'               => '',
-			'publicationOnboardingStateLastSyncedAtMs' => 0,
+			'ownerID'                           => 0,
+			'publicationID'                     => '',
+			'publicationOnboardingState'        => '',
+			'publicationOnboardingStateChanged' => false,
 		);
 	}
 
@@ -102,9 +102,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				}
 			}
 
-			if ( isset( $option['publicationOnboardingStateLastSyncedAtMs'] ) ) {
-				if ( ! is_int( $option['publicationOnboardingStateLastSyncedAtMs'] ) ) {
-					$option['publicationOnboardingStateLastSyncedAtMs'] = 0;
+			if ( isset( $option['publicationOnboardingStateChanged'] ) ) {
+				if ( ! is_bool( $option['publicationOnboardingStateChanged'] ) ) {
+					$option['publicationOnboardingStateChanged'] = false;
 				}
 			}
 
