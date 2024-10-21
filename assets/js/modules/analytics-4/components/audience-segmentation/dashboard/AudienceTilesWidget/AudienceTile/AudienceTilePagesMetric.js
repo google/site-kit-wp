@@ -83,6 +83,7 @@ export default function AudienceTilePagesMetric( {
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} );
 	const errorRedirectURL = addQueryArgs( global.location.href, {
 		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
