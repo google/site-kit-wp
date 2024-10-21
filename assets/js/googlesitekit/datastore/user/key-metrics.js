@@ -287,8 +287,9 @@ const baseSelectors = {
 		const keyMetricSettings = select( CORE_USER ).getKeyMetricsSettings();
 		const isUserInputCompleted = select( CORE_USER ).isUserInputCompleted();
 		const showConversionTailoredMetrics =
-			keyMetricSettings?.includeConversionTailoredMetrics ||
-			isUserInputCompleted;
+			( keyMetricSettings?.includeConversionTailoredMetrics ||
+				isUserInputCompleted ) &&
+			isFeatureEnabled( 'conversionReporting' );
 
 		switch ( purpose ) {
 			case 'publish_blog':

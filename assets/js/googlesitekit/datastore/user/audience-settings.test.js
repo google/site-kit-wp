@@ -227,6 +227,36 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		} );
+
+		describe( 'resetAudienceSettings', () => {
+			it( 'should reset the audience settings data in the store', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetAudienceSettings( audienceSettingsResponse );
+
+				await registry.dispatch( CORE_USER ).resetAudienceSettings();
+
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getAudienceSettings();
+
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toEqual( audienceSettingsResponse );
+
+				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

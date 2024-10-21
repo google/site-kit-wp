@@ -24,10 +24,12 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideUserAuthentication,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -492,6 +494,112 @@ describe( 'modules/analytics-4 settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged()
 				).toBe( false );
+			} );
+
+			it( 'should reset audience settings in the store when Analytics settings have successfully saved', async () => {
+				const analyticsSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( analyticsSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: analyticsSettings,
+					status: 200,
+				} );
+
+				const audienceSettings = {
+					configuredAudiences: [],
+					isAudienceSegmentationWidgetHidden: false,
+					didSetAudiences: true,
+				};
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetAudienceSettings( audienceSettings );
+
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getAudienceSettings', [] );
+
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toEqual( audienceSettings );
+
+				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				// We can ignore the subsequent GET for the `audience-settings` endpoint,
+				// this is covered in the test for `resetAudienceSettings()`.
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/audience-settings'
+					)
+				);
+
+				// Verify that the audience settings have been reset.
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getAudienceSettings();
+			} );
+
+			it( 'should not reset audience settings in the store when Analytics settings have not successfully saved', async () => {
+				const analyticsSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( analyticsSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const audienceSettings = {
+					configuredAudiences: [],
+					isAudienceSegmentationWidgetHidden: false,
+					didSetAudiences: true,
+				};
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetAudienceSettings( audienceSettings );
+
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getAudienceSettings', [] );
+
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toEqual( audienceSettings );
+
+				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				// Verify that the audience settings have not been reset.
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toEqual( audienceSettings );
+
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:settings',
+					'type:modules',
+					'identifier:analytics-4',
+					'error:"Something wrong happened."'
+				);
 			} );
 		} );
 	} );
