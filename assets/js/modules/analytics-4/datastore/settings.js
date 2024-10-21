@@ -161,6 +161,8 @@ export async function submitChanges( { select, dispatch } ) {
 		return { error };
 	}
 
+	dispatch( CORE_USER ).resetAudienceSettings();
+
 	await API.invalidateCache( 'modules', 'analytics-4' );
 
 	return {};

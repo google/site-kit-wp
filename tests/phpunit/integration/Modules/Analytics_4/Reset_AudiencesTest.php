@@ -209,10 +209,15 @@ class Reset_AudiencesTest extends TestCase {
 				$this->assertFalse( array_key_exists( $dismissed_item, $user_dismissed_items ) );
 			}
 
-			// Confirm the user's audience settings have been reset.
+			// Confirm the user's applicable audience settings have been reset.
 			$audience_settings = $this->audience_settings->get();
 			foreach ( array_keys( $default_user_audience_settings ) as $key ) {
+				// `isAudienceSegmentationWidgetHidden` should not be reset.
+				if ( 'isAudienceSegmentationWidgetHidden' === $key ) {
+					$this->assertEquals( $activated_user_audience_settings[ $key ], $audience_settings[ $key ] );
+				} else {
 					$this->assertEquals( $default_user_audience_settings[ $key ], $audience_settings[ $key ] );
+				}
 			}
 		}
 

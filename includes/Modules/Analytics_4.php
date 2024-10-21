@@ -685,7 +685,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'service' => '',
 			);
 			$datapoints['POST:sync-audiences']                       = array(
-				'service' => 'analyticsaudiences',
+				'service'   => 'analyticsaudiences',
+				'shareable' => true,
 			);
 		}
 
@@ -1455,6 +1456,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$custom_dimension
 					);
 			case 'POST:sync-audiences':
+				if ( ! $this->authentication->is_authenticated() ) {
+					return new WP_Error(
+						'forbidden',
+						__( 'User must be authenticated to sync audiences.', 'google-site-kit' ),
+						array( 'status' => 403 )
+					);
+				}
+
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
