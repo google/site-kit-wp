@@ -42,6 +42,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
+		add_action( 'login_form', array( $this, 'render_signin_button' ) );
 	}
 
 	/**
@@ -106,5 +107,70 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Registers and Enqueues the sign in button script.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function register_and_enqueue_script() {
+		$sign_in_script = new Script(
+			'googlesitekit-sign-in-with-google-sign-in-button',
+			array(
+				'src'       => 'https://accounts.google.com/gsi/client',
+				'execution' => 'async',
+			)
+		);
+		$sign_in_script->register( $this->context );
+		$sign_in_script->enqueue();
+	}
+
+	/**
+	 * Registers and Enqueues the sign in button styles.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function register_and_enqueue_style() {
+		$this->assets->enqueue_asset( 'googlesitekit-wp-login-css' );
+	}
+
+	/**
+	 * Renders the sign in button.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function render_signin_button() {
+		$settings = $this->get_settings()->get();
+
+		// TODO: update once blockers are merged to the REST endpoint.
+		$redirect_url = site_url( '/todo' );
+
+		if ( substr( wp_login_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
+			return;
+		}
+
+		// Register and enqueue the script required for the sign in button.
+		$this->register_and_enqueue_script();
+
+		// Enqueue styles.
+		$this->register_and_enqueue_style();
+
+		// Render the Sign in with Google button.
+		?>
+<div id="g_id_onload"
+	data-client_id="<?php echo esc_attr( $settings['clientID'] ); ?>"
+	data-login_uri="<?php echo esc_url( $redirect_url ); ?>"
+	data-auto_prompt="false">
+</div>
+<div class="g_id_signin"
+	data-type="standard"
+	data-size="large"
+	data-theme="<?php echo esc_attr( $settings['theme'] ); ?>"
+	data-text="<?php echo esc_attr( $settings['text'] ); ?>"
+	data-shape="<?php echo esc_attr( $settings['shape'] ); ?>"
+	data-logo_alignment="left">
+</div>
+		<?php
 	}
 }

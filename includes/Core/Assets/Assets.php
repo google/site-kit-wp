@@ -688,6 +688,13 @@ final class Assets {
 					),
 				)
 			),
+			// Log in page assets.
+			new Stylesheet(
+				'googlesitekit-wp-login-css',
+				array(
+					'src' => $base_url . 'css/googlesitekit-wp-login-css.css',
+				)
+			),
 			new Stylesheet(
 				'googlesitekit-fonts',
 				array(
