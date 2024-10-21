@@ -51,6 +51,7 @@ import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
 import AudienceErrorModal from '../../AudienceErrorModal';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
+import useViewContext from '../../../../../../../hooks/useViewContext';
 
 export default function AudienceTilePagesMetric( {
 	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
@@ -64,6 +65,7 @@ export default function AudienceTilePagesMetric( {
 	isTopContentPartialData,
 } ) {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 
 	const postTypeDimension =
 		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
@@ -253,6 +255,7 @@ export default function AudienceTilePagesMetric( {
 							onCancel={ onCancel }
 							inProgress={ isSaving }
 							hasOAuthError={ hasOAuthError }
+							trackEventCategory={ `${ viewContext }_audiences-top-content-cta` }
 						/>
 					) }
 			</div>

@@ -93,6 +93,20 @@ export default function AudienceErrorModal( {
 		} );
 	}
 
+	function handleDialog() {
+		let action;
+
+		if ( hasOAuthError ) {
+			action = 'auth_error_cancel';
+		} else if ( hasInsufficientPermissionsError ) {
+			action = 'insufficient_permissions_error_cancel';
+		} else {
+			action = 'setup_error_cancel';
+		}
+
+		trackEvent( trackEventCategory, action ).finally( onCancel );
+	}
+
 	let errorTitle, errorDescription, confirmButton, buttonLink;
 
 	if ( hasOAuthError ) {
@@ -153,7 +167,7 @@ export default function AudienceErrorModal( {
 				subtitle={ errorDescription }
 				handleConfirm={ handleConfirm }
 				confirmButton={ confirmButton }
-				handleDialog={ onCancel }
+				handleDialog={ handleDialog }
 				onOpen={ () => {
 					let action;
 
