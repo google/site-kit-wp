@@ -37,6 +37,7 @@ import Portal from '../../../../../components/Portal';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { isInsufficientPermissionsError } from '../../../../../util/errors';
+import { trackEvent } from '../../../../../util';
 
 export default function AudienceErrorModal( {
 	apiErrors,
@@ -44,6 +45,7 @@ export default function AudienceErrorModal( {
 	inProgress,
 	title,
 	description,
+	trackEventCategory,
 	onCancel = () => {},
 	onRetry = () => {},
 } ) {
@@ -134,6 +136,19 @@ export default function AudienceErrorModal( {
 				handleConfirm={ onRetry }
 				confirmButton={ confirmButton }
 				handleDialog={ onCancel }
+				onOpen={ () => {
+					let action;
+
+					if ( hasOAuthError ) {
+						action = 'auth_error';
+					} else if ( hasInsufficientPermissionsError ) {
+						action = 'insufficient_permissions_error';
+					} else {
+						action = 'setup_error';
+					}
+
+					trackEvent( trackEventCategory, action );
+				} }
 				onClose={ onCancel }
 				danger
 				inProgress={ inProgress }
@@ -150,6 +165,9 @@ AudienceErrorModal.propTypes = {
 	] ),
 	hasOAuthError: PropTypes.bool,
 	inProgress: PropTypes.bool,
+	title: PropTypes.string,
+	description: PropTypes.string,
+	trackEventCategory: PropTypes.string,
 	onCancel: PropTypes.func,
 	onRetry: PropTypes.func,
 };
