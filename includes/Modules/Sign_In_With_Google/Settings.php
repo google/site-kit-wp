@@ -105,6 +105,10 @@ class Settings extends Module_Settings {
 				}
 			}
 
+			if ( isset( $option['oneTapEnabled'] ) ) {
+				$option['oneTapEnabled'] = (bool) $option['oneTapEnabled'];
+			}
+
 			return $option;
 		};
 	}
