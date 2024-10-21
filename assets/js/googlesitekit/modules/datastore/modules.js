@@ -80,6 +80,7 @@ const moduleDefaults = {
 	SettingsViewComponent: null,
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
+	onCompleteSetup: undefined,
 	checkRequirements: () => true,
 	DashboardMainEffectComponent: null,
 	DashboardEntityEffectComponent: null,
@@ -342,6 +343,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
 	 * @param {WPComponent}    [settings.DashboardEntityEffectComponent]   Optional. React component to render the effects on entity dashboard. Default none.
@@ -365,6 +367,7 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				onCompleteSetup,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,
 			} = {}
@@ -380,6 +383,7 @@ const baseActions = {
 				SettingsEditComponent,
 				SettingsViewComponent,
 				SetupComponent,
+				onCompleteSetup,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
 				DashboardMainEffectComponent,
