@@ -75,6 +75,24 @@ export default function AudienceErrorModal( {
 		isInsufficientPermissionsError( error )
 	);
 
+	function handleConfirm() {
+		let action;
+
+		if ( hasOAuthError ) {
+			action = 'auth_error_retry';
+		} else if ( hasInsufficientPermissionsError ) {
+			action = 'insufficient_permissions_error_request_access';
+		} else {
+			action = 'setup_error_retry';
+		}
+
+		trackEvent( trackEventCategory, action ).finally( () => {
+			if ( ! hasInsufficientPermissionsError ) {
+				onRetry();
+			}
+		} );
+	}
+
 	let errorTitle, errorDescription, confirmButton, buttonLink;
 
 	if ( hasOAuthError ) {
@@ -133,7 +151,7 @@ export default function AudienceErrorModal( {
 				buttonLink={ buttonLink }
 				title={ errorTitle }
 				subtitle={ errorDescription }
-				handleConfirm={ onRetry }
+				handleConfirm={ handleConfirm }
 				confirmButton={ confirmButton }
 				handleDialog={ onCancel }
 				onOpen={ () => {
