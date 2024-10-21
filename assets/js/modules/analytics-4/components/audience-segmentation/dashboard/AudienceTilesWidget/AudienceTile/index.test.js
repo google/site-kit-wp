@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import AudienceTile from '.';
@@ -48,10 +53,7 @@ import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn().mockImplementation( () => ( {
-		isIntersecting: true,
-		intersectionRatio: 1,
-	} ) ),
+	useIntersection: jest.fn(),
 } ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -218,7 +220,12 @@ describe( 'AudienceTile', () => {
 
 	describe( 'Top content metric', () => {
 		it( 'should track an event when the missing custom dimension CTA is viewed', () => {
-			const { getByRole } = render(
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: false,
+				intersectionRatio: 0,
+			} ) );
+
+			const { getByRole, rerender } = render(
 				<WidgetWithComponentProps { ...props } />,
 				{
 					registry,
@@ -229,6 +236,16 @@ describe( 'AudienceTile', () => {
 			expect(
 				getByRole( 'button', { name: /update/i } )
 			).toBeInTheDocument();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps { ...props } /> );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
