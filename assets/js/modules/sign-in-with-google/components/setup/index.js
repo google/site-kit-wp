@@ -1,5 +1,5 @@
 /**
- * Sorting functions.
+ * Sign In With Google Setup components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,20 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Sorts the provided list in a case-insensitive manner.
- *
- * @since 1.138.0
- *
- * @param {Array}  listToSort The list to sort (Array of objects or arrays).
- * @param {string} orderBy    The field by which the list should be ordered.
- * @return {Array} The sorted list.
- */
-export function caseInsensitiveListSort( listToSort, orderBy ) {
-	return [ ...listToSort ].sort( ( a, b ) => {
-		const nameA = a[ orderBy ]?.toLowerCase() || '';
-		const nameB = b[ orderBy ]?.toLowerCase() || '';
-
-		return nameA.localeCompare( nameB );
-	} );
-}
+export { default as SetupForm } from './SetupForm';
+export { default as SetupMain } from './SetupMain';

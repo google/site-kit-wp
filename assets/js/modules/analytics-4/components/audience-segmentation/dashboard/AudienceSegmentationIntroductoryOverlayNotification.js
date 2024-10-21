@@ -48,12 +48,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	const breakpoint = useBreakpoint();
 	const dashboardType = useDashboardType();
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-		)
-	);
-
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
@@ -62,17 +56,31 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	const shouldShowAudienceSegmentationIntroductoryOverlay = useSelect(
 		( select ) => {
+			const isDismissed = select( CORE_USER ).isItemDismissed(
+				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+			);
+
+			const isAudienceSegmentationWidgetHidden =
+				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
+
 			const isModuleActive =
 				select( CORE_MODULES ).isModuleActive( 'analytics-4' );
+
 			const canViewModule =
 				! isViewOnly ||
 				select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+
 			const audienceSegmentationSetupCompletedBy =
 				select(
 					MODULES_ANALYTICS_4
 				).getAudienceSegmentationSetupCompletedBy();
+
 			const userID = select( CORE_USER ).getID();
+
 			return (
+				DASHBOARD_TYPE_MAIN === dashboardType &&
+				isDismissed === false &&
+				isAudienceSegmentationWidgetHidden === false &&
 				isModuleActive &&
 				canViewModule &&
 				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
@@ -107,14 +115,11 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		dismissNotification();
 	};
 
-	const shouldShowNotification =
-		isDismissed === false &&
-		shouldShowAudienceSegmentationIntroductoryOverlay &&
-		DASHBOARD_TYPE_MAIN === dashboardType;
-
 	return (
 		<OverlayNotification
-			shouldShowNotification={ shouldShowNotification }
+			shouldShowNotification={
+				shouldShowAudienceSegmentationIntroductoryOverlay
+			}
 			GraphicDesktop={ AudienceIntroductoryGraphicDesktop }
 			GraphicMobile={ AudienceIntroductoryGraphicMobile }
 			notificationID={
