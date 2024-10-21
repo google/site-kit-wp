@@ -150,6 +150,11 @@ describe( 'AudienceTile', () => {
 	};
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -219,12 +224,7 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'Top content metric', () => {
-		it( 'should track an event when the missing custom dimension CTA is viewed', () => {
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: false,
-				intersectionRatio: 0,
-			} ) );
-
+		it( 'should track an event when the create custom dimension CTA is viewed', () => {
 			const { getByRole, rerender } = render(
 				<WidgetWithComponentProps { ...props } />,
 				{
@@ -251,6 +251,31 @@ describe( 'AudienceTile', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-top-content-cta',
 				'view_cta'
+			);
+		} );
+
+		it( 'should track an event when the create custom dimension CTA is clicked', async () => {
+			const { getByRole } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-top-content-cta',
+				'create_custom_dimension'
 			);
 		} );
 	} );
