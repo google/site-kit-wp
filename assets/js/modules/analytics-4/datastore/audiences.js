@@ -407,6 +407,29 @@ const baseActions = {
 			configuredAudiences.push( ...audiences );
 		}
 
+		if ( configuredAudiences.length === 1 ) {
+			// Add 'Purchasers' audience if it has data.
+			const purchasersAudience = availableAudiences.find(
+				( { audienceSlug } ) => audienceSlug === 'purchasers'
+			);
+
+			if ( purchasersAudience ) {
+				const purchasersResourceDataAvailabilityDate =
+					yield commonActions.await(
+						resolveSelect(
+							MODULES_ANALYTICS_4
+						).getResourceDataAvailabilityDate(
+							purchasersAudience.name,
+							RESOURCE_TYPE_AUDIENCE
+						)
+					);
+
+				if ( purchasersResourceDataAvailabilityDate ) {
+					configuredAudiences.push( purchasersAudience.name );
+				}
+			}
+		}
+
 		if ( configuredAudiences.length === 0 ) {
 			const requiredAudienceSlugs = [
 				'new-visitors',
