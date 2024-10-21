@@ -1095,6 +1095,79 @@ describe( 'modules/analytics-4 audiences', () => {
 				).toEqual( expectedConfiguredAudiences );
 			} );
 
+			it( 'should add "purchasers" audience to `configuredAudiences` if it has data and there is only one audience available in `configuredAudiences`', async () => {
+				const userAudience = availableAudiencesFixture[ 4 ];
+
+				const availableAudiences = [
+					userAudience,
+					availableAudiencesFixture[ 1 ], // Purchaser
+				];
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiences.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions( [ userAudience ], {
+						startDate,
+						endDate: referenceDate,
+					} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+					createAudiencesTotalUsersMockReport( {
+						[ userAudience.name ]: 123,
+					} ),
+					{ options }
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				const expectedConfiguredAudiences = availableAudiences.map(
+					( { name } ) => name
+				);
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: expectedConfiguredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				muteFetch( expirableItemEndpoint );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				const getConfiguredAudiences = registry
+					.select( CORE_USER )
+					.getConfiguredAudiences();
+
+				expect( getConfiguredAudiences ).toEqual(
+					expectedConfiguredAudiences
+				);
+			} );
+
 			it( 'should make a request to expire new badges for configured audiences', async () => {
 				const totalUsersByAudience = {
 					[ availableUserAudiences[ 0 ].name ]: 0,
