@@ -460,7 +460,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	// TODO: The variable `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
 	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
-	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See #XXXX.
+	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
 	let audienceTileNumber = 0;
 
 	return (
