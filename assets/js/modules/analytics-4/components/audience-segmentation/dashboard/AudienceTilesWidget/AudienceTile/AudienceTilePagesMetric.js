@@ -53,6 +53,10 @@ import AudienceErrorModal from '../../AudienceErrorModal';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
 
 export default function AudienceTilePagesMetric( {
+	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
+	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See #XXXX.
+	audienceTileNumber,
 	TileIcon,
 	title,
 	topContent,
@@ -223,34 +227,41 @@ export default function AudienceTilePagesMetric( {
 					onCreateCustomDimension={ onCreateCustomDimension }
 					isSaving={ isSaving }
 				/>
-				{ ( ( customDimensionError && ! isSaving ) ||
-					( isRetryingCustomDimensionCreate &&
-						! isAutoCreatingCustomDimensionsForAudience ) ||
-					hasOAuthError ) && (
-					<AudienceErrorModal
-						apiErrors={ [ customDimensionError ] }
-						title={ __(
-							'Failed to enable metric',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Oops! Something went wrong. Retry enabling the metric.',
-							'google-site-kit'
-						) }
-						onRetry={ () =>
-							onCreateCustomDimension( { isRetrying: true } )
-						}
-						onCancel={ onCancel }
-						inProgress={ isSaving }
-						hasOAuthError={ hasOAuthError }
-					/>
-				) }
+				{ /*
+						TODO: The `audienceTileNumber` check is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+						within `AudienceTilesWidget`. This should be removed, and the `AudienceErrorModal` render extracted
+						from here to be rendered once at a higher level instead. See #XXXX.
+					*/ }
+				{ audienceTileNumber === 0 &&
+					( ( customDimensionError && ! isSaving ) ||
+						( isRetryingCustomDimensionCreate &&
+							! isAutoCreatingCustomDimensionsForAudience ) ||
+						hasOAuthError ) && (
+						<AudienceErrorModal
+							apiErrors={ [ customDimensionError ] }
+							title={ __(
+								'Failed to enable metric',
+								'google-site-kit'
+							) }
+							description={ __(
+								'Oops! Something went wrong. Retry enabling the metric.',
+								'google-site-kit'
+							) }
+							onRetry={ () =>
+								onCreateCustomDimension( { isRetrying: true } )
+							}
+							onCancel={ onCancel }
+							inProgress={ isSaving }
+							hasOAuthError={ hasOAuthError }
+						/>
+					) }
 			</div>
 		</div>
 	);
 }
 
 AudienceTilePagesMetric.propTypes = {
+	audienceTileNumber: PropTypes.number,
 	TileIcon: PropTypes.elementType.isRequired,
 	title: PropTypes.string.isRequired,
 	topContent: PropTypes.object,
