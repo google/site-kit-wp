@@ -466,6 +466,8 @@ const baseSelectors = {
 
 		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
+		// TODO The below logic is specific to unavailable custom dimensions for view only users
+		// who had user picked metrics. So move this to somewhere more appropriate.
 		if ( isViewOnly ) {
 			// Filter out widget slugs that depend on unavailable custom dimensions.
 			const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
@@ -476,7 +478,13 @@ const baseSelectors = {
 						return false;
 					}
 
-					if ( widget.displayInList ) {
+					if (
+						// The call to displayInList() was added solely for metrics
+						// with custom dimensions, so adding this check till we refactor this
+						// whole isViewOnly section.
+						widget.requiredCustomDimensions?.length &&
+						widget.displayInList
+					) {
 						return widget.displayInList( select, isViewOnly, slug );
 					}
 
