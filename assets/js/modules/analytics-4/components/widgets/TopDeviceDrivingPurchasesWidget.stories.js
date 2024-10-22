@@ -200,6 +200,9 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webDataStreamID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'purchase' ] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
