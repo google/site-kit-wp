@@ -41,6 +41,7 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT,
+	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
 } from '../constants';
 import {
 	EDIT_SCOPE,
@@ -52,6 +53,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 import { SelectionPanelFooter } from '../../SelectionPanel';
+import { useFeature } from '../../../hooks/useFeature';
 
 export default function Footer( {
 	isOpen,
@@ -60,6 +62,7 @@ export default function Footer( {
 	onNavigationToOAuthURL = () => {},
 } ) {
 	const viewContext = useViewContext();
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -195,6 +198,9 @@ export default function Footer( {
 	}, [ trackingCategory ] );
 
 	const selectedMetricsCount = selectedMetrics?.length || 0;
+	const maxSelectedMetricsLimit = isConversionReportingEnabled
+		? MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
+		: MAX_SELECTED_METRICS_COUNT;
 	let metricsLimitError;
 	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
@@ -206,7 +212,7 @@ export default function Footer( {
 			MIN_SELECTED_METRICS_COUNT,
 			selectedMetricsCount
 		);
-	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
+	} else if ( selectedMetricsCount > maxSelectedMetricsLimit ) {
 		metricsLimitError = sprintf(
 			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
 			__(
@@ -214,7 +220,7 @@ export default function Footer( {
 				'google-site-kit'
 			),
 
-			MAX_SELECTED_METRICS_COUNT,
+			maxSelectedMetricsLimit,
 			selectedMetricsCount
 		);
 	}
@@ -227,7 +233,7 @@ export default function Footer( {
 			saveError={ saveError }
 			itemLimitError={ metricsLimitError }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
-			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
+			maxSelectedItemCount={ maxSelectedMetricsLimit }
 			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
 			onSaveSuccess={ onSaveSuccess }
 			onCancel={ onCancel }

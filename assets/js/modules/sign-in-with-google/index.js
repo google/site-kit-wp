@@ -17,8 +17,11 @@
 /**
  * Internal dependencies
  */
-import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './datastore/constants';
+import Icon from '../../../svg/graphics/sign-in-with-google.svg';
+import SetupMain from './components/setup/SetupMain';
+
+export { registerStore } from './datastore';
 
 export function registerModule( modules ) {
 	modules.registerModule( 'sign-in-with-google', {
@@ -29,8 +32,16 @@ export function registerModule( modules ) {
 		SettingsViewComponent() {
 			return null;
 		},
-		SetupComponent() {
-			return null;
+		SetupComponent: SetupMain,
+		onCompleteSetup: async ( registry, finishSetup ) => {
+			const { submitChanges } = registry.dispatch(
+				MODULES_SIGN_IN_WITH_GOOGLE
+			);
+
+			const response = await submitChanges();
+			if ( ! response.error ) {
+				finishSetup();
+			}
 		},
 		Icon,
 	} );
