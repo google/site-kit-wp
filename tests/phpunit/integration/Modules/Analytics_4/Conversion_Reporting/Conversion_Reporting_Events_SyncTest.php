@@ -91,7 +91,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		);
 		$event_check->sync_detected_events();
 
-		$transient_detected_events = $this->transients->get( $this->get_instance()::DETECTED_EVENTS_TRANSIENT );
+		$transient_detected_events = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
 
 		$this->assertSame( $transient_detected_events, $detected_new_events );
 	}
