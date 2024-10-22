@@ -38,6 +38,32 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'receiveConversionReportingInlineData', () => {
+			it( 'requires the data param', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveConversionReportingInlineData();
+				} ).toThrow( 'data is required.' );
+			} );
+
+			it( 'receives and sets inline data', async () => {
+				const data = {
+					newEvents: [ 'purchase' ],
+					lostEvents: [],
+				};
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( data );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConversionReportingEventsChange()
+				).toMatchObject( data );
+			} );
+		} );
 		describe( 'dismissNewConversionReportingEvents', () => {
 			it( 'fetches clear new events endpoint', async () => {
 				fetchMock.postOnce(
