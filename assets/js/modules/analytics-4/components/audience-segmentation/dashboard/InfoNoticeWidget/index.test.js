@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies.
  */
 import InfoNoticeWidget from '.';
@@ -29,11 +34,21 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
+import * as tracking from '../../../../../../util/tracking';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'InfoNoticeWidget', () => {
 	let registry;
@@ -41,6 +56,11 @@ describe( 'InfoNoticeWidget', () => {
 	let dismissPromptSpy;
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -54,6 +74,10 @@ describe( 'InfoNoticeWidget', () => {
 			registry.dispatch( CORE_USER ),
 			'dismissPrompt'
 		);
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
@@ -337,44 +361,84 @@ describe( 'InfoNoticeWidget', () => {
 		);
 	} );
 
-	it.each(
-		AUDIENCE_INFO_NOTICES.map( ( { content }, index ) => [
+	describe.each(
+		AUDIENCE_INFO_NOTICES.map( ( { content, slug }, index ) => [
 			content,
 			index,
+			slug,
 		] )
 	)(
-		'should render the "%s" notice when dismiss count is %d',
-		async ( content, dismissCount ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableAudiences( availableAudiences );
+		'for the "%s" notice, when dismiss count is %d',
+		( content, dismissCount, slug ) => {
+			let getByText, getByRole, rerender;
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-				configuredAudiences: [ 'properties/12345/audiences/1' ],
-				isAudienceSegmentationWidgetHidden: false,
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiences );
+
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					configuredAudiences: [ 'properties/12345/audiences/1' ],
+					isAudienceSegmentationWidgetHidden: false,
+				} );
+
+				const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+					[ AUDIENCE_INFO_NOTICE_SLUG ]: {
+						expires: currentTimeInSeconds - 10,
+						count: dismissCount,
+					},
+				} );
+
+				( { getByRole, getByText, rerender } = render(
+					<WidgetWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
 			} );
 
-			const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
-
-			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-				[ AUDIENCE_INFO_NOTICE_SLUG ]: {
-					expires: currentTimeInSeconds - 10,
-					count: dismissCount,
-				},
+			it( 'should render the notice', () => {
+				expect( getByText( content ) ).toBeInTheDocument();
 			} );
 
-			const { queryByText, waitForRegistry } = render(
-				<WidgetWithComponentProps />,
-				{
-					registry,
-				}
-			);
+			it( 'should track an event when the notice is viewed', () => {
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-			const result = queryByText( content );
+				// Simulate the CTA becoming visible.
+				mockUseIntersection.mockImplementation( () => ( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} ) );
 
-			await waitForRegistry();
+				rerender( <WidgetWithComponentProps /> );
 
-			expect( result ).toBeInTheDocument();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'mainDashboard_audiences-info-notice',
+					'view_notice',
+					slug
+				);
+			} );
+
+			it( 'should track an event when the notice is dismissed', async () => {
+				// We do not need to test anything for dismiss prompt handler.
+				dismissPromptSpy.mockImplementation( jest.fn() );
+
+				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'mainDashboard_audiences-info-notice',
+					'dismiss_notice',
+					slug
+				);
+			} );
 		}
 	);
 } );
