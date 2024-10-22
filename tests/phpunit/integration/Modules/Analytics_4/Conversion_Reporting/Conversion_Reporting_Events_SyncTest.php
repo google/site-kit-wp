@@ -110,7 +110,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		);
 		$event_check->sync_detected_events();
 
-		$transient_lost_events = $this->transients->get( $this->get_instance()::LOST_EVENTS_TRANSIENT );
+		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 
 		$this->assertEquals( $transient_lost_events, $lost_events );
 	}
