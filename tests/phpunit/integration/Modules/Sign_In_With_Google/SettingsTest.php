@@ -31,11 +31,13 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertArrayHasKey( 'text', $default );
 		$this->assertArrayHasKey( 'theme', $default );
 		$this->assertArrayHasKey( 'shape', $default );
+		$this->assertArrayHasKey( 'oneTapEnabled', $default );
 
 		$this->assertSame( '', $default['clientID'] );
 		$this->assertSame( Settings::TEXT_SIGN_IN_WITH_GOOGLE, $default['text'] );
 		$this->assertSame( Settings::THEME_LIGHT, $default['theme'] );
 		$this->assertSame( Settings::SHAPE_RECTANGULAR, $default['shape'] );
+		$this->assertSame( false, $default['oneTapEnabled'] );
 	}
 
 	/**
