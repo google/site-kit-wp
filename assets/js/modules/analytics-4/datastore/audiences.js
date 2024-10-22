@@ -646,6 +646,8 @@ const baseActions = {
 				} ) )
 			)
 		);
+
+		return {};
 	},
 };
 
