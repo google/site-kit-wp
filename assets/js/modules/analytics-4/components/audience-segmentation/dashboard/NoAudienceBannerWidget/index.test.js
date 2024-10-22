@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import NoAudienceBannerWidget from '.';
@@ -38,8 +43,17 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
+import * as tracking from '../../../../../../util/tracking';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
 import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'NoAudienceBannerWidget', () => {
 	mockLocation();
@@ -55,6 +69,11 @@ describe( 'NoAudienceBannerWidget', () => {
 	);
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -160,7 +179,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with an authenticated user who's never populated their audience selection", () => {
-		let container, getByRole, getByText;
+		let container, getByRole, getByText, rerender;
 
 		beforeEach( () => {
 			provideSiteInfo( registry );
@@ -174,7 +193,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: false,
 			} );
 
-			( { container, getByRole, getByText } = render(
+			( { container, getByRole, getByText, rerender } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -220,12 +239,59 @@ describe( 'NoAudienceBannerWidget', () => {
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+			);
+		} );
+
+		it( 'should track an event when the banner is viewed', () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps /> );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-no-audiences',
+				'view_banner',
+				'none-selected'
+			);
+		} );
+
+		it( 'should track an event when clicking on "Select groups"', async () => {
+			fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
+
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-no-audiences',
+				'select_groups',
+				'none-selected'
+			);
+		} );
+
+		it( 'should track an event when clicking on "Settings"', async () => {
+			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
+
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-no-audiences',
+				'change_settings',
+				'none-selected'
 			);
 		} );
 	} );
 
 	describe( "with an authenticated user who's previously populated their audience selection", () => {
-		let container, getByRole, getByText;
+		let container, getByRole, getByText, rerender;
 
 		beforeEach( () => {
 			provideSiteInfo( registry );
@@ -239,7 +305,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: true,
 			} );
 
-			( { container, getByRole, getByText } = render(
+			( { container, getByRole, getByText, rerender } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -291,10 +357,59 @@ describe( 'NoAudienceBannerWidget', () => {
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
 			);
 		} );
+
+		it( 'should track an event when the banner is viewed', () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps /> );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-no-audiences',
+				'view_banner',
+				'no-longer-available'
+			);
+		} );
+
+		it( 'should track an event when clicking on "Select other groups"', async () => {
+			fireEvent.click(
+				getByRole( 'button', { name: 'Select other groups' } )
+			);
+
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-no-audiences',
+				'select_groups',
+				'no-longer-available'
+			);
+		} );
+
+		it( 'should track an event when clicking on "Settings"', async () => {
+			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
+
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-no-audiences',
+				'change_settings',
+				'no-longer-available'
+			);
+		} );
 	} );
 
 	describe( "with a view-only user who's never populated their audience selection", () => {
-		let container, getByRole, getByText;
+		let container, getByRole, getByText, rerender;
 
 		beforeEach( () => {
 			registry
@@ -306,7 +421,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: false,
 			} );
 
-			( { container, getByRole, getByText } = render(
+			( { container, getByRole, getByText, rerender } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -341,10 +456,43 @@ describe( 'NoAudienceBannerWidget', () => {
 					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
 		} );
+
+		it( 'should track an event when the banner is viewed', () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps /> );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboardViewOnly_audiences-no-audiences',
+				'view_banner',
+				'none-selected'
+			);
+		} );
+
+		it( 'should track an event when clicking on "Select groups"', async () => {
+			fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
+
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboardViewOnly_audiences-no-audiences',
+				'select_groups',
+				'none-selected'
+			);
+		} );
 	} );
 
 	describe( "with a view-only user who's previously populated their audience selection", () => {
-		let container, getByRole, getByText;
+		let container, getByRole, getByText, rerender;
 
 		beforeEach( () => {
 			registry
@@ -356,7 +504,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: true,
 			} );
 
-			( { container, getByRole, getByText } = render(
+			( { container, getByRole, getByText, rerender } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -394,6 +542,41 @@ describe( 'NoAudienceBannerWidget', () => {
 					.select( CORE_UI )
 					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
+		} );
+
+		it( 'should track an event when the banner is viewed', () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps /> );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboardViewOnly_audiences-no-audiences',
+				'view_banner',
+				'no-longer-available'
+			);
+		} );
+
+		it( 'should track an event when clicking on "Select other groups"', async () => {
+			fireEvent.click(
+				getByRole( 'button', { name: 'Select other groups' } )
+			);
+
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboardViewOnly_audiences-no-audiences',
+				'select_groups',
+				'no-longer-available'
+			);
 		} );
 	} );
 } );
