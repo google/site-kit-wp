@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 
 /**
@@ -143,8 +144,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function render_signin_button() {
 		$settings = $this->get_settings()->get();
 
-		// TODO: update once blockers are merged to the REST endpoint.
-		$redirect_url = site_url( '/todo' );
+		$redirect_url = rest_url( '/' . REST_Routes::REST_ROOT . '/modules/sign-in-with-google/auth/google' );
 
 		if ( substr( wp_login_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
 			return;
