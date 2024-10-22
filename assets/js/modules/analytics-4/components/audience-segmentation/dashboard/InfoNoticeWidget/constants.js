@@ -64,7 +64,7 @@ export const AUDIENCE_INFO_NOTICES = [
 	{
 		slug: 'custom-audiences',
 		content: __(
-			'Configure your own custom audiences in Analytics to gain deeper insights into visitor behavior, for example consider creating an "Existing customers" or "Subscribers" segment, depending on what goals you have for your site.',
+			'Configure your own custom audiences in Analytics to gain deeper insights into visitor behavior, for example consider creating an “Existing customers” or “Subscribers” segment, depending on what goals you have for your site.',
 			'google-site-kit'
 		),
 	},
@@ -85,7 +85,7 @@ export const AUDIENCE_INFO_NOTICES = [
 	{
 		slug: 'compare-new-returning',
 		content: __(
-			'Compare the ratio of "new" to "returning" visitors – this can give you insights on whether you have more people stopping by as a one-off, or more loyal visitors.',
+			'Compare the ratio of “new” to “returning” visitors – this can give you insights on whether you have more people stopping by as a one-off, or more loyal visitors.',
 			'google-site-kit'
 		),
 	},
