@@ -1,5 +1,5 @@
 /**
- * `modules/sign-in-with-google` base data store.
+ * Sign in with Google Settings Edit component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,13 +19,19 @@
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
-import { validateCanSubmitChanges } from './settings';
+import { useSelect } from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import SettingsForm from './SettingsForm';
 
-export default Modules.createModuleStore( 'sign-in-with-google', {
-	storeName: MODULES_SIGN_IN_WITH_GOOGLE,
-	validateCanSubmitChanges,
-	ownedSettingsSlugs: [],
-	settingSlugs: [ 'clientID', 'shape', 'text', 'theme', 'oneTapEnabled' ],
-} );
+export default function SettingsEdit() {
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).isDoingSubmitChanges()
+	);
+
+	return (
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--sign-in-with-google">
+			{ isDoingSubmitChanges ? <ProgressBar /> : <SettingsForm /> }
+		</div>
+	);
+}
