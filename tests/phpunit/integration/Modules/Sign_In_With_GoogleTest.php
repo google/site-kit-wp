@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 
 /**
  * @group Modules
@@ -37,5 +38,56 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 'https://developers.google.com/identity/gsi/web/guides/overview', $this->module->homepage );
 		$this->assertEquals( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalized experience for your visitors', $this->module->description );
 		$this->assertEquals( 10, $this->module->order );
+	}
+
+	public function test_render_signin_button() {
+		$reset_site_url = site_url();
+		update_option( 'home', 'http://example.com/' );
+		update_option( 'siteurl', 'http://example.com/' );
+
+		// Does not render the if the site is not https.
+		$this->assertNull( $this->module->render_signin_button() );
+
+		// Update site URL to https.
+		update_option( 'home', 'https://example.com/' );
+		update_option( 'siteurl', 'https://example.com/' );
+
+		// Does not render if clientID is not set.
+		$this->module->get_settings()->set( array( 'clientID' => '' ) );
+		$this->assertNull( $this->module->render_signin_button() );
+		$this->module->get_settings()->set( array( 'clientID' => null ) );
+		$this->assertNull( $this->module->render_signin_button() );
+
+		// Renders the button with the correct clientID and redirect_uri.
+		$this->module->get_settings()->set(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE,
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT,
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR,
+			)
+		);
+
+		// Render the button.
+		ob_start();
+		$this->module->render_signin_button();
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		// Test the script and style are enqueued.
+		$this->assertTrue( wp_script_is( 'googlesitekit-sign-in-with-google-sign-in-button', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'googlesitekit-wp-login-css', 'enqueued' ) );
+
+		// Check the rendered button contains the expected data.
+		$this->assertStringContainsString( 'data-client_id="1234567890.googleusercontent.com"', $output );
+		$this->assertStringContainsString( 'data-login_uri="https://example.com/index.php?rest_route=/google-site-kit/v1/modules/sign-in-with-google/auth/google"', $output );
+
+		$this->assertStringContainsString( 'data-text="' . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . '"', $output );
+		$this->assertStringContainsString( 'data-theme="' . Sign_In_With_Google_Settings::THEME_LIGHT . '"', $output );
+		$this->assertStringContainsString( 'data-shape="' . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . '"', $output );
+
+		// Revert home and siteurl.
+		update_option( 'home', $reset_site_url );
+		update_option( 'siteurl', $reset_site_url );
 	}
 }

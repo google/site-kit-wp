@@ -146,7 +146,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		$redirect_url = rest_url( '/' . REST_Routes::REST_ROOT . '/modules/sign-in-with-google/auth/google' );
 
-		if ( substr( wp_login_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
+		if ( substr( rest_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
 			return;
 		}
 
