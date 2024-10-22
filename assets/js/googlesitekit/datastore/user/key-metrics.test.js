@@ -409,6 +409,7 @@ describe( 'core/user key metrics', () => {
 					expectedMetricsIncludingConversionTailored
 				) => {
 					enabledFeatures.add( 'conversionReporting' );
+          
 					provideUserAuthentication( registry );
 					await registry
 						.dispatch( CORE_USER )
