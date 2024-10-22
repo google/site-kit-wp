@@ -41,7 +41,7 @@ let mockResponse;
 
 async function getTotalImpressions() {
 	const datapointSelector =
-		'.overview-total-impressions .googlesitekit-data-block__datapoint, .googlesitekit-data-block--impressions .googlesitekit-data-block__datapoint';
+		'.googlesitekit-data-block--impressions .googlesitekit-data-block__datapoint';
 	await expect( page ).toMatchElement( datapointSelector );
 	return await page.$eval( datapointSelector, ( el ) => el.textContent );
 }
@@ -87,6 +87,7 @@ describe( 'date range filtering on dashboard views', () => {
 
 		mockResponse = last28Days;
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+		await page.waitForSelector( '.googlesitekit-widget' );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
@@ -102,6 +103,7 @@ describe( 'date range filtering on dashboard views', () => {
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
+		await pageWait();
 		const TOTAL_IMPRESSIONS_14_DAYS = await getTotalImpressions();
 
 		expect( TOTAL_IMPRESSIONS_14_DAYS ).not.toBe(
