@@ -27,6 +27,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -158,7 +159,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( "should render correctly for an authenticated user who's never populated their audience selection.", () => {
+	it( "should render correctly for an authenticated user who's never populated their audience selection.", async () => {
 		provideSiteInfo( registry );
 
 		registry
@@ -190,6 +191,9 @@ describe( 'NoAudienceBannerWidget', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		expect(
 			registry
 				.select( CORE_UI )
@@ -200,6 +204,9 @@ describe( 'NoAudienceBannerWidget', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
 		);
@@ -207,7 +214,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( "should render correctly for an authenticated user who's previously populated their audience selection.", () => {
+	it( "should render correctly for an authenticated user who's previously populated their audience selection.", async () => {
 		provideSiteInfo( registry );
 
 		registry
@@ -243,6 +250,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			getByRole( 'button', { name: 'Select other groups' } )
 		);
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		expect(
 			registry
 				.select( CORE_UI )
@@ -253,6 +263,9 @@ describe( 'NoAudienceBannerWidget', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
 		);
@@ -260,7 +273,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( "should render correctly for a view-only user who's never populated their audience selection.", () => {
+	it( "should render correctly for a view-only user who's never populated their audience selection.", async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -290,6 +303,9 @@ describe( 'NoAudienceBannerWidget', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		expect(
 			registry
 				.select( CORE_UI )
@@ -299,7 +315,7 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( "should render correctly for a view-only user who's previously populated their audience selection.", () => {
+	it( "should render correctly for a view-only user who's previously populated their audience selection.", async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
@@ -332,6 +348,9 @@ describe( 'NoAudienceBannerWidget', () => {
 		fireEvent.click(
 			getByRole( 'button', { name: 'Select other groups' } )
 		);
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
 
 		expect(
 			registry
