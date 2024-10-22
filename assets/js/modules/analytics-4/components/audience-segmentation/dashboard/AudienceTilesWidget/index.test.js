@@ -241,6 +241,9 @@ describe( 'AudienceTilesWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -249,7 +252,9 @@ describe( 'AudienceTilesWidget', () => {
 					return acc;
 				}, {} ),
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	} );
 
