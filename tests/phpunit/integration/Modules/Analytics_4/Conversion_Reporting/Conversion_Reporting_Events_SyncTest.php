@@ -48,7 +48,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$this->request_handler_calls = array();
 
 		$this->user    = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context       = new Context( __FILE__ );
+		$context       = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->context = $context;
 		$options       = new Options( $context );
 		$user_options  = new User_Options( $context, $this->user->ID );
