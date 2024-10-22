@@ -22,39 +22,42 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-export default function LeanCTABanner( {
-	className,
-	children,
-	Icon,
-	SVGGraphic,
-} ) {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-lean-cta-banner',
-				className
-			) }
-		>
-			<div className="googlesitekit-lean-cta-banner__body">
-				{ Icon && (
-					<div className="googlesitekit-lean-cta-banner__body-icon">
-						<Icon width="32" height="32" />
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+const LeanCTABanner = forwardRef(
+	( { className, children, Icon, SVGGraphic }, ref ) => {
+		return (
+			<div
+				ref={ ref }
+				className={ classnames(
+					'googlesitekit-lean-cta-banner',
+					className
+				) }
+			>
+				<div className="googlesitekit-lean-cta-banner__body">
+					{ Icon && (
+						<div className="googlesitekit-lean-cta-banner__body-icon">
+							<Icon width="32" height="32" />
+						</div>
+					) }
+					{
+						<div className="googlesitekit-lean-cta-banner__body-content">
+							{ children }
+						</div>
+					}
+				</div>
+				{ SVGGraphic && (
+					<div className="googlesitekit-lean-cta-banner__graphic">
+						<SVGGraphic />
 					</div>
 				) }
-				{
-					<div className="googlesitekit-lean-cta-banner__body-content">
-						{ children }
-					</div>
-				}
 			</div>
-			{ SVGGraphic && (
-				<div className="googlesitekit-lean-cta-banner__graphic">
-					<SVGGraphic />
-				</div>
-			) }
-		</div>
-	);
-}
+		);
+	}
+);
 
 LeanCTABanner.propTypes = {
 	className: PropTypes.string,
@@ -62,3 +65,5 @@ LeanCTABanner.propTypes = {
 	Icon: PropTypes.elementType,
 	SVGGraphic: PropTypes.elementType,
 };
+
+export default LeanCTABanner;

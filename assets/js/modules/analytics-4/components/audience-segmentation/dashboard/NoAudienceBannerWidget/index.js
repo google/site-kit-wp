@@ -29,14 +29,24 @@ import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import NoAudienceBanner from './NoAudienceBanner';
+import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
+import { trackEvent } from '../../../../../../util';
+
+const NoAudienceBannerWithIntersectionObserver =
+	withIntersectionObserver( NoAudienceBanner );
 
 function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 	const availableAudiences = useSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
 	} );
+
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
+	);
+
+	const didSetAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).didSetAudiences()
 	);
 
 	const hasNoMatchingAudience = configuredAudiences?.every(
@@ -50,7 +60,17 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 	) {
 		return (
 			<Widget noPadding>
-				<NoAudienceBanner />
+				<NoAudienceBannerWithIntersectionObserver
+					onInView={ () => {
+						trackEvent(
+							'${viewContext}_audiences-no-audiences',
+							'view_banner',
+							didSetAudiences
+								? 'no-longer-available'
+								: 'none-selected'
+						);
+					} }
+				/>
 			</Widget>
 		);
 	}

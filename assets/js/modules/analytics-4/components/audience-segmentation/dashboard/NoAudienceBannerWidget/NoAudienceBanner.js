@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,8 +36,9 @@ import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants'
 import { CORE_USER } from '.././../../../../../googlesitekit/datastore/user/constants';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
+import { trackEvent } from '../../../../../../util';
 
-export default function NoAudienceBanner() {
+const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const isViewOnly = useViewOnly();
 
 	const didSetAudiences = useSelect( ( select ) =>
@@ -54,8 +55,23 @@ export default function NoAudienceBanner() {
 	const { setValue } = useDispatch( CORE_UI );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const eventLabel = didSetAudiences
+		? 'no-longer-available'
+		: 'none-selected';
+
+	function handleSelectGroups() {
+		trackEvent(
+			'${viewContext}_audiences-no-audiences',
+			'select_groups',
+			eventLabel
+		).finally( () => {
+			setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+	}
+
 	return (
 		<LeanCTABanner
+			ref={ ref }
 			className="googlesitekit-no-audience-banner"
 			Icon={ Icon }
 			SVGGraphic={ NoAudienceBannerGraphic }
@@ -71,12 +87,7 @@ export default function NoAudienceBanner() {
 							a: (
 								<Link
 									secondary
-									onClick={ () =>
-										setValue(
-											AUDIENCE_SELECTION_PANEL_OPENED_KEY,
-											true
-										)
-									}
+									onClick={ handleSelectGroups }
 								/>
 							),
 						}
@@ -91,12 +102,7 @@ export default function NoAudienceBanner() {
 							a: (
 								<Link
 									secondary
-									onClick={ () =>
-										setValue(
-											AUDIENCE_SELECTION_PANEL_OPENED_KEY,
-											true
-										)
-									}
+									onClick={ handleSelectGroups }
 								/>
 							),
 						}
@@ -113,11 +119,17 @@ export default function NoAudienceBanner() {
 							a: (
 								<Link
 									secondary
-									onClick={ () =>
-										navigateTo(
-											`${ settingsURL }#/admin-settings`
-										)
-									}
+									onClick={ () => {
+										trackEvent(
+											'${viewContext}_audiences-no-audiences',
+											'change_settings',
+											eventLabel
+										).finally( () => {
+											navigateTo(
+												`${ settingsURL }#/admin-settings`
+											);
+										} );
+									} }
 								/>
 							),
 						}
@@ -126,4 +138,6 @@ export default function NoAudienceBanner() {
 			) }
 		</LeanCTABanner>
 	);
-}
+} );
+
+export default NoAudienceBanner;
