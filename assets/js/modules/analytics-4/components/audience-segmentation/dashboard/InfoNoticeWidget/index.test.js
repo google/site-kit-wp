@@ -26,6 +26,7 @@ import {
 	muteFetch,
 	provideModules,
 	render,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
@@ -198,7 +199,7 @@ describe( 'InfoNoticeWidget', () => {
 			}
 		);
 
-		const result = queryByText( AUDIENCE_INFO_NOTICES[ 0 ] );
+		const result = queryByText( AUDIENCE_INFO_NOTICES[ 0 ].content );
 
 		await waitForRegistry();
 
@@ -232,7 +233,7 @@ describe( 'InfoNoticeWidget', () => {
 		);
 
 		const result = queryByText(
-			AUDIENCE_INFO_NOTICES[ AUDIENCE_INFO_NOTICES.length - 1 ]
+			AUDIENCE_INFO_NOTICES[ AUDIENCE_INFO_NOTICES.length - 1 ].content
 		);
 
 		await waitForRegistry();
@@ -276,6 +277,9 @@ describe( 'InfoNoticeWidget', () => {
 		).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
 
 		// Ensure that dismiss prompt handler is getting called after clicking the button.
 		expect( dismissPromptSpy ).toHaveBeenCalledTimes( 1 );
@@ -322,6 +326,9 @@ describe( 'InfoNoticeWidget', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		// Ensure that dismiss prompt handler is getting called after clicking the button.
 		expect( dismissPromptSpy ).toHaveBeenCalledTimes( 1 );
 		expect( dismissPromptSpy ).toHaveBeenCalledWith(
@@ -331,10 +338,13 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it.each(
-		AUDIENCE_INFO_NOTICES.map( ( notice, index ) => [ notice, index ] )
+		AUDIENCE_INFO_NOTICES.map( ( { content }, index ) => [
+			content,
+			index,
+		] )
 	)(
 		'should render the "%s" notice when dismiss count is %d',
-		async ( notice, dismissCount ) => {
+		async ( content, dismissCount ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( availableAudiences );
@@ -360,7 +370,7 @@ describe( 'InfoNoticeWidget', () => {
 				}
 			);
 
-			const result = queryByText( notice );
+			const result = queryByText( content );
 
 			await waitForRegistry();
 
