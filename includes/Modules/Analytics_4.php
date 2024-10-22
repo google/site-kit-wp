@@ -1676,11 +1676,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				};
 			case 'POST:clear-conversion-reporting-new-events':
 				return function () {
-					return $this->transients->delete( 'googlesitekit_conversion_reporting_detected_events' );
+					return $this->transients->delete( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
 				};
 			case 'POST:clear-conversion-reporting-lost-events':
 				return function () {
-					return $this->transients->delete( 'googlesitekit_conversion_reporting_lost_events' );
+					return $this->transients->delete( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 				};
 		}
 
@@ -2599,12 +2599,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * @return array Inline modules data.
 	 */
 	public function inline_conversion_reporting_events_detection( $modules_data ) {
-		if ( $this->is_connected() ) {
-			$conversion_reporting_detected_events      = $this->transients->get( 'googlesitekit_conversion_reporting_detected_events' );
-			$conversion_reporting_lost_events          = $this->transients->get( 'googlesitekit_conversion_reporting_lost_events' );
-			$modules_data['analytics-4']['newEvents']  = is_array( $conversion_reporting_detected_events ) ? $conversion_reporting_detected_events : array();
-			$modules_data['analytics-4']['lostEvents'] = is_array( $conversion_reporting_lost_events ) ? $conversion_reporting_lost_events : array();
+		if ( ! $this->is_connected() ) {
+			return $modules_data;
 		}
+
+		$detected_events                           = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+		$lost_events                               = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+		$modules_data['analytics-4']['newEvents']  = is_array( $detected_events ) ? $detected_events : array();
+		$modules_data['analytics-4']['lostEvents'] = is_array( $lost_events ) ? $lost_events : array();
 
 		return $modules_data;
 	}
