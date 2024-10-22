@@ -43,11 +43,14 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
+import useViewContext from '../../../../../../hooks/useViewContext';
 
 const InfoNoticeWithIntersectionObserver =
 	withIntersectionObserver( InfoNotice );
 
 function InfoNoticeWidget( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
+
 	const availableAudiences = useInViewSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
@@ -89,7 +92,7 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 		}
 
 		trackEvent(
-			'${viewContext}_audiences-info-notice',
+			`${ viewContext }_audiences-info-notice`,
 			'dismiss_notice',
 			AUDIENCE_INFO_NOTICES[ dismissCount ].slug
 		).finally( () => {
@@ -101,7 +104,7 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 				expiresInSeconds: expiry,
 			} );
 		} );
-	}, [ dismissCount, dismissPrompt, noticesCount ] );
+	}, [ dismissCount, dismissPrompt, noticesCount, viewContext ] );
 
 	// Return null if there are no matching audiences or if the notice has been dismissed.
 	if (
@@ -124,7 +127,7 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 				onDismiss={ onDismiss }
 				onInView={ () => {
 					trackEvent(
-						'${viewContext}_audiences-info-notice',
+						`${ viewContext }_audiences-info-notice`,
 						'view_notice',
 						slug
 					);

@@ -31,11 +31,14 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import NoAudienceBanner from './NoAudienceBanner';
 import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
 import { trackEvent } from '../../../../../../util';
+import useViewContext from '../../../../../../hooks/useViewContext';
 
 const NoAudienceBannerWithIntersectionObserver =
 	withIntersectionObserver( NoAudienceBanner );
 
 function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
+
 	const availableAudiences = useSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
@@ -63,7 +66,7 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 				<NoAudienceBannerWithIntersectionObserver
 					onInView={ () => {
 						trackEvent(
-							'${viewContext}_audiences-no-audiences',
+							`${ viewContext }_audiences-no-audiences`,
 							'view_banner',
 							didSetAudiences
 								? 'no-longer-available'

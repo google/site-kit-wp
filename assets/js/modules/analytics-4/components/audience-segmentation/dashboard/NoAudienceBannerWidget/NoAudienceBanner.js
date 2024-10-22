@@ -35,10 +35,12 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '.././../../../../../googlesitekit/datastore/user/constants';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
+import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
 
 const NoAudienceBanner = forwardRef( ( props, ref ) => {
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
 	const didSetAudiences = useSelect( ( select ) =>
@@ -61,7 +63,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 
 	function handleSelectGroups() {
 		trackEvent(
-			'${viewContext}_audiences-no-audiences',
+			`${ viewContext }_audiences-no-audiences`,
 			'select_groups',
 			eventLabel
 		).finally( () => {
@@ -121,7 +123,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 									secondary
 									onClick={ () => {
 										trackEvent(
-											'${viewContext}_audiences-no-audiences',
+											`${ viewContext }_audiences-no-audiences`,
 											'change_settings',
 											eventLabel
 										).finally( () => {
