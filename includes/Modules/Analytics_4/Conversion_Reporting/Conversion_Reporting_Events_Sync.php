@@ -105,10 +105,10 @@ class Conversion_Reporting_Events_Sync {
 		if ( empty( $report->rowCount ) ) {
 			$this->settings->merge( array( 'detectedEvents' => array() ) );
 
-			$this->transients->delete( static::DETECTED_EVENTS_TRANSIENT );
+			$this->transients->delete( self::DETECTED_EVENTS_TRANSIENT );
 
 			if ( ! empty( $saved_detected_events ) ) {
-				$this->transients->set( static::LOST_EVENTS_TRANSIENT, $saved_detected_events );
+				$this->transients->set( self::LOST_EVENTS_TRANSIENT, $saved_detected_events );
 			}
 
 			return;
@@ -122,15 +122,15 @@ class Conversion_Reporting_Events_Sync {
 		$lost_events = array_diff( $saved_detected_events, $detected_events );
 
 		if ( ! empty( $new_events ) ) {
-			$this->transients->set( static::DETECTED_EVENTS_TRANSIENT, array_values( $new_events ) );
+			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, array_values( $new_events ) );
 		}
 
 		if ( ! empty( $lost_events ) ) {
-			$this->transients->set( static::LOST_EVENTS_TRANSIENT, array_values( $lost_events ) );
+			$this->transients->set( self::LOST_EVENTS_TRANSIENT, array_values( $lost_events ) );
 		}
 
 		if ( empty( $saved_detected_events ) ) {
-			$this->transients->set( static::DETECTED_EVENTS_TRANSIENT, $detected_events );
+			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, $detected_events );
 		}
 
 		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
