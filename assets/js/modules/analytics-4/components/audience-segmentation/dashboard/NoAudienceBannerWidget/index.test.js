@@ -159,205 +159,241 @@ describe( 'NoAudienceBannerWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( "should render correctly for an authenticated user who's never populated their audience selection.", async () => {
-		provideSiteInfo( registry );
+	describe( "with an authenticated user who's never populated their audience selection", () => {
+		let container, getByRole, getByText;
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		beforeEach( () => {
+			provideSiteInfo( registry );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
-			didSetAudiences: false,
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
+
+			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				configuredAudiences: [],
+				didSetAudiences: false,
+			} );
+
+			( { container, getByRole, getByText } = render(
+				<WidgetWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			) );
 		} );
 
-		const { container, getByRole, getByText } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
+		it( 'should render correctly.', () => {
+			expect(
+				getByText( /You don’t have any visitor groups selected./i )
+			).toBeInTheDocument();
 
-		expect(
-			getByText( /You don’t have any visitor groups selected./i )
-		).toBeInTheDocument();
+			expect( container ).toMatchSnapshot();
+		} );
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBeUndefined();
+		it( 'should open the Audience Selection Panel when clicking on "Select groups"', async () => {
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBeUndefined();
 
-		fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
+			fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
 
-		// Allow the `trackEvent()` promise to resolve.
-		await waitForDefaultTimeouts();
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBe( true );
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
+		} );
 
-		expect( global.location.assign ).not.toHaveBeenCalled();
+		it( 'should redirect to the settings page when clicking on "Settings"', async () => {
+			expect( global.location.assign ).not.toHaveBeenCalled();
 
-		fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
+			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
 
-		// Allow the `trackEvent()` promise to resolve.
-		await waitForDefaultTimeouts();
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
-		);
-
-		expect( container ).toMatchSnapshot();
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+			);
+		} );
 	} );
 
-	it( "should render correctly for an authenticated user who's previously populated their audience selection.", async () => {
-		provideSiteInfo( registry );
+	describe( "with an authenticated user who's previously populated their audience selection", () => {
+		let container, getByRole, getByText;
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		beforeEach( () => {
+			provideSiteInfo( registry );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
-			didSetAudiences: true,
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
+
+			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				configuredAudiences: [],
+				didSetAudiences: true,
+			} );
+
+			( { container, getByRole, getByText } = render(
+				<WidgetWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			) );
 		} );
 
-		const { container, getByRole, getByText } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
+		it( 'should render correctly.', () => {
+			expect(
+				getByText(
+					/It looks like your visitor groups aren’t available anymore./i
+				)
+			).toBeInTheDocument();
 
-		expect(
-			getByText(
-				/It looks like your visitor groups aren’t available anymore./i
-			)
-		).toBeInTheDocument();
+			expect( container ).toMatchSnapshot();
+		} );
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBeUndefined();
+		it( 'should open the Audience Selection Panel when clicking on "Select other groups"', async () => {
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBeUndefined();
 
-		fireEvent.click(
-			getByRole( 'button', { name: 'Select other groups' } )
-		);
+			fireEvent.click(
+				getByRole( 'button', { name: 'Select other groups' } )
+			);
 
-		// Allow the `trackEvent()` promise to resolve.
-		await waitForDefaultTimeouts();
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBe( true );
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
+		} );
 
-		expect( global.location.assign ).not.toHaveBeenCalled();
+		it( 'should redirect to the settings page when clicking on "Settings"', async () => {
+			expect( global.location.assign ).not.toHaveBeenCalled();
 
-		fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
+			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
 
-		// Allow the `trackEvent()` promise to resolve.
-		await waitForDefaultTimeouts();
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
-		);
-
-		expect( container ).toMatchSnapshot();
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+			);
+		} );
 	} );
 
-	it( "should render correctly for a view-only user who's never populated their audience selection.", async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+	describe( "with a view-only user who's never populated their audience selection", () => {
+		let container, getByRole, getByText;
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
-			didSetAudiences: false,
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
+
+			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				configuredAudiences: [],
+				didSetAudiences: false,
+			} );
+
+			( { container, getByRole, getByText } = render(
+				<WidgetWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				}
+			) );
 		} );
 
-		const { container, getByRole, getByText } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			}
-		);
+		it( 'should render correctly.', () => {
+			expect(
+				getByText( /You don’t have any visitor groups selected./i )
+			).toBeInTheDocument();
 
-		expect(
-			getByText( /You don’t have any visitor groups selected./i )
-		).toBeInTheDocument();
+			expect( container ).toMatchSnapshot();
+		} );
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBeUndefined();
+		it( 'should open the Audience Selection Panel when clicking on "Select groups"', async () => {
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBeUndefined();
 
-		fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
+			fireEvent.click( getByRole( 'button', { name: 'Select groups' } ) );
 
-		// Allow the `trackEvent()` promise to resolve.
-		await waitForDefaultTimeouts();
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBe( true );
-
-		expect( container ).toMatchSnapshot();
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
+		} );
 	} );
 
-	it( "should render correctly for a view-only user who's previously populated their audience selection.", async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+	describe( "with a view-only user who's previously populated their audience selection", () => {
+		let container, getByRole, getByText;
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [],
-			didSetAudiences: true,
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
+
+			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				configuredAudiences: [],
+				didSetAudiences: true,
+			} );
+
+			( { container, getByRole, getByText } = render(
+				<WidgetWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				}
+			) );
 		} );
 
-		const { container, getByRole, getByText } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			}
-		);
+		it( 'should render correctly.', () => {
+			expect(
+				getByText(
+					/It looks like your visitor groups aren’t available anymore./i
+				)
+			).toBeInTheDocument();
 
-		expect(
-			getByText(
-				/It looks like your visitor groups aren’t available anymore./i
-			)
-		).toBeInTheDocument();
+			expect( container ).toMatchSnapshot();
+		} );
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBeUndefined();
+		it( 'should open the Audience Selection Panel when clicking on "Select other groups"', async () => {
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBeUndefined();
 
-		fireEvent.click(
-			getByRole( 'button', { name: 'Select other groups' } )
-		);
+			fireEvent.click(
+				getByRole( 'button', { name: 'Select other groups' } )
+			);
 
-		// Allow the `trackEvent()` promise to resolve.
-		await waitForDefaultTimeouts();
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
 
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
-		).toBe( true );
-
-		expect( container ).toMatchSnapshot();
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
+		} );
 	} );
 } );
