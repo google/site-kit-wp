@@ -164,15 +164,21 @@ export function registerDefaults( notificationsAPI ) {
 				resolveSelect,
 				dispatch,
 			} ) => {
-				const adSenseModuleConnected = await resolveSelect(
-					CORE_MODULES
-				).isModuleConnected( 'adsense' );
+				await Promise.all( [
+					// The getAdSenseLinked selector relies on the resolution
+					// of the getSettings() resolver.
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					// The isModuleConnected() selector relies on the resolution
+					// of the getModules() resolver.
+					resolveSelect( CORE_MODULES ).getModules(),
+				] );
 
-				const analyticsModuleConnected = await resolveSelect(
-					CORE_MODULES
-				).isModuleConnected( 'analytics-4' );
+				const adSenseModuleConnected =
+					select( CORE_MODULES ).isModuleConnected( 'adsense' );
 
-				await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+				const analyticsModuleConnected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
 				const isAdSenseLinked =
 					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
