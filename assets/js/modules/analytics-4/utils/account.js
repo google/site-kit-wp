@@ -71,7 +71,7 @@ export function getAccountDefaults(
 /**
  * Appends an account ID to an account object.
  *
- * @since n.e.x.t
+ * @since 1.138.0
  *
  * @param {Object} account Account object.
  * @return {Object} Account object with an appended ID.
@@ -89,7 +89,7 @@ export const populateAccountID = ( account ) => {
 /**
  * Appends property and account IDs to a property object.
  *
- * @since n.e.x.t
+ * @since 1.138.0
  *
  * @param {Object} property Property object.
  * @return {Object} Property object with appended IDs.

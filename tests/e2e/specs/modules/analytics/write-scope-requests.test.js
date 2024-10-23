@@ -305,6 +305,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.googlesitekit-cta-link', {
 			text: /set up analytics/i,
 		} );
+		await pageWait();
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
@@ -424,9 +425,7 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForSelector( '.googlesitekit-publisher-win__title', {
-			timeout: 5_000,
-		} );
+		await page.waitForTimeout( 5000 );
 		await expect( page ).toMatchElement(
 			'.googlesitekit-publisher-win__title',
 			{

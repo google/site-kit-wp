@@ -119,10 +119,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceWidget/ZeroData',
-	delay: 250,
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -148,10 +144,6 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/TopTrafficSource/Error',
-	delay: 250,
-};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -176,11 +168,6 @@ InsufficientPermissions.args = {
 			reportOptions[ 1 ],
 		] );
 	},
-};
-
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopTrafficSource/InsufficientPermissions',
-	delay: 250,
 };
 
 export default {

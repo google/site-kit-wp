@@ -72,7 +72,7 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 * @since 1.12.0  Added wrapWidget setting.
-	 * @since n.e.x.t Added hideOnBreakpoints setting.
+	 * @since 1.138.0 Added hideOnBreakpoints setting.
 	 *
 	 * @param {string}                slug                         Widget's slug.
 	 * @param {Object}                settings                     Widget's settings.

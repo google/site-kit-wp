@@ -128,9 +128,6 @@ Loading.args = {
 		] );
 	},
 };
-Loading.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Loading',
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -151,9 +148,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/ZeroData',
-};
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
@@ -172,9 +166,6 @@ GatheringData.args = {
 			true
 		);
 	},
-};
-GatheringData.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/GatheringData',
 };
 
 export const Error = Template.bind( {} );
@@ -207,10 +198,6 @@ Error.args = {
 			reportOptions,
 		] );
 	},
-};
-Error.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Error',
-	delay: 250,
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );

@@ -48,6 +48,7 @@ import {
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { isFeatureEnabled } from '../../features';
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
+import WidgetNull from './components/WidgetNull';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -465,6 +466,24 @@ export function registerDefaults( widgetsAPI ) {
 					}
 
 					return keyMetrics.length < 6;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+
+		widgetsAPI.registerWidget(
+			'keyMetricsEventDetectionCalloutNotification',
+			{
+				Component: WidgetNull,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 0,
+				modules: [ 'analytics-4' ],
+				isActive: () => {
+					if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
+						return false;
+					}
+
+					return true;
 				},
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
