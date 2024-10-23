@@ -1575,7 +1575,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					).toEqual( expectedConfiguredAudiences );
 				} );
 
-				it( 'should return an insufficient permisions error if "create-audience" request fails', async () => {
+				it( 'should return an insufficient permisions error if the "create-audience" request fails', async () => {
 					const insufficientPermissionsError = {
 						code: 'test_error',
 						message: 'Error message.',
