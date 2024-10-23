@@ -254,14 +254,19 @@ export function registerDefaults( notificationsAPI ) {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
-			const isAnalyticsConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
+			await Promise.all( [
+				// The isModuleConnected() and canViewSharedModule() selectors rely
+				// on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData(),
+				resolveSelect( MODULES_SEARCH_CONSOLE ).isGatheringData(),
+				viewOnly
+					? resolveSelect( CORE_MODULES ).getRecoverableModules()
+					: Promise.resolve( [] ),
+			] );
 
-			if ( viewOnly ) {
-				// This ensures resolution for the canViewSharedModule() selectors.
-				await resolveSelect( CORE_MODULES ).getModules();
-			}
+			const isAnalyticsConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
 			const canViewSharedAnalytics = ! viewOnly
 				? true
@@ -271,27 +276,25 @@ export function registerDefaults( notificationsAPI ) {
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-			const showRecoverableAnalytics = await ( async () => {
+			const showRecoverableAnalytics = await ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
 			} )();
-			const showRecoverableSearchConsole = await ( async () => {
+			const showRecoverableSearchConsole = await ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
@@ -302,16 +305,12 @@ export function registerDefaults( notificationsAPI ) {
 				isAnalyticsConnected &&
 				canViewSharedAnalytics &&
 				false === showRecoverableAnalytics
-					? await resolveSelect(
-							MODULES_ANALYTICS_4
-					  ).isGatheringData()
+					? select( MODULES_ANALYTICS_4 ).isGatheringData()
 					: false;
 			const searchConsoleGatheringData =
 				canViewSharedSearchConsole &&
 				false === showRecoverableSearchConsole &&
-				( await resolveSelect(
-					MODULES_SEARCH_CONSOLE
-				).isGatheringData() );
+				select( MODULES_SEARCH_CONSOLE ).isGatheringData();
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
