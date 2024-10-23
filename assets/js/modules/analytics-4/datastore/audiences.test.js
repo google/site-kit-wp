@@ -40,6 +40,7 @@ import {
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import {
 	properties as propertiesFixture,
 	audiences as audiencesFixture,
@@ -1572,6 +1573,47 @@ describe( 'modules/analytics-4 audiences', () => {
 					expect(
 						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toEqual( expectedConfiguredAudiences );
+				} );
+
+				it( 'should return an insufficient permisions error if the "create-audience" request fails', async () => {
+					const insufficientPermissionsError = {
+						code: 'test_error',
+						message: 'Error message.',
+						data: {
+							reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+						},
+					};
+
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: [],
+						status: 200,
+					} );
+
+					// Mocking createAudience API call with insufficient permissions error.
+					fetchMock.post(
+						{ url: createAudienceEndpoint, repeat: 2 },
+						{
+							body: insufficientPermissionsError,
+							status: 400,
+						}
+					);
+
+					const { response, error } = await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					await waitForDefaultTimeouts();
+
+					expect( response ).toBeUndefined();
+					expect( error ).toEqual( insufficientPermissionsError );
+
+					// Ensuring no configured audiences are set when all creation attempts fail.
+					expect(
+						registry.select( CORE_USER ).getConfiguredAudiences()
+					).toBeNull();
+
+					expect( console ).toHaveErrored();
+					expect( console ).toHaveErrored();
 				} );
 			} );
 		} );
