@@ -258,8 +258,6 @@ export function registerDefaults( notificationsAPI ) {
 				// The isModuleConnected() and canViewSharedModule() selectors rely
 				// on the resolution of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
-				resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData(),
-				resolveSelect( MODULES_SEARCH_CONSOLE ).isGatheringData(),
 				viewOnly
 					? resolveSelect( CORE_MODULES ).getRecoverableModules()
 					: Promise.resolve( [] ),
@@ -305,12 +303,16 @@ export function registerDefaults( notificationsAPI ) {
 				isAnalyticsConnected &&
 				canViewSharedAnalytics &&
 				false === showRecoverableAnalytics
-					? select( MODULES_ANALYTICS_4 ).isGatheringData()
+					? await resolveSelect(
+							MODULES_ANALYTICS_4
+					  ).isGatheringData()
 					: false;
 			const searchConsoleGatheringData =
 				canViewSharedSearchConsole &&
 				false === showRecoverableSearchConsole &&
-				select( MODULES_SEARCH_CONSOLE ).isGatheringData();
+				( await resolveSelect(
+					MODULES_SEARCH_CONSOLE
+				).isGatheringData() );
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
