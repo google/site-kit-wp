@@ -337,8 +337,6 @@ export function registerDefaults( notificationsAPI ) {
 				// The isModuleConnected() and canViewSharedModule() selectors rely
 				// on the resolution of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
-				resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData(),
-				resolveSelect( MODULES_SEARCH_CONSOLE ).isGatheringData(),
 				viewOnly
 					? resolveSelect( CORE_MODULES ).getRecoverableModules()
 					: Promise.resolve( [] ),
@@ -370,8 +368,9 @@ export function registerDefaults( notificationsAPI ) {
 
 				// Next, we need to check gathering data state and return early
 				// if the module is in the gathering state.
-				const isGatheringData =
-					select( datastoreSlug ).isGatheringData();
+				const isGatheringData = await resolveSelect(
+					datastoreSlug
+				).isGatheringData();
 				if ( isGatheringData ) {
 					return 'gathering';
 				}
