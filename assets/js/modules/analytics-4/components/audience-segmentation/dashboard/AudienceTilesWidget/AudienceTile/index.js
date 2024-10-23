@@ -97,7 +97,7 @@ export default function AudienceTile( {
 	);
 	const isAudiencePartialData = useInViewSelect(
 		( select ) => {
-			if ( isSiteKitAudience ) {
+			if ( isSiteKitAudience || isPropertyPartialData === undefined ) {
 				return false;
 			}
 
@@ -112,11 +112,18 @@ export default function AudienceTile( {
 		[ isPropertyPartialData, isSiteKitAudience, audienceResourceName ]
 	);
 	const isTopContentPartialData = useInViewSelect(
-		( select ) =>
-			! isAudiencePartialData &&
-			select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
-				'googlesitekit_post_type'
-			),
+		( select ) => {
+			if ( isPropertyPartialData === undefined ) {
+				return false;
+			}
+
+			return (
+				! isAudiencePartialData &&
+				select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
+					'googlesitekit_post_type'
+				)
+			);
+		},
 		[ isAudiencePartialData ]
 	);
 
