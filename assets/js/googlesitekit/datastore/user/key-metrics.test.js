@@ -62,7 +62,6 @@ import { CORE_SITE } from '../site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 import { enabledFeatures } from '../../../features';
-import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -409,7 +408,8 @@ describe( 'core/user key metrics', () => {
 					expectedMetrics,
 					expectedMetricsIncludingConversionTailored
 				) => {
-					setEnabledFeatures( [ 'conversionReporting' ] );
+					enabledFeatures.add( 'conversionReporting' );
+
 					provideUserAuthentication( registry );
 					await registry
 						.dispatch( CORE_USER )
@@ -482,6 +482,8 @@ describe( 'core/user key metrics', () => {
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
 					).toEqual( expectedMetricsIncludingConversionTailored );
+
+					enabledFeatures.delete( 'conversionReporting' );
 				}
 			);
 
