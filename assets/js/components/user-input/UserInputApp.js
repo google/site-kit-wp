@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -91,7 +91,11 @@ export default function UserInputApp() {
 											className="googlesitekit-user-input__question-number"
 										>
 											{ sprintf(
-												'%d / 3',
+												/*  translators: %d is replaced with the current page number (1, 2, or 3 etc.). */
+												__(
+													'%d / 3',
+													'google-site-kit'
+												),
 												questionNumber
 											) }
 										</Cell>

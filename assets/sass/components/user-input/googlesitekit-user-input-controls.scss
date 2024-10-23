@@ -149,6 +149,13 @@
 			&.googlesitekit-cta-link {
 				color: $c-surfaces-on-background-variant;
 			}
+
+			// "Complete setup" becomes "Complete" on mobile screens.
+			span.googlesitekit-user-input__responsive-text {
+				@media (max-width: $bp-mobileOnly) {
+					display: none;
+				}
+			}
 		}
 	}
 }

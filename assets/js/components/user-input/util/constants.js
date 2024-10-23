@@ -170,19 +170,19 @@ export function getUserInputAnswersDescription() {
 	return {
 		USER_INPUT_ANSWERS_PURPOSE: {
 			sell_products_or_service: __(
-				'E.g. selling products like devices, apparel, equipment, etc or offering services like courses, consulting, tutoring, etc.',
+				'E.g. selling products like devices, apparel, equipment, etc. or offering services like courses, consulting, tutoring, etc.',
 				'google-site-kit'
 			),
 			monetize_content: __(
-				'Using display ads, affiliate links, sponsored content, etc',
+				'Using display ads, affiliate links, sponsored content, etc.',
 				'google-site-kit'
 			),
 			publish_blog: __(
-				"Writing on a topic you're passionate about, no focus on monetizing content",
+				'Writing on a topic you’re passionate about, no focus on monetizing content',
 				'google-site-kit'
 			),
 			publish_news: __(
-				'E.g. local news, investigative pieces, interviews, etc',
+				'E.g. local news, investigative pieces, interviews, etc.',
 				'google-site-kit'
 			),
 			share_portfolio: __(

@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,7 +40,6 @@ import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
 import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import WarningSVG from '../../../svg/icons/warning.svg';
 
 export default function UserInputQuestionWrapper( props ) {
@@ -49,8 +49,6 @@ export default function UserInputQuestionWrapper( props ) {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
-
-	const breakpoint = useBreakpoint();
 
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
@@ -113,9 +111,17 @@ export default function UserInputQuestionWrapper( props ) {
 							isSaving={ isScreenLoading }
 							disabled={ hasErrorForAnswer( values ) }
 						>
-							{ breakpoint === BREAKPOINT_SMALL
-								? __( 'Complete', 'google-site-kit' )
-								: __( 'Complete setup', 'google-site-kit' ) }
+							{ createInterpolateElement(
+								__(
+									'Complete<span> setup</span>',
+									'google-site-kit'
+								),
+								{
+									span: (
+										<span className="googlesitekit-user-input__responsive-text" />
+									),
+								}
+							) }
 						</SpinnerButton>
 					) }
 				</div>

@@ -118,7 +118,7 @@
 		padding: 18px 14px;
 		position: fixed;
 		right: 0;
-		z-index: 1; // Required to prevent the WordPress version number to appear over this section.
+		z-index: 1; // Required to prevent the WordPress version number from appearing over this section.
 
 		@media (min-width: $bp-wpAdminBarTablet) {
 			left: 160px;
