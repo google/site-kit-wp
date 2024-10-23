@@ -120,6 +120,9 @@ export function registerDefaults( notificationsAPI ) {
 				// The isAuthenticated() and hasScope() selectors
 				// rely on the resolution of getAuthentication().
 				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
 			] );
 
 			const setupErrorMessage =
@@ -127,9 +130,8 @@ export function registerDefaults( notificationsAPI ) {
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
-			const ga4ModuleConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
