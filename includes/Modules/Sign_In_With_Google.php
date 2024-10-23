@@ -144,9 +144,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function render_signin_button() {
 		$settings = $this->get_settings()->get();
 
-		$redirect_url = rest_url( '/' . REST_Routes::REST_ROOT . '/modules/sign-in-with-google/auth/google' );
+		$redirect_url = site_url( '/auth/google' );
 
-		if ( substr( rest_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
+		if ( substr( site_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
 			return;
 		}
 

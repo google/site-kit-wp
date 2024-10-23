@@ -49,8 +49,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertNull( $this->module->render_signin_button() );
 
 		// Update site URL to https.
-		update_option( 'home', 'https://example.com/' );
+		$_SERVER['HTTPS'] = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
 		update_option( 'siteurl', 'https://example.com/' );
+		update_option( 'home', 'https://example.com/' );
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
@@ -80,14 +81,15 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'data-client_id="1234567890.googleusercontent.com"', $output );
-		$this->assertStringContainsString( 'data-login_uri="https://example.com/index.php?rest_route=/google-site-kit/v1/modules/sign-in-with-google/auth/google"', $output );
+		$this->assertStringContainsString( 'data-login_uri="https://example.com/auth/google"', $output );
 
 		$this->assertStringContainsString( 'data-text="' . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . '"', $output );
 		$this->assertStringContainsString( 'data-theme="' . Sign_In_With_Google_Settings::THEME_LIGHT . '"', $output );
 		$this->assertStringContainsString( 'data-shape="' . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . '"', $output );
 
-		// Revert home and siteurl.
+		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );
 		update_option( 'siteurl', $reset_site_url );
+		unset( $_SERVER['HTTPS'] );
 	}
 }
