@@ -438,8 +438,9 @@ const baseActions = {
 				if ( result.error ) {
 					if ( isInsufficientPermissionsError( result.error ) ) {
 						insufficientPermissionsError = result.error;
+					} else {
+						failedAudiencesToRetry.push( audienceSlug );
 					}
-					failedAudiencesToRetry.push( audienceSlug );
 				} else {
 					configuredAudiences.push( result.response.name );
 				}
