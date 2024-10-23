@@ -331,11 +331,21 @@ export function registerDefaults( notificationsAPI ) {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
+			await Promise.all( [
+				// The isModuleConnected() and canViewSharedModule() selectors rely
+				// on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData(),
+				resolveSelect( MODULES_SEARCH_CONSOLE ).isGatheringData(),
+				viewOnly
+					? resolveSelect( CORE_MODULES ).getRecoverableModules()
+					: Promise.resolve( [] ),
+			] );
+
 			const getModuleState = async ( moduleSlug, datastoreSlug ) => {
 				// Check if the module connected and return early if not.
-				const isConnected = await resolveSelect(
-					CORE_MODULES
-				).isModuleConnected( moduleSlug );
+				const isConnected =
+					select( CORE_MODULES ).isModuleConnected( moduleSlug );
 				if ( ! isConnected ) {
 					return 'disconnected';
 				}
@@ -343,18 +353,14 @@ export function registerDefaults( notificationsAPI ) {
 				// If we are in the view only mode, we need to ensure the user can view the module
 				// and it is not in the recovering state. Return early if either of these is wrong.
 				if ( viewOnly ) {
-					// This ensures resolution for the canViewSharedModule() selectors.
-					await resolveSelect( CORE_MODULES ).getModules();
-
 					const canView =
 						select( CORE_USER ).canViewSharedModule( moduleSlug );
 					if ( ! canView ) {
 						return 'cant-view';
 					}
 
-					const modules = await resolveSelect(
-						CORE_MODULES
-					).getRecoverableModules();
+					const modules =
+						select( CORE_MODULES ).getRecoverableModules();
 					if ( !! modules[ moduleSlug ] ) {
 						return 'recovering';
 					}
@@ -362,9 +368,8 @@ export function registerDefaults( notificationsAPI ) {
 
 				// Next, we need to check gathering data state and return early
 				// if the module is in the gathering state.
-				const isGatheringData = await resolveSelect(
-					datastoreSlug
-				).isGatheringData();
+				const isGatheringData =
+					select( datastoreSlug ).isGatheringData();
 				if ( isGatheringData ) {
 					return 'gathering';
 				}
