@@ -426,7 +426,9 @@ describe( 'AudienceTilesWidget', () => {
 					'properties/12345/audiences/4': dataAvailabilityDate,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 
 		registry

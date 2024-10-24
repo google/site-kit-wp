@@ -347,11 +347,6 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                           42
                         </div>
                       </div>
-                      <span
-                        class="googlesitekit-audience-segmentation-partial-data-notice"
-                      >
-                        Still collecting full data for this timeframe, partial data is displayed for this metric
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -740,11 +735,6 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                           6
                         </div>
                       </div>
-                      <span
-                        class="googlesitekit-audience-segmentation-partial-data-notice"
-                      >
-                        Still collecting full data for this timeframe, partial data is displayed for this metric
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -1286,11 +1276,6 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                           42
                         </div>
                       </div>
-                      <span
-                        class="googlesitekit-audience-segmentation-partial-data-notice"
-                      >
-                        Still collecting full data for this timeframe, partial data is displayed for this metric
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -1651,11 +1636,6 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                           42
                         </div>
                       </div>
-                      <span
-                        class="googlesitekit-audience-segmentation-partial-data-notice"
-                      >
-                        Still collecting full data for this timeframe, partial data is displayed for this metric
-                      </span>
                     </div>
                   </div>
                 </div>
