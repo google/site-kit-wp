@@ -487,6 +487,51 @@ describe( 'core/user key metrics', () => {
 				}
 			);
 
+			it.each( [
+				[
+					'publish_news',
+					'publish_blog',
+					[
+						KM_ANALYTICS_RETURNING_VISITORS,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'publish_blog',
+					'publish_news',
+					[
+						KM_ANALYTICS_PAGES_PER_VISIT,
+						KM_ANALYTICS_VISIT_LENGTH,
+						KM_ANALYTICS_VISITS_PER_VISITOR,
+						KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					],
+				],
+			] )(
+				'should return the correct metrics when getAnswerBasedMetrics() is overridden',
+				async ( currentPurpose, purposeOverride, expectedMetrics ) => {
+					enabledFeatures.add( 'conversionReporting' );
+
+					provideUserAuthentication( registry );
+					await registry
+						.dispatch( CORE_USER )
+						.receiveIsUserInputCompleted( false );
+
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetUserInputSettings( {
+							purpose: { values: [ currentPurpose ] },
+						} );
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.getAnswerBasedMetrics( purposeOverride )
+					).toEqual( expectedMetrics );
+				}
+			);
+
 			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'product', label: 'Product' } ],
