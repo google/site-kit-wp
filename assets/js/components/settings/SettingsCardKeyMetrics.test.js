@@ -24,10 +24,12 @@ import { render, waitFor } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideKeyMetrics,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { ACR_SUBTLE_NOTIFICATION_SLUG } from '../KeyMetrics/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -35,12 +37,12 @@ describe( 'SettingsCardKeyMetrics', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
 
-	it( 'should trigger a survey when the Key Metrics Setup CTA is in view', async () => {
-		mockSurveyEndpoints();
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		mockSurveyEndpoints();
 
 		muteFetch(
 			new RegExp(
@@ -50,7 +52,9 @@ describe( 'SettingsCardKeyMetrics', () => {
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
 		);
+	} );
 
+	it( 'should trigger a survey when the Key Metrics Setup CTA is in view', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -66,5 +70,116 @@ describe( 'SettingsCardKeyMetrics', () => {
 				},
 			} )
 		);
+	} );
+
+	it( 'should show ACRSubtleNotification when Key metrics are not setup', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+				features: [ 'conversionReporting' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show ACRSubtleNotification when Key metrics are setup manually', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideKeyMetrics( registry );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+				features: [ 'conversionReporting' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).toBeInTheDocument();
+
+		// Default content should be replaced with ACRSubtleNotification, so it should
+		// not be shown at the same time as ACR notification.
+		expect(
+			container.querySelector( '.googlesitekit-user-input__notification' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should not show ACRSubtleNotification when Key metrics are setup using tailored metrics', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( true );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+				features: [ 'conversionReporting' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should not show ACRSubtleNotification if it was previously dismissed', async () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ ACR_SUBTLE_NOTIFICATION_SLUG ] );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+				features: [ 'conversionReporting' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should not show ACRSubtleNotification if conversionReporting feature flag is not enabled', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).not.toBeInTheDocument();
 	} );
 } );

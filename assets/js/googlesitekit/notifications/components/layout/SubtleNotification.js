@@ -30,11 +30,13 @@ import WarningSVG from '../../../../../svg/icons/warning.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
 export default function SubtleNotification( {
+	className,
 	title,
 	description,
 	dismissCTA,
 	additionalCTA,
 	type = 'success',
+	icon = null,
 } ) {
 	return (
 		<Grid>
@@ -44,6 +46,7 @@ export default function SubtleNotification( {
 					size={ 12 }
 					className={ classnames(
 						'googlesitekit-subtle-notification',
+						className,
 						{
 							'googlesitekit-subtle-notification--success':
 								type === 'success',
@@ -53,10 +56,11 @@ export default function SubtleNotification( {
 					) }
 				>
 					<div className="googlesitekit-subtle-notification__icon">
-						{ type === 'success' && (
+						{ icon }
+						{ type === 'success' && ! icon && (
 							<CheckFill width={ 24 } height={ 24 } />
 						) }
-						{ type === 'warning' && (
+						{ type === 'warning' && ! icon && (
 							<WarningSVG width={ 24 } height={ 24 } />
 						) }
 					</div>
