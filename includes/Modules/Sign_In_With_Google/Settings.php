@@ -28,9 +28,22 @@ class Settings extends Module_Settings {
 	const TEXT_SIGN_IN_WITH_GOOGLE  = 'Sign in with Google';
 	const TEXT_SIGN_UP_WITH_GOOGLE  = 'Sign up with Google';
 
+	const TEXT_VALUES_MAP = array(
+		self::TEXT_CONTINUE_WITH_GOOGLE => 'continue_with',
+		self::TEXT_SIGN_IN              => 'signin',
+		self::TEXT_SIGN_IN_WITH_GOOGLE  => 'signin_with',
+		self::TEXT_SIGN_UP_WITH_GOOGLE  => 'signup_with',
+	);
+
 	const THEME_LIGHT   = 'light';
 	const THEME_NEUTRAL = 'neutral';
 	const THEME_DARK    = 'dark';
+
+	const THEME_VALUES_MAP = array(
+		self::THEME_LIGHT   => 'outline',
+		self::THEME_NEUTRAL => 'filled_blue',
+		self::THEME_DARK    => 'filled_black',
+	);
 
 	const SHAPE_RECTANGULAR = 'rectangular';
 	const SHAPE_PILL        = 'pill';

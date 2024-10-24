@@ -75,16 +75,14 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = ob_get_contents();
 		ob_end_clean();
 
-		// Test the script and style are enqueued.
-		$this->assertTrue( wp_script_is( 'googlesitekit-sign-in-with-google-sign-in-button', 'enqueued' ) );
-		$this->assertTrue( wp_style_is( 'googlesitekit-wp-login-css', 'enqueued' ) );
-
 		// Check the rendered button contains the expected data.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
 		$this->assertStringContainsString( 'data-client_id="1234567890.googleusercontent.com"', $output );
 		$this->assertStringContainsString( 'data-login_uri="https://example.com/auth/google"', $output );
 
-		$this->assertStringContainsString( 'data-text="' . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . '"', $output );
-		$this->assertStringContainsString( 'data-theme="' . Sign_In_With_Google_Settings::THEME_LIGHT . '"', $output );
+		$this->assertStringContainsString( 'data-text="' . Sign_In_With_Google_Settings::TEXT_VALUES_MAP[ Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE ] . '"', $output );
+		$this->assertStringContainsString( 'data-theme="' . Sign_In_With_Google_Settings::THEME_VALUES_MAP[ Sign_In_With_Google_Settings::THEME_LIGHT ] . '"', $output );
 		$this->assertStringContainsString( 'data-shape="' . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . '"', $output );
 
 		// Revert home and siteurl and https value.

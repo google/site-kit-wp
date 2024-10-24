@@ -43,7 +43,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
-		add_action( 'login_form', array( $this, 'render_signin_button' ) );
+		add_action( 'login_message', array( $this, 'render_signin_button' ) );
 	}
 
 	/**
@@ -111,32 +111,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Registers and Enqueues the sign in button script.
-	 *
-	 * @since n.e.x.t
-	 */
-	protected function register_and_enqueue_script() {
-		$sign_in_script = new Script(
-			'googlesitekit-sign-in-with-google-sign-in-button',
-			array(
-				'src'       => 'https://accounts.google.com/gsi/client',
-				'execution' => 'async',
-			)
-		);
-		$sign_in_script->register( $this->context );
-		$sign_in_script->enqueue();
-	}
-
-	/**
-	 * Registers and Enqueues the sign in button styles.
-	 *
-	 * @since n.e.x.t
-	 */
-	protected function register_and_enqueue_style() {
-		$this->assets->enqueue_asset( 'googlesitekit-wp-login-css' );
-	}
-
-	/**
 	 * Renders the sign in button.
 	 *
 	 * @since n.e.x.t
@@ -150,14 +124,39 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		// Register and enqueue the script required for the sign in button.
-		$this->register_and_enqueue_script();
-
-		// Enqueue styles.
-		$this->register_and_enqueue_style();
-
-		// Render the Sign in with Google button.
+		// Render the Sign in with Google button and related inline styles.
 		?>
+<!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+<style type="text/css">
+.wp-core-ui {
+	#login {
+		display: flex;
+		flex-direction: column;
+
+		.wp-login-logo {
+			order: 1;
+		}
+
+		#login_error {
+			order: 1;
+		}
+
+		.g_id_signin {
+			order: 2;
+		}
+
+		#loginform {
+			order: 3;
+		}
+
+		p {
+			order: 3;
+		}
+	}
+}
+</style>
+<?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
+<script src="https://accounts.google.com/gsi/client" async></script>
 <div id="g_id_onload"
 	data-client_id="<?php echo esc_attr( $settings['clientID'] ); ?>"
 	data-login_uri="<?php echo esc_url( $redirect_url ); ?>"
@@ -166,11 +165,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <div class="g_id_signin"
 	data-type="standard"
 	data-size="large"
-	data-theme="<?php echo esc_attr( $settings['theme'] ); ?>"
-	data-text="<?php echo esc_attr( $settings['text'] ); ?>"
+	data-theme="<?php echo esc_attr( Settings::THEME_VALUES_MAP[ $settings['theme'] ] ); ?>"
+	data-text="<?php echo esc_attr( Settings::TEXT_VALUES_MAP[ $settings['text'] ] ); ?>"
 	data-shape="<?php echo esc_attr( $settings['shape'] ); ?>"
 	data-logo_alignment="left">
 </div>
+<!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
 	}
 }
