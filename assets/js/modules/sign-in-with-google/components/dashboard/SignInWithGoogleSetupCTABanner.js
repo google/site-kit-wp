@@ -21,8 +21,27 @@
  */
 import PropTypes from 'prop-types';
 
-export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
-	return <Notification>{ id }</Notification>;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+
+export default function SignInWithGoogleSetupCTABanner( { Notification } ) {
+	return (
+		<Notification>
+			<NotificationWithSVG
+				title={ __(
+					'Boost onboarding, security, and trust on your site using Sign in with Google',
+					'google-site-kit'
+				) }
+			/>
+		</Notification>
+	);
 }
 
 SignInWithGoogleSetupCTABanner.propTypes = {
