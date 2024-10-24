@@ -118,6 +118,7 @@ export default function AudienceTile( {
 			}
 
 			return (
+				! isPropertyPartialData &&
 				! isAudiencePartialData &&
 				select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
 					'googlesitekit_post_type'
