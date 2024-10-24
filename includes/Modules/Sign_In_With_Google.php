@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 
 /**
@@ -42,6 +43,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
+		add_action( 'login_message', array( $this, 'render_signin_button' ) );
 	}
 
 	/**
@@ -106,5 +108,69 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Renders the sign in button.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function render_signin_button() {
+		$settings = $this->get_settings()->get();
+
+		$redirect_url = site_url( '/auth/google' );
+
+		if ( substr( site_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
+			return;
+		}
+
+		// Render the Sign in with Google button and related inline styles.
+		?>
+<!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+<style type="text/css">
+.wp-core-ui {
+	#login {
+		display: flex;
+		flex-direction: column;
+
+		.wp-login-logo {
+			order: 1;
+		}
+
+		#login_error {
+			order: 1;
+		}
+
+		.g_id_signin {
+			order: 2;
+		}
+
+		#loginform {
+			order: 3;
+		}
+
+		p {
+			order: 3;
+		}
+	}
+}
+</style>
+<?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<div id="g_id_onload"
+	data-client_id="<?php echo esc_attr( $settings['clientID'] ); ?>"
+	data-login_uri="<?php echo esc_url( $redirect_url ); ?>"
+	data-auto_prompt="false">
+</div>
+<div class="g_id_signin"
+	data-type="standard"
+	data-size="large"
+	data-theme="<?php echo esc_attr( Settings::THEME_VALUES_MAP[ $settings['theme'] ] ); ?>"
+	data-text="<?php echo esc_attr( Settings::TEXT_VALUES_MAP[ $settings['text'] ] ); ?>"
+	data-shape="<?php echo esc_attr( $settings['shape'] ); ?>"
+	data-logo_alignment="left">
+</div>
+<!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+		<?php
 	}
 }
