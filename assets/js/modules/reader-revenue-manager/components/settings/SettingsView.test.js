@@ -101,7 +101,6 @@ describe( 'SettingsView', () => {
 					ownerID: 1,
 					publicationID,
 					publicationOnboardingState: publicationState,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				} );
 
 			const { getByText, waitForRegistry } = render( <SettingsView />, {
@@ -128,7 +127,6 @@ describe( 'SettingsView', () => {
 				ownerID: 2,
 				publicationID,
 				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
-				publicationOnboardingStateLastSyncedAtMs: 0,
 			} );
 
 		registry

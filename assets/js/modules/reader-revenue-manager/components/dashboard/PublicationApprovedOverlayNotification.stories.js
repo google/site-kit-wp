@@ -22,7 +22,10 @@
 import PublicationApprovedOverlayNotification from './PublicationApprovedOverlayNotification';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import { UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION } from '../../datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+} from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 
@@ -45,6 +48,12 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: 'ONBOARDING_COMPLETE',
+						publicationOnboardingStateChanged: true,
+					} );
 				// Set the UI key to true to show the overlay notification.
 				registry
 					.dispatch( CORE_UI )

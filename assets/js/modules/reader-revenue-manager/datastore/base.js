@@ -31,6 +31,6 @@ export default Modules.createModuleStore( 'reader-revenue-manager', {
 		'ownerID',
 		'publicationID',
 		'publicationOnboardingState',
-		'publicationOnboardingStateLastSyncedAtMs',
+		'publicationOnboardingStateChanged',
 	],
 } );
