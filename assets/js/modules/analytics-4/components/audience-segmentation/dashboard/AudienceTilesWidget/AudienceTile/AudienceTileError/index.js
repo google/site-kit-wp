@@ -22,62 +22,53 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { isInsufficientPermissionsError } from '../../../../../../../../util/errors';
-import AudienceTileErrorImage from '../../../../../../../../../svg/graphics/analytics-audience-segmentation-tile-error.svg';
-import ReportErrorActions from '../../../../../../../../components/ReportErrorActions';
-import GetHelpLink from '../../../GetHelpLink';
+import TileErrorContent from './TileErrorContent';
+import withIntersectionObserver from '../../../../../../../../util/withIntersectionObserver';
+import useViewContext from '../../../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../../../util';
 
-export default function AudienceTileError( { errors } ) {
+const TileErrorContentWithIntersectionObserver =
+	withIntersectionObserver( TileErrorContent );
+
+export default function AudienceTileError( { audienceSlug, errors } ) {
+	const viewContext = useViewContext();
 	const hasInsufficientPermissionsError = errors.some( ( err ) =>
 		isInsufficientPermissionsError( err )
 	);
 
 	return (
-		<div className="googlesitekit-audience-segmentation-tile-error">
-			<div className="googlesitekit-audience-segmentation-tile-error__container">
-				<AudienceTileErrorImage className="googlesitekit-audience-segmentation-tile-error__image" />
-				<div className="googlesitekit-audience-segmentation-tile-error__body">
-					<div className="googlesitekit-audience-segmentation-tile-error__message">
-						<h3 className="googlesitekit-audience-segmentation-tile-error__title">
-							{ hasInsufficientPermissionsError
-								? __(
-										'Insufficient permissions',
-										'google-site-kit'
-								  )
-								: __(
-										'Data loading failed',
-										'google-site-kit'
-								  ) }
-						</h3>
-					</div>
-					<div className="googlesitekit-audience-segmentation-tile-error__actions">
-						<ReportErrorActions
-							moduleSlug="analytics-4"
-							error={ errors }
-							GetHelpLink={
-								hasInsufficientPermissionsError
-									? GetHelpLink
-									: undefined
-							}
-							hideGetHelpLink={
-								! hasInsufficientPermissionsError
-							}
-							buttonVariant="danger"
-						/>
-					</div>
-				</div>
-			</div>
-		</div>
+		<TileErrorContentWithIntersectionObserver
+			errors={ errors }
+			onInView={ () => {
+				const action = hasInsufficientPermissionsError
+					? 'insufficient_permissions_error'
+					: 'data_loading_error';
+
+				trackEvent(
+					`${ viewContext }_audiences-tile`,
+					action,
+					audienceSlug
+				);
+			} }
+			onRetry={ () => {
+				const action = hasInsufficientPermissionsError
+					? 'insufficient_permissions_error_request_access'
+					: 'data_loading_error_retry';
+
+				trackEvent(
+					`${ viewContext }_audiences-tile`,
+					action,
+					audienceSlug
+				);
+			} }
+		/>
 	);
 }
 
 AudienceTileError.propTypes = {
+	audienceSlug: PropTypes.string.isRequired,
 	errors: PropTypes.array.isRequired,
 };
