@@ -34,9 +34,11 @@ export default function ActionsCTALinkDismiss( {
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
 } ) {
-	const isNavigatingToCTALink = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( ctaLink )
-	);
+	const isNavigatingToCTALink = useSelect( ( select ) => {
+		return ctaLink
+			? select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+			: false;
+	} );
 
 	return (
 		<div className="googlesitekit-publisher-win__actions">
