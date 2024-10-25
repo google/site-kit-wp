@@ -50,10 +50,11 @@ import AudienceTilePagesMetric from './AudienceTilePagesMetric';
 import ChangeBadge from '../../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../../components/InfoTooltip';
 import PartialDataNotice from './PartialDataNotice';
-import { numFmt } from '../../../../../../../util';
+import { numFmt, trackEvent } from '../../../../../../../util';
 import AudienceTileCollectingData from './AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
 import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
+import useViewContext from '../../../../../../../hooks/useViewContext';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
@@ -63,6 +64,7 @@ export default function AudienceTile( {
 	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
 	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
 	audienceTileNumber = 0,
+	audienceSlug,
 	title,
 	infoTooltip,
 	visitors,
@@ -82,6 +84,7 @@ export default function AudienceTile( {
 	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
 	const isPropertyPartialData = useInViewSelect( ( select ) => {
@@ -153,6 +156,13 @@ export default function AudienceTile( {
 										<InfoTooltip
 											title={ infoTooltip }
 											tooltipClassName="googlesitekit-info-tooltip__content--audience"
+											onOpen={ () =>
+												trackEvent(
+													`${ viewContext }_audiences-tile`,
+													'view_tile_tooltip',
+													audienceSlug
+												)
+											}
 										/>
 									) }
 								</div>
@@ -191,6 +201,13 @@ export default function AudienceTile( {
 								<InfoTooltip
 									title={ infoTooltip }
 									tooltipClassName="googlesitekit-info-tooltip__content--audience"
+									onOpen={ () =>
+										trackEvent(
+											`${ viewContext }_audiences-tile`,
+											'view_tile_tooltip',
+											audienceSlug
+										)
+									}
 								/>
 							) }
 						</div>
@@ -205,6 +222,13 @@ export default function AudienceTile( {
 									'Still collecting full data for this timeframe, partial data is displayed for this group',
 									'google-site-kit'
 								) }
+								onTooltipOpen={ () =>
+									trackEvent(
+										`${ viewContext }_audiences-tile`,
+										'view_partial_data_tile_tooltip',
+										audienceSlug
+									)
+								}
 							/>
 						) }
 					</div>
@@ -291,6 +315,7 @@ export default function AudienceTile( {
 							! hasInvalidCustomDimensionError ) ) && (
 						<AudienceTilePagesMetric
 							audienceTileNumber={ audienceTileNumber }
+							audienceSlug={ audienceSlug }
 							TileIcon={ AudienceMetricIconTopContent }
 							title={ __(
 								'Top content by pageviews',
@@ -309,6 +334,7 @@ export default function AudienceTile( {
 
 AudienceTile.propTypes = {
 	audienceTileNumber: PropTypes.number,
+	audienceSlug: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
