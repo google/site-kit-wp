@@ -41,56 +41,57 @@ export default function NotificationWithSVG( {
 			<Grid className="googlesitekit-widget-area">
 				<Row>
 					<Cell size={ 12 }>
-						<div className="'googlesitekit-widget googlesitekit-widget--no-padding googlesitekit-setup-cta-banner">
-							<Grid collapsed>
-								<Row>
-									<Cell
-										smSize={ 12 }
-										mdSize={ 8 }
-										lgSize={ 6 }
-										className="googlesitekit-setup-cta-banner__primary-cell"
-									>
-										<h4 className="googlesitekit-setup-cta-banner__title">
-											{ title }
-										</h4>
-										<p className="googlesitekit-setup-cta-banner__description">
-											{ description }
-										</p>
+						<div className="googlesitekit-widget googlesitekit-widget--no-padding googlesitekit-setup-cta-banner">
+							<div className="googlesitekit-widget__body">
+								<Grid collapsed>
+									<Row>
+										<Cell
+											smSize={ 12 }
+											mdSize={ 8 }
+											lgSize={ 6 }
+											className="googlesitekit-setup-cta-banner__primary-cell"
+										>
+											<h4 className="googlesitekit-setup-cta-banner__title">
+												{ title }
+											</h4>
 
-										<div className="googlesitekit-setup-cta-banner__actions-wrapper">
-											{ actions }
-										</div>
-									</Cell>
-									{ ! isMobileBreakpoint &&
-										! isTabletBreakpoint && (
+											{ description }
+
+											<div className="googlesitekit-setup-cta-banner__actions-wrapper">
+												{ actions }
+											</div>
+										</Cell>
+										{ ! isMobileBreakpoint &&
+											! isTabletBreakpoint && (
+												<Cell
+													alignBottom
+													className="googlesitekit-setup-cta-banner__svg-wrapper"
+													mdSize={ 8 }
+													lgSize={ 6 }
+												>
+													<DesktopSVG />
+												</Cell>
+											) }
+										{ isTabletBreakpoint && (
+											<Cell
+												className="googlesitekit-setup-cta-banner__svg-wrapper"
+												mdSize={ 8 }
+											>
+												<TabletSVG />
+											</Cell>
+										) }
+										{ isMobileBreakpoint && (
 											<Cell
 												alignBottom
 												className="googlesitekit-setup-cta-banner__svg-wrapper"
-												mdSize={ 8 }
-												lgSize={ 6 }
+												smSize={ 12 }
 											>
-												<DesktopSVG />
+												<MobileSVG />
 											</Cell>
 										) }
-									{ isTabletBreakpoint && (
-										<Cell
-											className="googlesitekit-setup-cta-banner__svg-wrapper"
-											mdSize={ 8 }
-										>
-											<TabletSVG />
-										</Cell>
-									) }
-									{ isMobileBreakpoint && (
-										<Cell
-											alignBottom
-											className="googlesitekit-setup-cta-banner__svg-wrapper"
-											smSize={ 12 }
-										>
-											<MobileSVG />
-										</Cell>
-									) }
-								</Row>
-							</Grid>
+									</Row>
+								</Grid>
+							</div>
 						</div>
 					</Cell>
 				</Row>
