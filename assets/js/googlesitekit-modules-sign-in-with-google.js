@@ -19,7 +19,13 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import { registerModule, registerStore } from './modules/sign-in-with-google';
+import Notifications from 'googlesitekit-notifications';
+import {
+	registerModule,
+	registerStore,
+	registerNotifications,
+} from './modules/sign-in-with-google';
 
 registerModule( Modules );
 registerStore( Data );
+registerNotifications( Notifications );
