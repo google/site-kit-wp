@@ -275,7 +275,7 @@ export default function AudienceTilePagesMetric( {
 
 AudienceTilePagesMetric.propTypes = {
 	audienceTileNumber: PropTypes.number,
-	audienceSlug: PropTypes.string,
+	audienceSlug: PropTypes.string.isRequired,
 	TileIcon: PropTypes.elementType.isRequired,
 	title: PropTypes.string.isRequired,
 	topContent: PropTypes.object,

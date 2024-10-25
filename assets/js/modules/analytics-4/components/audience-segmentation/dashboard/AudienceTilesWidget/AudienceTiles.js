@@ -577,6 +577,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							return (
 								<AudienceTileError
 									key={ audienceResourceName }
+									audienceSlug={ audienceSlug }
 									errors={
 										individualTileErrors[
 											audienceResourceName
@@ -590,6 +591,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							<AudienceTile
 								key={ audienceResourceName }
 								audienceTileNumber={ audienceTileNumber++ }
+								audienceSlug={ audienceSlug }
 								title={ audienceName }
 								infoTooltip={
 									<AudienceTooltipMessage

@@ -51,10 +51,9 @@ import ChangeBadge from '../../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../../components/InfoTooltip';
 import PartialDataNotice from './PartialDataNotice';
 import { numFmt, trackEvent } from '../../../../../../../util';
-import AudienceTileCollectingData from './AudienceTileCollectingData';
-import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
 import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 import useViewContext from '../../../../../../../hooks/useViewContext';
+import AudienceTileZeroData from './AudienceTileZeroData';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
@@ -145,40 +144,15 @@ export default function AudienceTile( {
 
 	if ( isPartialData && isZeroData ) {
 		return (
-			<Widget noPadding>
-				<div className="googlesitekit-audience-segmentation-tile">
-					<div className="googlesitekit-audience-segmentation-tile__zero-data-container">
-						{ ! isMobileBreakpoint && (
-							<div className="googlesitekit-audience-segmentation-tile__header">
-								<div className="googlesitekit-audience-segmentation-tile__header-title">
-									{ title }
-									{ infoTooltip && (
-										<InfoTooltip
-											title={ infoTooltip }
-											tooltipClassName="googlesitekit-info-tooltip__content--audience"
-											onOpen={ () =>
-												trackEvent(
-													`${ viewContext }_audiences-tile`,
-													'view_tile_tooltip',
-													audienceSlug
-												)
-											}
-										/>
-									) }
-								</div>
-							</div>
-						) }
-						<div className="googlesitekit-audience-segmentation-tile__zero-data-content">
-							<AudienceTileCollectingData />
-							{ isTileHideable && (
-								<AudienceTileCollectingDataHideable
-									onHideTile={ onHideTile }
-								/>
-							) }
-						</div>
-					</div>
-				</div>
-			</Widget>
+			<AudienceTileZeroData
+				Widget={ Widget }
+				audienceSlug={ audienceSlug }
+				title={ title }
+				infoTooltip={ infoTooltip }
+				isMobileBreakpoint={ isMobileBreakpoint }
+				isTileHideable={ isTileHideable }
+				onHideTile={ onHideTile }
+			/>
 		);
 	}
 
@@ -334,7 +308,7 @@ export default function AudienceTile( {
 
 AudienceTile.propTypes = {
 	audienceTileNumber: PropTypes.number,
-	audienceSlug: PropTypes.string,
+	audienceSlug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
