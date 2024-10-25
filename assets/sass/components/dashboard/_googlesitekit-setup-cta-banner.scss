@@ -34,6 +34,12 @@
 			line-height: $lh-title-md;
 			margin: 0 0 10px;
 
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-headline-sm;
+				font-weight: $fw-normal;
+				line-height: $lh-headline-sm;
+			}
+
 			@media (min-width: $width-desktop + 1 + px) {
 				font-size: $fs-headline-md;
 				font-weight: $fw-normal;
