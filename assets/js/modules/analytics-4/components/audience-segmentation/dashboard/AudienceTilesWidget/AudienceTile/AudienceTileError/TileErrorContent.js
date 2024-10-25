@@ -35,57 +35,61 @@ import AudienceTileErrorImage from '../../../../../../../../../svg/graphics/anal
 import ReportErrorActions from '../../../../../../../../components/ReportErrorActions';
 import GetHelpLink from '../../../GetHelpLink';
 
-const TileErrorContent = forwardRef( ( { errors, onRetry }, ref ) => {
-	const hasInsufficientPermissionsError = errors.some( ( err ) =>
-		isInsufficientPermissionsError( err )
-	);
+const TileErrorContent = forwardRef(
+	( { errors, onRetry, onRequestAccess }, ref ) => {
+		const hasInsufficientPermissionsError = errors.some( ( err ) =>
+			isInsufficientPermissionsError( err )
+		);
 
-	return (
-		<div
-			className="googlesitekit-audience-segmentation-tile-error"
-			ref={ ref }
-		>
-			<div className="googlesitekit-audience-segmentation-tile-error__container">
-				<AudienceTileErrorImage className="googlesitekit-audience-segmentation-tile-error__image" />
-				<div className="googlesitekit-audience-segmentation-tile-error__body">
-					<div className="googlesitekit-audience-segmentation-tile-error__message">
-						<h3 className="googlesitekit-audience-segmentation-tile-error__title">
-							{ hasInsufficientPermissionsError
-								? __(
-										'Insufficient permissions',
-										'google-site-kit'
-								  )
-								: __(
-										'Data loading failed',
-										'google-site-kit'
-								  ) }
-						</h3>
-					</div>
-					<div className="googlesitekit-audience-segmentation-tile-error__actions">
-						<ReportErrorActions
-							moduleSlug="analytics-4"
-							error={ errors }
-							GetHelpLink={
-								hasInsufficientPermissionsError
-									? GetHelpLink
-									: undefined
-							}
-							hideGetHelpLink={
-								! hasInsufficientPermissionsError
-							}
-							buttonVariant="danger"
-							onRetry={ onRetry }
-						/>
+		return (
+			<div
+				className="googlesitekit-audience-segmentation-tile-error"
+				ref={ ref }
+			>
+				<div className="googlesitekit-audience-segmentation-tile-error__container">
+					<AudienceTileErrorImage className="googlesitekit-audience-segmentation-tile-error__image" />
+					<div className="googlesitekit-audience-segmentation-tile-error__body">
+						<div className="googlesitekit-audience-segmentation-tile-error__message">
+							<h3 className="googlesitekit-audience-segmentation-tile-error__title">
+								{ hasInsufficientPermissionsError
+									? __(
+											'Insufficient permissions',
+											'google-site-kit'
+									  )
+									: __(
+											'Data loading failed',
+											'google-site-kit'
+									  ) }
+							</h3>
+						</div>
+						<div className="googlesitekit-audience-segmentation-tile-error__actions">
+							<ReportErrorActions
+								moduleSlug="analytics-4"
+								error={ errors }
+								GetHelpLink={
+									hasInsufficientPermissionsError
+										? GetHelpLink
+										: undefined
+								}
+								hideGetHelpLink={
+									! hasInsufficientPermissionsError
+								}
+								buttonVariant="danger"
+								onRetry={ onRetry }
+								onRequestAccess={ onRequestAccess }
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	);
-} );
+		);
+	}
+);
 
 TileErrorContent.propTypes = {
 	errors: PropTypes.array.isRequired,
 	onRetry: PropTypes.func.isRequired,
+	onRequestAccess: PropTypes.func.isRequired,
 };
 
 export default TileErrorContent;

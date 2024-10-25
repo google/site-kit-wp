@@ -43,7 +43,7 @@ import ReportErrorActions from '../../../../../../components/ReportErrorActions'
 import GetHelpLink from '../GetHelpLink';
 
 const ErrorWidgetContent = forwardRef(
-	( { Widget, errors, onRetry, showRetryButton }, ref ) => {
+	( { Widget, errors, onRetry, onRequestAccess, showRetryButton }, ref ) => {
 		const breakpoint = useBreakpoint();
 		const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 		const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
@@ -95,6 +95,7 @@ const ErrorWidgetContent = forwardRef(
 										buttonVariant="danger"
 										getHelpClassName="googlesitekit-error-retry-text"
 										onRetry={ onRetry }
+										onRequestAccess={ onRequestAccess }
 									/>
 								) }
 							</div>
@@ -135,7 +136,8 @@ const ErrorWidgetContent = forwardRef(
 ErrorWidgetContent.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	errors: PropTypes.arrayOf( PropTypes.object ).isRequired,
-	onRetry: PropTypes.func,
+	onRetry: PropTypes.func.isRequired,
+	onRequestAccess: PropTypes.func.isRequired,
 	showRetryButton: PropTypes.bool,
 };
 

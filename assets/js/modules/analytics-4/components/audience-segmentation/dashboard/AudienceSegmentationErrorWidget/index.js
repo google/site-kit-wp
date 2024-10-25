@@ -57,16 +57,13 @@ function AudienceSegmentationErrorWidget( {
 	);
 
 	const handleRetry = () => {
-		const action = hasInsufficientPermissionsError
-			? 'insufficient_permissions_error_request_access'
-			: 'data_loading_error_retry';
-
-		trackEvent( `${ viewContext }_audiences-all-tiles`, action ).finally(
-			() => {
-				setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
-				onRetry?.();
-			}
-		);
+		trackEvent(
+			`${ viewContext }_audiences-all-tiles`,
+			'data_loading_error_retry'
+		).finally( () => {
+			setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
+			onRetry?.();
+		} );
 	};
 
 	useEffect( () => {
@@ -79,6 +76,12 @@ function AudienceSegmentationErrorWidget( {
 			Widget={ Widget }
 			errors={ errorsArray }
 			onRetry={ handleRetry }
+			onRequestAccess={ () => {
+				trackEvent(
+					`${ viewContext }_audiences-all-tiles`,
+					'insufficient_permissions_error_request_access'
+				);
+			} }
 			showRetryButton={ showRetryButton }
 			onInView={ () => {
 				const action = hasInsufficientPermissionsError

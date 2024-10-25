@@ -54,13 +54,16 @@ export default function AudienceTileError( { audienceSlug, errors } ) {
 				);
 			} }
 			onRetry={ () => {
-				const action = hasInsufficientPermissionsError
-					? 'insufficient_permissions_error_request_access'
-					: 'data_loading_error_retry';
-
 				trackEvent(
 					`${ viewContext }_audiences-tile`,
-					action,
+					'data_loading_error_retry',
+					audienceSlug
+				);
+			} }
+			onRequestAccess={ () => {
+				trackEvent(
+					`${ viewContext }_audiences-tile`,
+					'insufficient_permissions_error_request_access',
 					audienceSlug
 				);
 			} }
