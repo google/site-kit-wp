@@ -68,6 +68,7 @@ describe( 'AudienceTile', () => {
 	const audienceResourceName = 'properties/12345/audiences/12345';
 	const props = {
 		audienceResourceName,
+		audienceSlug: 'new-visitors',
 		title: 'New visitors',
 		toolTip: 'This is a tooltip',
 		loaded: true,

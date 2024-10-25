@@ -26,6 +26,7 @@ import {
 	provideModuleRegistrations,
 	provideUserInfo,
 	fireEvent,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
@@ -209,6 +210,9 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
 
 		expect( handleRetrySpy ).toHaveBeenCalledTimes( 1 );
 	} );
