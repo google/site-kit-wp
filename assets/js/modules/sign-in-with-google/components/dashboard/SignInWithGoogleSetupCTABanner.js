@@ -31,9 +31,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import DesktopSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-desktop.svg';
 import TabletSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-tablet.svg';
 import MobileSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-mobile.svg';
@@ -44,6 +46,8 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 			'sign-in-with-google'
 		);
 	} );
+
+	const onSetupActivate = useActivateModuleCallback( 'sign-in-with-google' );
 
 	return (
 		<Notification>
@@ -66,6 +70,17 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 								url={ learnMoreURL }
 							/>
 						}
+					/>
+				}
+				actions={
+					<ActionsCTALinkDismiss
+						id={ id }
+						ctaLabel={ __(
+							'Set up Sign in with Google',
+							'google-site-kit'
+						) }
+						onCTAClick={ onSetupActivate }
+						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				}
 				DesktopSVG={ DesktopSVG }
