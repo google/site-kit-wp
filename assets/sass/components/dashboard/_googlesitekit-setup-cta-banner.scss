@@ -47,11 +47,16 @@
 			}
 		}
 
-		.googlesitekit-setup-cta-banner__description {
+		.googlesitekit-setup-cta-banner__description p {
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
-			margin: 0;
+
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+			}
 
 			@media (min-width: $width-desktop + 1 + px) {
 				font-size: $fs-body-lg;
