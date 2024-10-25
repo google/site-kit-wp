@@ -51,7 +51,9 @@ export default function NotificationWithSVG( {
 											lgSize={ 6 }
 											className="googlesitekit-setup-cta-banner__primary-cell"
 										>
-											<h3>{ title }</h3>
+											<h3 className="googlesitekit-setup-cta-banner__title">
+												{ title }
+											</h3>
 
 											{ description }
 
