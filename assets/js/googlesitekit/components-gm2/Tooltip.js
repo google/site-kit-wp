@@ -23,12 +23,40 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Tooltip as MuiTooltip } from '@material-ui/core';
 
+/**
+ * WordPress dependencies
+ */
+import { useRef } from '@wordpress/element';
+
 export default function Tooltip( {
 	children,
 	popperClassName,
 	tooltipClassName,
+	onOpen,
+	onClose,
 	...props
 } ) {
+	const isOpen = useRef( false );
+
+	const handleOpen = onOpen
+		? () => {
+				// This fixes a bug where the `onOpen` callback is called when the tooltip is already open.
+				if ( isOpen.current ) {
+					return;
+				}
+
+				isOpen.current = true;
+				onOpen?.();
+		  }
+		: undefined;
+
+	const handleClose = onOpen
+		? () => {
+				isOpen.current = false;
+				onClose?.();
+		  }
+		: onClose;
+
 	return (
 		<MuiTooltip
 			classes={ {
@@ -42,6 +70,8 @@ export default function Tooltip( {
 				),
 			} }
 			arrow
+			onOpen={ handleOpen }
+			onClose={ handleClose }
 			{ ...props }
 		>
 			{ children }
