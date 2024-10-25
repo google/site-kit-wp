@@ -34,6 +34,9 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import DesktopSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-desktop.svg';
+import TabletSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-tablet.svg';
+import MobileSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-mobile.svg';
 
 export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	const learnMoreURL = useSelect( ( select ) => {
@@ -64,6 +67,9 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 						}
 					/>
 				}
+				DesktopSVG={ DesktopSVG }
+				TabletSVG={ TabletSVG }
+				MobileSVG={ MobileSVG }
 			/>
 		</Notification>
 	);
