@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,13 +35,16 @@ import AudienceTileErrorImage from '../../../../../../../../../svg/graphics/anal
 import ReportErrorActions from '../../../../../../../../components/ReportErrorActions';
 import GetHelpLink from '../../../GetHelpLink';
 
-export default function TileErrorContent( { errors, onRetry } ) {
+const TileErrorContent = forwardRef( ( { errors, onRetry }, ref ) => {
 	const hasInsufficientPermissionsError = errors.some( ( err ) =>
 		isInsufficientPermissionsError( err )
 	);
 
 	return (
-		<div className="googlesitekit-audience-segmentation-tile-error">
+		<div
+			className="googlesitekit-audience-segmentation-tile-error"
+			ref={ ref }
+		>
 			<div className="googlesitekit-audience-segmentation-tile-error__container">
 				<AudienceTileErrorImage className="googlesitekit-audience-segmentation-tile-error__image" />
 				<div className="googlesitekit-audience-segmentation-tile-error__body">
@@ -77,9 +81,11 @@ export default function TileErrorContent( { errors, onRetry } ) {
 			</div>
 		</div>
 	);
-}
+} );
 
 TileErrorContent.propTypes = {
 	errors: PropTypes.array.isRequired,
 	onRetry: PropTypes.func.isRequired,
 };
+
+export default TileErrorContent;
