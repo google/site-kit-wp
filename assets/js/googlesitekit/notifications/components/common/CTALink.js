@@ -47,9 +47,11 @@ export default function CTALink( {
 
 	const trackEvents = useNotificationEvents( id );
 
-	const isNavigatingToCTALink = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( ctaLink )
-	);
+	const isNavigatingToCTALink = useSelect( ( select ) => {
+		return ctaLink
+			? select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+			: false;
+	} );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
