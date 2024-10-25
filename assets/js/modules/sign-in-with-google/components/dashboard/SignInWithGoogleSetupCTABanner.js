@@ -29,9 +29,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+import Description from '../../../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 
-export default function SignInWithGoogleSetupCTABanner( { Notification } ) {
+export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
+	const learnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'sign-in-with-google'
+		);
+	} );
+
 	return (
 		<Notification>
 			<NotificationWithSVG
@@ -39,6 +49,21 @@ export default function SignInWithGoogleSetupCTABanner( { Notification } ) {
 					'Boost onboarding, security, and trust on your site using Sign in with Google',
 					'google-site-kit'
 				) }
+				description={
+					<Description
+						text={ __(
+							'Provide your site visitors with a simple, secure, and personalised experience by adding a Sign in with Google button to your login page.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ learnMoreURL }
+							/>
+						}
+					/>
+				}
 			/>
 		</Notification>
 	);
