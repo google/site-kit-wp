@@ -196,13 +196,13 @@ export default function AudienceTile( {
 									'Still collecting full data for this timeframe, partial data is displayed for this group',
 									'google-site-kit'
 								) }
-								onTooltipOpen={ () =>
+								onTooltipOpen={ () => {
 									trackEvent(
 										`${ viewContext }_audiences-tile`,
-										'view_partial_data_tile_tooltip',
+										'view_tile_partial_data_tooltip',
 										audienceSlug
-									)
-								}
+									);
+								} }
 							/>
 						) }
 					</div>
