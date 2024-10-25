@@ -26,11 +26,11 @@ import {
 	provideModuleRegistrations,
 	provideUserInfo,
 	fireEvent,
-} from '../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import AudienceSegmentationErrorWidget from './AudienceSegmentationErrorWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
+} from '../../../../../../../../tests/js/test-utils';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import AudienceSegmentationErrorWidget from '.';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 
 describe( 'AudienceSegmentationErrorWidget', () => {
 	let registry;
