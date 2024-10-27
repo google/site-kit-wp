@@ -32,6 +32,7 @@ export default function ActionsCTALinkDismiss( {
 	className = 'googlesitekit-publisher-win__actions',
 	ctaLink,
 	ctaLabel,
+	onCTAClick,
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
 } ) {
@@ -47,6 +48,7 @@ export default function ActionsCTALinkDismiss( {
 				id={ id }
 				ctaLink={ ctaLink }
 				ctaLabel={ ctaLabel }
+				onCTAClick={ onCTAClick }
 				dismissExpires={ dismissExpires }
 			/>
 
