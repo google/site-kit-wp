@@ -29,6 +29,7 @@ import SettingsEdit from './components/settings/SettingsEdit';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -69,14 +70,16 @@ export function registerModule( modules ) {
 }
 
 export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'siwg-setup-cta', {
-		Component: SignInWithGoogleSetupCTABanner,
-		priority: 320,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: () => {
-			return true;
-		},
-		isDismissible: true,
-	} );
+	if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
+		notifications.registerNotification( 'siwg-setup-cta', {
+			Component: SignInWithGoogleSetupCTABanner,
+			priority: 320,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			checkRequirements: () => {
+				return true;
+			},
+			isDismissible: true,
+		} );
+	}
 };
