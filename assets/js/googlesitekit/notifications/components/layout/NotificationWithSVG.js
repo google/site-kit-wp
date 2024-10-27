@@ -57,9 +57,7 @@ export default function NotificationWithSVG( {
 
 											{ description }
 
-											<div className="googlesitekit-setup-cta-banner__actions-wrapper">
-												{ actions }
-											</div>
+											{ actions }
 										</Cell>
 										{ ! isMobileBreakpoint &&
 											! isTabletBreakpoint && (

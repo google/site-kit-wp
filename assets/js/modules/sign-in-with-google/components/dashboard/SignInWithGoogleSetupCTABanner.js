@@ -75,6 +75,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 				actions={
 					<ActionsCTALinkDismiss
 						id={ id }
+						className="googlesitekit-setup-cta-banner__actions-wrapper"
 						ctaLabel={ __(
 							'Set up Sign in with Google',
 							'google-site-kit'

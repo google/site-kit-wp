@@ -29,6 +29,7 @@ import CTALink from './CTALink';
 
 export default function ActionsCTALinkDismiss( {
 	id,
+	className = 'googlesitekit-publisher-win__actions',
 	ctaLink,
 	ctaLabel,
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
@@ -41,7 +42,7 @@ export default function ActionsCTALinkDismiss( {
 	} );
 
 	return (
-		<div className="googlesitekit-publisher-win__actions">
+		<div className={ className }>
 			<CTALink
 				id={ id }
 				ctaLink={ ctaLink }
