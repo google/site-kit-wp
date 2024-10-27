@@ -58,7 +58,7 @@ export default function CTALink( {
 
 	const handleCTAClick = async ( event ) => {
 		event.persist();
-		if ( ! event.defaultPrevented ) {
+		if ( ! event.defaultPrevented && ctaLink ) {
 			event.preventDefault();
 		}
 
@@ -81,7 +81,9 @@ export default function CTALink( {
 
 		await Promise.all( ctaClickActions );
 
-		navigateTo( ctaLink );
+		if ( ctaLink ) {
+			navigateTo( ctaLink );
+		}
 	};
 
 	return (
