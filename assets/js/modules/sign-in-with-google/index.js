@@ -22,6 +22,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './datastore/constants';
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
@@ -30,6 +32,7 @@ import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoo
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
+import { isURLUsingHTTPS } from '../reader-revenue-manager/utils/validation';
 
 export { registerStore } from './datastore';
 
@@ -76,7 +79,27 @@ export const registerNotifications = ( notifications ) => {
 			priority: 320,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			checkRequirements: () => {
+			checkRequirements: async ( { select, resolveSelect } ) => {
+				await Promise.all( [
+					// The isModuleConnected() relies on the resolution
+					// of the getModules() resolver.
+					resolveSelect( CORE_MODULES ).getModules(),
+					// Ensure the site info is resolved to get the home URL.
+					resolveSelect( CORE_SITE ).getSiteInfo(),
+				] );
+
+				const isConnected = select( CORE_MODULES ).isModuleConnected(
+					'sign-in-with-google'
+				);
+				if ( isConnected ) {
+					return false;
+				}
+
+				const homeURL = select( CORE_SITE ).getHomeURL();
+				if ( ! isURLUsingHTTPS( homeURL ) ) {
+					return false;
+				}
+
 				return true;
 			},
 			isDismissible: true,
