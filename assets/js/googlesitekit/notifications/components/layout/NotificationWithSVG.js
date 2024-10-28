@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classNames from 'classnames';
+
+/**
  * Internal dependencies
  */
 import {
@@ -25,6 +30,7 @@ import {
 import { Cell, Grid, Row } from '../../../../material-components';
 
 export default function NotificationWithSVG( {
+	id,
 	title,
 	description,
 	actions,
@@ -48,7 +54,14 @@ export default function NotificationWithSVG( {
 			<Grid className="googlesitekit-widget-area">
 				<Row>
 					<Cell size={ 12 }>
-						<div className="googlesitekit-widget googlesitekit-widget--no-padding googlesitekit-setup-cta-banner">
+						<div
+							className={ classNames(
+								'googlesitekit-widget',
+								'googlesitekit-widget--no-padding',
+								'googlesitekit-setup-cta-banner',
+								`googlesitekit-setup-cta-banner--${ id }`
+							) }
+						>
 							<div className="googlesitekit-widget__body">
 								<Grid collapsed>
 									<Row>
@@ -68,7 +81,7 @@ export default function NotificationWithSVG( {
 										</Cell>
 										<Cell
 											alignBottom
-											className="googlesitekit-setup-cta-banner__svg-wrapper"
+											className={ `googlesitekit-setup-cta-banner__svg-wrapper--${ id }` }
 											{ ...svgSizeProps }
 										>
 											<SVG />
