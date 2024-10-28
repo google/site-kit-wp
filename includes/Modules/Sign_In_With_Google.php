@@ -44,7 +44,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
-		add_action( 'login_message', array( $this, $this->get_method_proxy( 'render_signin_button' ) ) );
+		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
 	/**
@@ -123,7 +123,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		$redirect_url = site_url( '/auth/google' );
-
 		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
 			return;
 		}
@@ -131,34 +130,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		// Render the Sign in with Google button and related inline styles.
 		?>
 <!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
-<style type="text/css">
-.wp-core-ui {
-	#login {
-		display: flex;
-		flex-direction: column;
-
-		.wp-login-logo {
-			order: 1;
-		}
-
-		#login_error {
-			order: 1;
-		}
-
-		.g_id_signin {
-			order: 2;
-		}
-
-		#loginform {
-			order: 3;
-		}
-
-		p {
-			order: 3;
-		}
-	}
-}
-</style>
 <?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
 <script src="https://accounts.google.com/gsi/client" async></script>
 <div id="g_id_onload"
@@ -167,13 +138,22 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	data-auto_prompt="false">
 </div>
 <div class="g_id_signin"
+	style="display: none;"
 	data-type="standard"
 	data-size="large"
-	data-theme="<?php echo esc_attr( Settings::THEME_VALUES_MAP[ $settings['theme'] ] ); ?>"
-	data-text="<?php echo esc_attr( Settings::TEXT_VALUES_MAP[ $settings['text'] ] ); ?>"
+	data-theme="<?php echo esc_attr( $settings['theme'] ); ?>"
+	data-text="<?php echo esc_attr( $settings['text'] ); ?>"
 	data-shape="<?php echo esc_attr( $settings['shape'] ); ?>"
 	data-logo_alignment="left">
 </div>
+<script type="text/javascript">
+window.addEventListener("load", () => {
+	if ( document.getElementsByClassName('g_id_signin')?.[0] ) {
+		document.getElementById('login').insertBefore(document.getElementsByClassName('g_id_signin')?.[0], document.getElementById('loginform'));
+		document.getElementsByClassName('g_id_signin')[0].style.display = 'block';
+	}
+});
+</script>
 <!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
 	}

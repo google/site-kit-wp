@@ -40,13 +40,25 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 10, $this->module->order );
 	}
 
+	private function render_signin_button_by_action() {
+		ob_start();
+		do_action( 'login_form' );
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
+
 	public function test_render_signin_button() {
 		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
 
+		$this->module->register();
+
 		// Does not render the if the site is not https.
-		$this->assertNull( $this->module->render_signin_button() );
+		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
+		$output = $this->render_signin_button_by_action();
+		$this->assertEmpty( $output );
 
 		// Update site URL to https.
 		$_SERVER['HTTPS'] = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
@@ -55,9 +67,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$this->assertNull( $this->module->render_signin_button() );
+		$output = $this->render_signin_button_by_action();
+		$this->assertEmpty( $output );
+
 		$this->module->get_settings()->set( array( 'clientID' => null ) );
-		$this->assertNull( $this->module->render_signin_button() );
+		$output = $this->render_signin_button_by_action();
+		$this->assertEmpty( $output );
 
 		// Renders the button with the correct clientID and redirect_uri.
 		$this->module->get_settings()->set(
@@ -70,10 +85,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 
 		// Render the button.
-		ob_start();
-		$this->module->render_signin_button();
-		$output = ob_get_contents();
-		ob_end_clean();
+		$output = $this->render_signin_button_by_action();
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
@@ -81,8 +93,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( 'data-client_id="1234567890.googleusercontent.com"', $output );
 		$this->assertStringContainsString( 'data-login_uri="https://example.com/auth/google"', $output );
 
-		$this->assertStringContainsString( 'data-text="' . Sign_In_With_Google_Settings::TEXT_VALUES_MAP[ Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE ] . '"', $output );
-		$this->assertStringContainsString( 'data-theme="' . Sign_In_With_Google_Settings::THEME_VALUES_MAP[ Sign_In_With_Google_Settings::THEME_LIGHT ] . '"', $output );
+		$this->assertStringContainsString( 'data-text="' . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . '"', $output );
+		$this->assertStringContainsString( 'data-theme="' . Sign_In_With_Google_Settings::THEME_LIGHT . '"', $output );
 		$this->assertStringContainsString( 'data-shape="' . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . '"', $output );
 
 		// Revert home and siteurl and https value.
