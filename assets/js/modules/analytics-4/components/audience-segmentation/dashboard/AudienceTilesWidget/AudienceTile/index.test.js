@@ -37,6 +37,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../../../../../tests/js/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../googlesitekit/constants';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
@@ -50,6 +51,10 @@ import {
 } from '../../../../../datastore/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../../../tests/js/viewport-width-utils';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -309,30 +314,18 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'with zero data, in the partial data state', () => {
-		it( 'should render the zero data tile', () => {
-			const { container, getByText } = render(
+		let originalViewportWidth, container, getByRole, getByText, rerender;
+
+		beforeEach( () => {
+			originalViewportWidth = getViewportWidth();
+
+			// Ensure the viewport is wide enough to render the tooltip.
+			setViewportWidth( 1024 );
+
+			( { container, getByRole, getByText, rerender } = render(
 				<WidgetWithComponentProps
 					{ ...props }
-					isPartialData
-					isZeroData
-					isTileHideable
-				/>,
-				{
-					registry,
-				}
-			);
-
-			expect(
-				getByText( 'Site Kit is collecting data for this group.' )
-			).toBeInTheDocument();
-
-			expect( container ).toMatchSnapshot();
-		} );
-
-		it( 'should track an event when the tile is viewed', () => {
-			const { rerender } = render(
-				<WidgetWithComponentProps
-					{ ...props }
+					infoTooltip="This is a tooltip"
 					isPartialData
 					isZeroData
 					isTileHideable
@@ -341,8 +334,22 @@ describe( 'AudienceTile', () => {
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
-			);
+			) );
+		} );
 
+		afterEach( () => {
+			setViewportWidth( originalViewportWidth );
+		} );
+
+		it( 'should render the zero data tile', () => {
+			expect(
+				getByText( 'Site Kit is collecting data for this group.' )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should track an event when the tile is viewed', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
@@ -369,19 +376,6 @@ describe( 'AudienceTile', () => {
 		} );
 
 		it( 'should track an event when the "Temporarily hide" button is clicked', async () => {
-			const { getByRole } = render(
-				<WidgetWithComponentProps
-					{ ...props }
-					isPartialData
-					isZeroData
-					isTileHideable
-				/>,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			await act( async () => {
@@ -397,6 +391,23 @@ describe( 'AudienceTile', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-tile',
 				'temporarily_hide',
+				'new-visitors'
+			);
+		} );
+
+		it( 'should track an event when the tooltip is viewed', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector( '.googlesitekit-info-tooltip' )
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_tooltip',
 				'new-visitors'
 			);
 		} );

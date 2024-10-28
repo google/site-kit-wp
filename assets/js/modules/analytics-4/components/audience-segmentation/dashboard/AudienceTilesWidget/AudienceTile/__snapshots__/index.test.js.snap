@@ -268,6 +268,21 @@ exports[`AudienceTile with zero data, in the partial data state should render th
           class="googlesitekit-audience-segmentation-tile__zero-data-container"
         >
           <div
+            class="googlesitekit-audience-segmentation-tile__header"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile__header-title"
+            >
+              New visitors
+              <span
+                class="googlesitekit-info-tooltip"
+                title="This is a tooltip"
+              >
+                <svg />
+              </span>
+            </div>
+          </div>
+          <div
             class="googlesitekit-audience-segmentation-tile__zero-data-content"
           >
             <svg />
