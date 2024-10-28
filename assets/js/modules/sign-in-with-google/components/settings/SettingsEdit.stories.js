@@ -55,8 +55,8 @@ Default.decorators = [
 				.receiveGetSettings( {
 					clientID:
 						'example-client-id-123123123.apps.usercontent.com',
-					text: 'Continue with Google',
-					theme: 'light',
+					text: 'continue_with',
+					theme: 'outline',
 					shape: 'rectangular',
 					OneTapEnabled: true,
 				} );
