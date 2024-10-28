@@ -28,6 +28,7 @@ import {
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -69,6 +70,27 @@ function provideAudienceTilesMockReport(
 	} );
 
 	const { startDate, endDate } = dates;
+
+	const userCountReportOptions = {
+		startDate,
+		endDate,
+		dimensions: [ 'date' ],
+		metrics: [ { name: 'totalUsers' } ],
+	};
+
+	const userCountReportData = getAnalytics4MockResponse(
+		userCountReportOptions
+	);
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( userCountReportData, {
+			options: userCountReportOptions,
+		} );
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ userCountReportOptions ] );
 
 	const reportOptions = {
 		dimensions: isSiteKitAudiencePartialData
@@ -244,6 +266,12 @@ describe( 'AudienceTilesWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: '12345',
 		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				createTime: '2014-10-02T15:01:23Z',
+			},
+			{ propertyID: '12345' }
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -251,11 +279,19 @@ describe( 'AudienceTilesWidget', () => {
 					acc[ name ] = 20201220;
 					return acc;
 				}, {} ),
-				customDimension: {},
+				customDimension: {
+					googlesitekit_post_type: 20201220,
+				},
 				property: {
 					12345: 20201218,
 				},
 			} );
+
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+			)
+		);
 	} );
 
 	afterEach( () => {
@@ -320,6 +356,9 @@ describe( 'AudienceTilesWidget', () => {
 		await waitFor( () => {
 			expect( container ).toMatchSnapshot();
 		} );
+
+		// expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+		// expect( mockTrackEvent ).toHaveBeenCalledWith( {} );
 	} );
 
 	it( 'should render when all configured audiences are matching available audiences', async () => {
