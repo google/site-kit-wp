@@ -74,7 +74,7 @@ export function registerModule( modules ) {
 
 export const registerNotifications = ( notifications ) => {
 	if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
-		notifications.registerNotification( 'siwg-setup-cta', {
+		notifications.registerNotification( 'setup-cta-siwg', {
 			Component: SignInWithGoogleSetupCTABanner,
 			priority: 320,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
