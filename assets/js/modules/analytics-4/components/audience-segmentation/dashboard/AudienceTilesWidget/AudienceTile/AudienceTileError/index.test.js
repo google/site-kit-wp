@@ -195,7 +195,7 @@ describe( 'AudienceTileError', () => {
 		await act( waitForRegistry );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-tile`,
+			'mainDashboard_audiences-tile',
 			'insufficient_permissions_error',
 			audienceSlug
 		);
@@ -233,7 +233,7 @@ describe( 'AudienceTileError', () => {
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-tile`,
+			'mainDashboard_audiences-tile',
 			'insufficient_permissions_error_request_access',
 			audienceSlug
 		);
