@@ -15,6 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
  * Internal dependencies
@@ -27,8 +31,10 @@ import {
 	provideUserInfo,
 	fireEvent,
 	waitForDefaultTimeouts,
+	act,
 } from '../../../../../../../../tests/js/test-utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceSegmentationErrorWidget from '.';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
@@ -46,6 +52,11 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	let registry;
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -68,7 +79,14 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	)( AudienceSegmentationErrorWidget );
 
 	describe( 'default error state', () => {
-		it( 'should render correctly', async () => {
+		let container,
+			getByText,
+			getByRole,
+			queryByText,
+			rerender,
+			waitForRegistry;
+
+		beforeEach( async () => {
 			await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 				{
 					code: 'test-error-code',
@@ -98,18 +116,22 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
-			const {
+			( {
 				container,
 				getByText,
 				getByRole,
 				queryByText,
+				rerender,
 				waitForRegistry,
 			} = render( <WidgetWithComponentProps errors={ errors } />, {
 				registry,
-			} );
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} ) );
 
 			await waitForRegistry();
+		} );
 
+		it( 'should render correctly', () => {
 			expect( container ).toMatchSnapshot();
 
 			expect(
@@ -126,10 +148,50 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 			).not.toBeInTheDocument();
 			expect( queryByText( /request access/i ) ).not.toBeInTheDocument();
 		} );
+
+		it( 'should track an event when the widget is viewed', () => {
+			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps errors={ errors } /> );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-all-tiles',
+				'data_loading_error'
+			);
+		} );
+
+		it( 'should track an event when the "Retry" button is clicked', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+			// Allow the `trackEvent()` promise to resolve.
+			await act( waitForDefaultTimeouts );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-all-tiles',
+				'data_loading_error_retry'
+			);
+		} );
 	} );
 
 	describe( 'insufficient permissions error state', () => {
-		it( 'should render correctly', async () => {
+		let container,
+			getByText,
+			getByRole,
+			queryByText,
+			rerender,
+			waitForRegistry;
+
+		beforeEach( async () => {
 			const [ accountID, propertyID, measurementID, webDataStreamID ] = [
 				'12345',
 				'34567',
@@ -162,18 +224,21 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
-			const {
+			( {
 				container,
 				getByText,
 				getByRole,
 				queryByText,
+				rerender,
 				waitForRegistry,
 			} = render( <WidgetWithComponentProps errors={ errors } />, {
 				registry,
-			} );
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} ) );
 
 			await waitForRegistry();
-
+		} );
+		it( 'should render correctly', () => {
 			expect( container ).toMatchSnapshot();
 
 			expect(
@@ -195,6 +260,41 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 				queryByText( 'Your visitor groups data loading failed' )
 			).not.toBeInTheDocument();
 			expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should track an event when the widget is viewed', () => {
+			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps errors={ errors } /> );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-all-tiles',
+				'insufficient_permissions_error'
+			);
+		} );
+
+		it( 'should track an event when the "Request access" button is clicked', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /request access/i } )
+			);
+
+			// Allow the `trackEvent()` promise to resolve.
+			await act( waitForDefaultTimeouts );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-all-tiles',
+				'insufficient_permissions_error_request_access'
+			);
 		} );
 	} );
 
