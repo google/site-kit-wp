@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
-use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 
 /**
@@ -29,6 +29,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
  */
 final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation {
 
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 
@@ -43,7 +44,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
-		add_action( 'login_message', array( $this, 'render_signin_button' ) );
+		add_action( 'login_message', array( $this, $this->get_method_proxy( 'render_signin_button' ) ) );
 	}
 
 	/**
@@ -115,12 +116,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @since n.e.x.t
 	 */
-	public function render_signin_button() {
+	private function render_signin_button() {
 		$settings = $this->get_settings()->get();
+		if ( ! $settings['clientID'] ) {
+			return;
+		}
 
 		$redirect_url = site_url( '/auth/google' );
 
-		if ( substr( site_url(), 0, 5 ) !== 'https' || ! $settings['clientID'] ) {
+		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
 			return;
 		}
 
