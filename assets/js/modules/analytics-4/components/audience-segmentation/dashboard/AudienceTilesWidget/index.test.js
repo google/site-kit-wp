@@ -362,9 +362,6 @@ describe( 'AudienceTilesWidget', () => {
 		await waitFor( () => {
 			expect( container ).toMatchSnapshot();
 		} );
-
-		// expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
-		// expect( mockTrackEvent ).toHaveBeenCalledWith( {} );
 	} );
 
 	it( 'should render when all configured audiences are matching available audiences', async () => {
