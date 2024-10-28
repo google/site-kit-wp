@@ -36,6 +36,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate } from '../../../util';
+import { isInsufficientPermissionsError } from '../../../util/errors';
 import { validateAudience } from '../utils/validation';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
@@ -407,6 +408,29 @@ const baseActions = {
 			configuredAudiences.push( ...audiences );
 		}
 
+		if ( configuredAudiences.length === 1 ) {
+			// Add 'Purchasers' audience if it has data.
+			const purchasersAudience = availableAudiences.find(
+				( { audienceSlug } ) => audienceSlug === 'purchasers'
+			);
+
+			if ( purchasersAudience ) {
+				const purchasersResourceDataAvailabilityDate =
+					yield commonActions.await(
+						resolveSelect(
+							MODULES_ANALYTICS_4
+						).getResourceDataAvailabilityDate(
+							purchasersAudience.name,
+							RESOURCE_TYPE_AUDIENCE
+						)
+					);
+
+				if ( purchasersResourceDataAvailabilityDate ) {
+					configuredAudiences.push( purchasersAudience.name );
+				}
+			}
+		}
+
 		if ( configuredAudiences.length === 0 ) {
 			const requiredAudienceSlugs = [
 				'new-visitors',
@@ -429,15 +453,25 @@ const baseActions = {
 			);
 
 			const failedAudiencesToRetry = [];
+			let insufficientPermissionsError = null;
 
 			audienceCreationResults.forEach( ( result, index ) => {
 				const audienceSlug = audiencesToCreate[ index ];
+
 				if ( result.error ) {
-					failedAudiencesToRetry.push( audienceSlug );
+					if ( isInsufficientPermissionsError( result.error ) ) {
+						insufficientPermissionsError = result.error;
+					} else {
+						failedAudiencesToRetry.push( audienceSlug );
+					}
 				} else {
 					configuredAudiences.push( result.response.name );
 				}
 			} );
+
+			if ( insufficientPermissionsError ) {
+				return { error: insufficientPermissionsError };
+			}
 
 			yield commonActions.await(
 				resolveSelect( CORE_USER ).getAudienceSettings()
@@ -637,15 +671,19 @@ const baseActions = {
 			return { error };
 		}
 
-		// Expire new badges for initially configured audiences.
-		yield commonActions.await(
-			dispatch( CORE_USER ).setExpirableItemTimers(
-				configuredAudiences.map( ( slug ) => ( {
-					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
-					expiresInSeconds: 1,
-				} ) )
-			)
-		);
+		if ( configuredAudiences.length > 0 ) {
+			// Expire new badges for initially configured audiences.
+			yield commonActions.await(
+				dispatch( CORE_USER ).setExpirableItemTimers(
+					configuredAudiences.map( ( slug ) => ( {
+						slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+						expiresInSeconds: 1,
+					} ) )
+				)
+			);
+		}
+
+		return {};
 	},
 };
 

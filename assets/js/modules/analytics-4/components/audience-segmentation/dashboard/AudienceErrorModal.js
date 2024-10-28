@@ -37,6 +37,7 @@ import Portal from '../../../../../components/Portal';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { isInsufficientPermissionsError } from '../../../../../util/errors';
+import { trackEvent } from '../../../../../util';
 
 export default function AudienceErrorModal( {
 	apiErrors,
@@ -44,6 +45,7 @@ export default function AudienceErrorModal( {
 	inProgress,
 	title,
 	description,
+	trackEventCategory,
 	onCancel = () => {},
 	onRetry = () => {},
 } ) {
@@ -72,6 +74,38 @@ export default function AudienceErrorModal( {
 	const hasInsufficientPermissionsError = errors.some( ( error ) =>
 		isInsufficientPermissionsError( error )
 	);
+
+	function handleConfirm() {
+		let action;
+
+		if ( hasOAuthError ) {
+			action = 'auth_error_retry';
+		} else if ( hasInsufficientPermissionsError ) {
+			action = 'insufficient_permissions_error_request_access';
+		} else {
+			action = 'setup_error_retry';
+		}
+
+		trackEvent( trackEventCategory, action ).finally( () => {
+			if ( ! hasInsufficientPermissionsError ) {
+				onRetry();
+			}
+		} );
+	}
+
+	function handleDialog() {
+		let action;
+
+		if ( hasOAuthError ) {
+			action = 'auth_error_cancel';
+		} else if ( hasInsufficientPermissionsError ) {
+			action = 'insufficient_permissions_error_cancel';
+		} else {
+			action = 'setup_error_cancel';
+		}
+
+		trackEvent( trackEventCategory, action ).finally( onCancel );
+	}
 
 	let errorTitle, errorDescription, confirmButton, buttonLink;
 
@@ -131,9 +165,22 @@ export default function AudienceErrorModal( {
 				buttonLink={ buttonLink }
 				title={ errorTitle }
 				subtitle={ errorDescription }
-				handleConfirm={ onRetry }
+				handleConfirm={ handleConfirm }
 				confirmButton={ confirmButton }
-				handleDialog={ onCancel }
+				handleDialog={ handleDialog }
+				onOpen={ () => {
+					let action;
+
+					if ( hasOAuthError ) {
+						action = 'auth_error';
+					} else if ( hasInsufficientPermissionsError ) {
+						action = 'insufficient_permissions_error';
+					} else {
+						action = 'setup_error';
+					}
+
+					trackEvent( trackEventCategory, action );
+				} }
 				onClose={ onCancel }
 				danger
 				inProgress={ inProgress }
@@ -150,6 +197,9 @@ AudienceErrorModal.propTypes = {
 	] ),
 	hasOAuthError: PropTypes.bool,
 	inProgress: PropTypes.bool,
+	title: PropTypes.string,
+	description: PropTypes.string,
+	trackEventCategory: PropTypes.string,
 	onCancel: PropTypes.func,
 	onRetry: PropTypes.func,
 };
