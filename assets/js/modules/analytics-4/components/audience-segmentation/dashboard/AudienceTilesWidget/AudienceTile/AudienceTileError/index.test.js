@@ -269,7 +269,7 @@ describe( 'AudienceTileError', () => {
 		await act( waitForRegistry );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-tile`,
+			'mainDashboard_audiences-tile',
 			'data_loading_error',
 			audienceSlug
 		);
@@ -303,7 +303,7 @@ describe( 'AudienceTileError', () => {
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-tile`,
+			'mainDashboard_audiences-tile',
 			'data_loading_error_retry',
 			audienceSlug
 		);
