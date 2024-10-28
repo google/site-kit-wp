@@ -22,6 +22,7 @@
 import AudienceTilesWidget from '.';
 import {
 	act,
+	fireEvent,
 	render,
 	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
@@ -36,6 +37,7 @@ import {
 	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { getPreviousDate } from '../../../../../../util';
 import {
@@ -47,7 +49,11 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import * as tracking from '../../../../../../util/tracking';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 /**
  * Generates mock response for audience tiles component.
@@ -538,6 +544,50 @@ describe( 'AudienceTilesWidget', () => {
 		).toBeInTheDocument();
 
 		await act( () => waitForTimeouts( 100 ) );
+	} );
+
+	it( 'should track an event when the tooltip for an audience tab is viewed', async () => {
+		const configuredAudiences = [ 'properties/12345/audiences/1' ];
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences );
+
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+		fireEvent.mouseOver(
+			container.querySelector( '.googlesitekit-info-tooltip' )
+		);
+
+		// Wait for the tooltip to appear, its delay is 100ms.
+		await waitForTimeouts( 100 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_audiences-tile',
+			'view_tile_tooltip',
+			'all-users'
+		);
 	} );
 
 	it( 'should show the "no audiences" banner when there is no matching audience', async () => {
