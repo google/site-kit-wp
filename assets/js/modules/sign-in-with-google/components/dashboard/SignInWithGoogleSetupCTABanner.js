@@ -50,6 +50,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	return (
 		<Notification>
 			<NotificationWithSVG
+				id={ id }
 				title={ __(
 					'Boost onboarding, security, and trust on your site using Sign in with Google',
 					'google-site-kit'
