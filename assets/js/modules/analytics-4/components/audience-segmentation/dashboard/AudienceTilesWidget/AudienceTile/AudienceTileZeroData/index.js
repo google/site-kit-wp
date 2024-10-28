@@ -63,7 +63,7 @@ export default function AudienceTileZeroData( {
 			onInView={ () => {
 				trackEvent(
 					`${ viewContext }_audiences-tile`,
-					'view_tile_zero_data',
+					'view_tile_collecting_data',
 					audienceSlug
 				);
 			} }
