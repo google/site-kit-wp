@@ -289,7 +289,7 @@ describe( 'AudienceTilesWidget', () => {
 					googlesitekit_post_type: 20201220,
 				},
 				property: {
-					12345: 20201218,
+					12345: 20201220,
 				},
 			} );
 
@@ -462,18 +462,19 @@ describe( 'AudienceTilesWidget', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
-				audience: {
-					'properties/12345/audiences/3': dataAvailabilityDate,
-					'properties/12345/audiences/4': dataAvailabilityDate,
-				},
-				customDimension: {
-					googlesitekit_post_type: 20201220,
-				},
-				property: {
-					12345: 20201218,
-				},
-			} );
+			.setResourceDataAvailabilityDate(
+				'properties/12345/audiences/3',
+				'audience',
+				dataAvailabilityDate
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setResourceDataAvailabilityDate(
+				'properties/12345/audiences/4',
+				'audience',
+				dataAvailabilityDate
+			);
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -542,7 +543,7 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 100 ) );
+		await act( () => waitForTimeouts( 150 ) );
 	} );
 
 	it( 'should track an event when the tooltip for an audience tab is viewed', async () => {
