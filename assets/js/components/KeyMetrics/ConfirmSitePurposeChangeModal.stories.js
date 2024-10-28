@@ -53,7 +53,7 @@ Default.scenario = {
 };
 
 export default {
-	title: 'Key Metrics Confirm Site Purpose Change Modal',
+	title: 'Key Metrics/Key Metrics Confirm Site Purpose Change Modal',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
