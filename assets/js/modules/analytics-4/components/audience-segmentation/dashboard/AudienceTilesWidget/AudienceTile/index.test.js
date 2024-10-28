@@ -65,7 +65,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceTile', () => {
-	let registry;
+	let registry, originalViewportWidth;
 
 	const WidgetWithComponentProps =
 		withWidgetComponentProps( 'audienceTile' )( AudienceTile );
@@ -75,7 +75,7 @@ describe( 'AudienceTile', () => {
 		audienceResourceName,
 		audienceSlug: 'new-visitors',
 		title: 'New visitors',
-		toolTip: 'This is a tooltip',
+		infoTooltip: 'This is a tooltip',
 		loaded: true,
 		visitors: {
 			metricValue: 24200,
@@ -156,6 +156,11 @@ describe( 'AudienceTile', () => {
 	};
 
 	beforeEach( () => {
+		originalViewportWidth = getViewportWidth();
+
+		// Ensure the viewport is wide enough to render the tooltips.
+		setViewportWidth( 1024 );
+
 		mockUseIntersection.mockImplementation( () => ( {
 			isIntersecting: false,
 			intersectionRatio: 0,
@@ -222,6 +227,7 @@ describe( 'AudienceTile', () => {
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render the AudienceTile component', () => {
@@ -233,6 +239,31 @@ describe( 'AudienceTile', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should track an event when the tooltip is viewed', async () => {
+		const { container } = render(
+			<WidgetWithComponentProps { ...props } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.mouseOver(
+			container.querySelector( '.googlesitekit-info-tooltip' )
+		);
+
+		// Wait for the tooltip to appear, its delay is 100ms.
+		await act( () => waitForTimeouts( 100 ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_audiences-tile',
+			'view_tile_tooltip',
+			'new-visitors'
+		);
 	} );
 
 	describe( 'Top content metric', () => {
@@ -314,18 +345,12 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'with zero data, in the partial data state', () => {
-		let originalViewportWidth, container, getByRole, getByText, rerender;
+		let container, getByRole, getByText, rerender;
 
 		beforeEach( () => {
-			originalViewportWidth = getViewportWidth();
-
-			// Ensure the viewport is wide enough to render the tooltip.
-			setViewportWidth( 1024 );
-
 			( { container, getByRole, getByText, rerender } = render(
 				<WidgetWithComponentProps
 					{ ...props }
-					infoTooltip="This is a tooltip"
 					isPartialData
 					isZeroData
 					isTileHideable
@@ -335,10 +360,6 @@ describe( 'AudienceTile', () => {
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			) );
-		} );
-
-		afterEach( () => {
-			setViewportWidth( originalViewportWidth );
 		} );
 
 		it( 'should render the zero data tile', () => {

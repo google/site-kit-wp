@@ -12,6 +12,21 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
         class="googlesitekit-audience-segmentation-tile"
       >
         <div
+          class="googlesitekit-audience-segmentation-tile__header"
+        >
+          <div
+            class="googlesitekit-audience-segmentation-tile__header-title"
+          >
+            New visitors
+            <span
+              class="googlesitekit-info-tooltip"
+              title="This is a tooltip"
+            >
+              <svg />
+            </span>
+          </div>
+        </div>
+        <div
           class="googlesitekit-audience-segmentation-tile__metrics"
         >
           <div
