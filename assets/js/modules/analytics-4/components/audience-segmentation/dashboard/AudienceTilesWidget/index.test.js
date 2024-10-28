@@ -467,7 +467,9 @@ describe( 'AudienceTilesWidget', () => {
 					'properties/12345/audiences/3': dataAvailabilityDate,
 					'properties/12345/audiences/4': dataAvailabilityDate,
 				},
-				customDimension: {},
+				customDimension: {
+					googlesitekit_post_type: 20201220,
+				},
 				property: {
 					12345: 20201218,
 				},
