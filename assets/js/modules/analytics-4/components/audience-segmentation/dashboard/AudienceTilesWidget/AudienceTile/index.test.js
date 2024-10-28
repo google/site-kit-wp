@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useIntersection as mockUseIntersection } from 'react-use';
+import { getByText as domGetByText } from '@testing-library/dom';
 
 /**
  * Internal dependencies
@@ -341,9 +342,17 @@ describe( 'AudienceTile', () => {
 					'audience',
 					dataAvailabilityDate
 				);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					'googlesitekit_post_type',
+					'customDimension',
+					dataAvailabilityDate
+				);
 		} );
 
-		it( 'should render a partial data badge', () => {
+		it( 'should render a partial data badge for the audience when the audience is in the partial data state', () => {
 			const { container, getByText } = render(
 				<WidgetWithComponentProps { ...props } isPartialData />,
 				{
@@ -356,7 +365,35 @@ describe( 'AudienceTile', () => {
 			expect( container ).toMatchSnapshot();
 		} );
 
-		it( 'should track an event when the partial data badge tooltip is viewed', async () => {
+		it( 'should render a partial data badge for the "Top content" metric area when the custom dimension is in the partial data state and the audience is not', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				domGetByText(
+					container.querySelector(
+						'.googlesitekit-audience-segmentation-tile-metric--top-content'
+					),
+					'Partial data'
+				)
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( "should track an event when the partial data badge for the audience's tooltip is viewed", async () => {
 			const { container } = render(
 				<WidgetWithComponentProps { ...props } isPartialData />,
 				{
@@ -379,6 +416,41 @@ describe( 'AudienceTile', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-tile',
 				'view_tile_partial_data_tooltip',
+				'new-visitors'
+			);
+		} );
+
+		it( "should track an event when the partial data badge for the 'Top content' metric area's tooltip is viewed", async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-tile-metric--top-content .googlesitekit-info-tooltip'
+				)
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_top_content_partial_data_tooltip',
 				'new-visitors'
 			);
 		} );

@@ -1,6 +1,285 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AudienceTile Partial data badge should render a partial data badge 1`] = `
+exports[`AudienceTile Partial data badge should render a partial data badge for the "Top content" metric area when the custom dimension is in the partial data state and the audience is not 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--audienceTile googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-audience-segmentation-tile"
+      >
+        <div
+          class="googlesitekit-audience-segmentation-tile__header"
+        >
+          <div
+            class="googlesitekit-audience-segmentation-tile__header-title"
+          >
+            New visitors
+            <span
+              class="googlesitekit-info-tooltip"
+              title="This is a tooltip"
+            >
+              <svg />
+            </span>
+          </div>
+        </div>
+        <div
+          class="googlesitekit-audience-segmentation-tile__metrics"
+        >
+          <div
+            class="googlesitekit-audience-segmentation-tile-metric"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__container"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__value"
+              >
+                24K
+              </div>
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__title"
+              >
+                Visitors
+              </div>
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+            >
+              <div
+                class="googlesitekit-change-badge"
+              >
+                +18.5%
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-audience-segmentation-tile-metric"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__container"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__value"
+              >
+                3
+              </div>
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__title"
+              >
+                Visits per visitor
+              </div>
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+            >
+              <div
+                class="googlesitekit-change-badge"
+              >
+                +50%
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-audience-segmentation-tile-metric"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__container"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__value"
+              >
+                2
+              </div>
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__title"
+              >
+                Pages per visit
+              </div>
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+            >
+              <div
+                class="googlesitekit-change-badge googlesitekit-change-badge--negative"
+              >
+                -33.3%
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-audience-segmentation-tile-metric"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__container"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__value"
+              >
+                1.6K
+              </div>
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__title"
+              >
+                33.3% of total pageviews
+              </div>
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__badge-container"
+            >
+              <div
+                class="googlesitekit-change-badge"
+              >
+                +4.1%
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--cities"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__container"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__title"
+              >
+                Cities with the most visitors
+              </div>
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__content"
+              >
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                  >
+                    Dublin
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                  >
+                    63.8%
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                  >
+                    London
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                  >
+                    20.7%
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                >
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                  >
+                    New York
+                  </div>
+                  <div
+                    class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                  >
+                    15.5%
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-audience-segmentation-tile-metric__container"
+            >
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__title"
+              >
+                Top content by pageviews
+                <span
+                  class="googlesitekit-badge-with-tooltip googlesitekit-badge googlesitekit-audience-segmentation-partial-data-badge"
+                >
+                  Partial data
+                  <span
+                    class="googlesitekit-info-tooltip"
+                    title="Still collecting full data for this timeframe, partial data is displayed for this metric"
+                  >
+                    <svg />
+                  </span>
+                </span>
+              </div>
+              <div
+                class="googlesitekit-audience-segmentation-tile-metric__content"
+              >
+                <div
+                  class="googlesitekit-audience-segmentation-tile-metric__no-data"
+                >
+                  No data to show
+                  <p>
+                    Update Analytics to track metric
+                  </p>
+                  <button
+                    class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised mdc-button--danger"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Update
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AudienceTile Partial data badge should render a partial data badge for the audience when the audience is in the partial data state 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceTile googlesitekit-widget--no-padding"
