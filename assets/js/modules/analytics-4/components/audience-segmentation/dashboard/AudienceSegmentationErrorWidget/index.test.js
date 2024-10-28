@@ -32,6 +32,15 @@ import { withWidgetComponentProps } from '../../../../../../googlesitekit/widget
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceSegmentationErrorWidget from '.';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import * as tracking from '../../../../../../util/tracking';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationErrorWidget', () => {
 	let registry;
@@ -50,129 +59,143 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'audienceSegmentationErrorWidget'
 	)( AudienceSegmentationErrorWidget );
 
-	it( 'should render the default error state', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-			{
-				code: 'test-error-code',
-				message: 'Test error message',
-				data: {
-					reason: '',
-				},
-			},
-			'getReport',
-			[
+	describe( 'default error state', () => {
+		it( 'should render correctly', async () => {
+			await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 				{
-					metrics: [
-						{
-							name: 'totalUsers',
-						},
-					],
-					dimensions: [
-						{
-							name: 'date',
-						},
-					],
-					startDate: '2020-08-11',
-					endDate: '2020-09-07',
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: '',
+					},
 				},
-			]
-		);
+				'getReport',
+				[
+					{
+						metrics: [
+							{
+								name: 'totalUsers',
+							},
+						],
+						dimensions: [
+							{
+								name: 'date',
+							},
+						],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				]
+			);
 
-		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
-		const {
-			container,
-			getByText,
-			getByRole,
-			queryByText,
-			waitForRegistry,
-		} = render( <WidgetWithComponentProps errors={ errors } />, {
-			registry,
+			const {
+				container,
+				getByText,
+				getByRole,
+				queryByText,
+				waitForRegistry,
+			} = render( <WidgetWithComponentProps errors={ errors } />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
+
+			expect(
+				getByText( 'Your visitor groups data loading failed' )
+			).toBeInTheDocument();
+
+			expect(
+				getByRole( 'button', { name: /retry/i } )
+			).toBeInTheDocument();
+
+			// Verify that it's not an "Insufficient permissions" error.
+			expect(
+				queryByText( 'Insufficient permissions' )
+			).not.toBeInTheDocument();
+			expect( queryByText( /request access/i ) ).not.toBeInTheDocument();
 		} );
-
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-
-		expect(
-			getByText( 'Your visitor groups data loading failed' )
-		).toBeInTheDocument();
-
-		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
-
-		// Verify that it's not an "Insufficient permissions" error.
-		expect(
-			queryByText( 'Insufficient permissions' )
-		).not.toBeInTheDocument();
-		expect( queryByText( /request access/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should render the insufficient permissions error state', async () => {
-		const [ accountID, propertyID, measurementID, webDataStreamID ] = [
-			'12345',
-			'34567',
-			'56789',
-			'78901',
-		];
+	describe( 'insufficient permissions error state', () => {
+		it( 'should render correctly', async () => {
+			const [ accountID, propertyID, measurementID, webDataStreamID ] = [
+				'12345',
+				'34567',
+				'56789',
+				'78901',
+			];
 
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAccountID( accountID );
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setPropertyID( propertyID );
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setMeasurementID( measurementID );
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setWebDataStreamID( webDataStreamID );
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-			{
-				code: 'test-error-code',
-				message: 'Test error message',
-				data: {
-					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAccountID( accountID );
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( propertyID );
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setMeasurementID( measurementID );
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setWebDataStreamID( webDataStreamID );
+			await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+				{
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
 				},
-			},
-			'getAccountID'
-		);
+				'getAccountID'
+			);
 
-		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
-		const {
-			container,
-			getByText,
-			getByRole,
-			queryByText,
-			waitForRegistry,
-		} = render( <WidgetWithComponentProps errors={ errors } />, {
-			registry,
+			const {
+				container,
+				getByText,
+				getByRole,
+				queryByText,
+				waitForRegistry,
+			} = render( <WidgetWithComponentProps errors={ errors } />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
+
+			expect(
+				getByText( 'Insufficient permissions' )
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					'Contact your administrator. Trouble getting access?'
+				)
+			).toBeInTheDocument();
+
+			expect(
+				getByRole( 'button', { name: /request access/i } )
+			).toBeInTheDocument();
+
+			// Verify that it's not a default error.
+			expect(
+				queryByText( 'Your visitor groups data loading failed' )
+			).not.toBeInTheDocument();
+			expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 		} );
-
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-
-		expect( getByText( 'Insufficient permissions' ) ).toBeInTheDocument();
-
-		expect(
-			getByText( 'Contact your administrator. Trouble getting access?' )
-		).toBeInTheDocument();
-
-		expect(
-			getByRole( 'button', { name: /request access/i } )
-		).toBeInTheDocument();
-
-		// Verify that it's not a default error.
-		expect(
-			queryByText( 'Your visitor groups data loading failed' )
-		).not.toBeInTheDocument();
-		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should render a retry button when `onRetry` and `showRetryButton` props are passed', async () => {

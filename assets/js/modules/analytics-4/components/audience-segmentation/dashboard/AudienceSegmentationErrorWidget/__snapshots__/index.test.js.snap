@@ -1,55 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AudienceSegmentationErrorWidget should render a retry button when \`onRetry\` and \`showRetryButton\` props are passed 1`] = `
-<div>
-  <div
-    class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
-  >
-    <div
-      class="googlesitekit-widget__body"
-    >
-      <div
-        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
-      >
-        <div
-          class="mdc-layout-grid__inner"
-        >
-          <div
-            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
-          >
-            <h3
-              class="googlesitekit-publisher-win__title"
-            >
-              Your visitor groups data loading failed
-            </h3>
-            <div
-              class="googlesitekit-widget-audience-segmentation-error__actions"
-            >
-              <button
-                class="mdc-button mdc-button--raised mdc-button--danger"
-                target="_self"
-              >
-                <span
-                  class="mdc-button__label"
-                >
-                  Retry
-                </span>
-              </button>
-            </div>
-          </div>
-          <div
-            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell"
-          >
-            <svg />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`AudienceSegmentationErrorWidget should render the default error state 1`] = `
+exports[`AudienceSegmentationErrorWidget default error state should render correctly 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
@@ -102,7 +53,7 @@ exports[`AudienceSegmentationErrorWidget should render the default error state 1
 </div>
 `;
 
-exports[`AudienceSegmentationErrorWidget should render the insufficient permissions error state 1`] = `
+exports[`AudienceSegmentationErrorWidget insufficient permissions error state should render correctly 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
@@ -162,6 +113,55 @@ exports[`AudienceSegmentationErrorWidget should render the insufficient permissi
                   </a>
                 </div>
               </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell"
+          >
+            <svg />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AudienceSegmentationErrorWidget should render a retry button when \`onRetry\` and \`showRetryButton\` props are passed 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <h3
+              class="googlesitekit-publisher-win__title"
+            >
+              Your visitor groups data loading failed
+            </h3>
+            <div
+              class="googlesitekit-widget-audience-segmentation-error__actions"
+            >
+              <button
+                class="mdc-button mdc-button--raised mdc-button--danger"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Retry
+                </span>
+              </button>
             </div>
           </div>
           <div
