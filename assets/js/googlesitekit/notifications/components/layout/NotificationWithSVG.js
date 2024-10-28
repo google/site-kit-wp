@@ -28,13 +28,20 @@ export default function NotificationWithSVG( {
 	title,
 	description,
 	actions,
-	DesktopSVG,
-	TabletSVG,
-	MobileSVG,
+	SVG,
 } ) {
 	const breakpoint = useBreakpoint();
-	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
-	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
+
+	// Desktop breakpoint.
+	let svgSizeProps = { mdSize: 8, lgSize: 6 };
+	// Tablet breakpoint.
+	if ( breakpoint === BREAKPOINT_TABLET ) {
+		svgSizeProps = { mdSize: 8 };
+	}
+	// Mobile breakpoint.
+	if ( breakpoint === BREAKPOINT_SMALL ) {
+		svgSizeProps = { smSize: 12 };
+	}
 
 	return (
 		<div className="googlesitekit-widget-context">
@@ -59,34 +66,13 @@ export default function NotificationWithSVG( {
 
 											{ actions }
 										</Cell>
-										{ ! isMobileBreakpoint &&
-											! isTabletBreakpoint && (
-												<Cell
-													alignBottom
-													className="googlesitekit-setup-cta-banner__svg-wrapper"
-													mdSize={ 8 }
-													lgSize={ 6 }
-												>
-													<DesktopSVG />
-												</Cell>
-											) }
-										{ isTabletBreakpoint && (
-											<Cell
-												className="googlesitekit-setup-cta-banner__svg-wrapper"
-												mdSize={ 8 }
-											>
-												<TabletSVG />
-											</Cell>
-										) }
-										{ isMobileBreakpoint && (
-											<Cell
-												alignBottom
-												className="googlesitekit-setup-cta-banner__svg-wrapper"
-												smSize={ 12 }
-											>
-												<MobileSVG />
-											</Cell>
-										) }
+										<Cell
+											alignBottom
+											className="googlesitekit-setup-cta-banner__svg-wrapper"
+											{ ...svgSizeProps }
+										>
+											<SVG />
+										</Cell>
 									</Row>
 								</Grid>
 							</div>

@@ -36,9 +36,7 @@ import NotificationWithSVG from '../../../../googlesitekit/notifications/compone
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import DesktopSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-desktop.svg';
-import TabletSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-tablet.svg';
-import MobileSVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta-mobile.svg';
+import SiWGSetupCTASVG from '../../../../../svg/graphics/sign-in-with-google-setup-cta.svg';
 
 export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	const learnMoreURL = useSelect( ( select ) => {
@@ -84,9 +82,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 					/>
 				}
-				DesktopSVG={ DesktopSVG }
-				TabletSVG={ TabletSVG }
-				MobileSVG={ MobileSVG }
+				SVG={ SiWGSetupCTASVG }
 			/>
 		</Notification>
 	);
