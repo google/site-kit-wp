@@ -516,13 +516,13 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 										<InfoTooltip
 											title={ tooltipMessage }
 											tooltipClassName="googlesitekit-info-tooltip__content--audience"
-											onOpen={ () =>
+											onOpen={ () => {
 												trackEvent(
 													`${ viewContext }_audiences-tile`,
 													'view_tile_tooltip',
 													audienceSlug
-												)
-											}
+												);
+											} }
 										/>
 									</Tab>
 								);
