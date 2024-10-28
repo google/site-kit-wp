@@ -252,3 +252,54 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
   </div>
 </div>
 `;
+
+exports[`AudienceTile with zero data, in the partial data state should render the zero data tile 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--audienceTile googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-audience-segmentation-tile"
+      >
+        <div
+          class="googlesitekit-audience-segmentation-tile__zero-data-container"
+        >
+          <div
+            class="googlesitekit-audience-segmentation-tile__zero-data-content"
+          >
+            <svg />
+            <p
+              class="googlesitekit-audience-segmentation-tile__zero-data-description"
+            >
+              Site Kit is collecting data for this group.
+            </p>
+            <p
+              class="googlesitekit-audience-segmentation-tile__zero-data-description"
+            >
+              You can hide this group until data is available.
+            </p>
+            <button
+              class="googlesitekit-cta-link googlesitekit-audience-segmentation-tile-hide-cta googlesitekit-cta-link--secondary googlesitekit-cta-link--link-button"
+            >
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-right: 5px;"
+              >
+                <svg />
+              </span>
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Temporarily hide
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

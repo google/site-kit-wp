@@ -308,6 +308,100 @@ describe( 'AudienceTile', () => {
 		} );
 	} );
 
+	describe( 'with zero data, in the partial data state', () => {
+		it( 'should render the zero data tile', () => {
+			const { container, getByText } = render(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				getByText( 'Site Kit is collecting data for this group.' )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should track an event when the tile is viewed', () => {
+			const { rerender } = render(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_collecting_data',
+				'new-visitors'
+			);
+		} );
+
+		it( 'should track an event when the "Temporarily hide" button is clicked', async () => {
+			const { getByRole } = render(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /temporarily hide/i } )
+				);
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'temporarily_hide',
+				'new-visitors'
+			);
+		} );
+	} );
+
 	describe( 'AudienceErrorModal', () => {
 		let getByRole, getByText;
 
