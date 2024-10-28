@@ -35,6 +35,10 @@ import {
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
 } from './constants';
+import { isValidClientID } from '../utils/validation';
+
+export const INVARIANT_INVALID_CLIENT_ID =
+	'a valid clientID is required to submit changes';
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
@@ -55,6 +59,8 @@ export function validateCanSubmitChanges( select ) {
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+
+	invariant( isValidClientID( getClientID() ), INVARIANT_INVALID_CLIENT_ID );
 
 	const clientID = getClientID();
 	const shape = getShape();
