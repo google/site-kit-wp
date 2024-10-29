@@ -443,6 +443,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+		displayInList: shouldDisplayWidgetWithConversionEvent,
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
 		title: __( 'Top cities driving purchases', 'google-site-kit' ),

@@ -39,8 +39,7 @@ export default function AudienceTooltipMessage( {
 	audienceName,
 } ) {
 	const documentationURL = useSelect( ( select ) =>
-		// TODO: The link must be updated here to the correct support URL once written.
-		select( CORE_SITE ).getDocumentationLinkURL( 'audience-segmentation' )
+		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-groups' )
 	);
 
 	const tooltipMessage = useMemo( () => {

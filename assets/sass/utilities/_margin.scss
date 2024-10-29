@@ -16,10 +16,17 @@
  * limitations under the License.
  */
 
+// These utility classes include `!important` to ensure they override other
+// styles—since they're utility classes they should always apply their styles
+// over other things hence the important flag.
 .googlesitekit-plugin {
 
 	.googlesitekit-margin-top-0 {
 		margin-top: 0 !important;
+	}
+
+	.googlesitekit-margin-top-1 {
+		margin-top: 1rem !important;
 	}
 
 	.googlesitekit-margin-bottom-0 {

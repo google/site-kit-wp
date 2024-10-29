@@ -107,7 +107,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 
 ReadyWithActivateAnalyticsCTA.scenario = {
 	label: 'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
-	delay: 3000,
+	delay: 6000, // This extra delay is required to fix unstable VRTs.
 };
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );

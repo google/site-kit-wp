@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -34,6 +39,7 @@ export default function Dismiss( {
 	dismissExpires = 0,
 	disabled,
 	onDismiss = () => {},
+	gaTrackingEventArgs,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
@@ -41,7 +47,10 @@ export default function Dismiss( {
 
 	const handleDismiss = async ( event ) => {
 		await onDismiss?.( event );
-		trackEvents.dismiss();
+		trackEvents.dismiss(
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
+		);
 		dismissNotification( id, { expiresInSeconds: dismissExpires } );
 	};
 
@@ -55,3 +64,16 @@ export default function Dismiss( {
 		</Button>
 	);
 }
+
+Dismiss.propTypes = {
+	id: PropTypes.string,
+	primary: PropTypes.bool,
+	dismissLabel: PropTypes.string,
+	dismissExpires: PropTypes.number,
+	disabled: PropTypes.bool,
+	onDismiss: PropTypes.func,
+	gaTrackingEventArgs: PropTypes.shape( {
+		label: PropTypes.string,
+		value: PropTypes.string,
+	} ),
+};

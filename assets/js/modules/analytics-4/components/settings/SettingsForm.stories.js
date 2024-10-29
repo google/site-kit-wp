@@ -31,7 +31,7 @@ const {
 	webDataStreamsBatch,
 	defaultEnhancedMeasurementSettings,
 } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;

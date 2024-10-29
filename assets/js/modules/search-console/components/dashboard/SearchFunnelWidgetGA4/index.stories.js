@@ -50,7 +50,7 @@ import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import SearchFunnelWidgetGA4 from './index';
 
 const { accountSummaries } = fixtures;
-const accounts = accountSummaries.map( ( account ) => ( {
+const accounts = accountSummaries.accountSummaries.map( ( account ) => ( {
 	...account,
 	propertySummaries: account.propertySummaries.map( ( property ) => ( {
 		...property,
@@ -505,7 +505,10 @@ export default {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetAccountSummaries( accounts );
+				.receiveGetAccountSummaries( {
+					accountSummaries: accounts,
+					nextPageToken: null,
+				} );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetProperty( properties[ 0 ], {

@@ -238,7 +238,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
       class="googlesitekit-setup-module__inputs"
     >
       <div
-        class="googlesitekit-analytics-enable-enhanced-measurement"
+        class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-margin-bottom-0"
       >
         <div
           aria-checked="true"

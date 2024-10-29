@@ -241,6 +241,9 @@ describe( 'AudienceTilesWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -249,7 +252,9 @@ describe( 'AudienceTilesWidget', () => {
 					return acc;
 				}, {} ),
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	} );
 
@@ -421,7 +426,9 @@ describe( 'AudienceTilesWidget', () => {
 					'properties/12345/audiences/4': dataAvailabilityDate,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 
 		registry
@@ -491,7 +498,7 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 50 ) );
+		await act( () => waitForTimeouts( 100 ) );
 	} );
 
 	it( 'should show the "no audiences" banner when there is no matching audience', async () => {

@@ -77,6 +77,8 @@ export default function AnalyticsStats( props ) {
 	if ( propertyCreateTime ) {
 		dateMarkers = [
 			{
+				// Valid use of `new Date()` with an argument.
+				// eslint-disable-next-line sitekit/no-direct-date
 				date: getDateString( new Date( propertyCreateTime ) ),
 				text: __(
 					'Google Analytics property created',

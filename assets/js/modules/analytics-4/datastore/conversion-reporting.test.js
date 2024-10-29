@@ -36,6 +36,54 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 		provideModules( registry );
 	} );
 
+	describe( 'actions', () => {
+		describe( 'dismissNewConversionReportingEvents', () => {
+			it( 'fetches clear new events endpoint', async () => {
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
+					),
+					true
+				);
+
+				const { response } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.dismissNewConversionReportingEvents();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
+					)
+				);
+				expect( response ).toEqual( true );
+			} );
+		} );
+
+		describe( 'dismissLostConversionReportingEvents', () => {
+			it( 'fetches clear lost events endpoint', async () => {
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-lost-events'
+					),
+					true
+				);
+
+				const { response } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.dismissLostConversionReportingEvents();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-lost-events'
+					)
+				);
+				expect( response ).toEqual( true );
+			} );
+		} );
+	} );
+
 	describe( 'selectors', () => {
 		describe( 'hasConversionReportingEvents', () => {
 			it( 'returns false when no conversion reporting events are available', () => {

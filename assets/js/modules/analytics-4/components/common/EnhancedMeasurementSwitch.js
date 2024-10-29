@@ -45,6 +45,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
 export default function EnhancedMeasurementSwitch( {
+	className,
 	onClick,
 	disabled = false,
 	loading = false,
@@ -93,6 +94,7 @@ export default function EnhancedMeasurementSwitch( {
 		<div
 			className={ classnames(
 				'googlesitekit-analytics-enable-enhanced-measurement',
+				className,
 				{
 					'googlesitekit-analytics-enable-enhanced-measurement--loading':
 						loading,

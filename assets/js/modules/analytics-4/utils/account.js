@@ -67,3 +67,43 @@ export function getAccountDefaults(
 		[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 	};
 }
+
+/**
+ * Appends an account ID to an account object.
+ *
+ * @since 1.138.0
+ *
+ * @param {Object} account Account object.
+ * @return {Object} Account object with an appended ID.
+ */
+export const populateAccountID = ( account ) => {
+	const matches = account.account?.match( /accounts\/([^/]+)/ );
+	const _id = matches?.[ 1 ];
+
+	return {
+		...account,
+		_id,
+	};
+};
+
+/**
+ * Appends property and account IDs to a property object.
+ *
+ * @since 1.138.0
+ *
+ * @param {Object} property Property object.
+ * @return {Object} Property object with appended IDs.
+ */
+export const populatePropertyAndAccountIds = ( property ) => {
+	const propertyMatches = property.property?.match( /properties\/([^/]+)/ );
+	const _id = propertyMatches?.[ 1 ];
+
+	const accountMatches = property.parent?.match( /accounts\/([^/]+)/ );
+	const _accountID = accountMatches?.[ 1 ];
+
+	return {
+		...property,
+		_id,
+		_accountID,
+	};
+};
