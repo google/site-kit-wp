@@ -81,7 +81,7 @@ class Validate_Auth_Request {
 			$this->error = new WP_Error(
 				'google_auth_bad_request_method',
 				__( 'Bad request method.', 'google-site-kit' ),
-				array( 'status' => 500 )
+				array( 'status' => 400 )
 			);
 		}
 	}

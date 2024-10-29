@@ -138,7 +138,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				exit;
 			}
 
-			// @TODO implement further flow and redirect with $payload.
+			// @TODO implement further flow and redirect with $payload in #9339.
 			wp_send_json_success();
 
 		} catch ( \Exception $e ) {
