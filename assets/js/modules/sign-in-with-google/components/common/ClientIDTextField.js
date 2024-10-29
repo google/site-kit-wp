@@ -33,10 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidClientID } from '../../utils/validation';
 import { useDebounce } from '../../../../hooks/useDebounce';
-import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 
 export default function ClientIDTextField() {
 	const clientID = useSelect( ( select ) =>
@@ -74,16 +72,6 @@ export default function ClientIDTextField() {
 					__(
 						'The Sign in with Google button won’t be displayed until you insert a valid Client ID',
 						'google-site-kit'
-					)
-				}
-				trailingIcon={
-					! isValid && (
-						<span className="googlesitekit-text-field-icon--error">
-							<VisuallyHidden>
-								{ __( 'Error', 'google-site-kit' ) }
-							</VisuallyHidden>
-							<WarningIcon width={ 14 } height={ 12 } />
-						</span>
 					)
 				}
 				outlined
