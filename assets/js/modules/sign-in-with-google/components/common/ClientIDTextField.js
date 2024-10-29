@@ -17,10 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useDebounce } from '../../../../hooks/useDebounce';
 
 /**
  * Internal dependencies
@@ -28,11 +34,22 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import VisuallyHidden from '../../../../components/VisuallyHidden';
+import { isValidClientID } from '../../utils/validation';
+import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 
 export default function ClientIDTextField() {
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
+
+	// Don't show a validation error before user interacts with the field
+	// in setup. When editing show validation error immediately if the value
+	// is invalid.
+	const [ isValid, setIsValid ] = useState(
+		! clientID || isValidClientID( clientID )
+	);
+	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
 	const { setClientID } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 	const onChange = useCallback(
@@ -42,15 +59,36 @@ export default function ClientIDTextField() {
 			if ( newValue !== clientID ) {
 				setClientID( newValue );
 			}
+
+			debounceSetIsValid( isValidClientID( newValue ) );
 		},
-		[ clientID, setClientID ]
+		[ clientID, setClientID, debounceSetIsValid ]
 	);
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<TextField
 				label={ __( 'Client ID', 'google-site-kit' ) }
-				className="googlesitekit-text-field-client-id"
+				className={ classnames( 'googlesitekit-text-field-client-id', {
+					'mdc-text-field--error': ! isValid,
+				} ) }
+				helperText={
+					! isValid &&
+					__(
+						'Sign In With Google won’t work until you insert a valid ID',
+						'google-site-kit'
+					)
+				}
+				trailingIcon={
+					! isValid && (
+						<span className="googlesitekit-text-field-icon--error">
+							<VisuallyHidden>
+								{ __( 'Error', 'google-site-kit' ) }
+							</VisuallyHidden>
+							<WarningIcon width={ 14 } height={ 12 } />
+						</span>
+					)
+				}
 				outlined
 				value={ clientID }
 				onChange={ onChange }
