@@ -42,7 +42,6 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	keyMetricsGA4WidgetsNonACR,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
@@ -224,12 +223,6 @@ const baseSelectors = {
 		}
 
 		if ( userPickedMetrics.length ) {
-			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-				return userPickedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonACR.includes( slug );
-				} );
-			}
-
 			return userPickedMetrics;
 		}
 
@@ -397,7 +390,7 @@ const baseSelectors = {
 		}
 
 		// Even though a user may have picked their own metrics, there is a chance that they no longer
-		// are "available" if they require certain custom dimensions, detected events, etc. which no
+		// are "available" if they require certain custom dimensions, detected events, feature flags, etc. which no
 		// longer exist. So we should filter these out by using the displayInWidgetArea() callback.
 		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 		const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(

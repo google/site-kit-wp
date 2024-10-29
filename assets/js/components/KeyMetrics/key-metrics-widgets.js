@@ -59,6 +59,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
+import { isFeatureEnabled } from '../../features';
 
 /**
  * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
@@ -326,6 +327,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
 		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
@@ -343,6 +345,7 @@ const KEY_METRICS_WIDGETS = {
 			'generate_lead',
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
 		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
@@ -356,6 +359,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ 'purchase' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
 		title: __( 'Most engaged traffic source', 'google-site-kit' ),
@@ -406,6 +410,7 @@ const KEY_METRICS_WIDGETS = {
 			'generate_lead',
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART ]: {
 		title: __( 'Top cities driving add to cart', 'google-site-kit' ),
@@ -419,6 +424,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
 		title: __( 'Top cities driving purchases', 'google-site-kit' ),
@@ -432,6 +438,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ 'purchase' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]: {
 		title: __( 'Top device driving purchases', 'google-site-kit' ),
@@ -445,6 +452,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ 'purchase' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
 		title: __( 'Top countries driving traffic', 'google-site-kit' ),
@@ -480,6 +488,7 @@ const KEY_METRICS_WIDGETS = {
 			'generate_lead',
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 	},
 };
 
