@@ -155,6 +155,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
 		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
@@ -168,6 +169,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
 		title: __( 'Top categories by pageviews', 'google-site-kit' ),
@@ -181,6 +183,7 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_POPULAR_CONTENT ]: {
 		title: __( 'Most popular content by pageviews', 'google-site-kit' ),
@@ -204,6 +207,7 @@ const KEY_METRICS_WIDGETS = {
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductPostType(),
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),
