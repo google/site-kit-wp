@@ -26,7 +26,6 @@ import classnames from 'classnames';
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useDebounce } from '../../../../hooks/useDebounce';
 
 /**
  * Internal dependencies
@@ -36,6 +35,7 @@ import { TextField } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidClientID } from '../../utils/validation';
+import { useDebounce } from '../../../../hooks/useDebounce';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 
 export default function ClientIDTextField() {
