@@ -34,14 +34,19 @@ import {
 	waitFor,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
-import SetupCTA from './SetupCTA';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import * as tracking from '../../../../../../util/tracking';
+import SetupCTA from './SetupCTA';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	let registry;
@@ -144,6 +149,28 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		expect( fetchMock ).toHaveFetched( syncAvailableAudiencesEndpoint );
 
 		await act( waitForDefaultTimeouts );
+	} );
+
+	it( 'should track an event when the CTA is clicked', async () => {
+		freezeFetch( syncAvailableAudiencesEndpoint );
+
+		const { getByRole } = render( <SetupCTA />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: /Enable groups/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_audiences-setup-cta-settings',
+			'enable_groups'
+		);
 	} );
 
 	describe( 'AudienceErrorModal', () => {
