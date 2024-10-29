@@ -17,13 +17,17 @@
  */
 
 /**
- * Checks if the given conversion ID is valid.
+ * Checks if the given client ID is valid.
  *
  * @since n.e.x.t
  *
- * @param {*} value Client ID to test.
+ * @param {*} value Sign in with Google Client ID to test.
  * @return {boolean} Whether or not the given ID is valid.
  */
 export function isValidClientID( value ) {
-	return /^[a-zA-Z0-9.-]+$/.test( value );
+	return (
+		typeof value === 'string' &&
+		value !== '' &&
+		/^[A-Za-z0-9-_.]+$/.test( value )
+	);
 }

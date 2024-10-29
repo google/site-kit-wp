@@ -22,18 +22,17 @@
 import { isValidClientID } from './validation';
 
 describe( 'modules/sign-in-with-google validations', () => {
-	describe( 'isValidConversionID', () => {
+	describe( 'isValidClientID', () => {
 		it( 'should return TRUE when a valid clientID is passed', () => {
 			expect(
-				isValidClientID(
-					'40021282855-d4ea9t80ph5m5pjjob24qdaj1suqg065.apps.googleusercontent.com'
-				)
+				isValidClientID( '1234567890-googleusercontent.com' )
 			).toBe( true );
 		} );
 
 		it.each( [
-			[ 'empty space', ' ' ],
-			[ 'special character', 'asd%' ],
+			[ 'false', false ],
+			[ 'an empty string', '' ],
+			[ 'contains invalid characters', '?*,<()' ],
 		] )( 'should return FALSE when %s is passed', ( _, clientID ) => {
 			expect( isValidClientID( clientID ) ).toBe( false );
 		} );

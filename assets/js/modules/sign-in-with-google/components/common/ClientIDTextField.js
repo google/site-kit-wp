@@ -43,9 +43,6 @@ export default function ClientIDTextField() {
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
 
-	// Don't show a validation error before user interacts with the field
-	// in setup. When editing show validation error immediately if the value
-	// is invalid.
 	const [ isValid, setIsValid ] = useState(
 		! clientID || isValidClientID( clientID )
 	);
@@ -75,7 +72,7 @@ export default function ClientIDTextField() {
 				helperText={
 					! isValid &&
 					__(
-						'Sign In With Google won’t work until you insert a valid ID',
+						'The Sign in with Google button won’t be displayed until you insert a valid Client ID',
 						'google-site-kit'
 					)
 				}

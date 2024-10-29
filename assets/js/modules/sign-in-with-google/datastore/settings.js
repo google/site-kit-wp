@@ -37,6 +37,9 @@ import {
 } from './constants';
 import { isValidClientID } from '../utils/validation';
 
+export const INVARIANT_INVALID_CLIENT_ID =
+	'a valid clientID is required to submit changes';
+
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
 
@@ -63,7 +66,7 @@ export function validateCanSubmitChanges( select ) {
 	const theme = getTheme();
 
 	invariant( clientID?.length, 'clientID is required' );
-	invariant( isValidClientID( clientID ), 'Invalid client ID' );
+	invariant( isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
 	invariant(
 		SIGN_IN_WITH_GOOGLE_SHAPES.includes( shape ),
 		`shape must be one of: ${ SIGN_IN_WITH_GOOGLE_SHAPES.join( ', ' ) }`
