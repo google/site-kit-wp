@@ -51,6 +51,7 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
+			margin: 0;
 
 			@media (min-width: $width-tablet + 1 + px) {
 				font-size: $fs-body-md;
