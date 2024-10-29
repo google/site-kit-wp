@@ -101,12 +101,15 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show in progress state when enabling groups', () => {
+	it( 'should show in progress state when enabling groups', async () => {
 		freezeFetch( syncAvailableAudiencesEndpoint );
 
 		const { getByText, getByRole } = render( <SetupCTA />, { registry } );
 
 		fireEvent.click( getByRole( 'button', { name: /Enable groups/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
 
 		expect( getByText( 'Enabling groups' ) ).toBeInTheDocument();
 	} );
@@ -128,6 +131,9 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /Enable groups/i } ) );
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		expect( getByText( 'Enabling groups' ) ).toBeInTheDocument();
 
 		await act(
@@ -141,7 +147,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	} );
 
 	describe( 'AudienceErrorModal', () => {
-		it( 'should show the OAuth error modal when the required scopes are not granted', () => {
+		it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
 			provideSiteInfo( registry, {
 				setupErrorCode: 'access_denied',
 			} );
@@ -177,6 +183,9 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 					getByRole( 'button', { name: /Enable groups/i } )
 				);
 			} );
+
+			// Allow the `trackEvent()` promise to resolve.
+			await waitForDefaultTimeouts();
 
 			// Verify the error is an OAuth error variant.
 			expect(
