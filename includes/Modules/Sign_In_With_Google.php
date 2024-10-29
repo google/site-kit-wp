@@ -26,6 +26,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Validate_Auth_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
+use WP_User;
 
 /**
  * Class representing the Sign in With Google module.
@@ -53,6 +54,22 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	protected $validate_auth_request;
 
 	/**
+	 * Google_Client instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Google_Client
+	 */
+	protected $client;
+
+	/**
+	 * Option name for persistent user ID.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	const SIGN_IN_WITH_GOOGLE_USER_ID_OPTION = 'googlesitekitpersistent_sign_in_with_google_user_id';
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -73,6 +90,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$this->validate_auth_request = new Validate_Auth_Request( $context );
+
+		$settings = $this->get_settings()->get();
+		if ( ! empty( $settings['clientID'] ) ) {
+			$this->client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
+		}
 	}
 
 	/**
@@ -102,6 +124,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
+	 * Login user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user WordPress user object.
+	 */
+	protected function login_user( WP_User $user ) {
+		wp_set_current_user( $user->ID, $user->user_login );
+		wp_set_auth_cookie( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+	}
+
+	/**
 	 * Intercept the page request to process token ID
 	 * and complete Sign in with Google flow.
 	 *
@@ -114,8 +149,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		$client_id = $this->get_settings()->get()['clientID'];
-		if ( empty( $client_id ) ) {
+		$settings = $this->get_settings()->get();
+		if ( empty( $settings['clientID'] ) ) {
 			wp_safe_redirect( add_query_arg( 'error', 'no_client_id', wp_login_url() ) );
 			exit;
 		}
@@ -129,21 +164,49 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		$id_token = $this->context->input()->filter( INPUT_POST, 'credential' );
-		try {
-			$client  = new Google_Client( array( 'client_id' => $client_id ) );
-			$payload = $client->verifyIdToken( $id_token );
+		$payload  = $this->client->verifyIdToken( $id_token );
 
-			if ( empty( $payload ) ) {
-				wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
-				exit;
-			}
-
-			// @TODO implement further flow and redirect with $payload.
-			wp_send_json_success();
-
-		} catch ( \Exception $e ) {
-			wp_send_json_error( $e->getMessage() );
+		if ( empty( $payload ) || ! array_key_exists( 'sub', $payload ) || empty( $payload['sub'] ) || ! array_key_exists( 'email', $payload ) || empty( $payload['email'] ) ) {
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
+			exit;
 		}
+
+		$google_user_id    = $payload['sub'];
+		$google_user_email = $payload['email'];
+
+		// Check if there are any existing WordPress users connected to this Google account.
+		// The user ID is used as the unique identifier because users can change the email on their Google account.
+		$existing_users = get_users(
+			array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_key'   => self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				'meta_value' => $google_user_id,
+				'number'     => 1,
+			)
+		);
+		if ( ! empty( $existing_users ) && $existing_users[0] instanceof WP_User ) {
+			return $this->login_user( $existing_users[0] );
+		}
+
+		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
+		$existing_user = get_user_by( 'email', $google_user_email );
+		if ( $existing_user instanceof WP_User ) {
+			add_user_meta( $existing_user->ID, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, $google_user_id, true );
+			return $this->login_user( $existing_user );
+		}
+
+		// Create a new user if "Anyone can register" setting is enabled.
+		$registration_open = get_option( 'users_can_register' );
+
+		if ( $registration_open ) {
+			$new_user_id = wp_create_user( $google_user_email, wp_generate_password(), $google_user_email );
+			add_user_meta( $new_user_id, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, $google_user_id, true );
+			return $this->login_user( get_user_by( 'id', $new_user_id ) );
+		}
+
+		wp_safe_redirect( add_query_arg( 'error', 'user_actions_failed', wp_login_url() ) );
+		exit;
 	}
 
 	/**
@@ -175,6 +238,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				break;
 			case 'missing_parameter':
 				$error->add( 'access', __( 'Parameter: "credential" is missing.', 'google-site-kit' ) );
+				break;
+			case 'user_actions_failed':
+				$error->add( 'access', __( 'Failed to perform user actions.', 'google-site-kit' ) );
 				break;
 		}
 
