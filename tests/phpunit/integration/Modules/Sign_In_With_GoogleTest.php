@@ -90,12 +90,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
-		$this->assertStringContainsString( 'data-client_id="1234567890.googleusercontent.com"', $output );
-		$this->assertStringContainsString( 'data-login_uri="https://example.com/auth/google"', $output );
+		$this->assertStringContainsString( "client_id: '1234567890.googleusercontent.com'", $output );
+		$this->assertStringContainsString( "login_uri: 'https://example.com/auth/google'", $output );
 
-		$this->assertStringContainsString( 'data-text="' . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . '"', $output );
-		$this->assertStringContainsString( 'data-theme="' . Sign_In_With_Google_Settings::THEME_LIGHT . '"', $output );
-		$this->assertStringContainsString( 'data-shape="' . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . '"', $output );
+		$this->assertStringContainsString( "text: '" . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . "'", $output );
+		$this->assertStringContainsString( "theme: '" . Sign_In_With_Google_Settings::THEME_LIGHT . "'", $output );
+		$this->assertStringContainsString( "shape: '" . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . "'", $output );
 
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );

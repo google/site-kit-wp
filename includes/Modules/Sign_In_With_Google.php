@@ -131,28 +131,21 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		?>
 <!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
 <?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
-<script src="https://accounts.google.com/gsi/client" async></script>
-<div id="g_id_onload"
-	data-client_id="<?php echo esc_attr( $settings['clientID'] ); ?>"
-	data-login_uri="<?php echo esc_url( $redirect_url ); ?>"
-	data-auto_prompt="false">
-</div>
-<div class="g_id_signin"
-	style="display: none;"
-	data-type="standard"
-	data-size="large"
-	data-theme="<?php echo esc_attr( $settings['theme'] ); ?>"
-	data-text="<?php echo esc_attr( $settings['text'] ); ?>"
-	data-shape="<?php echo esc_attr( $settings['shape'] ); ?>"
-	data-logo_alignment="left">
-</div>
-<script type="text/javascript">
-window.addEventListener("load", () => {
-	if ( document.getElementsByClassName('g_id_signin')?.[0] ) {
-		document.getElementById('login').insertBefore(document.getElementsByClassName('g_id_signin')?.[0], document.getElementById('loginform'));
-		document.getElementsByClassName('g_id_signin')[0].style.display = 'block';
-	}
-});
+<script src="https://accounts.google.com/gsi/client"></script>
+<script>
+( () => {
+	google.accounts.id.initialize({
+		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
+		login_uri: '<?php echo esc_js( $redirect_url ); ?>',
+	});
+	const parent = document.createElement( 'div' );  
+	document.getElementById( 'login').insertBefore( parent, document.getElementById( 'loginform' ) );
+	google.accounts.id.renderButton(parent, {
+		theme: '<?php echo esc_js( $settings['theme'] ); ?>',
+		text: '<?php echo esc_js( $settings['text'] ); ?>',
+		shape: '<?php echo esc_js( $settings['shape'] ); ?>'
+	});
+} )();
 </script>
 <!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
