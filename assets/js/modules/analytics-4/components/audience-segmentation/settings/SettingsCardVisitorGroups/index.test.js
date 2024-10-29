@@ -16,15 +16,23 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { render, waitFor } from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import * as tracking from '../../../../../../util/tracking';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import SettingsCardVisitorGroups from './';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardVisitorGroups', () => {
 	let registry;
@@ -41,6 +49,10 @@ describe( 'SettingsCardVisitorGroups', () => {
 			] );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the setup CTA if groups are not configured', () => {
@@ -178,5 +190,82 @@ describe( 'SettingsCardVisitorGroups', () => {
 				},
 			} );
 		} );
+	} );
+
+	it( 'should track an event when the switch is toggled', async () => {
+		const audienceSettingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/audience-settings'
+		);
+
+		const availableAudiences = [
+			{
+				name: 'audienceA',
+				description: 'Audience A',
+				displayName: 'Audience A',
+				audienceType: 'DEFAULT_AUDIENCE',
+				audienceSlug: 'audience-a',
+			},
+			{
+				name: 'audienceB',
+				description: 'Audience B',
+				displayName: 'Audience B',
+				audienceType: 'SITE_KIT_AUDIENCE',
+				audienceSlug: 'audience-b',
+			},
+		];
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [ 'audienceA', 'audienceB' ],
+			isAudienceSegmentationWidgetHidden: true,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAudienceSegmentationSetupCompletedBy( null );
+
+		fetchMock.post( audienceSettingsEndpoint, ( url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+			// Return the same settings passed to the API.
+			return { body: data, status: 200 };
+		} );
+
+		const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		const switchControl = getByLabelText(
+			'Display visitor groups in dashboard'
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		switchControl.click();
+
+		await waitFor( () => {
+			expect( switchControl ).toBeChecked();
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_audiences-settings',
+			'audience_widgets_enable'
+		);
+
+		switchControl.click();
+
+		await waitFor( () => {
+			expect( switchControl ).not.toBeChecked();
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+			'settings_audiences-settings',
+			'audience_widgets_disable'
+		);
 	} );
 } );
