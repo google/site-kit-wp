@@ -120,152 +120,111 @@ describe( 'SettingsCardVisitorGroups', () => {
 		} );
 	} );
 
-	it( 'should toggle the switch on click and save the audience settings', async () => {
+	describe( 'the "Display visitor groups in dashboard" switch', () => {
+		let switchControl;
+
 		const audienceSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/audience-settings'
 		);
 
-		const availableAudiences = [
-			{
-				name: 'audienceA',
-				description: 'Audience A',
-				displayName: 'Audience A',
-				audienceType: 'DEFAULT_AUDIENCE',
-				audienceSlug: 'audience-a',
-			},
-			{
-				name: 'audienceB',
-				description: 'Audience B',
-				displayName: 'Audience B',
-				audienceType: 'SITE_KIT_AUDIENCE',
-				audienceSlug: 'audience-b',
-			},
-		];
+		beforeEach( () => {
+			const availableAudiences = [
+				{
+					name: 'audienceA',
+					description: 'Audience A',
+					displayName: 'Audience A',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'audience-a',
+				},
+				{
+					name: 'audienceB',
+					description: 'Audience B',
+					displayName: 'Audience B',
+					audienceType: 'SITE_KIT_AUDIENCE',
+					audienceSlug: 'audience-b',
+				},
+			];
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'audienceA', 'audienceB' ],
-			isAudienceSegmentationWidgetHidden: true,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
-
-		fetchMock.postOnce( audienceSettingsEndpoint, {
-			body: {
+			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 				configuredAudiences: [ 'audienceA', 'audienceB' ],
-				isAudienceSegmentationWidgetHidden: false,
-			},
-			status: 200,
+				isAudienceSegmentationWidgetHidden: true,
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAudienceSegmentationSetupCompletedBy( null );
+
+			fetchMock.post( audienceSettingsEndpoint, ( url, opts ) => {
+				const { data } = JSON.parse( opts.body );
+				// Return the same settings passed to the API.
+				return { body: data, status: 200 };
+			} );
+
+			const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
+				registry,
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			} );
+
+			switchControl = getByLabelText(
+				'Display visitor groups in dashboard'
+			);
 		} );
 
-		const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
-			registry,
-		} );
+		it( 'should toggle on click and save the audience settings', async () => {
+			expect( switchControl ).not.toBeChecked();
 
-		const switchControl = getByLabelText(
-			'Display visitor groups in dashboard'
-		);
+			switchControl.click();
 
-		expect( switchControl ).not.toBeChecked();
+			await waitFor( () => {
+				expect( switchControl ).toBeChecked();
 
-		switchControl.click();
-
-		await waitFor( () => {
-			expect( switchControl ).toBeChecked();
-
-			// Ensure the proper body parameters were sent.
-			expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
-				body: {
-					data: {
-						settings: {
-							configuredAudiences: [ 'audienceA', 'audienceB' ],
-							isAudienceSegmentationWidgetHidden: false,
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
+					body: {
+						data: {
+							settings: {
+								configuredAudiences: [
+									'audienceA',
+									'audienceB',
+								],
+								isAudienceSegmentationWidgetHidden: false,
+							},
 						},
 					},
-				},
+				} );
 			} );
 		} );
-	} );
 
-	it( 'should track an event when the switch is toggled', async () => {
-		const audienceSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/audience-settings'
-		);
+		it( 'should track an event when toggled', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-		const availableAudiences = [
-			{
-				name: 'audienceA',
-				description: 'Audience A',
-				displayName: 'Audience A',
-				audienceType: 'DEFAULT_AUDIENCE',
-				audienceSlug: 'audience-a',
-			},
-			{
-				name: 'audienceB',
-				description: 'Audience B',
-				displayName: 'Audience B',
-				audienceType: 'SITE_KIT_AUDIENCE',
-				audienceSlug: 'audience-b',
-			},
-		];
+			switchControl.click();
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+			await waitFor( () => {
+				expect( switchControl ).toBeChecked();
+			} );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
-			configuredAudiences: [ 'audienceA', 'audienceB' ],
-			isAudienceSegmentationWidgetHidden: true,
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'settings_audiences-settings',
+				'audience_widgets_enable'
+			);
+
+			switchControl.click();
+
+			await waitFor( () => {
+				expect( switchControl ).not.toBeChecked();
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+			expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+				'settings_audiences-settings',
+				'audience_widgets_disable'
+			);
 		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
-
-		fetchMock.post( audienceSettingsEndpoint, ( url, opts ) => {
-			const { data } = JSON.parse( opts.body );
-			// Return the same settings passed to the API.
-			return { body: data, status: 200 };
-		} );
-
-		const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
-			registry,
-			viewContext: VIEW_CONTEXT_SETTINGS,
-		} );
-
-		const switchControl = getByLabelText(
-			'Display visitor groups in dashboard'
-		);
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
-
-		switchControl.click();
-
-		await waitFor( () => {
-			expect( switchControl ).toBeChecked();
-		} );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'settings_audiences-settings',
-			'audience_widgets_enable'
-		);
-
-		switchControl.click();
-
-		await waitFor( () => {
-			expect( switchControl ).not.toBeChecked();
-		} );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
-		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
-			'settings_audiences-settings',
-			'audience_widgets_disable'
-		);
 	} );
 } );
