@@ -29,11 +29,12 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-function getInlineDataProperty( propName ) {
+function getEventsChangeProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
 		const inlineData =
 			select(
@@ -142,7 +143,7 @@ export const actions = {
 	},
 };
 
-export const reducer = ( state, { payload, type } ) => {
+export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_CONVERSION_REPORTING_INLINE_DATA: {
 			const { newEvents, lostEvents } = payload.data;
@@ -160,7 +161,7 @@ export const reducer = ( state, { payload, type } ) => {
 			return state;
 		}
 	}
-};
+} );
 
 export const selectors = {
 	/**
@@ -214,7 +215,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} `newEvents` list.
 	 */
-	hasNewConversionReportingEvents: getInlineDataProperty( 'newEvents' ),
+	hasNewConversionReportingEvents: getEventsChangeProperty( 'newEvents' ),
 
 	/**
 	 * Gets lostEvents list.
@@ -224,7 +225,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} `lostEvents` list.
 	 */
-	hasLostConversionReportingEvents: getInlineDataProperty( 'lostEvents' ),
+	hasLostConversionReportingEvents: getEventsChangeProperty( 'lostEvents' ),
 };
 
 export default combineStores(

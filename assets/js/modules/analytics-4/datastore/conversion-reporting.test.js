@@ -29,12 +29,19 @@ import {
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
+	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
 		provideModules( registry );
+
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+	} );
+
+	afterEach( () => {
+		global._googlesitekitModulesData = undefined;
 	} );
 
 	describe( 'actions', () => {
@@ -56,12 +63,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( data );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConversionReportingEventsChange()
-				).toMatchObject( data );
+				expect( store.getState().detectedEventsChange ).toMatchObject(
+					data
+				);
 			} );
 		} );
 		describe( 'dismissNewConversionReportingEvents', () => {
@@ -181,8 +185,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.getConversionReportingEventsChange();
 
 				expect( data ).toEqual( inlineData );
-
-				global._googlesitekitModulesData = undefined;
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
