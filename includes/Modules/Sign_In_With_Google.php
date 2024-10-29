@@ -107,4 +107,23 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	protected function setup_settings() {
 		return new Settings( $this->options );
 	}
+
+	/**
+	 * Checks whether the module is connected.
+	 *
+	 * A module being connected means that all steps required as part of its activation are completed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$options = $this->get_settings()->get();
+
+		if ( empty( $options['clientID'] ) ) {
+			return false;
+		}
+
+		return parent::is_connected();
+	}
 }
