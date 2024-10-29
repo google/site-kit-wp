@@ -21,7 +21,9 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+import useViewContext from '../../../../../../../hooks/useViewContext';
 import withIntersectionObserver from '../../../../../../../util/withIntersectionObserver';
+import { trackEvent } from '../../../../../../../util';
 import SetupSuccessContent from './SetupSuccessContent';
 
 const SetupSuccessContentWithIntersectionObserver =
@@ -31,6 +33,8 @@ export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
 	'settings_visitor_groups_setup_success_notification';
 
 export default function SetupSuccess() {
+	const viewContext = useViewContext();
+
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
@@ -41,5 +45,14 @@ export default function SetupSuccess() {
 		return null;
 	}
 
-	return <SetupSuccessContentWithIntersectionObserver />;
+	return (
+		<SetupSuccessContentWithIntersectionObserver
+			onInView={ () => {
+				trackEvent(
+					`${ viewContext }_audiences-setup-cta-settings-success`,
+					'view_notification'
+				);
+			} }
+		/>
+	);
 }
