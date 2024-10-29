@@ -408,6 +408,29 @@ const baseActions = {
 			configuredAudiences.push( ...audiences );
 		}
 
+		if ( configuredAudiences.length === 1 ) {
+			// Add 'Purchasers' audience if it has data.
+			const purchasersAudience = availableAudiences.find(
+				( { audienceSlug } ) => audienceSlug === 'purchasers'
+			);
+
+			if ( purchasersAudience ) {
+				const purchasersResourceDataAvailabilityDate =
+					yield commonActions.await(
+						resolveSelect(
+							MODULES_ANALYTICS_4
+						).getResourceDataAvailabilityDate(
+							purchasersAudience.name,
+							RESOURCE_TYPE_AUDIENCE
+						)
+					);
+
+				if ( purchasersResourceDataAvailabilityDate ) {
+					configuredAudiences.push( purchasersAudience.name );
+				}
+			}
+		}
+
 		if ( configuredAudiences.length === 0 ) {
 			const requiredAudienceSlugs = [
 				'new-visitors',
@@ -648,15 +671,17 @@ const baseActions = {
 			return { error };
 		}
 
-		// Expire new badges for initially configured audiences.
-		yield commonActions.await(
-			dispatch( CORE_USER ).setExpirableItemTimers(
-				configuredAudiences.map( ( slug ) => ( {
-					slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
-					expiresInSeconds: 1,
-				} ) )
-			)
-		);
+		if ( configuredAudiences.length > 0 ) {
+			// Expire new badges for initially configured audiences.
+			yield commonActions.await(
+				dispatch( CORE_USER ).setExpirableItemTimers(
+					configuredAudiences.map( ( slug ) => ( {
+						slug: `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`,
+						expiresInSeconds: 1,
+					} ) )
+				)
+			);
+		}
 
 		return {};
 	},

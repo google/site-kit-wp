@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS } from '../../../../../../util';
+import { trackEvent, WEEK_IN_SECONDS } from '../../../../../../util';
 import whenActive from '../../../../../../util/when-active';
 import InfoNotice from '../InfoNotice';
 import {
@@ -42,8 +42,15 @@ import {
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
+import useViewContext from '../../../../../../hooks/useViewContext';
+
+const InfoNoticeWithIntersectionObserver =
+	withIntersectionObserver( InfoNotice );
 
 function InfoNoticeWidget( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
+
 	const availableAudiences = useInViewSelect( ( select ) => {
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
@@ -79,18 +86,25 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 
 	const { dismissPrompt } = useDispatch( CORE_USER );
 
-	const onDismiss = useCallback( async () => {
+	const onDismiss = useCallback( () => {
 		if ( undefined === dismissCount ) {
 			return;
 		}
 
-		const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
-		const expiry = dismissCount + 1 < noticesCount ? twoWeeksInSeconds : 0;
+		trackEvent(
+			`${ viewContext }_audiences-info-notice`,
+			'dismiss_notice',
+			AUDIENCE_INFO_NOTICES[ dismissCount ].slug
+		).finally( () => {
+			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
+			const expiry =
+				dismissCount + 1 < noticesCount ? twoWeeksInSeconds : 0;
 
-		await dismissPrompt( AUDIENCE_INFO_NOTICE_SLUG, {
-			expiresInSeconds: expiry,
+			dismissPrompt( AUDIENCE_INFO_NOTICE_SLUG, {
+				expiresInSeconds: expiry,
+			} );
 		} );
-	}, [ dismissCount, dismissPrompt, noticesCount ] );
+	}, [ dismissCount, dismissPrompt, noticesCount, viewContext ] );
 
 	// Return null if there are no matching audiences or if the notice has been dismissed.
 	if (
@@ -103,12 +117,21 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 		return <WidgetNull />;
 	}
 
+	const { slug, content } = AUDIENCE_INFO_NOTICES[ dismissCount ];
+
 	return (
 		<Widget noPadding>
-			<InfoNotice
-				content={ AUDIENCE_INFO_NOTICES[ dismissCount ] }
+			<InfoNoticeWithIntersectionObserver
+				content={ content }
 				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 				onDismiss={ onDismiss }
+				onInView={ () => {
+					trackEvent(
+						`${ viewContext }_audiences-info-notice`,
+						'view_notice',
+						slug
+					);
+				} }
 			/>
 		</Widget>
 	);
