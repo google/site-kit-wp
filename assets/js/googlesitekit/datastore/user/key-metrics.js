@@ -563,6 +563,27 @@ const baseSelectors = {
 			} );
 		}
 	),
+
+	/**
+	 * Gets whether the new Analytics Conversion Reporting metric tiles
+	 * should be made available or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} True if ACR tiles should be shown, false if not.
+	 */
+	showConversionTailoredMetrics: createRegistrySelector( ( select ) => () => {
+		if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
+			return false;
+		}
+
+		const keyMetricSettings = select( CORE_USER ).getKeyMetricsSettings();
+		const isUserInputCompleted = select( CORE_USER ).isUserInputCompleted();
+		return (
+			keyMetricSettings?.includeConversionTailoredMetrics ||
+			isUserInputCompleted
+		);
+	} ),
 };
 
 const store = combineStores(
