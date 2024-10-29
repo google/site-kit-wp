@@ -284,12 +284,8 @@ const baseSelectors = {
 			return postTypes.some( ( { slug } ) => slug === 'product' );
 		};
 
-		const keyMetricSettings = select( CORE_USER ).getKeyMetricsSettings();
-		const isUserInputCompleted = select( CORE_USER ).isUserInputCompleted();
 		const showConversionTailoredMetrics =
-			( keyMetricSettings?.includeConversionTailoredMetrics ||
-				isUserInputCompleted ) &&
-			isFeatureEnabled( 'conversionReporting' );
+			select( CORE_USER ).showConversionTailoredMetrics();
 
 		switch ( purpose ) {
 			case 'publish_blog':
