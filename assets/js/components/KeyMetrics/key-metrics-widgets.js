@@ -39,6 +39,7 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
@@ -426,6 +427,19 @@ const KEY_METRICS_WIDGETS = {
 		),
 		infoTooltip: __(
 			'Cities driving the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+	},
+	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]: {
+		title: __( 'Top device driving purchases', 'google-site-kit' ),
+		description: __(
+			'Top device driving the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Top device driving the most purchases',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'purchase' ],

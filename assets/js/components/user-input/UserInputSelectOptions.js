@@ -42,6 +42,7 @@ import useViewContext from '../../hooks/useViewContext';
 
 export default function UserInputSelectOptions( {
 	slug,
+	descriptions,
 	options,
 	max,
 	next,
@@ -143,6 +144,7 @@ export default function UserInputSelectOptions( {
 		const props = {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
+			description: descriptions?.[ optionSlug ],
 			checked: values.includes( optionSlug ),
 			onKeyDown,
 			alignLeft: alignLeftOptions,
@@ -209,6 +211,7 @@ export default function UserInputSelectOptions( {
 
 UserInputSelectOptions.propTypes = {
 	slug: PropTypes.string.isRequired,
+	descriptions: PropTypes.shape( {} ),
 	options: PropTypes.shape( {} ).isRequired,
 	max: PropTypes.number,
 	next: PropTypes.func,
