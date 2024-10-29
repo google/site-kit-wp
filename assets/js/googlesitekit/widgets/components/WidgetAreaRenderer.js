@@ -51,7 +51,7 @@ import WidgetErrorHandler from '../../../components/WidgetErrorHandler';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
 import useLatestIntersection from '../../../hooks/useLatestIntersection';
-import WidgetNewBadge from './WidgetNewBadge';
+import WidgetAreaHeader from './WidgetAreaHeader';
 
 /**
  * Gets root margin value for the intersection hook.
@@ -99,7 +99,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
 
-	const { Icon, title, style, subtitle, CTA, Footer } = widgetArea;
+	const { style, CTA, Footer } = widgetArea;
 
 	const widgets = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug, {
@@ -136,7 +136,6 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 	}, [ intersectionEntry, slug, activeContextID, contextID ] );
 
 	const ctaWithSmallWindow = CTA && windowWidth <= 782;
-	const ctaWithLargeWindow = CTA && windowWidth >= 783;
 
 	if ( viewableModules === undefined ) {
 		return null;
@@ -197,40 +196,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 					) }
 					ref={ widgetAreaRef }
 				>
-					<Row>
-						<Cell
-							className="googlesitekit-widget-area-header"
-							size={ 12 }
-						>
-							{ Icon && <Icon width={ 33 } height={ 33 } /> }
-
-							{ title && (
-								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-									{ title }
-									<WidgetNewBadge slug={ slug } />
-								</h3>
-							) }
-
-							{ ( subtitle || CTA ) && (
-								<div className="googlesitekit-widget-area-header__details">
-									{ subtitle && (
-										<h4 className="googlesitekit-widget-area-header__subtitle">
-											{ subtitle }
-											{ ! title && (
-												<WidgetNewBadge slug={ slug } />
-											) }
-										</h4>
-									) }
-
-									{ ctaWithLargeWindow && (
-										<div className="googlesitekit-widget-area-header__cta">
-											<CTA />
-										</div>
-									) }
-								</div>
-							) }
-						</Cell>
-					</Row>
+					<WidgetAreaHeader slug={ slug } />
 
 					<div className="googlesitekit-widget-area-widgets">
 						<Row>
