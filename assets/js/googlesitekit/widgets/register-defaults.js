@@ -41,6 +41,7 @@ import {
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
+import MetricsWidgetSubtitle from '../../components/KeyMetrics/MetricsWidgetSubtitle';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import {
 	AudienceAreaFooter,
@@ -109,10 +110,7 @@ export function registerDefaults( widgetsAPI ) {
 					<KeyMetricsNewBadge />
 				</Fragment>
 			),
-			subtitle: __(
-				'Track progress towards your goals with tailored metrics',
-				'google-site-kit'
-			),
+			subtitle: <MetricsWidgetSubtitle />,
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 			CTA: ChangeMetricsLink,
