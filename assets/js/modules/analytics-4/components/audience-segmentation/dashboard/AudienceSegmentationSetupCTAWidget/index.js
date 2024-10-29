@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -49,13 +49,17 @@ import {
 	useTooltipState,
 } from '../../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { WEEK_IN_SECONDS } from '../../../../../../util';
+import { trackEvent, WEEK_IN_SECONDS } from '../../../../../../util';
+import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import AudienceErrorModal from '../AudienceErrorModal';
 import SetupCTAContent from './SetupCTAContent';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
+
+const SetupCTAContentWithIntersectionObserver =
+	withIntersectionObserver( SetupCTAContent );
 
 function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
@@ -134,20 +138,30 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
 	);
 
-	const handleDismissClick = async () => {
+	function handleDismissClick() {
 		showTooltip();
 
-		// For the first dismissal, we show the notification again in two weeks.
-		if ( dismissCount < 1 ) {
-			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
-			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION, {
-				expiresInSeconds: twoWeeksInSeconds,
-			} );
-		} else {
-			// For the second dismissal, dismiss the notification permanently.
-			await dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION );
-		}
-	};
+		trackEvent(
+			`${ viewContext }_audiences-setup-cta-dashboard`,
+			'dismiss_notification'
+		).finally( async () => {
+			// For the first dismissal, we show the notification again in two weeks.
+			if ( dismissCount < 1 ) {
+				const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
+				await dismissPrompt(
+					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+					{
+						expiresInSeconds: twoWeeksInSeconds,
+					}
+				);
+			} else {
+				// For the second dismissal, dismiss the notification permanently.
+				await dismissPrompt(
+					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+				);
+			}
+		} );
+	}
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
@@ -166,6 +180,15 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+
+	useEffect( () => {
+		if ( isTooltipVisible ) {
+			trackEvent(
+				`${ viewContext }_audiences-setup-cta-dashboard`,
+				'view_tooltip'
+			);
+		}
+	}, [ isTooltipVisible, viewContext ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -200,13 +223,26 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		return null;
 	}
 
+	function handleEnableGroups() {
+		trackEvent(
+			`${ viewContext }_audiences-setup-cta-dashboard`,
+			'confirm_notification'
+		).finally( onEnableGroups );
+	}
+
 	return (
 		<Fragment>
-			<SetupCTAContent
+			<SetupCTAContentWithIntersectionObserver
 				Widget={ Widget }
-				onEnableGroups={ onEnableGroups }
+				onEnableGroups={ handleEnableGroups }
 				isSaving={ isSaving }
 				handleDismissClick={ handleDismissClick }
+				onInView={ () => {
+					trackEvent(
+						`${ viewContext }_audiences-setup-cta-dashboard`,
+						'view_notification'
+					);
+				} }
 			/>
 			{ ( showErrorModal || hasOAuthError ) && (
 				<AudienceErrorModal
@@ -219,6 +255,13 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 							? onCancel
 							: () => setShowErrorModal( false )
 					}
+					onDismiss={ () => {
+						trackEvent(
+							`${ viewContext }_audiences-setup-cta-dashboard`,
+							'dismiss_tooltip'
+						);
+					} }
+					trackEventCategory={ `${ viewContext }_audiences-setup` }
 				/>
 			) }
 		</Fragment>
