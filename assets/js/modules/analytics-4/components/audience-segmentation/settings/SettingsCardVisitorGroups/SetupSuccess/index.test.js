@@ -30,6 +30,7 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
+	waitForDefaultTimeouts,
 } from '../../../../../../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../../../../../../tests/js/mock-browser-utils';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
@@ -108,7 +109,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should dismiss the notification if "Got it" is clicked on', () => {
+	it( 'should dismiss the notification if "Got it" is clicked on', async () => {
 		const { queryByText, getByRole } = render( <SetupSuccess />, {
 			registry,
 		} );
@@ -120,6 +121,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
 
 		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
 		expect( dismissItemSpy ).toHaveBeenCalledWith(
@@ -139,6 +143,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /Show me/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
 
 		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
 		expect( dismissItemSpy ).toHaveBeenCalledWith(
