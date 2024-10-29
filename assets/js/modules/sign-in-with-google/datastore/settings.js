@@ -35,6 +35,7 @@ import {
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
 } from './constants';
+import { isValidClientID } from '../utils/validation';
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
@@ -62,6 +63,7 @@ export function validateCanSubmitChanges( select ) {
 	const theme = getTheme();
 
 	invariant( clientID?.length, 'clientID is required' );
+	invariant( isValidClientID( clientID ), 'Invalid client ID' );
 	invariant(
 		SIGN_IN_WITH_GOOGLE_SHAPES.includes( shape ),
 		`shape must be one of: ${ SIGN_IN_WITH_GOOGLE_SHAPES.join( ', ' ) }`
