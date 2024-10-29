@@ -59,9 +59,9 @@ export default function ButtonTextSelect() {
 				enhanced
 				outlined
 			>
-				{ SIGN_IN_WITH_GOOGLE_TEXTS.map( ( value, i ) => (
-					<Option key={ i } value={ value }>
-						{ value }
+				{ SIGN_IN_WITH_GOOGLE_TEXTS.map( ( option ) => (
+					<Option key={ option.value } value={ option.value }>
+						{ option.label }
 					</Option>
 				) ) }
 			</Select>
