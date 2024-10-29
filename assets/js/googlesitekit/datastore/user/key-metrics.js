@@ -405,7 +405,42 @@ const baseSelectors = {
 		if ( keyMetricsSettings === undefined ) {
 			return undefined;
 		}
-		return keyMetricsSettings.widgetSlugs;
+
+		// Even though a user may have picked their own metrics, there is a chance that they no longer
+		// are "available" if they require certain custom dimensions, detected events, etc. which no
+		// longer exist. So we should filter these out by using the displayInWidgetArea() callback.
+		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
+		const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
+			( slug ) => {
+				const widget = KEY_METRICS_WIDGETS[ slug ];
+
+				if ( ! widget ) {
+					return false;
+				}
+
+				if (
+					widget.displayInWidgetArea &&
+					typeof widget.displayInWidgetArea === 'function'
+				) {
+					return widget.displayInWidgetArea(
+						select,
+						isViewOnly,
+						slug
+					);
+				}
+
+				return true;
+			}
+		);
+
+		// If only one widget tile remains after filtering, return an empty array.
+		// This triggers the `getKeyMetrics` selector to use the default set of widgets
+		// instead of hiding the entire widget area (which happens if only one tile is active).
+		if ( filteredWidgetSlugs.length === 1 ) {
+			return [];
+		}
+
+		return filteredWidgetSlugs;
 	} ),
 
 	/**
