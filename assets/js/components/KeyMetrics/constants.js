@@ -23,7 +23,6 @@ export const KEY_METRICS_SELECTION_FORM = 'key-metrics-selection-form';
 export const KEY_METRICS_SELECTED = 'key-metrics-selected';
 export const MIN_SELECTED_METRICS_COUNT = 2;
 export const MAX_SELECTED_METRICS_COUNT = 4;
-
 export const MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS = 8;
 
 export const KEY_METRICS_GROUP_VISITORS = {
