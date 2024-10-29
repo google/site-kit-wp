@@ -238,7 +238,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		$redirect_url = site_url( '/auth/google' );
+		$redirect_url = add_query_arg( 'action', 'google_auth', wp_login_url() );
 		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
 			return;
 		}
@@ -253,6 +253,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	google.accounts.id.initialize({
 		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
 		login_uri: '<?php echo esc_js( $redirect_url ); ?>',
+		ux_mode: 'redirect',
 	});
 	const parent = document.createElement( 'div' );
 	document.getElementById( 'login').insertBefore( parent, document.getElementById( 'loginform' ) );
