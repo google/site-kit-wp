@@ -25,7 +25,7 @@ import {
 	fireEvent,
 	render,
 	waitFor,
-} from '../../../../../../../tests/js/test-utils';
+} from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -34,26 +34,26 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	waitForTimeouts,
-} from '../../../../../../../tests/js/utils';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+} from '../../../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
-} from '../../../datastore/constants';
+} from '../../../../datastore/constants';
 import {
 	availableAudiences as audiencesFixture,
 	properties as propertiesFixture,
-} from '../../../datastore/__fixtures__';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
-import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { getAnalytics4MockResponse } from '../../../utils/data-mock';
+} from '../../../../datastore/__fixtures__';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import { getWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './AudienceSegmentationSetupCTAWidget';
+} from '.';
 
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;

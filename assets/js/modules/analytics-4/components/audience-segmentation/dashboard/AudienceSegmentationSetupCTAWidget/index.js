@@ -32,36 +32,36 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
-import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
-import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
-import whenActive from '../../../../../util/when-active';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import BannerGraphicsSVGDesktop from '../../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
+import BannerGraphicsSVGTablet from '../../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
+import BannerGraphicsSVGMobile from '../../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import whenActive from '../../../../../../util/when-active';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '../../../../../../googlesitekit/notifications/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
-} from '../../../datastore/constants';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
+} from '../../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../../settings/SettingsCardVisitorGroups/SetupSuccess';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import { Cell, Grid, Row } from '../../../../../../material-components';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
-import useViewContext from '../../../../../hooks/useViewContext';
+} from '../../../../../../hooks/useBreakpoint';
+import useViewContext from '../../../../../../hooks/useViewContext';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
 	useTooltipState,
-} from '../../../../../components/AdminMenuTooltip';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { WEEK_IN_SECONDS } from '../../../../../util';
-import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
-import AudienceErrorModal from './AudienceErrorModal';
+} from '../../../../../../components/AdminMenuTooltip';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { WEEK_IN_SECONDS } from '../../../../../../util';
+import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
+import AudienceErrorModal from '../AudienceErrorModal';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
