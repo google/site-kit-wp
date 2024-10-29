@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 
 /**
@@ -28,6 +29,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
  */
 final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation {
 
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 
@@ -42,6 +44,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
+		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
 	/**
@@ -125,5 +128,45 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		return parent::is_connected();
+	}
+
+	/**
+	 * Renders the sign in button.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function render_signin_button() {
+		$settings = $this->get_settings()->get();
+		if ( ! $settings['clientID'] ) {
+			return;
+		}
+
+		$redirect_url = site_url( '/auth/google' );
+		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
+			return;
+		}
+
+		// Render the Sign in with Google button and related inline styles.
+		?>
+<!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+<?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
+<script src="https://accounts.google.com/gsi/client"></script>
+<script>
+( () => {
+	google.accounts.id.initialize({
+		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
+		login_uri: '<?php echo esc_js( $redirect_url ); ?>',
+	});
+	const parent = document.createElement( 'div' );
+	document.getElementById( 'login').insertBefore( parent, document.getElementById( 'loginform' ) );
+	google.accounts.id.renderButton(parent, {
+		theme: '<?php echo esc_js( $settings['theme'] ); ?>',
+		text: '<?php echo esc_js( $settings['text'] ); ?>',
+		shape: '<?php echo esc_js( $settings['shape'] ); ?>'
+	});
+} )();
+</script>
+<!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+		<?php
 	}
 }
