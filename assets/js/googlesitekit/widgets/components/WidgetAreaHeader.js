@@ -19,23 +19,22 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * Internal dependencies
  */
 import { Cell, Row } from '../../../material-components';
-import { useSelect } from 'googlesitekit-data';
-import { CORE_WIDGETS } from '../datastore/constants';
 import WidgetNewBadge from './WidgetNewBadge';
 
-export default function WidgetAreaHeader( { slug } ) {
-	const widgetArea = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getWidgetArea( slug )
-	);
-
-	const { Icon, title, subtitle, CTA } = widgetArea;
-
+export default function WidgetAreaHeader( {
+	slug,
+	Icon = false,
+	title = '',
+	subtitle = '',
+	CTA,
+} ) {
 	const windowWidth = useWindowWidth();
 
 	const ctaWithLargeWindow = CTA && windowWidth >= 783;
@@ -57,7 +56,7 @@ export default function WidgetAreaHeader( { slug } ) {
 						{ subtitle && (
 							<h4 className="googlesitekit-widget-area-header__subtitle">
 								{ typeof subtitle === 'function' ? (
-									<widgetArea.subtitle />
+									<subtitle />
 								) : (
 									subtitle
 								) }
@@ -76,3 +75,11 @@ export default function WidgetAreaHeader( { slug } ) {
 		</Row>
 	);
 }
+
+WidgetAreaHeader.propTypes = {
+	slug: PropTypes.string.isRequired,
+	Icon: PropTypes.bool,
+	title: PropTypes.string,
+	subtitle: PropTypes.oneOf( PropTypes.string, PropTypes.object ),
+	CTA: PropTypes.object,
+};

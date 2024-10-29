@@ -99,7 +99,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
 
-	const { style, CTA, Footer } = widgetArea;
+	const { Icon, title, style, subtitle, CTA, Footer } = widgetArea;
 
 	const widgets = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug, {
@@ -196,7 +196,13 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 					) }
 					ref={ widgetAreaRef }
 				>
-					<WidgetAreaHeader slug={ slug } />
+					<WidgetAreaHeader
+						slug={ slug }
+						Icon={ Icon }
+						title={ title }
+						subtitle={ subtitle }
+						CTA={ CTA }
+					/>
 
 					<div className="googlesitekit-widget-area-widgets">
 						<Row>
