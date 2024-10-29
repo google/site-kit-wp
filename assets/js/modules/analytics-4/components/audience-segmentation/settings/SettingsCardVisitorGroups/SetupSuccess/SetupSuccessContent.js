@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups SetupSuccess component.
+ * SetupSuccessContent component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -25,23 +25,19 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../googlesitekit/widgets/default-areas';
-import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
+import { CORE_LOCATION } from '../../../../../../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import CheckFill from '../../../../../../../svg/icons/check-fill.svg';
+import CheckFill from '../../../../../../../../svg/icons/check-fill.svg';
+import { forwardRef } from 'react';
 
 export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
 	'settings_visitor_groups_setup_success_notification';
 
-export default function SetupSuccess() {
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		)
-	);
+const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	const dashboardURL = useSelect( ( select ) => {
 		const url = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-dashboard'
@@ -66,12 +62,11 @@ export default function SetupSuccess() {
 		navigateTo( dashboardURL );
 	}
 
-	if ( isDismissed === undefined || isDismissed ) {
-		return null;
-	}
-
 	return (
-		<div className="googlesitekit-settings-visitor-groups__setup-success googlesitekit-subtle-notification">
+		<div
+			ref={ ref }
+			className="googlesitekit-settings-visitor-groups__setup-success googlesitekit-subtle-notification"
+		>
 			<div className="googlesitekit-subtle-notification__icon">
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
@@ -93,4 +88,6 @@ export default function SetupSuccess() {
 			</div>
 		</div>
 	);
-}
+} );
+
+export default SetupSuccessContent;

@@ -30,14 +30,14 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../googlesitekit/widgets/default-areas';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+} from '../../../../../../../../../tests/js/test-utils';
+import { mockLocation } from '../../../../../../../../../tests/js/mock-browser-utils';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
+import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import SetupSuccess, {
 	SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
-} from './SetupSuccess';
+} from '.';
 
 describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 	let registry;
