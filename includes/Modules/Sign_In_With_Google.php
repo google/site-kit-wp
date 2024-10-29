@@ -81,24 +81,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
-		add_action(
-			'init',
-			function () {
-				add_rewrite_rule( '^auth/google/?$', 'index.php?google_auth=1', 'top' );
-			}
-		);
-
-		add_filter(
-			'query_vars',
-			function ( $vars ) {
-				$vars[] = 'google_auth';
-				return $vars;
-			}
-		);
-
 		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
 
-		add_action( 'template_redirect', array( $this, 'handle_google_auth' ) );
+		add_action( 'login_form_google_auth', array( $this, 'handle_google_auth' ) );
 	}
 
 	/**
@@ -108,12 +93,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 */
 	public function handle_google_auth() {
-		global $wp_query;
-
-		if ( ! isset( $wp_query->query_vars['google_auth'] ) ) {
-			return;
-		}
-
 		$client_id = $this->get_settings()->get()['clientID'];
 		if ( empty( $client_id ) ) {
 			wp_safe_redirect( add_query_arg( 'error', 'no_client_id', wp_login_url() ) );
@@ -138,11 +117,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				exit;
 			}
 
-			// @TODO implement further flow and redirect with $payload in #9339.
-			wp_send_json_success();
+			// @TODO implement further flow using $payload in #9339.
 
 		} catch ( \Exception $e ) {
-			wp_send_json_error( $e->getMessage() );
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
+			exit;
 		}
 	}
 
