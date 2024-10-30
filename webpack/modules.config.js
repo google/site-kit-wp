@@ -93,6 +93,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 				'./assets/js/googlesitekit-components-gm2.js',
 			'googlesitekit-components-gm3':
 				'./assets/js/googlesitekit-components-gm3.js',
+			'googlesitekit-metric-selection':
+				'./assets/js/googlesitekit-metric-selection.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
