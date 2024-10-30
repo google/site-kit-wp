@@ -393,6 +393,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		if ( ! Array.isArray( keyMetricsSettings.widgetSlugs ) ) {
+			return [];
+		}
+
 		// Even though a user may have picked their own metrics, there is a chance that they no longer
 		// are "available" if they require certain custom dimensions, detected events, feature flags, etc. which no
 		// longer exist. So we should filter these out by using the displayInWidgetArea() callback.
