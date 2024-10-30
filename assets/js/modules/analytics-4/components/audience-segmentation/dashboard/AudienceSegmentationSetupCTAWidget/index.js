@@ -185,7 +185,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		if ( isTooltipVisible ) {
 			trackEvent(
 				`${ viewContext }_audiences-setup-cta-dashboard`,
-				'view_tooltip'
+				'tooltip_view'
 			);
 		}
 	}, [ isTooltipVisible, viewContext ] );
@@ -204,6 +204,12 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					onDismiss={ () => {
+						trackEvent(
+							`${ viewContext }_audiences-setup-cta-dashboard`,
+							'tooltip_dismiss'
+						);
+					} }
 					tooltipStateKey={
 						AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 					}
