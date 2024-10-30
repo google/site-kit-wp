@@ -170,7 +170,10 @@ describe( 'core/user key metrics', () => {
 			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
-						widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
+						widgetSlugs: [
+							KM_ANALYTICS_RETURNING_VISITORS,
+							KM_ANALYTICS_NEW_VISITORS,
+						],
 						isWidgetHidden: false,
 					},
 					status: 200,
@@ -185,7 +188,10 @@ describe( 'core/user key metrics', () => {
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+				).toMatchObject( [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
