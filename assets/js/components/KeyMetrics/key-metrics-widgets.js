@@ -57,7 +57,6 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
 import { isFeatureEnabled } from '../../features';
 
@@ -79,13 +78,6 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
 	select,
 	isViewOnlyDashboard
 ) {
-	if (
-		! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ||
-		! select( CORE_MODULES ).isModuleConnected( 'adsense' )
-	) {
-		return false;
-	}
-
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
