@@ -889,7 +889,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		} );
 
 		describe( 'OAuth error modal', () => {
-			it( 'should show when the required scopes are not granted', async () => {
+			let getByRole, getByText;
+
+			beforeEach( () => {
 				provideSiteInfo( registry, {
 					setupErrorCode: 'access_denied',
 				} );
@@ -912,26 +914,24 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( settings );
 
-				const { getByRole, getByText } = render(
+				// Set `autoSubmit` to `true`, as the OAuth error modal will typically be
+				// shown when the user returns from the OAuth flow.
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+						autoSubmit: true,
+					} );
+
+				( { getByRole, getByText } = render(
 					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
-				);
+				) );
+			} );
 
-				expect(
-					getByRole( 'button', { name: /Enable groups/i } )
-				).toBeInTheDocument();
-
-				act( () => {
-					fireEvent.click(
-						getByRole( 'button', { name: /Enable groups/i } )
-					);
-				} );
-
-				// Allow the `trackEvent()` promise to resolve.
-				await waitForDefaultTimeouts();
-
+			it( 'should show when the required scopes are not granted', () => {
 				// Verify the error is an OAuth error variant.
 				expect(
 					getByText( /Analytics update failed/i )
@@ -952,12 +952,48 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 
 				// Verify the "Retry" button is displayed.
-				expect( getByText( /retry/i ) ).toBeInTheDocument();
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should track an event when the Retry button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'auth_error_retry'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /Cancel/i } )
+					);
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'auth_error_cancel'
+				);
 			} );
 		} );
 
 		describe( 'insufficient permissions error modal', () => {
-			it( 'should show when the user does not have the required permissions', async () => {
+			let getByRole, getByText;
+
+			beforeEach( async () => {
 				const errorResponse = {
 					code: 'test_error',
 					message: 'Error message.',
@@ -969,12 +1005,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				const { getByRole, getByText } = render(
+				( { getByRole, getByText } = render(
 					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
-				);
+				) );
 
 				expect(
 					getByRole( 'button', { name: /Enable groups/i } )
@@ -986,25 +1023,71 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					);
 				} );
 
-				// Verify the error is "Insufficient permissions" variant.
 				await waitFor( () => {
-					expect(
-						getByText( /Insufficient permissions/i )
-					).toBeInTheDocument();
-
-					// Verify the "Get help" link is displayed.
-					expect( getByText( /get help/i ) ).toBeInTheDocument();
-
-					// Verify the "Request access" button is displayed.
-					expect(
-						getByText( /request access/i )
-					).toBeInTheDocument();
+					getByText( /Insufficient permissions/i );
 				} );
+			} );
+
+			it( 'should show when the user does not have the required permissions', () => {
+				// Verify the error is "Insufficient permissions" variant.
+				expect(
+					getByText( /Insufficient permissions/i )
+				).toBeInTheDocument();
+
+				// Verify the "Get help" link is displayed.
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toBeInTheDocument();
+
+				// Verify the "Request access" button is displayed.
+				expect(
+					getByRole( 'button', { name: /request access/i } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should track an event when the "Request access" button is clicked', async () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /request access/i } )
+					);
+				} );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'insufficient_permissions_error_request_access'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+				} );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'insufficient_permissions_error_cancel'
+				);
 			} );
 		} );
 
 		describe( 'generic error modal', () => {
-			it( 'should show when an internal server error occurs', async () => {
+			let getByRole, getByText;
+
+			beforeEach( async () => {
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -1016,12 +1099,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				const { getByRole, getByText } = render(
+				( { getByRole, getByText } = render(
 					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
-				);
+				) );
 
 				expect(
 					getByRole( 'button', { name: /Enable groups/i } )
@@ -1035,15 +1119,59 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 				// Verify the error is general error variant.
 				await waitFor( () => {
-					expect(
-						getByText( /Failed to set up visitor groups/i )
-					).toBeInTheDocument();
-
-					// Verify the "Retry" button is displayed.
-					expect(
-						getByRole( 'button', { name: /retry/i } )
-					).toBeInTheDocument();
+					getByText( /Failed to set up visitor groups/i );
 				} );
+			} );
+
+			it( 'should show when an internal server error occurs', () => {
+				expect(
+					getByText( /Failed to set up visitor groups/i )
+				).toBeInTheDocument();
+
+				// Verify the "Retry" button is displayed.
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should track an event when the Retry button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'setup_error_retry'
+				);
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'setup_error_cancel'
+				);
 			} );
 		} );
 	} );
