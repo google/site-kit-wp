@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,11 +33,18 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { useDebounce } from '../../../../hooks/useDebounce';
+import { isValidClientID } from '../../utils/validation';
 
 export default function ClientIDTextField() {
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
+
+	const [ isValid, setIsValid ] = useState(
+		! clientID || isValidClientID( clientID )
+	);
+	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
 	const { setClientID } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 	const onChange = useCallback(
@@ -42,15 +54,26 @@ export default function ClientIDTextField() {
 			if ( newValue !== clientID ) {
 				setClientID( newValue );
 			}
+
+			debounceSetIsValid( isValidClientID( newValue ) );
 		},
-		[ clientID, setClientID ]
+		[ debounceSetIsValid, clientID, setClientID ]
 	);
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<TextField
 				label={ __( 'Client ID', 'google-site-kit' ) }
-				className="googlesitekit-text-field-client-id"
+				className={ classnames( 'googlesitekit-text-field-client-id', {
+					'mdc-text-field--error': ! isValid,
+				} ) }
+				helperText={
+					! isValid &&
+					__(
+						'The Sign in with Google button won’t be displayed until you insert a valid Client ID',
+						'google-site-kit'
+					)
+				}
 				outlined
 				value={ clientID }
 				onChange={ onChange }
