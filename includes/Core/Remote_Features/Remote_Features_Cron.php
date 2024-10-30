@@ -57,9 +57,9 @@ class Remote_Features_Cron {
 		if ( ! wp_next_scheduled( self::CRON_ACTION ) && ! wp_installing() ) {
 			$response = wp_schedule_event( time(), 'twicedaily', self::CRON_ACTION, array(), true );
 
-			if ( is_wp_error( $response ) ) {
-				error_log( 'Failed to schedule remote features cron: ' . $response->get_error_message() );
-			}
+			// if ( is_wp_error( $response ) ) {
+			// 	error_log( 'Failed to schedule remote features cron: ' . $response->get_error_message() );
+			// }
 		}
 	}
 }

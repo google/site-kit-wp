@@ -137,9 +137,9 @@ class Uninstallation {
 			if ( (bool) wp_next_scheduled( $event ) ) {
 				$response = wp_clear_scheduled_hook( $event, array(), true );
 
-				if ( is_wp_error( $response ) ) {
-					error_log( 'Failed to clear remote features cron: ' . $response->get_error_message() );
-				}
+				// if ( is_wp_error( $response ) ) {
+				// 	error_log( 'Failed to clear remote features cron: ' . $response->get_error_message() );
+				// }
 			}
 		}
 	}
