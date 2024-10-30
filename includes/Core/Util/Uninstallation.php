@@ -135,10 +135,10 @@ class Uninstallation {
 		global $wpdb;
 		$wpdb->show_errors();
 		foreach ( self::SCHEDULED_EVENTS as $event ) {
-			error_log( 'Uninstalling test error log. : ' . $event );
 			// DEBUG: log wpdb errors to catch failure in update_options.
 			wp_clear_scheduled_hook( $event );
 			if ( $wpdb->last_error !== '' ) {
+				error_log( 'wpdb error found : ' . $event );
 				$wpdb->print_error();
 			}
 		}
