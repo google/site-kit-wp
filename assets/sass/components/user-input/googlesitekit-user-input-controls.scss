@@ -30,6 +30,9 @@
 		@media (min-width: $bp-tablet) {
 			padding: 10px 0;
 		}
+		.mdc-radio {
+			margin-right: 8px;
+		}
 
 		label {
 			color: $c-surfaces-on-background;
