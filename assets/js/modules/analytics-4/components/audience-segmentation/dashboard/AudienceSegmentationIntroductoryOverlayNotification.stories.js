@@ -61,6 +61,12 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAudienceSegmentationSetupCompletedBy( userID + 1 );
+
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					configuredAudiences: [],
+					isAudienceSegmentationWidgetHidden: false,
+					didSetAudiences: true,
+				} );
 			};
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

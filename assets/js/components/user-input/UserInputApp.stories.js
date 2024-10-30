@@ -91,12 +91,30 @@ MultipleAdmins.parameters = {
 	},
 };
 
+export const ErrorMessage = Template.bind( {} );
+ErrorMessage.storyName = 'Error message';
+ErrorMessage.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveError(
+			{
+				code: 'test_code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'saveUserInputSettings',
+			[]
+		);
+	},
+};
+
 export default {
 	title: 'Components/User Input',
 	component: UserInputApp,
 	decorators: [
 		withQuery,
-		( Story ) => {
+		( Story, { args } ) => {
 			return (
 				<WithTestRegistry
 					callback={ ( registry ) => {
@@ -104,6 +122,10 @@ export default {
 						registry
 							.dispatch( CORE_USER )
 							.receiveIsUserInputCompleted( false );
+
+						if ( typeof args?.setupRegistry === 'function' ) {
+							args.setupRegistry( registry );
+						}
 					} }
 				>
 					<Story />
@@ -112,6 +134,7 @@ export default {
 		},
 	],
 	parameters: {
+		padding: 0,
 		query: {
 			question: 'role',
 		},

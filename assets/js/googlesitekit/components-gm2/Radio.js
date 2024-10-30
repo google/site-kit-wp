@@ -45,6 +45,7 @@ export default function Radio( props ) {
 		onClick = null,
 		onChange = null,
 		alignLeft = false,
+		description,
 	} = props;
 
 	const formFieldRef = useCallback( ( el ) => {
@@ -85,7 +86,17 @@ export default function Radio( props ) {
 					<div className="mdc-radio__inner-circle"></div>
 				</div>
 			</div>
-			<label htmlFor={ id }>{ children }</label>
+
+			{ ! description && <label htmlFor={ id }>{ children }</label> }
+
+			{ description && (
+				<div className="mdc-radio__content">
+					<label htmlFor={ id }>{ children }</label>
+					<div className="mdc-radio__description">
+						{ description }
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }
@@ -101,4 +112,5 @@ Radio.propTypes = {
 	disabled: PropTypes.bool,
 	children: PropTypes.string.isRequired,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
+	description: PropTypes.node,
 };
