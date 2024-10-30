@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import fetchMock from 'fetch-mock';
@@ -33,11 +38,13 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
@@ -49,11 +56,20 @@ import {
 	properties as propertiesFixture,
 } from '../../../../datastore/__fixtures__';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import * as tracking from '../../../../../../util/tracking';
 import { getWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from '.';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;
@@ -85,6 +101,11 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	const testPropertyID = propertiesFixture[ 0 ]._id;
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry, {
@@ -216,6 +237,40 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 
 			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should track an event when the CTA is viewed', () => {
+			const { rerender } = render(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'view_notification'
+			);
 		} );
 
 		it( 'should not render the widget when no audience is configured and Google Analytics data is not loaded on the page', async () => {
@@ -368,6 +423,47 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should track events when the CTA is dismissed and the tooltip is viewed', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'dismiss_notification'
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'tooltip_view'
+			);
+		} );
+
 		it( 'should close the tooltip on clicking the `X` button', async () => {
 			const { getByRole } = render(
 				<div>
@@ -402,6 +498,47 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).not.toBeInTheDocument();
 		} );
 
+		it( 'should track an event when the tooltip is closed by clicking the `X` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				3,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'tooltip_dismiss'
+			);
+		} );
+
 		it( 'should close the tooltip on clicking the `Got it` button', async () => {
 			const { getByRole } = render(
 				<div>
@@ -434,6 +571,47 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should track an event when the tooltip is closed by clicking the `Got it` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				3,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'tooltip_dismiss'
+			);
 		} );
 
 		it( 'should show the `Don’t show again` CTA when the dismissCount is 1', async () => {
@@ -644,8 +822,74 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			await act( () => waitForTimeouts( 100 ) );
 		} );
 
+		it( 'should track an event when the CTA is clicked', async () => {
+			const settings = {
+				configuredAudiences: null,
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetAudienceSettings( settings );
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: audiencesFixture,
+			} );
+
+			const settingsBody = {
+				configuredAudiences: [
+					audiencesFixture[ 2 ].name,
+					audiencesFixture[ 3 ].name,
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			fetchMock.postOnce( audienceSettingsEndpoint, {
+				status: 200,
+				body: settingsBody,
+			} );
+
+			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'confirm_notification'
+			);
+
+			// Dismiss prompt endpoint must be called when the CTA is clicked.
+			const dismissPromptEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+			);
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+			} );
+		} );
+
 		describe( 'AudienceErrorModal', () => {
-			it( 'should show the OAuth error modal when the required scopes are not granted', () => {
+			it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
 				provideSiteInfo( registry, {
 					setupErrorCode: 'access_denied',
 				} );
@@ -684,6 +928,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 						getByRole( 'button', { name: /Enable groups/i } )
 					);
 				} );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
 
 				// Verify the error is an OAuth error variant.
 				expect(
