@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,22 +38,28 @@ import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';
 import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
+import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import WarningSVG from '../../../svg/icons/warning.svg';
 
 export default function UserInputQuestionWrapper( props ) {
-	const {
-		children,
-		slug,
-		questionNumber,
-		title,
-		description,
-		next,
-		back,
-		error,
-	} = props;
+	const { children, slug, questionNumber, next, back, complete, error } =
+		props;
 
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
+
+	const settings = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettings()
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( settings )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const isScreenLoading = isSavingSettings || isNavigating;
 
 	return (
 		<div className="googlesitekit-user-input__question">
@@ -60,33 +67,25 @@ export default function UserInputQuestionWrapper( props ) {
 				<Row>
 					<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 						<Row>
-							{ title && (
-								<UserInputQuestionInfo
-									slug={ slug }
-									title={ title }
-									description={ description }
-									questionNumber={ questionNumber }
-								/>
-							) }
+							<UserInputQuestionInfo
+								slug={ slug }
+								questionNumber={ questionNumber }
+							/>
 
 							{ children }
 						</Row>
-
-						{ error && <ErrorNotice error={ error } /> }
 					</Cell>
 				</Row>
 			</div>
+
+			{ error && (
+				<div className="googlesitekit-user-input__error">
+					<ErrorNotice error={ error } Icon={ WarningSVG } />
+				</div>
+			) }
+
 			<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
 				<div className="googlesitekit-user-input__footer-nav">
-					{ next && (
-						<Button
-							className="googlesitekit-user-input__buttons--next"
-							onClick={ next }
-							disabled={ hasErrorForAnswer( values ) }
-						>
-							{ __( 'Next', 'google-site-kit' ) }
-						</Button>
-					) }
 					{ back && (
 						<Button
 							tertiary
@@ -96,7 +95,37 @@ export default function UserInputQuestionWrapper( props ) {
 							{ __( 'Back', 'google-site-kit' ) }
 						</Button>
 					) }
+					{ next && (
+						<Button
+							className="googlesitekit-user-input__buttons--next"
+							onClick={ next }
+							disabled={ hasErrorForAnswer( values ) }
+						>
+							{ __( 'Next', 'google-site-kit' ) }
+						</Button>
+					) }
+					{ complete && (
+						<SpinnerButton
+							className="googlesitekit-user-input__buttons--complete"
+							onClick={ complete }
+							isSaving={ isScreenLoading }
+							disabled={ hasErrorForAnswer( values ) }
+						>
+							{ createInterpolateElement(
+								__(
+									'Complete<span> setup</span>',
+									'google-site-kit'
+								),
+								{
+									span: (
+										<span className="googlesitekit-user-input__responsive-text" />
+									),
+								}
+							) }
+						</SpinnerButton>
+					) }
 				</div>
+
 				<div className="googlesitekit-user-input__footer-cancel">
 					<CancelUserInputButton />
 				</div>
@@ -109,9 +138,9 @@ UserInputQuestionWrapper.propTypes = {
 	slug: PropTypes.string.isRequired,
 	questionNumber: PropTypes.number.isRequired,
 	children: PropTypes.node,
-	title: PropTypes.string,
 	description: PropTypes.string,
 	next: PropTypes.func,
 	back: PropTypes.func,
+	complete: PropTypes.func,
 	error: PropTypes.object,
 };

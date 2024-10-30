@@ -1,41 +1,48 @@
 // Overrides for .mdc-radio
-.googlesitekit-plugin .mdc-radio {
+.googlesitekit-plugin {
+	.mdc-radio {
 
-	@include mdc-radio-unchecked-stroke-color($c-black);
-	@include mdc-radio-checked-stroke-color($c-black);
-	@include mdc-radio-ink-color($c-black);
-	@include mdc-radio-focus-indicator-color($c-content-on-primary-container);
+		@include mdc-radio-unchecked-stroke-color($c-black);
+		@include mdc-radio-checked-stroke-color($c-black);
+		@include mdc-radio-ink-color($c-black);
+		@include mdc-radio-focus-indicator-color($c-content-on-primary-container);
 
-	// Overriding WordPress load-styles.php
-	.mdc-radio__native-control {
-		appearance: none;
-		background: transparent;
-		border: none;
-		border-radius: 0;
-		box-shadow: none;
-		clear: none;
-		color: $c-primary;
-		cursor: inherit;
-		display: block;
-		height: 100%;
-		line-height: normal;
-		margin: 0;
-		min-width: auto;
-		opacity: 0;
-		outline: 0;
-		padding: 0;
-		text-align: center;
-		transition: none;
-		vertical-align: middle;
-		width: 100%;
-		z-index: 1;
+		// Overriding WordPress load-styles.php
+		.mdc-radio__native-control {
+			appearance: none;
+			background: transparent;
+			border: none;
+			border-radius: 0;
+			box-shadow: none;
+			clear: none;
+			color: $c-primary;
+			cursor: inherit;
+			display: block;
+			height: 100%;
+			line-height: normal;
+			margin: 0;
+			min-width: auto;
+			opacity: 0;
+			outline: 0;
+			padding: 0;
+			text-align: center;
+			transition: none;
+			width: 100%;
+			z-index: 1;
+		}
+
+		// The Radio component has an essential padding of 10 pixels to accommodate
+		// its hover/focus background. This makes it not possible to align the radio
+		// to the absolute left when required. The following style compensates for the
+		// padding and aligns it to the absolute left.
+		&.mdc-radio--align-left {
+			margin-left: -10px;
+		}
 	}
 
-	// The Radio component has an essential padding of 10 pixels to accommodate
-	// its hover/focus background. This makes it not possible to align the radio
-	// to the absolute left when required. The following style compensates for the
-	// padding and aligns it to the absolute left.
-	&.mdc-radio--align-left {
-		margin-left: -10px;
+	.mdc-radio__description {
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
 	}
 }
