@@ -21,11 +21,11 @@
  */
 import { isValidClientID } from './validation';
 
-describe( 'modules/ads validations', () => {
+describe( 'modules/sign-in-with-google validations', () => {
 	describe( 'isValidClientID', () => {
 		it( 'should return TRUE when a valid clientID is passed', () => {
 			expect(
-				isValidClientID( '1234567890.googleusercontent.com' )
+				isValidClientID( '1234567890-googleusercontent.com' )
 			).toBe( true );
 		} );
 
