@@ -122,6 +122,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		wp_set_current_user( $user->ID, $user->user_login );
 		wp_set_auth_cookie( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
+		wp_safe_redirect( admin_url() );
+		exit;
 	}
 
 	/**
@@ -131,14 +133,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 */
 	public function handle_google_auth() {
-		global $wp_query;
-
-		if ( ! isset( $wp_query->query_vars['google_auth'] ) ) {
-			return;
-		}
-
-		$settings = $this->get_settings()->get();
-		if ( empty( $settings['clientID'] ) ) {
+		$client_id = $this->get_settings()->get()['clientID'];
+		if ( empty( $client_id ) ) {
 			wp_safe_redirect( add_query_arg( 'error', 'no_client_id', wp_login_url() ) );
 			exit;
 		}
@@ -152,9 +148,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		$id_token = $this->context->input()->filter( INPUT_POST, 'credential' );
-		$payload  = $this->client->verifyIdToken( $id_token );
+		$payload  = null;
+		try {
+			$payload = $this->client->verifyIdToken( $id_token );
+		} catch ( \Exception $e ) {
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
+			exit;
+		}
 
-		if ( empty( $payload ) || ! array_key_exists( 'sub', $payload ) || empty( $payload['sub'] ) || ! array_key_exists( 'email', $payload ) || empty( $payload['email'] ) ) {
+		if ( is_null( $payload ) || empty( $payload ) || ! array_key_exists( 'sub', $payload ) || empty( $payload['sub'] ) || ! array_key_exists( 'email', $payload ) || empty( $payload['email'] ) ) {
 			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
 			exit;
 		}
@@ -191,9 +193,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$new_user_id = wp_create_user( $google_user_email, wp_generate_password(), $google_user_email );
 			add_user_meta( $new_user_id, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, $google_user_id, true );
 			return $this->login_user( get_user_by( 'id', $new_user_id ) );
+		} else {
+			wp_safe_redirect( add_query_arg( 'error', 'registration_disabled', wp_login_url() ) );
+			exit;
 		}
 
-		wp_safe_redirect( add_query_arg( 'error', 'user_actions_failed', wp_login_url() ) );
+		wp_safe_redirect( add_query_arg( 'error', 'unable_to_login', wp_login_url() ) );
 		exit;
 	}
 
@@ -227,8 +232,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			case 'missing_parameter':
 				$error->add( 'access', __( 'Parameter: "credential" is missing.', 'google-site-kit' ) );
 				break;
-			case 'user_actions_failed':
-				$error->add( 'access', __( 'Failed to perform user actions.', 'google-site-kit' ) );
+			case 'registration_disabled':
+				$error->add( 'access', __( 'This site does not allow public registration.', 'google-site-kit' ) );
+				break;
+			case 'unable_to_login':
+				$error->add( 'access', __( 'Unable to sign in.', 'google-site-kit' ) );
 				break;
 		}
 

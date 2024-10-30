@@ -165,7 +165,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
-		$this->module->handle_google_auth();
+		try {
+			$this->module->handle_google_auth();
+			$this->fail( 'Expected redirection to dashboard' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertEquals( 'http://example.org/wp-admin/', $redirect_url );
+		}
 
 		$this->assertEquals( $wp_user->ID, get_current_user_id() );
 		$this->assertEquals( '1111111111', get_user_meta( get_current_user_id(), Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
@@ -191,7 +197,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
-		$this->module->handle_google_auth();
+		try {
+			$this->module->handle_google_auth();
+			$this->fail( 'Expected redirection to dashboard' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertEquals( 'http://example.org/wp-admin/', $redirect_url );
+		}
 
 		$this->assertEquals( $wp_user1->ID, get_current_user_id() );
 		$this->assertEquals( '2222222222', get_user_meta( get_current_user_id(), Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
@@ -210,7 +222,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
-		$this->module->handle_google_auth();
+		try {
+			$this->module->handle_google_auth();
+			$this->fail( 'Expected redirection to dashboard' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertEquals( 'http://example.org/wp-admin/', $redirect_url );
+		}
 
 		$new_user = get_user_by( 'email', 'testsiwg3@example.com' );
 		$this->assertEquals( 'testsiwg3@example.com', $new_user->user_login );
@@ -231,11 +249,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		try {
 			$this->module->handle_google_auth();
-			$this->fail( 'Expected redirection to login with error user_actions_failed' );
+			$this->fail( 'Expected redirection to login with error registration_disabled' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
-			$this->assertEquals( 'user_actions_failed', $params['error'] );
+			$this->assertEquals( 'registration_disabled', $params['error'] );
 		}
 		// Check the user was not created and the meta not stored.
 		$this->assertFalse( get_user_by( 'email', 'testsiwg4@example.com' ) );
