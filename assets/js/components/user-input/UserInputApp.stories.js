@@ -53,29 +53,22 @@ MultipleAdmins.decorators = [
 			),
 			{
 				body: {
-					goals: {
+					purpose: {
 						scope: 'site',
-						values: [ 'publish_blog', 'share_portfolio' ],
+						answeredBy: 1,
+						values: [ 'sell_products_or_service' ],
 						author: {
 							photo: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
 							login: 'admin',
 						},
 					},
-					helpNeeded: {
-						scope: 'site',
-						values: [],
-					},
-					searchTerms: {
-						scope: 'site',
-						values: [],
-					},
 					postFrequency: {
 						scope: 'user',
-						values: [ 'never' ],
+						values: [],
 					},
-					role: {
+					goals: {
 						scope: 'user',
-						values: [ 'owner' ],
+						values: [],
 					},
 				},
 				status: 200,
@@ -87,7 +80,7 @@ MultipleAdmins.decorators = [
 ];
 MultipleAdmins.parameters = {
 	query: {
-		question: 'goals',
+		question: 'purpose',
 	},
 };
 
@@ -136,7 +129,7 @@ export default {
 	parameters: {
 		padding: 0,
 		query: {
-			question: 'role',
+			question: 'purpose',
 		},
 	},
 };
