@@ -133,10 +133,13 @@ class Uninstallation {
 	 */
 	private function clear_scheduled_events() {
 		foreach ( self::SCHEDULED_EVENTS as $event ) {
-			$response = wp_clear_scheduled_hook( $event, array(), true );
+			// Only clear scheduled events that are set, important in E2E testing.
+			if ( (bool) wp_next_scheduled( $event ) ) {
+				$response = wp_clear_scheduled_hook( $event, array(), true );
 
-			if ( is_wp_error( $response ) ) {
-				error_log( 'Failed to clear remote features cron: ' . $response->get_error_message() );
+				if ( is_wp_error( $response ) ) {
+					error_log( 'Failed to clear remote features cron: ' . $response->get_error_message() );
+				}
 			}
 		}
 	}
