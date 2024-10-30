@@ -148,17 +148,12 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 		case RECEIVE_CONVERSION_REPORTING_INLINE_DATA: {
 			const { newEvents, lostEvents } = payload.data;
 
-			return {
-				...state,
-				detectedEventsChange: {
-					newEvents,
-					lostEvents,
-				},
-			};
+			state.detectedEventsChange = { newEvents, lostEvents };
+			break;
 		}
 
 		default: {
-			return state;
+			break;
 		}
 	}
 } );
