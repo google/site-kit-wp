@@ -888,8 +888,8 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			} );
 		} );
 
-		describe( 'AudienceErrorModal', () => {
-			it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
+		describe( 'OAuth error modal', () => {
+			it( 'should show when the required scopes are not granted', async () => {
 				provideSiteInfo( registry, {
 					setupErrorCode: 'access_denied',
 				} );
@@ -954,8 +954,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				// Verify the "Retry" button is displayed.
 				expect( getByText( /retry/i ) ).toBeInTheDocument();
 			} );
+		} );
 
-			it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
+		describe( 'insufficient permissions error modal', () => {
+			it( 'should show when the user does not have the required permissions', async () => {
 				const errorResponse = {
 					code: 'test_error',
 					message: 'Error message.',
@@ -999,8 +1001,10 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					).toBeInTheDocument();
 				} );
 			} );
+		} );
 
-			it( 'should show the generic error modal when an internal server error occurs', async () => {
+		describe( 'generic error modal', () => {
+			it( 'should show when an internal server error occurs', async () => {
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
