@@ -201,6 +201,7 @@ describe( 'core/user key metrics', () => {
 					body: {
 						widgetSlugs: [
 							KM_ANALYTICS_RETURNING_VISITORS,
+							KM_ANALYTICS_NEW_VISITORS,
 							KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 						],
 						isWidgetHidden: false,
@@ -217,7 +218,10 @@ describe( 'core/user key metrics', () => {
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+				).toMatchObject( [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
