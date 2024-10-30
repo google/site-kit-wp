@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Validate_Auth_Request;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\TestCase;
@@ -67,12 +68,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
 
 		$mock_validate_auth_request = $this->getMockBuilder( Validate_Auth_Request::class )
-			->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
-			->setMethods( array( 'get_error' ) )
-			->getMock();
+		->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
+		->setMethods( array( 'get_error' ) )
+		->getMock();
 
 		$mock_validate_auth_request->method( 'get_error' )
-			->willReturn( new WP_Error( 'test_error_type' ) );
+		->willReturn( new WP_Error( 'test_error_type' ) );
 		$this->force_set_property( $this->module, 'validate_auth_request', $mock_validate_auth_request );
 
 		try {
@@ -86,24 +87,24 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Should redirect with google_auth_invalid_request error if payload is empty.
 		$mock_input = $this->getMockBuilder( Input::class )
-			->setMethods( array( 'filter' ) )
-			->getMock();
+		->setMethods( array( 'filter' ) )
+		->getMock();
 		$mock_input->method( 'filter' )
-			->willReturn( '123456789' );
+		->willReturn( '123456789' );
 		$this->force_set_property( $this->module, 'context', new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input ) );
 
 		$mock_validate_auth_request = $this->getMockBuilder( Validate_Auth_Request::class )
-			->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input ) ) )
-			->setMethods( array( 'get_error' ) )
-			->getMock();
+		->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input ) ) )
+		->setMethods( array( 'get_error' ) )
+		->getMock();
 
 		$mock_validate_auth_request->method( 'get_error' )
-			->willReturn( null );
+		->willReturn( null );
 		$this->force_set_property( $this->module, 'validate_auth_request', $mock_validate_auth_request );
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-			->willReturn( array() );
+		->willReturn( array() );
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		try {
@@ -118,7 +119,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Should redirect with google_auth_invalid_request error if payload is missing email.
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-			->willReturn( array( 'sub' => '1111111111' ) );
+		->willReturn( array( 'sub' => '1111111111' ) );
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		try {
@@ -133,7 +134,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Should redirect with google_auth_invalid_request error if payload is missing sub.
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-			->willReturn( array( 'email' => 'testemail@example.com' ) );
+		->willReturn( array( 'email' => 'testemail@example.com' ) );
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		try {
@@ -156,12 +157,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-			->willReturn(
-				array(
-					'sub'   => '1111111111',
-					'email' => 'testsiwg@example.com',
-				)
-			);
+		->willReturn(
+			array(
+				'sub'   => '1111111111',
+				'email' => 'testsiwg@example.com',
+			)
+		);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		$this->module->handle_google_auth();
@@ -182,12 +183,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-			->willReturn(
-				array(
-					'sub'   => '2222222222',
-					'email' => 'testsiwgdifferentemail@example.com',
-				)
-			);
+		->willReturn(
+			array(
+				'sub'   => '2222222222',
+				'email' => 'testsiwgdifferentemail@example.com',
+			)
+		);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		$this->module->handle_google_auth();
@@ -201,12 +202,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-			->willReturn(
-				array(
-					'sub'   => '3333333333',
-					'email' => 'testsiwg3@example.com',
-				)
-			);
+		->willReturn(
+			array(
+				'sub'   => '3333333333',
+				'email' => 'testsiwg3@example.com',
+			)
+		);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		$this->module->handle_google_auth();
@@ -220,12 +221,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-			->willReturn(
-				array(
-					'sub'   => '4444444444',
-					'email' => 'testsiwg4@example.com',
-				)
-			);
+		->willReturn(
+			array(
+				'sub'   => '4444444444',
+				'email' => 'testsiwg4@example.com',
+			)
+		);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		try {
@@ -251,5 +252,67 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_delete_user( $wp_user->ID );
 		wp_delete_user( $wp_user1->ID );
 		wp_delete_user( $new_user->ID );
+	}
+	private function render_signin_button_by_action() {
+		ob_start();
+		do_action( 'login_form' );
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
+
+	public function test_render_signin_button() {
+		$reset_site_url = site_url();
+		update_option( 'home', 'http://example.com/' );
+		update_option( 'siteurl', 'http://example.com/' );
+
+		$this->module->register();
+
+		// Does not render the if the site is not https.
+		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
+		$output = $this->render_signin_button_by_action();
+		$this->assertEmpty( $output );
+
+		// Update site URL to https.
+		$_SERVER['HTTPS'] = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		update_option( 'siteurl', 'https://example.com/' );
+		update_option( 'home', 'https://example.com/' );
+
+		// Does not render if clientID is not set.
+		$this->module->get_settings()->set( array( 'clientID' => '' ) );
+		$output = $this->render_signin_button_by_action();
+		$this->assertEmpty( $output );
+
+		$this->module->get_settings()->set( array( 'clientID' => null ) );
+		$output = $this->render_signin_button_by_action();
+		$this->assertEmpty( $output );
+
+		// Renders the button with the correct clientID and redirect_uri.
+		$this->module->get_settings()->set(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE,
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT,
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR,
+			)
+		);
+
+		// Render the button.
+		$output = $this->render_signin_button_by_action();
+
+		// Check the rendered button contains the expected data.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
+		$this->assertStringContainsString( "client_id: '1234567890.googleusercontent.com'", $output );
+		$this->assertStringContainsString( "login_uri: 'https://example.com/wp-login.php?action=google_auth'", $output );
+
+		$this->assertStringContainsString( "text: '" . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . "'", $output );
+		$this->assertStringContainsString( "theme: '" . Sign_In_With_Google_Settings::THEME_LIGHT . "'", $output );
+		$this->assertStringContainsString( "shape: '" . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . "'", $output );
+
+		// Revert home and siteurl and https value.
+		update_option( 'home', $reset_site_url );
+		update_option( 'siteurl', $reset_site_url );
+		unset( $_SERVER['HTTPS'] );
 	}
 }

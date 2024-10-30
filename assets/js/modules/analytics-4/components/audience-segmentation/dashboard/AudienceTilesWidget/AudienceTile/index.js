@@ -59,6 +59,10 @@ import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 // the full report rows for the current tile to reduce data manipulation
 // in AudienceTiles.
 export default function AudienceTile( {
+	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
+	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
+	audienceTileNumber = 0,
 	title,
 	infoTooltip,
 	visitors,
@@ -114,6 +118,7 @@ export default function AudienceTile( {
 			}
 
 			return (
+				! isPropertyPartialData &&
 				! isAudiencePartialData &&
 				select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
 					'googlesitekit_post_type'
@@ -285,6 +290,7 @@ export default function AudienceTile( {
 						( postTypeDimensionExists &&
 							! hasInvalidCustomDimensionError ) ) && (
 						<AudienceTilePagesMetric
+							audienceTileNumber={ audienceTileNumber }
 							TileIcon={ AudienceMetricIconTopContent }
 							title={ __(
 								'Top content by pageviews',
@@ -302,6 +308,7 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
+	audienceTileNumber: PropTypes.number,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,
