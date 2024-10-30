@@ -116,7 +116,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.139.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -133,7 +133,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Renders the sign in button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.139.0
 	 */
 	private function render_signin_button() {
 		$settings = $this->get_settings()->get();
