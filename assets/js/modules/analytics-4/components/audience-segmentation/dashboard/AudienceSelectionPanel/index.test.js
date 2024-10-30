@@ -738,7 +738,7 @@ describe( 'AudienceSelectionPanel', () => {
 				expect( selectionPanelItems ).toHaveLength( 5 );
 
 				selectionPanelItems.forEach( ( item ) => {
-					const audienceName = item?.querySelector(
+					const audienceName = item.querySelector(
 						'input[type="checkbox"]'
 					).value;
 
