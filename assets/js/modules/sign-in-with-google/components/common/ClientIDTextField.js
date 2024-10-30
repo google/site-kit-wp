@@ -33,8 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import { useDebounce } from '../../../../hooks/useDebounce';
 import { isValidClientID } from '../../utils/validation';
+import { useDebounce } from '../../../../hooks/useDebounce';
 
 export default function ClientIDTextField() {
 	const clientID = useSelect( ( select ) =>
@@ -57,7 +57,7 @@ export default function ClientIDTextField() {
 
 			debounceSetIsValid( isValidClientID( newValue ) );
 		},
-		[ debounceSetIsValid, clientID, setClientID ]
+		[ clientID, setClientID, debounceSetIsValid ]
 	);
 
 	return (
