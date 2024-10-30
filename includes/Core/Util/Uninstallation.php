@@ -132,9 +132,16 @@ class Uninstallation {
 	 * @since 1.136.0
 	 */
 	private function clear_scheduled_events() {
+		global $wpdb;
+		$wpdb->show_errors();
 		foreach ( self::SCHEDULED_EVENTS as $event ) {
-			// DEBUG: skip clearing scheduled events.
-			// wp_clear_scheduled_hook( $event );
+			error_log( 'Uninstalling test error log. : ' . $event );
+			// DEBUG: log wpdb errors to catch failure in update_options.
+			wp_clear_scheduled_hook( $event );
+			if ( $wpdb->last_error !== '' ) {
+				$wpdb->print_error();
+			}
 		}
+		$wpdb->hide_errors();
 	}
 }
