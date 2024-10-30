@@ -261,12 +261,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 							? onCancel
 							: () => setShowErrorModal( false )
 					}
-					onDismiss={ () => {
-						trackEvent(
-							`${ viewContext }_audiences-setup-cta-dashboard`,
-							'dismiss_tooltip'
-						);
-					} }
 					trackEventCategory={ `${ viewContext }_audiences-setup` }
 				/>
 			) }
