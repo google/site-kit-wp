@@ -132,16 +132,12 @@ class Uninstallation {
 	 * @since 1.136.0
 	 */
 	private function clear_scheduled_events() {
-		global $wpdb;
-		$wpdb->show_errors();
 		foreach ( self::SCHEDULED_EVENTS as $event ) {
-			// DEBUG: log wpdb errors to catch failure in update_options.
-			wp_clear_scheduled_hook( $event );
-			if ( $wpdb->last_error !== '' ) {
-				error_log( 'wpdb error found : ' . $event );
-				$wpdb->print_error();
+			$response = wp_clear_scheduled_hook( $event, array(), true );
+
+			if ( is_wp_error( $response ) ) {
+				error_log( 'Failed to clear remote features cron: ' . $response->get_error_message() );
 			}
 		}
-		$wpdb->hide_errors();
 	}
 }
