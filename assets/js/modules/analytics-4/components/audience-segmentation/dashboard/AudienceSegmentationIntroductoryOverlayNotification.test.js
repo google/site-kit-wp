@@ -159,6 +159,45 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
+	it( 'should dismiss the notification when the "Got it" button is clicked', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { getByRole, waitForRegistry } = render(
+			<AudienceSegmentationIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
+			'view_notification'
+		);
+
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: JSON.stringify( [
+				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+			] ),
+			status: 200,
+		} );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+		} );
+
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
+			'dismiss_notification'
+		);
+	} );
+
 	it( 'should scroll to the traffic widget area and dismiss the notification when the notification is clicked', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
