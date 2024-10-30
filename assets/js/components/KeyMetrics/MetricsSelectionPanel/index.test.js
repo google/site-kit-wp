@@ -499,9 +499,13 @@ describe( 'MetricsSelectionPanel', () => {
 				)
 			);
 
-			// Set the last metric as selected.
-			provideKeyMetrics( registry, {
-				widgetSlugs: [ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ],
+			// Set the last 2 metrics as selected.
+			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+				widgetSlugs: [
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+				],
+				isWidgetHidden: false,
 			} );
 
 			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
@@ -510,12 +514,12 @@ describe( 'MetricsSelectionPanel', () => {
 
 			await waitForRegistry();
 
-			// Verify that the last metric is positioned at the top.
+			// Verify that the second last metric is positioned at the top.
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-item:first-child label'
 				)
-			).toHaveTextContent( 'Top converting traffic source' );
+			).toHaveTextContent( 'Top traffic source' );
 		} );
 
 		it( 'should not list metrics dependent on modules that a view-only user does not have access to', async () => {
