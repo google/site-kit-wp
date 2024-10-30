@@ -668,8 +668,6 @@ describe( 'MetricsSelectionPanel', () => {
 
 	describe( 'Footer', () => {
 		beforeEach( () => {
-			provideKeyMetrics( registry );
-
 			provideModules( registry, [
 				{
 					slug: 'analytics-4',
