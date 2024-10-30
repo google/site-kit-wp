@@ -2593,7 +2593,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.139.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
