@@ -19,7 +19,7 @@
 /**
  * Checks if a given URL uses HTTPS.
  *
- * @since n.e.x.t
+ * @since 1.139.0
  *
  * @param {string} url The URL to check.
  * @return {boolean} True if the URL uses HTTPS, false otherwise.
