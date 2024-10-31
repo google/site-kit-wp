@@ -33,10 +33,17 @@ import { sprintf, _n } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_USER_INPUT_PREVIOUS_PURPOSE,
+} from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
-import { USER_INPUT_QUESTION_POST_FREQUENCY } from './util/constants';
+import {
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from './util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -50,14 +57,26 @@ export default function UserInputSelectOptions( {
 	alignLeftOptions,
 } ) {
 	const viewContext = useViewContext();
+	const { setValues } = useDispatch( CORE_FORMS );
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
+
+	const userInputSettings = useSelect( ( select ) => {
+		return select( CORE_USER ).getUserInputSettings();
+	} );
+
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserInputSettings( values )
 	);
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
+	);
+	const previousPurpose = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_PREVIOUS_PURPOSE,
+			'purpose'
+		)
 	);
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const optionsRef = useRef();
@@ -105,6 +124,15 @@ export default function UserInputSelectOptions( {
 					? 'content_frequency_question_answer'
 					: `site_${ slug }_question_answer`;
 
+			if ( USER_INPUT_QUESTIONS_PURPOSE === slug ) {
+				// Only set previous purpose if it not yet exists.
+				if ( ! previousPurpose ) {
+					setValues( FORM_USER_INPUT_PREVIOUS_PURPOSE, {
+						purpose: userInputSettings?.purpose?.values?.[ 0 ],
+					} );
+				}
+			}
+
 			const checkedValues = Array.from( newValues ).slice( 0, max );
 
 			trackEvent(
@@ -115,7 +143,16 @@ export default function UserInputSelectOptions( {
 
 			setUserInputSetting( slug, checkedValues );
 		},
-		[ max, setUserInputSetting, slug, values, viewContext ]
+		[
+			max,
+			setUserInputSetting,
+			slug,
+			values,
+			viewContext,
+			previousPurpose,
+			setValues,
+			userInputSettings,
+		]
 	);
 
 	const onKeyDown = useCallback(
