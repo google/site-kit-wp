@@ -38,7 +38,10 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../../googlesitekit/constants';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 import {
 	createTestRegistry,
@@ -58,7 +61,11 @@ import {
 	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
+import * as tracking from '../../../../../../util/tracking';
 import AudienceSelectionPanel from '.';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
@@ -133,6 +140,33 @@ describe( 'AudienceSelectionPanel', () => {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 
 		muteFetch( expirableItemEndpoint );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
+	it( 'should track event when the panel is opened', async () => {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences,
+			status: 200,
+		} );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+		const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+			'audiences_sidebar_view'
+		);
 	} );
 
 	describe( 'Header', () => {
