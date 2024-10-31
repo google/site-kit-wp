@@ -97,6 +97,9 @@ describe( 'AudienceSelectionPanel', () => {
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/audience-settings'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -1524,6 +1527,83 @@ describe( 'AudienceSelectionPanel', () => {
 					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-error-text'
 				)
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should track event after saving', async () => {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				configuredAudiences,
+				isAudienceSegmentationWidgetHidden: false,
+				didSetAudiences: true,
+			} );
+
+			muteFetch( audienceSettingsEndpoint );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const saveButton = getByRole( 'button', {
+				name: /save selection/i,
+			} );
+
+			fireEvent.click( saveButton );
+
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+					'audiences_sidebar_save',
+					'user:0,site-kit:2,default:0'
+				);
+			} );
+		} );
+
+		it( 'should track event if cancelled', async () => {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const cancelButton = getByRole( 'button', {
+				name: /cancel/i,
+			} );
+
+			fireEvent.click( cancelButton );
+
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+					'audiences_sidebar_cancel'
+				);
+			} );
 		} );
 	} );
 } );

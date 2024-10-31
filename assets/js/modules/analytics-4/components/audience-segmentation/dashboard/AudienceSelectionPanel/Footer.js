@@ -31,6 +31,8 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
 import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_FORM,
@@ -39,9 +41,12 @@ import {
 } from './constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
 
 export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
+	const viewContext = useViewContext();
+
 	const selectedItems = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AUDIENCE_SELECTION_FORM,
@@ -69,6 +74,12 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			item.startsWith( 'audience-tile-' )
 		);
 	} );
+	const availableAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
+	);
+	const configuredAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).getConfiguredAudiences()
+	);
 
 	const { saveAudienceSettings, removeDismissedItems } =
 		useDispatch( CORE_USER );
@@ -100,11 +111,11 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const [ dismissedItemsError, setDismissedItemsError ] = useState( null );
 
 	const saveSettings = useCallback(
-		async ( configuredAudiences ) => {
+		async ( selectedAudiences ) => {
 			setDismissedItemsError( null );
 
 			let { error } = await saveAudienceSettings( {
-				configuredAudiences,
+				configuredAudiences: selectedAudiences,
 			} );
 
 			if ( ! error ) {
@@ -114,7 +125,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 							'audience-tile-',
 							''
 						);
-						return ! configuredAudiences.includes(
+						return ! selectedAudiences.includes(
 							audienceResourceName
 						);
 					} );
@@ -135,6 +146,43 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		[ hiddenTileDismissedItems, removeDismissedItems, saveAudienceSettings ]
 	);
 
+	const onSaveSuccess = useCallback( () => {
+		const audienceTypeLabels = {
+			USER_AUDIENCE: 'user',
+			SITE_KIT_AUDIENCE: 'site-kit',
+			DEFAULT_AUDIENCE: 'default',
+		};
+
+		const eventLabel = Object.keys( audienceTypeLabels )
+			.map( ( type ) => {
+				const audiencesOfType = configuredAudiences.filter(
+					( audienceName ) => {
+						const audience = availableAudiences?.find(
+							( { name } ) => audienceName === name
+						);
+
+						return audience?.audienceType === type;
+					}
+				);
+
+				return `${ audienceTypeLabels[ type ] }:${ audiencesOfType.length }`;
+			} )
+			.join( ',' );
+
+		trackEvent(
+			`${ viewContext }_audiences-sidebar`,
+			'audiences_sidebar_save',
+			eventLabel
+		);
+	}, [ availableAudiences, configuredAudiences, viewContext ] );
+
+	const onCancel = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_audiences-sidebar`,
+			'audiences_sidebar_cancel'
+		);
+	}, [ viewContext ] );
+
 	return (
 		<SelectionPanelFooter
 			savedItemSlugs={ savedItemSlugs }
@@ -147,6 +195,8 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			isBusy={ isSavingSettings }
 			isOpen={ isOpen }
 			closePanel={ closePanel }
+			onSaveSuccess={ onSaveSuccess }
+			onCancel={ onCancel }
 		/>
 	);
 }
