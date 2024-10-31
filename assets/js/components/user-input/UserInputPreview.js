@@ -26,7 +26,13 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -51,6 +57,8 @@ import ErrorNotice from '../ErrorNotice';
 import LoadingWrapper from '../LoadingWrapper';
 import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
+import Portal from '../Portal';
+import ConfirmSitePurposeChangeModal from '../KeyMetrics/ConfirmSitePurposeChangeModal';
 
 export default function UserInputPreview( props ) {
 	const {
@@ -61,6 +69,10 @@ export default function UserInputPreview( props ) {
 		settingsView = false,
 	} = props;
 	const previewContainer = useRef();
+	const [ isModalOpen, toggleIsModalOpen ] = useState( false );
+	const handleModal = useCallback( () => {
+		toggleIsModalOpen( ! isModalOpen );
+	}, [ isModalOpen ] );
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
@@ -152,6 +164,7 @@ export default function UserInputPreview( props ) {
 					options={ USER_INPUT_ANSWERS_PURPOSE }
 					loading={ loading }
 					settingsView={ settingsView }
+					onChange={ handleModal }
 				/>
 
 				<UserInputPreviewGroup
@@ -213,6 +226,12 @@ export default function UserInputPreview( props ) {
 					</div>
 				</Fragment>
 			) }
+			<Portal>
+				<ConfirmSitePurposeChangeModal
+					dialogActive={ isModalOpen }
+					handleDialog={ handleModal }
+				/>
+			</Portal>
 		</div>
 	);
 }
