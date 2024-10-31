@@ -41,6 +41,7 @@ export const USER_INPUT_CURRENTLY_EDITING_KEY =
 	'googlesitekit-user-input-currently-editing';
 
 export const FORM_USER_INPUT_QUESTION_NUMBER = 'user_input_question_number';
+export const FORM_USER_INPUT_QUESTION_SNAPSHOT = 'user_input_question_snapshot';
 
 /**
  * Gets available questions for user input settings.

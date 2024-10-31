@@ -39,12 +39,15 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	FORM_USER_INPUT_NEW_PURPOSE,
-} from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
+import {
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
+	USER_INPUT_CURRENTLY_EDITING_KEY,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from '../user-input/util/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -52,20 +55,47 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const newPurpose = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_USER_INPUT_NEW_PURPOSE, 'purpose' )
-	);
-
-	const currentMetrics = useSelect( ( select ) => {
+	const newMetrics = useSelect( ( select ) => {
 		return select( CORE_USER ).getKeyMetrics();
 	} );
 
-	const newMetrics = useSelect( ( select ) => {
-		if ( undefined !== newPurpose ) {
-			return select( CORE_USER ).getAnswerBasedMetrics( newPurpose );
+	const savedPurpose = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_QUESTION_SNAPSHOT,
+			USER_INPUT_QUESTIONS_PURPOSE
+		)
+	);
+
+	const currentMetrics = useSelect( ( select ) => {
+		if ( savedPurpose === undefined ) {
+			return [];
 		}
-		return currentMetrics;
+
+		return select( CORE_USER ).getAnswerBasedMetrics( savedPurpose[ 0 ] );
 	} );
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues: setUIValues } = useDispatch( CORE_UI );
+	const { resetUserInputSettings } = useDispatch( CORE_USER );
+
+	const onClose = useCallback( async () => {
+		if ( savedPurpose?.length ) {
+			await resetUserInputSettings();
+			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+				[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
+			} );
+		}
+		setUIValues( {
+			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
+		} );
+		handleDialog();
+	}, [
+		handleDialog,
+		savedPurpose,
+		resetUserInputSettings,
+		setValues,
+		setUIValues,
+	] );
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 
@@ -73,8 +103,8 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving( true );
 		await saveUserInputSettings();
 		setIsSaving( false );
-		handleDialog();
-	}, [ saveUserInputSettings, handleDialog, setIsSaving ] );
+		onClose();
+	}, [ saveUserInputSettings, onClose, setIsSaving ] );
 
 	return (
 		<Dialog
@@ -82,6 +112,7 @@ function ConfirmSitePurposeChangeModal( {
 			aria-describedby={ undefined }
 			tabIndex="-1"
 			className="googlesitekit-dialog-confirm-site-purpose-change"
+			onClose={ onClose }
 		>
 			<DialogTitle>
 				{ __( 'Tailored metrics suggestions', 'google-site-kit' ) }
@@ -141,7 +172,7 @@ function ConfirmSitePurposeChangeModal( {
 				<Button
 					className="mdc-dialog__cancel-button"
 					tertiary
-					onClick={ handleDialog }
+					onClick={ onClose }
 				>
 					{ __( 'Keep current selection', 'google-site-kit' ) }
 				</Button>
@@ -152,8 +183,6 @@ function ConfirmSitePurposeChangeModal( {
 		</Dialog>
 	);
 }
-
-ConfirmSitePurposeChangeModal.displayName = 'Dialog';
 
 ConfirmSitePurposeChangeModal.propTypes = {
 	dialogActive: PropTypes.bool,
