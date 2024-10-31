@@ -118,7 +118,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		switch ( $error_code ) {
 			case 'google_auth_invalid_request':
 			case 'google_auth_invalid_g_csrf_token':
-				$error->add( 'access', __( 'Sign in with Google failed.', 'google-site-kit' ) );
+				$error->add( 'google_auth', __( 'Sign in with Google failed.', 'google-site-kit' ) );
 				break;
 			default:
 				break;
