@@ -133,14 +133,14 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 
 				// If all configured audiences are hidden, clear the dismissed state for the first one to unhide it
 				if (
-					configuredAudiences.every( ( audienceResourceName ) =>
+					selectedAudiences.every( ( audienceResourceName ) =>
 						hiddenTileDismissedItems?.includes(
 							`audience-tile-${ audienceResourceName }`
 						)
 					)
 				) {
 					hiddenAudienceDismissedItemsToClear.push(
-						`audience-tile-${ configuredAudiences[ 0 ] }`
+						`audience-tile-${ selectedAudiences[ 0 ] }`
 					);
 				}
 

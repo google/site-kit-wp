@@ -109,6 +109,9 @@ describe( 'AudienceSelectionPanel', () => {
 	const audienceSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
+	const dismissedItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -801,14 +804,6 @@ describe( 'AudienceSelectionPanel', () => {
 					)
 				);
 			} );
-
-			// Prepare the endpoints for saving the settings.
-			const audienceSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/audience-settings'
-			);
-			const dismissedItemsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismissed-items'
-			);
 
 			fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
 				const { data } = JSON.parse( opts.body );
