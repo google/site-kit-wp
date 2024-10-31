@@ -45,6 +45,7 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
+import { USER_INPUT_QUESTIONS_PURPOSE } from '../user-input/util/constants';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -53,6 +54,8 @@ function ConfirmSitePurposeChangeModal( {
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const { setValues } = useDispatch( CORE_FORMS );
+
+	const { setUserInputSetting } = useDispatch( CORE_USER );
 
 	const previousPurpose = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -156,7 +159,18 @@ function ConfirmSitePurposeChangeModal( {
 				<Button
 					className="mdc-dialog__cancel-button"
 					tertiary
-					onClick={ handleDialog }
+					onClick={ async () => {
+						handleDialog();
+
+						if ( !! previousPurpose ) {
+							await setUserInputSetting(
+								USER_INPUT_QUESTIONS_PURPOSE,
+								[ previousPurpose ]
+							);
+
+							await saveUserInputSettings();
+						}
+					} }
 				>
 					{ __( 'Keep current selection', 'google-site-kit' ) }
 				</Button>
