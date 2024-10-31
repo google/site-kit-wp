@@ -244,6 +244,21 @@ describe( 'modules/analytics-4 accounts', () => {
 			} );
 		} );
 
+		describe( 'fetchGetAccountSummaries', () => {
+			it( 'supports when no account summaries returned', async () => {
+				fetchMock.get( accountSummariesEndpoint, {
+					body: { nextPageToken: null },
+					status: 200,
+				} );
+				const { fetchGetAccountSummaries } =
+					registry.dispatch( MODULES_ANALYTICS_4 );
+
+				await fetchGetAccountSummaries();
+
+				expect( store.getState().accountSummaries ).toEqual( [] );
+			} );
+		} );
+
 		describe( 'transformAndSortAccountSummaries', () => {
 			it( 'should create an action to transform and sort account summaries', async () => {
 				registry
