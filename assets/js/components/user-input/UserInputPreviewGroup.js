@@ -100,6 +100,7 @@ export default function UserInputPreviewGroup( {
 		// while previously it had value, that will mark that modal is closed and we should
 		// return focus to the edit button.
 		if (
+			isConversionReportingEnabled &&
 			slug === USER_INPUT_QUESTIONS_PURPOSE &&
 			previousPurposeAnswer !== savedPurposeAnswer &&
 			savedPurposeAnswer === undefined
@@ -108,7 +109,12 @@ export default function UserInputPreviewGroup( {
 				editButtonRef.current?.focus?.();
 			}, 100 );
 		}
-	}, [ savedPurposeAnswer, previousPurposeAnswer, slug ] );
+	}, [
+		isConversionReportingEnabled,
+		savedPurposeAnswer,
+		previousPurposeAnswer,
+		slug,
+	] );
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { saveUserInputSettings, resetUserInputSettings } =
