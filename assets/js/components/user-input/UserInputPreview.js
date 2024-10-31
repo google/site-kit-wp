@@ -71,8 +71,8 @@ export default function UserInputPreview( props ) {
 	const previewContainer = useRef();
 	const [ isModalOpen, toggleIsModalOpen ] = useState( false );
 	const handleModal = useCallback( () => {
-		toggleIsModalOpen( ! isModalOpen );
-	}, [ isModalOpen ] );
+		toggleIsModalOpen( false );
+	}, [ toggleIsModalOpen ] );
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
@@ -164,7 +164,7 @@ export default function UserInputPreview( props ) {
 					options={ USER_INPUT_ANSWERS_PURPOSE }
 					loading={ loading }
 					settingsView={ settingsView }
-					onChange={ handleModal }
+					onChange={ () => toggleIsModalOpen( true ) }
 				/>
 
 				<UserInputPreviewGroup
