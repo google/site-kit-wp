@@ -1,5 +1,5 @@
 /**
- * Validation function tests.
+ * Utility function related to checking if a given URL uses HTTPS.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,24 +17,23 @@
  */
 
 /**
- * Internal dependencies
+ * Checks if a given URL uses HTTPS.
+ *
+ * @since 1.139.0
+ *
+ * @param {string} url The URL to check.
+ * @return {boolean} True if the URL uses HTTPS, false otherwise.
  */
-import { isValidClientID } from './validation';
+export const isURLUsingHTTPS = ( url ) => {
+	try {
+		if ( typeof url !== 'string' || ! url ) {
+			throw new TypeError( `Invalid URL: ${ url }` );
+		}
 
-describe( 'modules/sign-in-with-google validations', () => {
-	describe( 'isValidClientID', () => {
-		it( 'should return TRUE when a valid clientID is passed', () => {
-			expect(
-				isValidClientID( '1234567890-googleusercontent.com' )
-			).toBe( true );
-		} );
-
-		it.each( [
-			[ 'false', false ],
-			[ 'an empty string', '' ],
-			[ 'contains invalid characters', '?*,<()' ],
-		] )( 'should return FALSE when %s is passed', ( _, clientID ) => {
-			expect( isValidClientID( clientID ) ).toBe( false );
-		} );
-	} );
-} );
+		const parsedURL = new URL( url );
+		return parsedURL.protocol === 'https:';
+	} catch ( error ) {
+		global.console.warn( 'Invalid URL:', error );
+		return false;
+	}
+};

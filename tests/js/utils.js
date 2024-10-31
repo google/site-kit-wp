@@ -428,6 +428,30 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
 };
 
 /**
+ * Provides key metrics user input settings data to the given registry.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetricsUserInputSettings = (
+	registry,
+	extraData = {}
+) => {
+	const defaults = {
+		purpose: {
+			values: [ 'publish_news' ],
+			scope: 'site',
+		},
+	};
+	registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error

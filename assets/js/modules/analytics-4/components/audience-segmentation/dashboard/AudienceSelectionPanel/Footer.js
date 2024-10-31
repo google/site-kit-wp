@@ -108,7 +108,8 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			} );
 
 			if ( ! error ) {
-				const unselectedHiddenTileDismissedItems =
+				// Determine the list of hidden audiences that have been unselected and need their dismissed state to be cleared.
+				const hiddenAudienceDismissedItemsToClear =
 					hiddenTileDismissedItems?.filter( ( item ) => {
 						const audienceResourceName = item.replace(
 							'audience-tile-',
@@ -117,11 +118,24 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 						return ! configuredAudiences.includes(
 							audienceResourceName
 						);
-					} );
+					} ) || [];
 
-				if ( unselectedHiddenTileDismissedItems?.length > 0 ) {
+				// If all configured audiences are hidden, clear the dismissed state for the first one to unhide it
+				if (
+					configuredAudiences.every( ( audienceResourceName ) =>
+						hiddenTileDismissedItems?.includes(
+							`audience-tile-${ audienceResourceName }`
+						)
+					)
+				) {
+					hiddenAudienceDismissedItemsToClear.push(
+						`audience-tile-${ configuredAudiences[ 0 ] }`
+					);
+				}
+
+				if ( hiddenAudienceDismissedItemsToClear?.length > 0 ) {
 					( { error } = await removeDismissedItems(
-						...unselectedHiddenTileDismissedItems
+						...hiddenAudienceDismissedItemsToClear
 					) );
 
 					if ( error ) {

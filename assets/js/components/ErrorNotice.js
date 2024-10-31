@@ -41,6 +41,7 @@ export default function ErrorNotice( {
 	storeName,
 	message = error.message,
 	noPrefix = false,
+	Icon,
 } ) {
 	const dispatch = useDispatch();
 
@@ -78,6 +79,11 @@ export default function ErrorNotice( {
 
 	return (
 		<Fragment>
+			{ Icon && (
+				<div className="googlesitekit-error-notice__icon">
+					<Icon width="24" height="24" />
+				</div>
+			) }
 			<ErrorText
 				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
@@ -103,4 +109,5 @@ ErrorNotice.propTypes = {
 	storeName: PropTypes.string,
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
+	Icon: PropTypes.elementType,
 };

@@ -1,5 +1,5 @@
 /**
- * Sign in with Google Settings styles.
+ * Key Metrics site purpose change modal styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -18,22 +18,47 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-settings-module--sign-in-with-google {
+	.mdc-dialog.googlesitekit-dialog-confirm-site-purpose-change {
 
-		& > .mdc-layout-grid {
-			margin-bottom: 0;
+		.mdc-dialog__content {
+			margin-top: 15px;
+
+			h3 {
+				font-size: $fs-body-md;
+				font-weight: $fw-medium;
+				margin: 0;
+			}
 		}
 
-		.googlesitekit-sign-in-with-google-settings-fields .mdc-layout-grid {
-			padding: 0;
+		ul.mdc-list.mdc-list--underlined {
+
+			li.mdc-list-item {
+				font-size: $fs-body-sm;
+				min-height: auto;
+				padding: 4px 0;
+
+				&::before {
+					display: none;
+				}
+
+				&:last-child {
+					border: none;
+				}
+			}
 		}
 
-		.googlesitekit-sign-in-with-google-settings-fields .mdc-layout-grid .mdc-layout-grid .mdc-layout-grid__inner {
-			margin-bottom: $grid-gap-desktop;
-		}
+		.mdc-dialog__actions {
+			border-top: none;
 
-		.mdc-select {
-			width: 100%;
+			button {
+				@media (max-width: $bp-tablet) {
+					width: 100%;
+
+					&:last-child {
+						margin-top: 5px;
+					}
+				}
+			}
 		}
 	}
 }

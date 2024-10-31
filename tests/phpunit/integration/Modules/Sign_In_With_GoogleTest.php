@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
@@ -53,58 +54,83 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$wp_query = new WP_Query();
 		$wp_query->query( array( 'google_auth' => 123 ) );
 
-		// Should redirect with no_client_id error if no clientID set.
-		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		try {
-			$this->module->handle_google_auth();
-			$this->fail( 'Expected redirection to login with error no_client_id' );
-		} catch ( RedirectException $e ) {
-			$redirect_url = $e->get_location();
-			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
-			$this->assertEquals( 'no_client_id', $params['error'] );
-		}
-
-		// Should redirect with returned errors from Validate_Auth_Request.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
 
-		$mock_validate_auth_request = $this->getMockBuilder( Validate_Auth_Request::class )
-		->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
-		->setMethods( array( 'get_error' ) )
-		->getMock();
+		$mock_input = $this->getMockBuilder( Input::class )
+			->setMethods( array( 'filter' ) )
+			->getMock();
+		$mock_input->method( 'filter' )
+			->willReturnCallback(
+				function ( $input ) {
+					if ( INPUT_SERVER === $input ) {
+						return 'GET';
+					}
+					return null;
+				}
+			);
+		$this->force_set_property( $this->module, 'context', new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input ) );
 
-		$mock_validate_auth_request->method( 'get_error' )
-		->willReturn( new WP_Error( 'test_error_type' ) );
-		$this->force_set_property( $this->module, 'validate_auth_request', $mock_validate_auth_request );
+		// Should return null if the Request Method is not POST.
+		$this->assertNull( $this->module->handle_google_auth() );
+
+		// Should redirect to login with error google_auth_invalid_g_csrf_token if csrf tokens don't match.
+		$mock_input = $this->getMockBuilder( Input::class )
+			->setMethods( array( 'filter' ) )
+			->getMock();
+		$mock_input->method( 'filter' )
+			->willReturnCallback(
+				function ( $input ) {
+					if ( INPUT_SERVER === $input ) {
+						return 'POST';
+					}
+					if ( INPUT_COOKIE === $input ) {
+						return '11111';
+					}
+					if ( INPUT_POST === $input ) {
+						return '99999';
+					}
+					return null;
+				}
+			);
+		$this->force_set_property( $this->module, 'context', new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input ) );
 
 		try {
 			$this->module->handle_google_auth();
-			$this->fail( 'Expected redirection to login with error test_error_type' );
+			$this->fail( 'Expected redirection to login with error google_auth_invalid_g_csrf_token' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
-			$this->assertEquals( 'test_error_type', $params['error'] );
+			$this->assertEquals( 'google_auth_invalid_g_csrf_token', $params['error'] );
 		}
 
-		// Should redirect with google_auth_invalid_request error if payload is empty.
+		// Should redirect to login with error google_auth_invalid_request verify throws and Exception.
 		$mock_input = $this->getMockBuilder( Input::class )
-		->setMethods( array( 'filter' ) )
-		->getMock();
+			->setMethods( array( 'filter' ) )
+			->getMock();
 		$mock_input->method( 'filter' )
-		->willReturn( '123456789' );
+			->willReturnCallback(
+				function ( $input ) {
+					if ( INPUT_SERVER === $input ) {
+						return 'POST';
+					}
+					if ( INPUT_COOKIE === $input ) {
+						return '11111';
+					}
+					if ( INPUT_POST === $input ) {
+						return '11111';
+					}
+					return null;
+				}
+			);
 		$this->force_set_property( $this->module, 'context', new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input ) );
-
-		$mock_validate_auth_request = $this->getMockBuilder( Validate_Auth_Request::class )
-		->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input ) ) )
-		->setMethods( array( 'get_error' ) )
-		->getMock();
-
-		$mock_validate_auth_request->method( 'get_error' )
-		->willReturn( null );
-		$this->force_set_property( $this->module, 'validate_auth_request', $mock_validate_auth_request );
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-		->willReturn( array() );
+			->willReturnCallback(
+				function () {
+					throw new Exception();
+				}
+			);
 		$this->force_set_property( $this->module, 'client', $mock_google_client );
 
 		try {

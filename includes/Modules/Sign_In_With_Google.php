@@ -24,7 +24,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Validate_Auth_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 use WP_User;
@@ -48,14 +47,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * Validate_Auth_Request instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Validate_Auth_Request
-	 */
-	protected $validate_auth_request;
-
-	/**
 	 * Google_Client instance.
 	 *
 	 * @since n.e.x.t
@@ -71,17 +62,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	const SIGN_IN_WITH_GOOGLE_USER_ID_OPTION = 'googlesitekitpersistent_sign_in_with_google_user_id';
 
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
-	 */
+		/**
+		 * Constructor.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param Context        $context        Plugin context.
+		 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+		 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+		 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+		 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
+		 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
@@ -90,8 +81,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-
-		$this->validate_auth_request = new Validate_Auth_Request( $context );
 
 		$settings = $this->get_settings()->get();
 		if ( ! empty( $settings['clientID'] ) ) {
@@ -133,22 +122,25 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 */
 	public function handle_google_auth() {
-		$client_id = $this->get_settings()->get()['clientID'];
-		if ( empty( $client_id ) ) {
-			wp_safe_redirect( add_query_arg( 'error', 'no_client_id', wp_login_url() ) );
-			exit;
+		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+
+		if ( 'POST' !== $request_method ) {
+			return;
 		}
 
-		$this->validate_auth_request->run_validations();
-		$error = $this->validate_auth_request->get_error();
+		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
+		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
 
-		if ( is_wp_error( $error ) ) {
-			wp_safe_redirect( add_query_arg( 'error', $error->get_error_code(), wp_login_url() ) );
+		if (
+			! $csrf_cookie ||
+			! $csrf_post ||
+			$csrf_cookie !== $csrf_post
+		) {
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_g_csrf_token', wp_login_url() ) );
 			exit;
 		}
 
 		$id_token = $this->context->input()->filter( INPUT_POST, 'credential' );
-		$payload  = null;
 		try {
 			$payload = $this->client->verifyIdToken( $id_token );
 		} catch ( \Exception $e ) {
@@ -198,7 +190,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			exit;
 		}
 
-		wp_safe_redirect( add_query_arg( 'error', 'unable_to_login', wp_login_url() ) );
+		wp_safe_redirect( add_query_arg( 'error', 'user_actions_failed', wp_login_url() ) );
 		exit;
 	}
 
@@ -217,26 +209,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		switch ( $error_code ) {
-			case 'no_client_id':
-				$error->add( 'access', __( 'No client ID supplied.', 'google-site-kit' ) );
-				break;
 			case 'google_auth_invalid_request':
-				$error->add( 'access', __( 'Invalid request.', 'google-site-kit' ) );
-				break;
-			case 'google_auth_bad_request_method':
-				$error->add( 'access', __( 'Bad request method.', 'google-site-kit' ) );
-				break;
 			case 'google_auth_invalid_g_csrf_token':
-				$error->add( 'access', __( 'Invalid g_csrf token.', 'google-site-kit' ) );
-				break;
-			case 'missing_parameter':
-				$error->add( 'access', __( 'Parameter: "credential" is missing.', 'google-site-kit' ) );
+				$error->add( 'google_auth', __( 'Sign in with Google failed.', 'google-site-kit' ) );
 				break;
 			case 'registration_disabled':
-				$error->add( 'access', __( 'This site does not allow public registration.', 'google-site-kit' ) );
+				$error->add( 'registration_disabled', __( 'Public registration disabled.', 'google-site-kit' ) );
 				break;
-			case 'unable_to_login':
-				$error->add( 'access', __( 'Unable to sign in.', 'google-site-kit' ) );
+			default:
 				break;
 		}
 
@@ -308,9 +288,28 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
+	 * Checks whether the module is connected.
+	 *
+	 * A module being connected means that all steps required as part of its activation are completed.
+	 *
+	 * @since 1.139.0
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$options = $this->get_settings()->get();
+
+		if ( empty( $options['clientID'] ) ) {
+			return false;
+		}
+
+		return parent::is_connected();
+	}
+
+	/**
 	 * Renders the sign in button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.139.0
 	 */
 	private function render_signin_button() {
 		$settings = $this->get_settings()->get();

@@ -1,5 +1,5 @@
 /**
- * Validation function tests.
+ * ProgressSegments component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,24 +17,34 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import { isValidClientID } from './validation';
+import classnames from 'classnames';
 
-describe( 'modules/sign-in-with-google validations', () => {
-	describe( 'isValidClientID', () => {
-		it( 'should return TRUE when a valid clientID is passed', () => {
-			expect(
-				isValidClientID( '1234567890-googleusercontent.com' )
-			).toBe( true );
-		} );
-
-		it.each( [
-			[ 'false', false ],
-			[ 'an empty string', '' ],
-			[ 'contains invalid characters', '?*,<()' ],
-		] )( 'should return FALSE when %s is passed', ( _, clientID ) => {
-			expect( isValidClientID( clientID ) ).toBe( false );
-		} );
-	} );
-} );
+export default function ProgressSegments( {
+	currentSegment,
+	totalSegments,
+	className,
+} ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-progress-segments',
+				className
+			) }
+		>
+			{ Array.from( Array( totalSegments ).keys() ).map( ( key ) => (
+				<div
+					key={ key }
+					className={ classnames(
+						'googlesitekit-progress-segments__segment',
+						{
+							'googlesitekit-progress-segments__segment--active':
+								key + 1 <= currentSegment,
+						}
+					) }
+				></div>
+			) ) }
+		</div>
+	);
+}
