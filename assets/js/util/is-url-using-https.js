@@ -1,5 +1,5 @@
 /**
- * Sign in with Google Setup components.
+ * Utility function related to checking if a given URL uses HTTPS.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,5 +16,24 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
+/**
+ * Checks if a given URL uses HTTPS.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} url The URL to check.
+ * @return {boolean} True if the URL uses HTTPS, false otherwise.
+ */
+export const isURLUsingHTTPS = ( url ) => {
+	try {
+		if ( typeof url !== 'string' || ! url ) {
+			throw new TypeError( `Invalid URL: ${ url }` );
+		}
+
+		const parsedURL = new URL( url );
+		return parsedURL.protocol === 'https:';
+	} catch ( error ) {
+		global.console.warn( 'Invalid URL:', error );
+		return false;
+	}
+};
