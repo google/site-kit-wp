@@ -24,7 +24,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './datastore/constants';
+import {
+	ERROR_CODE_NON_HTTPS_SITE,
+	MODULES_SIGN_IN_WITH_GOOGLE,
+} from './datastore/constants';
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
@@ -32,7 +35,7 @@ import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoo
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
-import { isURLUsingHTTPS } from '../reader-revenue-manager/utils/validation';
+import { isURLUsingHTTPS } from '../../util/is-url-using-https';
 
 export { registerStore } from './datastore';
 
@@ -69,6 +72,24 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 		],
+		checkRequirements: async ( registry ) => {
+			// Ensure the site info is resolved to get the home URL.
+			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
+			const homeURL = registry.select( CORE_SITE ).getHomeURL();
+
+			if ( isURLUsingHTTPS( homeURL ) ) {
+				return;
+			}
+
+			throw {
+				code: ERROR_CODE_NON_HTTPS_SITE,
+				message: __(
+					'The site should use HTTPS to set up Sign in with Google',
+					'google-site-kit'
+				),
+				data: null,
+			};
+		},
 	} );
 }
 

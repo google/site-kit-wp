@@ -34,7 +34,9 @@ import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import useViewContext from '../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import { trackEvent } from '../../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
@@ -44,6 +46,7 @@ export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
 	const dashboardType = useDashboardType();
@@ -91,12 +94,21 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
-	const dismissNotification = () => {
+	const dismissNotice = () => {
 		// Dismiss the notification, which also dismisses it from
 		// the current user's profile with the `dismissItem` action.
 		dismissOverlayNotification(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		);
+	};
+
+	const dismissNotification = () => {
+		trackEvent(
+			`${ viewContext }_audiences-secondary-user-intro`,
+			'dismiss_notification'
+		).finally( () => {
+			dismissNotice();
+		} );
 	};
 
 	const scrollToWidgetAndDismissNotification = ( event ) => {
@@ -112,7 +124,12 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 			} );
 		}, 0 );
 
-		dismissNotification();
+		trackEvent(
+			`${ viewContext }_audiences-secondary-user-intro`,
+			'confirm_notification'
+		).finally( () => {
+			dismissNotice();
+		} );
 	};
 
 	return (
@@ -125,6 +142,12 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 			notificationID={
 				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 			}
+			onShow={ () => {
+				trackEvent(
+					`${ viewContext }_audiences-secondary-user-intro`,
+					'view_notification'
+				);
+			} }
 		>
 			<div className="googlesitekit-overlay-notification__body">
 				<h3>{ __( 'New! Visitor groups', 'google-site-kit' ) }</h3>
