@@ -34,13 +34,14 @@ import {
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-function getEventsChangeProperty( propName ) {
+function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
 		const inlineData =
 			select(
 				MODULES_ANALYTICS_4
 			).getConversionReportingEventsChange() || {};
-		return inlineData[ propName ];
+
+		return inlineData[ propName ]?.length;
 	} );
 }
 
@@ -203,24 +204,26 @@ export const selectors = {
 	},
 
 	/**
-	 * Gets newEvents list.
+	 * Checks if newEvents are present.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} `newEvents` list.
+	 * @return {boolean} TRUE if `newEvents` are present, FALSE otherwise.
 	 */
-	hasNewConversionReportingEvents: getEventsChangeProperty( 'newEvents' ),
+	hasNewConversionReportingEvents:
+		hasConversionReportingEventsOfType( 'newEvents' ),
 
 	/**
-	 * Gets lostEvents list.
+	 * Checks if lostEvents are present.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} `lostEvents` list.
+	 * @return {boolean} TRUE if `lostEvents` are present, FALSE otherwise.
 	 */
-	hasLostConversionReportingEvents: getEventsChangeProperty( 'lostEvents' ),
+	hasLostConversionReportingEvents:
+		hasConversionReportingEventsOfType( 'lostEvents' ),
 };
 
 export default combineStores(
