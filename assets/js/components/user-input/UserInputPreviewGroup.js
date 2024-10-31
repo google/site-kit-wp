@@ -49,6 +49,7 @@ import LoadingWrapper from '../LoadingWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function UserInputPreviewGroup( {
 	slug,
@@ -57,7 +58,9 @@ export default function UserInputPreviewGroup( {
 	options = {},
 	loading = false,
 	settingsView = false,
+	onChange,
 } ) {
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 	const viewContext = useViewContext();
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
@@ -121,6 +124,10 @@ export default function UserInputPreviewGroup( {
 		if ( ! response.error ) {
 			trackEvent( gaEventCategory, 'question_update', slug );
 			toggleEditMode();
+
+			if ( isConversionReportingEnabled && onChange ) {
+				onChange();
+			}
 		}
 	}, [
 		answerHasError,
@@ -128,6 +135,8 @@ export default function UserInputPreviewGroup( {
 		saveUserInputSettings,
 		slug,
 		toggleEditMode,
+		onChange,
+		isConversionReportingEnabled,
 	] );
 
 	const handleOnEditClick = useCallback( async () => {
@@ -288,4 +297,5 @@ UserInputPreviewGroup.propTypes = {
 	options: PropTypes.shape( {} ),
 	loading: PropTypes.bool,
 	settingsView: PropTypes.bool,
+	onChange: PropTypes.func,
 };
