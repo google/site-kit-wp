@@ -76,11 +76,11 @@ function ConfirmSitePurposeChangeModal( {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValues: setUIValues } = useDispatch( CORE_UI );
-	const { setUserInputSetting } = useDispatch( CORE_USER );
+	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
-	const onClose = useCallback( () => {
+	const onClose = useCallback( async () => {
 		if ( savedPurpose?.length ) {
-			setUserInputSetting( USER_INPUT_QUESTIONS_PURPOSE, savedPurpose );
+			await resetUserInputSettings();
 			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
 				[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
 			} );
@@ -92,7 +92,7 @@ function ConfirmSitePurposeChangeModal( {
 	}, [
 		handleDialog,
 		savedPurpose,
-		setUserInputSetting,
+		resetUserInputSettings,
 		setValues,
 		setUIValues,
 	] );
@@ -103,8 +103,8 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving( true );
 		await saveUserInputSettings();
 		setIsSaving( false );
-		handleDialog();
-	}, [ saveUserInputSettings, handleDialog, setIsSaving ] );
+		onClose();
+	}, [ saveUserInputSettings, onClose, setIsSaving ] );
 
 	return (
 		<Dialog
@@ -172,9 +172,7 @@ function ConfirmSitePurposeChangeModal( {
 				<Button
 					className="mdc-dialog__cancel-button"
 					tertiary
-					onClick={ () => {
-						onClose();
-					} }
+					onClick={ onClose }
 				>
 					{ __( 'Keep current selection', 'google-site-kit' ) }
 				</Button>
