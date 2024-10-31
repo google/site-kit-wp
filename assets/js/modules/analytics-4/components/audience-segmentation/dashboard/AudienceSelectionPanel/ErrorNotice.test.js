@@ -221,6 +221,7 @@ describe( 'ErrorNotice', () => {
 				<ErrorNotice />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -234,6 +235,16 @@ describe( 'ErrorNotice', () => {
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getServiceEntityAccessURL()
+			);
+
+			// Verify that an event is tracked when the link is clicked.
+			fireEvent.click(
+				getByRole( 'button', { name: /request access/i } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+				'insufficient_permissions_error_request_access'
 			);
 		}
 	);
@@ -384,6 +395,7 @@ describe( 'ErrorNotice', () => {
 				<ErrorNotice />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -396,6 +408,11 @@ describe( 'ErrorNotice', () => {
 			fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
 			expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+				'data_loading_error_retry'
+			);
 		} );
 	} );
 } );
