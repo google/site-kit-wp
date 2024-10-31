@@ -79,7 +79,7 @@ export function registerModule( modules ) {
 			throw {
 				code: ERROR_CODE_NON_HTTPS_SITE,
 				message: __(
-					'The site should use HTTPS to set up Sign In With Google',
+					'The site should use HTTPS to set up Sign in with Google',
 					'google-site-kit'
 				),
 				data: null,

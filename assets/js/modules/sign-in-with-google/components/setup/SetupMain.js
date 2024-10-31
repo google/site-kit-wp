@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Main setup component.
+ * Sign in with Google Main setup component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -44,7 +44,7 @@ export default function SetupMain() {
 
 				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 					{ _x(
-						'Sign In With Google',
+						'Sign in with Google',
 						'Service name',
 						'google-site-kit'
 					) }
