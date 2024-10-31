@@ -67,13 +67,18 @@ export default function MetricItems( { savedMetrics } ) {
 			return acc;
 		}
 
-		const { title, description } = KEY_METRICS_WIDGETS[ metricSlug ];
+		const {
+			title,
+			description,
+			metadata: { group },
+		} = KEY_METRICS_WIDGETS[ metricSlug ];
 
 		return {
 			...acc,
 			[ metricSlug ]: {
 				title,
 				description,
+				group,
 			},
 		};
 	};

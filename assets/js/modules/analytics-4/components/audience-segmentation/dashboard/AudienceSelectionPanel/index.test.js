@@ -17,6 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import {
+	getByText as domGetByText,
+	queryByText as domQueryByText,
+} from '@testing-library/dom';
+
+/**
  * Internal dependencies
  */
 import {
@@ -48,6 +56,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
@@ -105,9 +114,10 @@ describe( 'AudienceSelectionPanel', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry
-			.dispatch( CORE_USER )
-			.setConfiguredAudiences( configuredAudiences );
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
 
 		registry.dispatch( CORE_FORMS ).setValues( AUDIENCE_SELECTION_FORM, {
 			[ AUDIENCE_SELECTED ]: configuredAudiences,
@@ -679,6 +689,142 @@ describe( 'AudienceSelectionPanel', () => {
 						expect( item ).toContainElement( newBadgeSourceInDOM );
 					}
 				} );
+		} );
+
+		it( 'should clear the "Temporarily hidden" badge for the first configured audience if all audiences are hidden when saving the selection', async () => {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( [
+					'properties/12345/audiences/1',
+					'properties/12345/audiences/2',
+					'properties/12345/audiences/5',
+				] );
+
+			const temporarilyHiddenAudiences = [
+				'properties/12345/audiences/1',
+				'properties/12345/audiences/5',
+			];
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					'audience-tile-properties/12345/audiences/1',
+					'audience-tile-properties/12345/audiences/5',
+				] );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			function assertExpectedTemporarilyHiddenBadges( hiddenAudiences ) {
+				const selectionPanelItems = document.querySelectorAll(
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item'
+				);
+
+				expect( selectionPanelItems ).toHaveLength( 5 );
+
+				selectionPanelItems.forEach( ( item ) => {
+					const audienceName = item.querySelector(
+						'input[type="checkbox"]'
+					).value;
+
+					if ( hiddenAudiences.includes( audienceName ) ) {
+						expect(
+							domGetByText( item, 'Temporarily hidden' )
+						).toBeInTheDocument();
+					} else {
+						expect(
+							domQueryByText( item, 'Temporarily hidden' )
+						).not.toBeInTheDocument();
+					}
+				} );
+			}
+
+			// Verify there are "Temporarily hidden" badges for the hidden audiences.
+			assertExpectedTemporarilyHiddenBadges( temporarilyHiddenAudiences );
+
+			act( () => {
+				fireEvent.click(
+					document.querySelector(
+						'input[type="checkbox"][value="properties/12345/audiences/2"]'
+					)
+				);
+			} );
+
+			// Prepare the endpoints for saving the settings.
+			const audienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/audience-settings'
+			);
+			const dismissedItemsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismissed-items'
+			);
+
+			fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
+				const { data } = JSON.parse( opts.body );
+				// Return the same settings passed to the API.
+				return { body: data, status: 200 };
+			} );
+
+			fetchMock.postOnce(
+				dismissedItemsEndpoint,
+				{
+					body: [ 'audience-tile-properties/12345/audiences/5' ],
+				},
+				{
+					headers: {
+						// The @wordpress/api-fetch middleware uses this header to tunnel DELETE requests via POST.
+						// See https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/api-fetch/src/middlewares/http-v1.js#L36
+						'X-HTTP-Method-Override': 'DELETE',
+					},
+				}
+			);
+
+			// Save the settings.
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Apply changes' } )
+				);
+
+				await waitForDefaultTimeouts();
+			} );
+
+			// Verify the dismissed item for the first configured audience is cleared.
+			expect( fetchMock ).toHaveFetched(
+				dismissedItemsEndpoint,
+				{
+					body: {
+						data: {
+							slugs: [
+								'audience-tile-properties/12345/audiences/1',
+							],
+						},
+					},
+				},
+				{
+					headers: {
+						'X-HTTP-Method-Override': 'DELETE',
+					},
+				}
+			);
+
+			// Verify there is a "Temporarily hidden" badge for the remaining hidden audience.
+			assertExpectedTemporarilyHiddenBadges( [
+				'properties/12345/audiences/5',
+			] );
 		} );
 
 		it( 'should not show "New" badges if they have expired', async () => {
