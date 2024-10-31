@@ -91,7 +91,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		$this->assertStringContainsString( "client_id: '1234567890.googleusercontent.com'", $output );
-		$this->assertStringContainsString( "login_uri: 'https://example.com/auth/google'", $output );
+		$this->assertStringContainsString( "login_uri: 'https://example.com/wp-login.php?action=google_auth'", $output );
 
 		$this->assertStringContainsString( "text: '" . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . "'", $output );
 		$this->assertStringContainsString( "theme: '" . Sign_In_With_Google_Settings::THEME_LIGHT . "'", $output );
