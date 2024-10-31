@@ -39,7 +39,11 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_USER_INPUT_PREVIOUS_PURPOSE,
+} from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
 function ConfirmSitePurposeChangeModal( {
@@ -48,8 +52,21 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const previousPurpose = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_PREVIOUS_PURPOSE,
+			'purpose'
+		)
+	);
+
 	const currentMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getKeyMetrics();
+		if ( undefined === previousPurpose ) {
+			return select( CORE_USER ).getKeyMetrics();
+		}
+
+		return select( CORE_USER ).getAnswerBasedMetrics( previousPurpose );
 	} );
 
 	const userInputSettings = useSelect( ( select ) => {
@@ -69,7 +86,10 @@ function ConfirmSitePurposeChangeModal( {
 		await saveUserInputSettings();
 		setIsSaving( false );
 		handleDialog();
-	}, [ saveUserInputSettings, handleDialog, setIsSaving ] );
+		setValues( FORM_USER_INPUT_PREVIOUS_PURPOSE, {
+			purpose: undefined,
+		} );
+	}, [ saveUserInputSettings, handleDialog, setIsSaving, setValues ] );
 
 	return (
 		<Dialog
