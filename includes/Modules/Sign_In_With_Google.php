@@ -24,7 +24,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Validate_Auth_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 
@@ -47,37 +46,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * Validate_Auth_Request instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Validate_Auth_Request
-	 */
-	protected $validate_auth_request;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
-	 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-
-		$this->validate_auth_request = new Validate_Auth_Request( $context );
-	}
-
-	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.137.0
@@ -96,21 +64,26 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 */
 	public function handle_google_auth() {
+		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+
+		if ( 'POST' !== $request_method ) {
+			return;
+		}
+
+		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
+		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
+
+		if (
+			! $csrf_cookie ||
+			! $csrf_post ||
+			$csrf_cookie !== $csrf_post
+		) {
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_g_csrf_token', wp_login_url() ) );
+			exit;
+		}
+
 		$client_id = $this->get_settings()->get()['clientID'];
-		if ( empty( $client_id ) ) {
-			wp_safe_redirect( add_query_arg( 'error', 'no_client_id', wp_login_url() ) );
-			exit;
-		}
-
-		$this->validate_auth_request->run_validations();
-		$error = $this->validate_auth_request->get_error();
-
-		if ( is_wp_error( $error ) ) {
-			wp_safe_redirect( add_query_arg( 'error', $error->get_error_code(), wp_login_url() ) );
-			exit;
-		}
-
-		$id_token = $this->context->input()->filter( INPUT_POST, 'credential' );
+		$id_token  = $this->context->input()->filter( INPUT_POST, 'credential' );
 		try {
 			$client  = new Google_Client( array( 'client_id' => $client_id ) );
 			$payload = $client->verifyIdToken( $id_token );
@@ -143,20 +116,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		switch ( $error_code ) {
-			case 'no_client_id':
-				$error->add( 'access', __( 'No client ID supplied.', 'google-site-kit' ) );
-				break;
 			case 'google_auth_invalid_request':
-				$error->add( 'access', __( 'Invalid request.', 'google-site-kit' ) );
-				break;
-			case 'google_auth_bad_request_method':
-				$error->add( 'access', __( 'Bad request method.', 'google-site-kit' ) );
-				break;
 			case 'google_auth_invalid_g_csrf_token':
-				$error->add( 'access', __( 'Invalid g_csrf token.', 'google-site-kit' ) );
+				$error->add( 'access', __( 'Sign in with Google failed.', 'google-site-kit' ) );
 				break;
-			case 'missing_parameter':
-				$error->add( 'access', __( 'Parameter: "credential" is missing.', 'google-site-kit' ) );
+			default:
 				break;
 		}
 
