@@ -112,9 +112,28 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
+	 * Checks whether the module is connected.
+	 *
+	 * A module being connected means that all steps required as part of its activation are completed.
+	 *
+	 * @since 1.139.0
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$options = $this->get_settings()->get();
+
+		if ( empty( $options['clientID'] ) ) {
+			return false;
+		}
+
+		return parent::is_connected();
+	}
+
+	/**
 	 * Renders the sign in button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.139.0
 	 */
 	private function render_signin_button() {
 		$settings = $this->get_settings()->get();
@@ -138,7 +157,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
 		login_uri: '<?php echo esc_js( $redirect_url ); ?>',
 	});
-	const parent = document.createElement( 'div' );  
+	const parent = document.createElement( 'div' );
 	document.getElementById( 'login').insertBefore( parent, document.getElementById( 'loginform' ) );
 	google.accounts.id.renderButton(parent, {
 		theme: '<?php echo esc_js( $settings['theme'] ); ?>',
