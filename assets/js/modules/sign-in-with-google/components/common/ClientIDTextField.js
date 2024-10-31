@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Module Client ID component.
+ * Sign in with Google Module Client ID component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
