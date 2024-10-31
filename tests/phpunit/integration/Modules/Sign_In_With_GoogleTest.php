@@ -236,6 +236,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_logout();
 
 		// Creates new user if "Anyone can register" setting is enabled.
+		if ( is_multisite() ) {
+			update_site_option( 'registration', 'user' );
+		}
 		update_option( 'users_can_register', true );
 
 		$mock_google_client = $this->createMock( Google_Client::class );
@@ -261,6 +264,10 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( '3333333333', get_user_meta( get_current_user_id(), Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
 
 		// Does not create new user if "Anyone can register" setting is disabled and will redirect to login with error user_actions_failed.
+		if ( is_multisite() ) {
+			// Note: on multisite, the registration site option overrides the site level option.
+			update_site_option( 'registration', 'none' );
+		}
 		update_option( 'users_can_register', false );
 
 		$mock_google_client = $this->createMock( Google_Client::class );
