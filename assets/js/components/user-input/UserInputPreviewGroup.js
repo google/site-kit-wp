@@ -42,6 +42,7 @@ import useViewContext from '../../hooks/useViewContext';
 import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
@@ -119,14 +120,18 @@ export default function UserInputPreviewGroup( {
 			return;
 		}
 
-		const response = await saveUserInputSettings();
+		if (
+			USER_INPUT_QUESTIONS_PURPOSE === slug &&
+			isConversionReportingEnabled &&
+			onChange
+		) {
+			onChange();
+		} else {
+			const response = await saveUserInputSettings();
 
-		if ( ! response.error ) {
-			trackEvent( gaEventCategory, 'question_update', slug );
-			toggleEditMode();
-
-			if ( isConversionReportingEnabled && onChange ) {
-				onChange();
+			if ( ! response.error ) {
+				trackEvent( gaEventCategory, 'question_update', slug );
+				toggleEditMode();
 			}
 		}
 	}, [

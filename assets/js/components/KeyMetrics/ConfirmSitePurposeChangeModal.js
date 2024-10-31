@@ -41,11 +41,10 @@ import {
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	CORE_USER,
-	FORM_USER_INPUT_PREVIOUS_PURPOSE,
+	FORM_USER_INPUT_NEW_PURPOSE,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-import { USER_INPUT_QUESTIONS_PURPOSE } from '../user-input/util/constants';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -53,33 +52,19 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
-	const { setUserInputSetting } = useDispatch( CORE_USER );
-
-	const previousPurpose = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_PREVIOUS_PURPOSE,
-			'purpose'
-		)
+	const newPurpose = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_USER_INPUT_NEW_PURPOSE, 'purpose' )
 	);
 
 	const currentMetrics = useSelect( ( select ) => {
-		if ( undefined === previousPurpose ) {
-			return select( CORE_USER ).getKeyMetrics();
-		}
-
-		return select( CORE_USER ).getAnswerBasedMetrics( previousPurpose );
+		return select( CORE_USER ).getKeyMetrics();
 	} );
-
-	const userInputSettings = useSelect( ( select ) => {
-		return select( CORE_USER ).getUserInputSettings();
-	} );
-
-	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
 
 	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getAnswerBasedMetrics( purpose );
+		if ( undefined !== newPurpose ) {
+			return select( CORE_USER ).getAnswerBasedMetrics( newPurpose );
+		}
+		return currentMetrics;
 	} );
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
@@ -89,10 +74,7 @@ function ConfirmSitePurposeChangeModal( {
 		await saveUserInputSettings();
 		setIsSaving( false );
 		handleDialog();
-		setValues( FORM_USER_INPUT_PREVIOUS_PURPOSE, {
-			purpose: undefined,
-		} );
-	}, [ saveUserInputSettings, handleDialog, setIsSaving, setValues ] );
+	}, [ saveUserInputSettings, handleDialog, setIsSaving ] );
 
 	return (
 		<Dialog
@@ -159,18 +141,7 @@ function ConfirmSitePurposeChangeModal( {
 				<Button
 					className="mdc-dialog__cancel-button"
 					tertiary
-					onClick={ async () => {
-						handleDialog();
-
-						if ( !! previousPurpose ) {
-							await setUserInputSetting(
-								USER_INPUT_QUESTIONS_PURPOSE,
-								[ previousPurpose ]
-							);
-
-							await saveUserInputSettings();
-						}
-					} }
+					onClick={ handleDialog }
 				>
 					{ __( 'Keep current selection', 'google-site-kit' ) }
 				</Button>

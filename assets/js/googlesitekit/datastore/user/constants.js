@@ -91,8 +91,7 @@ export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
 export const KM_ANALYTICS_VISITS_PER_VISITOR = 'kmAnalyticsVisitsPerVisitor';
 export const KM_ANALYTICS_MOST_ENGAGING_PAGES = 'kmAnalyticsMostEngagingPages';
 export const KM_ANALYTICS_TOP_CATEGORIES = 'kmAnalyticsTopCategories';
-export const FORM_USER_INPUT_PREVIOUS_PURPOSE =
-	'form_user_input_previous_puropose';
+export const FORM_USER_INPUT_NEW_PURPOSE = 'form_user_input_new_puropose';
 
 export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
