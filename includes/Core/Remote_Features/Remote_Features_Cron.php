@@ -55,7 +55,7 @@ class Remote_Features_Cron {
 	 */
 	public function maybe_schedule_cron() {
 		if ( ! wp_next_scheduled( self::CRON_ACTION ) && ! wp_installing() ) {
-			wp_schedule_event( time(), 'twicedaily', self::CRON_ACTION, array(), true );
+			wp_schedule_event( time(), 'twicedaily', self::CRON_ACTION );
 		}
 	}
 }
