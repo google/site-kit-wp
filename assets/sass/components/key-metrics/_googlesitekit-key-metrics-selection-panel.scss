@@ -23,5 +23,13 @@
 		@media (min-width: $bp-nonMobile) {
 			width: 578px;
 		}
+
+		.googlesitekit-selection-panel-header {
+			p {
+				color: $c-neutral-n-900;
+				font-size: $fs-title-sm;
+				margin: 8px 0 0;
+			}
+		}
 	}
 }

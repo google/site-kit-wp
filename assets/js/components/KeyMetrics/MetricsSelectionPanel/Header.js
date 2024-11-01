@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,12 +34,15 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS } from '../constants';
 import Link from '../../Link';
 import { SelectionPanelHeader } from '../../SelectionPanel';
 import useViewOnly from '../../../hooks/useViewOnly';
+import { useFeature } from '../../../hooks/useFeature';
 
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
@@ -57,7 +60,15 @@ export default function Header( { closePanel } ) {
 
 	return (
 		<SelectionPanelHeader
-			title={ __( 'Select your metrics', 'google-site-kit' ) }
+			title={
+				isConversionReportingEnabled
+					? sprintf(
+							/* translators: %d: number of max allowed metrics. */
+							__( 'Select up to %d metrics', 'google-site-kit' ),
+							MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
+					  )
+					: __( 'Select your metrics', 'google-site-kit' )
+			}
 			onCloseClick={ closePanel }
 		>
 			{ ! isViewOnly && (
