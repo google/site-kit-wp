@@ -18,11 +18,13 @@ export const logIgnoreList = {
 	],
 	latest: [
 		'Cron reschedule event error for hook: googlesitekit_cron_update_remote_features',
+		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
 	],
 	nightly: [
 		// Can be removed once WordPress AMP Plugin removes the deprecated function call.
 		// See: https://github.com/ampproject/amp-wp/issues/7619
 		'PHP Deprecated:  Function _admin_bar_bump_cb is deprecated since version 6.4.0! Use wp_enqueue_admin_bar_bump_styles instead. in /var/www/html/wp-includes/functions.php',
 		'Cron reschedule event error for hook: googlesitekit_cron_update_remote_features',
+		'tail: /var/www/html/wp-content/debug.log has appeared; following end of new file',
 	],
 };
