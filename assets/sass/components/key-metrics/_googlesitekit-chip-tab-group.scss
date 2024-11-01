@@ -22,8 +22,12 @@
 		.googlesitekit-chip-tab-group__tab-items {
 			display: flex;
 			flex-wrap: wrap;
-			gap: 10px;
+			gap: 12px;
 			margin: 0 25px 25px;
+
+			@media (min-width: $bp-desktop) {
+				flex-direction: column;
+			}
 		}
 
 		.googlesitekit-chip-tab-group__chip-item {
@@ -36,6 +40,23 @@
 
 			svg {
 				margin-right: 7px;
+			}
+		}
+
+		.googlesitekit-chip-tab-group__tab-items-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+
+			&:last-child {
+				.googlesitekit-chip-tab-group__chip-item {
+					&:nth-last-child(2),
+					&:last-child {
+						@media (min-width: $bp-desktop) {
+							padding: 6px 23px;
+						}
+					}
+				}
 			}
 		}
 
