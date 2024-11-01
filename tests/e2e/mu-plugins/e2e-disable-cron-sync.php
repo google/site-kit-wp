@@ -12,7 +12,7 @@
 add_filter(
 	'schedule_event',
 	function ( $event ) {
-		if ( is_object( $event ) && 'googlesitekit_cron_update_remote_features' === $event->hook ) {
+		if ( 'googlesitekit_cron_update_remote_features' === $event->hook ) {
 			return false;
 		}
 

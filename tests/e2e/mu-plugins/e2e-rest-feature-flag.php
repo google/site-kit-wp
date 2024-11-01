@@ -13,17 +13,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 
-add_filter(
-	'schedule_event',
-	function ( $event ) {
-		if ( 'googlesitekit_cron_update_remote_features' === $event->hook ) {
-			return false;
-		}
-
-		return $event;
-	}
-);
-
 add_action(
 	'rest_api_init',
 	function () {
