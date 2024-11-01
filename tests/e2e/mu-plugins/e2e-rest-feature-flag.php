@@ -10,8 +10,20 @@
  */
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+
+add_filter(
+	'schedule_event',
+	function ( $event ) {
+		if ( Remote_Features_Cron::CRON_ACTION === $event->hook ) {
+			return false;
+		}
+
+		return $event;
+	}
+);
 
 add_action(
 	'rest_api_init',
