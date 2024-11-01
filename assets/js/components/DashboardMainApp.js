@@ -108,6 +108,12 @@ export default function DashboardMainApp() {
 			grantedScopes.includes( scope )
 		);
 
+	const configuredAudiences = useSelect(
+		( select ) =>
+			audienceSegmentationEnabled &&
+			select( CORE_USER ).getConfiguredAudiences()
+	);
+
 	useMount( () => {
 		// Render the current survey portal in 5 seconds after the initial rendering.
 		if ( ! viewOnlyDashboard ) {
@@ -294,7 +300,9 @@ export default function DashboardMainApp() {
 
 			<MetricsSelectionPanel />
 
-			{ audienceSegmentationEnabled && <AudienceSelectionPanel /> }
+			{ audienceSegmentationEnabled && configuredAudiences && (
+				<AudienceSelectionPanel />
+			) }
 
 			<OfflineNotification />
 		</Fragment>

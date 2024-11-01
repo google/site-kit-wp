@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
 export const KEY_METRICS_SETUP_CTA_WIDGET_SLUG = 'key-metrics-setup-cta-widget';
 export const ACR_SUBTLE_NOTIFICATION_SLUG =
 	'key-metrics-acr-subtle-notification';
@@ -27,3 +32,24 @@ export const KEY_METRICS_SELECTED = 'key-metrics-selected';
 export const MIN_SELECTED_METRICS_COUNT = 2;
 export const MAX_SELECTED_METRICS_COUNT = 4;
 export const MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS = 8;
+
+export const KEY_METRICS_GROUP_VISITORS = {
+	SLUG: 'visitors',
+	LABEL: __( 'Visitors', 'google-site-kit' ),
+};
+export const KEY_METRICS_GROUP_DRIVING_TRAFFIC = {
+	SLUG: 'drivingTraffic',
+	LABEL: __( 'Driving traffic', 'google-site-kit' ),
+};
+export const KEY_METRICS_GROUP_GENERATING_LEADS = {
+	SLUG: 'generatingLeads',
+	LABEL: __( 'Generating leads', 'google-site-kit' ),
+};
+export const KEY_METRICS_GROUP_SELLING_PRODUCTS = {
+	SLUG: 'sellingProducts',
+	LABEL: __( 'Selling products', 'google-site-kit' ),
+};
+export const KEY_METRICS_GROUP_CONTENT_PERFORMANCE = {
+	SLUG: 'contentPerformance',
+	LABEL: __( 'Content performance', 'google-site-kit' ),
+};

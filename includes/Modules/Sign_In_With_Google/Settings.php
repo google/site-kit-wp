@@ -23,14 +23,14 @@ class Settings extends Module_Settings {
 
 	const OPTION = 'googlesitekit_sign-in-with-google_settings';
 
-	const TEXT_CONTINUE_WITH_GOOGLE = 'Continue with Google';
-	const TEXT_SIGN_IN              = 'Sign in';
-	const TEXT_SIGN_IN_WITH_GOOGLE  = 'Sign in with Google';
-	const TEXT_SIGN_UP_WITH_GOOGLE  = 'Sign up with Google';
+	const TEXT_CONTINUE_WITH_GOOGLE = 'continue_with';
+	const TEXT_SIGN_IN              = 'signin';
+	const TEXT_SIGN_IN_WITH_GOOGLE  = 'signin_with';
+	const TEXT_SIGN_UP_WITH_GOOGLE  = 'signup_with';
 
-	const THEME_LIGHT   = 'light';
-	const THEME_NEUTRAL = 'neutral';
-	const THEME_DARK    = 'dark';
+	const THEME_LIGHT   = 'outline';
+	const THEME_NEUTRAL = 'filled_blue';
+	const THEME_DARK    = 'filled_black';
 
 	const SHAPE_RECTANGULAR = 'rectangular';
 	const SHAPE_PILL        = 'pill';
@@ -44,10 +44,11 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
-			'clientID' => '',
-			'text'     => self::TEXT_SIGN_IN_WITH_GOOGLE,
-			'theme'    => self::THEME_LIGHT,
-			'shape'    => self::SHAPE_RECTANGULAR,
+			'clientID'      => '',
+			'text'          => self::TEXT_SIGN_IN_WITH_GOOGLE,
+			'theme'         => self::THEME_LIGHT,
+			'shape'         => self::SHAPE_RECTANGULAR,
+			'oneTapEnabled' => false,
 		);
 	}
 
@@ -102,6 +103,10 @@ class Settings extends Module_Settings {
 				if ( ! in_array( $option['shape'], $shape_options, true ) ) {
 					$option['shape'] = self::SHAPE_RECTANGULAR;
 				}
+			}
+
+			if ( isset( $option['oneTapEnabled'] ) ) {
+				$option['oneTapEnabled'] = (bool) $option['oneTapEnabled'];
 			}
 
 			return $option;
