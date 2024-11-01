@@ -69,7 +69,7 @@ export default function SettingsCardKeyMetrics() {
 		select( CORE_USER ).isItemDismissed( ACR_SUBTLE_NOTIFICATION_SLUG )
 	);
 	const showACRNotification =
-		conversionReportingEnabled && ! isACRNotificationDismissed;
+		conversionReportingEnabled && isACRNotificationDismissed === false;
 
 	const isUserInputCompletedLoading = useSelect(
 		( select ) =>

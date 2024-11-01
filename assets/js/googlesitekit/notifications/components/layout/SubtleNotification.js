@@ -36,7 +36,7 @@ export default function SubtleNotification( {
 	dismissCTA,
 	additionalCTA,
 	type = 'success',
-	icon = null,
+	icon,
 } ) {
 	return (
 		<Grid>
@@ -83,9 +83,11 @@ export default function SubtleNotification( {
 }
 
 SubtleNotification.propTypes = {
+	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
 	type: PropTypes.string,
+	icon: PropTypes.object,
 };
