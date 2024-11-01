@@ -36,21 +36,30 @@ import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import {
+	CORE_USER,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../../googlesitekit/datastore/user/constants';
 
 function Template() {
-	const savedItemSlugs = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				KEY_METRICS_SELECTION_FORM,
-				KEY_METRICS_SELECTED
-			) || []
-	);
+	const savedViewableMetrics = useSelect( ( select ) => {
+		const metrics = select( CORE_USER ).getKeyMetrics();
+
+		if ( ! Array.isArray( metrics ) ) {
+			return [];
+		}
+
+		const { isKeyMetricAvailable } = select( CORE_USER );
+
+		return metrics.filter( isKeyMetricAvailable );
+	} );
 
 	const metricsListReducer = ( acc, metricSlug ) => {
-		const { title, description, group } = KEY_METRICS_WIDGETS[ metricSlug ];
+		const {
+			title,
+			description,
+			metadata: { group },
+		} = KEY_METRICS_WIDGETS[ metricSlug ];
 
 		return {
 			...acc,
@@ -70,14 +79,14 @@ function Template() {
 		<SelectionPanel isOpen className="googlesitekit-km-selection-panel">
 			<Header closePanel={ () => null } />
 			<SelectionPanelItems
-				savedItemSlugs={ savedItemSlugs }
+				savedItemSlugs={ savedViewableMetrics }
 				allMetricItems={ allMetricItems }
 			/>
 			<CustomDimensionsNotice />
 			<Footer
 				isOpen
 				closePanel={ () => null }
-				savedMetrics={ savedItemSlugs }
+				savedMetrics={ savedViewableMetrics }
 				onNavigationToOAuthURL={ () => null }
 			/>
 		</SelectionPanel>
