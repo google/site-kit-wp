@@ -60,7 +60,19 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: ( { select } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getSetupErrorMessage selector relies on the resolution
+				// of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
+				// rely on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
 
@@ -100,7 +112,19 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: ( { select } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getSetupErrorMessage selector relies on the resolution
+				// of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// The isAuthenticated() and hasScope() selectors
+				// rely on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
 
@@ -140,6 +164,15 @@ export function registerDefaults( notificationsAPI ) {
 				resolveSelect,
 				dispatch,
 			} ) => {
+				await Promise.all( [
+					// The getAdSenseLinked selector relies on the resolution
+					// of the getSettings() resolver.
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					// The isModuleConnected() selector relies on the resolution
+					// of the getModules() resolver.
+					resolveSelect( CORE_MODULES ).getModules(),
+				] );
+
 				const adSenseModuleConnected =
 					select( CORE_MODULES ).isModuleConnected( 'adsense' );
 
@@ -221,6 +254,15 @@ export function registerDefaults( notificationsAPI ) {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
+			await Promise.all( [
+				// The isModuleConnected() and canViewSharedModule() selectors rely
+				// on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				viewOnly
+					? resolveSelect( CORE_MODULES ).getRecoverableModules()
+					: Promise.resolve( [] ),
+			] );
+
 			const isAnalyticsConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
@@ -232,27 +274,25 @@ export function registerDefaults( notificationsAPI ) {
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-			const showRecoverableAnalytics = await ( async () => {
+			const showRecoverableAnalytics = await ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
 			} )();
-			const showRecoverableSearchConsole = await ( async () => {
+			const showRecoverableSearchConsole = await ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
@@ -293,6 +333,15 @@ export function registerDefaults( notificationsAPI ) {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
+			await Promise.all( [
+				// The isModuleConnected() and canViewSharedModule() selectors rely
+				// on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				viewOnly
+					? resolveSelect( CORE_MODULES ).getRecoverableModules()
+					: Promise.resolve( [] ),
+			] );
+
 			const getModuleState = async ( moduleSlug, datastoreSlug ) => {
 				// Check if the module connected and return early if not.
 				const isConnected =
@@ -310,9 +359,8 @@ export function registerDefaults( notificationsAPI ) {
 						return 'cant-view';
 					}
 
-					const modules = await resolveSelect(
-						CORE_MODULES
-					).getRecoverableModules();
+					const modules =
+						select( CORE_MODULES ).getRecoverableModules();
 					if ( !! modules[ moduleSlug ] ) {
 						return 'recovering';
 					}

@@ -170,7 +170,7 @@ const baseActions = {
 	/**
 	 * Resets the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.139.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */

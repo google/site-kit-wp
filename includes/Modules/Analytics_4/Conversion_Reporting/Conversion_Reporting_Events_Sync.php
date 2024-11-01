@@ -59,7 +59,7 @@ class Conversion_Reporting_Events_Sync {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.139.0
 	 * @var Transients
 	 */
 	protected $transients;
@@ -68,7 +68,7 @@ class Conversion_Reporting_Events_Sync {
 	 * Constructor.
 	 *
 	 * @since 1.135.0
-	 * @since n.e.x.t Added $context param to constructor.
+	 * @since 1.139.0 Added $context param to constructor.
 	 *
 	 * @param Context     $context   Plugin context.
 	 * @param Settings    $settings  Settings module settings instance.

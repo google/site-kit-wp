@@ -46,6 +46,7 @@ function ModalDialog( {
 	className = '',
 	dialogActive = false,
 	handleDialog = null,
+	onOpen = null,
 	onClose = null,
 	title = null,
 	provides,
@@ -66,6 +67,7 @@ function ModalDialog( {
 	return (
 		<Dialog
 			open={ dialogActive }
+			onOpen={ onOpen }
 			onClose={ onClose }
 			aria-describedby={ hasProvides ? describedByID : undefined }
 			tabIndex="-1"
@@ -129,6 +131,7 @@ function ModalDialog( {
 				{ buttonLink ? (
 					<Button
 						href={ buttonLink }
+						onClick={ handleConfirm }
 						target="_blank"
 						danger={ danger }
 					>
@@ -157,6 +160,8 @@ ModalDialog.propTypes = {
 	dialogActive: PropTypes.bool,
 	handleDialog: PropTypes.func,
 	handleConfirm: PropTypes.func.isRequired,
+	onOpen: PropTypes.func,
+	onClose: PropTypes.func,
 	title: PropTypes.string,
 	confirmButton: PropTypes.string,
 	danger: PropTypes.bool,

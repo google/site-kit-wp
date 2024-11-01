@@ -53,29 +53,22 @@ MultipleAdmins.decorators = [
 			),
 			{
 				body: {
-					goals: {
+					purpose: {
 						scope: 'site',
-						values: [ 'publish_blog', 'share_portfolio' ],
+						answeredBy: 1,
+						values: [ 'sell_products_or_service' ],
 						author: {
 							photo: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
 							login: 'admin',
 						},
 					},
-					helpNeeded: {
-						scope: 'site',
-						values: [],
-					},
-					searchTerms: {
-						scope: 'site',
-						values: [],
-					},
 					postFrequency: {
 						scope: 'user',
-						values: [ 'never' ],
+						values: [],
 					},
-					role: {
+					goals: {
 						scope: 'user',
-						values: [ 'owner' ],
+						values: [],
 					},
 				},
 				status: 200,
@@ -87,7 +80,25 @@ MultipleAdmins.decorators = [
 ];
 MultipleAdmins.parameters = {
 	query: {
-		question: 'goals',
+		question: 'purpose',
+	},
+};
+
+export const ErrorMessage = Template.bind( {} );
+ErrorMessage.storyName = 'Error message';
+ErrorMessage.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveError(
+			{
+				code: 'test_code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'saveUserInputSettings',
+			[]
+		);
 	},
 };
 
@@ -96,7 +107,7 @@ export default {
 	component: UserInputApp,
 	decorators: [
 		withQuery,
-		( Story ) => {
+		( Story, { args } ) => {
 			return (
 				<WithTestRegistry
 					callback={ ( registry ) => {
@@ -104,6 +115,10 @@ export default {
 						registry
 							.dispatch( CORE_USER )
 							.receiveIsUserInputCompleted( false );
+
+						if ( typeof args?.setupRegistry === 'function' ) {
+							args.setupRegistry( registry );
+						}
 					} }
 				>
 					<Story />
@@ -112,8 +127,9 @@ export default {
 		},
 	],
 	parameters: {
+		padding: 0,
 		query: {
-			question: 'role',
+			question: 'purpose',
 		},
 	},
 };

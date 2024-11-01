@@ -40,6 +40,7 @@ import {
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import {
 	properties as propertiesFixture,
 	audiences as audiencesFixture,
@@ -1095,6 +1096,79 @@ describe( 'modules/analytics-4 audiences', () => {
 				).toEqual( expectedConfiguredAudiences );
 			} );
 
+			it( 'should add "purchasers" audience to `configuredAudiences` if it has data and there is only one audience available in `configuredAudiences`', async () => {
+				const userAudience = availableAudiencesFixture[ 4 ];
+
+				const availableAudiences = [
+					userAudience,
+					availableAudiencesFixture[ 1 ], // Purchaser
+				];
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: availableAudiences.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					} );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions( [ userAudience ], {
+						startDate,
+						endDate: referenceDate,
+					} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+					createAudiencesTotalUsersMockReport( {
+						[ userAudience.name ]: 123,
+					} ),
+					{ options }
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				const expectedConfiguredAudiences = availableAudiences.map(
+					( { name } ) => name
+				);
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: expectedConfiguredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				muteFetch( expirableItemEndpoint );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				const getConfiguredAudiences = registry
+					.select( CORE_USER )
+					.getConfiguredAudiences();
+
+				expect( getConfiguredAudiences ).toEqual(
+					expectedConfiguredAudiences
+				);
+			} );
+
 			it( 'should make a request to expire new badges for configured audiences', async () => {
 				const totalUsersByAudience = {
 					[ availableUserAudiences[ 0 ].name ]: 0,
@@ -1572,6 +1646,47 @@ describe( 'modules/analytics-4 audiences', () => {
 					expect(
 						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toEqual( expectedConfiguredAudiences );
+				} );
+
+				it( 'should return an insufficient permisions error if the "create-audience" request fails', async () => {
+					const insufficientPermissionsError = {
+						code: 'test_error',
+						message: 'Error message.',
+						data: {
+							reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+						},
+					};
+
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: [],
+						status: 200,
+					} );
+
+					// Mocking createAudience API call with insufficient permissions error.
+					fetchMock.post(
+						{ url: createAudienceEndpoint, repeat: 2 },
+						{
+							body: insufficientPermissionsError,
+							status: 400,
+						}
+					);
+
+					const { response, error } = await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					await waitForDefaultTimeouts();
+
+					expect( response ).toBeUndefined();
+					expect( error ).toEqual( insufficientPermissionsError );
+
+					// Ensuring no configured audiences are set when all creation attempts fail.
+					expect(
+						registry.select( CORE_USER ).getConfiguredAudiences()
+					).toBeNull();
+
+					expect( console ).toHaveErrored();
+					expect( console ).toHaveErrored();
 				} );
 			} );
 		} );
