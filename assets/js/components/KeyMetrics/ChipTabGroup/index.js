@@ -36,19 +36,14 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import Chip from './Chip';
 import MetricItem from '../MetricsSelectionPanel/MetricItem';
 import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../hooks/useBreakpoint';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const [ isActive, setIsActive ] = useState(
 		KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG
 	);
 	const breakpoint = useBreakpoint();
-	const isDesktopBreakpoint =
-		breakpoint !== BREAKPOINT_SMALL && breakpoint !== BREAKPOINT_TABLET;
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -107,7 +102,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	return (
 		<div className="googlesitekit-chip-tab-group">
 			<div className="googlesitekit-chip-tab-group__tab-items">
-				{ isDesktopBreakpoint &&
+				{ ! isMobileBreakpoint &&
 					chipItemRows.map( ( row ) => (
 						<div
 							// To avoid using indexes, key is extracted from the first grouo
@@ -129,7 +124,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 							) ) }
 						</div>
 					) ) }
-				{ ! isDesktopBreakpoint &&
+				{ isMobileBreakpoint &&
 					[ currentSelectionGroup, ...KEY_METRICS_GROUPS ].map(
 						( group ) => (
 							<Chip
