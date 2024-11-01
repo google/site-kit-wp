@@ -29,25 +29,33 @@ export const KEY_METRICS_SELECTED = 'key-metrics-selected';
 export const MIN_SELECTED_METRICS_COUNT = 2;
 export const MAX_SELECTED_METRICS_COUNT = 4;
 export const MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS = 8;
-export const KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG = 'current-selection';
 
+export const KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG = 'current-selection';
 export const KEY_METRICS_GROUP_VISITORS = {
 	SLUG: 'visitors',
 	LABEL: __( 'Visitors', 'google-site-kit' ),
 };
 export const KEY_METRICS_GROUP_DRIVING_TRAFFIC = {
-	SLUG: 'drivingTraffic',
+	SLUG: 'driving-traffic',
 	LABEL: __( 'Driving traffic', 'google-site-kit' ),
 };
 export const KEY_METRICS_GROUP_GENERATING_LEADS = {
-	SLUG: 'generatingLeads',
+	SLUG: 'generating-leads',
 	LABEL: __( 'Generating leads', 'google-site-kit' ),
 };
 export const KEY_METRICS_GROUP_SELLING_PRODUCTS = {
-	SLUG: 'sellingProducts',
+	SLUG: 'selling-products',
 	LABEL: __( 'Selling products', 'google-site-kit' ),
 };
 export const KEY_METRICS_GROUP_CONTENT_PERFORMANCE = {
-	SLUG: 'contentPerformance',
+	SLUG: 'content-performance',
 	LABEL: __( 'Content performance', 'google-site-kit' ),
 };
+
+export const KEY_METRICS_GROUPS = [
+	KEY_METRICS_GROUP_VISITORS,
+	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
+	KEY_METRICS_GROUP_GENERATING_LEADS,
+	KEY_METRICS_GROUP_SELLING_PRODUCTS,
+	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
+];
