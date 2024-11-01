@@ -23,7 +23,6 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
-	useMemo,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -73,28 +72,21 @@ export default function ErrorNotice() {
 		syncAvailableAudiences();
 	}, [ clearError, syncAvailableAudiences ] );
 
-	// Memoize `errors` as it is a dependency for the `useEffect` below.
-	const errors = useMemo( () => {
-		const errs = [];
+	const errors = [];
 
-		if ( syncAvailableAudiencesError ) {
-			errs.push( syncAvailableAudiencesError );
-		}
+	if ( syncAvailableAudiencesError ) {
+		errors.push( syncAvailableAudiencesError );
+	}
 
-		if ( otherUserCountReportError ) {
-			errs.push( otherUserCountReportError );
-		}
+	if ( otherUserCountReportError ) {
+		errors.push( otherUserCountReportError );
+	}
 
-		if ( siteKitUserCountReportError ) {
-			errs.push( siteKitUserCountReportError );
-		}
+	if ( siteKitUserCountReportError ) {
+		errors.push( siteKitUserCountReportError );
+	}
 
-		return errs;
-	}, [
-		syncAvailableAudiencesError,
-		otherUserCountReportError,
-		siteKitUserCountReportError,
-	] );
+	const hasErrors = errors.length > 0;
 
 	const hasInsufficientPermissionsError = errors.some( ( error ) =>
 		isInsufficientPermissionsError( error )
@@ -102,7 +94,7 @@ export default function ErrorNotice() {
 
 	// Track an event when the error notice is displayed.
 	useEffect( () => {
-		if ( ! isOpen || ! errors.length ) {
+		if ( ! isOpen || ! hasErrors ) {
 			return;
 		}
 
@@ -112,7 +104,7 @@ export default function ErrorNotice() {
 				? 'insufficient_permissions_error'
 				: 'data_loading_error'
 		);
-	}, [ errors, hasInsufficientPermissionsError, isOpen, viewContext ] );
+	}, [ hasErrors, hasInsufficientPermissionsError, isOpen, viewContext ] );
 
 	if ( ! errors.length ) {
 		return null;
