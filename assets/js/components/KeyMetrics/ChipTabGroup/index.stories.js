@@ -76,7 +76,10 @@ function Template() {
 	);
 
 	return (
-		<SelectionPanel isOpen className="googlesitekit-km-selection-panel">
+		<SelectionPanel
+			isOpen
+			className="googlesitekit-km-selection-panel googlesitekit-acr-km-selection-panel"
+		>
 			<Header closePanel={ () => null } />
 			<SelectionPanelItems
 				savedItemSlugs={ savedViewableMetrics }
@@ -95,6 +98,9 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.parameters = {
+	features: [ 'conversionReporting' ],
+};
 Default.scenario = {
 	label: 'Components/KeyMetrics/ChipTabGroup/default',
 };
@@ -103,7 +109,7 @@ export default {
 	title: 'Key Metrics/ChipTabGroup',
 	component: SelectionPanel,
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
 
@@ -143,7 +149,10 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithRegistrySetup
+					func={ setupRegistry }
+					features={ parameters.features || [] }
+				>
 					<Story />
 				</WithRegistrySetup>
 			);
