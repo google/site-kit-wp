@@ -24,7 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistryControl,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
@@ -33,10 +37,15 @@ import {
 } from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
+import { racePrioritizedAsyncTasks } from '../../../util/async';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
 const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
+const QUEUE_NOTIFICATION = 'QUEUE_NOTIFICATION';
+const RESET_QUEUE = 'RESET_QUEUE';
+// Controls.
+const POPULATE_QUEUE = 'POPULATE_QUEUE';
 
 export const initialState = {
 	notifications: {},
@@ -117,6 +126,25 @@ export const actions = {
 			type: RECEIVE_QUEUED_NOTIFICATIONS,
 		};
 	},
+	resetQueue() {
+		return { type: RESET_QUEUE };
+	},
+	*populateQueue( viewContext ) {
+		yield {
+			type: POPULATE_QUEUE,
+			payload: {
+				viewContext,
+			},
+		};
+	},
+	queueNotification( notification ) {
+		return {
+			payload: {
+				notification,
+			},
+			type: QUEUE_NOTIFICATION,
+		};
+	},
 	/**
 	 * Dismisses the given notification by its id.
 	 *
@@ -171,7 +199,54 @@ export const actions = {
 	),
 };
 
-export const controls = {};
+export const controls = {
+	[ POPULATE_QUEUE ]: createRegistryControl(
+		( registry ) =>
+			async ( { payload } ) => {
+				const { viewContext } = payload;
+				const { isNotificationDismissed } =
+					registry.select( CORE_NOTIFICATIONS );
+				const notifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotifications();
+
+				// Wait for all dismissed items to be available before filtering.
+				await registry.resolveSelect( CORE_USER ).getDismissedItems();
+
+				let potentialNotifications = Object.values( notifications )
+					.filter( ( notification ) =>
+						notification.viewContexts.includes( viewContext )
+					)
+					.filter(
+						( notification ) =>
+							!! notification.isDismissible &&
+							isNotificationDismissed( notification.id )
+					)
+					.map( ( notification ) => ( {
+						...notification,
+						check:
+							notification.checkRequirements ||
+							Promise.resolve( true ),
+					} ) );
+
+				const { queueNotification } =
+					registry.dispatch( CORE_NOTIFICATIONS );
+
+				let nextNotification;
+				do {
+					nextNotification = await racePrioritizedAsyncTasks(
+						potentialNotifications
+					);
+					if ( nextNotification ) {
+						queueNotification( nextNotification );
+						potentialNotifications = potentialNotifications.filter(
+							( n ) => n !== nextNotification
+						);
+					}
+				} while ( nextNotification );
+			}
+	),
+};
 
 export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
@@ -191,6 +266,17 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 		case RECEIVE_QUEUED_NOTIFICATIONS: {
 			state.queuedNotifications = payload.queuedNotifications;
+			break;
+		}
+
+		case RESET_QUEUE: {
+			state.queuedNotifications = [];
+			break;
+		}
+
+		case QUEUE_NOTIFICATION: {
+			state.queuedNotifications = state.queuedNotifications || [];
+			state.queuedNotifications.push( payload.notification );
 			break;
 		}
 
@@ -217,64 +303,56 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getQueuedNotifications( viewContext ) {
-		const registry = yield commonActions.getRegistry();
-
-		const notifications = registry
-			.select( CORE_NOTIFICATIONS )
-			.getNotifications();
-
-		// Wait for all dismissed items to be available before filtering.
-		yield commonActions.await(
-			registry.resolveSelect( CORE_USER ).getDismissedItems()
-		);
-
-		const filteredNotifications = Object.values( notifications ).filter(
-			( notification ) => {
-				if ( ! notification.viewContexts.includes( viewContext ) ) {
-					return false;
-				}
-
-				if (
-					!! notification.isDismissible &&
-					registry
-						.select( CORE_NOTIFICATIONS )
-						.isNotificationDismissed( notification.id )
-				) {
-					return false;
-				}
-
-				return true;
-			}
-		);
-
-		const checkRequirementsResults = yield commonActions.await(
-			Promise.all(
-				filteredNotifications.map( async ( { checkRequirements } ) => {
-					if ( typeof checkRequirements === 'function' ) {
-						try {
-							return await checkRequirements(
-								registry,
-								viewContext
-							);
-						} catch ( e ) {
-							return false; // Prevent `Promise.all()` from being rejected for a single failed promise.
-						}
-					}
-
-					return true;
-				} )
-			)
-		);
-
-		const queuedNotifications = filteredNotifications.filter(
-			( _, i ) => !! checkRequirementsResults[ i ]
-		);
-
-		queuedNotifications.sort( ( a, b ) => {
-			return a.priority - b.priority;
-		} );
-
-		yield actions.receiveQueuedNotifications( queuedNotifications );
+		yield actions.resetQueue();
+		yield actions.populateQueue( viewContext );
+		// 	const registry = yield commonActions.getRegistry();
+		// 	const notifications = registry
+		// 		.select( CORE_NOTIFICATIONS )
+		// 		.getNotifications();
+		// 	// Wait for all dismissed items to be available before filtering.
+		// 	yield commonActions.await(
+		// 		registry.resolveSelect( CORE_USER ).getDismissedItems()
+		// 	);
+		// 	const filteredNotifications = Object.values( notifications ).filter(
+		// 		( notification ) => {
+		// 			if ( ! notification.viewContexts.includes( viewContext ) ) {
+		// 				return false;
+		// 			}
+		// 			if (
+		// 				!! notification.isDismissible &&
+		// 				registry
+		// 					.select( CORE_NOTIFICATIONS )
+		// 					.isNotificationDismissed( notification.id )
+		// 			) {
+		// 				return false;
+		// 			}
+		// 			return true;
+		// 		}
+		// 	);
+		// 	const checkRequirementsResults = yield commonActions.await(
+		// 		Promise.all(
+		// 			filteredNotifications.map( async ( { checkRequirements } ) => {
+		// 				if ( typeof checkRequirements === 'function' ) {
+		// 					try {
+		// 						return await checkRequirements(
+		// 							registry,
+		// 							viewContext
+		// 						);
+		// 					} catch ( e ) {
+		// 						return false; // Prevent `Promise.all()` from being rejected for a single failed promise.
+		// 					}
+		// 				}
+		// 				return true;
+		// 			} )
+		// 		)
+		// 	);
+		// 	const queuedNotifications = filteredNotifications.filter(
+		// 		( _, i ) => !! checkRequirementsResults[ i ]
+		// 	);
+		// 	queuedNotifications.sort( ( a, b ) => {
+		// 		return a.priority - b.priority;
+		// 	} );
+		// 	yield actions.receiveQueuedNotifications( queuedNotifications );
 	},
 };
 
