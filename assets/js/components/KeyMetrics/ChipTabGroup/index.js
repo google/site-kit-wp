@@ -25,14 +25,36 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG } from '../constants';
+import { useSelect } from 'googlesitekit-data';
+import {
+	KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
+	KEY_METRICS_GROUPS,
+	KEY_METRICS_SELECTED,
+	KEY_METRICS_SELECTION_FORM,
+} from '../constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import Chip from './Chip';
 import MetricItem from '../MetricsSelectionPanel/MetricItem';
 import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../hooks/useBreakpoint';
 
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const [ isActive, setIsActive ] = useState(
 		KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG
+	);
+	const breakpoint = useBreakpoint();
+	const isDesktopBreakpoint =
+		breakpoint !== BREAKPOINT_SMALL && breakpoint !== BREAKPOINT_TABLET;
+
+	const selectedMetrics = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			KEY_METRICS_SELECTION_FORM,
+			KEY_METRICS_SELECTED
+		)
 	);
 
 	const currentSelectionGroup = {
@@ -41,6 +63,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	};
 	const selectedCounts = {};
 	const activeMetricItems = {};
+
 	for ( const metricItemSlug in allMetricItems ) {
 		const metricGroup = allMetricItems[ metricItemSlug ].group;
 		if ( metricGroup === isActive ) {
@@ -51,9 +74,11 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		if ( ! selectedCounts[ metricGroup ] ) {
 			const selectedCount = Object.keys( allMetricItems ).filter(
 				( slug ) => {
+					// Check if metric slug is in selectedMetrics, so the group
+					// count is reflected in real time as metrics are checked/unchecked.
 					if (
 						allMetricItems[ slug ].group === metricGroup &&
-						savedItemSlugs.includes( slug )
+						selectedMetrics.includes( slug )
 					) {
 						return true;
 					}
@@ -74,19 +99,49 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		[ setIsActive ]
 	);
 
+	const chipItemRows = [
+		[ currentSelectionGroup, ...KEY_METRICS_GROUPS.slice( 0, 2 ) ],
+		[ ...KEY_METRICS_GROUPS.slice( 2 ) ],
+	];
+
 	return (
 		<div className="googlesitekit-chip-tab-group">
 			<div className="googlesitekit-chip-tab-group__tab-items">
-				{ [ currentSelectionGroup ].map( ( group ) => (
-					<Chip
-						key={ group.SLUG }
-						slug={ group.SLUG }
-						label={ group.LABEL }
-						isActive={ group.SLUG === isActive }
-						onClick={ onChipChange }
-						selectedCount={ selectedCounts[ group.SLUG ] }
-					/>
-				) ) }
+				{ isDesktopBreakpoint &&
+					chipItemRows.map( ( row ) => (
+						<div
+							// To avoid using indexes, key is extracted from the first grouo
+							// of each row and joined to the string "row-".
+							key={ `row-${ row[ 0 ].SLUG }` }
+							className="googlesitekit-chip-tab-group__tab-items-row"
+						>
+							{ row.map( ( group ) => (
+								<Chip
+									key={ group.SLUG }
+									slug={ group.SLUG }
+									label={ group.LABEL }
+									isActive={ group.SLUG === isActive }
+									onClick={ onChipChange }
+									selectedCount={
+										selectedCounts[ group.SLUG ]
+									}
+								/>
+							) ) }
+						</div>
+					) ) }
+				{ ! isDesktopBreakpoint &&
+					[ currentSelectionGroup, ...KEY_METRICS_GROUPS ].map(
+						( group ) => (
+							<Chip
+								key={ group.SLUG }
+								slug={ group.SLUG }
+								label={ group.LABEL }
+								isActive={ group.SLUG === isActive }
+								onClick={ onChipChange }
+								selectedCount={ selectedCounts[ group.SLUG ] }
+							/>
+						)
+					) }
 			</div>
 			<div className="googlesitekit-chip-tab-group__tab-item">
 				{ Object.keys( activeMetricItems ).map( ( slug ) => (
