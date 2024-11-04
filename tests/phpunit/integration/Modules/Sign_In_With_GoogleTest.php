@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules;
 use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
@@ -23,6 +24,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 use WP_Query;
+use WPDieException;
 
 /**
  * @group Modules
@@ -337,9 +339,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_delete_user( $wp_user1->ID );
 		wp_delete_user( $new_user->ID );
 	}
-	private function render_signin_button_by_action() {
+	private function render_by_action( $action, $arg = null ) {
 		ob_start();
-		do_action( 'login_form' );
+		do_action( $action, $arg );
 		$output = ob_get_contents();
 		ob_end_clean();
 		return $output;
@@ -354,7 +356,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render the if the site is not https.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
-		$output = $this->render_signin_button_by_action();
+		$output = $this->render_by_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		// Update site URL to https.
@@ -364,11 +366,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$output = $this->render_signin_button_by_action();
+		$output = $this->render_by_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		$this->module->get_settings()->set( array( 'clientID' => null ) );
-		$output = $this->render_signin_button_by_action();
+		$output = $this->render_by_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		// Renders the button with the correct clientID and redirect_uri.
@@ -382,7 +384,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 
 		// Render the button.
-		$output = $this->render_signin_button_by_action();
+		$output = $this->render_by_action( 'login_form' );
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
@@ -398,5 +400,87 @@ class Sign_In_With_GoogleTest extends TestCase {
 		update_option( 'home', $reset_site_url );
 		update_option( 'siteurl', $reset_site_url );
 		unset( $_SERVER['HTTPS'] );
+	}
+
+	public function test_handle_disconnect_user() {
+		$this->module->register();
+
+		// Invalid nonce should return error.
+		$_GET['nonce'] = 'bad-nonce';
+		try {
+			do_action( 'admin_action_' . Sign_In_With_Google::DISCONNECT_ACTION );
+			$this->fail( 'Expected invalid nonce exception' );
+		} catch ( WPDieException $die_exception ) {
+			$this->assertEquals( $die_exception->getMessage(), 'The link you followed has expired.' );
+		}
+
+		// Returns null if no user ID is passed.
+		$this->assertEmpty( $this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) ) );
+
+		// Does not delete user meta if the user is not an admin and is not updating their own user.
+		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		add_user_meta( $user_id, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, '111111' );
+		$_REQUEST['user_id'] = $user_id_admin; // A user ID that is not the current user.
+
+		try {
+			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) );
+			$this->fail( 'Expected redirection to profile page' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertEquals( get_edit_user_link( $user_id_admin ), $redirect_url );
+		}
+		$this->assertEquals( '111111', get_user_meta( $user_id, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
+
+		// Deletes user meta if a non admin is updating their own user.
+		$_REQUEST['user_id'] = $user_id;
+		try {
+			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) );
+			$this->fail( 'Expected redirection to profile page' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertEquals( get_edit_user_link( $user_id ), $redirect_url );
+		}
+		$this->assertEmpty( get_user_meta( $user_id, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
+
+		// Deletes user meta if user is an admin.
+		add_user_meta( $user_id, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, '222222' );
+		wp_set_current_user( $user_id_admin );
+		try {
+			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) );
+			$this->fail( 'Expected redirection to profile page' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertEquals( get_edit_user_link( $user_id ), $redirect_url );
+		}
+		$this->assertEmpty( get_user_meta( $user_id, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
+	}
+
+	public function test_render_disconnect_profile() {
+		$this->module->register();
+
+		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		// Does not render the disconnect settings if the user meta is not set.
+		wp_set_current_user( $user_id );
+		$output = $this->render_by_action( 'show_user_profile', wp_get_current_user() );
+		$this->assertEmpty( $output );
+
+		// Should render the disconnect settings on the users own profile for editors and admins.
+		add_user_meta( $user_id, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, '111111' );
+		$output = $this->render_by_action( 'show_user_profile', wp_get_current_user() );
+		$this->assertStringContainsString( '111111', $output );
+
+		add_user_meta( $user_id_admin, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, '222222' );
+		wp_set_current_user( $user_id_admin );
+		$output = $this->render_by_action( 'show_user_profile', wp_get_current_user() );
+		$this->assertStringContainsString( '222222', $output );
+
+		// Should render the disconnect settings for other user if user is an admin.
+		wp_set_current_user( $user_id_admin );
+		$output = $this->render_by_action( 'edit_user_profile', get_user_by( 'id', $user_id ) );
+		$this->assertStringContainsString( '111111', $output );
 	}
 }

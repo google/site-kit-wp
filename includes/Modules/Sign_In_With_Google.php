@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -48,7 +49,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * Google_Client instance.
+	 * Google client instance.
 	 *
 	 * @since n.e.x.t
 	 * @var Google_Client
@@ -62,6 +63,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @var User_Connection_Setting
 	 */
 	protected $user_connection_setting;
+
+	/**
+	 * Disconnect action name.
+	 */
+	const DISCONNECT_ACTION = 'googlesitekit_sign_in_with_google_disconnect_user';
 
 	/**
 	 * Get Sign in with Google client.
@@ -79,12 +85,24 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.137.0
+	 * @since n.e.x.t Add functionality to allow users to disconnect their own account and admins to disconnect any user.
 	 */
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
 
 		add_action( 'login_form_google_auth', array( $this, 'handle_google_auth' ) );
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
+
+		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
+		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
+		add_action(
+			'admin_action_' . self::DISCONNECT_ACTION,
+			function () {
+				$this->handle_disconnect_user(
+					$this->context->input()->filter( INPUT_GET, 'nonce' )
+				);
+			}
+		);
 	}
 
 	/**
@@ -416,6 +434,98 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 } )();
 </script>
 <!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+		<?php
+	}
+
+	/**
+	 * Returns the disconnect URL for the specified user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id WordPress User ID.
+	 */
+	public static function disconnect_url( $user_id = null ) {
+		return add_query_arg(
+			array(
+				'action'  => self::DISCONNECT_ACTION,
+				'nonce'   => wp_create_nonce( self::DISCONNECT_ACTION ),
+				'user_id' => $user_id,
+			),
+			admin_url( 'index.php' )
+		);
+	}
+
+	/**
+	 * Handles the disconnect action.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $nonce Nonce.
+	 */
+	public function handle_disconnect_user( $nonce ) {
+		if ( ! wp_verify_nonce( $nonce, self::DISCONNECT_ACTION ) ) {
+			$authentication = new Authentication( $this->context );
+			$authentication->invalid_nonce_error( self::DISCONNECT_ACTION );
+		}
+
+		if ( ! isset( $_REQUEST['user_id'] ) ) {
+			return;
+		}
+		$user_id = (int) $_REQUEST['user_id'];
+
+		// Only allow this action for admins or users own setting.
+		if ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user_id ) {
+			delete_user_meta( $user_id, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION );
+		}
+		wp_safe_redirect( get_edit_user_link( $user_id ) );
+		exit;
+	}
+
+	/**
+	 * Displays a disconnect button on user profile pages.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user WordPress user object.
+	 */
+	private function render_disconnect_profile( WP_User $user ) {
+		$current_user_google_id = get_user_meta( $user->ID, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true );
+
+		// Don't show if the user does not have a Google ID save in user meta.
+		if ( empty( $current_user_google_id ) ) {
+			return;
+		}
+
+		// Only show to admins or users own settings.
+		if ( ! ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user->ID ) ) {
+			return;
+		}
+		?>
+<div id="googlesitekit-sign-in-with-google-disconnect">
+	<h2><?php esc_html_e( 'Sign in with Google', 'google-site-kit' ); ?></h2>
+	<p>
+		<?php
+		esc_html(
+			sprintf(
+				/* translators: %s: users Google account ID  */
+				__(
+					'This user can sign in with their Google account (%s).',
+					'google-site-kit'
+				),
+				$current_user_google_id
+			)
+		);
+		?>
+	</p>
+	<p>
+		<a
+			class="button button-secondary"
+			href="<?php echo esc_url( self::disconnect_url( $user->ID ) ); ?>"
+		>
+			<?php esc_html_e( 'Disconnect Google Account', 'google-site-kit' ); ?>
+		</a>
+	</p>
+</div>
 		<?php
 	}
 }
