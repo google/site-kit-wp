@@ -26,6 +26,8 @@ import {
 	provideUserAuthentication,
 	provideModules,
 	provideSiteInfo,
+	provideNotifications,
+	act,
 } from '../../../../tests/js/test-utils';
 import {
 	CORE_USER,
@@ -34,6 +36,8 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
@@ -43,6 +47,43 @@ describe( 'ErrorNotifications', () => {
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	} );
+
+	it( 'renders UnsatisfiedScopesAlert when user is authenticated', async () => {
+		act( () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/analytics.readonly',
+				],
+			} );
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+				},
+				true
+			);
+		} );
+
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'renders `Get help` link', () => {
