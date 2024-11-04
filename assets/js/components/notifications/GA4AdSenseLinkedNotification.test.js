@@ -25,6 +25,9 @@ import {
 	createTestRegistry,
 	provideModules,
 	muteFetch,
+	provideNotifications,
+	act,
+	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -33,6 +36,9 @@ import {
 	VIEW_CONTEXT_SETTINGS,
 } from '../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import Notifications from './Notifications';
 
 const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'top-earning-pages-success-notification';
@@ -54,11 +60,23 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideModules( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			adSenseLinked: true,
+		act( () => {
+			provideModules( registry );
+			provideNotifications(
+				registry,
+				{
+					[ GA4_ADSENSE_LINKED_NOTIFICATION ]:
+						DEFAULT_NOTIFICATIONS[
+							GA4_ADSENSE_LINKED_NOTIFICATION
+						],
+				},
+				true
+			);
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				adSenseLinked: true,
+			} );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		} );
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'does not render if AdSense module is not active', async () => {
@@ -211,36 +229,39 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 	} );
 
 	it( 'renders when both Analytics and AdSense modules are active and linked', async () => {
-		fetchMock.getOnce( analyticsReport, {
-			body: {
-				rowCount: null,
-			},
-			status: 200,
+		act( () => {
+			fetchMock.getOnce( analyticsReport, {
+				body: {
+					rowCount: null,
+				},
+				status: 200,
+			} );
+
+			provideModules( registry, [
+				{
+					active: true,
+					connected: true,
+					slug: 'analytics-4',
+				},
+				{
+					active: true,
+					connected: true,
+					slug: 'adsense',
+				},
+			] );
 		} );
 
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-			{
-				active: true,
-				connected: true,
-				slug: 'adsense',
-			},
-		] );
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await waitForRegistry();
+		await act( async () => {
+			await waitForRegistry();
+		} );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Your AdSense and Analytics accounts are linked'
