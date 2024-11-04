@@ -228,7 +228,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'renders when both Analytics and AdSense modules are active and linked', async () => {
+	it( 'renders when both Analytics & AdSense modules are active & linked, when report has no data and when it was not previously dismissed', async () => {
 		act( () => {
 			fetchMock.getOnce( analyticsReport, {
 				body: {
@@ -267,40 +267,5 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			'Your AdSense and Analytics accounts are linked'
 		);
 		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'renders when report has no data and it was not previously dismissed', async () => {
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-			{
-				active: true,
-				connected: true,
-				slug: 'adsense',
-			},
-		] );
-
-		fetchMock.getOnce( analyticsReport, {
-			body: {
-				rowCount: null,
-			},
-			status: 200,
-		} );
-
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).toHaveTextContent(
-			'Your AdSense and Analytics accounts are linked'
-		);
 	} );
 } );
