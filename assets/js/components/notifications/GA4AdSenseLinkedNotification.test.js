@@ -101,7 +101,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		] );
 
 		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
