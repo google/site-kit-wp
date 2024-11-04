@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import {
 	render,
 	createTestRegistry,
@@ -35,7 +34,6 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_SETTINGS,
 } from '../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import Notifications from './Notifications';
@@ -53,10 +51,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 	const analyticsReport = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
-
-	const NotificationWithComponentProps = withNotificationComponentProps(
-		GA4_ADSENSE_LINKED_NOTIFICATION
-	)( GA4AdSenseLinkedNotification );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -137,7 +131,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		] );
 
 		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -159,7 +153,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -176,7 +170,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			.receiveGetDismissedItems( [ GA4_ADSENSE_LINKED_NOTIFICATION ] );
 
 		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -213,7 +207,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SETTINGS,
