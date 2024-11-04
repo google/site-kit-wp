@@ -46,7 +46,10 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import * as tracking from '../../../../util/tracking';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { WEEK_IN_SECONDS } from '../../../../util';
-import { mockSurveyEndpoints } from '../../../../../../tests/js/mock-survey-endpoints';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../tests/js/mock-survey-endpoints';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -108,6 +111,15 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		expect(
 			getByText( /Grow your revenue and deepen reader engagement/ )
 		).toBeInTheDocument();
+
+		// The survey trigger endpoint should be called with the correct trigger ID.
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_reader_revenue_manager_cta' },
+				},
+			} )
+		);
 	} );
 
 	it( 'should not render the Reader Revenue Manager setup CTA banner when dismissed', async () => {
@@ -136,6 +148,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
+
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckRequirementsSuccess(
@@ -175,6 +188,15 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			2,
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
 			'confirm_notification'
+		);
+
+		// The survey trigger endpoint should be called with the correct trigger ID.
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_reader_revenue_manager_cta' },
+				},
+			} )
 		);
 	} );
 
@@ -229,6 +251,15 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			2,
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
 			'dismiss_notification'
+		);
+
+		// The survey trigger endpoint should be called with the correct trigger ID.
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_reader_revenue_manager_cta' },
+				},
+			} )
 		);
 	} );
 
@@ -340,6 +371,13 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 				method: 'POST',
 			} );
 
+			// The survey trigger endpoint should be called with the correct trigger ID.
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_reader_revenue_manager_cta' },
+				},
+			} );
+
 			expect(
 				getByText(
 					/You can always enable Reader Revenue Manager from Settings later/
@@ -407,6 +445,13 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 					},
 				},
 				method: 'POST',
+			} );
+
+			// The survey trigger endpoint should be called with the correct trigger ID.
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_reader_revenue_manager_cta' },
+				},
 			} );
 		} );
 	} );
