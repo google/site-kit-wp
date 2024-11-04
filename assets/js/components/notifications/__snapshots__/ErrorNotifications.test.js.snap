@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ErrorNotifications does not render the GTE message if the GTE feature is not enabled 1`] = `<div />`;
-
 exports[`ErrorNotifications does not render the GTE message if there are multiple unsatisfied scopes 1`] = `
 <div>
   <section

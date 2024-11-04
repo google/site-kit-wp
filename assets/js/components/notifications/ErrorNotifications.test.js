@@ -223,21 +223,6 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'does not render the GTE message if the GTE feature is not enabled', () => {
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-			],
-		} );
-
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		expect( container ).toMatchSnapshot();
-	} );
-
 	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', () => {
 		provideUserAuthentication( registry, {
 			authenticated: false,
