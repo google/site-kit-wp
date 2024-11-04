@@ -26,7 +26,6 @@ import {
 	muteFetch,
 	provideNotifications,
 	act,
-	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -101,7 +100,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await waitForRegistry();
+		await act( async () => {
+			await waitForRegistry();
+		} );
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
@@ -137,7 +138,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await waitForRegistry();
+		await act( async () => {
+			await waitForRegistry();
+		} );
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
@@ -159,7 +162,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await waitForRegistry();
+		await act( async () => {
+			await waitForRegistry();
+		} );
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
@@ -176,7 +181,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await waitForRegistry();
+		await act( async () => {
+			await waitForRegistry();
+		} );
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
@@ -213,7 +220,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_SETTINGS,
 			}
 		);
-		await waitForRegistry();
+		await act( async () => {
+			await waitForRegistry();
+		} );
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
@@ -255,7 +264,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		await act( async () => {
 			await waitForRegistry();
 		} );
-		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Your AdSense and Analytics accounts are linked'
