@@ -28,6 +28,7 @@ import {
 	provideSiteInfo,
 	provideNotifications,
 	act,
+	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import {
 	CORE_USER,
@@ -107,7 +108,9 @@ describe( 'ErrorNotifications', () => {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
-		await waitForRegistry();
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
@@ -171,9 +174,8 @@ describe( 'ErrorNotifications', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		await act( async () => {
-			await waitForRegistry();
-		} );
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Site Kit needs additional permissions to detect updates to tags on your site'
@@ -213,9 +215,8 @@ describe( 'ErrorNotifications', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		await act( async () => {
-			await waitForRegistry();
-		} );
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
