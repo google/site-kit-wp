@@ -181,19 +181,45 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
+	it( 'does not render the GTE message if there are multiple unsatisfied scopes', async () => {
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideUserAuthentication( registry, {
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+					'https://www.googleapis.com/auth/analytics.readonly',
+				],
+			} );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+					'authentication-error-gte':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				},
+				true
+			);
 		} );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
+		await act( async () => {
+			await waitForRegistry();
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
 		expect( container ).toMatchSnapshot();
 	} );
 
