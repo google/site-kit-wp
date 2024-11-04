@@ -179,6 +179,7 @@ export default function AudienceTilePagesMetric( {
 	const onCancel = useCallback( () => {
 		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 			autoSubmit: false,
+			isRetrying: false,
 		} );
 		setSetupErrorCode( null );
 		clearPermissionScopeError();
