@@ -94,7 +94,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		] );
 
 		const { container, waitForRegistry } = render(
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -132,7 +132,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		] );
 
 		const { container, waitForRegistry } = render(
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -156,7 +156,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container, waitForRegistry } = render(
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -175,7 +175,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			.receiveGetDismissedItems( [ GA4_ADSENSE_LINKED_NOTIFICATION ] );
 
 		const { container, waitForRegistry } = render(
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -214,7 +214,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SETTINGS,
