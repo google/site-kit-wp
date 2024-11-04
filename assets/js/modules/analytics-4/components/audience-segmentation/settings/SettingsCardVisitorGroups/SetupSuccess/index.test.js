@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -30,14 +35,25 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../googlesitekit/widgets/default-areas';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+	waitForDefaultTimeouts,
+} from '../../../../../../../../../tests/js/test-utils';
+import { mockLocation } from '../../../../../../../../../tests/js/mock-browser-utils';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
+import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../../../../googlesitekit/constants';
+import * as tracking from '../../../../../../../util/tracking';
 import SetupSuccess, {
 	SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
-} from './SetupSuccess';
+} from '.';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 	let registry;
@@ -46,6 +62,11 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 	mockLocation();
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
@@ -62,6 +83,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 	afterEach( () => {
 		dismissItemSpy.mockReset();
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the setup success notification', () => {
@@ -80,6 +102,29 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		expect(
 			getByRole( 'button', { name: /Show me/i } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should track an event when the notification is viewed', () => {
+		const { rerender } = render( <SetupSuccess />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		// Simulate the CTA becoming visible.
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: true,
+			intersectionRatio: 1,
+		} ) );
+
+		rerender( <SetupSuccess /> );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_audiences-setup-cta-settings-success',
+			'view_notification'
+		);
 	} );
 
 	it( 'should not render the setup success notification if dismissed', () => {
@@ -108,7 +153,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should dismiss the notification if "Got it" is clicked on', () => {
+	it( 'should dismiss the notification if "Got it" is clicked on', async () => {
 		const { queryByText, getByRole } = render( <SetupSuccess />, {
 			registry,
 		} );
@@ -121,9 +166,32 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
 
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
 		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
 		expect( dismissItemSpy ).toHaveBeenCalledWith(
 			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
+		);
+	} );
+
+	it( 'should track an event when "Got it" is clicked on', async () => {
+		const { getByRole } = render( <SetupSuccess />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_audiences-setup-cta-settings-success',
+			'dismiss_notification'
 		);
 	} );
 
@@ -139,6 +207,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /Show me/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
 
 		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
 		expect( dismissItemSpy ).toHaveBeenCalledWith(
@@ -159,5 +230,25 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 				expectedURL
 			);
 		} );
+	} );
+
+	it( 'should track an event when "Show me" is clicked on', async () => {
+		const { getByRole } = render( <SetupSuccess />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: /Show me/i } ) );
+
+		// Allow the `trackEvent()` promise to resolve.
+		await waitForDefaultTimeouts();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_audiences-setup-cta-settings-success',
+			'confirm_notification'
+		);
 	} );
 } );

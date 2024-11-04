@@ -26,6 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useInViewSelect, useDispatch } from 'googlesitekit-data';
+import useViewContext from '../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../util';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
@@ -33,6 +35,8 @@ import Link from '../../../../../components/Link';
 import PencilIcon from '../../../../../../svg/icons/pencil-alt.svg';
 
 export default function ChangeGroupsLink() {
+	const viewContext = useViewContext();
+
 	const availableAudiences = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getConfigurableAudiences(),
 		[]
@@ -42,7 +46,9 @@ export default function ChangeGroupsLink() {
 
 	const openAudiencesSelectionPanel = useCallback( () => {
 		setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+
+		trackEvent( `${ viewContext }_audiences-sidebar`, 'change_groups' );
+	}, [ setValue, viewContext ] );
 
 	const renderChangeGroupsLink =
 		Array.isArray( availableAudiences ) && availableAudiences?.length > 0;
