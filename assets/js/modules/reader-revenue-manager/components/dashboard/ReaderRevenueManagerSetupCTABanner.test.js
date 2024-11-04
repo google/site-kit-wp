@@ -32,6 +32,7 @@ import {
 	fireEvent,
 	provideModules,
 	waitFor,
+	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -45,6 +46,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import * as tracking from '../../../../util/tracking';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { WEEK_IN_SECONDS } from '../../../../util';
+import { mockSurveyEndpoints } from '../../../../../../tests/js/mock-survey-endpoints';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -64,6 +66,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		registry = createTestRegistry();
 		activateModuleMock = jest.fn( () => jest.fn() );
 
+		provideUserAuthentication( registry );
+
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 
 		registry
@@ -81,6 +85,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should render the Reader Revenue Manager setup CTA banner when not dismissed', async () => {
+		mockSurveyEndpoints();
+
 		const { getByText, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABanner
 				Widget={ Widget }
@@ -129,6 +135,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
+		mockSurveyEndpoints();
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckRequirementsSuccess(
@@ -172,6 +179,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
+		mockSurveyEndpoints();
+
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
@@ -207,7 +216,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
 		} );
 
-		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		// 3 fetches: 1 for the survey trigger, 1 for the survey timeout, 1 for the dismiss prompt.
+		expect( fetchMock ).toHaveFetchedTimes( 3 );
 
 		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 			1,
@@ -277,6 +287,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should call dismiss prompt with the correct expiration time when dismissed once', async () => {
+		mockSurveyEndpoints();
+
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
@@ -337,6 +349,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	} );
 
 	it( 'should dismiss the prompt permanently when dismissed for the second time', async () => {
+		mockSurveyEndpoints();
+
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
