@@ -49,6 +49,35 @@ describe( 'ErrorNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
+	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
+		provideUserAuthentication( registry, {
+			authenticated: false,
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideNotifications(
+			registry,
+			{
+				'authentication-error':
+					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+			},
+			true
+		);
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+		expect( container.childElementCount ).toBe( 0 );
+	} );
+
 	it( 'renders UnsatisfiedScopesAlert when user is authenticated', async () => {
 		act( () => {
 			provideUserAuthentication( registry, {
