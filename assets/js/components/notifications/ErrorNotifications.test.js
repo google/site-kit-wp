@@ -224,14 +224,37 @@ describe( 'ErrorNotifications', () => {
 	} );
 
 	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', () => {
-		provideUserAuthentication( registry, {
-			authenticated: false,
-		} );
-		provideSiteInfo( registry, {
-			setupErrorRedoURL: '#',
-			setupErrorCode: 'access_denied',
-			setupErrorMessage:
-				'Setup was interrupted because you did not grant the necessary permissions',
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideUserAuthentication( registry, {
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+					'https://www.googleapis.com/auth/analytics.readonly',
+				],
+				authenticated: false,
+			} );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+					'authentication-error-gte':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				},
+				true
+			);
+			provideSiteInfo( registry, {
+				setupErrorRedoURL: '#',
+				setupErrorCode: 'access_denied',
+				setupErrorMessage:
+					'Setup was interrupted because you did not grant the necessary permissions',
+			} );
 		} );
 
 		const { container } = render( <ErrorNotifications />, {
