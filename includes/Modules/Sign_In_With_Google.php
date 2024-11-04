@@ -153,8 +153,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			exit;
 		}
 
-		$google_user_id    = $payload['sub'];
-		$google_user_email = $payload['email'];
+		$google_user_id    = sanitize_text_field( $payload['sub'] );
+		$google_user_email = sanitize_email( $payload['email'] );
 
 		// Check if there are any existing WordPress users connected to this Google account.
 		// The user ID is used as the unique identifier because users can change the email on their Google account.
@@ -180,18 +180,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Create a new user if "Anyone can register" setting is enabled.
 		$registration_open = get_option( 'users_can_register' );
-
-		if ( $registration_open ) {
-			$new_user_id = wp_create_user( $google_user_email, wp_generate_password(), $google_user_email );
-			add_user_meta( $new_user_id, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, $google_user_id, true );
-			return $this->login_user( get_user_by( 'id', $new_user_id ) );
-		} else {
+		if ( ! $registration_open ) {
 			wp_safe_redirect( add_query_arg( 'error', 'registration_disabled', wp_login_url() ) );
 			exit;
 		}
-
-		wp_safe_redirect( add_query_arg( 'error', 'user_actions_failed', wp_login_url() ) );
-		exit;
+		$new_user_id = wp_create_user( $google_user_email, wp_generate_password(), $google_user_email );
+		add_user_meta( $new_user_id, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, $google_user_id, true );
+		return $this->login_user( get_user_by( 'id', $new_user_id ) );
 	}
 
 	/**
