@@ -107,7 +107,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
 	);
 
-	const { dismissPrompt } = useDispatch( CORE_USER );
+	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 
 	const onDismiss = useCallback( () => {
 		trackEvent(
@@ -145,8 +145,10 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 				`${ viewContext }_rrm-setup-notification`,
 				'view_notification'
 			);
+
+			triggerSurvey( 'view_reader_revenue_manager_cta' );
 		}
-	}, [ showBanner, viewContext ] );
+	}, [ showBanner, triggerSurvey, viewContext ] );
 
 	if ( isTooltipVisible ) {
 		return (
