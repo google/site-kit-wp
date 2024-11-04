@@ -25,6 +25,7 @@ import {
 	provideModules,
 	provideNotifications,
 	act,
+	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import { provideAnalytics4MockReport } from '../../modules/analytics-4/utils/data-mock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -107,9 +108,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await act( async () => {
-			await waitForRegistry();
-		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
@@ -128,9 +129,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await act( async () => {
-			await waitForRegistry();
-		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
@@ -159,9 +160,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await act( async () => {
-			await waitForRegistry();
-		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
@@ -181,9 +182,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await act( async () => {
-			await waitForRegistry();
-		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
@@ -200,9 +201,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_SETTINGS,
 			}
 		);
-		await act( async () => {
-			await waitForRegistry();
-		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
@@ -219,9 +220,9 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
-		await act( async () => {
-			await waitForRegistry();
-		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Your AdSense and Analytics accounts are linked'
