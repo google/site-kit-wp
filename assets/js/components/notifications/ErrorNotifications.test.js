@@ -267,12 +267,31 @@ describe( 'ErrorNotifications', () => {
 	} );
 
 	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', () => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry, {
-			setupErrorCode: 'access_denied',
-			setupErrorMessage:
-				'Setup was interrupted because you did not grant the necessary permissions',
-			setupErrorRedoURL: '#',
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideUserAuthentication( registry );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+					'authentication-error-gte':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				},
+				true
+			);
+			provideSiteInfo( registry, {
+				setupErrorCode: 'access_denied',
+				setupErrorMessage:
+					'Setup was interrupted because you did not grant the necessary permissions',
+				setupErrorRedoURL: '#',
+			} );
 		} );
 
 		const { container } = render( <ErrorNotifications />, {
