@@ -78,11 +78,13 @@ export const DEFAULT_NOTIFICATIONS = {
 				TAGMANAGER_READ_SCOPE
 			);
 
-			const showUnsatisfiedScopesAlertGTE =
-				ga4ModuleConnected && ! hasTagManagerReadScope;
-
 			const unsatisfiedScopes =
 				select( CORE_USER ).getUnsatisfiedScopes();
+
+			const showUnsatisfiedScopesAlertGTE =
+				ga4ModuleConnected &&
+				! hasTagManagerReadScope &&
+				unsatisfiedScopes?.length === 1;
 
 			return (
 				unsatisfiedScopes?.length &&
