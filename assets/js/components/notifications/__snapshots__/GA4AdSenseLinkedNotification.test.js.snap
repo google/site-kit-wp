@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GA4AdSenseLinkedNotification renders when both Analytics and AdSense modules are active and linked 1`] = `
+exports[`GA4AdSenseLinkedNotification renders when both Analytics & AdSense modules are active & linked, when report has no data and when it was not previously dismissed 1`] = `
 <div>
   <section
     id="top-earning-pages-success-notification"
