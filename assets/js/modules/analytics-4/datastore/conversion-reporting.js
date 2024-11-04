@@ -33,6 +33,7 @@ import {
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { negateDefined } from '../../../util/negate';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -41,7 +42,7 @@ function hasConversionReportingEventsOfType( propName ) {
 				MODULES_ANALYTICS_4
 			).getConversionReportingEventsChange() || {};
 
-		return inlineData[ propName ]?.length;
+		return negateDefined( negateDefined( inlineData[ propName ]?.length ) );
 	} );
 }
 
@@ -209,7 +210,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if `newEvents` are present, FALSE otherwise.
+	 * @return {boolean|undefined} TRUE if `newEvents` are present, FALSE otherwise.
 	 */
 	hasNewConversionReportingEvents:
 		hasConversionReportingEventsOfType( 'newEvents' ),
@@ -220,7 +221,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if `lostEvents` are present, FALSE otherwise.
+	 * @return {boolean|undefined} TRUE if `lostEvents` are present, FALSE otherwise.
 	 */
 	hasLostConversionReportingEvents:
 		hasConversionReportingEventsOfType( 'lostEvents' ),
