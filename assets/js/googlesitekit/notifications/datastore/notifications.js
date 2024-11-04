@@ -217,10 +217,10 @@ export const controls = {
 					.filter( ( notification ) =>
 						notification.viewContexts.includes( viewContext )
 					)
-					.filter(
-						( notification ) =>
-							!! notification.isDismissible &&
-							isNotificationDismissed( notification.id )
+					.filter( ( notification ) =>
+						notification.isDismissible
+							? isNotificationDismissed( notification.id )
+							: true
 					)
 					.map( ( notification ) => ( {
 						...notification,
@@ -235,6 +235,7 @@ export const controls = {
 				let nextNotification;
 				do {
 					nextNotification = await racePrioritizedAsyncTasks(
+						registry,
 						potentialNotifications
 					);
 					if ( nextNotification ) {

@@ -19,17 +19,18 @@
  *
  * @since n.e.x.t
  *
- * @param {Object[]} tasks List of task objects.
+ * @param {Object}   registry The registry instance.
+ * @param {Object[]} tasks    List of task objects.
  * @return {Promise<Object|null>} Promise that resolves to the highest priority task object which finishes its check first or `null` if no checks pass.
  */
-export async function racePrioritizedAsyncTasks( tasks ) {
+export async function racePrioritizedAsyncTasks( registry, tasks ) {
 	// Group tasks by priority
 	const priorityGroups = tasks.reduce( ( grouped, task ) => {
 		const priority = parseInt( task.priority, 10 );
 		grouped[ priority ] = grouped[ priority ] || [];
 		grouped[ priority ].push(
-			task
-				.check()
+			// Wrap the check result in a Promise in case the check is not async.
+			Promise.resolve( task.check( registry ) )
 				.then( ( result ) => ( { task, result: !! result } ) )
 				.catch( () => ( { result: false } ) )
 		);
