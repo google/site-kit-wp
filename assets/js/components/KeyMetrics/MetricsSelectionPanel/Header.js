@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -63,8 +63,13 @@ export default function Header( { closePanel } ) {
 			title={
 				isConversionReportingEnabled
 					? sprintf(
-							/* translators: %d: number of max allowed metrics. */
-							__( 'Select up to %d metrics', 'google-site-kit' ),
+							/* translators: %d: number of max allowed metrics */
+							_n(
+								'Select up to %d metric',
+								'Select up to %d metrics',
+								MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
+								'google-site-kit'
+							),
 							MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
 					  )
 					: __( 'Select your metrics', 'google-site-kit' )

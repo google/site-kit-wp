@@ -32,7 +32,7 @@ import CheckMark from '../../../../svg/icons/check-2.svg';
 export default function Chip( {
 	slug,
 	label,
-	isActive = false,
+	isActive,
 	onClick,
 	selectedCount,
 } ) {
@@ -63,7 +63,7 @@ export default function Chip( {
 Chip.propTypes = {
 	slug: propTypes.string.isRequired,
 	label: propTypes.string.isRequired,
-	isActive: propTypes.boolean,
+	isActive: propTypes.bool,
 	selectedCount: propTypes.number.isRequired,
 	onClick: propTypes.func.isRequired,
 };

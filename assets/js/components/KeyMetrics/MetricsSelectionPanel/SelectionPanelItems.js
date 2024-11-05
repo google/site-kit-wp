@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import ChipTabGroup from '../ChipTabGroup';
 
 export default function SelectionPanelItems( {
-	savedItemSlugs = [],
+	savedItemSlugs,
 	allMetricItems,
 } ) {
 	return (
@@ -41,6 +41,6 @@ export default function SelectionPanelItems( {
 }
 
 SelectionPanelItems.propTypes = {
-	savedItemSlugs: PropTypes.array,
-	allMetricItems: PropTypes.array,
+	savedItemSlugs: PropTypes.array.isRequired,
+	allMetricItems: PropTypes.object.isRequired,
 };
