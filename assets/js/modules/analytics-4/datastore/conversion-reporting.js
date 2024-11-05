@@ -42,6 +42,7 @@ function hasConversionReportingEventsOfType( propName ) {
 				MODULES_ANALYTICS_4
 			).getConversionReportingEventsChange() || {};
 
+		// Here we double-negate the value in order to cast it to a boolean, but only if it's not undefined.
 		return negateDefined( negateDefined( inlineData[ propName ]?.length ) );
 	} );
 }
