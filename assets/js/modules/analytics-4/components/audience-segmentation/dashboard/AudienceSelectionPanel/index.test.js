@@ -46,7 +46,10 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../../googlesitekit/constants';
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 import {
 	createTestRegistry,
@@ -67,7 +70,11 @@ import {
 	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
+import * as tracking from '../../../../../../util/tracking';
 import AudienceSelectionPanel from '.';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
@@ -98,6 +105,12 @@ describe( 'AudienceSelectionPanel', () => {
 	);
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/audience-settings'
+	);
+	const dismissedItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
 	);
 
 	beforeEach( () => {
@@ -143,6 +156,33 @@ describe( 'AudienceSelectionPanel', () => {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 
 		muteFetch( expirableItemEndpoint );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
+	it( 'should track event when the panel is opened', async () => {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences,
+			status: 200,
+		} );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+		const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+			'audiences_sidebar_view'
+		);
 	} );
 
 	describe( 'Header', () => {
@@ -765,14 +805,6 @@ describe( 'AudienceSelectionPanel', () => {
 				);
 			} );
 
-			// Prepare the endpoints for saving the settings.
-			const audienceSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/audience-settings'
-			);
-			const dismissedItemsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismissed-items'
-			);
-
 			fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
 				const { data } = JSON.parse( opts.body );
 				// Return the same settings passed to the API.
@@ -1135,13 +1167,18 @@ describe( 'AudienceSelectionPanel', () => {
 				},
 			};
 
+			const filteredAudiences = availableAudiences.filter( ( { name } ) =>
+				mixedConfiguredAudiences.includes( name )
+			);
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: filteredAudiences,
+			} );
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableAudiences(
-					availableAudiences.filter( ( { name } ) =>
-						mixedConfiguredAudiences.includes( name )
-					)
-				);
+				.setAvailableAudiences( filteredAudiences );
 
 			registry
 				.dispatch( CORE_USER )
@@ -1151,12 +1188,17 @@ describe( 'AudienceSelectionPanel', () => {
 				.dispatch( CORE_UI )
 				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
 			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
 
 			const { getByText, queryByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -1186,6 +1228,11 @@ describe( 'AudienceSelectionPanel', () => {
 					/Creating these groups require more data tracking. You will be directed to update your Analytics property./i
 				)
 			).not.toBeInTheDocument();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar-create-audiences-success`,
+				'view_notification'
+			);
 		} );
 
 		it( 'should display an audience creation success notice when both audiences are created', async () => {
@@ -1203,13 +1250,18 @@ describe( 'AudienceSelectionPanel', () => {
 				},
 			};
 
+			const filteredAudiences = availableAudiences.filter( ( { name } ) =>
+				mixedConfiguredAudiences.includes( name )
+			);
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: filteredAudiences,
+			} );
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableAudiences(
-					availableAudiences.filter( ( { name } ) =>
-						mixedConfiguredAudiences.includes( name )
-					)
-				);
+				.setAvailableAudiences( filteredAudiences );
 
 			registry
 				.dispatch( CORE_USER )
@@ -1219,12 +1271,17 @@ describe( 'AudienceSelectionPanel', () => {
 				.dispatch( CORE_UI )
 				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
 			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
 
 			const { getByText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -1244,6 +1301,75 @@ describe( 'AudienceSelectionPanel', () => {
 					'.googlesitekit-selection-panel-item .mdc-checkbox__content label'
 				)[ 3 ]
 			).toHaveTextContent( 'Returning visitors' );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar-create-audiences-success`,
+				'view_notification'
+			);
+		} );
+
+		it( 'should track an event when the success notice is dismissed', async () => {
+			const mixedConfiguredAudiences = [
+				'properties/12345/audiences/1',
+				'properties/12345/audiences/2',
+				'properties/12345/audiences/3', // New visitors Site Kit audience.
+			];
+
+			const mixedSiteKitReportOptions = {
+				...reportOptions,
+				dimensionFilters: {
+					audienceResourceName: mixedConfiguredAudiences,
+				},
+			};
+
+			const filteredAudiences = availableAudiences.filter( ( { name } ) =>
+				mixedConfiguredAudiences.includes( name )
+			);
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: filteredAudiences,
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( filteredAudiences );
+
+			registry
+				.dispatch( CORE_USER )
+				.setConfiguredAudiences( mixedConfiguredAudiences );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			provideAnalytics4MockReport( registry, mixedSiteKitReportOptions );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const dismissButton = getByRole( 'button', { name: /got it/i } );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( dismissButton );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar-create-audiences-success`,
+				'view_notification'
+			);
 		} );
 
 		describe( 'AudienceCreationErrorNotice', () => {
@@ -1251,11 +1377,11 @@ describe( 'AudienceSelectionPanel', () => {
 				'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
 			);
 
-			beforeEach( () => {
-				const nonSiteKitAvailableAudiences = availableAudiences.filter(
-					( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
-				);
+			const nonSiteKitAvailableAudiences = availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			);
 
+			beforeEach( () => {
 				const nonSiteKitConfiguredAudiences =
 					nonSiteKitAvailableAudiences.map( ( { name } ) => name );
 
@@ -1278,6 +1404,31 @@ describe( 'AudienceSelectionPanel', () => {
 					registry,
 					nonSiteKitReportOptions
 				);
+
+				fetchMock.post( syncAvailableAudiencesEndpoint, {
+					status: 200,
+					body: nonSiteKitAvailableAudiences,
+				} );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+				registry.dispatch( CORE_USER ).receiveGetExpirableItems(
+					availableAudiences
+						.filter(
+							( { audienceType } ) =>
+								audienceType !== 'DEFAULT_AUDIENCE'
+						)
+						.reduce(
+							( acc, { name } ) => ( {
+								...acc,
+								[ `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ name }` ]:
+									Math.floor( Date.now() / 1000 ) - 100,
+							} ),
+							{}
+						)
+				);
 			} );
 
 			it( 'should display an audience creation notice with an OAuth error notice', async () => {
@@ -1299,6 +1450,7 @@ describe( 'AudienceSelectionPanel', () => {
 					<AudienceSelectionPanel />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
 				);
 
@@ -1333,6 +1485,11 @@ describe( 'AudienceSelectionPanel', () => {
 							code: 'access_denied',
 						} )
 				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar-create-audiences`,
+					'auth_error'
+				);
 			} );
 
 			it( 'should display an audience creation notice with an insufficient permissions error', async () => {
@@ -1347,15 +1504,11 @@ describe( 'AudienceSelectionPanel', () => {
 					status: 500,
 				} );
 
-				fetchMock.post( syncAvailableAudiencesEndpoint, {
-					status: 200,
-					body: availableAudiences,
-				} );
-
 				const { getByText, getAllByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
 				);
 
@@ -1392,6 +1545,71 @@ describe( 'AudienceSelectionPanel', () => {
 					'identifier:analytics-4',
 					'error:"Error message."'
 				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar-create-audiences`,
+					'insufficient_permissions_error'
+				);
+			} );
+
+			it( 'should track an event when the insufficient permissions request access button is clicked', async () => {
+				const errorResponse = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
+
+				fetchMock.post( createAudienceEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				const { getByRole, getAllByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				await waitForRegistry();
+
+				const createButton = getAllByText( 'Create' )[ 0 ];
+
+				expect( createButton ).toBeInTheDocument();
+
+				act( () => {
+					fireEvent.click( createButton );
+				} );
+
+				// Verify the error is "Insufficient permissions" variant.
+				await waitFor( () => {
+					expect(
+						getByRole( 'button', { name: /request access/i } )
+					).toBeInTheDocument();
+				} );
+
+				await act( () => waitForTimeouts( 30 ) );
+
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:create-audience',
+					'type:modules',
+					'identifier:analytics-4',
+					'error:"Error message."'
+				);
+
+				fireEvent.click(
+					getByRole( 'button', {
+						name: /request access/i,
+					} )
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar-create-audiences`,
+					'insufficient_permissions_error_request_access'
+				);
 			} );
 
 			it( 'should display an audience creation notice with a general error', async () => {
@@ -1406,15 +1624,11 @@ describe( 'AudienceSelectionPanel', () => {
 					status: 500,
 				} );
 
-				fetchMock.post( syncAvailableAudiencesEndpoint, {
-					status: 200,
-					body: availableAudiences,
-				} );
-
 				const { getByText, getAllByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
 				);
 
@@ -1448,6 +1662,11 @@ describe( 'AudienceSelectionPanel', () => {
 					'type:modules',
 					'identifier:analytics-4',
 					'error:"Internal server error"'
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar-create-audiences`,
+					'setup_error'
 				);
 			} );
 		} );
@@ -1636,6 +1855,83 @@ describe( 'AudienceSelectionPanel', () => {
 					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-error-text'
 				)
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should track event after saving', async () => {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				configuredAudiences,
+				isAudienceSegmentationWidgetHidden: false,
+				didSetAudiences: true,
+			} );
+
+			muteFetch( audienceSettingsEndpoint );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const saveButton = getByRole( 'button', {
+				name: /save selection/i,
+			} );
+
+			fireEvent.click( saveButton );
+
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+					'audiences_sidebar_save',
+					'user:0,site-kit:2,default:0'
+				);
+			} );
+		} );
+
+		it( 'should track event if cancelled', async () => {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSelectionPanel />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const cancelButton = getByRole( 'button', {
+				name: /cancel/i,
+			} );
+
+			fireEvent.click( cancelButton );
+
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+					'audiences_sidebar_cancel'
+				);
+			} );
 		} );
 	} );
 } );
