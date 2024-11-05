@@ -249,6 +249,23 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
+	 * Gets the absolute number of users who have authenticated using Sign in with Google.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_authenticated_users_count() {
+		global $wpdb;
+
+		$settings = $this->get_settings();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		return $wpdb->query(
+			$wpdb->prepare( "SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s", self::GOOGLE_USER_ID_OPTION )
+		);
+	}
+
+	/**
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since n.e.x.t
