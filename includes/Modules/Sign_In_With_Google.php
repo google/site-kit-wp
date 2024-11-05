@@ -49,7 +49,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * Google client instance.
+	 * Google_Client instance.
 	 *
 	 * @since n.e.x.t
 	 * @var Google_Client
