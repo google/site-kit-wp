@@ -154,4 +154,41 @@ class Settings extends Module_Settings {
 			return $option;
 		};
 	}
+
+	/**
+	 * Gets the label for a given Sign in with Google setting value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $setting_name The slug for the Sign in with Google setting.
+	 * @param string $value The setting value to look up the label for.
+	 * @return string The label for the given setting value.
+	 */
+	public function get_label( $setting_name, $value ) {
+		switch ( $setting_name ) {
+			case 'text':
+				$constant = self::TEXTS;
+				break;
+
+			case 'theme':
+				$constant = self::THEMES;
+				break;
+
+			case 'shape':
+				$constant = self::SHAPES;
+				break;
+		}
+
+		if ( ! isset( $constant ) ) {
+			return '';
+		}
+
+		$key = array_search( $value, array_column( $constant, 'value' ), true );
+
+		if ( false === $key ) {
+			return '';
+		}
+
+		return $constant[ $key ]['label'];
+	}
 }
