@@ -28,9 +28,18 @@ class Settings extends Module_Settings {
 	const TEXT_SIGN_IN_WITH_GOOGLE  = 'signin_with';
 	const TEXT_SIGN_UP_WITH_GOOGLE  = 'signup_with';
 
-	const THEME_LIGHT   = 'outline';
-	const THEME_NEUTRAL = 'filled_blue';
-	const THEME_DARK    = 'filled_black';
+	const THEME_LIGHT   = array(
+		'value' => 'outline',
+		'label' => 'Light',
+	);
+	const THEME_NEUTRAL = array(
+		'value' => 'filled_blue',
+		'label' => 'Neutral',
+	);
+	const THEME_DARK    = array(
+		'value' => 'filled_black',
+		'label' => 'Dark',
+	);
 
 	const SHAPE_RECTANGULAR = 'rectangular';
 	const SHAPE_PILL        = 'pill';
@@ -46,7 +55,7 @@ class Settings extends Module_Settings {
 		return array(
 			'clientID'      => '',
 			'text'          => self::TEXT_SIGN_IN_WITH_GOOGLE,
-			'theme'         => self::THEME_LIGHT,
+			'theme'         => self::THEME_LIGHT['value'],
 			'shape'         => self::SHAPE_RECTANGULAR,
 			'oneTapEnabled' => false,
 		);
@@ -84,13 +93,13 @@ class Settings extends Module_Settings {
 
 			if ( isset( $option['theme'] ) ) {
 				$theme_options = array(
-					self::THEME_LIGHT,
-					self::THEME_NEUTRAL,
-					self::THEME_DARK,
+					self::THEME_LIGHT['value'],
+					self::THEME_NEUTRAL['value'],
+					self::THEME_DARK['value'],
 				);
 
 				if ( ! in_array( $option['theme'], $theme_options, true ) ) {
-					$option['theme'] = self::THEME_LIGHT;
+					$option['theme'] = self::THEME_LIGHT['value'];
 				}
 			}
 
