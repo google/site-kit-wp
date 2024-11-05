@@ -475,7 +475,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Only allow this action for admins or users own setting.
 		if ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user_id ) {
-			delete_user_meta( $user_id, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION );
+			delete_user_meta( $user_id, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ) );
 		}
 		wp_safe_redirect( get_edit_user_link( $user_id ) );
 		exit;
@@ -489,7 +489,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param WP_User $user WordPress user object.
 	 */
 	private function render_disconnect_profile( WP_User $user ) {
-		$current_user_google_id = get_user_meta( $user->ID, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true );
+		$current_user_google_id = get_user_meta( $user->ID, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ), true );
 
 		// Don't show if the user does not have a Google ID save in user meta.
 		if ( empty( $current_user_google_id ) ) {
@@ -505,15 +505,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	<h2><?php esc_html_e( 'Sign in with Google', 'google-site-kit' ); ?></h2>
 	<p>
 		<?php
-		esc_html(
-			sprintf(
-				/* translators: %s: users Google account ID  */
-				__(
-					'This user can sign in with their Google account (%s).',
-					'google-site-kit'
-				),
-				$current_user_google_id
-			)
+		esc_html_e(
+			'This user can sign in with their Google account.',
+			'google-site-kit'
 		);
 		?>
 	</p>
