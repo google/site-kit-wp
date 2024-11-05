@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
  * @access private
  * @ignore
  */
-class User_Connection_Settings extends User_Setting {
+class User_Connection_Setting extends User_Setting {
 	/**
 	 * Option name for persistent user ID.
 	 *
@@ -27,12 +27,4 @@ class User_Connection_Settings extends User_Setting {
 	 * @var string
 	 */
 	const OPTION = 'googlesitekitpersistent_sign_in_with_google_user_id';
-
-	/**
-	 * Option name for redirect URL.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	const OPTION_REDIRECT_URL = 'googlesitekit_sign_in_with_google_redirect_url';
 }
