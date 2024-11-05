@@ -15,20 +15,29 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './datastore/constants';
+import {
+	ERROR_CODE_NON_HTTPS_SITE,
+	MODULES_SIGN_IN_WITH_GOOGLE,
+} from './datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
+import SettingsEdit from './components/settings/SettingsEdit';
+import { isURLUsingHTTPS } from '../../util/is-url-using-https';
 
 export { registerStore } from './datastore';
 
 export function registerModule( modules ) {
 	modules.registerModule( 'sign-in-with-google', {
 		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
-		SettingsEditComponent() {
-			return null;
-		},
+		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent() {
 			return null;
 		},
@@ -44,5 +53,37 @@ export function registerModule( modules ) {
 			}
 		},
 		Icon,
+		features: [
+			__(
+				'Users will no longer be able to sign in to your WordPress site using their Google Accounts',
+				'google-site-kit'
+			),
+			__(
+				'Users will not be able to create an account on your site using their Google Account (if account creation is enabled)',
+				'google-site-kit'
+			),
+			__(
+				'Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress\' "Reset my password" to set a password for their account',
+				'google-site-kit'
+			),
+		],
+		checkRequirements: async ( registry ) => {
+			// Ensure the site info is resolved to get the home URL.
+			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
+			const homeURL = registry.select( CORE_SITE ).getHomeURL();
+
+			if ( isURLUsingHTTPS( homeURL ) ) {
+				return;
+			}
+
+			throw {
+				code: ERROR_CODE_NON_HTTPS_SITE,
+				message: __(
+					'The site should use HTTPS to set up Sign in with Google',
+					'google-site-kit'
+				),
+				data: null,
+			};
+		},
 	} );
 }

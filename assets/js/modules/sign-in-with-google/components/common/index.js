@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Common components.
+ * Sign in with Google Common components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,4 +16,9 @@
  * limitations under the License.
  */
 
+export { default as ButtonTextSelect } from './ButtonTextSelect';
+export { default as ButtonThemeSelect } from './ButtonThemeSelect';
+export { default as ButtonShapeSelect } from './ButtonShapeSelect';
 export { default as ClientIDTextField } from './ClientIDTextField';
+export { default as OneTapToggle } from './OneTapToggle';
+export { default as Preview } from './Preview';
