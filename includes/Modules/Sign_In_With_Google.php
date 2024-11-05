@@ -15,8 +15,10 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit_Dependencies\Google_Client;
@@ -29,7 +31,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation {
+final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation, Module_With_Debug_Fields {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -244,5 +246,26 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 </script>
 <!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		$debug_fields = array(
+			'sign_in_with_google_use_snippet' => array(
+				'label' => __( 'Sign in with Google One-tap Enabled', 'google-site-kit' ),
+				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
+			),
+		);
+
+		return $debug_fields;
 	}
 }
