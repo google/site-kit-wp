@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,6 +43,7 @@ import {
 	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
+import Link from '../../../../components/Link';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
@@ -84,9 +89,23 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 						) }
 					</h3>
 					<p className="googlesitekit-setup-module__description">
-						{ __(
-							'Once you have created your publication, it is submitted for review.',
-							'google-site-kit'
+						{ createInterpolateElement(
+							__(
+								'Once you have created your publication, it is submitted for review. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<Link
+										href="https://support.google.com/news/publisher-center/answer/11449914"
+										external
+										aria-label={ __(
+											'Learn more about publisher center',
+											'google-site-kit'
+										) }
+									/>
+								),
+							}
 						) }
 					</p>
 					<div className="googlesitekit-setup-module__action">
