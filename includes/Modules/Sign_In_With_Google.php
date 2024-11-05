@@ -48,32 +48,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * Google_Client instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Google_Client
+	 * Option name to store user ID received from Google.
 	 */
-	protected $google_client;
+	const GOOGLE_USER_ID_OPTION = 'googlesitekitpersistent_siwg_google_user_id';
 
 	/**
-	 * User_Connection_Setting instance.
-	 *
-	 * @since n.e.x.t
-	 * @var User_Connection_Setting
+	 * Error codes.
 	 */
-	protected $user_connection_setting;
-
-	/**
-	 * Get Sign in with Google client.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function get_sign_in_with_google_client() {
-		$settings = $this->get_settings()->get();
-		if ( ! empty( $settings['clientID'] ) ) {
-			$this->google_client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
-		}
-	}
+	const INVALID_REQUEST_ERROR    = 'google_auth_invalid_request';
+	const INVALID_CSRF_TOKEN_ERROR = 'google_auth_invalid_g_csrf_token';
+	const SIGNIN_FAILED_ERROR      = 'google_auth_failed';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -83,19 +67,53 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
 
-		add_action( 'login_form_google_auth', array( $this, 'handle_google_auth' ) );
+		add_action( 'login_form_google_auth', $this->get_method_proxy( 'handle_auth_callback' ) );
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
 	/**
-	 * Login user.
+	 * Handles the callback request after the user signs in with Google.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @param WP_User $user WordPress user object.
 	 */
-	protected function login_user_and_exit( WP_User $user ) {
+	private function handle_auth_callback() {
+		// Ignore the request if the request method is not POST.
+		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+		if ( 'POST' !== $request_method ) {
+			return;
+		}
+
+		$login_url = wp_login_url();
+
+		// Check if the CSRF token is valid, if not redirect to the login page with an error.
+		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
+		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
+		if ( ! $csrf_cookie || $csrf_cookie !== $csrf_post ) {
+			wp_safe_redirect( add_query_arg( 'error', self::INVALID_CSRF_TOKEN_ERROR, $login_url ) );
+			exit;
+		}
+
+		$user = null;
+
+		try {
+			$user = $this->find_or_create_user();
+			if ( is_wp_error( $user ) ) {
+				wp_safe_redirect( add_query_arg( 'error', $user->get_error_code(), $login_url ) );
+				exit;
+			}
+		} catch ( \Exception $e ) {
+			// Do nothign.
+		}
+
+		if ( ! $user instanceof WP_User ) {
+			wp_safe_redirect( add_query_arg( 'error', self::INVALID_REQUEST_ERROR, $login_url ) );
+			exit;
+		}
+
+		// Set the user to be the current user.
 		wp_set_current_user( $user->ID, $user->user_login );
+
+		// Set the authentication cookies and trigger the wp_login action.
 		wp_set_auth_cookie( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
 
@@ -132,133 +150,91 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Generate unique username.
+	 * Tries to find a user using user ID or email recieved from Google. If the user is not found,
+	 * attempts to create a new one.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $username Username.
-	 * @param int    $i        Current iteration of username generation.
-	 * @return string A username that is unique on the site.
+	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
 	 */
-	private function generate_unique_username( $username, $i = 1 ) {
-		$username = sanitize_title( $username );
-
-		if ( ! username_exists( $username ) ) {
-			return $username;
-		}
-		$new_username = sprintf( '%s-%s', $username, $i );
-		if ( ! username_exists( $new_username ) ) {
-			return $new_username;
-		} else {
-			return $this->generate_unique_username( $username, $i + 1 );
-		}
-	}
-
-	/**
-	 * Intercept the page request to process token ID
-	 * and complete Sign in with Google flow.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function handle_google_auth() {
-		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
-
-		if ( 'POST' !== $request_method ) {
-			return;
-		}
-
-		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
-		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
-
-		if (
-			! $csrf_cookie ||
-			! $csrf_post ||
-			$csrf_cookie !== $csrf_post
-		) {
-			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_g_csrf_token', wp_login_url() ) );
-			exit;
-		}
-
-		if ( is_null( $this->google_client ) ) {
-			$this->get_sign_in_with_google_client();
-		}
-
+	private function find_or_create_user() {
+		$settings = $this->get_settings()->get();
 		$id_token = $this->context->input()->filter( INPUT_POST, 'credential' );
-		try {
-			$payload = $this->google_client->verifyIdToken( $id_token );
-		} catch ( \Exception $e ) {
-			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
-			exit;
-		}
 
+		$google_client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
+		$payload       = $google_client->verifyIdToken( $id_token );
 		if ( empty( $payload['sub'] ) || empty( $payload['email'] ) ) {
-			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
-			exit;
+			return new WP_Error( self::INVALID_REQUEST_ERROR );
 		}
-
-		$google_user_id         = $payload['sub'];
-		$google_user_email      = $payload['email'];
-		$google_user_name       = $payload['name'];
-		$google_user_first_name = $payload['given_name'];
-		$google_user_last_name  = $payload['family_name'];
 
 		// Check if there are any existing WordPress users connected to this Google account.
 		// The user ID is used as the unique identifier because users can change the email on their Google account.
-		$existing_users = get_users(
+		$g_user_id = md5( $payload['sub'] );
+		$users     = get_users(
 			array(
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_key'   => $this->user_options->get_meta_key( User_Connection_Setting::OPTION ),
+				'meta_key'   => $this->user_options->get_meta_key( self::GOOGLE_USER_ID_OPTION ),
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'meta_value' => hash( 'sha256', $google_user_id ),
+				'meta_value' => $g_user_id,
 				'number'     => 1,
 			)
 		);
 
-		if ( ! empty( $existing_users ) ) {
-			return $this->login_user_and_exit( $existing_users[0] );
+		if ( ! empty( $users ) ) {
+			return $users[0];
 		}
 
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
-		$existing_user = get_user_by( 'email', $google_user_email );
-		if ( $existing_user ) {
-			add_user_meta( $existing_user->ID, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ), hash( 'sha256', $google_user_id ), true );
-			return $this->login_user_and_exit( $existing_user );
+		$user = get_user_by( 'email', $payload['email'] );
+		if ( $user ) {
+			$this->user_options->switch_user( $user->ID );
+			$this->user_options->set( self::GOOGLE_USER_ID_OPTION, $g_user_id );
+
+			return $user;
 		}
 
-		// Create a new user if "Anyone can register" setting is enabled.
-		$registration_open = get_option( 'users_can_register' );
-		if ( ! $registration_open ) {
-			wp_safe_redirect( add_query_arg( 'error', 'google_auth_failed', wp_login_url() ) );
-			exit;
+		// We haven't found the user using their google user id and email. Thus we need to create
+		// a new user. But if the registration is closed, we need to return an error to identify
+		// that the sign in process failed.
+		if ( ! get_option( 'users_can_register' ) ) {
+			return new WP_Error( self::SIGNIN_FAILED_ERROR );
 		}
-		$new_user_id = wp_create_user( $this->generate_unique_username( strtolower( preg_replace( '/\s+/', '', $google_user_name ) ) ), wp_generate_password(), $google_user_email );
-		$new_user    = get_user_by( 'id', $new_user_id );
 
+		// Get the default role for new users.
 		$default_role = get_option( 'default_role' );
 		if ( empty( $default_role ) ) {
 			$default_role = 'subscriber';
 		}
 
-		if ( is_multisite() ) {
-			add_user_to_blog( get_current_blog_id(), $new_user_id, $default_role );
-		}
-
-		$new_user->set_role( $default_role );
-
-		wp_update_user(
+		// Create a new user.
+		$user_id = wp_insert_user(
 			array(
-				'ID'         => $new_user_id,
-				'nickname'   => $google_user_first_name,
-				'first_name' => $google_user_first_name,
-				'last_name'  => $google_user_last_name,
+				'user_pass'    => wp_generate_password(),
+				'user_login'   => $payload['email'],
+				'user_email'   => $payload['email'],
+				'display_name' => sprintf( '%s %s', $payload['given_name'], $payload['family_name'] ),
+				'first_name'   => $payload['given_name'],
+				'last_name'    => $payload['family_name'],
+				'role'         => $default_role,
+				'meta_input'   => array(
+					$this->user_options->get_meta_key( User_Connection_Setting::OPTION ) => $g_user_id,
+				),
 			)
 		);
 
-		add_user_meta( $new_user_id, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ), hash( 'sha256', $google_user_id ), true );
+		if ( is_wp_error( $user_id ) ) {
+			return new WP_Error( self::SIGNIN_FAILED_ERROR );
+		}
 
-		wp_send_new_user_notifications( $new_user_id );
+		// Add the user to the current site if it is a multisite.
+		if ( is_multisite() ) {
+			add_user_to_blog( get_current_blog_id(), $user_id, $default_role );
+		}
 
-		return $this->login_user_and_exit( get_user_by( 'id', $new_user_id ) );
+		// Send the new user notification.
+		wp_send_new_user_notifications( $user_id );
+
+		return get_user_by( 'id', $user_id );
 	}
 
 	/**
@@ -276,12 +252,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		switch ( $error_code ) {
-			case 'google_auth_invalid_request':
-			case 'google_auth_invalid_g_csrf_token':
-				$error->add( 'google_auth', __( 'Sign in with Google failed.', 'google-site-kit' ) );
+			case self::INVALID_REQUEST_ERROR:
+			case self::INVALID_CSRF_TOKEN_ERROR:
+				$error->add( self::MODULE_SLUG, __( 'Sign in with Google failed.', 'google-site-kit' ) );
 				break;
-			case 'google_auth_failed':
-				$error->add( 'google_auth_failed', __( 'The user is not registered on this site.', 'google-site-kit' ) );
+			case self::SIGNIN_FAILED_ERROR:
+				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
 				break;
 			default:
 				break;
@@ -365,7 +341,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	public function is_connected() {
 		$options = $this->get_settings()->get();
-
 		if ( empty( $options['clientID'] ) ) {
 			return false;
 		}
@@ -396,7 +371,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Render the Sign in with Google button and related inline styles.
 		?>
-<!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+<!-- Sign in with Google button added by Site Kit -->
 <?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
@@ -415,7 +390,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	});
 } )();
 </script>
-<!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+<!-- End Sign in with Google button added by Site Kit -->
 		<?php
 	}
 }
