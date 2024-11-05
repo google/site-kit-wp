@@ -36,7 +36,7 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertSame( '', $default['clientID'] );
 		$this->assertSame( Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'], $default['text'] );
 		$this->assertSame( Settings::THEME_LIGHT['value'], $default['theme'] );
-		$this->assertSame( Settings::SHAPE_RECTANGULAR, $default['shape'] );
+		$this->assertSame( Settings::SHAPE_RECTANGULAR['value'], $default['shape'] );
 		$this->assertSame( false, $default['oneTapEnabled'] );
 	}
 

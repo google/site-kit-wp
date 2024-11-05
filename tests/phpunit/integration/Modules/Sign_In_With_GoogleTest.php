@@ -80,7 +80,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 				'clientID' => '1234567890.googleusercontent.com',
 				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
 				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
-				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR,
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
 			)
 		);
 
@@ -95,7 +95,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$this->assertStringContainsString( "text: '" . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] . "'", $output );
 		$this->assertStringContainsString( "theme: '" . Sign_In_With_Google_Settings::THEME_LIGHT['value'] . "'", $output );
-		$this->assertStringContainsString( "shape: '" . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . "'", $output );
+		$this->assertStringContainsString( "shape: '" . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] . "'", $output );
 
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );

@@ -53,8 +53,14 @@ class Settings extends Module_Settings {
 		'label' => 'Dark',
 	);
 
-	const SHAPE_RECTANGULAR = 'rectangular';
-	const SHAPE_PILL        = 'pill';
+	const SHAPE_RECTANGULAR = array(
+		'value' => 'rectangular',
+		'label' => 'Rectagular',
+	);
+	const SHAPE_PILL        = array(
+		'value' => 'pill',
+		'label' => 'Pill',
+	);
 
 	/**
 	 * Gets the default value.
@@ -68,7 +74,7 @@ class Settings extends Module_Settings {
 			'clientID'      => '',
 			'text'          => self::TEXT_SIGN_IN_WITH_GOOGLE['value'],
 			'theme'         => self::THEME_LIGHT['value'],
-			'shape'         => self::SHAPE_RECTANGULAR,
+			'shape'         => self::SHAPE_RECTANGULAR['value'],
 			'oneTapEnabled' => false,
 		);
 	}
@@ -117,12 +123,12 @@ class Settings extends Module_Settings {
 
 			if ( isset( $option['shape'] ) ) {
 				$shape_options = array(
-					self::SHAPE_RECTANGULAR,
-					self::SHAPE_PILL,
+					self::SHAPE_RECTANGULAR['value'],
+					self::SHAPE_PILL['value'],
 				);
 
 				if ( ! in_array( $option['shape'], $shape_options, true ) ) {
-					$option['shape'] = self::SHAPE_RECTANGULAR;
+					$option['shape'] = self::SHAPE_RECTANGULAR['value'];
 				}
 			}
 
