@@ -111,15 +111,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		expect(
 			getByText( /Grow your revenue and deepen reader engagement/ )
 		).toBeInTheDocument();
-
-		// The survey trigger endpoint should be called with the correct trigger ID.
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_reader_revenue_manager_cta' },
-				},
-			} )
-		);
 	} );
 
 	it( 'should not render the Reader Revenue Manager setup CTA banner when dismissed', async () => {
@@ -189,15 +180,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
 			'confirm_notification'
 		);
-
-		// The survey trigger endpoint should be called with the correct trigger ID.
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_reader_revenue_manager_cta' },
-				},
-			} )
-		);
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
@@ -251,15 +233,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			2,
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
 			'dismiss_notification'
-		);
-
-		// The survey trigger endpoint should be called with the correct trigger ID.
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_reader_revenue_manager_cta' },
-				},
-			} )
 		);
 	} );
 
@@ -371,13 +344,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 				method: 'POST',
 			} );
 
-			// The survey trigger endpoint should be called with the correct trigger ID.
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_reader_revenue_manager_cta' },
-				},
-			} );
-
 			expect(
 				getByText(
 					/You can always enable Reader Revenue Manager from Settings later/
@@ -446,13 +412,32 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 				},
 				method: 'POST',
 			} );
+		} );
+	} );
 
-			// The survey trigger endpoint should be called with the correct trigger ID.
+	it( 'should trigger a survey when the banner is displayed', async () => {
+		mockSurveyEndpoints();
+
+		const { waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABanner
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// The survey trigger endpoint should be called with the correct trigger ID.
+		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 				body: {
 					data: { triggerID: 'view_reader_revenue_manager_cta' },
 				},
-			} );
-		} );
+			} )
+		);
 	} );
 } );
