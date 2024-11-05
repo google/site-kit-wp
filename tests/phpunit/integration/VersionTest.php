@@ -18,26 +18,28 @@ namespace Google\Site_Kit\Tests;
  */
 class VersionTest extends TestCase {
 	public function test_version_numbers_are_the_same() {
+		$semver_group_pattern = '([0-9]+\.[0-9]+\.[0-9]+)';
+
 		$version_occurrences = array(
 			array(
 				'file'    => 'google-site-kit.php',
-				'pattern' => '/\'GOOGLESITEKIT_VERSION\', \'([0-9.]+)/',
+				'pattern' => "/\'GOOGLESITEKIT_VERSION\', \'$semver_group_pattern\'/",
 			),
 			array(
 				'file'    => 'google-site-kit.php',
-				'pattern' => '/Version:[ ]+([0-9.]+)/',
+				'pattern' => "/Version:[ ]+$semver_group_pattern/",
 			),
 			array(
 				'file'    => 'readme.txt',
-				'pattern' => '/Stable tag:[ ]+([0-9.]+)/',
+				'pattern' => "/Stable tag:[ ]+$semver_group_pattern/",
 			),
 			array(
 				'file'    => 'readme.txt',
-				'pattern' => '/= ([0-9.]+) =/',
+				'pattern' => "/= $semver_group_pattern =/",
 			),
 			array(
 				'file'    => 'changelog.txt',
-				'pattern' => '/= ([0-9.]+) =/',
+				'pattern' => "/= $semver_group_pattern =/",
 			),
 		);
 
@@ -49,7 +51,9 @@ class VersionTest extends TestCase {
 			$pattern = $version_occurrence['pattern'];
 
 			$file_path = __DIR__ . '/../../../' . $file;
-			// file_get_contents not used for remote request and WP_Filesystem is not appropriate here.
+
+			// This invocation of `file_get_contents` not used for a remote request, and `WP_Filesystem` is not appropriate here.
+			// Therefore, we can safely ignore the WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown sniff.
 			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 			$contents = file_get_contents( $file_path );
 
@@ -62,6 +66,9 @@ class VersionTest extends TestCase {
 			// version numbers and we only want to check the first.
 			$version_numbers[] = $matches[1];
 		}
+
+		// Verify the number of version numbers found matches the number of version occurrences.
+		$this->assertEquals( count( $version_numbers ), count( $version_occurrences ) );
 
 		// Assert all version numbers are the same in the array.
 		$this->assertEquals( 1, count( array_unique( $version_numbers ) ) );
