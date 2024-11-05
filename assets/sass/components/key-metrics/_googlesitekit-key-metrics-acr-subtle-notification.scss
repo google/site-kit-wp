@@ -30,8 +30,16 @@
 		}
 
 		.googlesitekit-subtle-notification__content,
-		.mdc-button--tertiary:not(:disabled) {
+		.mdc-button--tertiary:not(:disabled),
+		p > a {
 			color: $c-violet-v-600;
+		}
+	}
+
+	.googlesitekit-widget--keyMetricsEventDetectionCalloutNotification {
+		.googlesitekit-widget__body,
+		.mdc-layout-grid {
+			padding: 0;
 		}
 	}
 }
