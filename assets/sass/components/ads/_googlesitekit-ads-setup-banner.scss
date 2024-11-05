@@ -30,6 +30,7 @@
 		.googlesitekit-setup-cta-banner__title {
 			@media (min-width: $width-tablet + 1 + px) {
 				font-size: $fs-headline-sm;
+				font-weight: $fw-medium;
 				line-height: $lh-headline-sm;
 			}
 
