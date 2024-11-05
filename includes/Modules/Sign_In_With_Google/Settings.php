@@ -39,6 +39,12 @@ class Settings extends Module_Settings {
 		'value' => 'signup_with',
 		'label' => 'Sign up with Google',
 	);
+	const TEXTS                     = array(
+		self::TEXT_CONTINUE_WITH_GOOGLE,
+		self::TEXT_SIGN_IN,
+		self::TEXT_SIGN_IN_WITH_GOOGLE,
+		self::TEXT_SIGN_UP_WITH_GOOGLE,
+	);
 
 	const THEME_LIGHT   = array(
 		'value' => 'outline',
@@ -52,6 +58,11 @@ class Settings extends Module_Settings {
 		'value' => 'filled_black',
 		'label' => 'Dark',
 	);
+	const THEMES        = array(
+		self::THEME_LIGHT,
+		self::THEME_NEUTRAL,
+		self::THEME_DARK,
+	);
 
 	const SHAPE_RECTANGULAR = array(
 		'value' => 'rectangular',
@@ -60,6 +71,10 @@ class Settings extends Module_Settings {
 	const SHAPE_PILL        = array(
 		'value' => 'pill',
 		'label' => 'Pill',
+	);
+	const SHAPES            = array(
+		self::SHAPE_RECTANGULAR,
+		self::SHAPE_PILL,
 	);
 
 	/**
