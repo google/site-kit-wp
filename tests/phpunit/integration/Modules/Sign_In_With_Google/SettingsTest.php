@@ -46,4 +46,33 @@ class SettingsTest extends SettingsTestCase {
 	protected function get_option_name() {
 		return Settings::OPTION;
 	}
+
+	/**
+	 * @dataProvider data_value_label_map
+	 *
+	 * @param array  $args     Arguments to pass to the pointer constructor.
+	 * @param bool   $expected Whether the check is expected to evaluate to true or false.
+	 */
+	public function test_get_label( $setting_name, $value, $label ) {
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$this->assertEquals( $label, $settings->get_label( $setting_name, $value ) );
+	}
+
+	public function data_value_label_map() {
+		return array(
+			array( 'invalid-setting', 'continue_with', '' ),
+			array( null, 'continue_with', '' ),
+			array( 'text', 'invalid-value', '' ),
+			array( 'text', null, '' ),
+			array( 'text', 'continue_with', 'Continue with Google' ),
+			array( 'text', 'signin', 'Sign in' ),
+			array( 'text', 'signin_with', 'Sign in with Google' ),
+			array( 'text', 'signup_with', 'Sign up with Google' ),
+			array( 'theme', 'outline', 'Light' ),
+			array( 'theme', 'filled_blue', 'Neutral' ),
+			array( 'theme', 'filled_black', 'Dark' ),
+			array( 'shape', 'rectangular', 'Rectagular' ),
+			array( 'shape', 'pill', 'Pill' ),
+		);
+	}
 }
