@@ -241,28 +241,31 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 											'google-site-kit'
 										) }
 									</h3>
-									<p className="googlesitekit-setup-cta-banner__description">
-										{ createInterpolateElement(
-											__(
-												'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														href={
-															consentModeDocumentationURL
-														}
-														external
-														aria-label={ __(
-															'Learn more about consent mode',
-															'google-site-kit'
-														) }
-													/>
+									<div className="googlesitekit-setup-cta-banner__description">
+										<p>
+											{ createInterpolateElement(
+												__(
+													'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
+													'google-site-kit'
 												),
-											}
-										) }
-									</p>
+												{
+													a: (
+														<Link
+															href={
+																consentModeDocumentationURL
+															}
+															external
+															aria-label={ __(
+																'Learn more about consent mode',
+																'google-site-kit'
+															) }
+														/>
+													),
+												}
+											) }
+										</p>
+									</div>
+
 									{ saveError && (
 										<ErrorText
 											message={ saveError.message }
