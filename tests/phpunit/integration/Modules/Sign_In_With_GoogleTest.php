@@ -78,7 +78,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->get_settings()->set(
 			array(
 				'clientID' => '1234567890.googleusercontent.com',
-				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE,
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
 				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
 				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR,
 			)
@@ -93,7 +93,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( "client_id: '1234567890.googleusercontent.com'", $output );
 		$this->assertStringContainsString( "login_uri: 'https://example.com/wp-login.php?action=google_auth'", $output );
 
-		$this->assertStringContainsString( "text: '" . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . "'", $output );
+		$this->assertStringContainsString( "text: '" . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] . "'", $output );
 		$this->assertStringContainsString( "theme: '" . Sign_In_With_Google_Settings::THEME_LIGHT['value'] . "'", $output );
 		$this->assertStringContainsString( "shape: '" . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . "'", $output );
 

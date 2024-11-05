@@ -23,10 +23,22 @@ class Settings extends Module_Settings {
 
 	const OPTION = 'googlesitekit_sign-in-with-google_settings';
 
-	const TEXT_CONTINUE_WITH_GOOGLE = 'continue_with';
-	const TEXT_SIGN_IN              = 'signin';
-	const TEXT_SIGN_IN_WITH_GOOGLE  = 'signin_with';
-	const TEXT_SIGN_UP_WITH_GOOGLE  = 'signup_with';
+	const TEXT_CONTINUE_WITH_GOOGLE = array(
+		'value' => 'continue_with',
+		'label' => 'Continue with Google',
+	);
+	const TEXT_SIGN_IN              = array(
+		'value' => 'signin',
+		'label' => 'Sign in',
+	);
+	const TEXT_SIGN_IN_WITH_GOOGLE  = array(
+		'value' => 'signin_with',
+		'label' => 'Sign in with Google',
+	);
+	const TEXT_SIGN_UP_WITH_GOOGLE  = array(
+		'value' => 'signup_with',
+		'label' => 'Sign up with Google',
+	);
 
 	const THEME_LIGHT   = array(
 		'value' => 'outline',
@@ -54,7 +66,7 @@ class Settings extends Module_Settings {
 	protected function get_default() {
 		return array(
 			'clientID'      => '',
-			'text'          => self::TEXT_SIGN_IN_WITH_GOOGLE,
+			'text'          => self::TEXT_SIGN_IN_WITH_GOOGLE['value'],
 			'theme'         => self::THEME_LIGHT['value'],
 			'shape'         => self::SHAPE_RECTANGULAR,
 			'oneTapEnabled' => false,
@@ -80,14 +92,14 @@ class Settings extends Module_Settings {
 
 			if ( isset( $option['text'] ) ) {
 				$text_options = array(
-					self::TEXT_CONTINUE_WITH_GOOGLE,
-					self::TEXT_SIGN_IN,
-					self::TEXT_SIGN_IN_WITH_GOOGLE,
-					self::TEXT_SIGN_UP_WITH_GOOGLE,
+					self::TEXT_CONTINUE_WITH_GOOGLE['value'],
+					self::TEXT_SIGN_IN['value'],
+					self::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+					self::TEXT_SIGN_UP_WITH_GOOGLE['value'],
 				);
 
 				if ( ! in_array( $option['text'], $text_options, true ) ) {
-					$option['text'] = self::TEXT_SIGN_IN_WITH_GOOGLE;
+					$option['text'] = self::TEXT_SIGN_IN_WITH_GOOGLE['value'];
 				}
 			}
 
