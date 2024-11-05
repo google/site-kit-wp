@@ -24,7 +24,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
-use Google\Site_Kit\Modules\Sign_In_With_Google\User_Connection_Setting;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 use WP_User;
@@ -105,9 +104,20 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			// Do nothign.
 		}
 
+		// Redirect to the error page if the user is not found.
 		if ( ! $user instanceof WP_User ) {
 			wp_safe_redirect( add_query_arg( 'error', self::INVALID_REQUEST_ERROR, $login_url ) );
 			exit;
+		}
+
+		// Redirect to the error page if the user is not a member of the current blog in multisite.
+		if ( is_multisite() ) {
+			$blog_id = get_current_blog_id();
+			if ( ! is_user_member_of_blog( $user->ID, $blog_id ) ) {
+				// TODO: add the user to the current blog if registration is allowed.
+				wp_safe_redirect( add_query_arg( 'error', self::INVALID_REQUEST_ERROR, $login_url ) );
+				exit;
+			}
 		}
 
 		// Set the user to be the current user.
@@ -115,6 +125,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Set the authentication cookies and trigger the wp_login action.
 		wp_set_auth_cookie( $user->ID );
+		/** This filter is documented in wp-login.php */
 		do_action( 'wp_login', $user->user_login, $user );
 
 		// TODO: redirect_to cannot be returned form the SiwG flow. The redirect_to login needs to be implemented using settings or session storage.
@@ -128,8 +139,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$redirect_to = admin_url();
 		}
 
-		$requested_redirect_to = isset( $_REQUEST['redirect_to'] ) && is_string( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : '';
-		$redirect_to           = apply_filters( 'login_redirect', $redirect_to, $requested_redirect_to, $user );
+		/** This filter is documented in wp-login.php */
+		$redirect_to = apply_filters( 'login_redirect', $redirect_to, $redirect_to, $user );
 
 		if ( ( empty( $redirect_to ) || 'wp-admin/' === $redirect_to || admin_url() === $redirect_to ) ) {
 			// If the user doesn't belong to a blog, send them to user admin. If the user can't edit posts, send them to their profile.
