@@ -12,9 +12,11 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
+use Google\Site_Kit\Modules\Sign_In_With_Google\User_Connection_Setting;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Validate_Auth_Request;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\TestCase;
@@ -50,6 +52,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 	public function test_handle_google_auth() {
 		global $wp_query;
 		$this->module->register();
+
+		$user_options             = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$user_connection_meta_key = $user_options->get_meta_key( User_Connection_Setting::OPTION );
 
 		$wp_query = new WP_Query();
 		$wp_query->query( array( 'google_auth' => 123 ) );
@@ -131,7 +136,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 					throw new Exception();
 				}
 			);
-		$this->force_set_property( $this->module, 'client', $mock_google_client );
+		$this->force_set_property( $this->module, 'google_client', $mock_google_client );
 
 		try {
 			$this->module->handle_google_auth();
@@ -145,8 +150,15 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Should redirect with google_auth_invalid_request error if payload is missing email.
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
-		->willReturn( array( 'sub' => '1111111111' ) );
-		$this->force_set_property( $this->module, 'client', $mock_google_client );
+		->willReturn(
+			array(
+				'sub'         => '1111111111',
+				'name'        => '',
+				'given_name'  => '',
+				'family_name' => '',
+			)
+		);
+		$this->force_set_property( $this->module, 'google_client', $mock_google_client );
 
 		try {
 			$this->module->handle_google_auth();
@@ -161,7 +173,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
 		->willReturn( array( 'email' => 'testemail@example.com' ) );
-		$this->force_set_property( $this->module, 'client', $mock_google_client );
+		$this->force_set_property( $this->module, 'google_client', $mock_google_client );
 
 		try {
 			$this->module->handle_google_auth();
@@ -179,60 +191,69 @@ class Sign_In_With_GoogleTest extends TestCase {
 				'user_email' => 'testsiwg@example.com',
 			)
 		);
-		add_user_meta( $wp_user->ID, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, '1111111111', true );
+		add_user_meta( $wp_user->ID, $user_connection_meta_key, hash( 'sha256', '1111111111' ), true );
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
 		->willReturn(
 			array(
-				'sub'   => '1111111111',
-				'email' => 'testsiwg@example.com',
+				'sub'         => '1111111111',
+				'email'       => 'testsiwg@example.com',
+				'name'        => 'Full Name',
+				'given_name'  => 'Full',
+				'family_name' => 'Name',
 			)
 		);
-		$this->force_set_property( $this->module, 'client', $mock_google_client );
+		$this->force_set_property( $this->module, 'google_client', $mock_google_client );
 
 		try {
 			$this->module->handle_google_auth();
-			$this->fail( 'Expected redirection to dashboard' );
+			$this->fail( 'Expected successful login redirection' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertEquals( 'http://example.org/wp-admin/', $redirect_url );
+			$this->assertEquals( 'http://example.org/wp-admin/profile.php', $redirect_url );
 		}
 
 		$this->assertEquals( $wp_user->ID, get_current_user_id() );
-		$this->assertEquals( '1111111111', get_user_meta( get_current_user_id(), Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
+		$this->assertEquals( hash( 'sha256', '1111111111' ), get_user_meta( get_current_user_id(), $user_connection_meta_key, true ) );
 		$this->assertEquals( 1, did_action( 'wp_login' ) );
 		wp_logout();
 
 		// Should login existing user with matching Google ID regardless of email.
 		$wp_user1 = $this->factory()->user->create_and_get(
 			array(
-				'user_login' => 'testuser1',
-				'user_email' => 'testsiwg1@example.com',
+				'user_login'  => 'testuser1',
+				'user_email'  => 'testsiwg1@example.com',
+				'name'        => 'Full Name',
+				'given_name'  => 'Full',
+				'family_name' => 'Name',
 			)
 		);
-		add_user_meta( $wp_user1->ID, Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, '2222222222', true );
+		add_user_meta( $wp_user1->ID, $user_connection_meta_key, hash( 'sha256', '2222222222' ), true );
 
 		$mock_google_client = $this->createMock( Google_Client::class );
 		$mock_google_client->method( 'verifyIdToken' )
 		->willReturn(
 			array(
-				'sub'   => '2222222222',
-				'email' => 'testsiwgdifferentemail@example.com',
+				'sub'         => '2222222222',
+				'email'       => 'testsiwgdifferentemail@example.com',
+				'name'        => 'Full Name',
+				'given_name'  => 'Full',
+				'family_name' => 'Name',
 			)
 		);
-		$this->force_set_property( $this->module, 'client', $mock_google_client );
+		$this->force_set_property( $this->module, 'google_client', $mock_google_client );
 
 		try {
 			$this->module->handle_google_auth();
-			$this->fail( 'Expected redirection to dashboard' );
+			$this->fail( 'Expected successful login redirection' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertEquals( 'http://example.org/wp-admin/', $redirect_url );
+			$this->assertEquals( 'http://example.org/wp-admin/profile.php', $redirect_url );
 		}
 
 		$this->assertEquals( $wp_user1->ID, get_current_user_id() );
-		$this->assertEquals( '2222222222', get_user_meta( get_current_user_id(), Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
+		$this->assertEquals( hash( 'sha256', '2222222222' ), get_user_meta( get_current_user_id(), $user_connection_meta_key, true ) );
 		wp_logout();
 
 		// Creates new user if "Anyone can register" setting is enabled.
@@ -245,23 +266,32 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$mock_google_client->method( 'verifyIdToken' )
 		->willReturn(
 			array(
-				'sub'   => '3333333333',
-				'email' => 'testsiwg3@example.com',
+				'sub'         => '3333333333',
+				'email'       => 'testsiwg3@example.com',
+				'name'        => 'Full Name',
+				'given_name'  => 'Full',
+				'family_name' => 'Name',
 			)
 		);
-		$this->force_set_property( $this->module, 'client', $mock_google_client );
+		$this->force_set_property( $this->module, 'google_client', $mock_google_client );
 
 		try {
 			$this->module->handle_google_auth();
-			$this->fail( 'Expected redirection to dashboard' );
+			$this->fail( 'Expected successful login redirection' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertEquals( 'http://example.org/wp-admin/', $redirect_url );
+			$this->assertEquals( 'http://example.org/wp-admin/profile.php', $redirect_url );
 		}
 
+		// Check all user settings are set as expected.
 		$new_user = get_user_by( 'email', 'testsiwg3@example.com' );
-		$this->assertEquals( 'testsiwg3@example.com', $new_user->user_login );
-		$this->assertEquals( '3333333333', get_user_meta( get_current_user_id(), Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, true ) );
+		$this->assertEquals( 'fullname', $new_user->user_login );
+		$this->assertEquals( 'fullname', $new_user->display_name );
+		$this->assertEquals( 'testsiwg3@example.com', $new_user->user_email );
+		$this->assertEquals( 'Full', $new_user->nickname );
+		$this->assertEquals( 'Full', $new_user->first_name );
+		$this->assertEquals( 'Name', $new_user->last_name );
+		$this->assertEquals( hash( 'sha256', '3333333333' ), get_user_meta( get_current_user_id(), $user_connection_meta_key, true ) );
 
 		// Does not create new user if "Anyone can register" setting is disabled and will redirect to login with error user_actions_failed.
 		if ( is_multisite() ) {
@@ -274,11 +304,14 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$mock_google_client->method( 'verifyIdToken' )
 		->willReturn(
 			array(
-				'sub'   => '4444444444',
-				'email' => 'testsiwg4@example.com',
+				'sub'         => '4444444444',
+				'email'       => 'testsiwg4@example.com',
+				'name'        => 'Full Name',
+				'given_name'  => 'Full',
+				'family_name' => 'Name',
 			)
 		);
-		$this->force_set_property( $this->module, 'client', $mock_google_client );
+		$this->force_set_property( $this->module, 'google_client', $mock_google_client );
 
 		try {
 			$this->module->handle_google_auth();
@@ -286,14 +319,14 @@ class Sign_In_With_GoogleTest extends TestCase {
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
-			$this->assertEquals( 'registration_disabled', $params['error'] );
+			$this->assertEquals( 'google_auth_failed', $params['error'] );
 		}
 		// Check the user was not created and the meta not stored.
 		$this->assertFalse( get_user_by( 'email', 'testsiwg4@example.com' ) );
 		$matching_user = get_users(
 			array(
-				'meta_key'   => Sign_In_With_Google::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION,
-				'meta_value' => '4444444444',
+				'meta_key'   => $user_connection_meta_key,
+				'meta_value' => hash( 'sha256', '4444444444' ),
 				'number'     => 1,
 			)
 		);

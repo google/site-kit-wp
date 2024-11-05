@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
+use Google\Site_Kit\Modules\Sign_In_With_Google\User_Connection_Setting;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 use WP_User;
@@ -52,39 +53,25 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 * @var Google_Client
 	 */
-	protected $client;
+	protected $google_client;
 
 	/**
-	 * Option name for persistent user ID.
+	 * User_Connection_Setting instance.
 	 *
 	 * @since n.e.x.t
-	 * @var string
+	 * @var User_Connection_Setting
 	 */
-	const SIGN_IN_WITH_GOOGLE_USER_ID_OPTION = 'googlesitekitpersistent_sign_in_with_google_user_id';
+	protected $user_connection_setting;
 
-		/**
-		 * Constructor.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param Context        $context        Plugin context.
-		 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-		 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-		 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-		 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
-		 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-
+	/**
+	 * Get Sign in with Google client.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function get_sign_in_with_google_client() {
 		$settings = $this->get_settings()->get();
 		if ( ! empty( $settings['clientID'] ) ) {
-			$this->client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
+			$this->google_client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
 		}
 	}
 
@@ -107,12 +94,64 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @param WP_User $user WordPress user object.
 	 */
-	protected function login_user( WP_User $user ) {
+	protected function login_user_and_exit( WP_User $user ) {
 		wp_set_current_user( $user->ID, $user->user_login );
 		wp_set_auth_cookie( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
-		wp_safe_redirect( admin_url() );
+
+		// TODO: redirect_to cannot be returned form the SiwG flow. The redirect_to login needs to be implemented using settings or session storage.
+		if ( isset( $_REQUEST['redirect_to'] ) && is_string( $_REQUEST['redirect_to'] ) ) {
+			$redirect_to = $_REQUEST['redirect_to'];
+			// Redirect to HTTPS if user wants SSL.
+			if ( get_user_option( 'use_ssl', $user->ID ) && str_contains( $redirect_to, 'wp-admin' ) ) {
+				$redirect_to = preg_replace( '|^http://|', 'https://', $redirect_to );
+			}
+		} else {
+			$redirect_to = admin_url();
+		}
+
+		$requested_redirect_to = isset( $_REQUEST['redirect_to'] ) && is_string( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : '';
+		$redirect_to           = apply_filters( 'login_redirect', $redirect_to, $requested_redirect_to, $user );
+
+		if ( ( empty( $redirect_to ) || 'wp-admin/' === $redirect_to || admin_url() === $redirect_to ) ) {
+			// If the user doesn't belong to a blog, send them to user admin. If the user can't edit posts, send them to their profile.
+			if ( is_multisite() && ! get_active_blog_for_user( $user->ID ) && ! is_super_admin( $user->ID ) ) {
+				$redirect_to = user_admin_url();
+			} elseif ( is_multisite() && ! $user->has_cap( 'read' ) ) {
+				$redirect_to = get_dashboard_url( $user->ID );
+			} elseif ( ! $user->has_cap( 'edit_posts' ) ) {
+				$redirect_to = $user->has_cap( 'read' ) ? admin_url( 'profile.php' ) : home_url();
+			}
+
+			wp_redirect( $redirect_to );
+			exit;
+		}
+
+		wp_safe_redirect( $redirect_to );
 		exit;
+	}
+
+	/**
+	 * Generate unique username.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $username Username.
+	 * @param int    $i        Current iteration of username generation.
+	 * @return string A username that is unique on the site.
+	 */
+	private function generate_unique_username( $username, $i = 1 ) {
+		$username = sanitize_title( $username );
+
+		if ( ! username_exists( $username ) ) {
+			return $username;
+		}
+		$new_username = sprintf( '%s-%s', $username, $i );
+		if ( ! username_exists( $new_username ) ) {
+			return $new_username;
+		} else {
+			return $this->generate_unique_username( $username, $i + 1 );
+		}
 	}
 
 	/**
@@ -140,53 +179,86 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			exit;
 		}
 
+		if ( is_null( $this->google_client ) ) {
+			$this->get_sign_in_with_google_client();
+		}
+
 		$id_token = $this->context->input()->filter( INPUT_POST, 'credential' );
 		try {
-			$payload = $this->client->verifyIdToken( $id_token );
+			$payload = $this->google_client->verifyIdToken( $id_token );
 		} catch ( \Exception $e ) {
 			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
 			exit;
 		}
 
-		if ( is_null( $payload ) || empty( $payload ) || ! array_key_exists( 'sub', $payload ) || empty( $payload['sub'] ) || ! array_key_exists( 'email', $payload ) || empty( $payload['email'] ) ) {
+		if ( empty( $payload['sub'] ) || empty( $payload['email'] ) ) {
 			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
 			exit;
 		}
 
-		$google_user_id    = sanitize_text_field( $payload['sub'] );
-		$google_user_email = sanitize_email( $payload['email'] );
+		$google_user_id         = $payload['sub'];
+		$google_user_email      = $payload['email'];
+		$google_user_name       = $payload['name'];
+		$google_user_first_name = $payload['given_name'];
+		$google_user_last_name  = $payload['family_name'];
 
 		// Check if there are any existing WordPress users connected to this Google account.
 		// The user ID is used as the unique identifier because users can change the email on their Google account.
 		$existing_users = get_users(
 			array(
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_key'   => self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION,
+				'meta_key'   => $this->user_options->get_meta_key( User_Connection_Setting::OPTION ),
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'meta_value' => $google_user_id,
+				'meta_value' => hash( 'sha256', $google_user_id ),
 				'number'     => 1,
 			)
 		);
-		if ( ! empty( $existing_users ) && $existing_users[0] instanceof WP_User ) {
-			return $this->login_user( $existing_users[0] );
+
+		if ( ! empty( $existing_users ) ) {
+			return $this->login_user_and_exit( $existing_users[0] );
 		}
 
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
 		$existing_user = get_user_by( 'email', $google_user_email );
-		if ( $existing_user instanceof WP_User ) {
-			add_user_meta( $existing_user->ID, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, $google_user_id, true );
-			return $this->login_user( $existing_user );
+		if ( $existing_user ) {
+			add_user_meta( $existing_user->ID, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ), hash( 'sha256', $google_user_id ), true );
+			return $this->login_user_and_exit( $existing_user );
 		}
 
 		// Create a new user if "Anyone can register" setting is enabled.
 		$registration_open = get_option( 'users_can_register' );
 		if ( ! $registration_open ) {
-			wp_safe_redirect( add_query_arg( 'error', 'registration_disabled', wp_login_url() ) );
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_failed', wp_login_url() ) );
 			exit;
 		}
-		$new_user_id = wp_create_user( $google_user_email, wp_generate_password(), $google_user_email );
-		add_user_meta( $new_user_id, self::SIGN_IN_WITH_GOOGLE_USER_ID_OPTION, $google_user_id, true );
-		return $this->login_user( get_user_by( 'id', $new_user_id ) );
+		$new_user_id = wp_create_user( $this->generate_unique_username( strtolower( preg_replace( '/\s+/', '', $google_user_name ) ) ), wp_generate_password(), $google_user_email );
+		$new_user    = get_user_by( 'id', $new_user_id );
+
+		$default_role = get_option( 'default_role' );
+		if ( empty( $default_role ) ) {
+			$default_role = 'subscriber';
+		}
+
+		if ( is_multisite() ) {
+			add_user_to_blog( get_current_blog_id(), $new_user_id, $default_role );
+		}
+
+		$new_user->set_role( $default_role );
+
+		wp_update_user(
+			array(
+				'ID'         => $new_user_id,
+				'nickname'   => $google_user_first_name,
+				'first_name' => $google_user_first_name,
+				'last_name'  => $google_user_last_name,
+			)
+		);
+
+		add_user_meta( $new_user_id, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ), hash( 'sha256', $google_user_id ), true );
+
+		wp_send_new_user_notifications( $new_user_id );
+
+		return $this->login_user_and_exit( get_user_by( 'id', $new_user_id ) );
 	}
 
 	/**
@@ -208,8 +280,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			case 'google_auth_invalid_g_csrf_token':
 				$error->add( 'google_auth', __( 'Sign in with Google failed.', 'google-site-kit' ) );
 				break;
-			case 'registration_disabled':
-				$error->add( 'registration_disabled', __( 'Public registration disabled.', 'google-site-kit' ) );
+			case 'google_auth_failed':
+				$error->add( 'google_auth_failed', __( 'The user is not registered on this site.', 'google-site-kit' ) );
 				break;
 			default:
 				break;
@@ -316,6 +388,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
 			return;
 		}
+
+		// if ( ! empty( $_GET['redirect_to'] ) ) {
+			// TODO: we must find a way to store the redirect_to so that it can be retrieved after the SiwG flow.
+			// login_uri below does not accept additional query arguments.
+		// }
 
 		// Render the Sign in with Google button and related inline styles.
 		?>
