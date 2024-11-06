@@ -361,7 +361,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
@@ -382,7 +381,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
