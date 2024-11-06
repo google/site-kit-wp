@@ -101,7 +101,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				exit;
 			}
 		} catch ( \Exception $e ) {
-			// Do nothign.
+			wp_safe_redirect( add_query_arg( 'error', self::INVALID_REQUEST_ERROR, $login_url ) );
+			exit;
 		}
 
 		// Redirect to the error page if the user is not found.
@@ -129,14 +130,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		do_action( 'wp_login', $user->user_login, $user );
 
 		// TODO: redirect_to cannot be returned form the SiwG flow. The redirect_to login needs to be implemented using settings or session storage.
-		if ( isset( $_REQUEST['redirect_to'] ) && is_string( $_REQUEST['redirect_to'] ) ) {
-			$redirect_to = $_REQUEST['redirect_to'];
-			// Redirect to HTTPS if user wants SSL.
-			if ( get_user_option( 'use_ssl', $user->ID ) && str_contains( $redirect_to, 'wp-admin' ) ) {
-				$redirect_to = preg_replace( '|^http://|', 'https://', $redirect_to );
-			}
-		} else {
+		$redirect_to = $this->context->input()->filter( INPUT_POST, 'redirect_to' );
+		if ( empty( $redirect_to ) ) {
 			$redirect_to = admin_url();
+		}
+
+		// Redirect to HTTPS if user wants SSL.
+		if ( get_user_option( 'use_ssl', $user->ID ) && str_contains( $redirect_to, 'wp-admin' ) ) {
+			$redirect_to = preg_replace( '|^http://|', 'https://', $redirect_to );
 		}
 
 		/** This filter is documented in wp-login.php */
@@ -152,7 +153,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				$redirect_to = $user->has_cap( 'read' ) ? admin_url( 'profile.php' ) : home_url();
 			}
 
-			wp_redirect( $redirect_to );
+			wp_safe_redirect( $redirect_to );
 			exit;
 		}
 
@@ -207,12 +208,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		// We haven't found the user using their google user id and email. Thus we need to create
 		// a new user. But if the registration is closed, we need to return an error to identify
 		// that the sign in process failed.
-		if ( is_multisite() ) {
-			$mu_registration = get_site_option( 'registration' );
-			if ( $mu_registration != 'user' && $mu_registration != 'all' ) {
-				return new WP_Error( self::SIGNIN_FAILED_ERROR );
-			}
-		} elseif ( get_option( 'users_can_register' ) != 1 ) {
+		if (
+			( is_multisite() && ! users_can_register_signup_filter() ) ||
+			intval( get_option( 'users_can_register' ) ) !== 1
+		) {
 			return new WP_Error( self::SIGNIN_FAILED_ERROR );
 		}
 
@@ -379,11 +378,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
 			return;
 		}
-
-		// if ( ! empty( $_GET['redirect_to'] ) ) {
-			// TODO: we must find a way to store the redirect_to so that it can be retrieved after the SiwG flow.
-			// login_uri below does not accept additional query arguments.
-		// }
 
 		// Render the Sign in with Google button and related inline styles.
 		?>
