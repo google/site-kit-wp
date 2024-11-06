@@ -46,7 +46,7 @@ export const FORM_USER_INPUT_QUESTION_SNAPSHOT = 'user_input_question_snapshot';
 /**
  * Gets available questions for user input settings.
  *
- * @since n.e.x.t
+ * @since 1.139.0
  * @private
  *
  * @return {Object} Questions object.
@@ -162,7 +162,7 @@ export function getUserInputAnswers() {
 /**
  * Gets available answer descriptions for user input settings.
  *
- * @since n.e.x.t
+ * @since 1.139.0
  * @private
  *
  * @return {Object} Answer descriptions object.

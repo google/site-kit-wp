@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Module Button Text component.
+ * Sign in with Google Module Button Text component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

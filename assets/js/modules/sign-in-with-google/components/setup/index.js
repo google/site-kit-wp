@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Setup components.
+ * Sign in with Google Setup components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

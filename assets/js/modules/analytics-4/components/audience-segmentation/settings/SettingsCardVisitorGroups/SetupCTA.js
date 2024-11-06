@@ -36,8 +36,12 @@ import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboar
 import Link from '../../../../../../components/Link';
 import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
 
 export default function SetupCTA() {
+	const viewContext = useViewContext();
+
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
@@ -73,6 +77,13 @@ export default function SetupCTA() {
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 
+	function handleEnableGroups() {
+		trackEvent(
+			`${ viewContext }_audiences-setup-cta-settings`,
+			'enable_groups'
+		).finally( onEnableGroups );
+	}
+
 	const onCancel = () => {
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 			autoSubmit: false,
@@ -97,7 +108,7 @@ export default function SetupCTA() {
 				</div>
 			) }
 			{ ! isSaving && (
-				<Link onClick={ onEnableGroups }>
+				<Link onClick={ handleEnableGroups }>
 					{ __( 'Enable groups', 'google-site-kit' ) }
 				</Link>
 			) }
