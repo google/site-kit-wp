@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Main setup component.
+ * Sign in with Google Main setup component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -24,11 +24,17 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SignInWithGoogleIcon from '../../../../../svg/graphics/sign-in-with-google.svg';
 import SetupForm from './SetupForm';
 import Badge from '../../../../components/Badge';
+import HTTPSWarning from '../../../../components/notifications/HTTPSWarning';
+import { isURLUsingHTTPS } from '../../../../util/is-url-using-https';
 
 export default function SetupMain() {
+	const homeURL = useSelect( ( select ) => select( CORE_SITE ).getHomeURL() );
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--with-panels googlesitekit-setup-module--sign-in-with-google">
 			<div className="googlesitekit-setup-module__step">
@@ -38,7 +44,7 @@ export default function SetupMain() {
 
 				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 					{ _x(
-						'Sign In With Google',
+						'Sign in with Google',
 						'Service name',
 						'google-site-kit'
 					) }
@@ -49,7 +55,9 @@ export default function SetupMain() {
 				</h2>
 			</div>
 			<div className="googlesitekit-setup-module__step">
-				<SetupForm />
+				<HTTPSWarning moduleSlug="sign-in-with-google" />
+
+				{ isURLUsingHTTPS( homeURL ) && <SetupForm /> }
 			</div>
 		</div>
 	);

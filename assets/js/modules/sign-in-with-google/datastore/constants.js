@@ -16,6 +16,8 @@
 
 export const MODULES_SIGN_IN_WITH_GOOGLE = 'modules/sign-in-with-google';
 
+export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
+
 export const SIGN_IN_WITH_GOOGLE_THEME_LIGHT = {
 	value: 'outline',
 	label: 'Light',

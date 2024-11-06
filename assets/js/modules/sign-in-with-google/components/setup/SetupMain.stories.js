@@ -45,6 +45,14 @@ Default.scenario = {
 	label: 'Modules/SignInWithGoogle/Setup/SetupMain',
 };
 
+export const WithHTTPSWarning = Template.bind( {} );
+WithHTTPSWarning.storyName = 'With HTTPS Warning';
+WithHTTPSWarning.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry );
+	},
+};
+
 export default {
 	title: 'Modules/SignInWithGoogle/Setup/SetupMain',
 	decorators: [
@@ -58,7 +66,9 @@ export default {
 					},
 				] );
 
-				provideSiteInfo( registry );
+				provideSiteInfo( registry, {
+					homeURL: 'https://example.com',
+				} );
 				provideModuleRegistrations( registry );
 			};
 

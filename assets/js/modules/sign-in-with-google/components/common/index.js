@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Common components.
+ * Sign in with Google Common components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

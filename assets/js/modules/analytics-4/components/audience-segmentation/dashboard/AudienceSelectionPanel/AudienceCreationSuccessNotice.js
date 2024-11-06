@@ -19,22 +19,44 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
+import {
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
+} from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { Button } from 'googlesitekit-components';
 import CheckFill from '../../../../../../../svg/icons/check-fill.svg';
-import { AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG } from './constants';
 
 export default function AudienceCreationSuccessNotice() {
+	const viewContext = useViewContext();
+
 	const { setValue } = useDispatch( CORE_UI );
+
 	const showSuccessNotice = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG )
 	);
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+	);
+
+	// Track an event when the notice is viewed.
+	useEffect( () => {
+		if ( isOpen && showSuccessNotice ) {
+			trackEvent(
+				`${ viewContext }_audiences-sidebar-create-audiences-success`,
+				'view_notification'
+			);
+		}
+	}, [ isOpen, showSuccessNotice, viewContext ] );
 
 	if ( ! showSuccessNotice ) {
 		return null;
@@ -55,10 +77,15 @@ export default function AudienceCreationSuccessNotice() {
 				<Button
 					tertiary
 					onClick={ () => {
-						setValue(
-							AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
-							false
-						);
+						trackEvent(
+							`${ viewContext }_audiences-sidebar-create-audiences-success`,
+							'dismiss_notification'
+						).finally( () => {
+							setValue(
+								AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+								false
+							);
+						} );
 					} }
 				>
 					{ __( 'Got it', 'google-site-kit' ) }
