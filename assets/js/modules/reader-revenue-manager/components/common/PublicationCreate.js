@@ -100,7 +100,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 										path="/news/publisher-center/answer/11449914"
 										external
 										aria-label={ __(
-											'Learn more about publisher center',
+											'Learn more about setting up Reader Revenue Manager',
 											'google-site-kit'
 										) }
 									/>
