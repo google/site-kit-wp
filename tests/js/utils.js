@@ -56,6 +56,8 @@ import {
 	PERMISSION_VIEW_MODULE_DETAILS,
 	PERMISSION_MANAGE_OPTIONS,
 	CORE_USER,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
@@ -418,7 +420,10 @@ export function provideTracking( registry, enabled = true ) {
  */
 export const provideKeyMetrics = ( registry, extraData = {} ) => {
 	const defaults = {
-		widgetSlugs: [ 'test-slug' ],
+		widgetSlugs: [
+			KM_ANALYTICS_NEW_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
+		],
 		isWidgetHidden: false,
 	};
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {

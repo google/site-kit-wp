@@ -57,8 +57,8 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
+import { isFeatureEnabled } from '../../features';
 import {
 	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
 	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
@@ -85,13 +85,6 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
 	select,
 	isViewOnlyDashboard
 ) {
-	if (
-		! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ||
-		! select( CORE_MODULES ).isModuleConnected( 'adsense' )
-	) {
-		return false;
-	}
-
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
@@ -149,6 +142,8 @@ const KEY_METRICS_WIDGETS = {
 			'Pages that generated the most AdSense revenue',
 			'google-site-kit'
 		),
+		displayInSelectionPanel:
+			shouldDisplayWidgetWithAnalytics4AndAdSenseLinked,
 		displayInList: shouldDisplayWidgetWithAnalytics4AndAdSenseLinked,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
@@ -163,6 +158,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
@@ -177,6 +174,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
@@ -191,6 +190,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
@@ -213,10 +214,11 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_type' ],
-		displayInList: ( select ) =>
+		displayInSelectionPanel: ( select ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductPostType(),
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
@@ -342,6 +344,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -360,6 +364,8 @@ const KEY_METRICS_WIDGETS = {
 			'contact',
 			'generate_lead',
 		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
@@ -374,6 +380,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'purchase' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -428,6 +436,8 @@ const KEY_METRICS_WIDGETS = {
 			'contact',
 			'generate_lead',
 		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
@@ -442,6 +452,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -456,6 +468,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'purchase' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -470,6 +484,8 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'purchase' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -508,6 +524,8 @@ const KEY_METRICS_WIDGETS = {
 			'contact',
 			'generate_lead',
 		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
