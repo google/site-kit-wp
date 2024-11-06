@@ -228,7 +228,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				'last_name'    => $payload['family_name'],
 				'role'         => $default_role,
 				'meta_input'   => array(
-					$this->user_options->get_meta_key( User_Connection_Setting::OPTION ) => $g_user_id,
+					$this->user_options->get_meta_key( self::GOOGLE_USER_ID_OPTION ) => $g_user_id,
 				),
 			)
 		);
