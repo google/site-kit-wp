@@ -109,12 +109,14 @@ function AdsModuleSetupCTAWidget( { WidgetNull, Widget } ) {
 												'google-site-kit'
 											) }
 										</h3>
-										<p className="googlesitekit-setup-cta-banner__description">
-											{ __(
-												'Help drive sales, leads, or site traffic by getting your business in front of people who are actively searching Google for products or services you offer.',
-												'google-site-kit'
-											) }
-										</p>
+										<div className="googlesitekit-setup-cta-banner__description">
+											<p>
+												{ __(
+													'Help drive sales, leads, or site traffic by getting your business in front of people who are actively searching Google for products or services you offer.',
+													'google-site-kit'
+												) }
+											</p>
+										</div>
 
 										<div className="googlesitekit-setup-cta-banner__actions-wrapper">
 											<Button

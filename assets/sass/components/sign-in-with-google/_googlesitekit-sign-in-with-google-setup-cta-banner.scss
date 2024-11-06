@@ -1,4 +1,6 @@
 /**
+ * Sign in with Google Setup CTA Banner styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +16,22 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import Notifications from 'googlesitekit-notifications';
-import {
-	registerModule,
-	registerStore,
-	registerNotifications,
-} from './modules/sign-in-with-google';
+.googlesitekit-plugin {
 
-registerModule( Modules );
-registerStore( Data );
-registerNotifications( Notifications );
+	.googlesitekit-setup-cta-banner--setup-cta-siwg {
+
+		.googlesitekit-setup-cta-banner__svg-wrapper--setup-cta-siwg {
+			align-items: flex-end;
+			display: flex;
+			justify-content: center;
+
+			svg {
+				max-height: 136px;
+
+				@media (min-width: $width-desktop + 1 + px) {
+					max-height: 265px;
+				}
+			}
+		}
+	}
+}

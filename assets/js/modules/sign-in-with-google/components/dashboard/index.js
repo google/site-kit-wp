@@ -1,4 +1,6 @@
 /**
+ * Sign in with Google settings components.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import Notifications from 'googlesitekit-notifications';
-import {
-	registerModule,
-	registerStore,
-	registerNotifications,
-} from './modules/sign-in-with-google';
-
-registerModule( Modules );
-registerStore( Data );
-registerNotifications( Notifications );
+export { default as SignInWithGoogleSetupCTABanner } from './SignInWithGoogleSetupCTABanner';
