@@ -43,7 +43,7 @@ import {
 	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
-import Link from '../../../../components/Link';
+import SupportLink from '../../../../components/SupportLink';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
@@ -96,8 +96,8 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 							),
 							{
 								a: (
-									<Link
-										href="https://support.google.com/news/publisher-center/answer/11449914"
+									<SupportLink
+										path="/news/publisher-center/answer/11449914"
 										external
 										aria-label={ __(
 											'Learn more about publisher center',
