@@ -207,7 +207,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		// We haven't found the user using their google user id and email. Thus we need to create
 		// a new user. But if the registration is closed, we need to return an error to identify
 		// that the sign in process failed.
-		if ( ! get_option( 'users_can_register' ) ) {
+		if ( is_multisite() ) {
+			$mu_registration = get_site_option( 'registration' );
+			if ( $mu_registration != 'user' && $mu_registration != 'all' ) {
+				return new WP_Error( self::SIGNIN_FAILED_ERROR );
+			}
+		} elseif ( get_option( 'users_can_register' ) != 1 ) {
 			return new WP_Error( self::SIGNIN_FAILED_ERROR );
 		}
 
