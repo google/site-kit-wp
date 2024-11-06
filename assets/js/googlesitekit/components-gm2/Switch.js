@@ -35,7 +35,6 @@ import { ENTER } from '@wordpress/keycodes';
 import { MDCSwitch } from '../../material-components';
 
 function Switch( { onClick, label, checked, disabled, hideLabel } ) {
-	// eslint-disable-next-line sitekit/acronym-case
 	const instanceID = useInstanceId( Switch );
 	const switchRef = useCallback( ( el ) => {
 		if ( el !== null ) {
