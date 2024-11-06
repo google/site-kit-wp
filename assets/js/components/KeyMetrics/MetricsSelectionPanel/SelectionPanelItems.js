@@ -1,5 +1,5 @@
 /**
- * Settings admin styles.
+ * Selection Panel Items component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,32 +16,31 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-	#js-googlesitekit-settings {
+/**
+ * Internal dependencies
+ */
+import ChipTabGroup from '../ChipTabGroup';
 
-		.googlesitekit-layout__header {
-			border: none;
-
-			.mdc-layout-grid {
-				padding-bottom: 0;
-
-				h3.googlesitekit-layout__header-title {
-					font-family: $f-primary;
-					font-size: $fs-title-lg;
-					font-weight: $fw-medium;
-				}
-			}
-		}
-
-		.googlesitekit-settings-module {
-
-			.googlesitekit-settings-module__footer {
-
-				.mdc-layout-grid {
-					padding-top: 0;
-				}
-			}
-		}
-	}
+export default function SelectionPanelItems( {
+	savedItemSlugs,
+	allMetricItems,
+} ) {
+	return (
+		<div className="googlesitekit-selection-panel-items">
+			<ChipTabGroup
+				savedItemSlugs={ savedItemSlugs }
+				allMetricItems={ allMetricItems }
+			/>
+		</div>
+	);
 }
+
+SelectionPanelItems.propTypes = {
+	savedItemSlugs: PropTypes.array.isRequired,
+	allMetricItems: PropTypes.object.isRequired,
+};

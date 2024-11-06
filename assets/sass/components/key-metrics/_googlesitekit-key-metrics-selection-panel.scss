@@ -1,5 +1,5 @@
 /**
- * Settings admin styles.
+ * Audience Selection Panel styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -18,29 +18,17 @@
 
 .googlesitekit-plugin {
 
-	#js-googlesitekit-settings {
+	.googlesitekit-acr-km-selection-panel {
 
-		.googlesitekit-layout__header {
-			border: none;
-
-			.mdc-layout-grid {
-				padding-bottom: 0;
-
-				h3.googlesitekit-layout__header-title {
-					font-family: $f-primary;
-					font-size: $fs-title-lg;
-					font-weight: $fw-medium;
-				}
-			}
+		@media (min-width: $bp-nonMobile) {
+			width: 578px;
 		}
 
-		.googlesitekit-settings-module {
-
-			.googlesitekit-settings-module__footer {
-
-				.mdc-layout-grid {
-					padding-top: 0;
-				}
+		.googlesitekit-selection-panel-header {
+			p {
+				color: $c-neutral-n-900;
+				font-size: $fs-title-sm;
+				margin: 8px 0 0;
 			}
 		}
 	}
