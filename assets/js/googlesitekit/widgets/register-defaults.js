@@ -48,7 +48,7 @@ import {
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { isFeatureEnabled } from '../../features';
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
-import ACRNotificationCTAWidget from '../../components/KeyMetrics/ACRNotificationCTAWidget';
+import ConversionReportingNotificationCTAWidget from '../../components/KeyMetrics/ConversionReportingNotificationCTAWidget';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
@@ -475,7 +475,7 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidget(
 			'keyMetricsEventDetectionCalloutNotification',
 			{
-				Component: ACRNotificationCTAWidget,
+				Component: ConversionReportingNotificationCTAWidget,
 				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 				priority: 0,
 				modules: [ 'analytics-4' ],
