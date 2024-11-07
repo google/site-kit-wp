@@ -313,9 +313,7 @@ export default function DashboardMainApp() {
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			{ showKeyMetricsSelectionPanel === false && (
-				<MetricsSelectionPanel />
-			) }
+			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
 			{ audienceSegmentationEnabled && configuredAudiences && (
 				<AudienceSelectionPanel />
