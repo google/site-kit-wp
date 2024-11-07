@@ -67,7 +67,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
 
 		add_action( 'login_form_google_auth', $this->get_method_proxy( 'handle_auth_callback' ) );
-		add_action( 'login_form_google_auth_redirect', $this->get_method_proxy( 'handle_auth_redirect' ) );
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
@@ -130,10 +129,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		/** This filter is documented in wp-login.php */
 		do_action( 'wp_login', $user->user_login, $user );
 
-		// TODO: redirect_to cannot be returned form the SiwG flow. The redirect_to login needs to be implemented using settings or session storage.
-		$redirect_to = $this->context->input()->filter( INPUT_POST, 'redirect_to' );
-		if ( empty( $redirect_to ) ) {
-			$redirect_to = admin_url();
+		// Use the admin dashboard URL as the redirect URL by default.
+		$redirect_to = admin_url();
+
+		// If we have the redirect URL in the cookie, use it as the main redirect_to URL.
+		$cookie_redirect_to = $this->context->input()->filter( INPUT_COOKIE, 'google_auth_redirect_to' );
+		if ( ! empty( $cookie_redirect_to ) ) {
+			$redirect_to = $cookie_redirect_to;
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+			setcookie( 'google_auth_redirect_to', '', time() - 3600, $this->get_cookie_path(), COOKIE_DOMAIN );
 		}
 
 		// Redirect to HTTPS if user wants SSL.
@@ -155,20 +159,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			}
 		}
 
-		$redirect_url = add_query_arg(
-			array(
-				'action'      => 'google_auth_redirect',
-				'redirect_to' => $redirect_to,
-			),
-			wp_login_url()
-		);
-
-		$redirect_url = wp_nonce_url(
-			$redirect_url,
-			'google_auth_redirect_' . $redirect_to
-		);
-
-		wp_safe_redirect( $redirect_url );
+		wp_safe_redirect( $redirect_to );
 		exit;
 	}
 
@@ -261,26 +252,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		wp_send_new_user_notifications( $user_id );
 
 		return get_user_by( 'id', $user_id );
-	}
-
-	/**
-	 * Handles the redirect request after the user signs in with Google.
-	 *
-	 * @since n.e.x.t
-	 */
-	private function handle_auth_redirect() {
-		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
-		check_admin_referer( 'google_auth_redirect_' . $redirect_to );
-
-		$cookie_redirect_to = $this->context->input()->filter( INPUT_COOKIE, 'google_auth_redirect_to' );
-		if ( ! empty( $cookie_redirect_to ) ) {
-			$redirect_to = $cookie_redirect_to;
-			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
-			setcookie( 'google_auth_redirect_to', '', time() - 3600, $this->get_cookie_path(), COOKIE_DOMAIN );
-		}
-
-		wp_safe_redirect( $redirect_to );
-		exit;
 	}
 
 	/**
