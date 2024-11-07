@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../googlesitekit/widgets/default-areas';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
@@ -45,27 +45,24 @@ export default function MetricItems( { savedMetrics } ) {
 		select( CORE_USER )
 	);
 
-	const displayInList = useInViewSelect(
-		( select ) => {
-			return ( metric ) =>
-				KEY_METRICS_WIDGETS[ metric ].displayInList(
-					select,
-					isViewOnlyDashboard,
-					metric
-				);
-		},
-		[ isViewOnlyDashboard ]
+	const displayInSelectionPanel = useSelect(
+		( select ) => ( metric ) =>
+			KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel(
+				select,
+				isViewOnlyDashboard,
+				metric
+			)
 	);
 
 	const metricsListReducer = ( acc, metricSlug ) => {
-		if ( ! isKeyMetricAvailable( metricSlug ) || ! displayInList ) {
+		if ( ! isKeyMetricAvailable( metricSlug ) ) {
 			return acc;
 		}
 
 		if (
-			typeof KEY_METRICS_WIDGETS[ metricSlug ].displayInList ===
+			typeof KEY_METRICS_WIDGETS[ metricSlug ].displayInSelectionPanel ===
 				'function' &&
-			! displayInList( metricSlug )
+			! displayInSelectionPanel( metricSlug )
 		) {
 			return acc;
 		}
