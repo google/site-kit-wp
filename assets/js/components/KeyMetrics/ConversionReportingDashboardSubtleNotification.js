@@ -45,9 +45,7 @@ export default function ConversionReportingDashboardSubtleNotification( {
 	dismissCTALabel = __( 'Maybe later', 'google-site-kit' ),
 } ) {
 	const documentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL(
-			'advanced-conversion-reporting'
-		)
+		select( CORE_SITE ).getDocumentationLinkURL( 'key-metrics' )
 	);
 
 	return (
@@ -63,6 +61,7 @@ export default function ConversionReportingDashboardSubtleNotification( {
 					a: (
 						<Link
 							href={ documentationURL }
+							external
 							aria-label={ __(
 								'Learn more about advanced conversion reporting',
 								'google-site-kit'
