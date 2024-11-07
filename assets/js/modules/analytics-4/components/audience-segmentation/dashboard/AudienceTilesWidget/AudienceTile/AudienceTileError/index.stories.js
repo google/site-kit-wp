@@ -20,16 +20,16 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AudienceTileError from './AudienceTileError';
-import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
+import AudienceTileError from '.';
+import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../../../tests/js/WithRegistrySetup';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../util/errors';
+} from '../../../../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../../../../tests/js/WithRegistrySetup';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../../util/errors';
 
 function AudienceTileErrorWrapper( { ...args } ) {
 	const errors = useSelect( ( select ) =>
