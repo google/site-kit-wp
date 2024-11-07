@@ -115,9 +115,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		if ( is_multisite() ) {
 			$blog_id = get_current_blog_id();
 			if ( ! is_user_member_of_blog( $user->ID, $blog_id ) ) {
-				// TODO: add the user to the current blog if registration is allowed.
-				wp_safe_redirect( add_query_arg( 'error', self::INVALID_REQUEST_ERROR, $login_url ) );
-				exit;
+				if ( get_option( 'users_can_register' ) ) {
+					add_user_to_blog( $blog_id, $user->ID, $this->get_default_role() );
+				} else {
+					wp_safe_redirect( add_query_arg( 'error', self::INVALID_REQUEST_ERROR, $login_url ) );
+					exit;
+				}
 			}
 		}
 
@@ -210,18 +213,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		// We haven't found the user using their google user id and email. Thus we need to create
 		// a new user. But if the registration is closed, we need to return an error to identify
 		// that the sign in process failed.
-		if (
-			( is_multisite() && ! users_can_register_signup_filter() ) ||
-			intval( get_option( 'users_can_register' ) ) !== 1
-		) {
+		//
+		// No need to check the multisite settings because it is already incorporated in the following
+		// users_can_register check. See: https://github.com/WordPress/WordPress/blob/master/wp-includes/ms-default-filters.php#L20.
+		if ( ! get_option( 'users_can_register' ) ) {
 			return new WP_Error( self::SIGNIN_FAILED_ERROR );
 		}
 
 		// Get the default role for new users.
-		$default_role = get_option( 'default_role' );
-		if ( empty( $default_role ) ) {
-			$default_role = 'subscriber';
-		}
+		$default_role = $this->get_default_role();
 
 		// Create a new user.
 		$user_id = wp_insert_user(
@@ -252,6 +252,22 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		wp_send_new_user_notifications( $user_id );
 
 		return get_user_by( 'id', $user_id );
+	}
+
+	/**
+	 * Gets the default role for new users.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Default role.
+	 */
+	private function get_default_role() {
+		$default_role = get_option( 'default_role' );
+		if ( empty( $default_role ) ) {
+			$default_role = 'subscriber';
+		}
+
+		return $default_role;
 	}
 
 	/**
