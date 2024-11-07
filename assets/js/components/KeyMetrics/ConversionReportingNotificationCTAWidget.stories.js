@@ -24,6 +24,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
@@ -33,11 +34,22 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 )( ConversionReportingNotificationCTAWidget );
 
 function Template() {
-	return <WidgetWithComponentProps />;
+	return (
+		<div className="googlesitekit-widget-area--mainDashboardKeyMetricsPrimary">
+			<div className="googlesitekit-widget-area-widgets">
+				<div className="googlesitekit-widget--keyMetricsEventDetectionCalloutNotification">
+					<WidgetWithComponentProps />
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConversionReportingNotificationCTAWidget';
+Default.parameters = {
+	features: [ 'conversionReporting' ],
+};
 Default.scenario = {
 	label: 'KeyMetrics/ConversionReportingNotificationCTAWidget',
 };
@@ -45,9 +57,8 @@ Default.scenario = {
 export default {
 	title: 'Key Metrics/ConversionReportingNotificationCTAWidget',
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
 			const setupRegistry = async ( registry ) => {
-				global._googlesitekitUserData.isUserInputCompleted = true;
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -55,7 +66,9 @@ export default {
 						connected: true,
 					},
 				] );
+
 				provideUserAuthentication( registry );
+
 				const data = {
 					newEvents: [ 'contact' ],
 					lostEvents: [],
@@ -64,11 +77,33 @@ export default {
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( data );
-				// TODO: update the story based on the rendering logic of the widget.
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					includeConversionTailoredMetrics: false,
+					isWidgetHidden: false,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'contact' ] );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: {
+						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+				} );
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithRegistrySetup
+					func={ setupRegistry }
+					features={ parameters.features || [] }
+				>
 					<Story />
 				</WithRegistrySetup>
 			);
