@@ -24,7 +24,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
@@ -57,7 +57,7 @@ export default function Panel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
-	const savedItemSlugs = useSelect( ( select ) => {
+	const savedItemSlugs = useInViewSelect( ( select ) => {
 		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
 		const { getConfiguredAudiences } = select( CORE_USER );
 

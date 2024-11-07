@@ -29,7 +29,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -53,7 +53,7 @@ export default function Panel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
-	const savedViewableMetrics = useSelect( ( select ) => {
+	const savedViewableMetrics = useInViewSelect( ( select ) => {
 		const metrics = select( CORE_USER ).getKeyMetrics();
 
 		if ( ! Array.isArray( metrics ) ) {

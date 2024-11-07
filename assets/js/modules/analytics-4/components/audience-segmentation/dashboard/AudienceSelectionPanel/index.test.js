@@ -220,6 +220,15 @@ describe( 'AudienceSelectionPanel', () => {
 
 	describe( 'AudienceItems', () => {
 		it( 'should list available audiences', async () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
 				registry,
 			} );
@@ -1064,6 +1073,15 @@ describe( 'AudienceSelectionPanel', () => {
 			};
 
 			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: nonSiteKitAvailableAudiences,
+				status: 200,
+			} );
+
+			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( nonSiteKitAvailableAudiences );
 
@@ -1120,6 +1138,15 @@ describe( 'AudienceSelectionPanel', () => {
 
 			provideUserAuthentication( registry, {
 				grantedScopes: [],
+			} );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: nonSiteKitAvailableAudiences,
+				status: 200,
 			} );
 
 			registry
@@ -1719,7 +1746,6 @@ describe( 'AudienceSelectionPanel', () => {
 					message: 'Error message.',
 					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 				};
-
 				provideUserInfo( registry );
 				provideModules( registry );
 				provideModuleRegistrations( registry );
@@ -1729,6 +1755,17 @@ describe( 'AudienceSelectionPanel', () => {
 					measurementID: '56789',
 					webDataStreamID: '78901',
 				} );
+
+				if ( storeFunctionName !== 'syncAvailableAudiences' ) {
+					registry
+						.dispatch( CORE_UI )
+						.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableAudiences,
+						status: 200,
+					} );
+				}
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -1771,6 +1808,17 @@ describe( 'AudienceSelectionPanel', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveError( error, storeFunctionName, args );
+
+				if ( storeFunctionName !== 'syncAvailableAudiences' ) {
+					registry
+						.dispatch( CORE_UI )
+						.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableAudiences,
+						status: 200,
+					} );
+				}
 
 				const { getByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
@@ -1826,10 +1874,13 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should display error message when no group is checked', async () => {
 			registry
-				.dispatch( CORE_FORMS )
-				.setValues( AUDIENCE_SELECTION_FORM, {
-					[ AUDIENCE_SELECTED ]: [],
-				} );
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
 
 			const { findByLabelText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -1839,6 +1890,15 @@ describe( 'AudienceSelectionPanel', () => {
 			);
 
 			await waitForRegistry();
+
+			// De-select the selected groups.
+			const newVisitorsCheckbox = await findByLabelText( 'New visitors' );
+			fireEvent.click( newVisitorsCheckbox );
+
+			const returningVisitorsCheckbox = await findByLabelText(
+				'Returning visitors'
+			);
+			fireEvent.click( returningVisitorsCheckbox );
 
 			expect(
 				document.querySelector(

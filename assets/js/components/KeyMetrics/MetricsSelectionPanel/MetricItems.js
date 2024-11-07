@@ -95,7 +95,7 @@ export default function MetricItems( { savedMetrics } ) {
 	);
 
 	const savedMetricSlugs = widgets
-		.filter( ( { slug } ) => savedMetrics.includes( slug ) )
+		.filter( ( { slug } ) => savedMetrics?.includes( slug ) )
 		.map( ( { slug } ) => slug );
 
 	const availableSavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
