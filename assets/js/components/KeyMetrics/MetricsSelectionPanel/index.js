@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useEffect, useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
@@ -30,9 +35,21 @@ export default function MetricsSelectionPanel() {
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
 
+	const [ inViewState, setInViewState ] = useState( {
+		key: 'MetricsSelectionPanel',
+		value: !! isOpen,
+	} );
+
+	useEffect( () => {
+		setInViewState( {
+			key: 'WPDashboardApp',
+			value: !! isOpen,
+		} );
+	}, [ isOpen ] );
+
 	return (
-		<InViewProvider value={ isOpen }>
-			{ isOpen && <Panel /> }
+		<InViewProvider value={ inViewState }>
+			<Panel />
 		</InViewProvider>
 	);
 }
