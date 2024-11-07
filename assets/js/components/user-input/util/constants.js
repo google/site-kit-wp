@@ -96,6 +96,10 @@ export function getUserInputQuestions() {
 export function getUserInputAnswers() {
 	return {
 		USER_INPUT_ANSWERS_PURPOSE: {
+			sell_products_or_service: __(
+				'Sell products or services',
+				'google-site-kit'
+			),
 			sell_products: __( 'Sell products', 'google-site-kit' ),
 			provide_services: __( 'Provide services', 'google-site-kit' ),
 			monetize_content: __(
