@@ -165,7 +165,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		$redirect_url = wp_nonce_url(
 			$redirect_url,
-			'google_auth_redirect_' . $redirect_url
+			'google_auth_redirect_' . $redirect_to
 		);
 
 		wp_safe_redirect( $redirect_url );
