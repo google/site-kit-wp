@@ -1,0 +1,99 @@
+/**
+ * Key Metrics ChipTabGroup component styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-chip-tab-group {
+
+		.googlesitekit-chip-tab-group__tab-items {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin: 0 25px 25px;
+
+			@media (min-width: $bp-desktop) {
+				flex-direction: column;
+			}
+		}
+
+		.googlesitekit-chip-tab-group__chip-item {
+			background-color: $c-neutral-n-50;
+			color: $c-neutral-n-900;
+			font-size: $fs-label-sm;
+			font-weight: $fw-medium;
+			min-height: 28px;
+			padding: 6px 14px;
+
+			svg {
+				margin-right: 7px;
+			}
+		}
+
+		.googlesitekit-chip-tab-group__tab-items-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+
+			&:last-child {
+				.googlesitekit-chip-tab-group__chip-item {
+					&:nth-last-child(2),
+					&:last-child {
+						@media (min-width: $bp-desktop) {
+							padding: 6px 23px;
+						}
+					}
+				}
+			}
+		}
+
+		.googlesitekit-chip-tab-group__chip-item--active {
+			background-color: $c-site-kit-sk-100;
+		}
+
+		.googlesitekit-chip-tab-group__chip-item-count {
+			margin-left: 3px;
+		}
+
+		.googlesitekit-selection-panel-item {
+			border-color: $c-neutral-n-100;
+			padding: 0;
+
+			.googlesitekit-selection-box {
+				padding: 0 4px 10px;
+
+				.mdc-checkbox__description {
+					padding: 0;
+				}
+			}
+		}
+
+		.googlesitekit-chip-tab-group__graphic {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			margin-top: 10%;
+
+			svg {
+				max-height: 160px;
+
+				@media (min-width: $bp-tablet) {
+					max-height: unset;
+				}
+			}
+		}
+	}
+}

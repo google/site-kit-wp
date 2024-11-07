@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useIntersection as mockUseIntersection } from 'react-use';
+import { getByText as domGetByText } from '@testing-library/dom';
 
 /**
  * Internal dependencies
@@ -37,6 +38,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../../../../../tests/js/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../googlesitekit/constants';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
@@ -50,6 +52,11 @@ import {
 } from '../../../../../datastore/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../../../tests/js/viewport-width-utils';
+import { getPreviousDate } from '../../../../../../../util';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -60,7 +67,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceTile', () => {
-	let registry;
+	let registry, originalViewportWidth;
 
 	const WidgetWithComponentProps =
 		withWidgetComponentProps( 'audienceTile' )( AudienceTile );
@@ -68,8 +75,9 @@ describe( 'AudienceTile', () => {
 	const audienceResourceName = 'properties/12345/audiences/12345';
 	const props = {
 		audienceResourceName,
+		audienceSlug: 'new-visitors',
 		title: 'New visitors',
-		toolTip: 'This is a tooltip',
+		infoTooltip: 'This is a tooltip',
 		loaded: true,
 		visitors: {
 			metricValue: 24200,
@@ -150,6 +158,11 @@ describe( 'AudienceTile', () => {
 	};
 
 	beforeEach( () => {
+		originalViewportWidth = getViewportWidth();
+
+		// Ensure the viewport is wide enough to render the tooltips.
+		setViewportWidth( 1024 );
+
 		mockUseIntersection.mockImplementation( () => ( {
 			isIntersecting: false,
 			intersectionRatio: 0,
@@ -216,6 +229,7 @@ describe( 'AudienceTile', () => {
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render the AudienceTile component', () => {
@@ -227,6 +241,31 @@ describe( 'AudienceTile', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should track an event when the tooltip is viewed', async () => {
+		const { container } = render(
+			<WidgetWithComponentProps { ...props } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.mouseOver(
+			container.querySelector( '.googlesitekit-info-tooltip' )
+		);
+
+		// Wait for the tooltip to appear, its delay is 100ms.
+		await act( () => waitForTimeouts( 100 ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_audiences-tile',
+			'view_tile_tooltip',
+			'new-visitors'
+		);
 	} );
 
 	describe( 'Top content metric', () => {
@@ -287,13 +326,142 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'Partial data badge', () => {
+		beforeEach( () => {
+			const referenceDate = registry
+				.select( CORE_USER )
+				.getReferenceDate();
+
+			const dataAvailabilityDate = Number(
+				getPreviousDate( referenceDate, 1 ).replace( /-/g, '' )
+			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					dataAvailabilityDate
+				);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					'googlesitekit_post_type',
+					'customDimension',
+					dataAvailabilityDate
+				);
+		} );
+
+		it( 'should render a partial data badge for the audience when the audience is in the partial data state', () => {
+			const { container, getByText } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+				}
+			);
+
+			expect( getByText( 'Partial data' ) ).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should render a partial data badge for the "Top content" metric area when the custom dimension is in the partial data state and the audience is not', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				domGetByText(
+					container.querySelector(
+						'.googlesitekit-audience-segmentation-tile-metric--top-content'
+					),
+					'Partial data'
+				)
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( "should track an event when the partial data badge for the audience's tooltip is viewed", async () => {
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-partial-data-badge .googlesitekit-info-tooltip'
+				)
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_partial_data_tooltip',
+				'new-visitors'
+			);
+		} );
+
+		it( "should track an event when the partial data badge for the 'Top content' metric area's tooltip is viewed", async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-tile-metric--top-content .googlesitekit-info-tooltip'
+				)
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_top_content_partial_data_tooltip',
+				'new-visitors'
+			);
+		} );
+
 		it( 'should not display partial data badge for tile or top content metrics when property is in partial state', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( true );
 
 			const { container } = render(
-				<WidgetWithComponentProps { ...props } />,
+				<WidgetWithComponentProps { ...props } isPartialData />,
 				{
 					registry,
 				}
@@ -304,6 +472,96 @@ describe( 'AudienceTile', () => {
 					'.googlesitekit-audience-segmentation-partial-data-badge'
 				)
 			).toBeNull();
+		} );
+	} );
+
+	describe( 'with zero data, in the partial data state', () => {
+		let container, getByRole, getByText, rerender;
+
+		beforeEach( () => {
+			( { container, getByRole, getByText, rerender } = render(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			) );
+		} );
+
+		it( 'should render the zero data tile', () => {
+			expect(
+				getByText( 'Site Kit is collecting data for this group.' )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should track an event when the tile is viewed', () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_collecting_data',
+				'new-visitors'
+			);
+		} );
+
+		it( 'should track an event when the "Temporarily hide" button is clicked', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /temporarily hide/i } )
+				);
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'temporarily_hide',
+				'new-visitors'
+			);
+		} );
+
+		it( 'should track an event when the tooltip is viewed', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector( '.googlesitekit-info-tooltip' )
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_tooltip',
+				'new-visitors'
+			);
 		} );
 	} );
 

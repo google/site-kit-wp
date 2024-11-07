@@ -26,12 +26,12 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserInfo,
-} from '../../../../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import AudienceSegmentationErrorWidget from './AudienceSegmentationErrorWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
+} from '../../../../../../../../tests/js/test-utils';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import AudienceSegmentationErrorWidget from '.';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'audienceSegmentationErrorWidget'
