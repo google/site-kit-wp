@@ -30,11 +30,9 @@ import { Fragment, forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import BannerGraphicsSVGDesktop from '../../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
 import BannerGraphicsSVGTablet from '../../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
 import BannerGraphicsSVGMobile from '../../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../../../../../material-components';
 import {
@@ -43,20 +41,14 @@ import {
 	useBreakpoint,
 } from '../../../../../../hooks/useBreakpoint';
 
-export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
-	'audience_segmentation_setup_cta-notification';
-
 const SetupCTAContent = forwardRef(
-	( { Widget, onEnableGroups, isSaving, handleDismissClick }, ref ) => {
+	(
+		{ Widget, onEnableGroups, isSaving, dismissCount, handleDismissClick },
+		ref
+	) => {
 		const breakpoint = useBreakpoint();
 		const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 		const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
-
-		const dismissCount = useSelect( ( select ) =>
-			select( CORE_USER ).getPromptDismissCount(
-				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-			)
-		);
 
 		// TODO: We need to refactor this and the ConsentModeSetupCTAWidget to avoid this duplicate inlining of the widget context and area structure,
 		// and to ensure only one of these setup CTAs is shown at a time. This will be handled in a subsequent issue.
@@ -172,6 +164,7 @@ SetupCTAContent.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	onEnableGroups: PropTypes.func.isRequired,
 	isSaving: PropTypes.bool.isRequired,
+	dismissCount: PropTypes.number.isRequired,
 	handleDismissClick: PropTypes.func.isRequired,
 };
 

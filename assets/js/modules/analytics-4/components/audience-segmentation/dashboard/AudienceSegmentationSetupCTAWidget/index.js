@@ -242,6 +242,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 				Widget={ Widget }
 				onEnableGroups={ handleEnableGroups }
 				isSaving={ isSaving }
+				dismissCount={ dismissCount }
 				handleDismissClick={ handleDismissClick }
 				onInView={ () => {
 					trackEvent(
