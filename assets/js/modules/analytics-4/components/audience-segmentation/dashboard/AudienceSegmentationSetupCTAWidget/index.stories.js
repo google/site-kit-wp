@@ -22,15 +22,15 @@
 import {
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { getAnalytics4MockResponse } from '../../../utils/data-mock';
+} from '../../../../../../../../tests/js/test-utils';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './AudienceSegmentationSetupCTAWidget';
+} from '.';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'audienceSegmentationSetupCTA'

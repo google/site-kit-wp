@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AudienceTileError should correctly render the generic error variant 1`] = `
+<div>
+  <div
+    class="googlesitekit-audience-segmentation-tile-error"
+  >
+    <div
+      class="googlesitekit-audience-segmentation-tile-error__container"
+    >
+      <svg />
+      <div
+        class="googlesitekit-audience-segmentation-tile-error__body"
+      >
+        <div
+          class="googlesitekit-audience-segmentation-tile-error__message"
+        >
+          <h3
+            class="googlesitekit-audience-segmentation-tile-error__title"
+          >
+            Data loading failed
+          </h3>
+        </div>
+        <div
+          class="googlesitekit-audience-segmentation-tile-error__actions"
+        >
+          <div
+            class="googlesitekit-report-error-actions"
+          >
+            <button
+              class="mdc-button mdc-button--raised mdc-button--danger"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Retry
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AudienceTileError should correctly render the insufficient permissions variant 1`] = `
+<div>
+  <div
+    class="googlesitekit-audience-segmentation-tile-error"
+  >
+    <div
+      class="googlesitekit-audience-segmentation-tile-error__container"
+    >
+      <svg />
+      <div
+        class="googlesitekit-audience-segmentation-tile-error__body"
+      >
+        <div
+          class="googlesitekit-audience-segmentation-tile-error__message"
+        >
+          <h3
+            class="googlesitekit-audience-segmentation-tile-error__title"
+          >
+            Insufficient permissions
+          </h3>
+        </div>
+        <div
+          class="googlesitekit-audience-segmentation-tile-error__actions"
+        >
+          <div
+            class="googlesitekit-report-error-actions"
+          >
+            <a
+              aria-label="Request access (opens in a new tab)"
+              class="mdc-button mdc-button--raised mdc-button--danger"
+              href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Fa12345p34567%2Fadmin%2Fstreams%2Ftable%2F78901&Email=wapuu.wordpress%40gmail.com"
+              role="button"
+              target="_blank"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Request access
+              </span>
+            </a>
+            <div>
+              Contact your administrator. Trouble getting access? 
+              <a
+                aria-label="Get help (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://sitekit.withgoogle.com/support/?error_id=analytics-4_insufficient_permissions"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Get help
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

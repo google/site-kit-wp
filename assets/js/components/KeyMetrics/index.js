@@ -22,3 +22,4 @@ export { default as MetricTileTable } from './MetricTileTable';
 export { default as MetricTileTablePlainText } from './MetricTileTablePlainText';
 export { default as MetricTileText } from './MetricTileText';
 export { default as MetricTileWrapper } from './MetricTileWrapper';
+export { default as ChipTabGroup } from './ChipTabGroup';

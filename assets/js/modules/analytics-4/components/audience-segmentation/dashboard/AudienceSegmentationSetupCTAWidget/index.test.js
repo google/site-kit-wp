@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import fetchMock from 'fetch-mock';
@@ -25,7 +30,7 @@ import {
 	fireEvent,
 	render,
 	waitFor,
-} from '../../../../../../../tests/js/test-utils';
+} from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -33,27 +38,38 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForDefaultTimeouts,
 	waitForTimeouts,
-} from '../../../../../../../tests/js/utils';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+} from '../../../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
-} from '../../../datastore/constants';
+} from '../../../../datastore/constants';
 import {
 	availableAudiences as audiencesFixture,
 	properties as propertiesFixture,
-} from '../../../datastore/__fixtures__';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
-import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { getAnalytics4MockResponse } from '../../../utils/data-mock';
+} from '../../../../datastore/__fixtures__';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import * as tracking from '../../../../../../util/tracking';
+import { getWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
+import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './AudienceSegmentationSetupCTAWidget';
+} from '.';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;
@@ -85,6 +101,11 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	const testPropertyID = propertiesFixture[ 0 ]._id;
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry, {
@@ -216,6 +237,40 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 
 			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should track an event when the CTA is viewed', () => {
+			const { rerender } = render(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender(
+				<AudienceSegmentationSetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'view_notification'
+			);
 		} );
 
 		it( 'should not render the widget when no audience is configured and Google Analytics data is not loaded on the page', async () => {
@@ -368,6 +423,47 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should track events when the CTA is dismissed and the tooltip is viewed', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'dismiss_notification'
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'tooltip_view'
+			);
+		} );
+
 		it( 'should close the tooltip on clicking the `X` button', async () => {
 			const { getByRole } = render(
 				<div>
@@ -402,6 +498,47 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			).not.toBeInTheDocument();
 		} );
 
+		it( 'should track an event when the tooltip is closed by clicking the `X` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				3,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'tooltip_dismiss'
+			);
+		} );
+
 		it( 'should close the tooltip on clicking the `Got it` button', async () => {
 			const { getByRole } = render(
 				<div>
@@ -434,6 +571,47 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should track an event when the tooltip is closed by clicking the `Got it` button', async () => {
+			const { getByRole } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AudienceSegmentationSetupCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Maybe later/i } )
+				);
+			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				3,
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'tooltip_dismiss'
+			);
 		} );
 
 		it( 'should show the `Don’t show again` CTA when the dismissCount is 1', async () => {
@@ -644,8 +822,76 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			await act( () => waitForTimeouts( 100 ) );
 		} );
 
-		describe( 'AudienceErrorModal', () => {
-			it( 'should show the OAuth error modal when the required scopes are not granted', () => {
+		it( 'should track an event when the CTA is clicked', async () => {
+			const settings = {
+				configuredAudiences: null,
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetAudienceSettings( settings );
+
+			fetchMock.post( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: audiencesFixture,
+			} );
+
+			const settingsBody = {
+				configuredAudiences: [
+					audiencesFixture[ 2 ].name,
+					audiencesFixture[ 3 ].name,
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			fetchMock.postOnce( audienceSettingsEndpoint, {
+				status: 200,
+				body: settingsBody,
+			} );
+
+			muteFetch( reportEndpoint );
+			muteFetch( expirableItemEndpoint );
+
+			const { getByRole, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /Enable groups/i } )
+				);
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'confirm_notification'
+			);
+
+			// Dismiss prompt endpoint must be called when the CTA is clicked.
+			const dismissPromptEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+			);
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+			} );
+		} );
+
+		describe( 'OAuth error modal', () => {
+			let getByRole, getByText;
+
+			beforeEach( () => {
 				provideSiteInfo( registry, {
 					setupErrorCode: 'access_denied',
 				} );
@@ -668,23 +914,24 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					.dispatch( CORE_USER )
 					.receiveGetAudienceSettings( settings );
 
-				const { getByRole, getByText } = render(
+				// Set `autoSubmit` to `true`, as the OAuth error modal will typically be
+				// shown when the user returns from the OAuth flow.
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+						autoSubmit: true,
+					} );
+
+				( { getByRole, getByText } = render(
 					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
-				);
+				) );
+			} );
 
-				expect(
-					getByRole( 'button', { name: /Enable groups/i } )
-				).toBeInTheDocument();
-
-				act( () => {
-					fireEvent.click(
-						getByRole( 'button', { name: /Enable groups/i } )
-					);
-				} );
-
+			it( 'should show when the required scopes are not granted', () => {
 				// Verify the error is an OAuth error variant.
 				expect(
 					getByText( /Analytics update failed/i )
@@ -705,10 +952,48 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 
 				// Verify the "Retry" button is displayed.
-				expect( getByText( /retry/i ) ).toBeInTheDocument();
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
 			} );
 
-			it( 'should show the insufficient permission error modal when the user does not have the required permissions', async () => {
+			it( 'should track an event when the Retry button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'auth_error_retry'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /Cancel/i } )
+					);
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'auth_error_cancel'
+				);
+			} );
+		} );
+
+		describe( 'insufficient permissions error modal', () => {
+			let getByRole, getByText;
+
+			beforeEach( async () => {
 				const errorResponse = {
 					code: 'test_error',
 					message: 'Error message.',
@@ -720,12 +1005,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				const { getByRole, getByText } = render(
+				( { getByRole, getByText } = render(
 					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
-				);
+				) );
 
 				expect(
 					getByRole( 'button', { name: /Enable groups/i } )
@@ -737,23 +1023,71 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					);
 				} );
 
-				// Verify the error is "Insufficient permissions" variant.
 				await waitFor( () => {
-					expect(
-						getByText( /Insufficient permissions/i )
-					).toBeInTheDocument();
-
-					// Verify the "Get help" link is displayed.
-					expect( getByText( /get help/i ) ).toBeInTheDocument();
-
-					// Verify the "Request access" button is displayed.
-					expect(
-						getByText( /request access/i )
-					).toBeInTheDocument();
+					getByText( /Insufficient permissions/i );
 				} );
 			} );
 
-			it( 'should show the generic error modal when an internal server error occurs', async () => {
+			it( 'should show when the user does not have the required permissions', () => {
+				// Verify the error is "Insufficient permissions" variant.
+				expect(
+					getByText( /Insufficient permissions/i )
+				).toBeInTheDocument();
+
+				// Verify the "Get help" link is displayed.
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toBeInTheDocument();
+
+				// Verify the "Request access" button is displayed.
+				expect(
+					getByRole( 'button', { name: /request access/i } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should track an event when the "Request access" button is clicked', async () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /request access/i } )
+					);
+				} );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'insufficient_permissions_error_request_access'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				mockTrackEvent.mockClear();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+				} );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'insufficient_permissions_error_cancel'
+				);
+			} );
+		} );
+
+		describe( 'generic error modal', () => {
+			let getByRole, getByText;
+
+			beforeEach( async () => {
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -765,12 +1099,13 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					status: 500,
 				} );
 
-				const { getByRole, getByText } = render(
+				( { getByRole, getByText } = render(
 					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
 					{
 						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					}
-				);
+				) );
 
 				expect(
 					getByRole( 'button', { name: /Enable groups/i } )
@@ -784,15 +1119,59 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 				// Verify the error is general error variant.
 				await waitFor( () => {
-					expect(
-						getByText( /Failed to set up visitor groups/i )
-					).toBeInTheDocument();
-
-					// Verify the "Retry" button is displayed.
-					expect(
-						getByRole( 'button', { name: /retry/i } )
-					).toBeInTheDocument();
+					getByText( /Failed to set up visitor groups/i );
 				} );
+			} );
+
+			it( 'should show when an internal server error occurs', () => {
+				expect(
+					getByText( /Failed to set up visitor groups/i )
+				).toBeInTheDocument();
+
+				// Verify the "Retry" button is displayed.
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should track an event when the Retry button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'setup_error_retry'
+				);
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', () => {
+				mockTrackEvent.mockClear();
+
+				act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-setup',
+					'setup_error_cancel'
+				);
 			} );
 		} );
 	} );

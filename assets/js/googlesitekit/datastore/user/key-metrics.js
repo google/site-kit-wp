@@ -42,7 +42,6 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	keyMetricsGA4WidgetsNonACR,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
@@ -224,12 +223,6 @@ const baseSelectors = {
 		}
 
 		if ( userPickedMetrics.length ) {
-			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-				return userPickedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonACR.includes( slug );
-				} );
-			}
-
 			return userPickedMetrics;
 		}
 
@@ -240,12 +233,6 @@ const baseSelectors = {
 		}
 
 		if ( answerBasedMetrics.length ) {
-			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-				return answerBasedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonACR.includes( slug );
-				} );
-			}
-
 			return answerBasedMetrics;
 		}
 
@@ -288,14 +275,8 @@ const baseSelectors = {
 				return postTypes.some( ( { slug } ) => slug === 'product' );
 			};
 
-			const keyMetricSettings =
-				select( CORE_USER ).getKeyMetricsSettings();
-			const isUserInputCompleted =
-				select( CORE_USER ).isUserInputCompleted();
 			const showConversionTailoredMetrics =
-				( keyMetricSettings?.includeConversionTailoredMetrics ||
-					isUserInputCompleted ) &&
-				isFeatureEnabled( 'conversionReporting' );
+				select( CORE_USER ).showConversionTailoredMetrics();
 
 			switch ( purpose ) {
 				case 'publish_blog':
@@ -457,7 +438,46 @@ const baseSelectors = {
 		if ( keyMetricsSettings === undefined ) {
 			return undefined;
 		}
-		return keyMetricsSettings.widgetSlugs;
+
+		if ( ! Array.isArray( keyMetricsSettings.widgetSlugs ) ) {
+			return [];
+		}
+
+		// Even though a user may have picked their own metrics, there is a chance that they no longer
+		// are "available" if they require certain custom dimensions, detected events, feature flags, etc. which no
+		// longer exist. So we should filter these out by using the displayInWidgetArea() callback.
+		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
+		const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
+			( slug ) => {
+				const widget = KEY_METRICS_WIDGETS[ slug ];
+
+				if ( ! widget ) {
+					return false;
+				}
+
+				if (
+					widget.displayInWidgetArea &&
+					typeof widget.displayInWidgetArea === 'function'
+				) {
+					return widget.displayInWidgetArea(
+						select,
+						isViewOnly,
+						slug
+					);
+				}
+
+				return true;
+			}
+		);
+
+		// If only one widget tile remains after filtering, return an empty array.
+		// This triggers the `getKeyMetrics` selector to use the default set of widgets
+		// instead of hiding the entire widget area (which happens if only one tile is active).
+		if ( filteredWidgetSlugs.length === 1 ) {
+			return [];
+		}
+
+		return filteredWidgetSlugs;
 	} ),
 
 	/**
@@ -498,70 +518,22 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Gets key metrics settings, taking into account whether the user has view-only access.
-	 * If the user has view-only access and the custom dimensions required by the selected widgets are unavailable,
-	 * the widget slugs will be removed from the settings. If only one widget remains after filtering, the widget slugs
-	 * will be an empty array to prevent hiding the widget area.
+	 * Gets key metrics settings.
 	 *
 	 * @since 1.103.0
-	 * @since 1.114.0 Checks for view-only access and adjusts the `widgetSlugs` accordingly.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
 	 */
-	getKeyMetricsSettings: createRegistrySelector( ( select ) => ( state ) => {
+	getKeyMetricsSettings( state ) {
 		const keyMetricsSettings = state.keyMetricsSettings;
 
 		if ( ! keyMetricsSettings ) {
 			return undefined;
 		}
 
-		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
-
-		// TODO The below logic is specific to unavailable custom dimensions for view only users
-		// who had user picked metrics. So move this to somewhere more appropriate.
-		if ( isViewOnly ) {
-			// Filter out widget slugs that depend on unavailable custom dimensions.
-			const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
-				( slug ) => {
-					const widget = KEY_METRICS_WIDGETS[ slug ];
-
-					if ( ! widget ) {
-						return false;
-					}
-
-					if (
-						// The call to displayInList() was added solely for metrics
-						// with custom dimensions, so adding this check till we refactor this
-						// whole isViewOnly section.
-						widget.requiredCustomDimensions?.length &&
-						widget.displayInList
-					) {
-						return widget.displayInList( select, isViewOnly, slug );
-					}
-
-					return true;
-				}
-			);
-
-			// If only one widget remains after filtering, return an empty array.
-			// This prevents hiding the widget area when only one widget is available.
-			// This triggers the `getKeyMetrics` selector to use the default widgets instead.
-			if ( filteredWidgetSlugs.length === 1 ) {
-				return {
-					...keyMetricsSettings,
-					widgetSlugs: [],
-				};
-			}
-
-			return {
-				...keyMetricsSettings,
-				widgetSlugs: filteredWidgetSlugs,
-			};
-		}
-
 		return keyMetricsSettings;
-	} ),
+	},
 
 	/**
 	 * Determines whether the key metrics settings are being saved or not.
@@ -628,6 +600,27 @@ const baseSelectors = {
 			} );
 		}
 	),
+
+	/**
+	 * Gets whether the new Analytics Conversion Reporting metric tiles
+	 * should be made available or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} True if ACR tiles should be shown, false if not.
+	 */
+	showConversionTailoredMetrics: createRegistrySelector( ( select ) => () => {
+		if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
+			return false;
+		}
+
+		const keyMetricSettings = select( CORE_USER ).getKeyMetricsSettings();
+		const isUserInputCompleted = select( CORE_USER ).isUserInputCompleted();
+		return (
+			keyMetricSettings?.includeConversionTailoredMetrics ||
+			isUserInputCompleted
+		);
+	} ),
 };
 
 const store = combineStores(
