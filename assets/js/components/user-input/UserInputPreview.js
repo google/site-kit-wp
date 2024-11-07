@@ -153,6 +153,7 @@ export default function UserInputPreview( props ) {
 					loading={ loading }
 					settingsView={ settingsView }
 				/>
+
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
 					title={ __(
@@ -164,6 +165,7 @@ export default function UserInputPreview( props ) {
 					loading={ loading }
 					settingsView={ settingsView }
 				/>
+
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_GOALS }
 					title={ __(
@@ -175,6 +177,7 @@ export default function UserInputPreview( props ) {
 					loading={ loading }
 					settingsView={ settingsView }
 				/>
+
 				{ error && <ErrorNotice error={ error } /> }
 			</div>
 
