@@ -63,10 +63,10 @@ export default function MetricItems( { savedMetrics } ) {
 		}
 
 		if (
-			typeof KEY_METRICS_WIDGETS[ metricSlug ].displayInSelectionPanel ===
-				'function' &&
-			displayInSelectionPanel === 'function' &&
-			! displayInSelectionPanel( metricSlug )
+			displayInSelectionPanel === undefined ||
+			( typeof KEY_METRICS_WIDGETS[ metricSlug ]
+				.displayInSelectionPanel === 'function' &&
+				! displayInSelectionPanel( metricSlug ) )
 		) {
 			return acc;
 		}
