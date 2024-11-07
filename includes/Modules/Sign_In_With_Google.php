@@ -163,6 +163,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			wp_login_url()
 		);
 
+		$redirect_url = wp_nonce_url(
+			$redirect_url,
+			'google_auth_redirect_' . $redirect_url
+		);
+
 		wp_safe_redirect( $redirect_url );
 		exit;
 	}
@@ -264,6 +269,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 */
 	private function handle_auth_redirect() {
+		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
+		check_admin_referer( 'google_auth_redirect_' . $redirect_to );
+
+		$cookie_redirect_to = $this->context->input()->filter( INPUT_COOKIE, 'google_auth_redirect_to' );
+		if ( ! empty( $cookie_redirect_to ) ) {
+			$redirect_to = $cookie_redirect_to;
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+			setcookie( 'google_auth_redirect_to', '', time() - 3600, $this->get_cookie_path(), COOKIE_DOMAIN );
+		}
+
+		wp_safe_redirect( $redirect_to );
 		exit;
 	}
 
@@ -389,16 +405,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		$login_url = wp_login_url();
-		$login_uri = add_query_arg( 'action', 'google_auth', $login_url );
+		$login_uri = add_query_arg( 'action', 'google_auth', wp_login_url() );
 		if ( substr( $login_uri, 0, 5 ) !== 'https' ) {
 			return;
 		}
 
 		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
 		$redirect_to = trim( $redirect_to );
-
-		$redirect_cookie_path = dirname( wp_parse_url( $login_url, PHP_URL_PATH ) );
 
 		// Render the Sign in with Google button and related inline styles.
 		?>
@@ -424,11 +437,22 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 	const expires = new Date();
 	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
-	document.cookie = "google_auth_redirect_to=<?php echo esc_js( $redirect_to ); ?>;"  + expires.toUTCString() + ";path=<?php echo esc_js( $redirect_cookie_path ); ?>";
+	document.cookie = "google_auth_redirect_to=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( $this->get_cookie_path() ); ?>";
 <?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
 <!-- End Sign in with Google button added by Site Kit -->
 		<?php
+	}
+
+	/**
+	 * Gets the path for the redirect cookie.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Cookie path.
+	 */
+	protected function get_cookie_path() {
+		return dirname( wp_parse_url( wp_login_url(), PHP_URL_PATH ) );
 	}
 }
