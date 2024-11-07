@@ -1,5 +1,5 @@
 /**
- * ACRNotificationCTAWidget Component Stories.
+ * ConversionReportingNotificationCTAWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -26,24 +26,24 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import ACRNotificationCTAWidget from './ACRNotificationCTAWidget';
+import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsSetupCTA'
-)( ACRNotificationCTAWidget );
+)( ConversionReportingNotificationCTAWidget );
 
 function Template() {
 	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'ACRNotificationCTAWidget';
+Default.storyName = 'ConversionReportingNotificationCTAWidget';
 Default.scenario = {
-	label: 'KeyMetrics/ACRNotificationCTAWidget',
+	label: 'KeyMetrics/ConversionReportingNotificationCTAWidget',
 };
 
 export default {
-	title: 'Key Metrics/ACRNotificationCTAWidget',
+	title: 'Key Metrics/ConversionReportingNotificationCTAWidget',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = async ( registry ) => {
@@ -57,7 +57,7 @@ export default {
 				] );
 				provideUserAuthentication( registry );
 				const data = {
-					newEvents: [ 'purchase' ],
+					newEvents: [ 'contact' ],
 					lostEvents: [],
 				};
 
