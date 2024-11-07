@@ -31,7 +31,7 @@ import { useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -80,7 +80,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		}
 	}, [ isLoading, isOpen ] );
 
-	const availableAudiences = useSelect( ( select ) => {
+	const availableAudiences = useInViewSelect( ( select ) => {
 		const {
 			getConfigurableAudiences,
 			getReport,

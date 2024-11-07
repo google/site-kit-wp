@@ -30,7 +30,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
 import {
@@ -53,7 +53,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			AUDIENCE_SELECTED
 		)
 	);
-	const audienceSettings = useSelect( ( select ) =>
+	const audienceSettings = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getAudienceSettings()
 	);
 	const saveError = useSelect( ( select ) =>
@@ -67,7 +67,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingAudienceSettings()
 	);
-	const hiddenTileDismissedItems = useSelect( ( select ) => {
+	const hiddenTileDismissedItems = useInViewSelect( ( select ) => {
 		const dismissedItems = select( CORE_USER ).getDismissedItems();
 
 		return dismissedItems?.filter( ( item ) =>
