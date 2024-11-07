@@ -56,6 +56,19 @@ const dismissNewConversionReportingEventsStore = createFetchStore( {
 			'clear-conversion-reporting-new-events'
 		);
 	},
+	reducerCallback: ( state, values ) => {
+		if ( values === false ) {
+			return state;
+		}
+
+		return {
+			...state,
+			detectedEventsChange: {
+				...state.detectedEventsChange,
+				newEvents: [],
+			},
+		};
+	},
 } );
 
 const dismissLostConversionReportingEventsStore = createFetchStore( {
@@ -66,6 +79,19 @@ const dismissLostConversionReportingEventsStore = createFetchStore( {
 			'analytics-4',
 			'clear-conversion-reporting-lost-events'
 		);
+	},
+	reducerCallback: ( state, values ) => {
+		if ( values === false ) {
+			return state;
+		}
+
+		return {
+			...state,
+			detectedEventsChange: {
+				...state.detectedEventsChange,
+				lostEvents: [],
+			},
+		};
 	},
 } );
 
