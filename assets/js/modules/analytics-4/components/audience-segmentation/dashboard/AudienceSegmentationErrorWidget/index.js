@@ -27,6 +27,9 @@ import PropTypes from 'prop-types';
  */
 import { useEffect } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
 import whenActive from '../../../../../../util/when-active';
 import { useDispatch } from 'googlesitekit-data';
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';

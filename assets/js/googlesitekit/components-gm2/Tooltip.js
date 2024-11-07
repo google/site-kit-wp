@@ -83,4 +83,6 @@ Tooltip.propTypes = {
 	children: PropTypes.node,
 	popperClassName: PropTypes.string,
 	tooltipClassName: PropTypes.string,
+	onOpen: PropTypes.func,
+	onClose: PropTypes.func,
 };
