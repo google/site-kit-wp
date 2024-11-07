@@ -18,9 +18,12 @@ use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 
@@ -31,11 +34,12 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation, Module_With_Debug_Fields {
+final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation, Module_With_Debug_Fields, Module_With_Tag {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -313,5 +317,41 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		);
 
 		return $debug_fields;
+	}
+
+	/**
+	 * Implements mandatory interface method.
+	 *
+	 * This module doesn't use the usual tag registration within Site kit
+	 * to place its snippet. However, it does leverage the Tag_Placement functionality
+	 * to check if a tag is successfully placed or not within WordPress's Site Health.
+	 */
+	public function register_tag() {
+	}
+
+	/**
+	 * Returns the Module_Tag_Matchers instance.
+	 *
+	 * @since 1.132.0
+	 *
+	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
+	 */
+	public function get_tag_matchers() {
+		return new Tag_Matchers();
+	}
+
+	/**
+	 * Gets the URL of the page where a tag for the module would be placed.
+	 *
+	 * For all modules like Analytics, Tag Manager, AdSense, Ads, etc. except for
+	 * Sign in with Google, tags can be detected on the home page. SiwG places its
+	 * snippet on the login page and thus, overrides this method.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string TRUE if tag is found, FALSE if not.
+	 */
+	public function get_content_url() {
+		return wp_login_url();
 	}
 }
