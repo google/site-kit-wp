@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { usePrevious } from '@wordpress/compose';
 import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { sprintf, _n } from '@wordpress/i18n';
@@ -37,11 +38,13 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
 import {
+	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 
 export default function UserInputSelectOptions( {
 	slug,
@@ -184,6 +187,36 @@ export default function UserInputSelectOptions( {
 			)
 		);
 	} );
+
+	const currentlyEditingSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+
+	const previousValues = usePrevious( values );
+
+	useEffect( () => {
+		if (
+			currentlyEditingSlug === USER_INPUT_QUESTIONS_PURPOSE &&
+			values.includes( 'sell_products_or_service' ) &&
+			'sell_products' in options
+		) {
+			if (
+				undefined !== previousValues &&
+				previousValues.includes( 'sell_products_or_service' )
+			) {
+				setUserInputSetting( slug, [ 'sell_products' ] );
+			} else {
+				setUserInputSetting( slug, values );
+			}
+		}
+	}, [
+		options,
+		slug,
+		values,
+		currentlyEditingSlug,
+		setUserInputSetting,
+		previousValues,
+	] );
 
 	return (
 		<Cell
