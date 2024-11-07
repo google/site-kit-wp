@@ -45,6 +45,7 @@ import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import ProgressSegments from '../ProgressSegments';
+import { useConversionReportingEventsForTailoredMetrics } from '../KeyMetrics/hooks/useConversionReportingEventsForTailoredMetrics';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -154,15 +155,45 @@ export default function UserInputQuestionnaire() {
 		questionNumber,
 	] );
 
+	const userInputSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettings()
+	);
+	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+	const haveConversionReportingEventsForTailoredMetrics =
+		useConversionReportingEventsForTailoredMetrics( purpose );
+	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
+		useDispatch( CORE_USER );
+
 	const submitChanges = useCallback( async () => {
 		trackEvent( gaEventCategory, 'summary_submit' );
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
+			// If selected purpose has any ACR KMW assigned to it,
+			// mark 'includeConversionTailoredMetrics' key metrics setting to true
+			// so they can be included.
+			if ( haveConversionReportingEventsForTailoredMetrics ) {
+				await setKeyMetricsSetting(
+					'includeConversionTailoredMetrics',
+					true
+				);
+				await saveKeyMetricsSettings( {
+					widgetSlugs: undefined,
+				} );
+			}
+
 			const url = new URL( dashboardURL );
 			navigateTo( url.toString() );
 		}
-	}, [ gaEventCategory, saveUserInputSettings, dashboardURL, navigateTo ] );
+	}, [
+		gaEventCategory,
+		saveUserInputSettings,
+		haveConversionReportingEventsForTailoredMetrics,
+		dashboardURL,
+		setKeyMetricsSetting,
+		saveKeyMetricsSettings,
+		navigateTo,
+	] );
 
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
