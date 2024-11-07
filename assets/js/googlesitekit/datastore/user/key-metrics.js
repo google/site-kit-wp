@@ -56,7 +56,6 @@ import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-	keyMetricsGA4WidgetsNonACR,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -225,12 +224,6 @@ const baseSelectors = {
 		}
 
 		if ( userPickedMetrics.length ) {
-			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-				return userPickedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonACR.includes( slug );
-				} );
-			}
-
 			return userPickedMetrics;
 		}
 
@@ -241,12 +234,6 @@ const baseSelectors = {
 		}
 
 		if ( answerBasedMetrics.length ) {
-			if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-				return answerBasedMetrics.filter( ( slug ) => {
-					return keyMetricsGA4WidgetsNonACR.includes( slug );
-				} );
-			}
-
 			return answerBasedMetrics;
 		}
 
