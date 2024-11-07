@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
@@ -341,7 +342,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Gets the URL of the page where a tag for the module would be placed.
+	 * Gets the URL of the page(s) where a tag for the module would be placed.
 	 *
 	 * For all modules like Analytics, Tag Manager, AdSense, Ads, etc. except for
 	 * Sign in with Google, tags can be detected on the home page. SiwG places its
@@ -352,6 +353,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @return string TRUE if tag is found, FALSE if not.
 	 */
 	public function get_content_url() {
-		return wp_login_url();
+		$wp_login_url = wp_login_url();
+
+		$woo_commerce = new WooCommerce( $this->context );
+		if ( $woo_commerce->is_active() ) {
+			$wc_login_page_id = wc_get_page_id( 'myaccount' );
+			$wc_login_url     = get_permalink( $wc_login_page_id );
+			return array(
+				'WordPress Login Page'   => $wp_login_url,
+				'WooCommerce Login Page' => $wc_login_url,
+			);
+		}
+		return $wp_login_url;
 	}
 }
